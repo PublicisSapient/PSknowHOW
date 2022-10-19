@@ -174,7 +174,7 @@ public class RegressionPercentageKanbanServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-		when(testCaseDetailsRepository.findTestCases(any(), any())).thenReturn(testCaseDetailsList);
+		when(testCaseDetailsRepository.findTestDetails(any(), any(),any())).thenReturn(testCaseDetailsList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
 		when(cacheService

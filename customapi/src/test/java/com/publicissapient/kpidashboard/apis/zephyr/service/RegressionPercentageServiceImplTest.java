@@ -159,7 +159,7 @@ public class RegressionPercentageServiceImplTest {
 			}
 		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(testCaseDetailsRepository.findTestCases(any(), any())).thenReturn(testCaseDetailsList);
+		when(testCaseDetailsRepository.findTestDetails(any(), any(),any())).thenReturn(testCaseDetailsList);
 		Map<String, Object> map = regressionPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		Map<String, List<TestCaseDetails>> testCaseData = testCaseDetailsList.stream()
