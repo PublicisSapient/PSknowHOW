@@ -122,6 +122,7 @@ public final class CommonConstant {
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String CACHE_AGG_CRITERIA = "cache_aggregation_criteria";
 	public static final String CACHE_MATURITY_RANGE = "cache_maturity_range";
+	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 
 
 
