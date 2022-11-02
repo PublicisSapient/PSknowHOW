@@ -116,6 +116,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     previousBoardId: number;
     hierarchyLevel;
     showChart = true;
+    displayModal = false;
+    modalDetails = {
+        header: '',
+        tableHeadings: [],
+        tableValues: []
+    };
+    kpiExcelData;
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         this.kanbanActivated = this.service.getSelectedType() === 'Kanban' ? true : false;
         if (this.boardId) {
@@ -370,9 +377,27 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     // download excel functionality
     downloadExcel(kpiId, kpiName, isKanban) {
         const sprintIncluded = ['CLOSED'];
-        this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded);
+        this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded).subscribe(getData => {
+            this.kpiExcelData=this.excelService.generateExcelModalData(getData);
+            this.modalDetails['tableHeadings'] = this.kpiExcelData.headerNames;
+            this.modalDetails['header'] = kpiName;
+            this.modalDetails['tableValues'] = JSON.parse(JSON.stringify(this.kpiExcelData.excelData)).map(data => {
+                if(data.hasOwnProperty('rowSpan')){
+                    delete data.rowSpan;
+                }
+                return Object.values(data);
+            });
+            this.displayModal = true;
+        });
     }
 
+    exportExcel(kpiName){
+    this.excelService.generateExcel(this.kpiExcelData,kpiName);
+    }
+
+    checkIfArray(arr){
+        return Array.isArray(arr);
+    }
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
         this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');

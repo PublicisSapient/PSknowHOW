@@ -55,31 +55,8 @@ export class HelperService {
             }
         }
 
-        this.httpService.downloadExcel(downloadJson, kpiId)
-            .subscribe(getData => {
-                if (getData['kpiId'] == 'kpi83') {
-                    let dynamicKeys = [];
-                    for (const key in getData['validationData']) {
-                        if (dynamicKeys.length == 0) {
-                            dynamicKeys = Object.keys(getData['validationData'][key][kpiName][0]);
-                        }
-                        for (const x in dynamicKeys) {
-                            getData['validationData'][key][dynamicKeys[x]] = [];
-                        }
+        return this.httpService.downloadExcel(downloadJson, kpiId);
 
-                        const arr = getData['validationData'][key][kpiName];
-                        for (let i = 0; i < arr.length; i++) {
-                            for (const item in arr[i]) {
-                                getData['validationData'][key][item].push(arr[i][item]);
-                            }
-                        }
-                        delete getData['validationData'][key][kpiName];
-
-                    }
-                }
-
-                this.excelService.generateExcel(getData, 'individual', kpiName, isKanban);
-            });
     }
 
     // this is used for making request object for kpi .Here first parameter is kpi source i.e

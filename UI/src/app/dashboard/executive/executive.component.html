@@ -103,3 +103,45 @@
     <app-no-access [selectedTab]="''" [userEnable]='enableByUser'></app-no-access>
   </div>
 </ng-template>
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
+  <p-header>
+    {{modalDetails['header']}}
+    <button pButton pRipple label="Export" class="p-button-secondary p-p-2 export-button"
+      (click)="exportExcel(modalDetails['header'])"></button>
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img"
+      [autoLayout]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;">{{item.header}}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <td class="font-small" *ngFor="let cellData of rowData">
+            <ng-container *ngIf="!checkIfArray(cellData); else displayArrayData">
+              <a *ngIf="cellData.hasOwnProperty('hyperlink') ; else displayCellData" [href]="cellData['hyperlink']"
+                class="text-blue" target="_blank">{{cellData['text']}}</a>
+              <ng-template #displayCellData>{{cellData.length > 60 ? (cellData.slice(0,60)+'...') : cellData}}
+              </ng-template>
+            </ng-container>
+
+            <ng-template #displayArrayData>
+              <ng-container *ngFor="let data of cellData">
+                <a *ngIf="data.hasOwnProperty('hyperlink') ; else displayData" [href]="data['hyperlink']"
+                  class="text-blue column-content-spacing" target="_blank">{{data['text']}}</a>
+                <ng-template #displayData>
+                  <p class="column-content-spacing">{{data}}</p>
+                </ng-template>
+                <br>
+              </ng-container>
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</p-dialog>

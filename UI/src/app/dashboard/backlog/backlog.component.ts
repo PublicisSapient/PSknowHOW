@@ -6,7 +6,8 @@ import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-backlog',
-  templateUrl: './backlog.component.html'
+  templateUrl: './backlog.component.html',
+  styleUrls: ['./backlog.component.css']
 })
 export class BacklogComponent implements OnInit, OnDestroy{
   subscriptions: any[] = [];
@@ -42,6 +43,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
   showKpiTrendIndicator={};
   kpiDropdowns: object = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
+  displayModal = false;
+  modalDetails = {
+      header: '',
+      tableHeadings: [],
+      tableValues: []
+  };
+  kpiExcelData;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     // this.kanbanActivated = false;
@@ -454,8 +462,27 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   downloadExcel(kpiId, kpiName, isKanban) {
     const sprintIncluded = ['CLOSED'];
-    this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded);
-  }
+    this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded).subscribe(getData => {
+        this.kpiExcelData=this.excelService.generateExcelModalData(getData);
+        this.modalDetails['tableHeadings'] = this.kpiExcelData.headerNames;
+        this.modalDetails['header'] = kpiName;
+        this.modalDetails['tableValues'] = JSON.parse(JSON.stringify(this.kpiExcelData.excelData)).map(data => {
+            if(data.hasOwnProperty('rowSpan')){
+                delete data.rowSpan;
+            }
+            return Object.values(data);
+        });
+        this.displayModal = true;
+    });
+}
+
+exportExcel(kpiName){
+this.excelService.generateExcel(this.kpiExcelData,kpiName);
+}
+
+checkIfArray(arr){
+    return Array.isArray(arr);
+}
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());

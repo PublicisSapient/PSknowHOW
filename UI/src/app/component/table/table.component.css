@@ -20,7 +20,7 @@
     overflow: visible !important;
 }
 
-:host::ng-deep .p-datatable-sm .p-datatable-tbody tr td,::ng-deep.p-datatable .p-datatable-thead tr th{
+:host::ng-deep .p-datatable-sm .p-datatable-tbody tr td,:host::ng-deep.p-datatable .p-datatable-thead tr th{
     border: none;
 }
 
