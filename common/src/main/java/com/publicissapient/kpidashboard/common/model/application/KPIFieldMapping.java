@@ -23,5 +23,7 @@ import java.util.List;
 @Document(collection = "kpi_fieldmapping")
 public class KPIFieldMapping extends BasicModel {
     private String kpiId;
+    private String kpiName;
+    private List<String> type;
     private List<String> fieldNames;
 }
