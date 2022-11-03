@@ -1,0 +1,11 @@
+.filter-container {
+    background-color: lightgray;
+    border: 2px solid #7d7d7d;
+    border-radius: 5px;
+    width: 100%;
+    height: auto;
+  }
+  
+  .filter-container p-multiselect {
+    float: left;
+  }

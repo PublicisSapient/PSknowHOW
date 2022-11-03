@@ -31,7 +31,7 @@
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
-
+    <app-kpi-filter [kpiRelationShips]="kpiRelationShips" [fieldMappings]="fieldMappingFormDescriptionObj"></app-kpi-filter>
     <form [formGroup]="fieldMappingForm" autocomplete="off">
         <p-accordion [multiple]="true" [style]="{'width':'100%'}">
             <p-accordionTab header="Workflow Status Mapping">

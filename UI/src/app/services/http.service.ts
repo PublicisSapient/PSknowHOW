@@ -91,6 +91,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private basicConfigUrl = this.baseUrl + '/api/basicconfigs';
     private connectionUrl = this.baseUrl + '/api/connections';
     private fieldMappingsUrl = this.baseUrl + '/api/tools';
+    private getKPIFieldMappingRelationshipsUrl = this.baseUrl + '/api/fieldMappingData';
     private getAllBoardsUrl = this.baseUrl + '/api/jira/board';
     private getHierarchyLevelsUrl = this.baseUrl + '/api/hierarchylevels';
 
@@ -656,6 +657,11 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     /** Save all Field Mappings */
     setFieldMappings(toolId, mappingConfig) {
         return this.http.post(this.fieldMappingsUrl + '/' + toolId + '/fieldMapping', mappingConfig);
+    }
+
+    /** Get KPI-field mapping relationships */
+    getKPIFieldMappingRelationships() {
+        return this.http.get<any>(this.getKPIFieldMappingRelationshipsUrl);
     }
 
     /** get Active Directory Config */

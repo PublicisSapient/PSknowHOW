@@ -277,7 +277,7 @@ export class ProjectFilterComponent implements OnInit {
   hierarchyMatch(project) {
     let result = true;
 
-    const hierarchy = project.hierarchy.reduce(function(a, b) {
+    const hierarchy = project.hierarchy.reduce((a, b) => {
       a[b.hierarchyLevel.hierarchyLevelId] = b.value;
       return a;
     }, {});

@@ -1,0 +1,37 @@
+<p-panel header="Filter fields according to KPIs" [toggleable]="true">
+    <div class="filter-container p-d-flex p-p-3 p-mb-5">
+        <p-multiSelect placeholder="Select KPIs" [style]="{'max-width':'500px','width':'500px'}"
+            [options]="kpiRelationShips" [(ngModel)]="selectedKpis" optionLabel="kpiName" showClear="true">
+        </p-multiSelect>
+        <p-button id="showFields" label="Related Field Mappings" class="p-button-raised p-mt-1"
+            [ngStyle]="{'marfin-top': '10px'}" icon="pi pi-check" [loading]="isLoading" (click)="showFieldsPopup()"
+            [disabled]="disabled" badge="{{ getRelatedFieldsCount() }}">
+        </p-button>
+    </div>
+</p-panel>
+
+<p-dialog header="Field Mappings" [(visible)]="displayPopup" [modal]="true" (onHide)="clearForm()">
+    <form [formGroup]="fieldMappingForm" autocomplete="off">
+        <div *ngFor="let field of fields;let i=index">
+            <ngContainer [ngSwitch]="field.type">
+                <div *ngSwitchCase="'chips'">
+                    <div class="p-field p-col-7 p-p-0 p-ml-5">
+                        <p-chips [inputStyle]="{'width':'300px'}" id="{{field.fieldName}}"
+                            formControlName="{{field.fieldName}}" placeholder="Enter {{field.fieldName}}"
+                            addOnBlur="true" pTooltip='' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                        </p-chips>
+                    </div>
+                </div>
+                <div *ngSwitchCase="'text'">
+                    <div class="p-field p-col-7 p-p-0 p-ml-5">
+                        <input type="text" pInputText id="{{field.fieldName}}" formControlName="{{field.fieldName}}"
+                            placeholder="Enter {{field.fieldName}}" [style]="{'width':'300px'}" pTooltip=""
+                            tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                        <button [hidden]="" type="button" pButton pRipple icon="pi pi-search">
+                        </button>
+                    </div>
+                </div>
+            </ngContainer>
+        </div>
+    </form>
+</p-dialog>

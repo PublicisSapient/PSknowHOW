@@ -19,23 +19,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
+import { PanelModule } from 'primeng/panel';
+import { DialogModule } from 'primeng/dialog';
+import { ChipsModule } from 'primeng/chips';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProjectFilterComponent } from './project-filter/project-filter.component';
 import { NamePipePipe } from './name-pipe.pipe';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
 import { FooterComponent } from './footer/footer.component';
+import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     CalendarModule,
     NgSelectModule,
     MultiSelectModule,
-    DropdownModule
+    DropdownModule,
+    PanelModule,
+    DialogModule,
+    ChipsModule,
+    InputTextModule
   ],
   exports: [
     NgSelectModule,
@@ -43,13 +53,15 @@ import { FooterComponent } from './footer/footer.component';
     NamePipePipe,
     PageLoaderComponent,
     CalendarModule,
-    FooterComponent
+    FooterComponent,
+    KpiFilterComponent
   ],
   declarations: [
     ProjectFilterComponent,
     NamePipePipe,
     PageLoaderComponent,
-    FooterComponent
+    FooterComponent,
+    KpiFilterComponent
   ]
 })
 export class SharedModuleModule { }
