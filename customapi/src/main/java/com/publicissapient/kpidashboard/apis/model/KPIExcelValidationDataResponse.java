@@ -18,13 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Validation Data response. Variables to be added to serve the need of other
@@ -35,16 +35,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public class KPIExcelValidationDataResponse {
 
-    private String kpiName;
-    private String kpiId;
-    @JsonProperty("excelData")
-    private List<KPIExcelData> excelData;
-
     /**
      * The Map of sprint and data.
      */
     @JsonProperty("validationData")
     /* package */ Map<String, ValidationData> mapOfSprintAndData;
+    private String kpiName;
+    private String kpiId;
+    @JsonProperty("columns")
+    private List<String> excelColumns;
+    @JsonProperty("excelData")
+    private List<KPIExcelData> excelData;
 
     /**
      * Gets map of sprint and data.
@@ -100,14 +101,21 @@ public class KPIExcelValidationDataResponse {
         this.kpiId = kpiId;
     }
 
-	public List<KPIExcelData> getExcelData() {
-		return excelData;
-	}
+    public List<KPIExcelData> getExcelData() {
+        return excelData;
+    }
 
-	public void setExcelData(List<KPIExcelData> excelData) {
-		this.excelData = excelData;
-	}
-    
-    
+    public void setExcelData(List<KPIExcelData> excelData) {
+        this.excelData = excelData;
+    }
+
+    public List<String> getExcelColumns() {
+        return excelColumns;
+    }
+
+    public void setExcelColumns(List<String> excelColumns) {
+        this.excelColumns = excelColumns;
+    }
+
 
 }
