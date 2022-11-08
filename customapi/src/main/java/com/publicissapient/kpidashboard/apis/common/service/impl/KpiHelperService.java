@@ -433,8 +433,11 @@ public class KpiHelperService { // NOPMD
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
+			if (Optional.ofNullable(fieldMapping.getJiraSprintVelocityIssueType()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraSprintVelocityIssueType());
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
@@ -499,16 +502,20 @@ public class KpiHelperService { // NOPMD
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			List<String> capacityIssueType = fieldMapping.getJiraSprintCapacityIssueType();
-			if (CollectionUtils.isEmpty(capacityIssueType)) {
-				capacityIssueType = new ArrayList<>();
-				capacityIssueType.add("Story");
-			}
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(capacityIssueType));
+			if (Optional.ofNullable(fieldMapping.getJiraSprintCapacityIssueType()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraSprintCapacityIssueType());
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			} else {
+				List<String> capacityIssueType = new ArrayList<>();
+				capacityIssueType.add("Story");
+				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(capacityIssueType));
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});

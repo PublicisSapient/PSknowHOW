@@ -36,6 +36,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -160,8 +161,10 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			}
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				mapOfStoriesFilter.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
+				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+							fieldMapping.getJiraStoryIdentification());
+				}
 				uniqueProjectMapForStories.put(basicProjectConfigId.toString(), mapOfStoriesFilter);
 			}
 			storyType.addAll(fieldMapping.getJiraStoryIdentification());

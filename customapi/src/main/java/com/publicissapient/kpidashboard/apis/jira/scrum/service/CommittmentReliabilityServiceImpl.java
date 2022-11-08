@@ -197,8 +197,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		sprintLeafNodeList.forEach(node -> {
-			String validationKey = node.getProjectFilter().getName() + Constant.UNDERSCORE
-					+ node.getSprintFilter().getName();
 			String trendLineName = node.getProjectFilter().getName();
 
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -261,8 +259,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
+			if (Optional.ofNullable(fieldMapping.getJiraSprintVelocityIssueType()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraSprintVelocityIssueType());
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			}
 
 			if (Optional.ofNullable(fieldMapping.getJiraIssueDeliverdStatus()).isPresent()) {
 				projectWiseClosedStatusMap.put(basicProjectConfigId.toString(),

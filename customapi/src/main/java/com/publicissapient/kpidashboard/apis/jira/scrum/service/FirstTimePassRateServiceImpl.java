@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -282,8 +283,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			statusConfigsOfDefectRejectionStatus.put(basicProjectConfigId.toString(),
 					Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
 
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraStoryIdentification());
+			}
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					fieldMapping.getJiraIssueDeliverdStatus());
 			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,

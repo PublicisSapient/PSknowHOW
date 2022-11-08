@@ -26,9 +26,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -152,12 +154,12 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraStoryIdentification());
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			}
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
@@ -268,7 +270,6 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			// prepare data from jira issue.
 		}
 
-		// Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		for (Node node : sprintLeafNodeList) {

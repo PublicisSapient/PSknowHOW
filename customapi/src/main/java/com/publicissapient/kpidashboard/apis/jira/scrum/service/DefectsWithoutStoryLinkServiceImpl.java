@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +58,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -66,7 +66,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 
 	public static final String UNCHECKED = "unchecked";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectsWithoutStoryLinkServiceImpl.class);
-	private static final String DEFECT_WITHOUT_STORY_LINK = "Defects Without Story Link";
+		private static final String DEFECT_WITHOUT_STORY_LINK = "Defects Without Story Link";
 	private static final String DEFECT_LIST = "Total Defects";
 	private static final String STORY_LIST = "stories";
 
@@ -146,8 +146,10 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			if (null != fieldMapping) {
-				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
+				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+							fieldMapping.getJiraStoryIdentification());
+				}
 				ignoreStatusList.addAll(
 						CollectionUtils.isEmpty(fieldMapping.getJiraDefectDroppedStatus()) ? Lists.newArrayList()
 								: fieldMapping.getJiraDefectDroppedStatus());

@@ -207,7 +207,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			// prepare data from jira issue.
 		}
 
-		// Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			// Leaf node wise data
