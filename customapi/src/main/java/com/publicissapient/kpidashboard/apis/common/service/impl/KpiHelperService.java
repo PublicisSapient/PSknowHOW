@@ -343,12 +343,25 @@ public class KpiHelperService { // NOPMD
 			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
 		});
 
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		Set<String> completedIssues = new HashSet<>();
+		sprintDetails.stream().forEach(sprintDetail -> {
+			if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
+				completedIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.COMPLETED_ISSUES));
+			}
+
+		});
+
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
+				completedIssues.stream().collect(Collectors.toList()));
+
 
 		List<SprintWiseStory> sprintWiseStoryList = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);

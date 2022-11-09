@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -97,6 +100,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+
+	@Autowired
+	private SprintRepository sprintRepository;
 
 	@Override
 	public String getQualifierType() {
@@ -296,6 +302,16 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		});
 
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		Set<String> completedIssues = new HashSet<>();
+		sprintDetails.stream().forEach(sprintDetail -> {
+			if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
+				completedIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.COMPLETED_ISSUES));
+			}
+
+		});
+
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
@@ -303,6 +319,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
+				completedIssues.stream().collect(Collectors.toList()));
 
 		// Fetch Story ID grouped by Sprint
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
