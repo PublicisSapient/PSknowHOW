@@ -40,12 +40,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -117,6 +121,9 @@ public class FirstTimePassRateServiceImplTest {
 	@Mock
 	private FilterHelperService filterHelperService;
 
+	@Mock
+	private SprintRepository sprintRepository;
+
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
@@ -126,6 +133,8 @@ public class FirstTimePassRateServiceImplTest {
 	private List<String> defectPriority = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+
+	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -176,6 +185,9 @@ public class FirstTimePassRateServiceImplTest {
 
 		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
 
+		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
+		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
+
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 
 		List<JiraIssue> issues = jiraIssueDataFactory.getJiraIssues().stream().filter(
@@ -200,6 +212,8 @@ public class FirstTimePassRateServiceImplTest {
 
 		List<String> resultSet = Stream.of("p1", "P1 - Blocker", "blocker", "1", "0", "p0", "urgent", "p2", "critical",
 				"P2 - Critical", "2", "high").collect(Collectors.toList());
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getPriority()).thenReturn(priorityMap);
 		List<String> priorValue = new ArrayList<>();
