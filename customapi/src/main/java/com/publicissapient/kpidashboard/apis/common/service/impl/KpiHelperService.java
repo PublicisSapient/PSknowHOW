@@ -473,21 +473,19 @@ public class KpiHelperService { // NOPMD
 					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (MapUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(TOTAL_ISSUE_WITH_STORYPOINTS,totalIssue);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
+			resultListMap.put(SPRINTVELOCITYKEY, new ArrayList<>());
 		} else {
 			//start: for azure board sprint details collections put is empty due to we did not have required data of issues.
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					uniqueProjectMap);
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
-			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, null);
+			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
 		}
 		//end: for azure board sprint details collections put is empty due to we did not have required data of issues.
 

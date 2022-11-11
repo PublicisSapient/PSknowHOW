@@ -17,13 +17,14 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-
-import java.util.List;
 
 /**
  * @author yasbano
@@ -73,4 +74,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * @return list of sprints
 	 */
 	List<SprintDetails> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
+			String state);
  }

@@ -7,9 +7,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -29,6 +31,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -45,10 +48,12 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintPredictabilityImplTest {
@@ -59,12 +64,18 @@ public class SprintPredictabilityImplTest {
 	private Map<String, Object> filterLevelMap;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+	
+	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	
+	@Mock
+	private SprintRepository sprintRepository;
 
 	@Mock
 	private CacheService cacheService;
@@ -111,6 +122,11 @@ public class SprintPredictabilityImplTest {
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
 		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
 
+		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
+
+		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
+
+		basicProjectConfigObjectIds.add(new ObjectId("6335363749794a18e8a4479b"));
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setProjectName("Scrum Project");
@@ -163,6 +179,32 @@ public class SprintPredictabilityImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+				SprintDetails.SPRINT_STATE_CLOSED)).thenReturn(sprintDetailsList);
+
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintPredictability.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+		} catch (Exception exception) {
+		}
+	}
+
+	@Test
+	public void testGetSprintPredictability_EmptySprintDetails_AzureCase()  throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+				SprintDetails.SPRINT_STATE_CLOSED)).thenReturn(null);
 
 		when(jiraIssueRepository.findStoriesByType(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

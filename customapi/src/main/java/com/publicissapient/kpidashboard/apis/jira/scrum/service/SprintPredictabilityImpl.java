@@ -3,12 +3,16 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -30,12 +33,13 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,9 +50,14 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	private static final Integer SP_CONSTANT = 3;
 	private static final String DEV = "DeveloperKpi";
 	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
+	private static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetailMap";
+	private static final String TOTAL_ISSUE_WITH_STORY_POINTS = "totalIssueWithStoryPoints";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
+	@Autowired
+	private SprintRepository sprintRepository;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -121,7 +130,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
+		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		Map<String, List<String>> typeNameMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -129,6 +141,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
+			basicProjectConfigObjectIds.add(basicProjectConfigId);
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
@@ -136,20 +149,62 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
+			closedStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraIssueDeliverdStatus());
+			typeNameMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraSprintVelocityIssueType());
+
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
+
+		List<SprintDetails> totalSprintDetails = sprintRepository
+				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+						SprintDetails.SPRINT_STATE_CLOSED);
+		Map<Pair<String, String>, Map<String, Double>> totalIssue = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
+			List<SprintDetails> sprintDetails = totalSprintDetails.stream()
+					.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT).collect(Collectors.toList());
+			resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetails);
+			sprintDetails.stream().forEach(sprintDetail -> {
+
+				if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
+
+					List<String> closedStatus = closedStatusMap
+							.getOrDefault(sprintDetail.getBasicProjectConfigId().toString(), new ArrayList<>());
+					List<String> typeName = typeNameMap.getOrDefault(sprintDetail.getBasicProjectConfigId().toString(),
+							new ArrayList<>());
+					Map<String, Double> storyWiseStoryPoint = new HashMap<>();
+					sprintDetail.getTotalIssues().stream()
+							.filter(sprintIssue -> (closedStatus.contains(sprintIssue.getStatus())
+									&& typeName.contains(sprintIssue.getTypeName())))
+							.forEach(sprintIssue -> storyWiseStoryPoint.putIfAbsent(sprintIssue.getNumber(),
+									sprintIssue.getStoryPoints()));
+
+					totalIssue.put(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), sprintDetail.getSprintID()),
+							storyWiseStoryPoint);
+				}
+
+			});
+		} else {
+			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
+					sprintList.stream().distinct().collect(Collectors.toList()));
+		}
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		// Fetch Story ID grouped by Sprint
-		List<SprintWiseStory> sprintWisePredictabilityList = jiraIssueRepository.findStoriesByType(mapOfFilters,
-				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
-
-		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWisePredictabilityList);
+		if (MapUtils.isNotEmpty(totalIssue)) {
+			resultListMap.put(TOTAL_ISSUE_WITH_STORY_POINTS, totalIssue);
+			resultListMap.put(SPRINT_WISE_PREDICTABILITY, new ArrayList<>());
+		} else {
+			// start: for azure board sprint details collections put is empty due to we did
+			// not have required data of issues.
+			List<SprintWiseStory> sprintWisePredictabilityList = jiraIssueRepository.findStoriesByType(mapOfFilters,
+					uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
+			resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWisePredictabilityList);
+			resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, new ArrayList<>());
+		}
+		// end: for azure board sprint details collections put is empty due to we did
+		// not have required data of issues.
 
 		return resultListMap;
 
@@ -190,14 +245,42 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		Map<String, Object> storyMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
+		Map<String, Object> sprintWisePredictabilityMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
+				kpiRequest);
 
-		Map<Pair<String, String>, List<String>> sprintWiseMap = ((List<SprintWiseStory>) storyMap
-				.get(SPRINT_WISE_PREDICTABILITY)).stream().collect(
-						Collectors.toMap(x -> Pair.of(x.getBasicProjectConfigId(), x.getSprint()), SprintWiseStory::getStoryList));
+		List<SprintWiseStory> sprintWisePredictabilityList = (List<SprintWiseStory>) sprintWisePredictabilityMap
+				.get(SPRINT_WISE_PREDICTABILITY);
 
-		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(
-				((List<SprintWiseStory>) storyMap.get(SPRINT_WISE_PREDICTABILITY)));
+		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintWisePredictabilityMap
+				.get(SPRINT_WISE_SPRINT_DETAILS);
+
+		Map<Pair<String, String>, Map<String, Double>> sprintWiseNumberStoryMap = (Map<Pair<String, String>, Map<String, Double>>) sprintWisePredictabilityMap
+				.get(TOTAL_ISSUE_WITH_STORY_POINTS);
+
+		if (CollectionUtils.isEmpty(sprintWisePredictabilityList) && CollectionUtils.isNotEmpty(sprintDetails)) {
+			sprintDetails.forEach(sd -> {
+				Map<String, Double> storyWiseStoryPoint = sprintWiseNumberStoryMap
+						.get((Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID())));
+				SprintWiseStory sprintWiseStory = new SprintWiseStory();
+				sprintWiseStory.setSprint(sd.getSprintID());
+				sprintWiseStory.setSprintName(sd.getSprintName());
+				sprintWiseStory.setBasicProjectConfigId(sd.getBasicProjectConfigId().toString());
+				if (MapUtils.isNotEmpty(storyWiseStoryPoint)) {
+					double effectSum = 0.0d;
+					for (Map.Entry<String, Double> map : storyWiseStoryPoint.entrySet()) {
+						effectSum += Optional.ofNullable(map.getValue()).orElse(0.0d).doubleValue();
+					}
+					sprintWiseStory.setStoryList(new ArrayList<>(storyWiseStoryPoint.keySet()));
+					sprintWiseStory.setEffortSum(effectSum);
+				}
+				sprintWisePredictabilityList.add(sprintWiseStory);
+			});
+		}
+
+		Map<Pair<String, String>, List<String>> sprintWiseMap = sprintWisePredictabilityList.stream().collect(Collectors
+				.toMap(x -> Pair.of(x.getBasicProjectConfigId(), x.getSprint()), SprintWiseStory::getStoryList));
+
+		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
@@ -206,8 +289,9 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			Map<String, Double> storyWiseStoryPoint = sprintWiseNumberStoryMap.get(currentNodeIdentifier);
 			populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap,
-					sprintWiseMap.get(currentNodeIdentifier), sprintName);
+					sprintWiseMap.get(currentNodeIdentifier), sprintName, storyWiseStoryPoint);
 			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
 					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
 			if (predictability.get(currentNodeIdentifier) != null) {
@@ -278,8 +362,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			total += storyList.get(innerCount).getEffortSum();
 			avgCount++;
 		}
-		Double avg = getAvarage(total, avgCount);
-		return avg;
+		return getAvarage(total, avgCount);
 	}
 
 	/**
@@ -317,14 +400,25 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param sprintName
 	 * @param validationDataMap
 	 * @param storyList
+	 * @param storyWiseStoryPoint
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, List<String> storyList, String sprintName) {
+			Map<String, ValidationData> validationDataMap, List<String> storyList, String sprintName,
+			Map<String, Double> storyWiseStoryPoint) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			ValidationData validationData = new ValidationData();
-			if (CollectionUtils.isNotEmpty(storyList)) {
+			List<String> storyKeyList = new ArrayList<>();
+			List<String> storyPointList = new ArrayList<>();
+			if (MapUtils.isNotEmpty(storyWiseStoryPoint)) {
+				for (Map.Entry<String, Double> storyWiseStory : storyWiseStoryPoint.entrySet()) {
+					storyKeyList.add(storyWiseStory.getKey());
+					storyPointList.add(Optional.ofNullable(storyWiseStory.getValue()).orElse(0.0).toString());
+				}
+				validationData.setStoryKeyList(storyKeyList);
+				validationData.setStoryPointList(storyPointList);
+			} else {
 				validationData.setStoryKeyList(storyList);
 			}
 

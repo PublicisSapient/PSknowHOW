@@ -1210,7 +1210,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": true,
     "aggregationCriteria": "average",
     "kpiFilter": "radioButton",
-    "isAdditionalFilterSupport": true,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": ["-40","40-60","60-75","75-90","90-"]
   },
