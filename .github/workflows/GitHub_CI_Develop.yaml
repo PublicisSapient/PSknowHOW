@@ -28,7 +28,7 @@ jobs:
   # This workflow contains a single job called "build"
   GitHub_CI:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -78,14 +78,14 @@ jobs:
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm install
-          sudo npm install -g @angular/cli@6.0.8
+          sudo npm install -g @angular/cli@14.2.6
           #npm install --save-dev @angular-devkit/build-angular
-          sudo ng build --configuration=docker
+          npm run build
+
           sudo mkdir -p build
           sudo cp -r dist/dashboard/* build/
           sudo chmod -R 775 build
           cd build
-          ls -lrt
           sudo tar -czvf ui2.tar *
           sudo mv ui2.tar ../files
           sudo rm -rf build
@@ -132,7 +132,7 @@ jobs:
             processors:
               - 'processors/**'
       - name: Building and Testing CustomApi processor
-        if: steps.processors.outputs.processors == 'true' || steps.customapi.outputs.customapi == 'true'
+        if: steps.customapi.outputs.customapi == 'true'
         id: testcustomapi
         run: |
                mvn clean install -DskipTests -Pcustomapi
@@ -173,14 +173,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                
       - name: Checking code Quality using SonarQube for Customapi
-        if: steps.processors.outputs.processors == 'true' ||  steps.customapi.outputs.customapi == 'true'
+        if: steps.customapi.outputs.customapi == 'true'
         id: Sonarcustomapi
         run: |
                mvn sonar:sonar \
-                  -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
-                  -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
-                  -Dsonar.host.url=https://URL.com./sonar \
-                  -Dsonar.login=<#specfifytoke> -f customapi/pom.xml
+                  -Dsonar.projectKey=${{ secrets.PROJECT_KEY }} \
+                  -Dsonar.projectName=${{ secrets.PROJECT_NAME }} \
+                  -Dsonar.host.url=https://${{ secrets.SONARQUBE_HOST }}/sonar \
+                  -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} -f customapi/pom.xml
                chmod +x SonarDelay.sh
                 ./SonarDelay.sh ./customapi/target/sonar/report-task.txt
         env:
