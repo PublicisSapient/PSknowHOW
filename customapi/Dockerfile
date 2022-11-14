@@ -24,4 +24,5 @@ RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
 
 EXPOSE 8080
 
+
 CMD ["sh", "start_combined_collector.sh"]
