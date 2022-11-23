@@ -862,19 +862,30 @@ export class JiraConfigComponent implements OnInit {
                Generally all issues name are started with Project key<br /> <i>
                 Impacted : Jira/Azure Collector and all Kpi</i>`
               },
+              // {
+              //   type: 'button',
+              //   label: 'Fetch Boards',
+              //   id: 'fetchBoardsBtn',
+              //   containerClass: 'p-sm-2 p-d-flex p-ai-center',
+              //   class: 'p-button-raised',
+              //   show: true,
+              //   clickEventHandler: this.fetchBoards,
+              //   disabled: this.checkProjectKey
+              // },
               {
-                type: 'button',
-                label: 'Fetch Boards',
-                id: 'fetchBoardsBtn',
-                containerClass: 'p-sm-2 p-d-flex p-ai-center',
-                class: 'p-button-raised',
+                type: 'boolean',
+                label: 'JIRA Boards ',
+                id: 'queryEnabled',
+                model: 'queryEnabled',
+                validators: [],
+                containerClass: 'p-sm-12',
+                tooltip: `Shows all the boards that are setup in JIRA in a project associated with the selected project key`,
+                disabled: 'false',
                 show: true,
-                clickEventHandler: this.fetchBoards,
-                disabled: this.checkProjectKey
               },
               {
                 type: 'autoComplete',
-                label: 'JIRA Boards',
+                // label: 'JIRA Boards',
                 id: 'boards',
                 suggestions: 'filteredBoards',
                 validators: ['required'],
@@ -885,7 +896,8 @@ export class JiraConfigComponent implements OnInit {
                 unselectEventHandler: this.onBoardUnselect,
                 show: true,
                 isLoading: false,
-                disabled: this.checkBoards
+                disabled: this.checkBoards,
+                dependentOn: 'queryEnabled'
               }
             ],
           };
