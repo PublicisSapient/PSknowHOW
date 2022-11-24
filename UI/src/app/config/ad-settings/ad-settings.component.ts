@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { RsaEncryptionService } from '../../services/rsa.encryption.service';
@@ -29,12 +29,12 @@ import { RsaEncryptionService } from '../../services/rsa.encryption.service';
   styleUrls: ['./ad-settings.component.css']
 })
 export class AdSettingsComponent implements OnInit {
-  adSettingsForm: UntypedFormGroup;
+  authSettingsForm: UntypedFormGroup;
   adSettingsFormObj: any;
+  ssoFormObj: any;
+  authDetails: object = {}
   // standardLoginForm: UntypedFormGroup;
   // standardLoginFormObj: any;
-  // pingAuthenticationForm: UntypedFormGroup;
-  // pingAuthenticationFormObj: any;
   submitted = false;
   loginSettingsTypes = [{
     name: 'standardLogin',
@@ -43,6 +43,10 @@ export class AdSettingsComponent implements OnInit {
   {
     name: 'adLogin',
     label: 'AD Authentication'
+  },
+  {
+      name: 'ssoLogin',
+      label: 'Login with SSO'
   }];
 
   selectedTypes: any[] = [{
@@ -57,15 +61,15 @@ export class AdSettingsComponent implements OnInit {
     this.getAuthSettings();
   }
 
-  // get AD configuration
+  // get Auth configuration
   getAuthSettings() {
     this.initializeFields();
-    this.adSettingsForm = this.formBuilder.group(this.adSettingsFormObj);
     // this.standardLoginForm = this.formBuilder.group(this.standardLoginFormObj);
-    // this.pingAuthenticationForm = this.formBuilder.group(this.pingAuthenticationFormObj);
+    // this.authSettingsForm = this.formBuilder.group(this.ssoFormObj);
     this.http.getAuthConfig().subscribe(response => {
       if (response && response.success) {
         if (response && response.data && response.data.authTypeStatus) {
+          this.authDetails = response.data; 
           this.selectedTypes = [];
           if (response.data.authTypeStatus.standardLogin) {
             this.selectedTypes.push({
@@ -80,6 +84,13 @@ export class AdSettingsComponent implements OnInit {
               label: 'AD Authentication'
             });
           }
+
+          if (response.data.authTypeStatus.ssoLogin) {
+            this.selectedTypes.push({
+              name: 'ssoLogin',
+              label: 'Login with SSO'
+            });
+          }
         } else {
           this.selectedTypes.push({
             name: 'standardLogin',
@@ -89,8 +100,17 @@ export class AdSettingsComponent implements OnInit {
         if (response.success && response.data && response.data.adServerDetail) {
           for (const obj in response.data.adServerDetail) {
             if (obj !== 'password') {
-              if (this.adSettingsForm && this.adSettingsForm.controls[obj]) {
-                this.adSettingsForm.controls[obj].setValue(response.data.adServerDetail[obj]);
+              if (this.authSettingsForm && this.adForm[obj]) {
+                this.adForm[obj].setValue(response.data.adServerDetail[obj]);
+              }
+            }
+          }
+        }
+        if (response.success && response.data && response.data.ssoLoginConfig) {
+          for (const obj in response.data.ssoLoginConfig) {
+            if (obj !== 'secretRef') {
+              if (this.authSettingsForm && this.ssoForm[obj]) {
+                this.ssoForm[obj].setValue(response.data.ssoLoginConfig[obj]);
               }
             }
           }
@@ -124,7 +144,10 @@ export class AdSettingsComponent implements OnInit {
 
   // convenience getter for easy access to form fields
   get adForm() {
-    return this.adSettingsForm.controls;
+    return this.authSettingsForm.get('adServerDetail')['controls'];
+  }
+  get ssoForm() {
+    return this.authSettingsForm.get('ssoLoginConfig')['controls'];
   }
 
   // get standardLogin() {
@@ -137,24 +160,34 @@ export class AdSettingsComponent implements OnInit {
 
 
   initializeFields() {
-    this.adSettingsFormObj = {
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      host: ['', Validators.required],
-      port: [null, Validators.required],
-      rootDn: ['', Validators.required],
-      domain: ['', Validators.required]
-    };
-
-    // this.standardLoginFormObj = {
-    //   username: ['', Validators.required],
-    //   password: ['', Validators.required]
-    // };
-
-    // this.pingAuthenticationFormObj = {
-    //   field1: ['', Validators.required],
-    //   field2: ['', Validators.required]
-    // };
+    let formElems = {};
+    // if(type?.toLowerCase() === 'adlogin'){
+      this.adSettingsFormObj = {
+        username: ['', Validators.required],
+        password: ['', Validators.required],
+        host: ['', Validators.required],
+        port: [null, Validators.required],
+        rootDn: ['', Validators.required],
+        domain: ['', Validators.required],
+      };
+      formElems['adServerDetail'] = this.formBuilder.group(this.adSettingsFormObj);
+    // }
+    // if(type?.toLowerCase() === 'ssologin'){
+      this.ssoFormObj = {
+        clientID: ['', Validators.required],
+        secretRef: ['', Validators.required],
+        environment: ['', Validators.required],
+        discoveryURI: ['', Validators.required],
+        callbackUri: ['', Validators.required],
+        cookieDomain: ['', Validators.required],
+        jwksUrl: ['', Validators.required],
+        issuer: ['', Validators.required],
+        cookiePassRef: ['', Validators.required]
+      }
+      formElems['ssoLoginConfig'] = this.formBuilder.group(this.ssoFormObj);
+    // }
+   
+    this.authSettingsForm = this.formBuilder.group(formElems);
   }
 
   submit() {
@@ -167,7 +200,7 @@ export class AdSettingsComponent implements OnInit {
 
     if (this.selectedTypes.filter((type) => type.name === 'adLogin').length) {
       // return if form is invalid
-      if (this.adSettingsForm.invalid) {
+      if (this.authSettingsForm.invalid) {
         return;
       } else {
         submitData['adServerDetail'] = {};
@@ -181,6 +214,23 @@ export class AdSettingsComponent implements OnInit {
       }
     }
 
+    if (this.selectedTypes.filter((type) => type.name === 'ssoLogin').length) {
+      // return if form is invalid
+      if (this.authSettingsForm.invalid) {
+        return;
+      } else {
+        submitData['ssoLoginConfig'] = {};
+        for (const obj in this.ssoForm) {
+          if (obj === 'secretRef') {
+            submitData['ssoLoginConfig'][obj] = this.rsa.encrypt(this.ssoForm[obj].value);
+          } else {
+            submitData['ssoLoginConfig'][obj] = this.ssoForm[obj].value;
+          }
+        }
+      }
+    }
+    console.log(submitData);
+    
     this.http.setAuthConfig(submitData).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
