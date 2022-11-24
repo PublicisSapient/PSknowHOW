@@ -73,3 +73,9 @@ font-size: 12px
 .tool-form > label {
 display: block !important;
 }
+::ng-deep .field-mapping .p-autocomplete-dd > .p-inputtext{
+  width: 100%;
+}
+::ng-deep .field-mapping .p-autocomplete{
+  width: 100%;
+}

@@ -161,7 +161,8 @@ public class AgileDataCleanUpServiceTest {
 		fieldMapping.setJiraTestCaseType(values);
 		when(fieldMappingRepository.findByBasicProjectConfigId(Mockito.any())).thenReturn(fieldMapping);
         when(projectToolConfigRepository.findById(Mockito.anyString())).thenReturn(projectToolConfig);
-        when(projectBasicConfigService.getProjectBasicConfigs(Mockito.anyString())).thenReturn(projectBasicConfig);
+		doNothing().when(sprintRepository).deleteByBasicProjectConfigId(Mockito.any());
+		when(projectBasicConfigService.getProjectBasicConfigs(Mockito.anyString())).thenReturn(projectBasicConfig);
 
 		doNothing().when(testCaseDetailsRepository).deleteByBasicProjectConfigId(Mockito.anyString());
         doNothing().when(jiraIssueRepository).deleteByBasicProjectConfigId(Mockito.anyString());
@@ -170,6 +171,7 @@ public class AgileDataCleanUpServiceTest {
 
         verify(jiraIssueRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
         verify(jiraIssueCustomHistoryRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
+		verify(sprintRepository, times(1)).deleteByBasicProjectConfigId(new ObjectId("5e9db8f1e4b0caefbfa8e0c7"));
 		verify(testCaseDetailsRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
 		verify(processorExecutionTraceLogRepository, times(1)).deleteByBasicProjectConfigIdAndProcessorName("5e9db8f1e4b0caefbfa8e0c7", ProcessorConstants.JIRA);
 

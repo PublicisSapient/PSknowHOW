@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -77,6 +78,9 @@ public class SprintVelocityServiceImplTest {
 	private final static String SPRINTVELOCITYKEY = "sprintVelocityKey";
 	private static final String SUBGROUPCATEGORY = "subGroupCategory";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
+	private static final String PROJECT_WISE_CLOSED_STATUS_MAP = "projectWiseClosedStatusMap";
+	private static final String PROJECT_WISE_TYPE_NAME_MAP = "projectWiseTypeNameMap";
+	private static final String TOTAL_ISSUE_WITH_STORYPOINTS = "totalIssueWithStoryPoints";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
@@ -196,6 +200,43 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetailsList);
+		Map<Pair<String,String>, Map<String,Double>> map= new HashMap<>();
+		Map<String,Double> abc=new HashMap<>();
+		abc.put("ABC",1.0);
+		map.put(Pair.of("6335363749794a18e8a4479b","abc"),abc);
+
+		resultListMap.put(TOTAL_ISSUE_WITH_STORYPOINTS,map);
+		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(resultListMap);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+
+		try {
+			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
+
+			assertThat("Sprint Velocity trend value : ", dataCountList.size(), equalTo(1));
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+
+	@Test
+	public void testGetSprintVelocity_EmptySprintDetails_AzureCase() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("sprintVelocity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
+
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINTVELOCITYKEY, totalIssueList);
+		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
+		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(resultListMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

@@ -856,7 +856,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'JIRA Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from JIRA/AZURE.<br />
                Generally all issues name are started with Project key<br /> <i>
@@ -866,7 +866,7 @@ export class JiraConfigComponent implements OnInit {
                 type: 'button',
                 label: 'Fetch Boards',
                 id: 'fetchBoardsBtn',
-                containerClass: 'p-col-2 p-d-flex p-ai-center',
+                containerClass: 'p-sm-2 p-d-flex p-ai-center',
                 class: 'p-button-raised',
                 show: true,
                 clickEventHandler: this.fetchBoards,
@@ -878,7 +878,7 @@ export class JiraConfigComponent implements OnInit {
                 id: 'boards',
                 suggestions: 'filteredBoards',
                 validators: ['required'],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 tooltip: `Shows all the boards that are setup in JIRA in a project associated with the selected project key`,
                 filterEventHandler: this.filterBoards,
                 selectEventHandler: this.onBoardSelect,
@@ -913,7 +913,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Azure Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from AZURE Boards.<br />
             Generally all issues name are started with Project key<br /> <i>
@@ -925,7 +925,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
@@ -939,7 +939,7 @@ export class JiraConfigComponent implements OnInit {
                 id: 'queryEnabled',
                 model: 'queryEnabled',
                 validators: [],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 tooltip: ``,
                 disabled: 'false',
                 show: true,
@@ -949,7 +949,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Board Query',
                 id: 'boardQuery',
                 validators: [],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
               },
@@ -986,7 +986,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key*',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from JIRA/AZURE.<br />
               Generally all issues name are started with Project key<br /> <i>
@@ -997,7 +997,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Label Values to identify Automated Regression Test Cases',
                 id: 'regressionAutomationLabels',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list Label Values to identify Automated Regression Test Cases.
                    Example: "Regression Automation" <br />
@@ -1008,7 +1008,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Folder Path (In-Sprint Automation Coverage)',
                 id: 'inSprintAutomationFolderPath',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list of folders to locate test cases
                   from.Multiple values can be provided in this fields.<br />
@@ -1023,7 +1023,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Folder Path (Regression Automation Coverage)',
                 id: 'regressionAutomationFolderPath',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list of folders to locate test cases
                   from.Multiple values can be provided in this fields.<br />
@@ -1038,7 +1038,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Automation Field',
                 id: 'testAutomated',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1055,7 +1055,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Values for Automation Exclusion',
                 id: 'canNotAutomatedTestValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Value to identify if test cases can be automated' }}
                   <br /><i>
@@ -1067,7 +1067,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Automation Done Field',
                 id: 'testAutomationStatusLabel',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1082,7 +1082,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Values for Automation Completed',
                 id: 'automatedTestValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Values to identify automated test cases. Multiple values can be provided in this
                   fields.
@@ -1095,7 +1095,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Regression Field (For Automated Test Cases)',
                 id: 'testRegressionLabel',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1110,7 +1110,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Regression Field Value',
                 id: 'testRegressionValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Values to identify Test Case Regression (For Automated Test Cases). Multiple values can be provided in this fields.
         <br /><i>
@@ -1164,7 +1164,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Organization Key',
                 id: 'organizationKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Organization key is required in case of cloud setup.<br />
               <i>
@@ -1175,7 +1175,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.sonarVersionFinalList,
                 changeHandler: this.apiVersionHanlder,
                 model: this.selectedVersion,
@@ -1190,7 +1190,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.projectKeyList,
                 filterValue: 'true',
                 filterByName: 'name',
@@ -1208,7 +1208,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 filterValue: 'true',
                 filterByName: 'name',
@@ -1253,7 +1253,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true
@@ -1263,7 +1263,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Name',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 filterValue: 'true',
                 filterByName: 'name',
                 optionsList: this.jenkinsJobNameList,
@@ -1276,7 +1276,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Parameter Name for Environment',
                 id: 'parameterNameForEnvironment',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: false,
                 show: false,
                 tooltip: `The name of the parameter variable in which environment info/IP is passed.<br />
@@ -1319,7 +1319,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Name',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Job name to access teamcity data.<br />
               <i>
@@ -1358,7 +1358,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true,
@@ -1369,7 +1369,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Deployment Project',
                 id: 'deploymentProject',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.deploymentProjectList,
                 changeHandler: this.bambooDeploymentPjojectSelectionHandler,
                 filterValue: 'true',
@@ -1384,7 +1384,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Plan Name',
                 id: 'planName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.bambooPlanList,
                 changeHandler: this.bambooPlanSelectHandler,
                 filterValue: 'true',
@@ -1398,7 +1398,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Plan Key',
                 id: 'planKey',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: true,
                 show: false
               },
@@ -1407,7 +1407,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branches',
                 id: 'branchName',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.bambooBranchList,
                 filterValue: 'true',
                 filterByName: 'name',
@@ -1420,7 +1420,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch Key',
                 id: 'branchKey',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: true,
                 show: false
               },
@@ -1467,7 +1467,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access BitBucket data.<br />
               <i>
@@ -1478,7 +1478,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repo Slug',
                 id: 'repoSlug',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Repo Slug to access BitBucket data.<br />
               Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
@@ -1490,7 +1490,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key',
                 id: 'bitbucketProjKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Bitbucket project key to access BitBucket data.<br />
               Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
@@ -1537,7 +1537,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Gitlab Project Id',
                 id: 'projectId',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: ` GitLab Project Id to access GitLab data.<br />
               <i>
@@ -1548,7 +1548,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access GitLab data.<br />
               <i>
@@ -1590,7 +1590,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true
@@ -1600,7 +1600,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
                 Example: 5.1 <br />
@@ -1613,7 +1613,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Pipeline Name',
                 id: 'azurePipelineName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.azurePipelineList,
                 changeHandler: this.pipeLineDropdownHandler,
                 show: true
@@ -1623,7 +1623,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Definitions',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 tooltip: `Please enter Pipeline Id as fetched from Azure Devops Pipeline section<br />
               <i>
                 Impacted : All AzurePipeline based KPIs</i>`,
@@ -1671,7 +1671,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
@@ -1683,7 +1683,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repository Name',
                 id: 'repositoryName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Azure Repository Name.<br />
               <i>
@@ -1694,7 +1694,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access Azure Repository data.<br />
               <i>
@@ -1740,7 +1740,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repository Name',
                 id: 'repositoryName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `GitHub Repository Name.<br />
                 <i>
@@ -1751,7 +1751,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access GitHub Repository data.<br />
                 <i>

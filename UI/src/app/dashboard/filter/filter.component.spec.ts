@@ -87,7 +87,6 @@ describe('FilterComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     localStorage.setItem('user_name', 'Fake user name');
     localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_PROJECT_ADMIN"]', 'encrypt'));
-    sharedService.setDashConfigData({});
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 

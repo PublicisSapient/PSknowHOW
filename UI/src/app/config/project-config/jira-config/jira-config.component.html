@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="main p-3">
+<div class="main field-mapping p-3">
     <div class="p-p-3 p-mb-5 p-grid bg-cyan" *ngIf="selectedProject">
         <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
             <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
@@ -122,58 +122,56 @@
             <div class="p-grid p-p-0">
                 <div *ngFor="let form_elem of formTemplate.elements" [ngClass]="form_elem.containerClass">
                     <div [ngSwitch]="form_elem.type">
-                        <div *ngSwitchCase="'number'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'number'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                 <input type="number" pInputText id="{{form_elem.id}}" formControlName="{{form_elem.id}}"
                                     pTooltip='<span class="tooltiptext">{{form_elem.tooltip}}</span>'
-                                    tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                                    [style]="{'width':'100%'}"
+                                    tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                     [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                     [attr.disabled]="this[form_elem.disabled] ? true : null">
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'text'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'text'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                 <input type="text" pInputText #InputBoxValue id="{{form_elem.id}}"
                                     formControlName="{{form_elem.id}}"
                                     pTooltip='<span class="tooltiptext">{{form_elem.tooltip}}</span>'
-                                    tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                                    [style]="{'width':'100%'}"
+                                    tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                     [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                     [attr.disabled]="form_elem.disabled ? true : null"
                                     (focusout)="form_elem.onFocusOut(InputBoxValue.value, selectedConnection)">
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'autoComplete'" class="p-field p-p-0">
-                            <div *ngIf="form_elem.show">
+                        <div *ngSwitchCase="'autoComplete'" class="p-mb-3 p-autoComplete-custom">
+                            <div *ngIf="form_elem.show" class="p-d-flex p-flex-column">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                <p-autoComplete [style]="{'width':'100%'}" [inputStyle]="{'width':'1200px'}"
+                                <p-autoComplete
                                     inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
                                     [suggestions]="this[form_elem.suggestions]" (completeMethod)="form_elem.filterEventHandler($event)"
                                     [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                     field="boardName" [multiple]="true" dropdown="true" [unique]="true"
                                     pTooltip="<span class='tooltiptext'>
                                         {{form_elem.tooltip}}
-                                      </span>" tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                      </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                     (onUnselect)="form_elem.unselectEventHandler($event)" (onSelect)="form_elem.selectEventHandler($event)"
                                     [disabled]="form_elem.disabled()"></p-autoComplete>
                             </div>
                         </div>
-                        <div *ngSwitchCase="'array'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'array'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                <p-chips [style]="{'width':'100%'}" [inputStyle]="{'width':'600px'}"
+                                <p-chips
                                     inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}" addOnBlur="true"
                                     pTooltip="<span class='tooltiptext'>
                                         {{form_elem.tooltip}}
-                                      </span>" tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                      </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                     [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }">
                                 </p-chips>
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'boolean'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'boolean'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}" class="mr-sm-2">{{form_elem.label}}</label>
                                 <p-inputSwitch [(ngModel)]="this[form_elem.model]" name="{{form_elem.id}}"
@@ -182,7 +180,7 @@
                                 </p-inputSwitch>
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'textarea'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'textarea'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                 <textarea pInputTextarea id="{{form_elem.id}}" formControlName="{{form_elem.id}}"
@@ -190,24 +188,24 @@
                                     [attr.disabled]="!this[form_elem.disabled] ? true : null"></textarea>
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'button'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'button'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}" style="visibility: hidden;">{{form_elem.label}}</label>
                                 <p-button id="{{form_elem.id}}" label="{{form_elem.label}}"
-                                    class="p-button-raised p-mt-5" [ngStyle]="{'marfin-top': '10px'}" icon="pi pi-check"
+                                    class="p-button-raised p-mt-5" [ngStyle]="{'margin-top': '10px'}" icon="pi pi-check"
                                     [loading]="isLoading" (click)="form_elem.clickEventHandler()"
                                     [disabled]="form_elem.disabled()">
                                 </p-button>
                             </ng-container>
                         </div>
-                        <div *ngSwitchCase="'dropdown'" class="p-field p-p-0">
+                        <div *ngSwitchCase="'dropdown'" class="p-mb-3">
                             <ng-container *ngIf="form_elem.show">
                                 <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                 <ng-container *ngIf="form_elem.id !== 'branch'">
                                     <p-dropdown id="{{form_elem.id}}" [options]="getOptionList(form_elem.id)"
                                         [autoDisplayFirst]="false" formControlName="{{form_elem.id}}"
                                         (onChange)="form_elem.changeHandler($event.value)" styleClass="p-column-filter"
-                                        [showClear]="false" [style]="{'width':'100%'}" placeholder="Select Your Option"
+                                        [showClear]="false" placeholder="Select Your Option"
                                         [(ngModel)]="form_elem.model" [optionLabel]="'name'"
                                         [filter]="form_elem.filterValue" [filterBy]="form_elem.filterByName"
                                         [dropdownIcon]="form_elem.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-chevron-down'"
@@ -218,7 +216,7 @@
                                     <p-dropdown id="{{form_elem.id}}" [options]="getOptionList(form_elem.id)"
                                         [autoDisplayFirst]="false" formControlName="{{form_elem.id}}"
                                         (onChange)="form_elem.changeHandler($event.value)" styleClass="p-column-filter"
-                                        [showClear]="false" [style]="{'width':'100%'}" placeholder="Select Your Option"
+                                        [showClear]="false" placeholder="Select Your Option"
                                         [(ngModel)]="form_elem.model" [disabled]="!disableBranchDropDown"
                                         [optionLabel]="'name'" [filter]="form_elem.filterValue"
                                         [filterBy]="form_elem.filterByName"

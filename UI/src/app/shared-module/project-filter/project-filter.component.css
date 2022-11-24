@@ -16,11 +16,6 @@
  *
  ******************************************************************************/
 
-.filter-grid p-multiselect {
-    float: left;
-    width: 100%;
-}
-
 li.p-multiselect-item * {
     z-index: 1;
 }
@@ -34,4 +29,7 @@ div.option {
 
 .hierarchy-placeholder {
     color: rgba(0, 0, 0, 0.6);
+}
+:host ::ng-deep .ui-float-label .p-multiselect{
+    width: 100%;
 }

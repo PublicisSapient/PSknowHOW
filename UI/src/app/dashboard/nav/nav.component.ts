@@ -136,7 +136,7 @@ export class NavComponent implements OnInit {
 
     document.addEventListener(
       'click',
-      function (e) {
+      function(e) {
         const profileChkBox = document.getElementById(
           'profile2',
         ) as HTMLInputElement;
@@ -281,7 +281,7 @@ export class NavComponent implements OnInit {
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
-            this.processKPIListData();
+           this.processKPIListData();
           }
         },
         (error) => {
@@ -291,12 +291,14 @@ export class NavComponent implements OnInit {
           });
         },
       );
-    } else {
+    }else{
       this.processKPIListData();
     }
+
   }
 
-  processKPIListData() {
+
+  processKPIListData(){
     this.configOthersData = this.kpiListData['others'][0]?.kpis;
     this.service.setDashConfigData(this.kpiListData);
     this.boardNameArr = [];

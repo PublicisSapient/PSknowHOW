@@ -25,14 +25,17 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -44,17 +47,17 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 public class NetOpenTicketCountByRCAServiceImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountByRCAServiceImpl.class);
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final String FIELD_RCA = "rca";
+	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
+	Map<String, Object> resultListMap = new HashMap<>();
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private KpiHelperService kpiHelperService;
-
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountByRCAServiceImpl.class);
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final String FIELD_RCA = "rca";
 
 	/**
 	 * Gets Qualifier Type
@@ -124,8 +127,8 @@ public class NetOpenTicketCountByRCAServiceImpl
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
 
-		Map<String, Object> resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList,
-				startDate, endDate, kpiRequest, FIELD_RCA);
+		resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
+				kpiRequest, FIELD_RCA);
 
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		String startDateForCumulative = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);
@@ -157,6 +160,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 	private void kpiWithFilter(Map<String, Map<String, Map<String, Set<String>>>> resultMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
 		leafNodeList.forEach(node -> {
@@ -185,11 +189,14 @@ public class NetOpenTicketCountByRCAServiceImpl
 
 				}
 				// Populates data in Excel for validation for tickets created before
-				populateValidationDataObject(kpiElement, requestTrackerId, jiraHistoryRCAAndDateWiseIssueMap,
-						validationDataMap, node, projectWiseRCAList);
+				populateExcelDataObject(requestTrackerId, jiraHistoryRCAAndDateWiseIssueMap, node, projectWiseRCAList,
+						new HashSet<>((List<KanbanIssueCustomHistory>) resultListMap.get(JIRA_ISSUE_HISTORY_DATA)),
+						excelData, kpiRequest);
 				mapTmp.get(node.getId()).setValue(trendValueMap);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.NET_OPEN_TICKET_COUNT_BY_RCA.getColumns());
 	}
 
 	/**
@@ -332,26 +339,29 @@ public class NetOpenTicketCountByRCAServiceImpl
 	/**
 	 * Populates Validation Data Object for excel. Only Latest today cumulative data
 	 * export in excel
-	 *
-	 * @param kpiElement
+	 * 
 	 * @param requestTrackerId
 	 * @param jiraHistoryRCAAndDateWiseIssueMap
-	 * @param validationDataMap
 	 * @param node
 	 * @param projectWiseRCAList
+	 * @param kanbanJiraIssues
+	 * @param excelData
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, Map<String, Set<String>>> jiraHistoryRCAAndDateWiseIssueMap,
-			Map<String, ValidationData> validationDataMap, Node node, Set<String> projectWiseRCAList) {
+	private void populateExcelDataObject(String requestTrackerId,
+			Map<String, Map<String, Set<String>>> jiraHistoryRCAAndDateWiseIssueMap, Node node,
+			Set<String> projectWiseRCAList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
+			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
-
 			if (MapUtils.isNotEmpty(jiraHistoryRCAAndDateWiseIssueMap)) {
-				ValidationData validationData = kpiHelperService.prepareExcelForKanbanCumulativeDataMap(
-						jiraHistoryRCAAndDateWiseIssueMap, FIELD_RCA, projectWiseRCAList);
-				validationDataMap.put(dateProjectKey, validationData);
+				String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+				String date = getRange(
+						KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+						kpiRequest);
+				KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
+						jiraHistoryRCAAndDateWiseIssueMap, projectWiseRCAList, kanbanJiraIssues, excelData, date,
+						KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId());
 			}
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+
 		}
 	}
 }

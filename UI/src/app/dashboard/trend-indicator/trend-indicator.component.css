@@ -25,7 +25,7 @@
     display: flex;
 }
 
-.indicator-average-data .average-data-primary, .indicator-maturity-primary-data {
+.average-data-primary {
     font-size: 1rem;
     margin: 0;
     line-height: 1;
@@ -53,26 +53,27 @@
     /* margin-left: 5px; */
 }
 
-.arrow-up {
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-
-    border-bottom: 15px solid #49B493;
+.positive-trend {
+    color: #49B493;
+    display: flex;
+    align-items: center;
 }
 
-.arrow-down {
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-
-    border-top: 15px solid #EB3D4B;
+.negative-trend {
+    color: #EB3D4B;
+    display: flex;
+    align-items: center;
 }
 .no-trend{
     /* color:#FFB02F; */
     font-size: 1.1rem;
     line-height: 1;
     font-weight: bolder;
+}
+.kpi-trend{
+    font-size: .6rem;
+}
+.font-bold{
+    font-size: .9rem;
+    font-weight: 600;
 }

@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -166,7 +168,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 
 	private void kpiWithoutFilter(Map<String, Object> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData=  new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		Map<String, List<TestCaseDetails>> total = (Map<String, List<TestCaseDetails>>) projectWiseJiraIssue
 				.get(TESTCASEKEY);
@@ -184,8 +186,6 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 			if (CollectionUtils.isNotEmpty(automatedTest) || CollectionUtils.isNotEmpty(totalTest)) {
 				LocalDate currentDate = LocalDate.now();
 				List<DataCount> dc = new ArrayList<>();
-				Set<TestCaseDetails> automatedSet = new HashSet<>();
-				Set<TestCaseDetails> totalSet = new HashSet<>();
 
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 					Map<String, Integer> hoverMap = new LinkedHashMap<>();
@@ -208,8 +208,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 					DataCount dcObj = getDataCountObject(automation, projectName, date, projectNodeId, hoverMap);
 					dc.add(dcObj);
 
-					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, totalTestList,
-							automatedTestList, projectName, automatedSet, totalSet);
+					populateExcelDataObject(requestTrackerId, excelData, totalTestList,
+							automatedTestList, projectName,date);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -222,6 +222,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 				mapTmp.get(node.getId()).setValue(dc);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.KANBAN_REGRESSION_PASS_PERCENTAGE.getColumns());
 	}
 
 	private DataCount getDataCountObject(double automation, String projectName, String date, String projectNodeId,
@@ -297,35 +299,26 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	/**
 	 * populates the validation data node of the KPI element.
 	 *
-	 * @param kpiElement
+	 *
 	 * @param requestTrackerId
-	 * @param validationDataMap
+	 *
 	 * @param totalTest
 	 * @param automatedTest
 	 * @param dateProjectKey
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, List<TestCaseDetails> totalTest,
-			List<TestCaseDetails> automatedTest, String dateProjectKey, Set<TestCaseDetails> automatedSet,
-			Set<TestCaseDetails> totalSet) {
+	private void populateExcelDataObject(String requestTrackerId,
+			List<KPIExcelData> excelData, List<TestCaseDetails> totalTest,
+			List<TestCaseDetails> automatedTest, String dateProjectKey, String date) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
-			automatedSet.addAll(automatedTest);
-			totalSet.addAll(totalTest);
-			ValidationData validationData = new ValidationData();
-			if (CollectionUtils.isNotEmpty(automatedSet)) {
-				validationData.setAutomatedTestList(
-						automatedSet.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
-			}
-			if (CollectionUtils.isNotEmpty(totalSet)) {
-				validationData.setTotalTestList(
-						totalSet.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
+			Map<String, TestCaseDetails> totalTestCaseMap = new HashMap<>();
+			if (CollectionUtils.isNotEmpty(totalTest)) {
+				totalTest.stream().forEach(test -> totalTestCaseMap.putIfAbsent(test.getNumber(), test));
 			}
 
-			validationDataMap.put(dateProjectKey, validationData);
-
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+			KPIExcelUtility.populateRegressionAutomationExcelData(dateProjectKey, totalTestCaseMap, automatedTest,
+					excelData,KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(),date);
 
 		}
 	}

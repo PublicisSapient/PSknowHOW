@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -24,6 +24,7 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { ChangeDetectionStrategy } from '@angular/core';
+import { Accordion } from 'primeng/accordion';
 declare const require: any;
 
 @Component({
@@ -33,6 +34,7 @@ declare const require: any;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FieldMappingComponent implements OnInit {
+  @ViewChild('accordion') accordion: Accordion;
   fieldMappingForm: UntypedFormGroup;
   fieldMappingFormObj: any;
   fieldMappingFormDescriptionObj = [];
@@ -69,6 +71,12 @@ export class FieldMappingComponent implements OnInit {
   additionalFilterOptions: any = [];
   // kpi to field mapping relationships
   kpiRelationShips: any = [];
+  fieldstoShow=[];
+  groupsToShow={
+    groupNames:[],
+    groupFields:{},
+    showAllgroups:true
+  };
 
   private setting = {
     element: {
@@ -81,10 +89,6 @@ export class FieldMappingComponent implements OnInit {
 
   ngOnInit(): void {
     this.techDebtIdentification = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'CustomField',
         value: 'CustomField'
@@ -100,10 +104,6 @@ export class FieldMappingComponent implements OnInit {
     ];
     this.additionalFilterIdentificationOptions = [
       {
-        label: 'Select',
-        value: ''
-      },
-      {
         label: 'Component',
         value: 'Component'
       },
@@ -117,10 +117,6 @@ export class FieldMappingComponent implements OnInit {
       }
     ];
     this.estimationCriteriaTypes = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'Story Point',
         value: 'Story Point'
@@ -136,10 +132,6 @@ export class FieldMappingComponent implements OnInit {
     ];
     this.defectIdentification = [
       {
-        label: 'Select',
-        value: ''
-      },
-      {
         label: 'CustomField',
         value: 'CustomField'
       },
@@ -149,10 +141,6 @@ export class FieldMappingComponent implements OnInit {
       }
     ];
     this.productionDefectIdentificationOptions = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'CustomField',
         value: 'CustomField'
@@ -189,10 +177,6 @@ export class FieldMappingComponent implements OnInit {
       }
     ];
     this.testCaseIdentification = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'CustomField',
         value: 'CustomField'
@@ -241,364 +225,12 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getKPIFieldMappingRelationships() {
-    this.kpiRelationShips = [
-      // Scrum
-      {
-        kpiId: 'kpi14',
-        kpiName: 'Defect Injection Rate',
-        type: ['Scrum'],
-        fieldNames: ['jiraDod', 'jiraDefectInjectionIssueType', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi82',
-        kpiName: 'First Time Pass Rate',
-        type: ['Scrum'],
-        fieldNames: ['resolutionTypeForRejection', 'jiraStoryIdentification', 'JiraIssueDeliverdStatus', 'defectPriority', 'ExcludeRCAFromFTPR']
-      },
-      {
-        kpiId: 'kpi111',
-        kpiName: 'Defect Density',
-        type: ['Scrum'],
-        fieldNames: ['jiraQADefectDensityIssueType', 'jiraDod']
-      },
-      {
-        kpiId: 'kpi35',
-        kpiName: 'Defect Seepage Rate',
-        type: ['Scrum'],
-        fieldNames: ['jiraDefectSeepageIssueType', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi34',
-        kpiName: 'Defect Removal Efficiency',
-        type: ['Scrum'],
-        fieldNames: ['jiraDefectRemovalStatus', 'jiraDefectRemovalIssueType']
-      },
-      {
-        kpiId: 'kpi37',
-        kpiName: 'Defect Rejection Rate',
-        type: ['Scrum'],
-        fieldNames: ['jiraDefectRejectionStatus', 'resolutionTypeForRejection', 'jiraDefectRejectionlIssueType']
-      },
-      {
-        kpiId: 'kpi28',
-        kpiName: 'Defect Count By Priority',
-        type: ['Scrum'],
-        fieldNames: ['jiraDefectCountlIssueType', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi36',
-        kpiName: 'Defect Count By RCA',
-        type: ['Scrum'],
-        fieldNames: ['jiraDefectCountlIssueType', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi126',
-        type: ['Scrum'],
-        kpiName: 'Created vs Resolved defects',
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi42',
-        kpiName: 'Regression Automation Coverage',
-        type: ['Scrum'],
-        fieldNames: ['jiraRegressionTestValue', 'testRegressionValue', 'regressionAutomationFolderPath']
-      },
-      {
-        kpiId: 'kpi16',
-        kpiName: 'In-Sprint Automation Coverage',
-        type: ['Scrum'],
-        fieldNames: ['jiraRegressionTestValue', 'testRegressionValue', 'regressionAutomationFolderPath']
-      },
-      {
-        kpiId: 'kpi17',
-        type: ['Scrum'],
-        kpiName: 'Unit Test Coverage',
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi38',
-        kpiName: 'Sonar Violations',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi27',
-        kpiName: 'Sonar Tech Debt',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi116',
-        kpiName: 'Change Failure Rate',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi70',
-        kpiName: 'Test Execution and pass percentage',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi40',
-        kpiName: 'Story Count',
-        type: ['Scrum'],
-        fieldNames: ['jiraStoryIdentification']
-      },
-      {
-        kpiId: 'kpi72',
-        kpiName: 'Commitment Reliability',
-        type: ['Scrum'],
-        fieldNames: ['jiraSprintVelocityIssueType']
-      },
-      {
-        kpiId: 'kpi39',
-        kpiName: 'Sprint Velocity',
-        type: ['Scrum'],
-        fieldNames: ['jiraSprintVelocityIssueType']
-      },
-      {
-        kpiId: 'kpi46',
-        kpiName: 'Sprint Capacity Utilization',
-        type: ['Scrum'],
-        fieldNames: ['jiraSprintCapacityIssueType']
-      },
-      {
-        kpiId: 'kpi83',
-        kpiName: 'Average Resolution Time',
-        type: ['Scrum'],
-        fieldNames: ['resolutionTypeForRejection', 'jiraIssueTypeNames', 'jiradefecttype', 'jiraIssueDeliverdStatus', 'jiraStatusForDevelopment']
-      },
-      {
-        kpiId: 'kpi84',
-        type: ['Scrum'],
-        kpiName: 'Mean Time To Merge',
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi11',
-        type: ['Scrum'],
-        kpiName: 'Check-Ins & Merge Requests',
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi8',
-        kpiName: 'Code Build Time',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi3',
-        kpiName: 'Lead Time',
-        type: ['Scrum'],
-        fieldNames: ['jiraIntakeToDorIssueType', 'jiraDor', 'jiraDod', 'jiraLiveStatus']
-      },
-      {
-        kpiId: 'kpi118',
-        kpiName: 'Deployment Frequency',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi73',
-        kpiName: 'Release Frequency',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi113',
-        kpiName: 'Value delivered (Cost of Delay)',
-        type: ['Scrum'],
-        fieldNames: []
-      },
-
-      // Kanban
-      {
-        kpiId: 'kpi55',
-        kpiName: 'Ticket Open vs Closed rate by type',
-        type: ['Kanban'],
-        fieldNames: ['ticketCountIssueType', 'jiraTicketClosedStatus']
-      },
-      {
-        kpiId: 'kpi54',
-        kpiName: 'Ticket Open vs Closed rate by Priority',
-        type: ['Kanban'],
-        fieldNames: ['ticketCountIssueType', 'jiraTicketClosedStatus']
-      },
-      {
-        kpiId: 'kpi50',
-        kpiName: 'Net Open Ticket Count by Priority',
-        type: ['Kanban'],
-        fieldNames: ['storyFirstStatus', 'kanbanRCACountIssueType', 'ticketCountIssueType', 'jiraTicketClosedStatus', 'jiraLiveStatus', 'jiraTicketRejectedStatus']
-      },
-      {
-        kpiId: 'kpi51',
-        kpiName: 'Net Open Ticket Count By RCA',
-        type: ['Kanban'],
-        fieldNames: ['storyFirstStatus', 'kanbanRCACountIssueType', 'ticketCountIssueType', 'jiraTicketClosedStatus', 'jiraLiveStatus', 'jiraTicketRejectedStatus']
-      },
-      {
-        kpiId: 'kpi48',
-        kpiName: 'Net Open Ticket By Status',
-        type: ['Kanban'],
-        fieldNames: ['storyFirstStatus', 'kanbanRCACountIssueType', 'ticketCountIssueType', 'jiraTicketClosedStatus', 'jiraLiveStatus', 'jiraTicketRejectedStatus']
-      },
-      {
-        kpiId: 'kpi997',
-        kpiName: 'Open Ticket Ageing By Priority',
-        type: ['Kanban'],
-        fieldNames: ['ticketCountIssueType', 'jiraTicketClosedStatus', 'jiraLiveStatus', 'jiraTicketRejectedStatus']
-      },
-      {
-        kpiId: 'kpi63',
-        kpiName: 'Regression Automation Coverage',
-        type: ['Kanban'],
-        fieldNames: ['jiraRegressionTestValue', 'testRegressionValue', 'regressionAutomationFolderPath']
-      },
-      {
-        kpiId: 'kpi49',
-        kpiName: 'Ticket Velocity',
-        type: ['Kanban'],
-        fieldNames: ['jiraTicketVelocityIssueType', 'ticketDeliverdStatus']
-      },
-      {
-        kpiId: 'kpi53',
-        kpiName: 'Lead Time',
-        type: ['Kanban'],
-        fieldNames: ['jiraTicketTriagedStatus', 'jiraTicketClosedStatus', 'jiraLiveStatus']
-      },
-      {
-        kpiId: 'kpi114',
-        type: ['Kanban'],
-        kpiName: 'Value delivered (Cost of Delay)',
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi74',
-        kpiName: 'Release Frequency',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi62',
-        kpiName: 'Unit Test Coverage',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi64',
-        kpiName: 'Sonar Violations',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi67',
-        kpiName: 'Sonar Tech Debt',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi71',
-        kpiName: 'Test Execution and pass percentage',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi58',
-        kpiName: 'Team Capacity',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi66',
-        kpiName: 'Code Build Time',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi65',
-        kpiName: 'Number of Check-ins',
-        type: ['Kanban'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi121',
-        kpiName: 'Capacity',
-        type: ['Kanban'],
-        fieldNames: ['jiraSprintCapacityIssueType']
-      },
-      // others
-      {
-        kpiId: 'kpi119',
-        kpiName: 'Work Remaining',
-        type: ['Other'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi75',
-        kpiName: 'Estimate vs Actual',
-        type: ['Other'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi123',
-        kpiName: 'Issues likely to Spill',
-        type: ['Other'],
-        fieldNames: ['workingHoursDayCPT']
-      },
-      {
-        kpiId: 'kpi122',
-        kpiName: 'Closure Possible Today',
-        type: ['Other'],
-        fieldNames: ['jiraStatusForQa', 'workingHoursDayCPT']
-      },
-      {
-        kpiId: 'kpi120',
-        kpiName: 'Scope Change',
-        type: ['Other'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi124',
-        kpiName: 'Estimation Hygiene',
-        type: ['Other'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi125',
-        kpiName: 'Daily Closures',
-        type: ['Other'],
-        fieldNames: []
-      },
-      {
-        kpiId: 'kpi79',
-        kpiName: 'Test Cases Without Story Link',
-        type: ['Other'],
-        fieldNames: ['jiraStoryIdentification', 'JiraRegressionTestValue', 'testRegressionValue', 'regressionAutomationFolderPath']
-      },
-      {
-        kpiId: 'kpi80',
-        kpiName: 'Defects Without Story Link',
-        type: ['Other'],
-        fieldNames: ['jiraStoryIdentification', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi127',
-        kpiName: 'Production Defects Ageing',
-        type: ['Other'],
-        fieldNames: ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus']
-      },
-      {
-        kpiId: 'kpi989',
-        kpiName: 'Kpi Maturity',
-        type: ['Other'],
-        fieldNames: []
+    this.http.getKPIFieldMappingRelationships().subscribe(response => {
+      if (response['kpiFieldMappingList']) {
+        this.kpiRelationShips = response['kpiFieldMappingList'];
+        this.kpiRelationShips = this.kpiRelationShips.filter((kpi) => (kpi.type.includes('Scrum') || kpi.type.includes('Other')) && kpi.kpiSource === 'Jira');
       }
-    ];
-    // this.http.getKPIFieldMappingRelationships().subscribe(response => {
-    //   console.log(response);
-    // });
-    this.kpiRelationShips = this.kpiRelationShips.filter((kpi) => kpi.type.includes('Scrum') || kpi.type.includes('Other'));
+    });
   }
 
   generateAdditionalFilterMappings() {
@@ -609,8 +241,8 @@ export class FieldMappingComponent implements OnInit {
       this.additionalFiltersArray = [];
 
       const additionalFilters = this.filterHierarchy.filter((filter) => filter.level > this.filterHierarchy.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
-      if (additionalFilterMappings && additionalFilterMappings.length) {
-        additionalFilterMappings.forEach(element => {
+
+      additionalFilterMappings?.forEach(element => {
 
           this.additionalFiltersArray.push({
             name: additionalFilters.filter((f) => f.hierarchyLevelId === element.filterId)[0].hierarchyLevelName,
@@ -933,181 +565,20 @@ export class FieldMappingComponent implements OnInit {
       </span>`
       },
       // issue type mapping
-      {
-        fieldName: 'jiraIssueTypeNames',
-        field: [[]],
-        label: 'Issue Types to be fetched from Jira',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        Issue Type in Jira. These issue type are fetched in Speedy dashboard.
-        <i>
-          Example : "Story",
-          "Defect",
-          "Risk",
-          "Change Request",
-          "Test"<br />
-          Impacted : Jira/Azure Processor and KPIs</i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraDefectSeepageIssueType',
-        field: [[]],
-        label: 'Defect Seepage Rate - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked .<br /><i>
-            Example: Story, Change Request .
-            Impacted : Defect Seepage Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraQADefectDensityIssueType',
-        field: [[]],
-        label: 'QA Defect Density - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked .<br /><i>
-            Example: Story, Change Request, Enhancement <br />
-            Impacted KPI: QA Defect Density </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraDefectCountlIssueType',
-        field: [[]],
-        label: 'Defect Count - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted : Defect Count Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraSprintVelocityIssueType',
-        field: [[]],
-        label: 'Sprint Velocity - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted : Sprint Velocity Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraDefectRemovalIssueType',
-        field: [[]],
-        label: 'Defect Removal Rate - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted : Defect Removal Rate Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraDefectRejectionlIssueType',
-        field: [[]],
-        label: 'Defect Rejection Rate - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted : Defect Rejection Rate Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraDefectInjectionIssueType',
-        field: [[]],
-        label: 'Defect Injection Rate - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted : Defect Injection Rate Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraTestAutomationIssueType',
-        field: [[]],
-        label: 'In Sprint Automation - Issue Types with Linked Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        All issue types with which defect is linked.<br /><i>
-            Example: Story, Change Request .<br />
-            Impacted :Test Automation Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraIntakeToDorIssueType',
-        field: [[]],
-        label: 'Cycle Time Issue Type',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        The issue type which is to be considered while calculating cycle time KPIs, i.e.
-                  intake to DOR and DOR and DOD ...<br /><i>
-                    Example: Story, Change Request .<br />
-                    Impacted : Cycle Time Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraTechDebtIssueType',
-        field: [[]],
-        label: 'Tech Debt Issue Type',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        The issue type in JIRA/Azure which is used for managing Tech Debt in JIRA/Azure
-                  <br /><i>
-                    Example: Story, Change Request .<br />
-                    Impacted : Tech Debt Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraStoryIdentification',
-        field: [[]],
-        label: 'Story Count Issue Type',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        Value to identify kind of stories which are used for identification for story
-                  count.<br /><i>
-                    Example: Story<br />
-                    Impacted : Story Count Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraSprintCapacityIssueType',
-        field: [[]],
-        label: 'Sprint Capacity Issue Type',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        Value to identify kind of stories which are used for identification for Sprint
-                  Capacity.<br /><i>
-                    Example: Story<br />
-                    Impacted : Sprint Capacity Kpi </i>
-      </span>`
-      },
-      {
-        fieldName: 'jiraIssueEpicType',
-        field: [[]],
-        label: 'Epic Issue Type',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        This field is used to identify Epic Issue type.
-      </span>`
-      },
+      jiraIssueTypeNames: [[]],
+      jiraDefectSeepageIssueType: [[]],
+      jiraQADefectDensityIssueType: [[]],
+      jiraDefectCountlIssueType: [[]],
+      jiraSprintVelocityIssueType: [[]],
+      jiraDefectRemovalIssueType: [[]],
+      jiraDefectRejectionlIssueType: [[]],
+      jiraDefectInjectionIssueType: [[]],
+      jiraTestAutomationIssueType: [[]],
+      jiraIntakeToDorIssueType: [[]],
+      jiraStoryIdentification: [[]],
+      jiraFTPRStoryIdentification: [[]],
+      jiraSprintCapacityIssueType: [[]],
+      jiraIssueEpicType: [[]],
       // tech debt mapping
       {
         fieldName: 'jiraTechDebtIdentification',
@@ -1313,164 +784,20 @@ export class FieldMappingComponent implements OnInit {
   </span>`
       },
       // defect mapping
-      {
-        fieldName: 'jiradefecttype',
-        field: [[]],
-        label: 'Issue Type to Identify Defect',
-        type: 'chips',
-        section: 'Issue_Type',
-        tooltip: `<span class="tooltiptext">
-        In JIRA/AZURE a defect can be defined as "Bug", "Defect",
-        "Snag"
-        or any other value. So user need to provide value with which defect is identified
-        in JIRA/AZURE.<br />
-        <i>Impacted : "Jira/Azure Collector and KPIs</i>
-  </span>`
-      },
-      {
-        fieldName: 'defectPriority',
-        field: [[]],
-        label: 'Defect priority to exclude from FTPR',
-        type: 'multiselect',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        This field is used to identify if a defect is raised by
-        FTPR:
-       <i>
-          Impacted : "First Time Pass Rate Kpi.</i>
-          </span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByIdentification',
-        field: [''],
-        label: 'UAT Defect Identification',
-        type: 'dropdown',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        This field is used to identify if a defect is raised by
-        third party or client:
-        1. CustomField : If a separate custom field is used.
-        2. Labels : If a label is used to identify. Example: "TECH_DEBT" (This has to be
-        one value).<i>
-          Impacted : "Jira/AZURE Collector" and Defect Seepage Rate Kpi.</i>
-          </span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByCustomField',
-        field: [''],
-        label: 'UAT Defect Custom Field',
-        type: 'dropdown',
-        section: 'fields',
-        tooltip: `<span class="tooltiptext">
-        Provide customfield name to identify UAT or client raised defects.<br />
-        <i> Example: customfield_13907</i>
-  </span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByValue',
-        field: [[]],
-        label: 'UAT Defect Values',
-        type: 'chips',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        Provide label name to identify UAT or client raised defects.<br /> <i>
-            For Example : "Clone_by_QA"<br />
-            Impacted : Jira/Azure Collector and Defect Seepage Rate Kpi.
-      </span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByQAIdentification',
-        field: [''],
-        label: 'QA Defect Identification',
-        type: 'dropdown',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        This field is used to identify if a defect is raised by
-                  QA:<br />
-                  1. CustomField : If a separate custom field is used.<br />
-                  2. Labels : If a label is used to identify. Example: "QA Defect"<br /><i>
-                    Impacted KPI: QA Defect Density</i>
-          </span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByQACustomField',
-        field: [''],
-        label: 'QA Defect Custom Field',
-        type: 'text',
-        section: 'fields',
-        tooltip: `<span class="tooltiptext">
-        Provide customfield name to identify QA raised defects.<br />
-        <i> Example: customfield_13907</i>
-</span>`
-      },
-      {
-        fieldName: 'jiraBugRaisedByQAValue',
-        field: [[]],
-        label: 'QA Defect Values',
-        type: 'chips',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        Provide label name to identify QA raised defects.
-  </span>`
-      },
-      {
-        fieldName: 'productionDefectCustomField',
-        field: [''],
-        label: 'Production Defect Custom Field',
-        type: 'text',
-        section: 'fields',
-        tooltip: `<span class="tooltiptext">
-        Provide customfield name to identify Production raised defects.<br />
-        <i> Example: customfield_13907</i>
-</span>`
-      },
-      {
-        fieldName: 'productionDefectIdentifier',
-        field: [''],
-        label: 'Production defects identification',
-        type: 'dropdown',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        This field is used to identify if a defect is raised by
-        Production:<br />
-                  1. CustomField : If a separate custom field is used.<br />
-                  2. Labels : If a label is used to identify. Example: "Production Defect"<br /><i>
-                  3. Component : If a Component is used to identify. Example: "Production Defect"<br /><i>
-                    Impacted KPI: Production Defects Ageing</i>
-          </span>`
-      },
-      {
-        fieldName: 'productionDefectComponentValue',
-        field: [''],
-        label: 'Production defects Component',
-        type: 'text',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        Provide label name to identify Production raised defects.
-  </span>`
-      },
-      {
-        fieldName: 'productionDefectValue',
-        field: [[]],
-        label: 'Production Defect Values',
-        type: 'chips',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        Provide label name to identify Production raised defects.
-  </span>`
-      },
-      {
-        fieldName: 'rootCauseValue',
-        field: [[]],
-        label: 'RCA Value on Trend',
-        type: 'chips',
-        section: '',
-        tooltip: `<span class="tooltiptext">
-        Provide value of RCA that need to show on Trend line.<br />
-        <i> Example: Code Issue</i>
-        <i>Impacted : Defect Count By RCA (tagged to Story)</i>
-</span>`
-      },
+      jiradefecttype: [[]],
+
+      defectPriority: [[]],
+      jiraBugRaisedByIdentification: [''],
+      jiraBugRaisedByCustomField: [''],
+      jiraBugRaisedByValue: [[]],
+      jiraBugRaisedByQAIdentification: [''],
+      jiraBugRaisedByQACustomField: [''],
+      jiraBugRaisedByQAValue: [[]],
+
+      productionDefectCustomField: [''],
+      productionDefectIdentifier: [''],
+      productionDefectComponentValue: [''],
+      productionDefectValue: [[]],
       // qaRootCauseValue: [[]],
       // test case mapping
       {
@@ -1781,6 +1108,36 @@ export class FieldMappingComponent implements OnInit {
       text: JSON.stringify(submitData)
     });
   }
+
+  showFields(kpiRelatedFields) {
+    this.closeAllAccordionTabs();
+    this.fieldstoShow=[];
+    this.groupsToShow={
+      groupFields:{},
+      groupNames:[],
+      showAllgroups:true
+    };
+
+    if(kpiRelatedFields?.hasOwnProperty('fieldNames')){
+      for(const key in kpiRelatedFields.fieldNames){
+        this.groupsToShow.groupNames.push(key);
+        this.groupsToShow.groupFields[key]=kpiRelatedFields.fieldNames[key].length;
+        this.fieldstoShow.push(...Object.values(kpiRelatedFields.fieldNames[key]));
+      }
+      this.groupsToShow.showAllgroups =false;
+    }else{
+      this.fieldstoShow=[];
+      this.groupsToShow.showAllgroups =true;
+    }
+  }
+
+  closeAllAccordionTabs() {
+    if(this.accordion){
+        for(const tab of this.accordion.tabs) {
+              tab.selected = false;
+        }
+    }
+}
 
   handleAdditionalFilters(submitData: any): any {
     /** addiitional filters start*/

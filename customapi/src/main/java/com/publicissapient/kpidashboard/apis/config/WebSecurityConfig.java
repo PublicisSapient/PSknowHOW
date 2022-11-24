@@ -98,6 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	@Autowired
 	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
 
 	@Autowired

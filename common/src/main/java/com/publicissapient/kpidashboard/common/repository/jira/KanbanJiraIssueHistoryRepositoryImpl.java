@@ -59,6 +59,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 	private static final String NIN = "nin";
 	private static final String START_TIME = "T00:00:00.000Z";
 	private static final String END_TIME = "T23:59:59.000Z";
+	private static final String URL = "url";
 
 	/** The operations. */
 	@Autowired
@@ -110,7 +111,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 		}
 		list.add(Aggregation.group(STORY_ID, STORY_TYPE, TICKET_PROJECT_ID_FIELD, TICKET_CREATED_DATE_FIELD, PRIORITY,
-				ESTIMATE_TIME).push(HISTORY_DETAILS).as(HISTORY_DETAILS));
+				ESTIMATE_TIME,URL).push(HISTORY_DETAILS).as(HISTORY_DETAILS));
 		list.add(Aggregation.project(HISTORY_DETAILS));
 		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
 				list);
@@ -130,6 +131,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			history.setPriority(result.getId().getPriority());
 			history.setEstimate(result.getId().getEstimate());
 			history.setHistoryDetails(result.getHistoryDetails());
+			history.setUrl(result.getId().getUrl());
 			resultList.add(history);
 		});
 		return resultList;

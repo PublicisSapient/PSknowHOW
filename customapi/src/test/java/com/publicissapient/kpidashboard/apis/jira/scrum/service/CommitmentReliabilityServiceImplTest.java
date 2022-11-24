@@ -284,6 +284,51 @@ public class CommitmentReliabilityServiceImplTest {
 	}
 
 	@Test
+	public void testGetSprintCommitmentReliability_EmptySprintDetails_AzureCase() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put(COMMITMENTRELIABILITY, Arrays.asList("-20", "20-40", "40-60", "60-80", "80-"));
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
+		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(commitmentReliabilityImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+
+		try {
+			KpiElement kpiElement = commitmentReliabilityImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
+
+				String status = dc.getFilter();
+				switch (status) {
+				case "Story Point":
+					assertThat("Story Point :", dc.getValue().size(), equalTo(1));
+					break;
+				case "Issue Count":
+					assertThat("Issue Count :", dc.getValue().size(), equalTo(1));
+					break;
+				default:
+					break;
+				}
+
+			});
+
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+
+		}
+	}
+
+	@Test
 	public void testQualifierType() {
 		String kpiName = KPICode.COMMITMENT_RELIABILITY.name();
 		String type = commitmentReliabilityImpl.getQualifierType();

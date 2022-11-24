@@ -16,4 +16,5 @@ public class IssueGroupFields {
 	private String createdDate;
 	private String priority;
 	private String basicProjectConfigId;
+	private String url;
 }

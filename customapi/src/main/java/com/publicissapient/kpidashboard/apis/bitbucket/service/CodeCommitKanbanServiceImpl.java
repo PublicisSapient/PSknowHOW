@@ -47,14 +47,17 @@ import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -96,7 +99,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	}
 
 	/**
-	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
@@ -152,6 +154,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	private void kpiWithFilter(Map<String, Object> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 		Map<String, ValidationData> validationMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		List<CommitDetails> commitList = (List<CommitDetails>) resultMap.get(COMMIT_COUNT);
 		final Map<ObjectId, Map<String, Long>> commitListItemId = new LinkedHashMap<>();
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -184,18 +187,23 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				String dataCountDate = getRange(dateRange, kpiRequest);
 				prepareRepoWiseMap(filterValueMap, projectName, dataCountDate, projectWiseDataMap);
 				currentDate = getNextRangeDate(kpiRequest, currentDate);
-				populateValidationDataObject(getRequestTrackerIdKanban(), repoWiseCommitList, listOfRepo, listOfBranch,
-						validationMap, node);
+
+				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(), repoWiseCommitList, listOfRepo, listOfBranch, excelData);
+				}
+
 			}
 			mapTmp.get(projectNodeId).setValue(projectWiseDataMap);
 
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
 		kpiElement.setMapOfSprintAndData(validationMap);
 	}
 
 	/**
 	 * loop tool wise to fetch data for each day
-	 * 
+	 *
 	 * @param reposList
 	 * @param dateRange
 	 * @param commitListItemId
@@ -263,26 +271,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		DataCount dcObj = getDataCountObject(calculateKpiValue(commitCountList, KPICode.NUMBER_OF_CHECK_INS.getKpiId()),
 				projectName, dataCountDate);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
-	}
-
-	/**
-	 * Populates validation data object.
-	 *  @param requestTrackerId
-	 * @param repoWiseCommitList
-	 * @param repoList
-	 * @param branchList
-	 * @param validationDataMap
-	 * @param node
-	 */
-	private void populateValidationDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseCommitList,
-											  List<String> repoList, List<String> branchList, Map<String, ValidationData> validationDataMap, Node node) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setRepoList(repoList);
-			validationData.setBranchList(branchList);
-			validationData.setDayWiseCommitList(new ArrayList<>(repoWiseCommitList));
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
 	}
 
 	private DataCount getDataCountObject(Long value, String projectName, String date) {

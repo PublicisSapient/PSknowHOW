@@ -17,28 +17,36 @@
 
 package com.publicissapient.kpidashboard.apis.cleanup;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.*;
-import com.publicissapient.kpidashboard.common.repository.application.*;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * @author anisingh4
@@ -46,7 +54,6 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class AgileDataCleanUpService implements ToolDataCleanUpService {
-
 
 	@Autowired
 	private ProjectToolConfigRepository projectToolConfigRepository;
@@ -87,6 +94,9 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
+	@Autowired
+	private SprintRepository sprintRepository;
+
 	@Override
 	public String getToolCategory() {
 		return ProcessorType.AGILE_TOOL.toString();
@@ -98,6 +108,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
 		deleteJiraIssuesAndHistory(tool);
 		deleteReleaseInfo(tool);
+		deleteSprintDetailsData(tool);
 		clearCache();
 
 	}
@@ -161,6 +172,12 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 					hierarchyLevel.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				flag = true;
 			}
+		}
+	}
+
+	private void deleteSprintDetailsData(ProjectToolConfig projectToolConfig) {
+		if (projectToolConfig != null) {
+			sprintRepository.deleteByBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
 		}
 	}
 }

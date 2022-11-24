@@ -18,40 +18,46 @@ db.getCollection('kpi_category_mapping').insert(
 		"kpiOrder": 3,
 		"kanban": false
 	},
+    {
+    	"kpiId": "kpi5",
+    	"categoryId": "categoryOne",
+    	"kpiOrder": 4,
+    	"kanban": false
+    },
 	{
 		"kpiId": "kpi46",
-		"categoryId": "categoryOne",
-		"kpiOrder": 4,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi83",
 		"categoryId": "categoryOne",
 		"kpiOrder": 5,
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi84",
+		"kpiId": "kpi83",
 		"categoryId": "categoryOne",
 		"kpiOrder": 6,
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi11",
+		"kpiId": "kpi84",
 		"categoryId": "categoryOne",
 		"kpiOrder": 7,
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi8",
+		"kpiId": "kpi11",
 		"categoryId": "categoryOne",
 		"kpiOrder": 8,
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi3",
+		"kpiId": "kpi8",
 		"categoryId": "categoryOne",
 		"kpiOrder": 9,
+		"kanban": false
+	},
+	{
+		"kpiId": "kpi3",
+		"categoryId": "categoryOne",
+		"kpiOrder": 10,
 		"kanban": false
 	},
 	{

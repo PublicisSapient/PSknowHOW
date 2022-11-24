@@ -221,7 +221,7 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 		if (isAlreadyProcessed(listFiles, file) && !isProjectConfigChanged(listFiles, file)) {
 			return;
 		}
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createProcessorExecutionTraceLog(
+		/*ProcessorExecutionTraceLog processorExecutionTraceLog = createProcessorExecutionTraceLog(
 				offLineprojectConfig.getBasicProjectConfigId().toHexString());
 		processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 		if (file.getName().toLowerCase().contains(CommonConstant.RELEASE)) {
@@ -250,7 +250,7 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(offLineprojectConfig.getIssueCount() > 0);
 
-		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+		processorExecutionTraceLogService.save(processorExecutionTraceLog);*/
 	}
 
 	private ProcessorExecutionTraceLog createProcessorExecutionTraceLog(String basicProjectConfigId){

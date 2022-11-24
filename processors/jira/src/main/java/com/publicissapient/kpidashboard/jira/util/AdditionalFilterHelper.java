@@ -91,7 +91,7 @@ public class AdditionalFilterHelper {
 				values.add(additionalFilterValue);
 			});
 
-		} else if (CommonConstant.COMPONENTS.equals(additionalFilterConfig.getIdentifyFrom())) {
+		} else if (CommonConstant.COMPONENT.equals(additionalFilterConfig.getIdentifyFrom())) {
 			Set<BasicComponent> components = getComponents(issue, additionalFilterConfig);
 			components.forEach(component -> {
 				AdditionalFilterValue additionalFilterValue = new AdditionalFilterValue();

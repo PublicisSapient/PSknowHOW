@@ -144,6 +144,8 @@ public class CreatedVsResolvedServiceImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
 		// setDataCountList();
 		kpiWiseAggregation.put("created_Vs_Resolved_Defects", "sum");
 
@@ -205,6 +207,41 @@ public class CreatedVsResolvedServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(createdVsResolvedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
+
+		try {
+			KpiElement kpiElement = createdVsResolvedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
+
+			assertThat("Created Vs Resolved trend value : ", dataCountList.size(), equalTo(1));
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+
+	@Test
+	public void testGetCreatedVsResolved_EmptySprintDetails_AzureCase() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("sprintVelocity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
+
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
+
+		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn( new ArrayList<>());
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(createdVsResolvedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 

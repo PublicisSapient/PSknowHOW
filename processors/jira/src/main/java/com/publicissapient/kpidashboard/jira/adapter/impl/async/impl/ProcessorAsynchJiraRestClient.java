@@ -39,7 +39,7 @@ public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient im
      */
     public ProcessorAsynchJiraRestClient(final URI serverUri, final DisposableHttpClient httpClient) {
         super(serverUri, httpClient);
-        final URI baseUri = UriBuilder.fromUri(serverUri).path("/rest/api/latest").build();
+        final URI baseUri = UriBuilder.fromUri(serverUri).path("/rest/agile/1.0").build();
         this.issueRestClient = new CustomAsynchronousIssueRestClient(baseUri, httpClient, super.getSessionClient(), super.getMetadataClient());
         this.searchRestClient = new ProcessorAsynchSearchRestClient(baseUri, httpClient);
     }
@@ -55,6 +55,11 @@ public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient im
     @Override
     public SearchRestClient getProcessorSearchClient() {
         return searchRestClient;
+    }
+
+    @Override
+    public CustomAsynchronousIssueRestClient getCustomIssueClient() {
+        return issueRestClient;
     }
 
 }

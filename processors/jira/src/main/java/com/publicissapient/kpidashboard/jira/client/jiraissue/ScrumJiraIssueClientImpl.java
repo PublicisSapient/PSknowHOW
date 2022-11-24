@@ -18,42 +18,6 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
-import org.bson.types.ObjectId;
-import org.codehaus.jettison.json.JSONException;
-import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
@@ -74,6 +38,8 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
@@ -86,6 +52,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
@@ -95,8 +62,40 @@ import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.StringEscapeUtils;
+import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This is an implemented/extended storyDataClient for configured Scrum
@@ -140,8 +139,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
-
-
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -161,69 +158,62 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		int total = 0;
 
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
-
+		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 				projectConfig.getBasicProjectConfigId().toHexString());
-
 		try {
 
 			boolean dataExist = (jiraIssueRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-
-			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-					projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
-
-			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
-
-			maxChangeDatesByIssueType.forEach((k, v) -> {
-				long extraMinutes = jiraProcessorConfig.getMinsToReduce();
-				maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
-			});
-			int pageSize = jiraAdapter.getPageSize();
-
-			boolean hasMore = true;
-
-			boolean latestDataFetched = false;
-
+			//write get logic to fetch last successful updated date.
+			String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
 			Set<SprintDetails> setForCacheClean = new HashSet<>();
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			for(BoardDetails board : boardDetailsList) {
+				boolean latestDataFetched = false;
+				int pageSize = jiraAdapter.getPageSize();
+				boolean hasMore = true;
+				for (int i = 0; hasMore; i += pageSize) {
+					SearchResult searchResult = jiraAdapter.getIssues(board,projectConfig, queryDate,
+							userTimeZone, i, dataExist);
+					List<Issue> issues = getIssuesFromResult(searchResult);
+					if (total == 0) {
+						total = getTotal(searchResult);
+					}
 
-			for (int i = 0; hasMore; i += pageSize) {
-				SearchResult searchResult = jiraAdapter.getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
-						userTimeZone, i, dataExist);
-				List<Issue> issues = getIssuesFromResult(searchResult);
-				if (total == 0) {
-					total = getTotal(searchResult);
-				}
+					// in case of offline method issues size can be greater than
+					// pageSize, increase page size so that same issues not read
 
-				// in case of offline method issues size can be greater than
-				// pageSize, increase page size so that same issues not read
+					if (isOffline && issues.size() >= pageSize) {
+						pageSize = issues.size() + 1;
+					}
+					if (CollectionUtils.isNotEmpty(issues)) {
 
-				if (isOffline && issues.size() >= pageSize) {
-					pageSize = issues.size() + 1;
-				}
-				if (CollectionUtils.isNotEmpty(issues)) {
+						List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
+								jiraAdapter);
+						savedIsuesCount += issues.size();
+					}
 
-					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
-							jiraAdapter);
-					findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
-					savedIsuesCount += issues.size();
+					if (!latestDataFetched && setForCacheClean.size() > sprintCount) {
+						latestDataFetched = cleanCache();
+						setForCacheClean.clear();
+						log.info("latest sprint fetched cache cleaned.");
+					}
+					MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
+					MDC.put("IssueCount", String.valueOf(issues.size()));
+					// will result in an extra call if number of results == pageSize
+					// but I would rather do that then complicate the jira client
+					// implementation
+					if (issues.size() < pageSize) {
+						break;
+					}
 				}
-
-				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
-					latestDataFetched = cleanCache();
-					setForCacheClean.clear();
-					log.info("latest sprint fetched cache cleaned.");
-				}
-				MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
-				MDC.put("IssueCount", String.valueOf(issues.size()));
-				// will result in an extra call if number of results == pageSize
-				// but I would rather do that then complicate the jira client
-				// implementation
-				if (issues.size() < pageSize) {
-					break;
-				}
+				log.info("fetching epic");
+				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
+				saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
+						jiraAdapter);
 			}
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in scrum client", e);
@@ -232,11 +222,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
+				processorExecutionTraceLog.setLastSuccessfulRun(null);
+			}else{
+				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(),QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
 		}
 
 		return savedIsuesCount;
+
 	}
 
 	private boolean isAttemptSuccess(int total, int savedCount) {
@@ -258,10 +252,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
+				.getTraceLogs(ProcessorConstants.JIRA, basicProjectConfigId);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = null;
+
+		if (CollectionUtils.isNotEmpty(traceLogs)) {
+			processorExecutionTraceLog = traceLogs.get(0);
+			if(null == processorExecutionTraceLog.getLastSuccessfulRun()){
+				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+			}
+		}else {
+			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
+			processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+		}
 		return processorExecutionTraceLog;
 	}
 
@@ -277,43 +283,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-	}
-
-	private void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
-			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
-		Map<String, List<JiraIssue>> issuesByType = org.apache.commons.collections4.CollectionUtils
-				.emptyIfNull(
-						jiraIssues)
-				.stream()
-				.sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
-				.collect(Collectors.groupingBy(JiraIssue::getTypeName));
-
-		issuesByType.forEach((typeName, issues) -> {
-			JiraIssue firstIssue = issues.stream()
-					.sorted(Comparator
-							.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-									DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-							.reversed())
-					.findFirst().orElse(null);
-			if (firstIssue != null) {
-				LocalDateTime currentIssueDate = LocalDateTime.parse(firstIssue.getChangeDate(),
-						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
-				LocalDateTime capturedDate = lastSavedJiraIssueChangedDateByType.get(typeName);
-				lastSavedJiraIssueChangedDateByType.put(typeName, updatedDateToSave(capturedDate, currentIssueDate));
-			}
-		});
-	}
-
-	private LocalDateTime updatedDateToSave(LocalDateTime capturedDate, LocalDateTime currentIssueDate) {
-		if (capturedDate == null) {
-			return currentIssueDate;
-		}
-
-		if (currentIssueDate.isAfter(capturedDate)) {
-			return currentIssueDate;
-		}
-		return capturedDate;
 	}
 
 	private boolean cleanCache() {
@@ -404,7 +373,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 
 			JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
-			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueId);
+			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueNumber);
 			TestCaseDetails testCaseDetail=getTestCaseDetail(projectConfig, issueNumber);
 
 			Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
@@ -492,7 +461,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
 		testCaseDetailsRepository.saveAll(testCaseDetailsToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
-		sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter);
 		setForCacheClean.addAll(sprintDetailsSet.stream()
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
@@ -837,6 +805,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
 		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
 		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
+		jiraIssueHistory.setUrl(jiraIssue.getUrl());
+		jiraIssueHistory.setDescription(jiraIssue.getName());
 		// This method is not setup method. write it to keep
 		// custom history
 		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);

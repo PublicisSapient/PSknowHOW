@@ -32,6 +32,10 @@ public enum KPICode {
 	 */
 	LEAD_TIME("kpi3", KPISource.JIRA.name()),
 	/**
+	 * Sprint predictability kpi code.
+	 */
+	SPRINT_PREDICTABILITY("kpi5", KPISource.JIRA.name()),
+	/**
 	 * Code build time kpi code.
 	 */
 	CODE_BUILD_TIME("kpi8", KPISource.JENKINS.name()),
@@ -339,7 +343,12 @@ public enum KPICode {
 	/**
 	 * Invalid kpi code.
 	 */
-	INVALID("INVALID_KPI", "Invalid");
+	INVALID("INVALID_KPI", "Invalid"),
+
+	/**
+	 * Work Completed
+	 */
+	WORK_COMPLETED("kpi128", KPISource.JIRA.name());
 
 	// @formatter:on
 

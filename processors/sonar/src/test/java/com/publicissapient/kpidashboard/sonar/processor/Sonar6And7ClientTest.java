@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -82,12 +83,15 @@ public class Sonar6And7ClientTest {
 	private static final String PASSWORD = "password";
 	private static final String ACCESS_TOKEN = "5345g34h5vhj24656";
 
+	@Mock
+	private ToolCredentialProvider toolCredentialProvider;
+
 	@Before
 	public void init() {
 		when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
 		SONAR_SERVER.setUrl(SONAR_URL);
 		SONAR_CLOUD.setUrl(SONAR_CLOUD_URL);
-		sonar6And7Client = new Sonar6And7Client(restOperationsFactory, sonarSettings);
+		sonar6And7Client = new Sonar6And7Client(restOperationsFactory, sonarSettings, toolCredentialProvider);
 
 	}
 

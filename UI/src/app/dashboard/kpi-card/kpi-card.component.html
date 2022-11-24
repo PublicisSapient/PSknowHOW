@@ -70,13 +70,17 @@
     <div class="kpi-card-body" 
     [ngStyle]="{'height': showChartView ? '365px' : '110px', 
     'min-height': showChartView ? '330px' : '100px'}">
-        <div class="kpi-card-indicator p-jc-evenly" *ngIf="isShow && trendData?.length  > 0  && showTrendIndicator"
+        <div class="kpi-card-indicator p-jc-evenly" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
             >
             <ng-container *ngFor="let item of trendData; let i = index;">
+                <app-trend-indicator
+                    [dataTrend]="item" [color]="getColor(item?.hierarchyName)" [kpiData]="kpiData"
+                    [noOfBox]="trendData?.length">
+                </app-trend-indicator>
                 <!--Grouped Column Plus Chart has line value(lineValue) and bar value(value). We need to send lineValue to the latest value indicator.-->
-                <ng-container *ngIf="kpiData?.kpiDetail?.chartType !== 'grouped_column_plus_line'">
+                <!-- <ng-container *ngIf="kpiData?.kpiDetail?.chartType !== 'grouped_column_plus_line'">
                     <app-trend-indicator *ngIf="!kpiData?.kpiDetail?.trendCalculative"
-                        [dataTrend]="item?.value?.length > 1 ? [item?.value[item?.value?.length - 2]?.value, item?.value[item?.value?.length - 1]?.value]  : [item?.value[item?.value?.length - 1]?.value]"
+                        [dataTrend]="trendsObj"
                         [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
                         [noOfBox]="trendData?.length">
                     </app-trend-indicator>
@@ -97,15 +101,14 @@
                         [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
                         [noOfBox]="trendData?.length">
                     </app-trend-indicator>
-                </ng-container>
+                </ng-container> -->
             </ng-container>
         </div>
         <div class="kpi-card-indicator p-jc-evenly" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53')">
-            <ng-container *ngFor="let item of trendData?.data; let i = index;">
+            <ng-container *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
-                    [dataTrend]="item" [cols]="trendData?.columnHeaders"
-                    [maturity]="item?.maturity" [color]="getColor(item?.name)" [kpiData]="kpiData"
-                    [noOfBox]="trendData?.length">
+                    [dataTrend]="item" [cols]="cols" [color]="getColor(item?.name)" 
+                    [kpiData]="kpiData" [noOfBox]="trendData?.length">
                 </app-trend-indicator>
             </ng-container>
         </div>
@@ -117,7 +120,7 @@
             <!-- <object class="kpi-card-type-icon" data="../../../assets/img/Jira.svg"></object> -->
         </div>
         <div class="kpi-card-icons" *ngIf="showExport">
-            <fa-icon [icon]="faShareSquare" class="mr-10" (click)="exportToExcel()"></fa-icon>
+            <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon" (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
             <!-- <i class="fas fa-expand mr-10"></i> -->
         </div>
     </div>

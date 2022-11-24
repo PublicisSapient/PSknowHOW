@@ -289,9 +289,9 @@ export class FilterComponent implements OnInit {
         this.selectedFilterData = {};
         this.selectedFilterCount = 0;
         this.selectedFilterData.kanban = this.kanban;
-        this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE'];
+        this.selectedFilterData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
         const filterData = this.service.getFilterData();
-        if (!Object.keys(filterData).length || (this.previousType !== this.kanban) || this.initFlag) {
+        if (!Object.keys(filterData).length || (this.previousType !== this.kanban) || this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'backlog' || this.initFlag) {
             this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData)
                 .subscribe(filterApiData => {
                     this.processFilterData(filterApiData);
@@ -305,20 +305,10 @@ export class FilterComponent implements OnInit {
     processFilterData(filterData) {
         if (filterData[0] !== 'error') {
             this.filterData = filterData['data'];
-            if (this.filterData.length === 0) {
+            if (this.filterData.length == 0) {
                 this.service.setNoProjects(true);
             }
             this.service.setFilterData(JSON.parse(JSON.stringify(filterData)));
-            // segregate filter data sprints on the basis of dashboard type
-            let sprintData = this.filterData.filter((d) => d.labelName === 'sprint');
-            this.filterData = this.filterData.filter((d) => d.labelName !== 'sprint');
-            if (this.selectedTab?.toLowerCase() === 'iteration') {
-                sprintData = sprintData.filter((sprint) => sprint.sprintState === 'CLOSED' || sprint.sprintState === 'ACTIVE');
-            } else {
-                sprintData = sprintData.filter((sprint) => sprint.sprintState === 'CLOSED');
-            }
-            this.filterData = this.filterData.concat(sprintData);
-
             /** check if data for additional filters exists in filterData api, if yes create a formControl for the same */
             this.additionalFiltersDdn = {};
             for (let i = 0; i < this.additionalFiltersArr?.length; i++) {
@@ -438,6 +428,7 @@ export class FilterComponent implements OnInit {
     }
 
     filterAdditionalFilters() {
+        this.filteredAddFilters = {};
         const selectedLevel = this.filterForm.get('selectedLevel')?.value;
         if (selectedLevel == 'project') {
             const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value;
@@ -467,8 +458,17 @@ export class FilterComponent implements OnInit {
 
     // this method would be called on click of apply button of filter
     applyChanges(applySource?, filterApplied = true): void {
-        if (this.filterForm?.get('selectedTrendValue')?.value?.length > 0) {
-
+        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+        let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
+        let selectedLevel = this.hierarchyLevels?.filter(x => x.hierarchyLevelId == selectedLevelId)[0];
+        if (selectedTrendIds?.length > 0) {
+            let selectedTrendValues = [];
+            for(let i = 0; i<selectedTrendIds?.length;i++){
+                selectedTrendValues.push(this.trendLineValueList?.filter(x => x.nodeId == selectedTrendIds[i])[0]);
+            }
+            
+            this.service.setSelectedLevel(selectedLevel);
+            this.service.setSelectedTrends(selectedTrendValues);
             if (!applySource) {
                 this.ngselect?.close();
                 this.ngselect?.blur();
@@ -612,25 +612,17 @@ export class FilterComponent implements OnInit {
 
     getKpiOrderedList() {
         if (this.isEmptyObject(this.kpiListData)) {
-            this.kpiListData = this.service.getDashConfigData();
-            if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
-                this.httpService.getShowHideKpi().subscribe((response) => {
-                    if (response.success === true) {
-                        this.kpiListData = response.data;
-                        this.service.setDashConfigData(this.kpiListData);
-                        this.navigateToSelectedTab();
-                        this.service.changedMainDashboardValueSub.next(this.kpiListData?.scrum[0].boardName);
-                        this.processKpiList();
-                    }
-                }, error => {
-                    this.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
-                });
-            } else {
-                this.navigateToSelectedTab();
-                this.service.changedMainDashboardValueSub.next(this.kpiListData?.scrum[0].boardName);
-                this.processKpiList();
-            }
-
+            this.httpService.getShowHideKpi().subscribe((response) => {
+                if (response.success === true) {
+                    this.kpiListData = response.data;
+                    this.service.setDashConfigData(this.kpiListData);
+                    this.navigateToSelectedTab();
+                    this.service.changedMainDashboardValueSub.next(this.kpiListData?.scrum[0].boardName);
+                    this.processKpiList();
+                }
+            }, error => {
+                this.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
+            });
         } else {
             this.processKpiList();
         }
@@ -930,8 +922,8 @@ export class FilterComponent implements OnInit {
     }
 
     pad(s) {
-        return (s < 10) ? '0' + s : s;
-    }
+ return (s < 10) ? '0' + s : s;
+}
 
     startDateSelected(val) {
         this.beginningDate = new Date(val);
@@ -983,8 +975,8 @@ export class FilterComponent implements OnInit {
         if (hierarchyLevelId == 'sprint') {
             for (const item in this.filterForm?.get(hierarchyLevelId)?.value) {
                 if (this.filterForm?.get(hierarchyLevelId)?.value[item]) {
-                    isDisabled = null;
-                }
+isDisabled = null;
+}
             }
         } else {
             isDisabled = !this.filterForm?.get(hierarchyLevelId)?.value ? true : null;
@@ -997,8 +989,13 @@ export class FilterComponent implements OnInit {
         return name;
     }
 
-    showChartToggle(val) {
+    showChartToggle(val){
         this.showChart = val;
         this.service.setShowTableView(this.showChart);
+    }
+
+    exportToExcel($event = null) {
+        this.disableDownloadBtn = true;
+        this.service.setGlobalDownload(true);
     }
 }

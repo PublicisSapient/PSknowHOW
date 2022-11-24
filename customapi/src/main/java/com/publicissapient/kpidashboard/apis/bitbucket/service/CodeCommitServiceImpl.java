@@ -18,25 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.*;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
-import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
-import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
-import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,18 +44,39 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
+import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
+import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
+import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service reflects the logic for the number of check-ins in master
  * metrics. The logic represent the calculations at the sprint, build and
  * release level.
- * 
- * @author prigupta8
  *
+ * @author prigupta8
  */
 @Component
 @Slf4j
@@ -72,10 +87,10 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	private static final String BITBUCKET = "Bitbucket";
 	private static final String GITLAB = "GitLab";
 	private static final String GITHUB = "GitHub";
-	private static final String YYYYMMDD="yyyy-MM-dd";
-	private static final String DATE="Date ";
-	private static final String NO_CHECKIN="No. of Check in";
-	private static final String NO_MERGE="No. of Merge Requests";	
+	private static final String YYYYMMDD = "yyyy-MM-dd";
+	private static final String DATE = "Date ";
+	private static final String NO_CHECKIN = "No. of Check in";
+	private static final String NO_MERGE = "No. of Merge Requests";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -139,18 +154,18 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	/**
 	 * Populates KPI value to project leaf nodes. It also gives the trend analysis
 	 * project wise.
-	 * 
+	 *
 	 * @param kpiElement
 	 * @param mapTmp
 	 * @param projectLeafNodeList
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement,Map<String, Node> mapTmp,
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
 			List<Node> projectLeafNodeList) {
 
 		String requestTrackerId = getRequestTrackerId();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
 		String endDate = formatter.print(DateTime.now());
-		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCount()-1));
+		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCount() - 1));
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -161,7 +176,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		final Map<ObjectId, Map<String, Long>> commitListItemId = new HashMap<>();
 		final Map<ObjectId, Map<String, Long>> mergeListItemId = new HashMap<>();
 		collectCommitAndMergeItems(commitList, mergeList, commitListItemId, mergeListItemId);
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			DateTime start = new DateTime(startDate, DateTimeZone.UTC);
 			DateTime end = new DateTime(endDate, DateTimeZone.UTC);
@@ -171,8 +186,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			List<Tool> reposList = new ArrayList<>();
 			populateRepoList(reposList, mapOfListOfTools);
 			if (CollectionUtils.isEmpty(reposList)) {
-				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
-						node.getProjectFilter());
+				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
 			}
 
@@ -182,8 +196,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			List<String> branchList = new ArrayList<>();
 			String projectName = node.getProjectFilter().getName();
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-			Map<String, Long> aggCommitCountForRepo=new HashMap<>();
-			Map<String, Long> aggMergeCountForRepo=new HashMap<>();
+			Map<String, Long> aggCommitCountForRepo = new HashMap<>();
+			Map<String, Long> aggMergeCountForRepo = new HashMap<>();
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
@@ -208,16 +222,16 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 					}
 				}
 			});
-			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo,
-					aggCommitCountForRepo, new HashMap<>(), start, end, projectName,
-					new HashMap<>());	
+			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo, aggCommitCountForRepo,
+					new HashMap<>(), start, end, projectName, new HashMap<>());
 			aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
-			populateValidationDataObject(requestTrackerId, repoWiseCommitList, repoList, branchList,
-					validationDataMap, node, repoWiseMergeRequestList);
+			populateExcelData(requestTrackerId, repoWiseCommitList, repoList, branchList, excelData, node,
+					repoWiseMergeRequestList);
 		});
-		kpiElement.setMapOfSprintAndData(validationDataMap);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT.getColumns());
 	}
 
 	/**
@@ -228,10 +242,10 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	 */
 	private void aggCommitAndMergeCount(Map<String, Long> aggCommitCountForRepo, Map<String, Long> aggMergeCountForRepo,
 			Map<String, Long> commitCountForRepo, Map<String, Long> mergeCountForRepo) {
-		if(MapUtils.isNotEmpty(commitCountForRepo)) {
+		if (MapUtils.isNotEmpty(commitCountForRepo)) {
 			aggCommitCountForRepo.putAll(commitCountForRepo);
 		}
-		if( MapUtils.isNotEmpty(mergeCountForRepo)) {
+		if (MapUtils.isNotEmpty(mergeCountForRepo)) {
 			aggMergeCountForRepo.putAll(mergeCountForRepo);
 		}
 	}
@@ -258,7 +272,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 	/**
 	 * populate repolist from map
-	 * 
+	 *
 	 * @param reposList
 	 * @param mapOfListOfTools
 	 */
@@ -277,26 +291,22 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 	/**
 	 * Populates validation data object.
-	 * 
+	 *
 	 * @param requestTrackerId
 	 * @param repoWiseCommitList
 	 * @param repoList
 	 * @param branchList
-	 * @param validationDataMap
 	 * @param node
 	 * @param repoWiseMergeRequestList
 	 */
-	private void populateValidationDataObject(String requestTrackerId,
-			List<Map<String, Long>> repoWiseCommitList, List<String> repoList, List<String> branchList,
-			Map<String, ValidationData> validationDataMap, Node node,
+	private void populateExcelData(String requestTrackerId, List<Map<String, Long>> repoWiseCommitList,
+			List<String> repoList, List<String> branchList, List<KPIExcelData> excelData, Node node,
 			List<Map<String, Long>> repoWiseMergeRequestList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setRepoList(repoList);
-			validationData.setBranchList(branchList);
-			validationData.setDayWiseCommitList(repoWiseCommitList);
-			validationData.setDayWiseMergeList(repoWiseMergeRequestList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
+
+			String projectName = node.getProjectFilter().getName();
+			KPIExcelUtility.populateCodeCommit(projectName, repoWiseCommitList, repoList, branchList, excelData,
+					repoWiseMergeRequestList);
 		}
 	}
 
@@ -306,8 +316,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	 * @param excelDataLoader
 	 * @param mergeRequestExcelDataLoader
 	 */
-	private List<DataCount> setDayWiseCountForProject(Map<String, Long> mergeCountForRepo, Map<String, Long> commitCountForRepo,
-			Map<String, Long> excelDataLoader, DateTime start, DateTime end,
+	private List<DataCount> setDayWiseCountForProject(Map<String, Long> mergeCountForRepo,
+			Map<String, Long> commitCountForRepo, Map<String, Long> excelDataLoader, DateTime start, DateTime end,
 			String projectName, Map<String, Long> mergeRequestExcelDataLoader) {
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
@@ -318,30 +328,30 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			Map<String, Integer> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
-				excelDataLoader.put(DATE + formatDate(currentDate), commitForDay);
+				excelDataLoader.put(formatDate(currentDate), commitForDay);
 				dataCount.setValue(commitForDay);
 				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
 			} else {
-				excelDataLoader.put(DATE + formatDate(currentDate), 0l);
+				excelDataLoader.put(formatDate(currentDate), 0l);
 				dataCount.setValue(0l);
 				hoverValues.put(NO_CHECKIN, 0);
-				
+
 			}
 			if (mergeCountForRepo != null && mergeCountForRepo.get(currentDate) != null) {
 				Long mergeForDay = mergeCountForRepo.get(currentDate);
-				mergeRequestExcelDataLoader.put(DATE + formatDate(currentDate), mergeForDay);
+				mergeRequestExcelDataLoader.put(formatDate(currentDate), mergeForDay);
 				dataCount.setLineValue(mergeForDay);
 				hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			} else {
-				mergeRequestExcelDataLoader.put(DATE + formatDate(currentDate), 0l);
+				mergeRequestExcelDataLoader.put(formatDate(currentDate), 0l);
 				dataCount.setLineValue(0l);
 				hoverValues.put(NO_MERGE, 0);
-				
+
 			}
 			dataCount.setDate(formatDate(currentDate));
 			dataCount.setHoverValue(hoverValues);
-			dataCount.setSProjectName(projectName);			
+			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);
 			startDateTime = startDateTime.plusDays(1);
 		}
@@ -447,13 +457,13 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> t) {
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
-		return calculateKpiValueForLong(valueList,kpiId);
+		return calculateKpiValueForLong(valueList, kpiId);
 	}
 
 }

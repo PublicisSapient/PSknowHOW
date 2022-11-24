@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -71,6 +72,8 @@ public class ConfigHelperService {
 	private ProjectToolConfigRepositoryCustom toolConfigRepository;
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
+	@Autowired
+	private KpiFieldMappingRepository kpiFieldMappingRepository;
 	@Autowired
 	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 	@Autowired
@@ -237,8 +240,7 @@ public class ConfigHelperService {
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
 		LOGGER.info("loading KPI Master data");
-		Iterable<KpiMaster> masterData = kpiMasterRepository.findAll();
-		return masterData;
+		return kpiMasterRepository.findAll();
 	}
 
 	@PostConstruct
@@ -284,6 +286,16 @@ public class ConfigHelperService {
 	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
 		LOGGER.info("loading hierarchy level Master data");
 		return hierarchyLevelSuggestionRepository.findAll();
+	}
+
+	/**
+	 * Load KPI Field Mapping.
+	 */
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_KPI_FIELD_MAPPING)
+	public Object loadKpiFieldMapping() {
+		LOGGER.info("loading KPI FieldMapping data");
+		return kpiFieldMappingRepository.findAll();
 	}
 
 }

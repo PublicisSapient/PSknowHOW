@@ -18,5 +18,5 @@
 ################################################################################
 
 # This is LDAP certificate for EDC server . "$1" is a external veriable passed from jenkins
-sudo docker cp /app/apps/jssecacerts.cer customapi:/app &&
+sudo docker cp /app/apps/certs/jssecacerts.cer customapi:/app &&
 sudo docker exec -i customapi /bin/sh -c "keytool -importcert -alias $1-1 -keystore /usr/local/openjdk-8/lib/security/cacerts -storepass changeit -file jssecacerts.cer"

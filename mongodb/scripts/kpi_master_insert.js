@@ -1215,12 +1215,49 @@ db.getCollection('kpi_master').insert(
     "maturityRange": ["-40","40-60","60-75","75-90","90-"]
   },
   {
+    "kpiId": "kpi5",
+    "kpiName": "Sprint Predictability",
+    "isDeleted": "False",
+    "kpiInAggregatedFeed": "True",
+    "defaultOrder": 19,
+    "kpiOnDashboard": [
+      "Aggregated"
+    ],
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "maxValue": "10",
+    "kpiUnit": "%",
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Sprint Predictability signifies how stable is a team's velocity such that it can be used in forecasting milestones in future",
+      "formula": [
+        {
+          "lhs": "Sprint Predictability for a sprint",
+          "operator": "division",
+          "operands": [
+            "sprint velocity in last sprint.",
+            "sprint velocity in last 3 sprint"
+          ]
+        }
+      ]
+    },
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi39",
     "kpiName": "Sprint Velocity",
     "maxValue": "300",
     "kpiUnit": "SP",
     "isDeleted": "False",
-    "defaultOrder": 19,
+    "defaultOrder": 20,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1248,7 +1285,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "500",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 20,
+    "defaultOrder": 21,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1263,11 +1300,11 @@ db.getCollection('kpi_master').insert(
         },
         {
           "type": "paragraph",
-          "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog"
+          "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog. The capacity is defined in KnowHOW"
         },
         {
           "type": "paragraph",
-          "value": "Logged Work: The amount of time team has logged within a Sprint"
+          "value": "Logged Work: The amount of time team has logged within a Sprint. It is derived as sum of all logged work against issues tagged to a Sprint in Jira"
         }
       ]
     },
@@ -1287,7 +1324,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "100",
     "kpiUnit": "Days",
     "isDeleted": "False",
-    "defaultOrder": 21,
+    "defaultOrder": 22,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1363,7 +1400,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "10",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 22,
+    "defaultOrder": 23,
     "groupId": 1,
     "kpiSource": "BitBucket",
     "thresholdValue": "55",
@@ -1430,7 +1467,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "10",
     "kpiUnit": "MRs",
     "isDeleted": "False",
-    "defaultOrder": 23,
+    "defaultOrder": 24,
     "kpiSource": "BitBucket",
     "groupId": 1,
     "thresholdValue": "55",
@@ -1495,7 +1532,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "100",
     "kpiUnit": "min",
     "isDeleted": "False",
-    "defaultOrder": 24,
+    "defaultOrder": 25,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": "",
@@ -1566,7 +1603,7 @@ db.getCollection('kpi_master').insert(
     ],
     "kpiBaseLine": "0",
     "thresholdValue": "",
-    "defaultOrder": 25,
+    "defaultOrder": 26,
     "kpiUnit": "Days",
     "kpiSource": "Jira",
     "groupId": 3,
@@ -1746,7 +1783,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 26,
+    "defaultOrder": 27,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": 0,
@@ -1818,7 +1855,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 27,
+    "defaultOrder": 28,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -1849,8 +1886,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": true,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "maturityRange": ["-1","1-2","2-5","5-10","10-"]
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi113",
@@ -1858,7 +1894,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 28,
+    "defaultOrder": 29,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -2897,7 +2933,7 @@ db.getCollection('kpi_master').insert(
     "kpiId": "kpi121",
     "kpiName": "Capacity",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "",
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Iteration",
@@ -2910,7 +2946,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Planned capacity is the development team's available time represented in Hours."
+          "value": "Planned capacity is the development team's available time."
         },
         {
           "type": "paragraph",
@@ -2973,12 +3009,54 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi128",
+    "kpiName": "Work Completed",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isSquadSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi75",
     "kpiName": "Estimate vs Actual",
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3016,7 +3094,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3041,7 +3119,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
@@ -3050,7 +3128,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 7,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3087,7 +3165,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "2_column",
     "calculateMaturity": false
   },
   {
@@ -3096,7 +3174,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 8,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3134,7 +3212,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 8,
+    "defaultOrder": 9,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3172,7 +3250,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 10,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,

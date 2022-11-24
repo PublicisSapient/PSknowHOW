@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import org.joda.time.DateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,9 +40,11 @@ import lombok.ToString;
 @ToString
 public class CycleTimeValidationData {
 	private String issueNumber;
-	private String intakeDate;
-	private String dorDate;
-	private String dodDate;
-	private String liveDate;
+	private String url;
+	private String issueDesc;
+	private DateTime intakeDate;
+	private DateTime dorDate;
+	private DateTime dodDate;
+	private DateTime liveDate;
 
 }

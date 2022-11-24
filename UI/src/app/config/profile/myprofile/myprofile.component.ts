@@ -102,6 +102,7 @@ export class MyprofileComponent implements OnInit {
       const projectsArr = [];
       for(let i = 0; i < inArr[k]?.projects?.length; i++){
         const obj = {
+          role: inArr[k]?.role,
           projectName: inArr[k]?.projects[i]?.projectName,
           projectId: inArr[k]?.projects[i]?.projectId
         };
@@ -111,7 +112,7 @@ export class MyprofileComponent implements OnInit {
         }
         projectsArr?.push(obj);
       }
-      this.roleBasedProjectList.push({role:inArr[k].role, projects: projectsArr});
+      this.roleBasedProjectList = [...this.roleBasedProjectList, ...projectsArr];
     }
   }
 

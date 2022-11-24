@@ -276,7 +276,6 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 				if (specialFields.contains(key)) {
 					continue;
 				}
-				// TODO: JRJC-122
 				// we should use fieldParser here (some new version as the old one probably
 				// won't work)
 				// enable IssueJsonParserTest#testParseIssueWithUserPickerCustomFieldFilledOut

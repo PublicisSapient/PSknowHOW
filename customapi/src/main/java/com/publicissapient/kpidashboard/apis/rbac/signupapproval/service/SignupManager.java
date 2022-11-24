@@ -1,7 +1,13 @@
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.service;
 
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +22,9 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApprovalListener;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectApprovalListener;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -47,8 +53,13 @@ public class SignupManager {
 	 * @param grantApprovalListener
 	 */
 	public void grantAccess(String username, GrantApprovalListener grantApprovalListener) {
-		String superAdminEmail = authenticationRepository.findByUsername(authenticationService.getLoggedInUser())
-				.getEmail();
+		String superAdminEmail;
+		String loggedInUser = authenticationService.getLoggedInUser();
+		if (checkForLdapUser(loggedInUser)) {
+			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+		} else {
+			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
+		}
 		Authentication authentication = getAuthenticationByUserName(username);
 		if (authentication.isApproved()) {
 			if (grantApprovalListener != null) {
@@ -66,6 +77,12 @@ public class SignupManager {
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_SUCCESS);
 			}
 		}
+
+	}
+
+	private boolean checkForLdapUser(String userName) {
+		UserInfo loggedInUser = userInfoRepository.findByUsername(userName);
+		return loggedInUser.getAuthType().equals(AuthType.LDAP);
 
 	}
 
@@ -131,9 +148,14 @@ public class SignupManager {
 	 * @param listener
 	 */
 	public void rejectAccessRequest(String username, RejectApprovalListener listener) {
+		String superAdminEmail;
+		String loggedInUser = authenticationService.getLoggedInUser();
+		if (checkForLdapUser(loggedInUser)) {
+			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+		} else {
+			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
+		}
 		Authentication authentication = getAuthenticationByUserName(username);
-		String superAdminEmail = authenticationRepository.findByUsername(authenticationService.getLoggedInUser())
-				.getEmail();
 		Authentication updatedAuthenticationRequest = updateAuthenticationApprovalStatus(authentication);
 		if (updatedAuthenticationRequest.isApproved()) {
 			if (listener != null) {

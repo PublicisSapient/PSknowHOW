@@ -42,6 +42,7 @@ public final class Constant {
 	public static final String TOOL_ZEPHYR = "Zephyr";
 	public static final String TOOL_BAMBOO = "Bamboo";
 	public static final String TOOL_GITHUB = "GitHub";
+	public static final String EXCEL_YES = "Y";
 
 	public static final String MEDIAN = "median";
 	public static final String PERCENTILE = "percentile";
@@ -131,6 +132,7 @@ public final class Constant {
 	public static final String CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL = "additionalFilterHierLevel";
 	public static final String RESOLUTION_TYPE_FOR_REJECTION = "Resolution Type for Rejection";
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
+
 
 	private Constant() {
 	}

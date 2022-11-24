@@ -31,729 +31,797 @@
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
+    <app-kpi-filter [kpiRelationShips]="kpiRelationShips"
+    (fieldsToShow)="showFields($event)"></app-kpi-filter>
     <form [formGroup]="fieldMappingForm" autocomplete="off">
-        <p-accordion [multiple]="true" [style]="{'width':'100%'}">
-            <p-accordionTab header="Workflow Status Mapping">
-                <div class="p-grid">
-                    <div class="p-field p-col p-p-0">
-                        <div class="p-mb-3">
-                            <label class="field-title">Story First Status</label>
+        <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion>
+            <p-accordionTab header="Workflow Status Mapping" 
+            [disabled]="!(groupsToShow.groupNames.includes('Workflow Status Mapping') || groupsToShow.showAllgroups)">
+                <ng-template pTemplate="header">
+                    <p-badge *ngIf="groupsToShow.groupNames.includes('Workflow Status Mapping') && groupsToShow.groupNames.length !== 0"
+                        [value]="groupsToShow.groupFields['Workflow Status Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+                </ng-template>
+                <div class="p-p-0">
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('storyFirstStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Story First Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Default status when a Story is opened. <br>
+                                Example: Open <hr>
+                                KPI Impacted : 
+                                Jira Processor History
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <input type="text" pInputText id="storyFirstStatus" formControlName="storyFirstStatus"
-                                    placeholder="Enter Story Created Status" [style]="{'width':'500px'}" pTooltip='<span class="tooltiptext">
-                                    Default status when a Story is opened.
-                                    <i>
-                                      Example: Open<br />
-                                      Impacted : Jira Processor History</i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                <input type="text" pInputText id="storyFirstStatus" formControlName="storyFirstStatus" [style]="{'max-width':'initial','width':'60vw'}"
+                                    placeholder="Enter Story Created Status">
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(true, 'storyFirstStatus', 'workflow')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Delivered
-                                Status</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('ticketDeliverdStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Delivered Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Status from workflow on which ticket is considered as delivered. <br>
+                                Example : Closed <hr>
+                                KPI Impacted : 
+                                Ticket Velocity.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
-                                    inputId="ticketDeliverdStatus" formControlName="ticketDeliverdStatus"
-                                    placeholder="Enter Ticket Deliverd Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as delivered.<br /><i>
-                                        Example : Closed <br />
-                                        Impacted : Ticket Velocity.</i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
+                                    inputId="ticketDeliverdStatus" formControlName="ticketDeliverdStatus" [style]="{'max-width':'initial','width':'60vw'}"
+                                    placeholder="Enter Ticket Deliverd Status" addOnBlur="true">
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'ticketDeliverdStatus', 'workflow')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Triaged
-                                Status</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraTicketTriagedStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Triaged Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Status from workflow on which ticket is considered as Triaged. <br>
+                                Example : In progress <hr>
+                                KPI Impacted : 
+                                Cycle Time 
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
+                                [style]="{'max-width':'initial','width':'60vw'}"
                                     inputId="jiraTicketTriagedStatus" formControlName="jiraTicketTriagedStatus"
-                                    placeholder="Enter Ticket Triaged Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as Triaged.<br /><i>
-                                        Example : In progress <br />
-                                        Impacted : Cycle Time </i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    placeholder="Enter Ticket Triaged Status" addOnBlur="true">
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraTicketTriagedStatus', 'workflow')"></button>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-field p-col p-p-0">
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Resolved
-                                Status</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraTicketRejectedStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Rejected/Dropped Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Status from workflow on which ticket is considered as Rejected/Dropped. <br>
+                                Example : Rejected <hr>
+                                KPI Impacted : 
+                                WIP vs Closed 
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [inputStyle]="{'width':'500px', 'border-bottom-right-radius':'0'}"
-                                    inputId="jiraTicketResolvedStatus" formControlName="jiraTicketResolvedStatus"
-                                    placeholder="Enter Ticket Resolved Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as Resolved.<br /><i>
-                                        Example : Closed <br />
-                                        Impacted : Total Ticket Count, WIP vs Closed, Throughput </i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                                </p-chips>
-                                <button type="button" pButton pRipple icon="pi pi-search"
-                                    (click)="showDialogToAddValue(false, 'jiraTicketResolvedStatus', 'workflow')"></button>
-                            </div>
-                        </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Work In
-                                progress Status</label>
-                            <div class="p-inputgroup">
-                                <p-chips [inputStyle]="{'width':'500px', 'border-bottom-right-radius':'0'}"
-                                    inputId="jiraTicketWipStatus" formControlName="jiraTicketWipStatus"
-                                    placeholder="Enter Ticket Work In progress Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as In progress.<br /><i>
-                                        Example : In Development <br />
-                                        Impacted : WIP vs Closed </i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                                </p-chips>
-                                <button type="button" pButton pRipple icon="pi pi-search"
-                                    (click)="showDialogToAddValue(false, 'jiraTicketWipStatus', 'workflow')"></button>
-                            </div>
-                        </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket
-                                Rejected/Dropped Status</label>
-                            <div class="p-inputgroup">
-                                <p-chips [inputStyle]="{'width':'500px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
+                                [style]="{'max-width':'initial','width':'60vw'}"
                                     inputId="jiraTicketRejectedStatus" formControlName="jiraTicketRejectedStatus"
-                                    placeholder="Enter Ticket Rejected Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as
-                                              Rejected/Dropped.<br /><i>
-                                                Example : Rejected <br />
-                                                Impacted : WIP vs Closed </i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    placeholder="Enter Ticket Rejected Status" addOnBlur="true">
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraTicketRejectedStatus', 'workflow')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Closed
-                                Status</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraTicketClosedStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Closed Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Status from workflow on which ticket is considered as Resolved. <br>
+                                Example : Closed <hr>
+                                KPI Impacted : 
+                                Total Ticket Count, WIP vs Closed, Cycle Time, Throughput
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [inputStyle]="{'width':'500px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}" [style]="{'max-width':'initial','width':'60vw'}"
                                     inputId="jiraTicketClosedStatus" formControlName="jiraTicketClosedStatus"
-                                    placeholder="Enter Ticket Closed Status" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Status from workflow on which ticket is considered as Resolved.<br /><i>
-                                        Example : Closed <br />
-                                        Impacted : Total Ticket Count, WIP vs Closed, Cycle Time, Throughput </i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    placeholder="Enter Ticket Closed Status" addOnBlur="true" >
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraTicketClosedStatus', 'workflow')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Live Status</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraLiveStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Live Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Provide any status from workflow on which Live is considered. <br>
+                                Example: Live <hr>
+                                KPI Impacted : 
+                                Cycle Time - Complete to Live
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <input type="text" pInputText id="jiraLiveStatus" formControlName="jiraLiveStatus"
-                                    placeholder="Enter Live Status" [style]="{'width':'500px'}" pTooltip='<span class="tooltiptext">
-                                    Provide any status from workflow on which Live is considered.
-                                    <br /><i>
-                                      Example: Live<br />
-                                      Impacted : Cycle Time - Complete to Live</i>
-                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                <input type="text" pInputText id="jiraLiveStatus" formControlName="jiraLiveStatus" [style]="{'max-width':'initial','width':'60vw'}"
+                                    placeholder="Enter Live Status">
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(true, 'jiraLiveStatus', 'workflow')"></button>
                             </div>
                         </div>
-                    </div>
                 </div>
             </p-accordionTab>
-            <p-accordionTab header="Issue Types Mapping">
-                <div class="p-grid">
-                    <div class="p-field p-col p-p-0">
-                        <div class="p-mb-3">
-                            <label class="field-title">Issue Type Names</label>
+            <p-accordionTab header="Issue Types Mapping"
+            [disabled]="!(groupsToShow.groupNames.includes('Issue Types Mapping') || groupsToShow.showAllgroups)">
+            <ng-template pTemplate="header">
+                <p-badge *ngIf="groupsToShow.groupNames.includes('Issue Types Mapping') && groupsToShow.groupNames.length !== 0"
+                    [value]="groupsToShow.groupFields['Issue Types Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+            </ng-template>
+                <div class="p-p-0">
+
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraIssueTypeNames') || fieldstoShow.length === 0">
+                            <label class="field-title">Issue Type Names <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Issue Type in Jira. These issue type are fetched in Speedy dashboard. <br>
+                                Example : Story, Defect, Risk, Change Request, Test <hr>
+                                KPI Impacted : 
+                                Jira/Azure Processor and all KPIs
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
-                                    inputId="jiraIssueTypeNames" formControlName="jiraIssueTypeNames"
-                                    placeholder="Enter Issue Type Names" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Issue Type in Jira. These issue type are fetched in Speedy dashboard.
-                                                  <br /><i>
-                                                    Example : "Story",
-                                                    "Defect",
-                                                    "Risk",
-                                                    "Change Request",
-                                                    "Test"
-                                                    Impacted : Jira/Azure Processor and all KPIs</i>
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}" inputId="jiraIssueTypeNames" 
+                                [style]="{'max-width':'initial','width':'60vw'}"
+                                    formControlName="jiraIssueTypeNames" placeholder="Enter Issue Type Names"
+                                    addOnBlur="true">
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraIssueTypeNames', 'Issue_Type')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket Count Issue Type</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('ticketCountIssueType') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Count Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                KPI Impacted:
+                                Ticket Count by Priority,
+                                Ticket Open Rate by Priority,
+                                Total ticket count,
+                                Total Ticket Aging
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
                                     inputId="ticketCountIssueType" formControlName="ticketCountIssueType"
-                                    placeholder="Enter Ticket Count Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Impacted KPIs:<br /><i>
-                                            1. Ticket Count by Priority.
-                                            2. Ticket Open Rate by Priority.
-                                            3. Total ticket count.
-                                            4. Total Ticket Aging.</i>
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    [style]="{'max-width':'initial','width':'60vw'}"
+                                    placeholder="Enter Ticket Count Issue Type" addOnBlur="true">
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'ticketCountIssueType', 'Issue_Type')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket RCA Count Issue Type</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('kanbanRCACountIssueType') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket RCA Count Issue Type <span class="fa fa-info-circle" aria-hidden="true"pTooltip='<span>
+                                KPI Impacted:
+                                Net Open Ticket Count By RCA
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
                                     inputId="kanbanRCACountIssueType" formControlName="kanbanRCACountIssueType"
-                                    placeholder="Enter Ticket RCA Count Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Impacted KPIs:<br /><i>
-                                            1. Net Open Ticket Count By RCA.
-                                            </i>
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    [style]="{'max-width':'initial','width':'60vw'}"
+                                    placeholder="Enter Ticket RCA Count Issue Type" addOnBlur="true" >
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'kanbanRCACountIssueType', 'Issue_Type')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Ticket
-                                Velocity Issue Type</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraTicketVelocityIssueType') || fieldstoShow.length === 0">
+                            <label class="field-title">Ticket Velocity Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                KPI Impacted:
+                                Ticket Velocity
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
+                                [style]="{'max-width':'initial','width':'60vw'}"
                                     inputId="jiraTicketVelocityIssueType" formControlName="jiraTicketVelocityIssueType"
-                                    placeholder="Enter Ticket Velocity Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Impacted KPIs:<br /><i>
-                                            Ticket Velocity</i>
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                    placeholder="Enter Ticket Velocity Issue Type" addOnBlur="true" >
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraTicketVelocityIssueType', 'Issue_Type')"></button>
                             </div>
                         </div>
-                        <div class="p-mb-3">
-                            <label class="field-title">Epic Issue Type</label>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('kanbanCycleTimeIssueType') || fieldstoShow.length === 0">
+                            <label class="field-title">kanban Cycle Time Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            KPI Impacted : 
+                            Cycle time
+                            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                    [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
-                                    inputId="jiraIssueEpicType" formControlName="jiraIssueEpicType"
-                                    placeholder="Enter Epic Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        This field is used to identify Epic Issue type.
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
+                                [style]="{'max-width':'initial','width':'60vw'}"
+                                    inputId="kanbanCycleTimeIssueType" formControlName="kanbanCycleTimeIssueType"
+                                    placeholder="Enter kanban Cycle Time Issue Type" addOnBlur="true" >
+                                </p-chips>
+                                <button type="button" pButton pRipple icon="pi pi-search"
+                                    (click)="showDialogToAddValue(false, 'kanbanCycleTimeIssueType', 'Issue_Type')"></button>
+                            </div>
+                        </div>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraIssueEpicType') || fieldstoShow.length === 0">
+                            <label class="field-title">Epic Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                This field is used to identify Epic Issue type.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="p-inputgroup">
+                                <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}" inputId="jiraIssueEpicType"
+                                    formControlName="jiraIssueEpicType" placeholder="Enter Epic Issue Type"
+                                    [style]="{'max-width':'initial','width':'60vw'}"
+                                    addOnBlur="true" >
                                 </p-chips>
                                 <button type="button" pButton pRipple icon="pi pi-search"
                                     (click)="showDialogToAddValue(false, 'jiraIssueEpicType', 'Issue_Type')"></button>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-mb-3">
-                        <label class="field-title">kanban Cycle
-                            Time Issue Type</label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
-                                inputId="kanbanCycleTimeIssueType" formControlName="kanbanCycleTimeIssueType"
-                                placeholder="Enter kanban Cycle Time Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Impacted KPI: Cycle time
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'kanbanCycleTimeIssueType', 'Issue_Type')"></button>
-                        </div>
-                    </div>
-                    <div class="p-mb-3">
-                        <label class="field-title">kanban
-                            Tech
-                            Debt
-                            Issue
-                            Type</label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'500px','width':'500px'}"
-                                [inputStyle]="{'width':'480px', 'border-bottom-right-radius':'0'}"
-                                inputId="kanbanJiraTechDebtIssueType" formControlName="kanbanJiraTechDebtIssueType"
-                                placeholder="Enter kanban Jira/Azure Tech Debt Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                        Impacted KPI: Tech Debt
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'kanbanJiraTechDebtIssueType', 'Issue_Type')"></button>
-                        </div>
-                    </div>
                 </div>
             </p-accordionTab>
-            <p-accordionTab header="Defect Mapping">
-                <div class="p-grid">
-                    <div class="p-col-5 p-p-0">
-                        <label class="field-title">RCA Value on Trend</label>
-                        <p-chips [inputStyle]="{'width':'500px', 'border-bottom-right-radius':'0'}" id="rootCauseValue"
-                            formControlName="rootCauseValue" addOnBlur="true" placeholder="Enter RCA Value on Trend"
-                            pTooltip='<span class="tooltiptext">
-                                Provide value of RCA that need to show on Trend line.<br />
-                                <i> Example: Code Issue</i>
-                                <i>Impacted : Defect Count By RCA (tagged to Story)</i>
-                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"></p-chips>
-                    </div>
-                </div>
-            </p-accordionTab>
-            <p-accordionTab header="Custom Fields Mapping">
-                <div class="p-grid">
-                    <div class="p-field p-col-5 p-p-0">
-                        <label class="field-title">Estimation</label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="jiraStoryPointsCustomField"
-                                formControlName="jiraStoryPointsCustomField" placeholder="Enter Story Points"
-                                [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext">
-                                    JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                      fields.
-                                      Story Point is a custom field in JIRA. So User need to provide that custom field
-                                      which is associated with Story point in Users JIRA/AZURE
-                                      Installation.<i><br />
-                                        For
-                                        example : customfield_20803.</i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'jiraStoryPointsCustomField', 'fields')"></button>
+            <p-accordionTab header="Custom Fields Mapping"
+            [disabled]="!(groupsToShow.groupNames.includes('Custom Fields Mapping')|| groupsToShow.showAllgroups)">
+            <ng-template pTemplate="header">
+                <p-badge *ngIf=" groupsToShow.groupNames.includes('Custom Fields Mapping') && groupsToShow.groupNames.length !== 0"
+                    [value]="groupsToShow.groupFields['Custom Fields Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+            </ng-template>
+                <div class="p-p-0">
+
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraStoryPointsCustomField') || fieldstoShow.length === 0">
+                            <label class="field-title">Estimation <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                                Story Point is a custom field in JIRA. So User need to provide that custom field which is associated with Story point in Users JIRA/AZURE Installation. <br>
+                                Example: customfield_20803
+                            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="p-inputgroup">
+                                <input type="text" pInputText id="jiraStoryPointsCustomField"
+                                    formControlName="jiraStoryPointsCustomField" placeholder="Enter Story Points"
+                                    [style]="{'max-width':'initial','width':'60vw'}"
+                                    >
+                                <button type="button" pButton pRipple icon="pi pi-search"
+                                    (click)="showDialogToAddValue(true, 'jiraStoryPointsCustomField', 'fields')"></button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="p-field p-col-5 p-ml-5 p-p-0">
-                        <label class="field-title">Root Cause (RCA)</label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="rootCause" formControlName="rootCause"
-                                placeholder="Enter Root Cause" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext">
-                                    JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                      fields.
-                                      Root Cause is a custom field in JIRA. So User need to provide that custom field
-                                      which is associated with Root Cause in Users JIRA Installation.<br />
-                                      <i>
-                                        Example : customfield_19121 <br />
-                                        Impacted : Jira/Azure processor and Net Open Ticket Count By RCA Kpi.<br />
-                                      </i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'rootCause', 'fields')"></button>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                            *ngIf="fieldstoShow?.includes('estimationCriteria') || fieldstoShow.length === 0">
+                            <label class="field-title">Estimation Criteria <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                        Definition:
+                                                        Estimation criteria for stories. <br>
+                                                        Example: Buffered Estimation.
+                                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                    tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="fields-container p-p-2">
+                                <div class="p-d-flex p-justify-between">
+                                    <div class="p-inputgroup">
+                                        <ng-container *ngFor="let estimationType of estimationCriteriaTypes">
+                                            <p-radioButton placeholder="Select" formControlName="estimationCriteria"
+                                                value="{{estimationType.value}}" label="{{estimationType.value}}" class="p-m-2">
+                                            </p-radioButton>
+                                        </ng-container>
+                                    </div>
+                                    <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                        (click)="resetRadioButton('estimationCriteria')"></button>
+                                </div>
+                                <div class="p-m-2"
+                                *ngIf="(fieldstoShow?.includes('storyPointToHourMapping') || fieldstoShow.length === 0) && fieldMapping['estimationCriteria'] && fieldMapping['estimationCriteria'].value === 'Story Point'">
+                                    <label class="field-title">Story Point to Hour Conversion <span class="fa fa-info-circle" aria-hidden="true"  pTooltip='<span>
+                                        Definition:
+                                        Conversion factor for Story Point to Hour Conversion. <br>
+                                        Example: If 1 Story Point is 8 hrs, enter 8.
+                                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="p-inputgroup p-mt-2">
+                                        <input type="text" pInputText id="storyPointToHourMapping"
+                                        formControlName="storyPointToHourMapping" placeholder="Enter conversion factor"
+                                        [style]="{'width':'100%','max-width':'100%'}"
+                                        (input)="validateRegexp($event, '^[0-9]*$')">
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="p-col-12 p-grid p-p-0">
-                        <div class="p-col-5 p-p-0 p-field ">
-                            <label class="field-title">Estimation Criteria</label>
-                            <p-dropdown id="estimationCriteria" [options]="estimationCriteriaTypes" placeholder="Select"
-                                formControlName="estimationCriteria" [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                                        Estimation criteria for stories.
-                                              <br />
-                                              <i>Example: Buffered Estimation.</i>
-                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                                tooltipPosition="top">
-                            </p-dropdown>
+
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('rootCause') || fieldstoShow.length === 0">
+                            <label class="field-title">Root Cause (RCA) <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                                Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation.<br />
+                                Example : customfield_19121 <hr>
+                                KPI Impacted : 
+                                Jira/Azure processor and Net Open Ticket Count By RCA Kpi.
+                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="p-inputgroup">
+                                <input type="text" pInputText id="rootCause" formControlName="rootCause"
+                                    placeholder="Enter Root Cause" [style]="{'max-width':'initial','width':'60vw'}">
+                                <button type="button" pButton pRipple icon="pi pi-search"
+                                    (click)="showDialogToAddValue(true, 'rootCause', 'fields')"></button>
+                            </div>
                         </div>
-                        <div class="p-field p-col-5 p-p-0 p-ml-5"
-                            *ngIf="fieldMapping['estimationCriteria'] && fieldMapping['estimationCriteria'].value === 'Story Point'">
-                            <label class="field-title">Story Point to Hour Conversion</label>
-                            <input type="text" pInputText id="storyPointToHourMapping"
-                                formControlName="storyPointToHourMapping" placeholder="Enter conversion factor"
-                                [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                            Conversion factor for Story Point to Hour Conversion.
-                            <br />
-                            <i>Example: If 1 Story Point is 8 hrs, enter 8.</i>
-                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                                (input)="validateRegexp($event, '^[0-9]*$')">
-                        </div>
-                    </div>
-                </div>
-                <div class="p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Epic Cost of Delay</label>
+                    
+
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicCostOfDelay') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Cost of Delay <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of Cost Of delay field for Epics that need to show on Trend line.<br />
+                           Example:customfield_11111 <hr>
+                            KPI Impacted : 
+                            Cost of delay
+                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicCostOfDelay" formControlName="epicCostOfDelay"
-                                placeholder="Enter Cost of Delay Field" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext">JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                fields.
-                              Provide value of Cost Of delay field for Epics that need to show on Trend line.<br />
-                              <i> Example:customfield_11111</i>
-                              <i>Impacted : Cost of delay</i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                placeholder="Enter Cost of Delay Field" [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicCostOfDelay', 'fields')"></button>
                         </div>
                     </div>
-                    <div class="p-field p-col-3 p-p-0 p-ml-5">
-                        <label class="field-title">Epic Risk Reduction</label>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicRiskReduction') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Risk Reduction <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br />
+                            Example:customfield_11111 <hr>
+                           KPI Impacted :
+                        Cost of delay KPI
+            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicRiskReduction" formControlName="epicRiskReduction"
-                                placeholder="Enter Epic Risk Reduction Field" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext">JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                    fields.
-                                  Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br />
-                                  <i> Example:customfield_11111</i>
-                                  <i>Impacted : Cost of delay KPI</i>
-                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                placeholder="Enter Epic Risk Reduction Field"  [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicRiskReduction', 'fields')"></button>
                         </div>
                     </div>
-                    <div class="p-field p-col-3 p-p-0 p-ml-5">
-                        <label class="field-title">Epic Business Value</label>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicUserBusinessValue') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Business Value <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span> 
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of User-Business Value for Epic that is required to calculated Cost of delay .<br />
+                            Example:customfield_11111 <hr>
+                           KPI Impacted :
+                           Cost of delay
+            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicUserBusinessValue"
-                                formControlName="epicUserBusinessValue" placeholder="Enter Epic Business Value field"
-                                [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext"> JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                    fields.
-                                  Provide value of User-Business Value for Epic that is required to calculated Cost of delay .<br />
-                                  <i> Example:customfield_11111</i>
-                                  <i>Impacted : Cost of delay</i>
-                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                formControlName="epicUserBusinessValue" placeholder="Enter Epic Business Value field" [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicUserBusinessValue', 'fields')"></button>
                         </div>
                     </div>
-                </div>
-                <div class="p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Epic WSJF</label>
+
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicWsjf') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic WSJF <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span> 
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of WSJF value that is required to calculated Cost of delay <br />
+                            Example:customfield_11111 <hr>
+                            KPI Impacted: 
+                            Cost of delay
+            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicWsjf" formControlName="epicWsjf"
-                                placeholder="Enter EPIC WSJF Field" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext"> JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                    fields.
-                                  Provide value of WSJF value that is required to calculated Cost of delay <br />
-                                  <i> Example:customfield_11111</i>
-                                  <i>Impacted : Cost of delay</i>
-                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                placeholder="Enter EPIC WSJF Field" [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicWsjf', 'fields')"></button>
                         </div>
                     </div>
-                    <div class="p-field p-col-3 p-p-0 p-ml-5">
-                        <label class="field-title">Epic Time Criticality</label>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicTimeCriticality') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Time Criticality <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span> 
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of Time Criticality value on Epic that is required to calculated Cost of delay. <br>
+                            Example:customfield_11111 <hr>
+                            KPI Impacted:
+                            Cost of delay
+            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicTimeCriticality" formControlName="epicTimeCriticality"
-                                placeholder="Enter Epic Time Criticality Field" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext"> JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                    fields.
-                                 Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />
-                                  <i> Example:customfield_11111</i>
-                                  <i>Impacted : Cost of delay</i>
-                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                placeholder="Enter Epic Time Criticality Field" [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicTimeCriticality', 'fields')"></button>
                         </div>
                     </div>
-                    <div class="p-field p-col-3 p-p-0 p-ml-5">
-                        <label class="field-title">Epic Job Size</label>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicJobSize') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Job Size <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span> 
+                            Definition:
+                            JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
+                            Provide value of Job size on EPIC that is required to calculated WSJF. <br>
+                            Example:customfield_11111
+                            </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <input type="text" pInputText id="epicJobSize" formControlName="epicJobSize"
-                                placeholder="Enter Epic Job Size field" [style]="{'width':'300px'}" pTooltip='<span class="tooltiptext"> JIRA/AZURE applications let you add custom fields in addition to the built-in
-                                    fields.
-                                  Provide value of Job size on EPIC that is required to calculated WSJF.<br />
-                                  <i> Example:customfield_11111</i>
-                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                placeholder="Enter Epic Job Size field" [style]="{'max-width':'initial','width':'60vw'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                         </div>
                     </div>
                 </div>
             </p-accordionTab>
-            <p-accordionTab header="Tech Debt Mapping">
-                <div class="p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Tech Debt Identification</label>
-                        <p-dropdown id="jiraTechDebtIdentification" [options]="techDebtIdentification"
-                            placeholder="Select" formControlName="jiraTechDebtIdentification" [style]="{'width':'100%'}"
-                            pTooltip='<span class="tooltiptext">
-                                This field is used to identify "TECH_DEBT" stories. Only Below three values are
-                                      allowed in this field:
+            <p-accordionTab header="Tech Debt Mapping"
+             [disabled]="!(groupsToShow.groupNames.includes('Tech Debt Mapping') || groupsToShow.showAllgroups)">
+             <ng-template pTemplate="header">
+                <p-badge *ngIf="groupsToShow.groupNames.includes('Tech Debt Mapping')  && groupsToShow.groupNames.length !== 0"
+                    [value]="groupsToShow.groupFields['Tech Debt Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+             </ng-template>
+                <div class="p-mb-3 p-d-flex p-align-center"
+                 *ngIf="fieldstoShow?.includes('jiraTechDebtIdentification') || fieldstoShow.length === 0">
+                        <label class="field-title">Tech Debt Identification <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Definition:
+                            This field is used to identify "TECH_DEBT" stories. Only Below three values are allowed in this field:
+                                  IssueType : If a separate Issue type is used.
+                                  Example: Tech Story, Tech_Story
+                                  CustomField : If a separate custom field is used.
+                                  Labels : If a label is used to identify.
+                                  Example: "TECH_DEBT" (This has to be one value). <hr>
+                                  KPI Impacted : Jira/Azure Processor and Tech Debt Kpi
+                          </span>' tooltipPosition="right" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                          <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let techDebt of techDebtIdentification">
+                                        <p-radioButton placeholder="Select" formControlName="jiraTechDebtIdentification"
+                                            value="{{techDebt.value}}" label="{{techDebt.value}}" class="p-m-2"></p-radioButton>
+                                    </ng-container>
+                                </div>
+                                <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton('jiraTechDebtIdentification')"></button>
+                            </div>
 
-                                      IssueType : If a separate Issue type is used.<i> Example: Tech Story,
-                                        Tech_Story</i>
-                                      CustomField : If a separate custom field is used.
-                                      Labels : If a label is used to identify.<i> Example: "TECH_DEBT" (This
-                                        has
-                                        to be one value).</i>
-                                      <i>
-                                        Impacted : Jira/Azure Processor and Tech Debt Kpi</i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                            tooltipPosition="top">
-                        </p-dropdown>
-                    </div>
-                    <div class="p-field p-col-8 p-p-0 p-ml-5"
+                    <div class="p-m-2"
                         *ngIf="fieldMapping['jiraTechDebtIdentification'] && fieldMapping['jiraTechDebtIdentification'].value === 'Labels' || fieldMapping['jiraTechDebtIdentification'] && fieldMapping['jiraTechDebtIdentification'].value === 'IssueType' ">
                         <label class="field-title">Tech Debt
-                            {{fieldMapping['jiraTechDebtIdentification'].value}}</label>
-                        <div class="">
-                            <p-chips [inputStyle]="{'width':'544px'}" inputId="jiraTechDebtValue"
-                                formControlName="jiraTechDebtValue"
+                            {{fieldMapping['jiraTechDebtIdentification'].value}} <span class="fa fa-info-circle" aria-hidden="true"  pTooltip='<span>
+                                Definition: 
+                                Provide label name to identify Jira/Azure Tech debt.
+                                Example: "TECH_DEBT" <hr>
+                                KPI Impacted : 
+                                Jira/Azure Processor and Jira/Azure Tech Debt Kpi
+                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                          <div class="p-mt-2">
+                            <p-chips inputId="jiraTechDebtValue" formControlName="jiraTechDebtValue"
                                 placeholder="Enter Tech Debt {{fieldMapping['jiraTechDebtIdentification'].value}}"
-                                addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Provide label name to identify Jira/Azure Tech debt.
-                                    <br /><strong>
-                                      Example: "TECH_DEBT"<br />
-                                      Impacted : Jira/Azure Processor and Jira/Azure Tech Debt Kpi</strong>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                addOnBlur="true" [style]="{'width':'100%','max-width':'100%','display':'block'}">
                             </p-chips>
                         </div>
                     </div>
-                    <div class="p-field p-col-8 p-p-0 p-ml-5"
+                    <div class="p-m-2"
                         *ngIf="fieldMapping['jiraTechDebtIdentification'] && fieldMapping['jiraTechDebtIdentification'].value === 'CustomField'">
-                        <label class="field-title">Tech Debt Custom Field</label>
-                        <div class="p-inputgroup">
+                        <label class="field-title">Tech Debt Custom Field <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Definition:
+                            Provide customfield name to identify Jira/Azure Tech Debt Stories.
+                            Example: "customfield_13907" <hr>
+                            KPI Impacted : 
+                            Jira/Azure Processor and Jira/Azure Tech Debt Kpi
+                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                      <div class="p-inputgroup p-mt-2">
                             <input type="text" pInputText id="jiraTechDebtCustomField"
-                                formControlName="jiraTechDebtCustomField" placeholder="Enter Tech Debt"
-                                [style]="{'width':'500px'}" pTooltip='<span class="tooltiptext">
-                                    Provide customfield name to identify Jira/Azure Tech Debt Stories.
-                                    <br /><i>
-                                      Example: "customfield_13907"<br />
-                                      Impacted : Jira/Azure Processor and Jira/Azure Tech Debt Kpi</i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                                formControlName="jiraTechDebtCustomField" placeholder="Enter Tech Debt" [style]="{'width':'100%','max-width':'100%'}">
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'jiraTechDebtCustomField', 'fields')"></button>
                         </div>
                     </div>
-                    <div class="p-field p-col-12 p-p-0"
+                    <div class="p-m-2"
                         *ngIf="fieldMapping['jiraTechDebtIdentification'] && fieldMapping['jiraTechDebtIdentification'].value === 'CustomField'">
-                        <label class="field-title">Tech Debt Value</label>
-                        <div class="" pFocusTrap>
-                            <p-chips [inputStyle]="{'width':'876px'}" inputId="jiraTechDebtValue"
-                                formControlName="jiraTechDebtValue" placeholder="Enter Tech Debt Custom Values"
-                                addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Provide customfield value to identify Jira/Azure Tech Debt Stories.
-                                    <br /><i>
-                                      Example: "Tech Debt"<br />
-                                      Impacted : Jira/Azure Processor and Jira/Azure Tech Debt Kpi</i>
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
+                        <label class="field-title">Tech Debt Value <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Definition:
+                            Provide customfield value to identify Jira/Azure Tech Debt Stories.
+                              Example: "Tech Debt" <hr>
+                              KPI Impacted : Jira/Azure Processor and Jira/Azure Tech Debt Kpi
+                      </span>' tooltipPosition="right" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
+                        <div class="p-mt-2" pFocusTrap>
+                            <p-chips inputId="jiraTechDebtValue" formControlName="jiraTechDebtValue" [style]="{'width':'100%','max-width':'100%','display':'block'}"
+                                placeholder="Enter Tech Debt Custom Values" addOnBlur="true" >
                             </p-chips>
                         </div>
+                    </div>
                     </div>
                 </div>
             </p-accordionTab>
-            <p-accordionTab header="Test Case Mapping">
-                <div class="p-col-12 p-grid p-formgrid">
-                    <div class="p-field">
-                        <label class="field-title">Test Case Issue Type</label>
-                        <div class="p-inputgroup">
-                            <p-chips
-                                inputId="jiraTestCaseType" formControlName="jiraTestCaseType"
-                                placeholder="Enter Test Case Issue Type" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                Issue type of Test Case.
-                                <br /><i>
-                                Example: "Test"<br />
-                                Impacted : Sprint Automation and Regression Automation</i>
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'jiraTestCaseType', 'Issue_Type')"></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-col-12 p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Test Case Automation Field</label>
-                        <p-dropdown id="testAutomatedIdentification" [options]="testCaseIdentification"
-                            placeholder="Select field" formControlName="testAutomatedIdentification"
-                            [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                                Jira/Azure allow addition of filtering data through custom field or labels.
-                                It can be configured to determine if a test case is automatable or not.
-                          </span>' tooltipEvent="hover" [escape]="false"
-                            tooltipPosition="top">
-                        </p-dropdown>
-                    </div>
+            <p-accordionTab header="Test Case Mapping"
+            [disabled]="!(groupsToShow.groupNames.includes('Test Cases Mapping') || groupsToShow.showAllgroups)">
+            <ng-template pTemplate="header">
+                <p-badge *ngIf="groupsToShow.groupNames.includes('Test Cases Mapping') && groupsToShow.groupNames.length !== 0"
+                    [value]="groupsToShow.groupFields['Test Cases Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+            </ng-template>
+                <div class="p-p-0">
 
-                    <div class="p-field p-col-3 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testAutomatedIdentification'] && (fieldMapping['testAutomatedIdentification'].value === 'CustomField' )">
-                        <label class="field-title">Custom Field Id</label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="testAutomated"
-                                formControlName="testAutomated"
-                                placeholder="Enter custom field ID" [style]="{'width':'200px'}" pTooltip='<span class="tooltiptext">
-                                Provide customfield name to identify test case is automatable or not.<br />
-                                <i> Example: customfield_13907</i>
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'testAutomated', 'fields')"></button>
-                        </div>
-                    </div>
-                    <div class="p-field p-col-5 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testAutomatedIdentification'] && (fieldMapping['testAutomatedIdentification'].value === 'CustomField' || fieldMapping['testAutomatedIdentification'].value === 'Labels')">
-                        <label class="field-title">Values for Automation</label>
-                        <div class="">
-                            <p-chips [inputStyle]="{'width':'485px'}" inputId="jiraCanBeAutomatedTestValue"
-                                formControlName="jiraCanBeAutomatedTestValue" placeholder="Enter Values for Automation"
-                                addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Enter the field labels used in Jira/Azure to identify if a test case can be automated
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-col-12 p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Automation completed field</label>
-                        <p-dropdown id="testAutomationCompletedIdentification" [options]="testCaseIdentification"
-                            placeholder="Select field" formControlName="testAutomationCompletedIdentification"
-                            [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                                Jira/Azure allow addition of filtering data through custom field or labels.
-                                It can be configured to determine if a test case is automated or not.
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                            tooltipPosition="top">
-                        </p-dropdown>
-                    </div>
-
-                    <div class="p-field p-col-3 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testAutomationCompletedIdentification'] && (fieldMapping['testAutomationCompletedIdentification'].value === 'CustomField' )">
-                        <label class="field-title">Custom Field Id</label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="testAutomationCompletedByCustomField"
-                                formControlName="testAutomationCompletedByCustomField"
-                                placeholder="Enter custom field ID" [style]="{'width':'200px'}" pTooltip='<span class="tooltiptext">
-                                Provide customfield name to identify  if a test case is already automated
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'testAutomationCompletedByCustomField', 'fields')"></button>
-                        </div>
-                    </div>
-                    <div class="p-field p-col-5 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testAutomationCompletedIdentification'] && (fieldMapping['testAutomationCompletedIdentification'].value === 'CustomField' || fieldMapping['testAutomationCompletedIdentification'].value === 'Labels')">
-                        <label class="field-title">Values for Automation completed</label>
-                        <div class="">
-                            <p-chips [inputStyle]="{'width':'485px'}" inputId="jiraAutomatedTestValue"
-                                formControlName="jiraAutomatedTestValue" placeholder="Enter Values for Automation completed"
-                                addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Enter the field labels used in Jira/Azure to identify if a test case is already automated
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-col-12 p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Regression test case identifier</label>
-                        <p-dropdown id="testRegressionIdentification" [options]="testCaseIdentification"
-                            placeholder="Select field" formControlName="testRegressionIdentification"
-                            [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                                Jira/Azure allow addition of filtering data through custom field or labels.
-                                It can be used to identify regression test cases
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
-                            tooltipPosition="top">
-                        </p-dropdown>
-                    </div>
-
-                    <div class="p-field p-col-3 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testRegressionIdentification'] && (fieldMapping['testRegressionIdentification'].value === 'CustomField' )">
-                        <label class="field-title">Custom Field Id</label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="testRegressionByCustomField"
-                                formControlName="testRegressionByCustomField"
-                                placeholder="Enter custom field ID" [style]="{'width':'200px'}" pTooltip='<span class="tooltiptext">
-                                Provide customfield name to identify the test cases part of regression suite
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'testRegressionByCustomField', 'fields')"></button>
-                        </div>
-                    </div>
-                    <div class="p-field p-col-5 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping['testRegressionIdentification'] && (fieldMapping['testRegressionIdentification'].value === 'CustomField' || fieldMapping['testRegressionIdentification'].value === 'Labels')">
-                        <label class="field-title">Values for regression test cases</label>
-                        <div class="">
-                            <p-chips [inputStyle]="{'width':'485px'}" inputId="jiraRegressionTestValue"
-                                formControlName="jiraRegressionTestValue" placeholder="Enter Values for regression test cases"
-                                addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Enter the field labels used in Jira/Azure to identify the test cases part of regression suite
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-col-12 p-grid p-formgrid">
-                    <div class="p-field">
-                        <label class="field-title">Status to identify abandoned Test cases</label>
-                        <div class="p-inputgroup">
-                            <p-chips
-                                inputId="testCaseStatus" formControlName="testCaseStatus"
-                                placeholder="Enter Status to identify abandoned Test cases" addOnBlur="true" pTooltip='<span class="tooltiptext">
-                                    Select status like "Abandoned", "Deprecated" etc so that these can be excluded from Regression automation coverage, In Sprint automation coverage and Test case without story link KPI
-                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'testCaseStatus', 'workflow')"></button>
-                        </div>
-                    </div>
-                </div>
-            </p-accordionTab>
-            <p-accordionTab header="Additional Filters Mapping">
-                <div class="p-grid">
-                    <div class="p-field p-col-3 p-p-0">
-                        <label class="field-title">Additional Filter Identifier</label>
-                        <p-dropdown id="additionalFilterIdentifier" [options]="additionalFilterOptions"
-                            placeholder="Select" [(ngModel)]="additionalFilterIdentifier"
-                            [ngModelOptions]="{standalone: true}" [style]="{'width':'100%'}" pTooltip='<span class="tooltiptext">
-                            This field is used to identify Additional Filters. <i> Example: "SQUAD"</i>
-                                  <i>
-                                    Impacted : Filters</i>
-                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipPosition="top"
-                            optionLabel="name">
-                        </p-dropdown>
-                    </div>
-                    <div class="p-field p-col-3 p-ml-3 p-pt-3">
-                        <br />
-                        <p-button pRipple label="Add" class="p-button-raised configure-btn p-mt-1"
-                            (click)="addAdditionalFilterMappings()"></p-button>
-                    </div>
-                </div>
-                <div class="" *ngFor="let filter of additionalFiltersArray">
-                    <div class="p-col-12 p-grid">
-                        <!--Additional Filter Identifier dropdown with three values ["Component", "CustomField", "Labels"]-->
-                        <div class="p-field p-col-3 p-p-0">
-                            <label class="field-title">{{ filter.name }} Identifier</label>
-                            <p-dropdown id="{{ filter.code + 'Identifier'}}" [options]="additionalFilterIdentificationOptions"
-                                placeholder="Select" formControlName="{{ filter.code + 'Identifier'}}"
-                                (onChange)="changeControl($event)" [style]="{'width':'100%'}" pTooltip=''
-                                tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipPosition="top">
-                            </p-dropdown>
-                        </div>
-                        <!-- Single value text input for Custom Field-->
-                        <!-- -->
-                        <div class="p-field p-col-7 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'CustomField' ">
-                            <label class="field-title">{{fieldMapping[filter.code + 'Identifier'].value}}</label>
+                        <div  class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraTestCaseType') || fieldstoShow.length === 0">
+                            <label class="field-title">Test Case Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                Issue type of Test Case. <br>
+                                Example: Test <hr>
+                                KPI Impacted : 
+                                Sprint Automation and Regression Automation
+                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipStyleClass="tooltiptext"></span></label>
                             <div class="p-inputgroup">
-                                <input type="text" pInputText id="{{filter.code + 'IdentSingleValue'}}"
-                                    formControlName="{{filter.code + 'IdentSingleValue'}}"
-                                    placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
-                                    [style]="{'width':'300px'}" pTooltip="" tooltipPosition="top" tooltipEvent="hover"
-                                    [escape]="false">
-                                <button [hidden]="fieldMapping[filter.code + 'Identifier'].value !== 'CustomField'"
-                                    type="button" pButton pRipple icon="pi pi-search"
-                                    (click)="showDialogToAddValue(true, filter.code + 'IdentSingleValue' , 'fields')">
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Multivalue field for Component and Labels-->
-                        <!--  -->
-                        <div class="p-field p-col-7 p-p-0 p-ml-5"
-                        *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'Labels' || fieldMapping[filter.code + 'Identifier'].value === 'Component'">
-                            <label class="field-title">{{fieldMapping[filter.code + 'Identifier'].value}}</label>
-                            <div class="">
-                                <p-chips [inputStyle]="{'width':'544px'}"
-                                    inputId="{{ filter.code + 'IdentMultiValue' }}"
-                                    formControlName="{{ filter.code + 'IdentMultiValue' }}"
-                                    placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
-                                    addOnBlur="true" pTooltip='' tooltipPosition="top" tooltipEvent="hover"
-                                    [escape]="false">
+                                <p-chips inputId="jiraTestCaseType" formControlName="jiraTestCaseType"
+                                    placeholder="Enter Test Case Issue Type" addOnBlur="true" [style]="{'max-width':'initial','width':'60vw'}">
                                 </p-chips>
+                                <button type="button" pButton pRipple icon="pi pi-search"
+                                    (click)="showDialogToAddValue(false, 'jiraTestCaseType', 'Issue_Type')"></button>
                             </div>
                         </div>
-                        <div class="p-field p-col-1 p-p-5">
-                            <button pButton pRipple type="button" icon="pi pi-times"
-                                class="p-button-rounded p-button-danger p-button-outlined"
-                                (click)="removeAdditionFilterMapping(filter)"></button>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                            *ngIf="fieldstoShow?.includes('testAutomatedIdentification') || fieldstoShow.length === 0">
+                            <label class="field-title">Test Case Automation Field <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                        Definition:
+                                                        Jira/Azure allow addition of filtering data through custom field or labels.
+                                                        It can be configured to determine if a test case is automatable or not.
+                                                  </span>' tooltipEvent="hover" [escape]="false" tooltipPosition="top"
+                                    tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="fields-container p-p-2">
+                                <div class="p-d-flex p-justify-between">
+                                    <div class="p-inputgroup">
+                                        <ng-container *ngFor="let testCase of testCaseIdentification">
+                                            <p-radioButton placeholder="Select" formControlName="testAutomatedIdentification"
+                                                value="{{testCase.value}}" label="{{testCase.value}}" class="p-m-2">
+                                            </p-radioButton>
+                                        </ng-container>
+                                    </div>
+                                    <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                        (click)="resetRadioButton('testAutomatedIdentification')"></button>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testAutomatedIdentification'] && (fieldMapping['testAutomatedIdentification'].value === 'CustomField' )">
+                                    <label class="field-title">Custom Field Id <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                        Definition:
+                                                        Provide customfield name to identify test case is automatable or not. <br>
+                                                        Example: customfield_13907
+                                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="p-inputgroup p-mt-2">
+                                        <input type="text" pInputText id="testAutomated" formControlName="testAutomated"
+                                            placeholder="Enter custom field ID" [style]="{'width':'100%','max-width':'100%'}">
+                                        <button type="button" pButton pRipple icon="pi pi-search"
+                                            (click)="showDialogToAddValue(true, 'testAutomated', 'fields')"></button>
+                                    </div>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testAutomatedIdentification'] && (fieldMapping['testAutomatedIdentification'].value === 'CustomField' || fieldMapping['testAutomatedIdentification'].value === 'Labels')">
+                                    <label class="field-title">Values for Automation <span class="fa fa-info-circle" aria-hidden="true"
+                                            pTooltip='<span>
+                                                        Definition:
+                                                        Enter the field labels used in Jira/Azure to identify if a test case can be automated
+                                                  </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="p-mt-2">
+                                        <p-chips inputId="jiraCanBeAutomatedTestValue"
+                                            [style]="{'width':'100%','max-width':'100%','display':'block'}"
+                                            formControlName="jiraCanBeAutomatedTestValue" placeholder="Enter Values for Automation"
+                                            addOnBlur="true">
+                                        </p-chips>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                            *ngIf="fieldstoShow?.includes('testAutomationCompletedIdentification') || fieldstoShow.length === 0">
+                            <label class="field-title">Automation completed field <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                                                                        Definition:
+                                                                                                        Jira/Azure allow addition of filtering data through custom field or labels.
+                                                                                                        It can be configured to determine if a test case is automated or not.
+                                                                                                  </span>' tooltipPosition="top"
+                                    tooltipEvent="hover" [escape]="false" tooltipPosition="top" tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="fields-container p-p-2">
+                                <div class="p-d-flex p-justify-between">
+                                    <div class="p-inputgroup">
+                                        <ng-container *ngFor="let testCase of testCaseIdentification">
+                                            <p-radioButton placeholder="Select" formControlName="testAutomationCompletedIdentification"
+                                                value="{{testCase.value}}" label="{{testCase.value}}" class="p-m-2">
+                                            </p-radioButton>
+                                        </ng-container>
+                                    </div>
+                                    <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                        (click)="resetRadioButton('testAutomationCompletedIdentification')"></button>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testAutomationCompletedIdentification'] && (fieldMapping['testAutomationCompletedIdentification'].value === 'CustomField' )">
+                                    <label class="field-title">Custom Field Id <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                            Definition:
+                                                            Provide customfield name to identify  if a test case is already automated
+                                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="p-inputgroup p-mt-2">
+                                        <input type="text" pInputText id="testAutomationCompletedByCustomField"
+                                            formControlName="testAutomationCompletedByCustomField" placeholder="Enter custom field ID"
+                                            [style]="{'width':'100%','max-width':'100%'}">
+                                        <button type="button" pButton pRipple icon="pi pi-search"
+                                            (click)="showDialogToAddValue(true, 'testAutomationCompletedByCustomField', 'fields')"></button>
+                                    </div>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testAutomationCompletedIdentification'] && (fieldMapping['testAutomationCompletedIdentification'].value === 'CustomField' || fieldMapping['testAutomationCompletedIdentification'].value === 'Labels')">
+                                    <label class="field-title">Values for Automation completed <span class="fa fa-info-circle"
+                                            aria-hidden="true" pTooltip='<span>
+                                                            Definition:
+                                                            Enter the field labels used in Jira/Azure to identify if a test case is already automated
+                                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="">
+                                        <p-chips inputId="jiraAutomatedTestValue" formControlName="jiraAutomatedTestValue"
+                                            placeholder="Enter Values for Automation completed" addOnBlur="true"
+                                            [style]="{'width':'100%','max-width':'100%','display':'block'}">
+                                        </p-chips>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                            *ngIf="fieldstoShow?.includes('testRegressionIdentification') || fieldstoShow.length === 0">
+                            <label class="field-title">Regression test case identifier <span class="fa fa-info-circle" aria-hidden="true"
+                                    pTooltip='<span>
+                                                        Definition:
+                                                        Jira/Azure allow addition of filtering data through custom field or labels.
+                                                        It can be used to identify regression test cases
+                                                    </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipPosition="top"
+                                    tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="fields-container p-p-2">
+                                <div class="p-d-flex p-justify-between">
+                                    <div class="p-inputgroup">
+                                        <ng-container *ngFor="let testCase of testCaseIdentification">
+                                            <p-radioButton placeholder="Select" formControlName="testRegressionIdentification"
+                                                value="{{testCase.value}}" label="{{testCase.value}}" class="p-m-2">
+                                            </p-radioButton>
+                                        </ng-container>
+                                    </div>
+                                    <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                        (click)="resetRadioButton('testRegressionIdentification')"></button>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testRegressionIdentification'] && (fieldMapping['testRegressionIdentification'].value === 'CustomField' )">
+                                    <label class="field-title">Custom Field Id <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                            Definition:
+                                                            Provide customfield name to identify the test cases part of regression suite
+                                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="p-inputgroup">
+                                        <input type="text" pInputText id="testRegressionByCustomField"
+                                            formControlName="testRegressionByCustomField" placeholder="Enter custom field ID"
+                                            [style]="{'width':'100%','max-width':'100%'}">
+                                        <button type="button" pButton pRipple icon="pi pi-search"
+                                            (click)="showDialogToAddValue(true, 'testRegressionByCustomField', 'fields')"></button>
+                                    </div>
+                                </div>
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping['testRegressionIdentification'] && (fieldMapping['testRegressionIdentification'].value === 'CustomField' || fieldMapping['testRegressionIdentification'].value === 'Labels')">
+                                    <label class="field-title">Values for regression test cases <span class="fa fa-info-circle"
+                                            aria-hidden="true" pTooltip='<span>
+                                                            Definition:
+                                                            Enter the field labels used in Jira/Azure to identify the test cases part of regression suite
+                                                      </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
+                                            tooltipStyleClass="tooltiptext"></span></label>
+                                    <div class="">
+                                        <p-chips inputId="jiraRegressionTestValue" formControlName="jiraRegressionTestValue"
+                                            placeholder="Enter Values for regression test cases" addOnBlur="true"
+                                            [style]="{'width':'100%','max-width':'100%','display':'block'}">
+                                        </p-chips>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('testCaseStatus') || fieldstoShow.length === 0">
+                            <label class="field-title">Status to identify abandoned Test cases <span class="fa fa-info-circle" pTooltip='<span>
+                                Definition:
+                                Select status like "Abandoned", "Deprecated" etc so that these can be excluded from Regression automation coverage, In Sprint automation coverage and Test case without story link KPI
+                          </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" aria-hidden="true" tooltipStyleClass="tooltiptext"></span></label>
+                            <div class="p-inputgroup">
+                                <p-chips inputId="testCaseStatus" formControlName="testCaseStatus"
+                                    placeholder="Enter Status to identify abandoned Test cases" addOnBlur="true"
+                                    [style]="{'max-width':'initial','width':'60vw'}"
+                                    >
+                                </p-chips>
+                                <button type="button" pButton pRipple icon="pi pi-search"
+                                    (click)="showDialogToAddValue(false, 'testCaseStatus', 'workflow')"></button>
+                            </div>
+                        </div>
                 </div>
+            </p-accordionTab>
+            <p-accordionTab header="Additional Filters Mapping"
+            [disabled]="!(groupsToShow.groupNames.includes('Additional Filters Mapping') || groupsToShow.showAllgroups)">
+            <ng-template pTemplate="header">
+                <p-badge
+                    *ngIf="groupsToShow.groupNames.includes('Additional Filters Mapping') && groupsToShow.groupNames.length !== 0"
+                    [value]="groupsToShow.groupFields['Additional Filters Mapping']" styleClass="p-ml-2" severity="info"></p-badge>
+            </ng-template>
+               
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('additionalFilterIdentifier') || fieldstoShow.length === 0">
+                        <label class="field-title">Additional Filter Identifier <span class="fa fa-info-circle"
+                            aria-hidden="true" tooltipStyleClass="tooltiptext" pTooltip='<span>
+                                Definition:
+                                This field is used to identify Additional Filters. <br>
+                                 Example: SQUAD <hr>
+                                 KPI Impacted: 
+                                 Filters
+                              </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false" tooltipPosition="top"></span></label>
+                            <div [style]="{'width':'calc(60vw + 42px)'}">
+                                <div class="p-d-flex p-align-center p-w-100">
+                                    <div class="p-w-100">
+                                        <p-dropdown id="additionalFilterIdentifier" [options]="additionalFilterOptions" placeholder="Select"
+                                            [(ngModel)]="additionalFilterIdentifier" [ngModelOptions]="{standalone: true}"
+                                            [style]="{'width':'100%', 'max-width': '100%','border-bottom-right-radius':'0px','border-top-right-radius':'0px'}"
+                                            optionLabel="name">
+                                        </p-dropdown>
+                                    </div>
+                                    <div>
+                                        <p-button pRipple label="Add" class="p-button-raised configure-btn p-mt-1"
+                                            [style]="{'padding':'15px','border-top-left-radius': '0px','border-bottom-left-radius': '0px'}"
+                                            (click)="addAdditionalFilterMappings()"></p-button>
+                                    </div>
+                                </div>
+                            
+                    
+                                <div class="p-p-2 p-mt-2 position-relative additional-fields-container" *ngFor="let filter of additionalFiltersArray">
+                                    <div class="">
+                                        <!--Additional Filter Identifier dropdown with three values ["Component", "CustomField", "Labels"]-->
+                                        <div class="p-m-2">
+                                            <div class="p-d-flex">
+                                                <label class="field-title">{{ filter.name }} Identifier </label>
+                                                <div class="">
+                                                    <button pButton pRipple type="button" icon="pi pi-times"
+                                                        class="p-button p-button-secondary p-button-close"
+                                                        (click)="removeAdditionFilterMapping(filter)"></button>
+                                                </div>
+                                            </div>
+                                            <div class="p-d-flex p-justify-between">
+                                            <div class="p-inputgroup">
+                                                <ng-container *ngFor="let additionalFilter of additionalFilterIdentificationOptions">
+                                                    <p-radioButton placeholder="Select" formControlName="{{ filter.code + 'Identifier'}}"
+                                                        value="{{additionalFilter.value}}" label="{{additionalFilter.value}}" class="p-m-2"
+                                                        (onClick)="changeControl($event)">
+                                                    </p-radioButton>
+                                                </ng-container>
+                                            </div>
+                                            <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton(filter.code + 'Identifier')"></button>
+                                        </div>
+                                        </div>
+                                        <!-- Single value text input for Custom Field-->
+                                        <!-- -->
+                                        <div class="p-m-2" *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'CustomField'">
+                                            <label class="field-title">{{fieldMapping[filter.code + 'Identifier'].value}}</label>
+                                            <div class="p-inputgroup p-mt-2">
+                                                <input type="text" pInputText id="{{filter.code + 'IdentSingleValue'}}"
+                                                    formControlName="{{filter.code + 'IdentSingleValue'}}"
+                                                    placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
+                                                    [style]="{'width':'100%','max-width':'100%'}">
+                                                <button [hidden]="fieldMapping[filter.code + 'Identifier'].value !== 'CustomField'"
+                                                    type="button" pButton pRipple icon="pi pi-search"
+                                                    (click)="showDialogToAddValue(true, filter.code + 'IdentSingleValue' , 'fields')">
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Multivalue field for Component and Labels-->
+                                        <!--  -->
+                                        <div class="p-m-2"
+                                            *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'Labels' || fieldMapping[filter.code + 'Identifier'].value === 'Component'">
+                                            <label class="field-title">{{fieldMapping[filter.code + 'Identifier'].value}}</label>
+                                            <div class="p-mt-2">
+                                                <p-chips [style]="{'width':'100%','max-width':'100%','display':'block'}"
+                                                    inputId="{{ filter.code + 'IdentMultiValue' }}"
+                                                    formControlName="{{ filter.code + 'IdentMultiValue' }}"
+                                                    placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}" addOnBlur="true"
+                                                    pTooltip='' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false">
+                                                </p-chips>
+                                            </div>
+                                        </div>
+                    
+                                    </div>
+                                </div>
+                    </div>
+                    </div>
             </p-accordionTab>
 
 
@@ -761,10 +829,11 @@
     </form>
     <div class="save-container p-mt-5">
         <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
-            icon="pi pi-save" iconPos="left" label="Save" (click)="save()" [disabled]="disableSave  || fieldMappingForm.invalid"></button>
+            icon="pi pi-save" iconPos="left" label="Save" (click)="save()"
+            [disabled]="disableSave  || fieldMappingForm.invalid"></button>
 
-            <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3"
-            icon="pi pi-download" iconPos="left" label="Export" (click)="export()" [disabled]="fieldMappingForm.invalid"></button>
+        <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
+            iconPos="left" label="Export" (click)="export()" [disabled]="fieldMappingForm.invalid"></button>
     </div>
 </div>
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
@@ -773,12 +842,12 @@
         <div *ngIf="singleSelectionDropdown">
             <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
                 [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
-                placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
+                placeholder="Select Value"  [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
                 filter="true" showClear="true">
             </p-dropdown>
         </div>
         <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
-            <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
+            <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown" appendTo="body" 
                 [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
                 defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
             </p-multiSelect>

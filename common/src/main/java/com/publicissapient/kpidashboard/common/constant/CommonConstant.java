@@ -118,11 +118,19 @@ public final class CommonConstant {
 	public static final String ADDITIONAL_FILTER_VALUE_ID_SEPARATOR = "_";
 
 	public static final String LABELS = "Labels";
-	public static final String COMPONENTS = "Components";
+	public static final String COMPONENT = "Component";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String CACHE_AGG_CRITERIA = "cache_aggregation_criteria";
 	public static final String CACHE_MATURITY_RANGE = "cache_maturity_range";
 
+	public static final String COMPLETED_ISSUES = "completedIssues";
+	public static final String TOTAL_ISSUES = "totalIssues";
+	public static final String PUNTED_ISSUES = "puntedIssues";
+	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
+	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
+	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
+	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
+	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
 
 
 

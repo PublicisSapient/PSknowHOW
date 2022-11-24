@@ -86,6 +86,9 @@ class SprintClientImplTest {
 		Set<SprintDetails> set = new HashSet<>();
 		SprintDetails sprintDetails = new SprintDetails();
 		sprintDetails.setSprintID("asprintid");
+		List<String> list = new ArrayList<>();
+		list.add("1111");
+		sprintDetails.setOriginBoardId(list);
 		set.add(sprintDetails);
 		return set;
 	}

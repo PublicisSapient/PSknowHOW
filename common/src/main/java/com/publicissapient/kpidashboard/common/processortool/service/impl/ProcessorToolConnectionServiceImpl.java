@@ -160,6 +160,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setDeploymentProjectName(toolConfig.getDeploymentProjectName());
 		processorToolConnection.setDeploymentProjectId(toolConfig.getDeploymentProjectId());
 		processorToolConnection.setParameterNameForEnvironment(toolConfig.getParameterNameForEnvironment());
+		processorToolConnection.setVault(connection.isVault());
 		return processorToolConnection;
 	}
 

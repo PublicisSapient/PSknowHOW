@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -58,6 +60,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
+	@Autowired
+	private ConnectionRepository connectionRepository;
 	@Autowired
 	private SubProjectRepository subProjectRepository;
 	@Autowired
@@ -354,10 +358,20 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setDeploymentProjectId(e.getDeploymentProjectId());
 			projectConfToolDto.setDeploymentProjectName(e.getDeploymentProjectName());
 			projectConfToolDto.setParameterNameForEnvironment(e.getParameterNameForEnvironment());
+			projectConfToolDto.setConnectionName(checkConnectionName(e.getConnectionId()));
 			projectConfToolDtoList.add(projectConfToolDto);
 		});
 
 		return projectConfToolDtoList;
+	}
+
+	private String checkConnectionName(ObjectId connectionId) {
+		Optional<Connection> optConnection = connectionRepository.findById(connectionId);
+		if(optConnection.isPresent()) {
+			Connection connection = optConnection.get();
+			return connection.getConnectionName();
+		}
+		return null;
 	}
 
 	private boolean hasTool(ObjectId basicProjectConfigId, String type) {

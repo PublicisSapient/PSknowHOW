@@ -42,6 +42,7 @@ public class IterationKpiModalValue implements Serializable {
 	private static final long serialVersionUID = -6376203644006393547L;
 	private IterationKpiModalColoumn col1;
 	private String description;
-	
-	
+	private String issueStatus;
+	private String issueType;
+
 }

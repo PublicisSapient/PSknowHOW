@@ -6,7 +6,8 @@ import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-backlog',
-  templateUrl: './backlog.component.html'
+  templateUrl: './backlog.component.html',
+  styleUrls: ['./backlog.component.css']
 })
 export class BacklogComponent implements OnInit, OnDestroy{
   subscriptions: any[] = [];
@@ -42,6 +43,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
   showKpiTrendIndicator={};
   kpiDropdowns: object = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
+  displayModal = false;
+  modalDetails = {
+      header: '',
+      tableHeadings: [],
+      tableValues: []
+  };
+  kpiExcelData;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     // this.kanbanActivated = false;
@@ -454,8 +462,57 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   downloadExcel(kpiId, kpiName, isKanban) {
     const sprintIncluded = ['CLOSED'];
-    this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded);
-  }
+    this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded).subscribe(getData => {
+      if (getData['excelData'] || !getData?.hasOwnProperty('validationData')) {
+          this.kpiExcelData = this.excelService.generateExcelModalData(getData);
+          this.modalDetails['tableHeadings'] = this.kpiExcelData.headerNames.map(column => column.header);
+          this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
+          this.modalDetails['header'] = kpiName;
+          this.displayModal = true;
+      }else{
+          if (getData['kpiId'] === 'kpi83') {
+              let dynamicKeys = [];
+              for (const key in getData['validationData']) {
+                  if (dynamicKeys.length === 0) {
+                      dynamicKeys = Object.keys(getData['validationData'][key][kpiName][0]);
+                  }
+                  for (const x in dynamicKeys) {
+                      getData['validationData'][key][dynamicKeys[x]] = [];
+                  }
+
+                  const arr = getData['validationData'][key][kpiName];
+                  // eslint-disable-next-line @typescript-eslint/prefer-for-of
+                  for (let i = 0; i < arr.length; i++) {
+                      for (const item in arr[i]) {
+                          getData['validationData'][key][item].push(arr[i][item]);
+                      }
+                  }
+                  delete getData['validationData'][key][kpiName];
+
+              }
+          }
+
+          this.excelService.exportExcel(getData, 'individual', kpiName, isKanban);
+      }
+  });
+}
+
+exportExcel(kpiName){
+this.excelService.generateExcel(this.kpiExcelData,kpiName);
+}
+
+checkIfArray(arr){
+  return Array.isArray(arr);
+}
+
+clearModalDataOnClose(){
+  this.displayModal=false;
+  this.modalDetails = {
+      header: '',
+      tableHeadings: [],
+      tableValues: []
+  };
+}
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());

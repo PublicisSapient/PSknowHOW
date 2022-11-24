@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -110,6 +112,7 @@ public class AutomationPercentageServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
+	Set<JiraIssue> issues = new HashSet<>();
 	private final static String TESTCASEKEY = "testCaseData";
 	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	private KpiRequest kpiRequest;
@@ -129,6 +132,7 @@ public class AutomationPercentageServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalTestCaseList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
+		issues = new HashSet<>(JiraIssueDataFactory.newInstance().getStories());
 		setMockFieldMapping();
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
@@ -168,6 +172,7 @@ public class AutomationPercentageServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
 		when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
 		testFetchKPIDataFromDbData();
 		try {

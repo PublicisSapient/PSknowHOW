@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -69,6 +70,9 @@ public class Sonar8ClientTest {
 	
 	private Sonar8Client sonar8Client;
 
+	@Mock
+	ToolCredentialProvider toolCredentialProvider;
+
 	
 	private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&p=1&ps=500";
 	private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
@@ -89,7 +93,7 @@ public class Sonar8ClientTest {
 	public void init() {
 		Mockito.when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
 		SONAR_SERVER.setUrl(SONAR_URL);
-		sonar8Client = new Sonar8Client(restOperationsFactory, sonarSettings);
+		sonar8Client = new Sonar8Client(restOperationsFactory, sonarSettings, toolCredentialProvider);
 	}
 
 	@Test

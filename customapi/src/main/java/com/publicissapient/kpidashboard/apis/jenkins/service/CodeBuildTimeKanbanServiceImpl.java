@@ -5,16 +5,19 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -23,7 +26,6 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
@@ -41,13 +43,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -64,13 +66,10 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 
     @Autowired
     private ConfigHelperService configHelperService;
-
     @Autowired
     private KpiHelperService kpiHelperService;
-
     @Autowired
     private BuildRepository buildRepository;
-
     @Autowired
     private CustomApiConfig customApiConfig;
 
@@ -177,11 +176,10 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 
     private void kpiWithFilter(Map<ObjectId, List<Build>> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
                                KpiElement kpiElement, KpiRequest kpiRequest) {
-        Map<String, ValidationData> validationDataMap = new HashMap<>();
         String requestTrackerId = getKanbanRequestTrackerId();
         // gets the tool configuration
         Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-
+        List<KPIExcelData> excelData = new ArrayList<>();
         leafNodeList.forEach(node -> {
             Map<String, List<DataCount>> trendValueMap = new HashMap<>();
             CodeBuildTimeInfo codeBuildTimeInfo = new CodeBuildTimeInfo();
@@ -200,15 +198,18 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
                 if (CollectionUtils.isNotEmpty(aggData)) {
                     trendValueMap.put(CommonConstant.OVERALL, aggData);
                 }
-                // Populates data in Excel for validation for tickets created before
-                populateValidationDataObject(kpiElement, requestTrackerId, codeBuildTimeInfo, validationDataMap, node);
+                if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
+                    KPIExcelUtility.populateCodeBuildTimeExcelData(codeBuildTimeInfo, node.getProjectFilter().getName(), excelData);
+                }
                 mapTmp.get(node.getId()).setValue(trendValueMap);
             } else {
                 mapTmp.get(node.getId()).setValue(null);
                 return;
             }
         });
+        kpiElement.setExcelData(excelData);
+        kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME_KANBAN.getColumns());
     }
 
     private void filterDataBasedOnJobAndRangeWise(Map<ObjectId, List<Build>> resultMap, KpiRequest kpiRequest,
@@ -480,36 +481,6 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
      */
     private String createDurationString(long minutes, long seconds) {
         return minutes == 0L ? seconds + Constant.SEC : minutes + Constant.MIN + seconds + Constant.SEC;
-    }
-
-    /**
-     * Creates validation data for node.
-     *
-     * @param codeBuildTimeInfo
-     * @return ValidationData object
-     */
-    private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-        ValidationData validationData = new ValidationData();
-        validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-        validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-        validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-        validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-        validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-        validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-        validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-        validationData.setDuration(codeBuildTimeInfo.getDurationList());
-        return validationData;
-    }
-
-    private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-                                              CodeBuildTimeInfo codeBuildTimeInfo, Map<String, ValidationData> validationDataMap, Node node) {
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-            //TODO confirm from where we have to get project name
-            String dateProjectKey = node.getProjectFilter().getName();
-            ValidationData validationData = createValidationDataForNode(codeBuildTimeInfo);
-            validationDataMap.put(dateProjectKey, validationData);
-            kpiElement.setMapOfSprintAndData(validationDataMap);
-        }
     }
 
 }

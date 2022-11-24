@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.adapter.impl.async;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
 
 public interface ProcessorJiraRestClient extends JiraRestClient {
     /**
@@ -29,4 +30,6 @@ public interface ProcessorJiraRestClient extends JiraRestClient {
      */
     SearchRestClient getProcessorSearchClient();
 
-}
+    CustomAsynchronousIssueRestClient getCustomIssueClient();
+
+    }

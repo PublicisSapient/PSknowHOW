@@ -163,7 +163,7 @@ public class OfflineDataProcessorImplTest {
         when(issueOfflineTraceLogsRepository.findAll()).thenReturn(traceLogsList);
         PowerMockito.whenNew(ReleaseDataClientImpl.class).withAnyArguments().thenReturn(releaseData);
         when(jiraIssueClientFactory.getJiraIssueDataClient(any(ProjectConfFieldMapping.class))).thenReturn(kanbanJiraIssueClient);
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
         when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
         when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
         when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);

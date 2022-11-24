@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author yasbano
@@ -73,4 +74,13 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * @return list of sprints
 	 */
 	List<SprintDetails> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	/**
+	 * find all sprints of projects and based on status of sprint
+	 * @param basicProjectConfigIds
+	 * @param state
+	 * @return
+	 */
+	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
+			String state);
  }

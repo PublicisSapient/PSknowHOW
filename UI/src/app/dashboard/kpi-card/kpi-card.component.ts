@@ -8,7 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() kpiData: any;
-  @Input() trendData: any;
+  @Input() trendData: Array<object>;
   @Output() downloadExcel = new EventEmitter<boolean>();
   @Input() dropdownArr: any;
   @Output() optionSelected = new EventEmitter<any>();
@@ -22,12 +22,11 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   radioOption: string;
   filterMultiSelectOptionsData: object = {};
   kpiSelectedFilterObj: any = {};
-  lhs: any = '';
-  rhs: any = '';
   @Input() isShow?: any;
   @Input() showExport: boolean;
   @Input() showTrendIndicator =true;
   @Input() showChartView = true;
+  @Input() cols: Array<object> = [];
 
   constructor(private service: SharedService) {
   }
@@ -54,29 +53,10 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
       this.radioOption = this.dropdownArr[0]?.options[0];
     }
-    this.lhs = this.kpiData?.kpiDetail?.trendCalculation?.length > 0 ? this.kpiData?.kpiDetail?.trendCalculation[0].lhs : '';
-    this.rhs = this.kpiData?.kpiDetail?.trendCalculation?.length > 0 ? this.kpiData?.kpiDetail?.trendCalculation[0].rhs : '';
   }
 
   exportToExcel() {
     this.downloadExcel.emit(true);
-  }
-
-  checkMaturity(item) {
-    let maturity = item.maturity;
-    if (maturity == undefined) {
-      return undefined;
-    }
-    if (item.value.length >= 5) {
-      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-      const tempArr = last5ArrItems.filter(x => x.data != 0);
-      if (tempArr.length == 0) {
-        maturity = 0;
-      }
-    } else {
-      maturity = 0;
-    }
-    return maturity;
   }
 
   showTooltip(val) {
@@ -139,7 +119,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.kpiData = {};
-    this.trendData = {};
+    this.trendData = [];
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }

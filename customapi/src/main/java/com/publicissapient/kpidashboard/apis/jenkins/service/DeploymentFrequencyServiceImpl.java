@@ -4,13 +4,16 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -18,7 +21,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,17 +55,15 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 @Slf4j
 public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
 
-    @Autowired
-    private ConfigHelperService configHelperService;
-
-    @Autowired
-    private DeploymentRepository deploymentRepository;
-
-    @Autowired
-    private CustomApiConfig customApiConfig;
-
+    private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
     private final List<String> toolList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
             ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+    @Autowired
+    private ConfigHelperService configHelperService;
+    @Autowired
+    private DeploymentRepository deploymentRepository;
+    @Autowired
+    private CustomApiConfig customApiConfig;
 
     @Override
     public Long calculateKPIMetrics(Map<ObjectId, List<Deployment>> objectIdListMap) {
@@ -132,7 +131,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
         DateTimeFormatter formatterMonth = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
         String startDate = localStartDate.format(formatterMonth);
         String endDate = localEndDate.format(formatterMonth);
-
+        List<KPIExcelData> excelData = new ArrayList<>();
         Map<ObjectId, List<Deployment>> deploymentGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate,
                 null);
 
@@ -140,15 +139,14 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
             return;
         }
 
-        Map<String, ValidationData> validationDataMap = new HashMap<>();
         DeploymentFrequencyInfo deploymentFrequencyInfo = new DeploymentFrequencyInfo();
-
         projectLeafNodeList.forEach(node -> {
             Map<String, List<DataCount>> trendValueMap = new HashMap<>();
             List<DataCount> dataCountAggList = new ArrayList<>();
             String trendLineName = node.getProjectFilter().getName();
             ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-
+            String projectNodeId = node.getProjectFilter().getId();
+            String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
             List<Deployment> deploymentListProjectWise = deploymentGroup.get(basicProjectConfigId);
 
             if (CollectionUtils.isNotEmpty(deploymentListProjectWise)) {
@@ -164,11 +162,14 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
                 trendValueMap.put(CommonConstant.OVERALL, aggData);
             }
             mapTmp.get(node.getId()).setValue(trendValueMap);
-            ValidationData validationData = createValidationDataForNode(deploymentFrequencyInfo);
-            populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, validationData,
-                    trendLineName);
 
+            if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+                KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, excelData);
+            }
         });
+        kpiElement.setExcelData(excelData);
+        kpiElement.setExcelColumns(KPIExcelColumn.DEPLOYMENT_FREQUENCY.getColumns());
+
     }
 
     @Override
@@ -255,7 +256,8 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
                 deploymentMapMonthWise.forEach((month, deploymentListCurrentMonth) -> {
                     DataCount dataCount = createDataCount(trendLineName, envName, month, deploymentListCurrentMonth);
                     dataCountList.add(dataCount);
-                    setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth, month);
+                    setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
+
                 });
                 aggDataCountList.addAll(dataCountList);
                 trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
@@ -292,20 +294,6 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
         return dataCount;
     }
 
-    /**
-     * Creates validation data for node.
-     *
-     * @param deploymentFrequencyInfo
-     * @return ValidationData object
-     */
-    private ValidationData createValidationDataForNode(DeploymentFrequencyInfo deploymentFrequencyInfo) {
-        ValidationData validationData = new ValidationData();
-        validationData.setJobName(deploymentFrequencyInfo.getJobNameList());
-        validationData.setDateList(deploymentFrequencyInfo.getDeploymentDateList());
-        validationData.setEnvironmentList(deploymentFrequencyInfo.getEnvironmentList());
-        validationData.setMonthList(deploymentFrequencyInfo.getMonthList());
-        return validationData;
-    }
 
     /**
      * Set KPI data list for excel
@@ -315,7 +303,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
      * @return
      */
     private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
-                                                    List<Deployment> deploymentListCurrentMonth, String month) {
+                                                    List<Deployment> deploymentListCurrentMonth) {
         if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
             deploymentListCurrentMonth.stream().forEach(deployment -> {
                 deploymentFrequencyInfo.addEnvironmentList(deployment.getEnvName());
@@ -325,31 +313,13 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
                     deploymentFrequencyInfo.addJobNameList(deployment.getJobName());
                 }
                 deploymentFrequencyInfo.addDeploymentDateList(deployment.getStartTime());
-                deploymentFrequencyInfo.addMonthList(month);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
+                LocalDateTime dateTime = LocalDateTime.parse(deployment.getStartTime(), formatter);
+                deploymentFrequencyInfo.addMonthList(dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)));
             });
         }
     }
 
-    /**
-     * Populates data for validation.
-     *
-     * @param kpiElement
-     * @param requestTrackerId
-     * @param validationDataMap
-     * @param validationData
-     * @param projectName
-     */
-    private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-                                              Map<String, ValidationData> validationDataMap, ValidationData validationData, String projectName) {
-
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-            validationDataMap.put(projectName, validationData);
-
-            kpiElement.setMapOfSprintAndData(validationDataMap);
-
-        }
-    }
 
     /**
      * prepare month list of last N(count) month
@@ -358,13 +328,13 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
      */
     private Map<String, List<Deployment>> getLastNMonth(int count) {
         Map<String, List<Deployment>> lastNMonth = new LinkedHashMap<>();
-        DateTime currentDate = DateTime.now();
-        String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
+        LocalDateTime currentDate = LocalDateTime.now();
+        String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthValue();
         lastNMonth.put(currentDateStr, new ArrayList<>());
-        DateTime lastMonth = DateTime.now();
+        LocalDateTime lastMonth = LocalDateTime.now();
         for (int i = 1; i < count; i++) {
             lastMonth = lastMonth.minusMonths(1);
-            String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
+            String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthValue();
             lastNMonth.put(lastMonthStr, new ArrayList<>());
 
         }

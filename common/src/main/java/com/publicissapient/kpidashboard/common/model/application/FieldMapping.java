@@ -182,6 +182,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraRegressionTestValue;
 	private List<String> jiraCanBeAutomatedTestValue;
 	private List<String> testCaseStatus;
+
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
 
@@ -196,6 +197,8 @@ public class FieldMapping extends BasicModel {
 
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusExcluMissingWork;
+	//field for FTPR
+	private List<String> jiraFTPRStoryIdentification;
 
 	/**
 	 * Get jira issue type names string [ ].

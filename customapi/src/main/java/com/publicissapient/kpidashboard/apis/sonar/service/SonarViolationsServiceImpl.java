@@ -21,35 +21,44 @@
  */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
-import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
-import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
-import lombok.extern.slf4j.Slf4j;
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
+import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
+import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author prigupta8
@@ -58,7 +67,6 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 @Component
 @Slf4j
 public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
-
 
 	private static final String CRITICAL = "critical";
 	private static final String MAJOR = "major";
@@ -119,7 +127,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	}
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
-		Map<String, ValidationData> validationMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		List<String> projectList = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList, null, false).forEach((projectNodeId, projectData) -> {
@@ -136,19 +144,23 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 					String date = monday + " to " + sunday;
 					Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,projectNodeId);
+					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
+							projectNodeId);
 					prepareViolationsList(history, date, projectNodeId, projectList, violations, projectWiseDataMap,
 							versionDate);
 
 					endDateTime = endDateTime.minusWeeks(1);
 				}
 				tempMap.get(projectNodeId).setValue(projectWiseDataMap);
-				validationMap.putAll(populateValidationDataObjectForViolations(getRequestTrackerId(), projectList,
-						violations, versionDate, tempMap.get(projectNodeId)));
+				if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateSonarKpisExcelData(tempMap.get(projectNodeId).getProjectFilter().getName(),
+							projectList, violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS.getKpiId());
+				}
 			}
 		});
 
-		kpiElement.setMapOfSprintAndData(validationMap);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS.getColumns());
 	}
 
 	/**
@@ -161,7 +173,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	 * @return
 	 */
 	private Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start,
-															   Long end, String projectNodeId) {
+			Long end, String projectNodeId) {
 		Map<String, SonarHistory> map = new HashMap<>();
 		Map<ObjectId, String> keyNameProcessorMap = new HashMap<>();
 		List<SonarMetric> metricsList = new ArrayList<>();
@@ -192,22 +204,21 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		}
 
 		keyNameProcessorMap.entrySet().stream().filter(key -> !map.containsKey(key.getValue())).forEach(key -> {
-					String[] split = key.getValue().split(CommonConstant.ARROW);
-					SonarHistory build;
-					if (split.length == 3) {
-						build = SonarHistory.builder().processorItemId(key.getKey()).date(end).timestamp(end).key(split[0])
-								.name(split[0]).branch(split[1]).metrics(metricsList).build();
-					} else {
-						build = SonarHistory.builder().processorItemId(key.getKey()).date(end).timestamp(end).key(split[0])
-								.name(split[0]).metrics(metricsList).build();
-					}
-					map.put(key.getValue(), build);
-				}
+			String[] split = key.getValue().split(CommonConstant.ARROW);
+			SonarHistory build;
+			if (split.length == 3) {
+				build = SonarHistory.builder().processorItemId(key.getKey()).date(end).timestamp(end).key(split[0])
+						.name(split[0]).branch(split[1]).metrics(metricsList).build();
+			} else {
+				build = SonarHistory.builder().processorItemId(key.getKey()).date(end).timestamp(end).key(split[0])
+						.name(split[0]).metrics(metricsList).build();
+			}
+			map.put(key.getValue(), build);
+		}
 
 		);
 		return map;
 	}
-
 
 	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
 			List<String> projectList, List<String> violations, Map<String, List<DataCount>> projectWiseDataMap,
@@ -244,9 +255,10 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 			dateWiseViolationsList.add(sonarViolations);
 			violations.add(sonarViolationsHowerMap.toString());
 		});
-		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()), projectName, date,
-				projectNodeId);
+		DataCount dcObj = getDataCountObject(
+				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
+				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
+				projectName, date, projectNodeId);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
@@ -295,26 +307,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		dataCount.setValue(sonarViolations);
 		dataCount.setHoverValue(sonarViolationsHowerMap);
 		return dataCount;
-	}
-
-	/**
-	 * @param requestTrackerId
-	 * @param projectList
-	 * @param versionDate
-	 * @param node
-	 * @return
-	 */
-	private Map<String, ValidationData> populateValidationDataObjectForViolations(String requestTrackerId,
-			List<String> projectList, List<String> violations, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setViolationList(violations);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
-		return validationDataMap;
 	}
 
 	/**

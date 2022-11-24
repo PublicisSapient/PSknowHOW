@@ -163,6 +163,11 @@
     "jiraCanBeAutomatedTestValue": [
       "JAVA"
     ],
+    "jiraFTPRStoryIdentification": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 
     "8"

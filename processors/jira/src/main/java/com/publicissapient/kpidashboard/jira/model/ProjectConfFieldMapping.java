@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.model;//NOPMD
 
+import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -50,5 +51,7 @@ public class ProjectConfFieldMapping {
 	private ObjectId jiraToolConfigId;
 
 	private ProjectBasicConfig projectBasicConfig;
+
+	private JiraIssueMetadata jiraIssueMetadata;
 
 }

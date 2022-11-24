@@ -165,10 +165,6 @@ td.med-td {
     border-bottom: 1px solid #e4e4e4;
 }
 
-::ng-deep #project-access-table .p-datatable .p-datatable-tbody > tr > td {
-    border: none;
-}
-
 ::ng-deep #project-access-table .p-datatable .p-datatable-tbody > tr > td.custom-table-cell {
     padding: 0;
     border-width: 1px 1px 1px 1px;

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -190,6 +191,9 @@ public class DREServiceImplTest {
 		resultListMap.put("storyData", storyData);
 		resultListMap.put("defectData", defectData);
 
+		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(storyData);
+		when(jiraIssueRepository.findIssuesByType(any())).thenReturn(defectData);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = dreServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,

@@ -1,62 +1,45 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-kpi-filter',
   templateUrl: './kpi-filter.component.html',
-  styleUrls: ['./kpi-filter.component.css']
 })
 export class KpiFilterComponent implements OnInit {
   @Input() kpiRelationShips: any;
   @Input() fieldMappings: any;
-  @Output() formSavedEvent = new EventEmitter<string>();
-  fieldMappingForm: UntypedFormGroup;
-  selectedKpis = [];
-  isLoading = false;
-  disabled = false;
-  displayPopup = false;
-  fields = [];
+  @Output() fieldsToShow = new EventEmitter<any>();
+  selectedKpi;
 
-  constructor(private formBuilder: UntypedFormBuilder) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.fieldMappingForm = this.formBuilder.group({});
-  }
-
-  getRelatedFieldsCount() {
-    let result = 0;
-    if (this.selectedKpis && this.selectedKpis.length) {
-      this.selectedKpis.forEach((kpi) => {
-        result += kpi.fieldNames.length;
-      });
-    }
-    return result;
   }
 
   showFieldsPopup() {
-    if (this.selectedKpis && this.selectedKpis.length) {
-      const fieldMappingFormObj = {};
-      this.selectedKpis.forEach((selectedKpi) => {
-        this.fieldMappings.forEach((field) => {
-          if (selectedKpi.fieldNames.includes(field['fieldName'])) {
-            fieldMappingFormObj[field['fieldName']] = field['field'];
-            this.fields.push({
-              fieldName: field['fieldName'],
-              type: field['type'],
-              searchable: false
-            });
-          }
-        });
-      });
-
-      this.fieldMappingForm = this.formBuilder.group(fieldMappingFormObj);
-      this.displayPopup = true;
-    }
+    this.fieldsToShow.emit(this.selectedKpi);
   }
 
-  clearForm() {
-    this.fieldMappingForm = this.formBuilder.group({});
-    this.fields = [];
+  onClear(){
+    this.selectedKpi='';
+    this.fieldsToShow.emit(this.selectedKpi);
   }
 
 }

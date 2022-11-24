@@ -95,11 +95,11 @@ function running_js()
 	echo "########## Zephyr Cloud Base Url ############"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/zephyr_cloud_details.js
 
-	echo "########## user board config ############"
-	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_or_remove_kpi_in_user_board_config.js
-
   echo "########## insert processors to show on run processor screen ############"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_processors.js
+
+	echo "########## insert kpi_fieldmapping to show kpiwise field mapping############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_fieldmapping_insert.js
 }
 
 function cron_service()

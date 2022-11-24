@@ -85,10 +85,13 @@ public class KanbanIssueCustomHistory extends BasicModel {
 
 	private List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 
+	private String url;
+	private String description;
+
 
 	@Override
 	public String toString() {
-		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", storyType=" + storyType
+		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID +", url=" + url + ",storyType=" + storyType
 				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
 				+ ", projectComponentId=" + projectComponentId + ", storySprintDetails=" + historyDetails + "]";

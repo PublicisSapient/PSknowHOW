@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import static org.mockito.Mockito.*;
 
 public class ReleaseDataClientImplTest {
 

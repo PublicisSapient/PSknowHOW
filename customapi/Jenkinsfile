@@ -137,7 +137,7 @@ pipeline {
                             echo "[server]" > /tmp/customapi_hosts
                             echo " ${env.selected_environment}" >> /tmp/customapi_hosts
                             cd ansible_deployment/
-                            ansible-playbook -i /tmp/customapi_hosts playbooks/deploy.yaml -e 'DEPLOY=${DEPLOY}' -e 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}' -e 'AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}' -e 'edcurl=${edcurl}' -e 'ldapurl={ldapurl}' -e 'DNS_NAME=${DNS_NAME}' -e 'registry_username=${REGISTRY_USERNAME}' -e 'registry_password=${REGISTRY_PASSWORD}' -e 'selected_server=${env.selected_environment}' -e 'select_docker_registry=${DEFAULT_REGISTRY}' -e 'version=${env.version}' -e 'ansible_ssh_pass=${SSH_PASSWORD}' -e 'ansible_ssh_user=${SSH_USERNAME}'
+                            ansible-playbook -i /tmp/customapi_hosts playbooks/deploy.yaml -e 'DEPLOY=${DEPLOY}' -e 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}' -e 'AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}' -e 'edcurl=${edcurl}' -e 'ldapurl=${ldapurl}' -e 'DNS_NAME=${DNS_NAME}' -e 'registry_username=${REGISTRY_USERNAME}' -e 'registry_password=${REGISTRY_PASSWORD}' -e 'selected_server=${env.selected_environment}' -e 'select_docker_registry=${DEFAULT_REGISTRY}' -e 'version=${env.version}' -e 'ansible_ssh_pass=${SSH_PASSWORD}' -e 'ansible_ssh_user=${SSH_USERNAME}'
                         """
                 }
             }

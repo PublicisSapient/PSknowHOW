@@ -3,8 +3,8 @@ name: CI
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
-  push:
-    branches: [ develop ]
+  # push:
+  #   branches: [ develop ]
   pull_request:
     types:
       - labeled
@@ -69,7 +69,7 @@ jobs:
         with:
           filters: |
             UI:
-              - 'UI/**'
+              - 'UI/src/**'
       - name: Building UI
         # run only if some file in 'src' folder was changed
         if: steps.changes.outputs.UI == 'true'
@@ -89,24 +89,24 @@ jobs:
           sudo tar -czvf ui2.tar *
           sudo mv ui2.tar ../files
           sudo rm -rf build
-      - name: Testing UI
-        if: steps.changes.outputs.UI == 'true'
-        id: TestUI
-        run: |
-          cd UI
-          sudo npm install --save-dev @angular-devkit/build-angular
-          sudo ng test --code-coverage
-          sudo sed -i 's|SF:/var/jenkins_home/jobs/UI_Build/workspace/UI/|SF:|g' coverage/lcov.info 
-      - name: Scanning UI with Sonar Qube
-        if: steps.changes.outputs.UI == 'true'
-        id: SonarUI
-        run: | 
-          cd UI
-          sudo npm install -D sonarqube-scanner
-          sudo npm run sonar
-          cd ..
-          chmod +x SonarDelay.sh
-          ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
+      # - name: Testing UI
+      #   if: steps.changes.outputs.UI == 'true'
+      #   id: TestUI
+      #   run: |
+      #     cd UI
+      #     sudo npm install --save-dev @angular-devkit/build-angular
+      #     sudo ng test --code-coverage
+      #     sudo sed -i 's|SF:/var/jenkins_home/jobs/UI_Build/workspace/UI/|SF:|g' coverage/lcov.info 
+      # - name: Scanning UI with Sonar Qube
+      #   if: steps.changes.outputs.UI == 'true'
+      #   id: SonarUI
+      #   run: | 
+      #     cd UI
+      #     sudo npm install -D sonarqube-scanner
+      #     sudo npm run sonar
+      #     cd ..
+      #     chmod +x SonarDelay.sh
+      #     ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
 
       - uses: actions/setup-java@v2
         with:
@@ -124,7 +124,7 @@ jobs:
         with:
           filters: |
             customapi:
-              - 'customapi/**'
+              - 'customapi/src/**'
       - uses: dorny/paths-filter@v2
         id: processors
         with:
@@ -132,59 +132,59 @@ jobs:
             processors:
               - 'processors/**'
       - name: Building and Testing CustomApi processor
-        if: steps.processors.outputs.processors == 'true' || steps.customapi.outputs.customapi == 'true'
+        if: steps.customapi.outputs.customapi == 'true'
         id: testcustomapi
         run: |
-               mvn clean install -DskipTests -Pcustomapi
+               mvn clean install -Pcustomapi
       
       - name: Building and Testing jira processor
         if: steps.processors.outputs.processors == 'true'
         id: testjira
         run: |
-               mvn clean install -DskipTests -PjiraProcessor
+               mvn clean install -PjiraProcessor
       - name: Building and Testing Azure processor
         id: testazure
         if: steps.processors.outputs.processors == 'true'
         run: |
-               mvn clean install -DskipTests -PazureProcessor 
+               mvn clean install -PazureProcessor 
       - name: Building and Testing nonJira processor
         id: testnonjira
         if: steps.processors.outputs.processors == 'true'
         run: |
-               mvn clean install -DskipTests -PnonJiraProcessor
+               mvn clean install -PnonJiraProcessor
       - name: Building and Testing nonAzureProcessor
         id: testnonazure
         if: steps.processors.outputs.processors == 'true'
         run: |
-               mvn clean install -DskipTests -PnonAzureBoardsProcessor 
+               mvn clean install -PnonAzureBoardsProcessor 
       
-      - name: Checking code Quality using SonarQube for processor
-        id: Sonarprocessor
-        if: steps.processors.outputs.processors == 'true'
-        run: |        
-               mvn sonar:sonar \
-                  -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.PROCESSORS \
-                  -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
-                  -Dsonar.host.url=https://URL-of-Sonar.com/sonar \
-                  -Dsonar.login=<#spectoke> -f processors/pom.xml
-               chmod +x SonarDelay.sh
-               ./SonarDelay.sh ./processors/target/sonar/report-task.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Checking code Quality using SonarQube for processor
+      #   id: Sonarprocessor
+      #   if: steps.processors.outputs.processors == 'true'
+      #   run: |        
+      #          mvn sonar:sonar \
+      #             -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.PROCESSORS \
+      #             -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
+      #             -Dsonar.host.url=https://URL-of-Sonar.com/sonar \
+      #             -Dsonar.login=<#spectoke> -f processors/pom.xml
+      #          chmod +x SonarDelay.sh
+      #          ./SonarDelay.sh ./processors/target/sonar/report-task.txt
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                
-      - name: Checking code Quality using SonarQube for Customapi
-        if: steps.processors.outputs.processors == 'true' ||  steps.customapi.outputs.customapi == 'true'
-        id: Sonarcustomapi
-        run: |
-               mvn sonar:sonar \
-                  -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
-                  -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
-                  -Dsonar.host.url=https://URL.com./sonar \
-                  -Dsonar.login=<#specfifytoke> -f customapi/pom.xml
-               chmod +x SonarDelay.sh
-                ./SonarDelay.sh ./customapi/target/sonar/report-task.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
+      # - name: Checking code Quality using SonarQube for Customapi
+      #   if: steps.processors.outputs.processors == 'true' ||  steps.customapi.outputs.customapi == 'true'
+      #   id: Sonarcustomapi
+      #   run: |
+      #          mvn sonar:sonar \
+      #             -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
+      #             -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI \
+      #             -Dsonar.host.url=https://URL.com./sonar \
+      #             -Dsonar.login=<#specfifytoke> -f customapi/pom.xml
+      #          chmod +x SonarDelay.sh
+      #           ./SonarDelay.sh ./customapi/target/sonar/report-task.txt
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
       - name: Send mail
         if: failure()
         uses: dawidd6/action-send-mail@v2

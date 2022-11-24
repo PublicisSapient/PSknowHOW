@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +82,7 @@ public class SignupManagerTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("");
 		when(authenticationRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, false));
+		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfoObj());
 		signupManager.grantAccess(testId, grantApprovalListener);
 		verify(grantApprovalListener, atLeastOnce()).onFailure(
 				authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, true), "Failed to accept the request");
@@ -95,6 +97,7 @@ public class SignupManagerTest {
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false));
 		when(authenticationRepository.save(ArgumentMatchers.any()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, true));
+		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfoObj());
 		signupManager.rejectAccessRequest(testId, rejectApprovalListener);
 		verify(rejectApprovalListener, atLeastOnce()).onFailure(
 				authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false), "Failed to reject the request");
@@ -113,6 +116,7 @@ public class SignupManagerTest {
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
 		userInfo.setEmailAddress("testUser@gmail.com");
 		userInfo.setUsername("testUser");
+		userInfo.setAuthType(AuthType.STANDARD);
 		return userInfo;
 	}
 

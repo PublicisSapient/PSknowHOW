@@ -32,22 +32,23 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 
@@ -57,22 +58,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Object>, Map<String, Object>> {
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
-
-	@Autowired
-	private TestExecutionRepository testExecutionRepository;
-
 	private static final String QA = "QaKpi";
-	private static final String SPRINT_ID="sprintId";
-
+	private static final String SPRINT_ID = "sprintId";
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
 	private static final String TOTAL = "Total Test Cases";
 	private static final String EXECUTED = "Executed Test Cases";
 	private static final String PASSED = "Passed Test Cases";
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private TestExecutionRepository testExecutionRepository;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -95,7 +92,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+				KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -127,17 +125,15 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 		});
 		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA,
-				flterHelperService);
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, flterHelperService);
 
-		mapOfFilters.put(SPRINT_ID,
-				sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(SPRINT_ID, sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		resultListMap.put(TEST_EXECUTION_DETAIL,
 				testExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap));
-		
+
 		return resultListMap;
 	}
 
@@ -169,7 +165,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		Map<String, TestExecution> sprintWiseDataMap = createSprintWiseTestExecutionMap(
 				(List<TestExecution>) resultMap.get(TEST_EXECUTION_DETAIL));
 
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			List<DataCount> resultList = new ArrayList<>();
 			String validationKey = node.getSprintFilter().getName();
@@ -177,8 +173,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			String trendLineName = node.getProjectFilter().getName();
 
 			if (null != sprintWiseDataMap.get(sprintId)) {
-				setSprintNodeValue(kpiElement, sprintWiseDataMap.get(sprintId), resultList, trendLineName, node,
-						validationKey, validationDataMap);
+				setSprintNodeValue(sprintWiseDataMap.get(sprintId), resultList, trendLineName, node, validationKey,
+						excelData);
 			} else {
 				DataCount dataCount = new DataCount();
 				dataCount.setSubFilter(Constant.EMPTY_STRING);
@@ -193,23 +189,23 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			}
 			mapTmp.get(node.getId()).setValue(resultList);
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TEST_EXECUTION_AND_PASS_PERCENTAGE.getColumns());
+
 	}
 
 	/**
-	 * Gets the KPI value for sprint node.
+	 * * Gets the KPI value for sprint node.
 	 * 
-	 * @param kpiElement
 	 * @param executionDetail
 	 * @param trendValueList
 	 * @param trendLineName
 	 * @param node
 	 * @param validationKey
-	 * @param validationDataMap
-	 * @return
+	 * @param excelData
 	 */
-	private void setSprintNodeValue(KpiElement kpiElement, TestExecution executionDetail,
-			List<DataCount> trendValueList, String trendLineName, Node node, String validationKey,
-			Map<String, ValidationData> validationDataMap) {
+	private void setSprintNodeValue(TestExecution executionDetail, List<DataCount> trendValueList, String trendLineName,
+			Node node, String validationKey, List<KPIExcelData> excelData) {
 
 		// aggregated value of all sub-filters of a project for given sprint
 		double executionPerc = Math
@@ -227,8 +223,11 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		trendValueList.add(dataCount);
 
-		populateValidationDataObject(kpiElement, getRequestTrackerId(), executionDetail, validationDataMap,
-				validationKey);
+		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateTestExcecutionExcelData(node.getSprintFilter().getName(), executionDetail,null, executionPerc, passedPerc,
+					excelData);
+		}
+
 	}
 
 	/**
@@ -248,45 +247,13 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	}
 
 	/**
-	 * Group list of data by sprint
+	 * * Group list of data by sprint
 	 * 
 	 * @param resultList
-	 * @param kpiRequest
 	 * @return
 	 */
 	private Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream().collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
-	}
-
-	/**
-	 * This method check for API request source. If it is Excel it populates the
-	 * validation data node of the KPI element.
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param testDetail
-	 * @param validationDataMap
-	 * @param validationKey
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, TestExecution testDetail,
-			Map<String, ValidationData> validationDataMap, String validationKey) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-			double executionPerc = Math
-					.round((100.0 * testDetail.getExecutedTestCase()) / testDetail.getTotalTestCases());
-			double passedPerc = Math
-					.round((100.0 * testDetail.getPassedTestCase()) / (testDetail.getExecutedTestCase()));
-			ValidationData validationData = new ValidationData();
-			validationData.setSprintNameList(Lists.newArrayList(testDetail.getSprintName()));
-			validationData.setTotalTestList(Lists.newArrayList(testDetail.getTotalTestCases() + ""));
-			validationData.setExecutedTestList(Lists.newArrayList(testDetail.getExecutedTestCase() + ""));
-			validationData.setPassedTestList(Lists.newArrayList(testDetail.getPassedTestCase() + ""));
-			validationData.setExecutedPercentageList(Lists.newArrayList(executionPerc + ""));
-			validationData.setPassedPercentageList(Lists.newArrayList(passedPerc + ""));
-			validationDataMap.put(validationKey, validationData);
-
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
 	}
 
 	@Override

@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -59,6 +62,9 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	protected static final String TESTAUTOMATEDFLAG = "testAutomatedFlag";
 	protected static final String TESTCANBEAUTOMATEDFLAG = "testCanBeAutomatedFlag";
 	protected static final String AUTOMATEDVALUE = "automatedValue";
+
+	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
+
 
 	@Autowired
 	private TestCaseDetailsRepository testCaseDetailsRepository;
@@ -570,6 +576,28 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			}
 		});
 		return resultMap;
+	}
+
+	public String getDeltaDate(String lastSuccessfulRun) {
+		LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
+		ldt = ldt.minusDays(30);
+		return DateUtil.dateTimeFormatter(ldt,QUERYDATEFORMAT);
+	}
+
+	public void setStartDate(JiraProcessorConfig jiraProcessorConfig) {
+		LocalDateTime localDateTime = null;
+		if(jiraProcessorConfig.isConsiderStartDate()){
+			try{
+				localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(),QUERYDATEFORMAT);
+			} catch (DateTimeParseException ex) {
+				log.error("exception while parsing start date provided from property file picking last 6 months data.."
+						+ ex.getMessage());
+				localDateTime = LocalDateTime.now().minusMonths(6);
+			}
+		}else{
+			localDateTime = LocalDateTime.now().minusMonths(6);
+		}
+		jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
 	}
 
 }

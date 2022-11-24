@@ -28,14 +28,14 @@
     width: 100%; 
 }
 .card-type-2{
-    flex: 0 0 36%;
-    max-width: 36%;
+    flex: 0 0 31%;
+    max-width: 31%;
     position: relative;
     width: 100%; 
 }
 .card-type-3{
-    flex: 0 0 40%;
-    max-width: 40%;
+    flex: 0 0 38%;
+    max-width: 38%;
     position: relative;
     width: 100%; 
 }

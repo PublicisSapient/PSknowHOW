@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -169,6 +172,16 @@ public class NetOpenTicketCountStatusImplTest {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
 				.thenReturn(projectWiseJiraHistoryStatusAndDateWiseIssueMap);
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance().getKanbanIssueCustomHistoryDataList();
+
+		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
+		projectWiseDoneStatus.put("6335368249794a18e8a4479f",Arrays.asList("Closed"));
+		Map<String,Object> resultMap= new HashMap<>();
+		resultMap.put("JiraIssueHistoryData",kanbanIssueCustomHistoryDataList);
+		resultMap.put("projectWiseClosedStoryStatus",projectWiseDoneStatus);
+		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(),
+				any(), anyString())).thenReturn(resultMap);
+
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);

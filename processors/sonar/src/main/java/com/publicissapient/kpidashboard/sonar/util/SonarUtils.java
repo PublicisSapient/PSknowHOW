@@ -18,6 +18,10 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+
 /**
  * Utility class for common methods.
  *
@@ -101,6 +105,26 @@ public final class SonarUtils {
 	 */
 	private static boolean displayMinutes(int days, int hours, int minutes) {
 		return minutes > 0 && hours < 10 && days == 0;
+	}
+
+	public static ToolCredential getToolCredentials(ToolCredentialProvider toolCredentialProvider, ProcessorToolConnection sonarServer) {
+		ToolCredential toolCredential = new ToolCredential();
+		if (sonarServer.isVault()) {
+			ToolCredential toolCredentialFromProvider = toolCredentialProvider.findCredential(sonarServer.getUsername());
+			if (toolCredentialFromProvider != null) {
+				toolCredential.setUsername(toolCredentialFromProvider.getUsername());
+				toolCredential.setPassword(toolCredentialFromProvider.getPassword());
+			}
+
+		} else {
+			toolCredential.setUsername(sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim());
+			if (sonarServer.isCloudEnv()) {
+				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+			}
+			toolCredential.setPassword(sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim());
+		}
+
+		return toolCredential;
 	}
 
 }

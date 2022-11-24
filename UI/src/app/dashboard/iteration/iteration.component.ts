@@ -430,31 +430,35 @@ export class IterationComponent implements OnInit, OnDestroy {
     const aggregatedArr = [JSON.parse(JSON.stringify(arr[0]))];
       for(let i = 0;i<arr?.length;i++){
         for(let j = 0; j<arr[i]?.data?.length; j++){
-          if(aggregatedArr[0].data[j]?.label != arr[i]?.data[j]?.label){
+          let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i]?.data[j]?.label);
+          if(idx == -1){
             aggregatedArr[0]?.data?.push(arr[i]?.data[j]);
           }
         }
       }
 
       aggregatedArr[0].data = aggregatedArr[0]?.data?.map(item => ({
-          ...item,
-          value: 0,
-          value1: item?.hasOwnProperty('value1') ? 0 : null,
-          modalValues: item?.hasOwnProperty('modalValues') ? [] : null
-        }));
-
+        ...item,
+        value: 0,
+        value1: item?.hasOwnProperty('value1') ? 0 : null,
+        modalValues: item?.hasOwnProperty('modalValues') ? [] : null
+      }));
+      
       for (let i = 0; i < arr?.length; i++) {
         for (let j = 0; j < arr[i]?.data?.length; j++) {
-          aggregatedArr[0].data[j]['value'] = aggregatedArr[0].data[j]['value'] + arr[i].data[j]['value'];
-          if(aggregatedArr[0]?.data[j]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[j]?.value1 != null){
-            aggregatedArr[0].data[j]['value1'] = aggregatedArr[0].data[j]['value1'] + arr[i].data[j]['value1'];
-          }
-          if(aggregatedArr[0]?.data[j]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[j]?.modalValues != null){
-            aggregatedArr[0].data[j]['modalValues'] = [...aggregatedArr[0]?.data[j]['modalValues'], ... arr[i]?.data[j]['modalValues']];
+          let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i].data[j]['label']);
+          
+          if(idx != -1){
+            aggregatedArr[0].data[idx]['value'] += arr[i].data[j]['value'];
+            if(aggregatedArr[0]?.data[idx]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[idx]?.value1 != null){
+              aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
+            }
+            if(aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null){
+              aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ... arr[i]?.data[j]['modalValues']];
+            }
           }
         }
       }
-
     return aggregatedArr;
   }
 

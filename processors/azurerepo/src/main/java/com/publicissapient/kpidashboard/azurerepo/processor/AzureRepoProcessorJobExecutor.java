@@ -301,14 +301,16 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 					proBasicConfig.getId().toHexString());
 			try {
-				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-				MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
-				commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount);
-				mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount);
-				MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
-				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-				processorExecutionTraceLog.setExecutionSuccess(true);
-				processorExecutionTraceLogService.save(processorExecutionTraceLog);
+				if (CollectionUtils.isNotEmpty(azureRepoInfo)) {
+					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
+					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount);
+					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount);
+					MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
+					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLogService.save(processorExecutionTraceLog);
+				}
 			} catch (Exception exception) {
 				executionStatus = false;
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());

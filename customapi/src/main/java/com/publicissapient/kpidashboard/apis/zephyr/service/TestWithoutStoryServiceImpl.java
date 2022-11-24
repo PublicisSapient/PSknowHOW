@@ -18,21 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -42,47 +27,59 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @Service
 @Slf4j
 public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<Object>, Map<String, Object>> {
 
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CacheService cacheService;
-
-	@Autowired
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
 	private static final String TEST_TITLE = "Test Cases without any story link";
 	private static final String STORY_LIST = "stories";
 	private static final String TOTAL_TEST_CASES = "Total Test Cases";
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private TestCaseDetailsRepository testCaseDetailsRepository;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		List<DataCount> trendValueList = Lists.newArrayList();
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
@@ -112,7 +109,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+												  KpiRequest kpiRequest) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = Maps.newLinkedHashMap();
@@ -151,7 +148,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 						CommonUtils.convertTestFolderToPatternList(fieldMapping.getTestCaseStatus()));
 			}
 			if (MapUtils.isNotEmpty(mapOfProjectFiltersNotIn)) {
-			uniqueProjectMapNotIn.put(basicProjectConfigId.toString(),mapOfProjectFiltersNotIn);
+				uniqueProjectMapNotIn.put(basicProjectConfigId.toString(), mapOfProjectFiltersNotIn);
 			}
 
 			if (CollectionUtils.isNotEmpty(sprintAutomationFolderPath)) {
@@ -182,7 +179,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 
 		resultListMap.put(TOTAL_TEST_CASES,
-				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap,uniqueProjectMapNotIn));
+				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, uniqueProjectMapNotIn));
 		return resultListMap;
 	}
 
@@ -202,16 +199,16 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, List<DataCount> trendValueList,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+										 KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<String> storiesInProject = (List<String>) resultMap.get(STORY_LIST);
 		List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) resultMap.get(TOTAL_TEST_CASES);
 		List<TestCaseDetails> testWithoutStory = totalTestNonRegression.stream()
@@ -225,9 +222,11 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 		long value = testWithoutStory.size();
 
 		if (CollectionUtils.isNotEmpty(totalTestNonRegression)) {
-			populateValidationDataObject(kpiElement, requestTrackerId, totalTestNonRegression, testWithoutStory,
-					validationDataMap, latestSprint.getProjectFilter().getName());
+			populateExcelDataObject(requestTrackerId, totalTestNonRegression, testWithoutStory, latestSprint.getProjectFilter().getName(), excelData);
 		}
+
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TEST_WITHOUT_STORY_LINK.getColumns());
 
 		log.debug("[MISSING-WORK-LOGS-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
 				latestSprint.getProjectFilter().getName(), value);
@@ -242,28 +241,19 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 
 	}
 
-	/**
-	 * This method check for API request source. If it is Excel it populates the
-	 * validation data node of the KPI element.
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param testWithoutStory
-	 * @param validationDataMap
-	 * @param validationKey
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<TestCaseDetails> totalTests, List<TestCaseDetails> testWithoutStory,
-			Map<String, ValidationData> validationDataMap, String validationKey) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData
-					.setTotalTests(totalTests.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
-			validationData.setTestWithoutStory(
-					testWithoutStory.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
-			validationDataMap.put(validationKey, validationData);
 
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+	private void populateExcelDataObject(String requestTrackerId, List<TestCaseDetails> totalTests,
+										 List<TestCaseDetails> testWithoutStory, String projectName, List<KPIExcelData> excelData) {
+
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+
+			Map<String, TestCaseDetails> totalTestMap = new HashMap<>();
+			totalTests.stream()
+					.forEach(testCaseDetails -> totalTestMap.putIfAbsent(testCaseDetails.getNumber(), testCaseDetails));
+
+			KPIExcelUtility.populateTestWithoutStoryExcelData(projectName, totalTestMap, testWithoutStory,
+					excelData);
 		}
+
 	}
 }

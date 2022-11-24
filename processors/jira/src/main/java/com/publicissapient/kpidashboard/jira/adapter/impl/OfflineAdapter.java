@@ -27,9 +27,11 @@ import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -70,7 +72,9 @@ public class OfflineAdapter implements JiraAdapter {
      * @return list of issues
      */
     @Override
-    public SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,boolean dataExist) {
+    public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
+                                  String startDateTimeByIssueType, String userTimeZone, int pageStart,
+                                  boolean dataExist) {
         long t0 = System.currentTimeMillis();
         long t2 = System.currentTimeMillis();
         Iterable<Issue> jiraRawRs = searchResult.getIssues();
@@ -103,8 +107,8 @@ public class OfflineAdapter implements JiraAdapter {
 	public List<Status> getStatus() {
 		return new ArrayList<>();
 	}
-	
-	@Override
+
+    @Override
 	public List<IssuelinksType> getIssueLinkTypes() {
 		return new ArrayList<>();
 	
@@ -137,9 +141,14 @@ public class OfflineAdapter implements JiraAdapter {
     
 	@Override
 	public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
-			SprintDetails sprintDetails) {
+			SprintDetails sprintDetails,SprintDetails dbSprintDetails) {
 		log.info(sprintId);
 		log.info(boardId);
 	}
-    
+
+    @Override
+    public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) {
+        return null;
+    }
+
 }

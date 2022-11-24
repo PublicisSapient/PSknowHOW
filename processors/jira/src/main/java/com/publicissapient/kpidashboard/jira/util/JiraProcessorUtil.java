@@ -30,6 +30,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
+import org.stringtemplate.v4.ST;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -202,7 +203,9 @@ public final class JiraProcessorUtil {
                         sprint.setState(valueAsStr);
                         break;
                     case RAPIDVIEWID:
-                        sprint.setOriginBoardId(valueAsStr);
+                        List<String> rapidViewIdList = new ArrayList<>();
+                        rapidViewIdList.add(valueAsStr);
+                        sprint.setOriginBoardId(rapidViewIdList);
                         break;
                     case NAME:
                         sprint.setSprintName(valueAsStr);
@@ -223,7 +226,9 @@ public final class JiraProcessorUtil {
                         sprint.setGoal(valueAsStr);
                         break;
 					case BOARDID:
-						sprint.setOriginBoardId(valueAsStr);
+                        List<String> boardList = new ArrayList<>();
+                        boardList.add(valueAsStr);
+						sprint.setOriginBoardId(boardList);
 						break;
                     default:
                         break;
@@ -249,7 +254,9 @@ public final class JiraProcessorUtil {
             } else {
 				boardId = jsonNode.get(RAPIDVIEWID).asText();
             }
-            sprint.setOriginBoardId(boardId);
+            List<String> boardIdList = new ArrayList<>();
+            boardIdList.add(boardId);
+            sprint.setOriginBoardId(boardIdList);
             sprint.setSprintName(jsonNode.get(NAME) == null ? null : jsonNode.get(NAME).asText());
             sprint.setStartDate(
                     jsonNode.get(STARTDATE) == null ? null : convertToNewFormat(jsonNode.get(STARTDATE).asText()));

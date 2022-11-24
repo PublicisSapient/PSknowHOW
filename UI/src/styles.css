@@ -1281,26 +1281,6 @@ a:hover {
   text-align: left;
 }
 
-p-multiselect {
-  float: right;
-  margin-right: 10px;
-}
-.trend-chart-combo-box p-multiselect{
-  float: none;
-}
-/* .trend-chart-combo-box .p-multiselect .p-multiselect-label-container {
-  display: none;
-} */
-
-/* .kanban .p-multiselect-trigger .p-multiselect-trigger-icon:before {
-  content: '\2117';
-} */
-
-/* .kanban .T-icon .p-multiselect-trigger-icon:before {
-  content: '\24C9' !important;
-  font-size: 15px !important;
-} */
-
 .kanban .T-icon .p-multiselect-trigger {
   position: relative;
   top: -2px;
@@ -1309,13 +1289,6 @@ p-multiselect {
 .kanban .p-multiselect-header {
   display: none;
 }
-
-/* .kanban .p-multiselect-trigger .p-multiselect-trigger-icon {
-  margin-top: -5px;
-  font-size: 22px;
-  color: var(--color-black);
-  width: auto;
-} */
 .kanban .p-multiselect .p-multiselect-label.p-placeholder{
   padding: 9px;
 }

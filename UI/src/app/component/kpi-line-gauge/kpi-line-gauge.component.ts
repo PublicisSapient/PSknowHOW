@@ -44,6 +44,6 @@ export class KpiComponent implements OnInit {
   ngOnInit() { }
 
   downloadExcel(kpiId, kpiName, isKanban) {
-    this.executive.downloadExcel(kpiId, kpiName, isKanban);
+    this.executive.downloadExcel(kpiId, kpiName, isKanban,false);
   }
 }

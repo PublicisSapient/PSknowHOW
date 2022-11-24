@@ -1,5 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import org.joda.time.DateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,9 +23,11 @@ import lombok.ToString;
 @ToString
 public class LeadTimeValidationDataForKanban {
 
+	private String url;
+	private String issueDesc;
 	private String issueNumber;
-	private String intakeDate;
-	private String triageDate;
-	private String completedDate;
-	private String liveDate;
+	private DateTime intakeDate;
+	private DateTime triageDate;
+	private DateTime completedDate;
+	private DateTime liveDate;
 }

@@ -91,7 +91,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private basicConfigUrl = this.baseUrl + '/api/basicconfigs';
     private connectionUrl = this.baseUrl + '/api/connections';
     private fieldMappingsUrl = this.baseUrl + '/api/tools';
-    private getKPIFieldMappingRelationshipsUrl = this.baseUrl + '/api/fieldMappingData';
+    private getKPIFieldMappingRelationshipsUrl = this.baseUrl + '/api/kpiFieldMapping';
     private getAllBoardsUrl = this.baseUrl + '/api/jira/board';
     private getHierarchyLevelsUrl = this.baseUrl + '/api/hierarchylevels';
 

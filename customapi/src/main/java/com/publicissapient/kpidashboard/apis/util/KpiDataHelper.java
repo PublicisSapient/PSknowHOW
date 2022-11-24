@@ -27,9 +27,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -44,6 +45,8 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 /**
@@ -286,5 +289,35 @@ public final class KpiDataHelper {
 		cdr.setStartDate(startDate);
 		cdr.setEndDate(endDate);
 		return cdr;
+	}
+
+	/**
+	 * Based on sprint details type converted sprint issue objects to jira issue
+	 * number ids list
+	 * 
+	 * @param sprintDetails
+	 * @param issueType
+	 * @return
+	 */
+	public static List<String> getIssuesIdListBasedOnTypeFromSprintDetails(SprintDetails sprintDetails,
+			String issueType) {
+		if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
+					.distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.NOT_COMPLETED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getNotCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
+					.distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.PUNTED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
+					.distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssuesAnotherSprint()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.TOTAL_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
+					.distinct().collect(Collectors.toList());
+		} else {
+			return new ArrayList<>();
+		}
 	}
 }

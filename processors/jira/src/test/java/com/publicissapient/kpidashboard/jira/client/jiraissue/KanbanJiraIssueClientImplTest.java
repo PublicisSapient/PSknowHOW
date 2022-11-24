@@ -30,7 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.net.URISyntaxException;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import static org.mockito.Mockito.*;
@@ -80,6 +80,12 @@ public class KanbanJiraIssueClientImplTest {
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+        BoardDetails board = new BoardDetails();
+        board.setBoardId("1111");
+        board.setBoardName("test board");
+        List<BoardDetails> boardList = new ArrayList<>();
+        boardList.add(board);
+        projectToolConfig.setBoards(boardList);
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
         JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
@@ -111,8 +117,7 @@ public class KanbanJiraIssueClientImplTest {
         kanbanAccountHierarchy.setNodeId("121");
         kanbanAccountHierarchy.setPath("path");
         kanbanAccountHierarchies.add(kanbanAccountHierarchy);
-        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(0L);
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2022-09-28T10:22:12.0000000");
+        when(jiraProcessorConfig.getStartDate()).thenReturn("2022-09-28 10:22");
         when(jiraProcessorConfig.getPageSize()).thenReturn(2);
         when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
         when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
@@ -123,7 +128,7 @@ public class KanbanJiraIssueClientImplTest {
         map.put("KnowHOW", LocalDateTime.now());
         doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
         JiraAdapter jiraAdapter = new OfflineAdapter(jiraProcessorConfig, searchResult, alVersion);
-        kanbanJiraIssueClient.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Mockito.anyBoolean());
+        kanbanJiraIssueClient.processesJiraIssues(projectConfFieldMapping, jiraAdapter, true);
 
         verify(kanbanJiraRepo, times(1)).saveAll(Mockito.any());
         verify(kanbanIssueHistoryRepo, times(1)).saveAll(Mockito.any());

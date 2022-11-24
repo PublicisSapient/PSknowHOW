@@ -37,24 +37,19 @@
         </div>
       </div>
       <div class="content select-scenario" *ngIf="selectedView === 'processor_state'">
-        
+
         <p-table [value]="processorData.data" [paginator]="true" [rows]="15" [loading]="dataLoading"
           styleClass="p-datatable-striped"  loadingIcon="loading-img" [autoLayout]="true">
 
           <ng-template pTemplate="caption">
             <div class="table-header">
-              <div class="col-12">
-                <div class="">Processors</div>
-                <div class="message">
-                  *For tools other than Jira, after deleting Project data the 'Last Executed On' date/time stamp and 'Status' will not be removed. Please check the success message for confirmation.
-                </div>
-              </div>
-                <div class="d-flex align-items-center">
-                    <span style="font-size: 0.8em;margin-left: 14px;">
+              Processors
+              <div class="d-flex align-items-center">
+                    <span style="font-size: 0.8em;">
                         Select Project
                     </span>
                     <span class="p-mr-3 p-ml-3">
-                      <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name" 
+                      <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
                       [style]="{'min-width':'300px', 'max-width':'300px'}"
                       [filter]="true" filterBy="name" [showClear]="false" placeholder="Select a Project"
                       (onChange)="updateProjectSelection($event)"
@@ -65,13 +60,13 @@
                             </div>
                         </ng-template>
                         <ng-template let-userProject pTemplate="item">
-                            <div class="userProject-item">                  
+                            <div class="userProject-item">
                                 <div>{{userProject.name}}</div>
                             </div>
                         </ng-template>
                       </p-dropdown>
                     </span>
-                   
+
                 </div>
             </div>
         </ng-template>
@@ -89,12 +84,12 @@
               <td class='custom-table-cell'>
                 {{ processor.processorName === 'Azure' ? 'Azure Board' : processor.processorName }}
               </td>
-            
-              <td class='custom-table-cell'>                
+
+              <td class='custom-table-cell'>
                   {{ showExecutionDate(processor.processorName) }}
               </td>
               <td class='custom-table-cell'>
-                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'" 
+                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'"
                   class="status-container" [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                   {{ showProcessorLastState(processor.processorName)}}
                 </div>

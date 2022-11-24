@@ -4,14 +4,14 @@
         <div class="" *ngIf="!filterNo">
             <ng-container *ngIf="data?.formula?.length > 0">
                 <div *ngFor="let item of data?.formula" class="p-d-flex p-align-center p-mb-2">
-                    <h5 class="p-mb-0 p-text-center">{{item?.lhs}}</h5>
+                    <h4 class="p-mb-0 p-text-center">{{item?.lhs}}</h4>
                     <div *ngIf="item?.rhs || item?.operands" class="p-pl-2 p-pr-2">=</div>
                     <div class="p-d-flex p-align-center"
                         [ngClass]="{'p-flex-column': item?.operator === 'division'}">
-                        <h5 *ngIf="item?.operands" class="p-text-center">{{item?.operands[0]}}</h5>
+                        <h4 *ngIf="item?.operands" class="p-text-center">{{item?.operands[0]}}</h4>
                         <div *ngIf="item?.operator === 'division'" class="divide"></div>
-                        <h5 *ngIf="item?.operands" class="p-mb-0 p-mt-2 p-text-center">{{item?.operands[1]}}</h5>
-                        <h5 *ngIf="item?.rhs" class="p-mb-0 p-text-center">{{item?.rhs}}</h5>
+                        <h4 *ngIf="item?.operands" class="p-mb-0 p-mt-2 p-text-center">{{item?.operands[1]}}</h4>
+                        <h4 *ngIf="item?.rhs" class="p-mb-0 p-text-center">{{item?.rhs}}</h4>
                     </div>
                 </div>
             </ng-container>

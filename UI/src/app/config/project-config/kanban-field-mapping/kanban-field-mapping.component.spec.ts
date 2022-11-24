@@ -39,6 +39,8 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 
 import { environment } from 'src/environments/environment';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { BadgeModule } from 'primeng/badge';
 
 const completeHierarchyData = {
   kanban: [
@@ -428,7 +430,9 @@ describe('KanbanFieldMappingComponent', () => {
         TooltipModule,
         AccordionModule,
         ToastModule,
-        DialogModule
+        DialogModule,
+        RadioButtonModule,
+        BadgeModule
       ],
       providers: [
         HttpService,
@@ -537,7 +541,7 @@ describe('KanbanFieldMappingComponent', () => {
 
   it('should select values from popup', () => {
     component.singleSelectionDropdown = false;
-    component.selectedField = 'jiraTicketResolvedStatus';
+    component.selectedField = 'jiraTicketTriagedStatus';
     component.fieldMappingMultiSelectValues = [{
       key: 'Open',
       data: 'Open'

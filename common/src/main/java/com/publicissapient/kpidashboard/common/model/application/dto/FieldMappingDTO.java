@@ -190,6 +190,8 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;
+	//field for FTPR
+	private List<String> jiraFTPRStoryIdentification;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";

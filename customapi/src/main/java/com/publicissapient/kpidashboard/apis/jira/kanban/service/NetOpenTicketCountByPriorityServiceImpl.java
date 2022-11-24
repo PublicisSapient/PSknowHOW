@@ -27,37 +27,38 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 @Component
 public class NetOpenTicketCountByPriorityServiceImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
-	@Autowired
-	private ConfigHelperService configHelperService;
-	
-	@Autowired
-	private KpiHelperService kpiHelperService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountByPriorityServiceImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String FIELD_PRIORITY = "priority";
+	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
+	Map<String, Object> resultListMap = new HashMap<>();
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private KpiHelperService kpiHelperService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets Qualifier Type
@@ -85,7 +86,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-PRIORITY {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
 		dateWiseLeafNodeValue(mapTmp, projectList, kpiElement, kpiRequest);
 
@@ -126,8 +128,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	@Override
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList,
-				startDate, endDate, kpiRequest, FIELD_PRIORITY);
+		resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
+				kpiRequest, FIELD_PRIORITY);
 
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		String startDateForCumulative = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);
@@ -158,9 +160,8 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 	private void kpiWithFilter(Map<String, Map<String, Map<String, Set<String>>>> resultMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
-
 		leafNodeList.forEach(node -> {
 			Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
@@ -187,11 +188,15 @@ public class NetOpenTicketCountByPriorityServiceImpl
 
 				}
 				// Populates data in Excel for validation for tickets created before
-				populateValidationDataObject(kpiElement, requestTrackerId, jiraHistoryPriorityAndDateWiseIssueMap,
-						validationDataMap, node, projectWisePriorityList);
+				populateExcelDataObject(requestTrackerId, jiraHistoryPriorityAndDateWiseIssueMap, node,
+						projectWisePriorityList,
+						new HashSet<>((List<KanbanIssueCustomHistory>) resultListMap.get(JIRA_ISSUE_HISTORY_DATA)),
+						excelData, kpiRequest);
 				mapTmp.get(node.getId()).setValue(trendValueMap);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TICKET_COUNT_BY_PRIORITY.getColumns());
 	}
 
 	/**
@@ -255,14 +260,14 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		Map<String, Integer> hoverValueMap = new HashMap<>();
 		projectWisePriorityMap.forEach((key, value) -> {
 			hoverValueMap.put(key, value.intValue());
-			DataCount dcObj = getDataCountObject(value, projectName, date, projectNodeId, key , hoverValueMap);
+			DataCount dcObj = getDataCountObject(value, projectName, date, projectNodeId, key, hoverValueMap);
 			projectFilterWiseDataMap.computeIfAbsent(key, k -> new ArrayList<>()).add(dcObj);
 		});
 
 		Long aggLineValue = projectWisePriorityMap.values().stream().mapToLong(p -> p).sum();
 
-		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>())
-				.add(getDataCountObject(aggLineValue, projectName, date, projectNodeId, CommonConstant.OVERALL , hoverValueMap));
+		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(getDataCountObject(
+				aggLineValue, projectName, date, projectNodeId, CommonConstant.OVERALL, hoverValueMap));
 	}
 
 	/**
@@ -331,29 +336,21 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		return dataCount;
 	}
 
-	/**
-	 * Populates Validation Data Object for excel.
-	 * Only Latest today cumulative data export in excel
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param jiraHistoryPriorityAndDateWiseIssueMap
-	 * @param validationDataMap
-	 * @param node
-	 * @param projectWisePriorityList
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, Map<String, Set<String>>> jiraHistoryPriorityAndDateWiseIssueMap,
-			Map<String, ValidationData> validationDataMap, Node node, Set<String> projectWisePriorityList) {
+	private void populateExcelDataObject(String requestTrackerId,
+			Map<String, Map<String, Set<String>>> jiraHistoryPriorityAndDateWiseIssueMap, Node node,
+			Set<String> projectWisePriorityList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
+			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
 
 			if (MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
-				ValidationData validationData = kpiHelperService.prepareExcelForKanbanCumulativeDataMap(
-						jiraHistoryPriorityAndDateWiseIssueMap, FIELD_PRIORITY, projectWisePriorityList);
-				validationDataMap.put(dateProjectKey, validationData);
+				String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+				String date = getRange(
+						KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+						kpiRequest);
+				KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
+						jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData,
+						date, KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 			}
-			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}
 	}
 

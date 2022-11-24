@@ -142,13 +142,13 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		}
 
 		// Cleaning Cache
-		if (scrumIssueCount.get() > 0) {
+		if (scrumIssueCount.get() > 0 || executionStatus) {
 			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.ZEPHYR_KPI_CACHE);
 		}
-		if (kanbanIssueCount.get() > 0) {
+		if (kanbanIssueCount.get() > 0 || executionStatus) {
 			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,

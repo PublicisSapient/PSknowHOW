@@ -311,6 +311,7 @@ public class UserInfoServiceImplTest {
 	public void getAllUserInfoWithData() {
 		UserInfo testUser = new UserInfo();
 		testUser.setUsername("UnitTest");
+		testUser.setAuthorities(Arrays.asList("ROLE_SUPERADMIN"));
 		ArrayList<UserInfo> userInfoList = new ArrayList<UserInfo>();
 		userInfoList.add(testUser);
 		when(userInfoRepository.findAll()).thenReturn(userInfoList);

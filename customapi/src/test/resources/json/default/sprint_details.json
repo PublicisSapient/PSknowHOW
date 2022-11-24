@@ -9,48 +9,238 @@
     "endDate": "2022-09-27T17:00:00.000Z",
     "completeDate": "2022-09-28T02:52:29.666Z",
     "activatedDate": "2022-09-07T14:08:51.092Z",
-    "originBoardId": "11856",
+    "originBoardId": [ "11856" ],
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues": [
-      "DTS-16048",
-      "DTS-17908",
-      "DTS-18379",
-      "DTS-18392",
-      "DTS-18525",
-      "DTS-18547",
-      "DTS-18556",
-      "DTS-18637",
-      "DTS-18696",
-      "DTS-18783",
-      "DTS-18881",
-      "DTS-18906",
-      "DTS-18937",
-      "DTS-18987",
-      "DTS-19035",
-      "DTS-19036"
+    "completedIssues" : [
+      {
+        "number" : "DTS-16048",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-17908",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18379",
+        "priority" : "P4 - Minor",
+        "status" : "Dropped",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18392",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18525",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18547",
+        "priority" : "P4 - Minor",
+        "status" : "Live",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18556",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18637",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18696",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18783",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18881",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18906",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18937",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18987",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19035",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19036",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "notCompletedIssues": [
-      "DTS-16349",
-      "DTS-16627",
-      "DTS-17768",
-      "DTS-17918",
-      "DTS-17919",
-      "DTS-18215",
-      "DTS-18419",
-      "DTS-18557",
-      "DTS-18780",
-      "DTS-18903",
-      "DTS-19003"
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-16349",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "86400.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-16627",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "36000.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17768",
+        "priority" : "P4 - Minor",
+        "status" : "More info",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17918",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17919",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18215",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Enabler Story"
+      },
+      {
+        "number" : "DTS-18419",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18557",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18780",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18903",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19003",
+        "priority" : "P4 - Minor",
+        "status" : "In Investigation",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "puntedIssues": [
-      "DTS-17135"
+    "puntedIssues" : [
+      {
+        "number" : "DTS-17135",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "28800.0"
+      }
     ],
-    "completedIssuesAnotherSprint": [
-      "DTS-18621",
-      "DTS-18868"
+    "completedIssuesAnotherSprint" : [
+      {
+        "number" : "DTS-18621",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18868",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "addedIssues": [
+    "addedIssues" : [
       "DTS-18937",
       "DTS-18906",
       "DTS-18903",
@@ -60,34 +250,206 @@
       "DTS-19003",
       "DTS-19036"
     ],
-    "totalIssues": [
-      "DTS-16048",
-      "DTS-17908",
-      "DTS-18379",
-      "DTS-18392",
-      "DTS-18525",
-      "DTS-18547",
-      "DTS-18556",
-      "DTS-18637",
-      "DTS-18696",
-      "DTS-18783",
-      "DTS-18881",
-      "DTS-18906",
-      "DTS-18937",
-      "DTS-18987",
-      "DTS-19035",
-      "DTS-19036",
-      "DTS-16349",
-      "DTS-16627",
-      "DTS-17768",
-      "DTS-17918",
-      "DTS-17919",
-      "DTS-18215",
-      "DTS-18419",
-      "DTS-18557",
-      "DTS-18780",
-      "DTS-18903",
-      "DTS-19003"
+    "totalIssues" : [
+      {
+        "number" : "DTS-16048",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-17908",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18379",
+        "priority" : "P4 - Minor",
+        "status" : "Dropped",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18392",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18525",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18547",
+        "priority" : "P4 - Minor",
+        "status" : "Live",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18556",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18637",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18696",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18783",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18881",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18906",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18937",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18987",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19035",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19036",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-16349",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "86400.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-16627",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "36000.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17768",
+        "priority" : "P4 - Minor",
+        "status" : "More info",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17918",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17919",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18215",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Enabler Story"
+      },
+      {
+        "number" : "DTS-18419",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18557",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18780",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18903",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19003",
+        "priority" : "P4 - Minor",
+        "status" : "In Investigation",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
@@ -101,80 +463,484 @@
     "endDate": "2022-09-27T15:30:00.000Z",
     "completeDate": "2022-09-28T02:53:13.284Z",
     "activatedDate": "2022-09-14T07:43:00.031Z",
-    "originBoardId": "11856",
+    "originBoardId": [ "11856"],
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues": [
-      "DTS-17415",
-      "DTS-18499",
-      "DTS-18516",
-      "DTS-18561",
-      "DTS-18562",
-      "DTS-18563",
-      "DTS-18564",
-      "DTS-18565",
-      "DTS-18700",
-      "DTS-18701",
-      "DTS-18702",
-      "DTS-18704",
-      "DTS-18708",
-      "DTS-18710",
-      "DTS-18711",
-      "DTS-18716",
-      "DTS-18723",
-      "DTS-18777",
-      "DTS-18895",
-      "DTS-18916",
-      "DTS-18919",
-      "DTS-18948",
-      "DTS-18950",
-      "DTS-18990",
-      "DTS-19007",
-      "DTS-19017",
-      "DTS-19018",
-      "DTS-19021",
-      "DTS-19324",
-      "DTS-19341",
-      "DTS-19399",
-      "DTS-19485",
-      "DTS-19486",
-      "DTS-19488"
+    "completedIssues" : [
+      {
+        "number" : "DTS-17415",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18499",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18516",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18561",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18562",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18563",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18564",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18565",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18700",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18701",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18702",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18704",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18708",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18710",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18711",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18716",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18723",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18777",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18895",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18916",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18919",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18948",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18950",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18990",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19007",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19017",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19018",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19021",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19324",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19341",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19399",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19485",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19486",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19488",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "notCompletedIssues": [
-      "DTS-17407",
-      "DTS-17408",
-      "DTS-17416",
-      "DTS-17438",
-      "DTS-17458",
-      "DTS-18501",
-      "DTS-18503",
-      "DTS-18705",
-      "DTS-18714",
-      "DTS-18715",
-      "DTS-18721",
-      "DTS-18781",
-      "DTS-18915",
-      "DTS-18922",
-      "DTS-18940",
-      "DTS-18942",
-      "DTS-18943",
-      "DTS-19033",
-      "DTS-19365",
-      "DTS-19436",
-      "DTS-19489",
-      "DTS-19493",
-      "DTS-19510",
-      "DTS-19512",
-      "DTS-19513"
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-17407",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17408",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17416",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "57600.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17438",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17458",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18501",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18503",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18705",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18714",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18715",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18721",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18781",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18915",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 4
+      },
+      {
+        "number" : "DTS-18922",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18940",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18942",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18943",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19033",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-19365",
+        "priority" : "P2 - Critical",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19436",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-19489",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19493",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19510",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19512",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19513",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "puntedIssues": [
-      "DTS-18987"
+    "puntedIssues" : [
+      {
+        "number" : "DTS-18987",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "completedIssuesAnotherSprint": [
-      "DTS-18502",
-      "DTS-18719"
+    "completedIssuesAnotherSprint" : [
+      {
+        "number" : "DTS-18502",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18719",
+        "priority" : "P4 - Minor",
+        "status" : "Dropped",
+        "typeName" : "Story",
+        "estimate" : "230400.0",
+        "storyPoints" : 20
+      }
     ],
-    "addedIssues": [
+    "addedIssues" : [
       "DTS-18948",
       "DTS-19017",
       "DTS-19512",
@@ -198,68 +964,452 @@
       "DTS-18990",
       "DTS-19485"
     ],
-    "totalIssues": [
-      "DTS-17415",
-      "DTS-18499",
-      "DTS-18516",
-      "DTS-18561",
-      "DTS-18562",
-      "DTS-18563",
-      "DTS-18564",
-      "DTS-18565",
-      "DTS-18700",
-      "DTS-18701",
-      "DTS-18702",
-      "DTS-18704",
-      "DTS-18708",
-      "DTS-18710",
-      "DTS-18711",
-      "DTS-18716",
-      "DTS-18723",
-      "DTS-18777",
-      "DTS-18895",
-      "DTS-18916",
-      "DTS-18919",
-      "DTS-18948",
-      "DTS-18950",
-      "DTS-18990",
-      "DTS-19007",
-      "DTS-19017",
-      "DTS-19018",
-      "DTS-19021",
-      "DTS-19324",
-      "DTS-19341",
-      "DTS-19399",
-      "DTS-19485",
-      "DTS-19486",
-      "DTS-19488",
-      "DTS-17407",
-      "DTS-17408",
-      "DTS-17416",
-      "DTS-17438",
-      "DTS-17458",
-      "DTS-18501",
-      "DTS-18503",
-      "DTS-18705",
-      "DTS-18714",
-      "DTS-18715",
-      "DTS-18721",
-      "DTS-18781",
-      "DTS-18915",
-      "DTS-18922",
-      "DTS-18940",
-      "DTS-18942",
-      "DTS-18943",
-      "DTS-19033",
-      "DTS-19365",
-      "DTS-19436",
-      "DTS-19489",
-      "DTS-19493",
-      "DTS-19510",
-      "DTS-19512",
-      "DTS-19513"
+    "totalIssues" : [
+      {
+        "number" : "DTS-17415",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18499",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18516",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18561",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18562",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18563",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18564",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18565",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18700",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18701",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18702",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18704",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18708",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18710",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18711",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18716",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18723",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18777",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18895",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18916",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18919",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18948",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18950",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18990",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19007",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19017",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19018",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19021",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19324",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19341",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19399",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19485",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19486",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19488",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17407",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17408",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17416",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "57600.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17438",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17458",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18501",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18503",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18705",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18714",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18715",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18721",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18781",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18915",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 4
+      },
+      {
+        "number" : "DTS-18922",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18940",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18942",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18943",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19033",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-19365",
+        "priority" : "P2 - Critical",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19436",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-19489",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19493",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19510",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19512",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-19513",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
   {
     "_id": "6335e3724fd2f76a821115de",
@@ -271,40 +1421,198 @@
     "endDate": "2022-09-13T15:30:00.000Z",
     "completeDate": "2022-09-14T04:40:29.169Z",
     "activatedDate": "2022-09-01T03:05:24.853Z",
-    "originBoardId": "11856",
+    "originBoardId": [ "11856"],
     "goal": "",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues": [
-      "DTS-18495",
-      "DTS-18698",
-      "DTS-18699",
-      "DTS-18706",
-      "DTS-18709",
-      "DTS-18712",
-      "DTS-18717",
-      "DTS-18722",
-      "DTS-18875"
+    "completedIssues" : [
+      {
+        "number" : "DTS-18495",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18698",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18699",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18706",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18709",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18712",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18717",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18722",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18875",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      }
     ],
-    "notCompletedIssues": [
-      "DTS-18516",
-      "DTS-18561",
-      "DTS-18562",
-      "DTS-18700",
-      "DTS-18708",
-      "DTS-18710",
-      "DTS-18711",
-      "DTS-18714",
-      "DTS-18715",
-      "DTS-18716",
-      "DTS-18721",
-      "DTS-18723",
-      "DTS-18895",
-      "DTS-18916"
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-18516",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18561",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18562",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18700",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18708",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18710",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18711",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18714",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18715",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18716",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18721",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18723",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18895",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18916",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "puntedIssues": [],
-    "completedIssuesAnotherSprint": [],
-    "addedIssues": [
+    "puntedIssues" : [ ],
+    "completedIssuesAnotherSprint" : [ ],
+    "addedIssues" : [
       "DTS-18916",
       "DTS-18561",
       "DTS-18516",
@@ -314,32 +1622,190 @@
       "DTS-18562",
       "DTS-18895"
     ],
-    "totalIssues": [
-      "DTS-18495",
-      "DTS-18698",
-      "DTS-18699",
-      "DTS-18706",
-      "DTS-18709",
-      "DTS-18712",
-      "DTS-18717",
-      "DTS-18722",
-      "DTS-18875",
-      "DTS-18516",
-      "DTS-18561",
-      "DTS-18562",
-      "DTS-18700",
-      "DTS-18708",
-      "DTS-18710",
-      "DTS-18711",
-      "DTS-18714",
-      "DTS-18715",
-      "DTS-18716",
-      "DTS-18721",
-      "DTS-18723",
-      "DTS-18895",
-      "DTS-18916"
+    "totalIssues" : [
+      {
+        "number" : "DTS-18495",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18698",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18699",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18706",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18709",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18712",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18717",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18722",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18875",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18516",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18561",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18562",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18700",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18708",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18710",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18711",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18714",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18715",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18716",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18721",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18723",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18895",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18916",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
   {
     "_id": "6335e3724fd2f76a821115e0",
@@ -351,88 +1817,531 @@
     "endDate": "2022-09-07T10:23:00.000Z",
     "completeDate": "2022-09-07T01:20:28.387Z",
     "activatedDate": "2022-08-24T10:23:27.440Z",
-    "originBoardId": "11856",
+    "originBoardId": ["11856"],
     "goal": "1. Release 5.1.0 2. Hotfix to GS 3. Delete Project data and users 4. Nissan enhancements",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues": [
-      "DTS-14604",
-      "DTS-14612",
-      "DTS-14685",
-      "DTS-17292",
-      "DTS-17490",
-      "DTS-17495",
-      "DTS-17496",
-      "DTS-17926",
-      "DTS-17967",
-      "DTS-18198",
-      "DTS-18206",
-      "DTS-18224",
-      "DTS-18232",
-      "DTS-18252",
-      "DTS-18342",
-      "DTS-18378",
-      "DTS-18389",
-      "DTS-18447",
-      "DTS-18452",
-      "DTS-18476",
-      "DTS-18545",
-      "DTS-18615",
-      "DTS-18616",
-      "DTS-18622",
-      "DTS-18629",
-      "DTS-18631",
-      "DTS-18634",
-      "DTS-18636",
-      "DTS-18639",
-      "DTS-18641",
-      "DTS-18650",
-      "DTS-18656",
-      "DTS-18662",
-      "DTS-18664",
-      "DTS-18666",
-      "DTS-18667",
-      "DTS-18668",
-      "DTS-18674",
-      "DTS-18694",
-      "DTS-18724",
-      "DTS-18736",
-      "DTS-18745",
-      "DTS-18748",
-      "DTS-18754",
-      "DTS-18756",
-      "DTS-18759",
-      "DTS-18760"
+    "completedIssues" : [
+      {
+        "number" : "DTS-14604",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-14612",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-14685",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17292",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17490",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17495",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17496",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17926",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17967",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18198",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18206",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18224",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18232",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18252",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18342",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Enabler Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18378",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18389",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18447",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18452",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18476",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18545",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18615",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18616",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18622",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18629",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18631",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18634",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18636",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18639",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18641",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18650",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18656",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18662",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18664",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18666",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18667",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18668",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18674",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18694",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18724",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18736",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18745",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18748",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18754",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18756",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18759",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18760",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "notCompletedIssues": [
-      "DTS-16048",
-      "DTS-18480",
-      "DTS-18525",
-      "DTS-18547",
-      "DTS-18556",
-      "DTS-18557",
-      "DTS-18749",
-      "DTS-18783"
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-16048",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18480",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "28800.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18525",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18547",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18556",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18557",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18749",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18783",
+        "priority" : "P2 - Critical",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "puntedIssues": [
-      "DTS-17135",
-      "DTS-18516",
-      "DTS-18637",
-      "DTS-18663"
+    "puntedIssues" : [
+      {
+        "number" : "DTS-17135",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "28800.0"
+      },
+      {
+        "number" : "DTS-18516",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18637",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18663",
+        "priority" : "P4 - Minor",
+        "status" : "In Investigation",
+        "typeName" : "Defect"
+      }
     ],
-    "completedIssuesAnotherSprint": [
-      "DTS-17491",
-      "DTS-17492",
-      "DTS-17494",
-      "DTS-17770",
-      "DTS-17949",
-      "DTS-17972",
-      "DTS-18453",
-      "DTS-18486",
-      "DTS-18491",
-      "DTS-18493"
+    "completedIssuesAnotherSprint" : [
+      {
+        "number" : "DTS-17491",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17492",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17494",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "10800.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17770",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "14400.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17949",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17972",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18453",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18486",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18491",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18493",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "addedIssues": [
+    "addedIssues" : [
       "DTS-18636",
       "DTS-18615",
       "DTS-18637",
@@ -464,62 +2373,416 @@
       "DTS-18663",
       "DTS-18664"
     ],
-    "totalIssues": [
-      "DTS-14604",
-      "DTS-14612",
-      "DTS-14685",
-      "DTS-17292",
-      "DTS-17490",
-      "DTS-17495",
-      "DTS-17496",
-      "DTS-17926",
-      "DTS-17967",
-      "DTS-18198",
-      "DTS-18206",
-      "DTS-18224",
-      "DTS-18232",
-      "DTS-18252",
-      "DTS-18342",
-      "DTS-18378",
-      "DTS-18389",
-      "DTS-18447",
-      "DTS-18452",
-      "DTS-18476",
-      "DTS-18545",
-      "DTS-18615",
-      "DTS-18616",
-      "DTS-18622",
-      "DTS-18629",
-      "DTS-18631",
-      "DTS-18634",
-      "DTS-18636",
-      "DTS-18639",
-      "DTS-18641",
-      "DTS-18650",
-      "DTS-18656",
-      "DTS-18662",
-      "DTS-18664",
-      "DTS-18666",
-      "DTS-18667",
-      "DTS-18668",
-      "DTS-18674",
-      "DTS-18694",
-      "DTS-18724",
-      "DTS-18736",
-      "DTS-18745",
-      "DTS-18748",
-      "DTS-18754",
-      "DTS-18756",
-      "DTS-18759",
-      "DTS-18760",
-      "DTS-16048",
-      "DTS-18480",
-      "DTS-18525",
-      "DTS-18547",
-      "DTS-18556",
-      "DTS-18557",
-      "DTS-18749",
-      "DTS-18783"
+    "totalIssues" : [
+      {
+        "number" : "DTS-14604",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-14612",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-14685",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17292",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17490",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17495",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17496",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17926",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17967",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18198",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18206",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18224",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18232",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18252",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18342",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Enabler Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18378",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18389",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18447",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18452",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18476",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18545",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18615",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18616",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18622",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18629",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18631",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18634",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18636",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18639",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18641",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18650",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18656",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18662",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18664",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18666",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18667",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18668",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18674",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18694",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18724",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18736",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18745",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18748",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18754",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18756",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18759",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18760",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-16048",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 8
+      },
+      {
+        "number" : "DTS-18480",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "28800.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18525",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18547",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18556",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18557",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18749",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18783",
+        "priority" : "P2 - Critical",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
@@ -533,83 +2796,495 @@
     "endDate": "2022-08-24T09:47:00.000Z",
     "completeDate": "2022-08-24T03:35:24.843Z",
     "activatedDate": "2022-08-10T09:47:13.639Z",
-    "originBoardId": "11856",
+    "originBoardId": ["11856"],
     "goal": "",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues": [
-      "DTS-14606",
-      "DTS-14822",
-      "DTS-17208",
-      "DTS-17210",
-      "DTS-17274",
-      "DTS-17291",
-      "DTS-17488",
-      "DTS-17493",
-      "DTS-17779",
-      "DTS-17942",
-      "DTS-18242",
-      "DTS-18267",
-      "DTS-18299",
-      "DTS-18328",
-      "DTS-18342",
-      "DTS-18350",
-      "DTS-18362",
-      "DTS-18365",
-      "DTS-18375",
-      "DTS-18428",
-      "DTS-18429",
-      "DTS-18432",
-      "DTS-18433",
-      "DTS-18434",
-      "DTS-18446",
-      "DTS-18448",
-      "DTS-18449",
-      "DTS-18451",
-      "DTS-18468",
-      "DTS-18474",
-      "DTS-18475",
-      "DTS-18477",
-      "DTS-18478",
-      "DTS-18479"
+    "completedIssues" : [
+      {
+        "number" : "DTS-14606",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-14822",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17208",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17210",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17274",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17291",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17488",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17493",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17779",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17942",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18242",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18267",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18299",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18328",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18342",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Enabler Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18350",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18362",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18365",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18375",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18428",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18429",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18432",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18433",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18434",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18446",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18448",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18449",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18451",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18468",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18474",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18475",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18477",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18478",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18479",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "notCompletedIssues": [
-      "DTS-14604",
-      "DTS-14612",
-      "DTS-14685",
-      "DTS-17135",
-      "DTS-17490",
-      "DTS-17491",
-      "DTS-17492",
-      "DTS-17494",
-      "DTS-17495",
-      "DTS-17496",
-      "DTS-17770",
-      "DTS-17926",
-      "DTS-17949",
-      "DTS-17967",
-      "DTS-17972",
-      "DTS-18198",
-      "DTS-18206",
-      "DTS-18252",
-      "DTS-18378",
-      "DTS-18389",
-      "DTS-18452",
-      "DTS-18476",
-      "DTS-18486",
-      "DTS-18491",
-      "DTS-18493"
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-14604",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-14612",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-14685",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17135",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "28800.0"
+      },
+      {
+        "number" : "DTS-17490",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17491",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17492",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17494",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "10800.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17495",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17496",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17770",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "14400.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17926",
+        "priority" : "P2 - Critical",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17949",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17967",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17972",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18198",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18206",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18252",
+        "priority" : "P3 - Major",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18378",
+        "priority" : "P3 - Major",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18389",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18452",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18476",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18486",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18491",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18493",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "puntedIssues": [
-      "DTS-17209",
-      "DTS-18379",
-      "DTS-18388"
+    "puntedIssues" : [
+      {
+        "number" : "DTS-17209",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18379",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18388",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      }
     ],
-    "completedIssuesAnotherSprint": [
-      "DTS-17803",
-      "DTS-17938"
+    "completedIssuesAnotherSprint" : [
+      {
+        "number" : "DTS-17803",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17938",
+        "priority" : "P1 - Blocker",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
-    "addedIssues": [
+    "addedIssues" : [
       "DTS-18379",
       "DTS-18434",
       "DTS-18478",
@@ -639,66 +3314,446 @@
       "DTS-18451",
       "DTS-18491"
     ],
-    "totalIssues": [
-      "DTS-14606",
-      "DTS-14822",
-      "DTS-17208",
-      "DTS-17210",
-      "DTS-17274",
-      "DTS-17291",
-      "DTS-17488",
-      "DTS-17493",
-      "DTS-17779",
-      "DTS-17942",
-      "DTS-18242",
-      "DTS-18267",
-      "DTS-18299",
-      "DTS-18328",
-      "DTS-18342",
-      "DTS-18350",
-      "DTS-18362",
-      "DTS-18365",
-      "DTS-18375",
-      "DTS-18428",
-      "DTS-18429",
-      "DTS-18432",
-      "DTS-18433",
-      "DTS-18434",
-      "DTS-18446",
-      "DTS-18448",
-      "DTS-18449",
-      "DTS-18451",
-      "DTS-18468",
-      "DTS-18474",
-      "DTS-18475",
-      "DTS-18477",
-      "DTS-18478",
-      "DTS-18479",
-      "DTS-14604",
-      "DTS-14612",
-      "DTS-14685",
-      "DTS-17135",
-      "DTS-17490",
-      "DTS-17491",
-      "DTS-17492",
-      "DTS-17494",
-      "DTS-17495",
-      "DTS-17496",
-      "DTS-17770",
-      "DTS-17926",
-      "DTS-17949",
-      "DTS-17967",
-      "DTS-17972",
-      "DTS-18198",
-      "DTS-18206",
-      "DTS-18252",
-      "DTS-18378",
-      "DTS-18389",
-      "DTS-18452",
-      "DTS-18476",
-      "DTS-18486",
-      "DTS-18491",
-      "DTS-18493"
+    "totalIssues" : [
+      {
+        "number" : "DTS-14606",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-14822",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17208",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17210",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17274",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17291",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17488",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17493",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17779",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17942",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18242",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18267",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18299",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18328",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18342",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Enabler Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18350",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-18362",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18365",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18375",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18428",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18429",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18432",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18433",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18434",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18446",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18448",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18449",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18451",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect"
+      },
+      {
+        "number" : "DTS-18468",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18474",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18475",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18477",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18478",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18479",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-14604",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-14612",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-14685",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17135",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "28800.0"
+      },
+      {
+        "number" : "DTS-17490",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17491",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17492",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17494",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "estimate" : "10800.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17495",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17496",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-17770",
+        "priority" : "P4 - Minor",
+        "status" : "In Testing",
+        "typeName" : "Story",
+        "estimate" : "14400.0",
+        "storyPoints" : 3
+      },
+      {
+        "number" : "DTS-17926",
+        "priority" : "P2 - Critical",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-17949",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-17967",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-17972",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Defect",
+        "estimate" : "0.0",
+        "storyPoints" : 1
+      },
+      {
+        "number" : "DTS-18198",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 2
+      },
+      {
+        "number" : "DTS-18206",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "estimate" : "0.0",
+        "storyPoints" : 5
+      },
+      {
+        "number" : "DTS-18252",
+        "priority" : "P3 - Major",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18378",
+        "priority" : "P3 - Major",
+        "status" : "Open",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18389",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18452",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18476",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18486",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18491",
+        "priority" : "P3 - Major",
+        "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18493",
+        "priority" : "P3 - Major",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   }

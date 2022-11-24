@@ -39,14 +39,16 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,13 +57,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, List<Object>, Map<String, Object>> {
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
 	private static final String TESTCASEKEY = "testCaseData";
 	private static final String AUTOMATED_TESTCASE_KEY = "automatedTestCaseData";
 	private static final String AUTOMATED = "Regression test cases automated";
 	private static final String TOTAL = "Total Regression test cases";
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets Qualifier Type from KPICode enum
@@ -96,13 +97,13 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 		log.debug("[TEST-AUTOMATION-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
-		
 
-			Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-			calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.REGRESSION_AUTOMATION_COVERAGE);
-			//3rd change : remove code to set trendValuelist and call getTrendValues method
-			List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,KPICode.REGRESSION_AUTOMATION_COVERAGE);
-			kpiElement.setTrendValueList(trendValues);
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.REGRESSION_AUTOMATION_COVERAGE);
+		// 3rd change : remove code to set trendValuelist and call getTrendValues method
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+				KPICode.REGRESSION_AUTOMATION_COVERAGE);
+		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
 	}
@@ -116,10 +117,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		 return fetchRegressionKPIDataFromDb(leafNodeList,false);
+		return fetchRegressionKPIDataFromDb(leafNodeList, false);
 	}
-
-	
 
 	/**
 	 * 
@@ -135,14 +134,14 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 
 		String requestTrackerId = getRequestTrackerId();
 		DateTimeFormatter parser = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
-		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter()
-				.getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
+				.compareTo(o2.getSprintFilter().getStartDate()));
 		Map<String, Object> testDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 		Map<String, List<TestCaseDetails>> total = (Map<String, List<TestCaseDetails>>) testDataListMap
 				.get(TESTCASEKEY);
 		Map<String, List<TestCaseDetails>> automated = (Map<String, List<TestCaseDetails>>) testDataListMap
 				.get(AUTOMATED_TESTCASE_KEY);
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 
@@ -152,8 +151,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 			List<TestCaseDetails> automatedTest = automated.get(basicProjectConfId);
 			// Automation Percentage
 			double automationForCurrentLeaf = getKPI(totalTest, automatedTest);
-			populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap,
-					node.getSprintFilter().getName(), automatedTest, totalTest);
+
 			String sprintEndDate = node.getSprintFilter().getEndDate();
 			double sprintWiseAutomation = 0;
 			if (StringUtils.isNotEmpty(sprintEndDate) && CollectionUtils.isNotEmpty(totalTest)
@@ -168,28 +166,30 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 								&& parser.parseDateTime(test.getTestAutomatedDate()).isBefore(endDate))
 						.collect(Collectors.toList());
 				setHowerMap(sprintWiseAutomatedTest, sprintWiseTotalTest, howerMap, AUTOMATED, TOTAL);
+				populateExcelDataObject(requestTrackerId, excelData, node.getSprintFilter().getName(), sprintWiseAutomatedTest,
+						sprintWiseTotalTest);
 				sprintWiseAutomation = (double) Math
 						.round((100.0 * sprintWiseAutomatedTest.size()) / (sprintWiseTotalTest.size()));
 			}
 
 			log.debug("[REGRESSION-AUTOMATION-SPRINT-WISE][{}]. REGRESSION-AUTOMATION for sprint {}  is {}",
-					requestTrackerId, node.getSprintFilter().getName(),
-					automationForCurrentLeaf);
+					requestTrackerId, node.getSprintFilter().getName(), automationForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
 			dataCount.setData(String.valueOf(sprintWiseAutomation));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds( new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames( new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 			dataCount.setHoverValue(howerMap);
 			dataCount.setValue(sprintWiseAutomation);
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
 
 		});
-
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.REGRESSION_AUTOMATION_COVERAGE.getColumns());
 	}
 
 	/**
@@ -209,34 +209,18 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		return automatedPercentage;
 	}
 
-	/**
-	 * populates the validation data node of the KPI element.
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param projectName
-	 * @param automatedTest
-	 * @param totalTest
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, String projectName, List<TestCaseDetails> automatedTest,
-			List<TestCaseDetails> totalTest) {
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, String sprintName,
+			List<TestCaseDetails> automatedTest, List<TestCaseDetails> totalTest) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
-			ValidationData validationData = new ValidationData();
-			if (CollectionUtils.isNotEmpty(automatedTest)) {
-				validationData.setAutomatedTestList(
-						automatedTest.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
-			}
+			Map<String, TestCaseDetails> totalTestCaseMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(totalTest)) {
-				validationData.setTotalTestList(
-						totalTest.stream().map(TestCaseDetails::getNumber).collect(Collectors.toList()));
+				totalTest.stream().forEach(test -> totalTestCaseMap.putIfAbsent(test.getNumber(), test));
 			}
-			validationDataMap.put(projectName, validationData);
 
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+			KPIExcelUtility.populateRegressionAutomationExcelData(sprintName, totalTestCaseMap, automatedTest,
+					excelData,KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(), "");
 
 		}
 	}
@@ -260,9 +244,9 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 			howerMap.put(key2, 0);
 		}
 	}
-	
+
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList,kpiName);
+		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 }

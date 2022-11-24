@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
@@ -64,7 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Provide SonarQube 8 Implementation. Tested with SonarQube 8.0 and SonarQube
  * 8.1
- * 
+ *
  * @author vijkumar18
  *
  */
@@ -95,6 +98,9 @@ public class Sonar8Client implements SonarClient {
 	private final RestOperations restOperations;
 	private final SonarConfig sonarConfig;
 
+
+	private ToolCredentialProvider toolCredentialProvider;
+
 	/**
 	 * Instantiates a new Sonar 8 client.
 	 *
@@ -104,14 +110,15 @@ public class Sonar8Client implements SonarClient {
 	 *            the sonar settings
 	 */
 	@Autowired
-	public Sonar8Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig) {
+	public Sonar8Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig, ToolCredentialProvider toolCredentialProvider) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.sonarConfig = sonarConfig;
+		this.toolCredentialProvider = toolCredentialProvider;
 	}
 
 	/**
 	 * Provides the list of Sonar Projects.
-	 * 
+	 *
 	 * @param sonarServer
 	 *            the Sonar server connection details
 	 * @return the list of Sonar project
@@ -142,7 +149,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Provides List of Sonar Project setup properties.
-	 * 
+	 *
 	 * @param response
 	 *            the SearchProjectsResponse
 	 * @param sonarServer
@@ -150,7 +157,7 @@ public class Sonar8Client implements SonarClient {
 	 * @return the list of Sonar Project
 	 */
 	private List<SonarProcessorItem> getProjectsListFromResponse(SearchProjectsResponse response,
-			ProcessorToolConnection sonarServer) {
+																 ProcessorToolConnection sonarServer) {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		if (response != null) {
 			List<SonarComponent> sonarComponents = response.getComponents();
@@ -174,7 +181,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Returns true if next page is available.
-	 * 
+	 *
 	 * @param paging
 	 *            the pagination properties
 	 * @return true if next page is available
@@ -191,7 +198,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Count total pages.
-	 * 
+	 *
 	 * @param paging
 	 *            the pagination properties
 	 * @return total number of pages
@@ -209,25 +216,29 @@ public class Sonar8Client implements SonarClient {
 	}
 
 	private SearchProjectsResponse getProjects(ProcessorToolConnection sonarServer, Paging paging,
-			int nextPageIndex) {
+											   int nextPageIndex) {
+
+		ToolCredential toolCredentials = SonarUtils.getToolCredentials(toolCredentialProvider, sonarServer);
 
 		String baseUrl = sonarServer.getUrl() == null ? null : sonarServer.getUrl().trim();
-		String username = sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim();
-		String password = sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim();
-		String accessToken = sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim();
+		String username = toolCredentials.getUsername();
+		String password = toolCredentials.getPassword();
+
 		SearchProjectsResponse response;
 
 		if (sonarServer.isCloudEnv()) {
-			response = searchProjectsSonarCloud(baseUrl, accessToken, nextPageIndex, paging.getPageSize(),
+			response = searchProjectsSonarCloud(baseUrl, password, nextPageIndex, paging.getPageSize(),
 					sonarServer.getOrganizationKey());
 		} else {
 			response = searchProjects(baseUrl, username, password, nextPageIndex, paging.getPageSize());
 		}
 		return response;
 	}
+
+
 	/**
 	 * Rest call to get the projects of one page.
-	 * 
+	 *
 	 * @param baseUrl
 	 *            the base url
 	 * @param username
@@ -241,7 +252,7 @@ public class Sonar8Client implements SonarClient {
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
 	private SearchProjectsResponse searchProjects(String baseUrl, String username, String password, int pageIndex,
-			int pageSize) {
+												  int pageSize) {
 
 		String resUrl = String.format(RESOURCE_ENDPOINT, pageIndex, pageSize);
 		String url = baseUrl + resUrl;
@@ -289,7 +300,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 
 	private SearchProjectsResponse searchProjectsSonarCloud(String baseUrl, String accessToken, int pageIndex,
-			int pageSize, String organizationKey) {
+															int pageSize, String organizationKey) {
 
 		String resUrl = String.format(new StringBuilder(baseUrl).append(RESOURCE_ENDPOINT_CLOUD).toString(),
 				organizationKey, pageIndex, pageSize);
@@ -303,7 +314,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Provides Current Sonar snapshot.
-	 * 
+	 *
 	 * @param project
 	 *            the Sonar project setup properties
 	 * @param httpHeaders
@@ -314,7 +325,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 	@Override
 	public SonarDetails getLatestSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders,
-			String metrics) {
+											  String metrics) {
 		String url;
 		if (!project.getToolDetailsMap().containsKey(BRANCH)) {
 			url = String.format(
@@ -384,7 +395,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Provides code quality metrics.
-	 * 
+	 *
 	 * @param metricJson
 	 *            the metrics as json
 	 * @return the code quality metric
@@ -408,7 +419,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Set version to Sonar data.
-	 * 
+	 *
 	 * @param sonarDetail
 	 *            the sonar detail
 	 * @param eventJson
@@ -422,7 +433,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Provides Past sonar data.
-	 * 
+	 *
 	 * @param project
 	 *            the Sonar server connection details
 	 * @param httpHeaders
@@ -433,7 +444,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 	@Override
 	public List<SonarHistory> getPastSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders,
-			String metrics) {
+												  String metrics) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 		String lastUpdated = DEFAULT_DATE;
@@ -444,7 +455,7 @@ public class Sonar8Client implements SonarClient {
 		log.info("Last UpdatedTime: {}", lastUpdated);
 
 		String url = "";
-		
+
 		try {
 			int pageIndex = 1;
 			List<SonarHistory> codeList = new ArrayList<>();
@@ -466,7 +477,7 @@ public class Sonar8Client implements SonarClient {
 					if (qualityList.get(0).getHistory().size() <= 1) {
 						return codeList;
 					}
-					
+
 					for (int singleHistory = 0; singleHistory < qualityList.get(0).getHistory()
 							.size(); singleHistory++) {
 						SonarHistory sonarHistory = new SonarHistory();
@@ -509,7 +520,7 @@ public class Sonar8Client implements SonarClient {
 
 	/**
 	 * Populates sonar history.
-	 * 
+	 *
 	 * @param qualityList
 	 *            the list of Sonar measure data
 	 * @param singleHistory
@@ -518,7 +529,7 @@ public class Sonar8Client implements SonarClient {
 	 *            the sonar history
 	 */
 	private void populateCodeQualityHistory(List<SonarMeasureData> qualityList, int singleHistory,
-			SonarHistory sonarHistory) {
+											SonarHistory sonarHistory) {
 		for (SonarMeasureData sonarMeasureData : qualityList) {
 			SonarMetric metric = new SonarMetric(sonarMeasureData.getMetric());
 			if (!CollectionUtils.isEmpty(sonarMeasureData.getHistory())

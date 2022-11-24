@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
@@ -90,6 +93,8 @@ public class Sonar6And7Client implements SonarClient {
 	private final RestOperations restOperations;
 	private final SonarConfig sonarConfig;
 
+	private final ToolCredentialProvider toolCredentialProvider;
+
 	/**
 	 * Instantiates a new Default Sonar 6 or 7 client.
 	 *
@@ -99,9 +104,10 @@ public class Sonar6And7Client implements SonarClient {
 	 *            the sonar settings
 	 */
 	@Autowired
-	public Sonar6And7Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig) {
+	public Sonar6And7Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig, ToolCredentialProvider toolCredentialProvider) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.sonarConfig = sonarConfig;
+		this.toolCredentialProvider = toolCredentialProvider;
 	}
 
 	/**
@@ -138,20 +144,23 @@ public class Sonar6And7Client implements SonarClient {
 	private SearchProjectsResponse fetchProjects(ProcessorToolConnection sonarServer, Paging paging,
 			int nextPageIndex) {
 
+		ToolCredential toolCredentials = SonarUtils.getToolCredentials(toolCredentialProvider, sonarServer);
+
 		String baseUrl = sonarServer.getUrl() == null ? null : sonarServer.getUrl().trim();
-		String username = sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim();
-		String password = sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim();
-		String accessToken = sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim();
+		String username = toolCredentials.getUsername();
+		String password = toolCredentials.getPassword();
 		SearchProjectsResponse response;
 
 		if (sonarServer.isCloudEnv()) {
-			response = searchProjectsSonarCloud(baseUrl, accessToken, nextPageIndex, paging.getPageSize(),
+			response = searchProjectsSonarCloud(baseUrl, password, nextPageIndex, paging.getPageSize(),
 					sonarServer.getOrganizationKey());
 		} else {
 			response = searchProjects(baseUrl, username, password, nextPageIndex, paging.getPageSize());
 		}
 		return response;
 	}
+
+
 
 	/**
 	 * Provides List of Sonar Project setup properties.

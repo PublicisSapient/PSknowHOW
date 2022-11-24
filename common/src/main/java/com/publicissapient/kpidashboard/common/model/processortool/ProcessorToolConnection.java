@@ -66,6 +66,7 @@ public class ProcessorToolConnection {
 	private String url;
 	private String username;
 	private String password;
+	private boolean vault;
 	private String apiEndPoint;
 	private String consumerKey;
 	private String privateKey;

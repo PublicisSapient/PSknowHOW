@@ -85,6 +85,12 @@ public class ScrumJiraIssueClientImplTest {
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+        BoardDetails board = new BoardDetails();
+        board.setBoardId("1111");
+        board.setBoardName("test board");
+        List<BoardDetails> boardList = new ArrayList<>();
+        boardList.add(board);
+        projectToolConfig.setBoards(boardList);
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
         JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
@@ -121,6 +127,12 @@ public class ScrumJiraIssueClientImplTest {
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+        BoardDetails board = new BoardDetails();
+        board.setBoardId("1111");
+        board.setBoardName("test board");
+        List<BoardDetails> boardList = new ArrayList<>();
+        boardList.add(board);
+        projectToolConfig.setBoards(boardList);
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
         JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
@@ -150,13 +162,11 @@ public class ScrumJiraIssueClientImplTest {
         accountHierarchy.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         accountHierarchyList.add(accountHierarchy);
         Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2022-09-28T10:22:12.0000000");
+        when(jiraProcessorConfig.getStartDate()).thenReturn("2022-09-28 10:22");
         when(jiraProcessorConfig.getPageSize()).thenReturn(2);
         when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
         when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
         when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
-        doNothing().when(sprintClient).processSprints(getProjectConfFieldMapping(fieldMapping,
-                projectToolConfig, projectBasicConfig, jiraToolConfig), sprintDetailsSet, jiraAdapter);
         doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
         assertEquals(1, scrumJiraIssueClient.processesJiraIssues(getProjectConfFieldMapping(fieldMapping,
                 projectToolConfig, projectBasicConfig, jiraToolConfig), jiraAdapter, true));

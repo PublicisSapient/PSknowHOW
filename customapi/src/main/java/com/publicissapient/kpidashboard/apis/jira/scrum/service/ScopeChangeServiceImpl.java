@@ -48,6 +48,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -113,15 +115,16 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 			if (null != sprintDetails) {
-				List<String> puntedIssues = sprintDetails.getPuntedIssues();
-				List<String> addedIssues = sprintDetails.getAddedIssues();
+				List<String> puntedIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.PUNTED_ISSUES);
+				Set<String> addedIssues = sprintDetails.getAddedIssues();
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
 							basicProjectConfigId);
 					resultListMap.put(PUNTED_ISSUES, issueList);
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(addedIssues,
+					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(new ArrayList<>(addedIssues),
 							basicProjectConfigId);
 					resultListMap.put(ADDED_ISSUES, issueList);
 				}
@@ -135,7 +138,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	 * sprint level.
 	 * 
 	 * @param sprintLeafNodeList
-	 * @param trendValueList
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
@@ -189,17 +192,18 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 		}
 
 		if (CollectionUtils.isNotEmpty(data)) {
-			IterationKpiValue OverAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-			iterationKpiValues.add(OverAllIterationKpiValue);
+			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
-			IterationKpiFilters IterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC);
+			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
+					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(IterationKpiFilters);
+			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(modalHeads);
 		}
@@ -221,7 +225,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 							jiraIssue.getNumber(), jiraIssue.getUrl());
 					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(iterationKpiModalColoumn,
-							jiraIssue.getName());
+							jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
 					modalValues.add(iterationKpiModalValue);
 					overAllmodalValues.add(iterationKpiModalValue);
 					issueCount = issueCount + 1;

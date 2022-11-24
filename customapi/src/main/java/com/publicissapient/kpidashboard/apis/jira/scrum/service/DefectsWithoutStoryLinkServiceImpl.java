@@ -26,6 +26,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,16 +49,8 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -75,7 +78,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
@@ -124,7 +127,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+												  KpiRequest kpiRequest) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -180,7 +183,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param sprintLeafNodeList
 	 * @param kpiElement
@@ -188,7 +191,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+										  KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -199,7 +202,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-
+		List<KPIExcelData> excelData = new ArrayList<>();
 		List<JiraIssue> totalDefects = checkPriority((List<JiraIssue>) resultMap.get(DEFECT_LIST));
 		List<JiraIssue> totalStories = (List<JiraIssue>) resultMap.get(STORY_LIST);
 		List<JiraIssue> defectWithoutStory = new ArrayList<>();
@@ -207,7 +210,6 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 				totalDefects.stream().filter(f -> !CollectionUtils.containsAny(f.getDefectStoryID(), totalStories))
 						.collect(Collectors.toList()));
 
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(totalDefects)) {
 			Map<String, List<JiraIssue>> priorityWiseWSIssues = defectWithoutStory.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getPriority));
@@ -222,10 +224,12 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 				priorityWiseTDMap.put(priority.getKey(), Long.valueOf(priority.getValue().size()));
 			});
 
-			if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
-				populateValidationDataObject(kpiElement, requestTrackerId, defectWithoutStory, validationDataMap,
-						latestSprint);
+			if (CollectionUtils.isNotEmpty(defectWithoutStory) && requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+				KPIExcelUtility.populateDefectWithoutIssueLinkExcelData(defectWithoutStory, excelData, latestSprint.getProjectFilter().getName());
 			}
+
+			kpiElement.setExcelData(excelData);
+			kpiElement.setExcelColumns(KPIExcelColumn.DEFECTS_WITHOUT_STORY_LINK.getColumns());
 
 			LOGGER.debug(
 					"[DEFECTS-WITHOUT-STORYLINK-PROJECT-WISE][{}]. Total defect without story link for project {}  is {}",
@@ -248,7 +252,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 	}
 
 	private void populateDataCountMap(Map<String, Long> priorityWiseWSMap, Map<String, Long> priorityWiseTDMap,
-			Node latestSprint, Map<String, List<DataCount>> dataCountMap) {
+									  Node latestSprint, Map<String, List<DataCount>> dataCountMap) {
 
 		priorityWiseTDMap.forEach((key, value) -> {
 			DataCount dcObj = getDataCountObject(value, priorityWiseWSMap.getOrDefault(key, 0L), latestSprint, key);
@@ -277,37 +281,4 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 		return dataCount;
 	}
 
-	/**
-	 * This method check for API request source. If it is Excel it populates the
-	 * validation data node of the KPI element.
-	 * 
-	 * @param kpiElement
-	 *            KpiElement
-	 * @param requestTrackerId
-	 *            request id
-	 * @param storyDefectDataListMap
-	 *            map containing data fetched from DB
-	 * @param validationDataMap
-	 * @param node
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> storyDefectDataListMap, Map<String, ValidationData> validationDataMap, Node node) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String keyForValidation = node.getProjectFilter().getName();
-			ValidationData validationData = new ValidationData();
-			List<String> defectList = new ArrayList<>();
-			List<String> priorityList = new ArrayList<>();
-
-			storyDefectDataListMap.stream().forEach(issue -> {
-				defectList.add(issue.getNumber());
-				priorityList.add(issue.getPriority());
-			});
-
-			validationData.setDefectWithoutStoryList(defectList);
-			validationData.setDefectPriorityList(priorityList);
-			validationDataMap.put(keyForValidation, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
 }

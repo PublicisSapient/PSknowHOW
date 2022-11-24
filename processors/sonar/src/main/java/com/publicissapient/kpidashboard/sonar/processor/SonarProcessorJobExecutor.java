@@ -26,6 +26,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +117,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+	@Autowired
+	private ToolCredentialProvider toolCredentialProvider;
 
 	/**
 	 * Instantiate SonarProcessorJobExecutor.
@@ -378,14 +384,16 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 
 	private List<SonarHistory> getSonarHistory(ProcessorToolConnection sonarServer, SonarClient sonarClient,
 			String metrics, SonarProcessorItem ci) {
-		String username = sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim();
-		String password = sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim();
-		String accessToken = sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim();
+
+		ToolCredential toolCredentials = SonarUtils.getToolCredentials(toolCredentialProvider, sonarServer);
+		String username = toolCredentials.getUsername();
+		String password = toolCredentials.getPassword();
+
 
 		List<SonarHistory> sonarHistoryList;
 		if (sonarServer.isCloudEnv()) {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
-					new HttpEntity<>(SonarProcessorUtils.getHeaders(accessToken)), metrics);
+					new HttpEntity<>(SonarProcessorUtils.getHeaders(password)), metrics);
 
 		} else {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,

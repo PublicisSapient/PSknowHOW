@@ -31,6 +31,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -43,49 +45,34 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Component
 @Slf4j
 public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
-
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
-
-	@Autowired
-	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
-	
-	@Autowired
-	private FilterHelperService flterHelperService;
 
 	private static final String SUBGROUPCATEGORY = "subGroupCategory";
 	private static final String RANGE = "range";
@@ -96,6 +83,16 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
 	private static final String IN = "in";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	@Autowired
+	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	@Override
 	public String getQualifierType() {
@@ -149,7 +146,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
-		return calculateKpiValueForLong(valueList,kpiId);
+		return calculateKpiValueForLong(valueList, kpiId);
 	}
 
 	/**
@@ -187,8 +184,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			projectList.add(basicProjectConfigId.toString());
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(basicProjectConfigId);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
@@ -204,8 +200,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 				closedStatusFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
 
-				closedStatusProjectMap.put(basicProjectConfigId.toString(),
-						closedStatusFilters);
+				closedStatusProjectMap.put(basicProjectConfigId.toString(), closedStatusFilters);
 
 				projectWiseClosedStatusMap.put(basicProjectConfigId.toString(),
 						fieldMapping.getJiraTicketClosedStatus().stream().distinct().collect(Collectors.toList()));
@@ -214,7 +209,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 
 		/** additional filter **/
 		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV,flterHelperService);
+				DEV, flterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
@@ -259,11 +254,11 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 
 	private void kpiWithFilter(Map<String, Object> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		String subGroupCategory = (String) resultMap.get(SUBGROUPCATEGORY);
-		Map<String, List<KanbanJiraIssue>> projectWiseOpenedJiraIssue = KpiDataHelper
-				.createProjectWiseMapKanban((List<KanbanJiraIssue>) resultMap.get(OPENED_TICKET), subGroupCategory, flterHelperService);
+		Map<String, List<KanbanJiraIssue>> projectWiseOpenedJiraIssue = KpiDataHelper.createProjectWiseMapKanban(
+				(List<KanbanJiraIssue>) resultMap.get(OPENED_TICKET), subGroupCategory, flterHelperService);
 
 		Map<String, List<KanbanIssueCustomHistory>> projectWiseClosedJiraIssue = KpiDataHelper
 				.createProjectWiseMapKanbanHistory((List<KanbanIssueCustomHistory>) resultMap.get(CLOSED_TICKET),
@@ -272,7 +267,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 		Map<String, List<String>> projectWiseClosedStatusMap = (Map<String, List<String>>) resultMap
 				.get(PROJECT_WISE_CLOSED_STORY_STATUS);
 		leafNodeList.forEach(node -> {
-			String projectNodeId =  node.getProjectFilter().getBasicProjectConfigId().toString();
+			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			List<KanbanJiraIssue> kanbanOpenedIssueList = projectWiseOpenedJiraIssue.getOrDefault(projectNodeId,
 					new ArrayList<>());
 			List<KanbanIssueCustomHistory> kanbanClosedIssueList = projectWiseClosedJiraIssue
@@ -311,13 +306,16 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 					} else {
 						currentDate = currentDate.minusDays(1);
 					}
-					date += Constant.UNDERSCORE + node.getProjectFilter().getName();
-					populateValidationDataObject(kpiElement, requestTrackerId, dateWiseIssueTypeList,
-							dateWiseIssueClosedStatusList, validationDataMap, date);
+					populateExcelDataObject(requestTrackerId, dateWiseIssueTypeList, dateWiseIssueClosedStatusList,
+							date, node.getProjectFilter().getName(), excelData);
+
 				}
 				mapTmp.get(node.getId()).setValue(projectFilterWiseDataMap);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getColumns());
+
 	}
 
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
@@ -367,35 +365,17 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 		return dataCount;
 	}
 
-	/**
-	 * Populates Validation Data Object
-	 * 
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param dateProjectKey
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<KanbanJiraIssue> dateWiseIssueTypeList, List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList,
-			Map<String, ValidationData> validationDataMap, String dateProjectKey) {
+	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
+			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName,
+			List<KPIExcelData> excelData) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
 			if (CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
-				ValidationData validationData = new ValidationData();
-				validationData.setOpenedTicketList(
-						dateWiseIssueTypeList.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
-				validationData.setOpenedTicketPriorityList(
-						dateWiseIssueTypeList.stream().map(KanbanJiraIssue::getPriority).collect(Collectors.toList()));
-
-				validationData.setClosedTicketList(dateWiseIssueClosedStatusList.stream()
-						.map(KanbanIssueCustomHistory::getStoryID).collect(Collectors.toList()));
-				validationData.setClosedTicketPriorityList(dateWiseIssueClosedStatusList.stream()
-						.map(KanbanIssueCustomHistory::getPriority).collect(Collectors.toList()));
-
-				validationDataMap.put(dateProjectKey, validationData);
+				KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
+						dateWiseIssueClosedStatusList, excelData, KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId());
 			}
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+
 		}
+
 	}
 
 	public Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndIssueType(List<KanbanJiraIssue> issueList,

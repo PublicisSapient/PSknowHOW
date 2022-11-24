@@ -58,7 +58,7 @@
     "jsencrypt": "3.2.1",
     "primeflex": "^2.0.0",
     "primeicons": "^6.0.1",
-    "primeng": "^14.1.2",
+    "primeng": "14.1.2",
     "rxjs": "^6.6.3",
     "xlsx": "^0.18.5",
     "xlsx-style": "0.8.13",

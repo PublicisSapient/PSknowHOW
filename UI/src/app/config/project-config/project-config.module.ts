@@ -58,6 +58,8 @@ import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
 import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
+import { BadgeModule } from 'primeng/badge';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   declarations: [ProjectConfigComponent,
@@ -100,7 +102,9 @@ import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
     InputNumberModule,
     BlockUIModule,
     PanelModule,
-    SharedModuleModule
+    SharedModuleModule,
+    BadgeModule,
+    RadioButtonModule,
   ],
   providers: [MessageService, ConfirmationService]
 })

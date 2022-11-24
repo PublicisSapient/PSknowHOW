@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.jira.processor.mode.impl.online;
 
 import java.util.concurrent.CountDownLatch;
 
+import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
+import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +87,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 	private JiraRestClientFactory jiraRestClientFactory;
 
-
+	private SprintClient sprintClient;
 
 
 	/**
@@ -102,6 +104,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			if (jiraProcessorConfig.isFetchMetadata()) {
 				collectMetadata(jiraAdapter, onlineLineprojectConfigMap);
 			}
+			collectSprintReportData(jiraAdapter, onlineLineprojectConfigMap);
 			collectJiraIssueData(jiraAdapter, onlineLineprojectConfigMap);
 			collectReleaseData(jiraAdapter, onlineLineprojectConfigMap);
 			log.info("END - Jira processing finished for project {}",
@@ -119,13 +122,6 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		}
 
 	}
-
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId){
-        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-        processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-        processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-        return processorExecutionTraceLog;
-    }
 
 	/**
 	 * Sets the configurations and variables .
@@ -156,12 +152,12 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 *            jiraRestClientFactory
 	 */
 	public JiraOnlineRunnable(CountDownLatch latch, JiraAdapter jiraAdapter,//NOSONAR
-			ProjectConfFieldMapping onlineLineprojectConfigMap,
-			ProjectReleaseRepo projectReleaseRepo, AccountHierarchyRepository accountHierarchyRepository,
-			KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
-			JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
-			FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory) { // NOPMD
+							  ProjectConfFieldMapping onlineLineprojectConfigMap,
+							  ProjectReleaseRepo projectReleaseRepo, AccountHierarchyRepository accountHierarchyRepository,
+							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
+							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
+							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
+							  JiraRestClientFactory jiraRestClientFactory, SprintClient sprintClient) { // NOPMD
 		this.latch = latch;
 		this.jiraAdapter = jiraAdapter;
 		this.onlineLineprojectConfigMap = onlineLineprojectConfigMap;
@@ -174,6 +170,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.jiraRestClientFactory = jiraRestClientFactory;
+		this.sprintClient = sprintClient;
 	}
 
 	/**
@@ -200,15 +197,22 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		long end = System.currentTimeMillis();
 		MDC.put("ReleaseDataEndTime", String.valueOf(end));
 	}
+	private void collectSprintReportData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
+		log.info("START - SprintReport fetching start");
+		if(!projectConfig.isKanban()) {
+			sprintClient.createSprintDetailBasedOnBoard(projectConfig, jiraAdapter);
+		}
+		log.info("END - SprintReport fetching End");
+	}
 
-	/**
-	 * Collects JiraIssue Data.
-	 *
-	 * @param jiraAdapter
-	 *            JiraAdapter to create Connection
-	 * @param projectConfig
-	 *            Project Configuration map
-	 */
+		/**
+         * Collects JiraIssue Data.
+         *
+         * @param jiraAdapter
+         *            JiraAdapter to create Connection
+         * @param projectConfig
+         *            Project Configuration map
+         */
 	private void collectJiraIssueData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		long storyDataStart = System.currentTimeMillis();
 		MDC.put("storyDataStartTime", String.valueOf(storyDataStart));

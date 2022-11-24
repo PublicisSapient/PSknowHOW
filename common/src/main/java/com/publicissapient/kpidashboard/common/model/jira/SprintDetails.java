@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.jira;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -48,16 +49,16 @@ public class SprintDetails extends BasicModel {
 	private String endDate;
 	private String completeDate;
 	private String activatedDate;
-	private String originBoardId;
+	private List<String> originBoardId;
 	private String goal;
 	private ObjectId basicProjectConfigId;
 	private ObjectId processorId;
-	private List<String> completedIssues;
-	private List<String> notCompletedIssues;
-	private List<String> puntedIssues;
-	private List<String> completedIssuesAnotherSprint;
-	private List<String> addedIssues;
-	private List<String> totalIssues;
+	private Set<SprintIssue> completedIssues;
+	private Set<SprintIssue> notCompletedIssues;
+	private Set<SprintIssue> puntedIssues;
+	private Set<SprintIssue> completedIssuesAnotherSprint;
+	private Set<String> addedIssues;
+	private Set<SprintIssue> totalIssues;
 	
 	@Override
 	public boolean equals(Object o) {

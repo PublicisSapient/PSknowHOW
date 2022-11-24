@@ -11,11 +11,12 @@
     color: #333;
     margin-left: -24px;
 }
-.tooltip h5{
+.tooltip h4{
     font-family: 'FuturaNext_Medium', sans-serif;
     margin: 5px 0;
 }
 .tooltip-wrapper{
+    text-align: left;
     max-height: 250px;
     overflow-y: auto;
     overflow-x: hidden;

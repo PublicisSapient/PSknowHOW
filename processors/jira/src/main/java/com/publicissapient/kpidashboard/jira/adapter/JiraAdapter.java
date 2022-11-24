@@ -18,24 +18,26 @@
 
 package com.publicissapient.kpidashboard.jira.adapter;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.jira.rest.client.api.domain.Field;
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+
+import java.util.List;
 
 public interface JiraAdapter {
 
 	/**
 	 * Gets all issues from JIRA
-	 * 
+	 *
+	 * @param boardDetails
+	 * 			  boardDetails
 	 * @param projectConfig
 	 *            projectConfig Object
 	 * @param startDateTimeByIssueType
@@ -48,9 +50,8 @@ public interface JiraAdapter {
 	 *            data exist in db or not
 	 * @return list of issues
 	 */
-	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
-			String userTimeZone, int pageStart, boolean dataExist);
-
+	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig, String startDateTimeByIssueType,
+						   String userTimeZone, int pageStart, boolean dataExist);
 	/**
 	 * Gets page size from feature settings
 	 *
@@ -117,6 +118,9 @@ public interface JiraAdapter {
 	 * @param SprintDetails sprintdetails object
 	 */
 	public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
-			SprintDetails sprintDetails);
+			SprintDetails sprint, SprintDetails dbSprintDetails);
+
+	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId);
+
 
 }

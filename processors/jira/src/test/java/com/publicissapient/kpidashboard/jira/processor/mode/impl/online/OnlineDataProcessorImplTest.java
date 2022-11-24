@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -211,6 +212,9 @@ public class OnlineDataProcessorImplTest {
 
 	@Mock
 	private OnlineAdapter onlineAdapter;
+
+	@Mock
+	private ToolCredentialProvider toolCredentialProvider;
 
 	@BeforeEach
 	public void setUp() throws Exception {

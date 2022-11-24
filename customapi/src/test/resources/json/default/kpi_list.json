@@ -74,8 +74,15 @@
     "isPositiveTrend": false,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-175",
+      "175-125",
+      "125-75",
+      "75-25",
+      "25-"
+    ]
   },
   {
     "kpiId": "kpi82",
@@ -153,8 +160,15 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-25",
+      "25-50",
+      "50-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi111",
@@ -235,8 +249,15 @@
     "isPositiveTrend": false,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-90",
+      "90-60",
+      "60-25",
+      "25-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi35",
@@ -313,8 +334,15 @@
     "isPositiveTrend": false,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-90",
+      "90-75",
+      "75-50",
+      "50-25",
+      "25-"
+    ]
   },
   {
     "kpiId": "kpi34",
@@ -391,8 +419,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-25",
+      "25-50",
+      "50-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi37",
@@ -469,8 +504,15 @@
     "isPositiveTrend": false,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-75",
+      "75-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi28",
@@ -511,7 +553,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -551,7 +593,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -603,7 +645,7 @@
     "barLegend": "Created Defects",
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "maxValue": "300",
     "calculateMaturity": false
   },
@@ -677,8 +719,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi16",
@@ -751,8 +800,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi17",
@@ -765,7 +821,7 @@
     "groupId": 1,
     "thresholdValue": "55",
     "kanban": false,
-    "chartType": "single filtered line",
+    "chartType": "line",
     "kpiInfo": {
       "definition": "UNIT TEST COVERAGE is a measurement of the amount of code that is run by unit tests - either lines, branches, or methods.",
       "formula": [
@@ -821,8 +877,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi38",
@@ -864,7 +928,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -934,8 +998,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-100",
+      "100-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi116",
@@ -1013,8 +1085,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-50",
+      "50-30",
+      "30-20",
+      "20-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi70",
@@ -1090,8 +1170,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi40",
@@ -1118,7 +1205,7 @@
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -1193,8 +1280,52 @@
     "showTrend": true,
     "aggregationCriteria": "average",
     "kpiFilter": "radioButton",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-40",
+      "40-60",
+      "60-75",
+      "75-90",
+      "90-"
+    ]
+  },
+  {
+    "kpiId": "kpi5",
+    "kpiName": "Sprint Predictability",
+    "isDeleted": "False",
+    "kpiInAggregatedFeed": "True",
+    "defaultOrder": 19,
+    "kpiOnDashboard": [
+      "Aggregated"
+    ],
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "maxValue": "10",
+    "kpiUnit": "%",
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Sprint Predictability signifies who stable is a team's velocity such that it can be used in forecasting milestones in future",
+      "formula": [
+        {
+          "lhs": "Sprint Predictability for a sprint",
+          "operator": "division",
+          "operands": [
+            "sprint velocity in last sprint.",
+            "sprint velocity in last 5 sprint"
+          ]
+        }
+      ]
+    },
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi39",
@@ -1202,7 +1333,7 @@
     "maxValue": "300",
     "kpiUnit": "SP",
     "isDeleted": "False",
-    "defaultOrder": 19,
+    "defaultOrder": 20,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1221,7 +1352,7 @@
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -1230,7 +1361,7 @@
     "maxValue": "500",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 20,
+    "defaultOrder": 21,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1259,8 +1390,8 @@
     "barLegend": "Estimated",
     "isPositiveTrend": true,
     "showTrend": false,
-    "aggregationCriteria": "average",
-    "isSquadSupport": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -1269,7 +1400,7 @@
     "maxValue": "100",
     "kpiUnit": "Days",
     "isDeleted": "False",
-    "defaultOrder": 21,
+    "defaultOrder": 22,
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "",
@@ -1334,8 +1465,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": true,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-10",
+      "10-8",
+      "8-5",
+      "5-3",
+      "3-"
+    ]
   },
   {
     "kpiId": "kpi84",
@@ -1343,7 +1482,7 @@
     "maxValue": "10",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 22,
+    "defaultOrder": 23,
     "groupId": 1,
     "kpiSource": "BitBucket",
     "thresholdValue": "55",
@@ -1399,8 +1538,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-16",
+      "16-8",
+      "8-4",
+      "4-2",
+      "2-"
+    ]
   },
   {
     "kpiId": "kpi11",
@@ -1408,7 +1555,7 @@
     "maxValue": "10",
     "kpiUnit": "MRs",
     "isDeleted": "False",
-    "defaultOrder": 23,
+    "defaultOrder": 24,
     "kpiSource": "BitBucket",
     "groupId": 1,
     "thresholdValue": "55",
@@ -1462,8 +1609,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-2",
+      "2-4",
+      "4-8",
+      "8-16",
+      "16-"
+    ]
   },
   {
     "kpiId": "kpi8",
@@ -1471,7 +1626,7 @@
     "maxValue": "100",
     "kpiUnit": "min",
     "isDeleted": "False",
-    "defaultOrder": 24,
+    "defaultOrder": 25,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": "",
@@ -1527,8 +1682,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-45",
+      "45-30",
+      "30-15",
+      "15-5",
+      "5-"
+    ]
   },
   {
     "kpiId": "kpi3",
@@ -1540,7 +1703,7 @@
     ],
     "kpiBaseLine": "0",
     "thresholdValue": "",
-    "defaultOrder": 25,
+    "defaultOrder": 26,
     "kpiUnit": "Days",
     "kpiSource": "Jira",
     "groupId": 3,
@@ -1692,8 +1855,57 @@
     "showTrend": false,
     "kpiFilter": "radioButton",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-10",
+      "10-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "LeadTime",
+        "range": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-"
+        ]
+      },
+      {
+        "level": "Intake-DoR",
+        "range": [
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-"
+        ]
+      },
+      {
+        "level": "DoR-DoD",
+        "range": [
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-"
+        ]
+      },
+      {
+        "level": "DoD-Live",
+        "range": [
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+        ]
+      }
+    ]
   },
   {
     "kpiId": "kpi118",
@@ -1701,7 +1913,7 @@
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 26,
+    "defaultOrder": 27,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": 0,
@@ -1763,8 +1975,15 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-1",
+      "1-2",
+      "2-5",
+      "5-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi73",
@@ -1772,7 +1991,7 @@
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 27,
+    "defaultOrder": 28,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -1802,8 +2021,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
-    "calculateMaturity": false
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "maturityRange": [
+      "-1",
+      "1-2",
+      "2-5",
+      "5-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi113",
@@ -1811,7 +2037,7 @@
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 28,
+    "defaultOrder": 29,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -1841,7 +2067,7 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -1896,7 +2122,7 @@
     "barLegend": "Open Tickets",
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -1952,7 +2178,7 @@
     "barLegend": "Open Tickets",
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -1983,7 +2209,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -2013,7 +2239,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -2043,7 +2269,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -2066,7 +2292,7 @@
     "kpiFilter": "multiSelectDropDown",
     "showTrend": false,
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -2139,8 +2365,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi62",
@@ -2207,9 +2440,18 @@
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
     "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
     "showTrend": true,
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi64",
@@ -2247,7 +2489,7 @@
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -2317,8 +2559,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-100",
+      "100-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi71",
@@ -2394,8 +2644,15 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi49",
@@ -2417,7 +2674,7 @@
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
-    "isSquadSupport": true,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -2440,7 +2697,7 @@
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -2505,8 +2762,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-45",
+      "45-30",
+      "30-15",
+      "15-5",
+      "5-"
+    ]
   },
   {
     "kpiId": "kpi65",
@@ -2519,7 +2784,7 @@
     "kpiSource": "BitBucket",
     "thresholdValue": "55",
     "kanban": true,
-    "chartType": "single filtered line",
+    "chartType": "line",
     "kpiInfo": {
       "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
       "details": [
@@ -2570,8 +2835,16 @@
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-2",
+      "2-4",
+      "4-8",
+      "8-16",
+      "16-"
+    ]
   },
   {
     "kpiId": "kpi53",
@@ -2735,8 +3008,57 @@
     "showTrend": false,
     "kpiFilter": "radioButton",
     "aggregationCriteria": "average",
-    "isSquadSupport": false,
-    "calculateMaturity": true
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-10",
+      "10-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "LeadTime",
+        "range": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-"
+        ]
+      },
+      {
+        "level": "Open-Triage",
+        "range": [
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-"
+        ]
+      },
+      {
+        "level": "Triage-Complete",
+        "range": [
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-"
+        ]
+      },
+      {
+        "level": "Complete-Live",
+        "range": [
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+        ]
+      }
+    ]
   },
   {
     "kpiId": "kpi74",
@@ -2774,7 +3096,7 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -2813,7 +3135,7 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -2845,7 +3167,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "boxType": "1_column",
     "calculateMaturity": false
   },
@@ -2890,6 +3212,48 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi128",
+    "kpiName": "Work Completed",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
     "isSquadSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
@@ -2901,7 +3265,7 @@
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -2928,7 +3292,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column",
     "calculateMaturity": true
@@ -2939,7 +3303,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -2962,7 +3326,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column_big",
     "calculateMaturity": false
@@ -2973,7 +3337,7 @@
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 7,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3008,7 +3372,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column_big",
     "calculateMaturity": false
@@ -3019,7 +3383,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 8,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3046,7 +3410,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column_big",
     "calculateMaturity": false
@@ -3057,7 +3421,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 8,
+    "defaultOrder": 9,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3084,7 +3448,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column_big",
     "calculateMaturity": false
@@ -3095,7 +3459,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 10,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3122,7 +3486,7 @@
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "kpiFilter": "",
     "boxType": "chart",
     "calculateMaturity": false
@@ -3158,7 +3522,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": false,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -3192,7 +3556,7 @@
     "yAxisLabel": "",
     "isPositiveTrend": false,
     "showTrend": false,
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kpiFilter": "multiSelectDropDown"
   },
@@ -3217,7 +3581,7 @@
     "kpiFilter": "multiSelectDropDown",
     "showTrend": false,
     "aggregationCriteria": "sum",
-    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -3226,7 +3590,8 @@
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Kpi Maturity",
-    "isSquadSupport": false,
-    "calculateMaturity": false
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false
   }
 ]

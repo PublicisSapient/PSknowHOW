@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -176,9 +177,9 @@ public class ScrumJiraIssueClientImplTest {
 		when(jiraAdapter.getPageSize()).thenReturn(30);
 		when(jiraAdapter.getUserTimeZone(any())).thenReturn("Indian/Maldives");
 		when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
-		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
 		createIssue();
-		when(jiraAdapter.getIssues(any(), any(), any(), anyInt(), anyBoolean())).thenReturn(searchResult);
+		when(jiraAdapter.getIssues(any(),any(), any(), any(), anyInt(), anyBoolean())).thenReturn(searchResult);
 		projectConfFieldMapping.setProjectName("prName");
 		assertEquals(2, scrumJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
 	}
@@ -202,6 +203,13 @@ public class ScrumJiraIssueClientImplTest {
 //        jiraConfig.setJiraQueryEndpoint("rest/api/2/");
 //        jiraConfig.setOfflineMethod(true);
 //        jiraConfig.setFilePath("offlineData");
+
+		BoardDetails board = new BoardDetails();
+		board.setBoardId("1111");
+		board.setBoardName("test board");
+		List<BoardDetails> boardList = new ArrayList<>();
+		boardList.add(board);
+		jiraConfig.setBoards(boardList);
 //        projectConfig.setJira(jiraConfig);
 		projectConfig.setIsKanban(false);
 		scrumProjectList.add(projectConfig);
@@ -428,7 +436,14 @@ public class ScrumJiraIssueClientImplTest {
 		 * projectConfFieldMapping2.setBasicProjectConfigId(kanbanProjectlist.get(0).
 		 * getId()); projectConfFieldMapping2.setFieldMapping(fieldMappingList.get(1));
 		 */
-
+		ProjectToolConfig jiraConfig = new ProjectToolConfig();
+		BoardDetails board = new BoardDetails();
+		board.setBoardId("1111");
+		board.setBoardName("test board");
+		List<BoardDetails> boardList = new ArrayList<>();
+		boardList.add(board);
+		jiraConfig.setBoards(boardList);
+		projectConfFieldMapping.setProjectToolConfig(jiraConfig);
 		projectConfFieldMappingList.add(projectConfFieldMapping);
 		// projectConfFieldMappingList.add(projectConfFieldMapping2);
 	}

@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -153,7 +155,7 @@ public class KanbanJiraIssueClientImplTest {
 		when(jiraAdapter.getPageSize()).thenReturn(30);
 		when(jiraAdapter.getUserTimeZone(any())).thenReturn("Indian/Maldives");
 		when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
-		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
 		createIssue();
 		//when(jiraAdapter.getIssues(any(), any(), any(), anyInt(), anyBoolean())).thenReturn(issues);
 		List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
@@ -397,6 +399,14 @@ public class KanbanJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectToolConfig jiraConfig = new ProjectToolConfig();
+		BoardDetails board = new BoardDetails();
+		board.setBoardId("1111");
+		board.setBoardName("test board");
+		List<BoardDetails> boardList = new ArrayList<>();
+		boardList.add(board);
+		jiraConfig.setBoards(boardList);
+		projectConfFieldMapping.setProjectToolConfig(jiraConfig);
 		projectConfFieldMappingList.add(projectConfFieldMapping);
 	
 	}

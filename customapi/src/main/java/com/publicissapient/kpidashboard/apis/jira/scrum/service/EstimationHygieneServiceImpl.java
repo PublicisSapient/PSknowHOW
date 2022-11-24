@@ -49,6 +49,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -110,7 +112,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 			if (null != sprintDetails) {
-				List<String> totalIssues = sprintDetails.getTotalIssues();
+				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
 							basicProjectConfigId);
@@ -126,7 +129,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	 * sprint level.
 	 *
 	 * @param sprintLeafNodeList
-	 * @param trendValueList
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
@@ -180,7 +183,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName());
+								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
 						withoutEstmodalValues.add(iterationKpiModalValue);
 						overAllWithoutEstmodalValues.add(iterationKpiModalValue);
 					}
@@ -193,7 +196,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName());
+								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
 						missingmodalValues.add(iterationKpiModalValue);
 						overAllMissingModalValues.add(iterationKpiModalValue);
 					}
@@ -221,16 +224,17 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 					overAllMissingModalValues);
 			data.add(overAllWithouEst);
 			data.add(overAllMissWorkLog);
-			IterationKpiValue OverAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-			iterationKpiValues.add(OverAllIterationKpiValue);
+			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
-			IterationKpiFilters IterationKpiFilters = new IterationKpiFilters(filter1, null);
+			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC);
+			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
+					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(IterationKpiFilters);
+			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(modalHeads);
 			kpiElement.setTrendValueList(trendValue);
@@ -246,4 +250,6 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 		}
 		return toDrop;
 	}
+
 }
+

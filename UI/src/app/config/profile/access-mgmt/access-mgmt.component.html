@@ -111,7 +111,7 @@
                   <tr>
                     <th id="projects" class="p-text-center">Add/ remove Projects</th>
                     <th id="Role" style="width: 140px;" class="p-text-center">Edit Role</th>
-                    <th id="action" style="width: 140px;" class="p-text-center">Remove Row</th>
+                    <th id="action" style="width: 150px;" class="p-text-center">Remove Row</th>
                   </tr>
                   <tr *ngFor="let access of rowData.projectsAccess; let i = index" [attr.data-index]="i">
                     <td class="nested-td">
@@ -159,7 +159,7 @@
       </p-table>
 
       <p-dialog header="Add Projects" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
-        [style]="{width: '80vw', height: '90vh'}" (onHide)="hide()">
+        [style]="{width: '80vw'}" (onHide)="hide()">
         <div class="dialog-panel" #dialogpanel>
           <app-project-filter #projectfilter (projectSelectedEvent)="projectSelectedEvent($event)"></app-project-filter>
         </div>
