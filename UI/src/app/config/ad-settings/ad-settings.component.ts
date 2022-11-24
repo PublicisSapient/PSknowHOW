@@ -32,7 +32,6 @@ export class AdSettingsComponent implements OnInit {
   authSettingsForm: UntypedFormGroup;
   adSettingsFormObj: any;
   ssoFormObj: any;
-  authDetails: object = {}
   // standardLoginForm: UntypedFormGroup;
   // standardLoginFormObj: any;
   submitted = false;
@@ -69,7 +68,6 @@ export class AdSettingsComponent implements OnInit {
     this.http.getAuthConfig().subscribe(response => {
       if (response && response.success) {
         if (response && response.data && response.data.authTypeStatus) {
-          this.authDetails = response.data; 
           this.selectedTypes = [];
           if (response.data.authTypeStatus.standardLogin) {
             this.selectedTypes.push({
@@ -127,14 +125,16 @@ export class AdSettingsComponent implements OnInit {
     }
   }
 
-  checkValues() {
+  checkValues(event) {
+    console.log(event);
+    
     if (!this.selectedTypes.length) {
       this.selectedTypes = [{
         name: 'standardLogin',
         label: 'KnowHOW Local Authentication'
       }];
     }
-
+   
     // if (!this.selectedTypes.length) {
     //   this.disableSave = true;
     // } else {
@@ -144,10 +144,10 @@ export class AdSettingsComponent implements OnInit {
 
   // convenience getter for easy access to form fields
   get adForm() {
-    return this.authSettingsForm.get('adServerDetail')['controls'];
+    return this.authSettingsForm.get('adLogin')['controls'];
   }
   get ssoForm() {
-    return this.authSettingsForm.get('ssoLoginConfig')['controls'];
+    return this.authSettingsForm.get('ssoLogin')['controls'];
   }
 
   // get standardLogin() {
@@ -170,7 +170,7 @@ export class AdSettingsComponent implements OnInit {
         rootDn: ['', Validators.required],
         domain: ['', Validators.required],
       };
-      formElems['adServerDetail'] = this.formBuilder.group(this.adSettingsFormObj);
+      formElems['adLogin'] = this.formBuilder.group(this.adSettingsFormObj);
     // }
     // if(type?.toLowerCase() === 'ssologin'){
       this.ssoFormObj = {
@@ -184,7 +184,7 @@ export class AdSettingsComponent implements OnInit {
         issuer: ['', Validators.required],
         cookiePassRef: ['', Validators.required]
       }
-      formElems['ssoLoginConfig'] = this.formBuilder.group(this.ssoFormObj);
+      formElems['ssoLogin'] = this.formBuilder.group(this.ssoFormObj);
     // }
    
     this.authSettingsForm = this.formBuilder.group(formElems);

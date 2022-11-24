@@ -17,12 +17,12 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="main login-settings-container p-pb-1" *ngIf="(authDetails | json) != '{}'">
+<div class="main login-settings-container p-pb-1">
     <h3 class="card__primary__title__text p-mb-3 p-mt-1">Configuration</h3>
     <div class="checkbox-options-container border-top p-mt-3" *ngIf="selectedTypes?.length">
         <div *ngFor="let option of loginSettingsTypes;let i=index" class="checkbox-option p-pl-3 p-pr-3">
             <p-checkbox name="group" value="option" [value]="option" [(ngModel)]="selectedTypes"
-                [inputId]="option.name" (onChange)="checkValues()"
+                [inputId]="option.name" (onChange)="checkValues($event)"
                 [readonly]="option.name === 'standardLogin' && typeNotSelected('adLogin')"></p-checkbox>
             <label [for]="option.name" class="p-ml-3">{{option.label}}</label>
         </div>

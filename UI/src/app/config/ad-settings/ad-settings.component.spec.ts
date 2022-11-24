@@ -70,7 +70,7 @@ describe('AdSettingsComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/auth-types')[0].flush(fakeLoginSettings);
-    expect(component.adSettingsForm.controls['domain'].value).toEqual(fakeLoginSettings['data']['adServerDetail']['domain']);
+    expect(component.authSettingsForm.controls['domain'].value).toEqual(fakeLoginSettings['data']['adServerDetail']['domain']);
   });
 
   it('should submit AD config', () => {
@@ -78,13 +78,13 @@ describe('AdSettingsComponent', () => {
     fixture.detectChanges();
     for (const obj in fakeLoginSettings['data']['adServerDetail']) {
       if (obj !== 'password') {
-        if (component.adSettingsForm && component.adSettingsForm.controls[obj]) {
-          component.adSettingsForm.controls[obj].setValue(fakeLoginSettings['data']['adServerDetail'][obj]);
+        if (component.authSettingsForm && component.authSettingsForm.controls[obj]) {
+          component.authSettingsForm.controls[obj].setValue(fakeLoginSettings['data']['adServerDetail'][obj]);
         }
       }
     }
-    component.adSettingsForm.controls['password'].setValue('testPassword');
-    expect(component.adSettingsForm.valid).toBeTrue();
+    component.authSettingsForm.controls['password'].setValue('testPassword');
+    expect(component.authSettingsForm.valid).toBeTrue();
     const fakeSubmitResponse = {
       message: 'created and updated active directory user',
       success: true,
