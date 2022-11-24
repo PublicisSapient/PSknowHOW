@@ -8,4 +8,5 @@ public class AuthTypeConfig {
 
     private AuthTypeStatus authTypeStatus;
     private ADServerDetail adServerDetail;
+    private SSOLoginConfig ssoLoginConfig;
 }

@@ -69,6 +69,9 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
                 adServerDetail.setPassword(passEncrypt);
                 globalConfigs.get(0).setAdServerDetail(adServerDetail);
             }
+            if (authTypeConfig.getAuthTypeStatus().isSsoLogin()){
+                globalConfigs.get(0).setSsoLoginConfig(authTypeConfig.getSsoLoginConfig());
+            }
 
             globalConfigRepository.saveAll(globalConfigs);
             invalidateUsersAuthToken(authTypeStatus);
@@ -108,6 +111,7 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
         if (globalConfig != null) {
             authTypeConfig.setAdServerDetail(globalConfig.getAdServerDetail());
             authTypeConfig.setAuthTypeStatus(globalConfig.getAuthTypeStatus());
+            authTypeConfig.setSsoLoginConfig(globalConfig.getSsoLoginConfig());
         }
 
         return authTypeConfig;

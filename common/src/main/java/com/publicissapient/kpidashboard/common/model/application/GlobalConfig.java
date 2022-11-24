@@ -46,6 +46,8 @@ public class GlobalConfig extends BasicModel {
 	
 	private ADServerDetail adServerDetail;
 
+	private SSOLoginConfig ssoLoginConfig;
+
 	private EmailServerDetail emailServerDetail;
 
 	private String zephyrCloudBaseUrl;
