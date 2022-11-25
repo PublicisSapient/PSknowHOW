@@ -140,6 +140,10 @@ export class LoginComponent implements OnInit {
                     data => {
                         this.performLogin(data, this.adf.username.value, this.adf.password.value, 'AD');
                     });
+        } else if(loginType === 'SSO'){
+            this.httpService.loginToSSO().subscribe((res) => {
+                console.log(res);
+            })
         }
     }
 
@@ -189,11 +193,5 @@ export class LoginComponent implements OnInit {
                 this.router.navigate(['./dashboard/']);
             }
         }
-    }
-
-    redirectToSSO(){
-        this.httpService.loginToSSO().subscribe((res) => {
-            console.log(res);
-        })
     }
 }

@@ -132,7 +132,7 @@
 
               <p-tabPanel header="SSO Login" *ngIf="loginConfig['ssoLogin']">
                 <div class="redirection ssoLogin">
-                  <a class="link" (click)="redirectToSSO()">Login</a>
+                  <a class="link" (click)="onSubmit('SSO')">Login</a>
                 </div>
               </p-tabPanel>
             </p-tabView>
