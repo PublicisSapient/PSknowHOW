@@ -127,6 +127,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private ssoUrl = this.baseUrl + '/api/sso/login';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
@@ -849,5 +850,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     deleteProcessorData(toolId, projectId) {
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
+    }
+
+    loginToSSO(){
+        return this.http.get<any>(`${this.ssoUrl}`);
     }
 }

@@ -190,4 +190,10 @@ export class LoginComponent implements OnInit {
             }
         }
     }
+
+    redirectToSSO(){
+        this.httpService.loginToSSO().subscribe((res) => {
+            console.log(res);
+        })
+    }
 }
