@@ -21,7 +21,7 @@
     <img src="../../../assets/img/ps-logo.svg" alt="Publicis Sapient" class="ps-logo"/>
     <div class="p-grid">
 
-        <div class="login-form-wrapper p-lg-5 p-sm-10 p-xl-4">
+        <div class="login-form-wrapper p-lg-5 p-sm-10 p-xl-5">
           <!-- <div class="knowHowImage w-100"></div> -->
           <img src="../../../assets/img/knowHOW_logo_final.png" alt="Publicis Sapient" class="knowHowImage">
           <div class="login-form">
@@ -128,6 +128,12 @@
       
       
                 </form>
+              </p-tabPanel>
+
+              <p-tabPanel header="SSO Login" *ngIf="loginConfig['ssoLogin']">
+                <div class="redirection ssoLogin">
+                  <a class="link" routerLink="/authentication/forgetPasswordEmail">Login</a>
+                </div>
               </p-tabPanel>
             </p-tabView>
             <!-- Spinner -->
