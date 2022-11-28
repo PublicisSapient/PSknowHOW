@@ -17,12 +17,12 @@
  ******************************************************************************/
 
 import { Injectable, NgModule } from '@angular/core';
-import { throwError } from 'rxjs';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpEvent, HttpResponse } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 declare let $: any;
@@ -32,7 +32,7 @@ declare let $: any;
 export class HttpsRequestInterceptor implements HttpInterceptor {
     constructor(private getAuth: GetAuthService, private router: Router, private service: SharedService) { }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler) {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
         const requestArea = req.headers.get('requestArea') || 'internal';
 
@@ -74,10 +74,19 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         ];
 
         // handling error response
-        return next.handle(req)
-            .pipe(catchError((err) => {
+        return next.handle(req).pipe(
+            tap(res=> {
+                console.log(res);
+                
+                if (res instanceof HttpResponse) {
+                    console.log(res.headers );                                   
+                }
+            }),
+            catchError((err) => {
                 if (err instanceof HttpErrorResponse) {
-                    if (err.status === 401) {
+                    if(err.status === 302){
+                        console.log(err)
+                    }else if (err.status === 401) {
                         if (requestArea === 'internal') {
                             localStorage.removeItem('user_name');
                             localStorage.removeItem('authorities');
