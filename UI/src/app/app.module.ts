@@ -39,25 +39,6 @@ import { DatePipe } from '@angular/common';
 
 /******************* components   ***********************/
 import { AppComponent } from './app.component';
-import { NavComponent } from './dashboard/nav/nav.component';
-import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
-import { ProgressbarComponent } from './component/progressbar/progressbar.component';
-import { CircularchartComponent } from './component/circularchart/circularchart.component';
-import { NumberchartComponent } from './component/numberchart/numberchart.component';
-import { BarchartComponent } from './component/barchart/barchart.component';
-import { LineBarChartComponent } from './component/line-bar-chart/line-bar-chart.component';
-import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
-import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
-import { MultilineComponent } from './component/multiline/multiline.component';
-import { ExecutiveComponent } from './dashboard/executive/executive.component';
-import { MaturityComponent } from './dashboard/maturity/maturity.component';
-import { FilterComponent } from './dashboard/filter/filter.component';
-import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { PiechartComponent } from './component/piechart/piechart.component';
-import { ErrorComponent } from './dashboard/error/error.component';
-import { KpiComponent } from './component/kpi-line-gauge/kpi-line-gauge.component';
-import { SharedModuleModule } from '../app/shared-module/shared-module.module';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { BadgeModule } from 'primeng/badge';
 import { TabViewModule } from 'primeng/tabview';
@@ -81,21 +62,9 @@ import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
 import { RsaEncryptionService } from './services/rsa.encryption.service';
 import { TextEncryptionService } from './services/text.encryption.service';
-import { IterationComponent } from './dashboard/iteration/iteration.component';
-import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
-import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
-import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
 import { ExternalUrlDirective } from './external-url.directive';
 import { MessageService } from 'primeng/api';
-import { LandingPageComponent } from './dashboard/landing-page/landing-page.component';
 import { DialogModule } from 'primeng/dialog';
-import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
-import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
-import { NoAccessComponent } from './component/no-access/no-access.component';
-import { TooltipComponent } from './component/tooltip/tooltip.component';
-import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
-import { BacklogComponent } from './dashboard/backlog/backlog.component';
-import { TableComponent } from './component/table/table.component';
 
 /******************************************************/
 
@@ -103,38 +72,7 @@ import { TableComponent } from './component/table/table.component';
 @NgModule({
     declarations: [
         AppComponent,
-        NavComponent,
-        CircularProgressComponent,
-        ProgressbarComponent,
-        CircularchartComponent,
-        NumberchartComponent,
-        BarchartComponent,
-        LineBarChartComponent,
-        LineBarChartWithHowerComponent,
-        GaugechartComponent,
-        MultilineComponent,
-        ExecutiveComponent,
-        MaturityComponent,
-        FilterComponent,
-        DashboardComponent,
-        GroupstackchartComponent,
-        PiechartComponent,
-        KpiComponent,
-        ErrorComponent,
-        // FooterComponent,
-        IterationComponent,
-        OverlappedProgressbarComponent,
-        HorizontalStackProgressbarComponent,
-        CircularProgressWithLegendsComponent,
         ExternalUrlDirective,
-        LandingPageComponent,
-        KpiCardComponent,
-        TrendIndicatorComponent,
-        TooltipComponent,
-        NoAccessComponent,
-        GroupedColumnPlusLineChartComponent,
-        BacklogComponent,
-        TableComponent
     ],
     imports: [
         DropdownModule,
@@ -148,7 +86,6 @@ import { TableComponent } from './component/table/table.component';
         // NgSelectModule,
         MultiSelectModule,
         BrowserAnimationsModule,
-        SharedModuleModule,
         InputSwitchModule,
         RippleModule,
         BadgeModule,
@@ -167,7 +104,6 @@ import { TableComponent } from './component/table/table.component';
         ExcelService,
         SharedService,
         GetAuthService,
-        ExecutiveComponent,
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,

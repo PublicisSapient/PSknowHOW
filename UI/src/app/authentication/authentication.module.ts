@@ -19,17 +19,13 @@
 import { NgModule } from '@angular/core';
 import { AuthenticationRoutingModule } from './authentication.route';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TabViewModule } from 'primeng/tabview';
-import { SharedModuleModule } from '../shared-module/shared-module.module';
 
 
 @NgModule({
@@ -41,13 +37,9 @@ import { SharedModuleModule } from '../shared-module/shared-module.module';
     CommonModule,
     ToastModule,
     TabViewModule,
-    SharedModuleModule
   ],
   declarations: [
     LoginComponent,
-    RegisterComponent,
-    ForgotPasswordComponent,
-    ResetPasswordComponent,
   ],
   providers: [MessageService]
 })

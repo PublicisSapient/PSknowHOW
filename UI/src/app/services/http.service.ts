@@ -23,13 +23,8 @@ import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
 import { Router } from '@angular/router';
-import { Account } from '../model/Account';
-import { KPIScore } from '../model/KPIScore';
-import { ScoreCard } from '../model/ScoreCard';
 import { RsaEncryptionService } from '../services/rsa.encryption.service';
 import { TextEncryptionService } from './text.encryption.service';
-import { NotificationResponseDTO } from '../model/NotificationDTO.model';
-import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/userAccessApprovalDTO.model';
 @Injectable({
     providedIn: 'root'
 }
@@ -393,42 +388,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         ));
     }
 
-    /** fetch all the project from account id */
-    getAllProjectsOfAnAccount(accountID): Observable<object> {
-        return this.http.get<any>(this.enggMaturityChildByParentUrl)
-            .pipe(tap(projects => projects.map((project) => new Account({ id: project.id, name: project.nodeName }))));
-    }
-
-    /** fetch all the project from account ids */
-    getAllProjectsOfAnAccounts(accountID, levelName): Observable<Account[]> {
-        return this.http.get<any>(this.enggMaturityChildByParentUrl + '/' + accountID + '/' + levelName)
-            .pipe(map(projects => projects.map((project) => new Account({ id: project.id, name: project.nodeName }))));
-
-    }
-    /** fetch all the kpi master data according to project id */
-    getProjectEnggMaturityScoreCards(projectID): Observable<any[]> {
-        return this.http
-            .get<any>(this.enggMaturitykpiScoreMasterUrl + '/' + projectID)
-            .pipe(map(scoreCards => scoreCards.map((scoreCard) => new ScoreCard({
-                    id: scoreCard.id,
-                    projectID: scoreCard.accountHierarchyId,
-                    created: scoreCard.created,
-                    lastUpdated: scoreCard.lastUpdated
-                }))));
-    }
-
-    /** fetch the kpi score by scorecard master id */
-    getProjectEnggMaturityKPIScores(scoreCardID): Observable<object> {
-        return this.http
-            .get<any>(this.enggMaturityKpiScoreUrl + '/' + scoreCardID)
-            .pipe(map(KPIScores => KPIScores.map((kpiScore) => new KPIScore({
-                    id: kpiScore.id,
-                    scoreCardID: kpiScore.accountHierarchyKpiScoreMasterId,
-                    kpiID: kpiScore.kpiId,
-                    kpiScore: kpiScore.score,
-                    kpiMaturity: kpiScore.maturity
-                }))));
-    }
 
     /** Save and update the enggmaturity data */
     addEnggMaturityKPIScoreForProject(projectKPIScoreData: {}): Observable<object> {
@@ -471,11 +430,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             .pipe(map(requests => requests));
     }
 
-    /** get pending request notifications */
-    getAccessRequestsNotifications() {
-        return this.http.get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
-            .pipe(map(requests => requests));
-    }
 
     /** Save access request (RBAC) */
     saveAccessRequest(requestData): Observable<any> {
@@ -771,14 +725,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     updateUserBoardConfig(data): Observable<any> {
         return this.http.post<object>(this.showHideKpiUrl, data);
-    }
-
-    getNewUserAccessRequestFromAPI() {
-        return this.http.get<UserAccessApprovalResponseDTO>(this.newUserAccessRequestUrl);
-    }
-
-    updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
-        return this.http.put<any>(`${this.newUserAccessRequestUrl}/${username}`, reqBody);
     }
 
     getProcessorsTraceLogsForProject(basicProjectConfigId){
