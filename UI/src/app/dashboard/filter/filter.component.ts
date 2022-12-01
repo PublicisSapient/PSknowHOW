@@ -522,10 +522,10 @@ export class FilterComponent implements OnInit {
             }
 
             if (!applySource) {
-                for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-                    this.selectedFilterArray[i]['additionalFilters'] = [];
-                }
-                this.resetAdditionalFiltersToInitialValue();
+                // for (let i = 0; i < this.selectedFilterArray?.length; i++) {
+                //     this.selectedFilterArray[i]['additionalFilters'] = [];
+                // }
+                // this.resetAdditionalFiltersToInitialValue();
                 this.filterAdditionalFilters();
             }
             if (applySource?.toLowerCase() == 'date' && this.kanban) {
