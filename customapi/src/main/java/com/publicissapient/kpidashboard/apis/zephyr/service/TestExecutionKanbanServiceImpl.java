@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,10 +40,12 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -52,12 +54,9 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for Test Execution percentage kpi for kanban.
@@ -208,7 +207,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 							testExecutionAggregatedValuesForDateRange);
 					dataCounts.add(dcObj);
 
-					populateValidationDataObject(projectName, requestTrackerId,
+					populateExcelDataObject(projectName, requestTrackerId,
 							dataForTreadList, excelData);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
@@ -320,8 +319,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		return hoverData;
 	}
 
-	private void populateValidationDataObject(String projectName, String requestTrackerId,
-											  Map<String, KanbanTestExecution> dataForTreadList, List<KPIExcelData> excelData) {
+	private void populateExcelDataObject(String projectName, String requestTrackerId,
+			Map<String, KanbanTestExecution> dataForTreadList, List<KPIExcelData> excelData) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			dataForTreadList.forEach((date, testExecution) -> {

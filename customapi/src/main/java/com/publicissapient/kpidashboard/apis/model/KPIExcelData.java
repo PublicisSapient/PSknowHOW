@@ -285,4 +285,7 @@ public class KPIExcelData {
 
 	@JsonProperty("Linked Defects to Story")
 	private Map<String, String> linkedDefectsStory;
+
+	@JsonProperty("Total Time Spent (in hours)")
+	private String loggedTime;
 }

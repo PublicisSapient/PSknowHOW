@@ -14,7 +14,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -24,27 +25,29 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -237,10 +240,11 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	
 	private void kpiWithoutFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		leafNodeList.forEach(node -> {
 			List<KanbanJiraIssue> kanbanIssueList = projectWiseJiraIssue.get(node.getId());
+			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(kanbanIssueList)) {
 				String projectNodeId = node.getId();
 				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
@@ -266,9 +270,9 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 					dc.add(dcObj);
 					// below method is to get excel export functionality 
 					//input and implementation and position of this fuction may vary depending on kpi 
-					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, filteredList,
-							date + Constant.UNDERSCORE + projectName);
-					
+					populateExcelDataObject(requestTrackerId, filteredList, dateWiseIssueClosedStatusList,
+							date, node.getProjectFilter().getName(),
+							excelData);
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
 					} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
@@ -280,15 +284,19 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 				mapTmp.get(node.getId()).setValue(dc);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getColumns());
+
 	}
 
 	private void kpiWithFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		//implementing ticket type dropdown filter json
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		leafNodeList.forEach(node -> {
 			List<KanbanJiraIssue> kanbanIssueList = projectWiseJiraIssue.get(node.getId());
+			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(kanbanIssueList)) {
 				List<String> issueTypeList = kanbanIssueList.stream().map(KanbanJiraIssue::getTypeName).distinct().collect(Collectors.toList());
 				Map<String, List<DataCount>> projectFilterWiseDataMap = new HashMap<>();
@@ -317,9 +325,9 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 					} else {
 						currentDate = currentDate.minusDays(1);
 					}
-					String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
-					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, kanbanIssueList,
-							date + Constant.UNDERSCORE + projectName);
+					populateExcelDataObject(requestTrackerId, kanbanIssueList, dateWiseIssueClosedStatusList,
+							date, node.getProjectFilter().getName(),
+							excelData);
 				}
 				// move or create this method based on your kpi
 
@@ -327,6 +335,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 				mapTmp.get(node.getId()).setValue(projectFilterWiseDataMap);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getColumns());
 	}
 	
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
@@ -381,25 +391,18 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	}
 
 
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, Map<String, ValidationData> validationDataMap,
-											  List<KanbanJiraIssue> projectWiseFeatureMap, String dateProjectKey) {
+	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
+			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName,
+			List<KPIExcelData> excelData) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-
-
-			if (CollectionUtils.isNotEmpty(projectWiseFeatureMap)) {
-				ValidationData validationData = new ValidationData();
-				validationData.setTicketKeyList(
-						projectWiseFeatureMap.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
-				validationData.setIssueTypeList(
-						projectWiseFeatureMap.stream().map(KanbanJiraIssue::getTypeName).collect(Collectors.toList()));
-
-				validationDataMap.put(dateProjectKey, validationData);
+			if (CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
+				KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
+						dateWiseIssueClosedStatusList, excelData,
+						KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
 			}
-			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}
 	}
-	
+
 	public static List<KanbanJiraIssue> filterKanbanDataBasedOnStartAndEndDate(List<KanbanJiraIssue> issueList,
 			LocalDate startDate, LocalDate endDate) {
 		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime

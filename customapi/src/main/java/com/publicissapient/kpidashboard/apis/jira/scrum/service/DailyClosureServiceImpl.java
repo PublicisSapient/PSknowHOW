@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,23 +38,23 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class fetches the daily closure on Iteration dashboard. Trend analysis
@@ -209,7 +211,9 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				data.add(dataCount);
 			});
 			trendValueList.add(new DataCount(latestSprint.getProjectFilter().getName(), Lists.reverse(data)));
-			populateValidationDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
+			
+			
+			populateExcelDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
 		}
 	}
 
@@ -227,30 +231,15 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * @param sprint
 	 *            unique key
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
+	private void populateExcelDataObject(KpiElement kpiElement, String requestTrackerId,
 			List<JiraIssue> issuesExcel,Node sprint) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			Map<String, ValidationData> validationDataMap = new HashMap<>();
-			List<String> types = new ArrayList<>();
-			List<String> jiraIssues = new ArrayList<>();
+			List<KPIExcelData> excelData = new ArrayList<>();
+			KPIExcelUtility.populateDailyClosuresExcel(issuesExcel, sprint.getSprintFilter().getName(), excelData);
+			kpiElement.setExcelData(excelData);
+			kpiElement.setExcelColumns(KPIExcelColumn.DAILY_CLOSURES.getColumns());
 
-			
-			for (JiraIssue jiraIssue : issuesExcel) {
-
-				jiraIssues.add(jiraIssue.getNumber());
-				types.add(jiraIssue.getTypeName());
-			}
-			
-			ValidationData validationData = new ValidationData();
-			validationData.setIssues(jiraIssues);
-			validationData.setIssueTypeList(types);
-			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				String key =sprint.getSprintFilter().getId();
-				validationDataMap.put(key, validationData);
-				kpiElement.setMapOfSprintAndData(validationDataMap);
-			}
-		
 		}
 	}
 

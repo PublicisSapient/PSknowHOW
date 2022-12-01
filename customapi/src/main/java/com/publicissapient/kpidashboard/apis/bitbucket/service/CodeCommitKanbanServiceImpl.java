@@ -153,7 +153,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 	private void kpiWithFilter(Map<String, Object> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationMap = new HashMap<>();
+
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<CommitDetails> commitList = (List<CommitDetails>) resultMap.get(COMMIT_COUNT);
 		final Map<ObjectId, Map<String, Long>> commitListItemId = new LinkedHashMap<>();
@@ -198,7 +198,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
-		kpiElement.setMapOfSprintAndData(validationMap);
 	}
 
 	/**

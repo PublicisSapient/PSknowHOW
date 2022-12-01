@@ -43,19 +43,20 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -210,8 +211,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 				.collect(Collectors.groupingBy(ji -> Pair.of(ji.getBasicProjectConfigId(), ji.getSprintID()),
 						Collectors.toList()));
 
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-
+		List<KPIExcelData> excelData = new ArrayList<>();
 		for (Node node : sprintLeafNodeList) {
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
@@ -236,8 +236,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			Double value = 100 * howerMap.get(UNLOGGED_STORIES) / Double.valueOf(howerMap.get(STORY_LIST));
 
 			if (CollectionUtils.isNotEmpty(totalStory)) {
-				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap,
-						kpiRequest.getFilterToShowOnTrend(), node);
+				KPIExcelUtility.populateMissingWorkLogsData(totalStory,excelData);
 			}
 
 			LOGGER.debug("[MISSING-WORK-LOGS-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}",
@@ -260,6 +259,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			trendValueList.add(dataCount);
 
 		}
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.MISSING_WORK_LOGS.getColumns());
 	}
 
 	/**
@@ -270,51 +271,14 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param unloggedStory
 	 * 
 	 */
-	private void setSprintData(List<JiraIssue> stories, List<JiraIssue> totalStory,
-			List<JiraIssue> unloggedStory) {
+	private void setSprintData(List<JiraIssue> stories, List<JiraIssue> totalStory, List<JiraIssue> unloggedStory) {
 		if (CollectionUtils.isNotEmpty(stories)) {
-			totalStory.addAll(stories.stream()
-					.filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0).collect(Collectors.toList()));
+			totalStory.addAll(stories.stream().filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0)
+					.collect(Collectors.toList()));
 
 			unloggedStory.addAll(totalStory.stream().filter(
 					issue -> (issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == UNLOGGED))
 					.collect(Collectors.toList()));
 		}
 	}
-
-	/**
-	 * Populates Validation Data Object
-	 * 
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param sprintWiseStoriesList
-	 * @param validationDataMap
-	 * @param filterToShowOnTrend
-	 * @param node
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap,
-			String filterToShowOnTrend, Node node) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String keyForValidation = sprintWiseStoriesList.get(0).getSprintName();
-			List<String> storyKeyList = new ArrayList<>();
-			List<String> loggedTime = new ArrayList<>();
-
-			sprintWiseStoriesList.stream().forEach(jiraIssue -> {
-				storyKeyList.add(jiraIssue.getNumber());
-				Double daysLogged = 0.0d;
-				if (jiraIssue.getTimeSpentInMinutes() != null) {
-					daysLogged = Double.valueOf(jiraIssue.getTimeSpentInMinutes()) / 60;
-				}
-				loggedTime.add(df2.format(daysLogged));
-			});
-
-			ValidationData validationData = new ValidationData();
-			validationData.setTotalStoryKeyList(storyKeyList);
-			validationData.setLoggedTimeList(loggedTime);
-			validationDataMap.put(keyForValidation, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
-
 }

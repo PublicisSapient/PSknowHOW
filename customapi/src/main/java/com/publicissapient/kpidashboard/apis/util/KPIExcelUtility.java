@@ -35,16 +35,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,11 +42,21 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
+import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -1087,5 +1087,40 @@ public class KPIExcelUtility {
 		excelData.setEstimatedCapacity(df2.format(capacity));
 		kpiExcelData.add(excelData);
 	}
+
+	public static void populateMissingWorkLogsData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData) {
+		if(CollectionUtils.isNotEmpty(jiraIssues)) {
+			String sprintName = jiraIssues.get(0).getSprintName();
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				Map<String, String> story = new HashMap<>();
+				story.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setStoryId(story);
+				Double daysLogged = 0.0d;
+				if (jiraIssue.getTimeSpentInMinutes() != null) {
+					daysLogged = Double.valueOf(jiraIssue.getTimeSpentInMinutes()) / 60;
+				}
+				excelData.setLoggedTime(df2.format(daysLogged));
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+	public static void populateDailyClosuresExcel(List<JiraIssue> jiraIssues, String sprintName, List<KPIExcelData> kpiExcelData) {
+		if(CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				Map<String, String> story = new HashMap<>();
+				story.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setTicketIssue(story);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueType(jiraIssue.getTypeName());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
 
 }

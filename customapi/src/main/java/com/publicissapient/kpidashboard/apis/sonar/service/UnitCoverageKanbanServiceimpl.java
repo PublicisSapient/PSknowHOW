@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -46,22 +45,22 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is a service to compute unite coverage for kanban.
@@ -231,20 +230,7 @@ public class UnitCoverageKanbanServiceimpl
 		}
 		return range;
 	}
-
-	private Map<String, ValidationData> populateValidationDataObjectForCoverage(String requestTrackerId,
-			List<String> projectList, List<String> debtList, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setCoverageList(debtList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
-		return validationDataMap;
-	}
-
+	
 	private Map<String, Object> prepareCoverageList(Map<String, SonarHistory> history, String date,
 			String projectNodeId, List<String> projectList, List<String> debtList,
 			Map<String, List<DataCount>> projectWiseDataMap, List<String> versionDate) {
@@ -266,8 +252,9 @@ public class UnitCoverageKanbanServiceimpl
 				debtList.add(String.valueOf(coverageValue));
 			}
 		});
-		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()),
-				projectName, date, projectNodeId);
+		DataCount dcObj = getDataCountObject(
+				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()), projectName,
+				date, projectNodeId);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;

@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -46,22 +45,22 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author shichand0
@@ -325,28 +324,7 @@ public class SonarTechDebtKanbanServiceImpl
 		}
 		return range;
 	}
-
-	/**
-	 * @param requestTrackerId
-	 * @param projectList
-	 * @param debtList
-	 * @param versionDate
-	 * @param node
-	 * @return
-	 */
-	private Map<String, ValidationData> populateValidationDataObjectForTechDebt(String requestTrackerId,
-			List<String> projectList, List<String> debtList, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setSonarTechDebtList(debtList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
-		return validationDataMap;
-	}
-
+	
 	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start, Long end,
 			String projectNodeId) {
 		Map<String, SonarHistory> map = new HashMap<>();

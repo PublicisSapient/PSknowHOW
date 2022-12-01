@@ -127,6 +127,10 @@ public enum KPIExcelColumn {
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
+    MISSING_WORK_LOGS("kpi115", Arrays.asList("Sprint Name", "Story ID", "Total Time Spent (in hours)")),
+
+    DAILY_CLOSURES("kpi125", Arrays.asList("Sprint Name", "Ticket Issue ID", "Issue Description","Issue Type")),
+
 	INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 
     // @formatter:on

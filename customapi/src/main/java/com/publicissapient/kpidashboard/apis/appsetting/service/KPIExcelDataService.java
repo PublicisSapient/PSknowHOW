@@ -563,8 +563,6 @@ public class KPIExcelDataService {
 			kpiExcelValidationDataResponse.setKpiId(element.getKpiId());
 			kpiExcelValidationDataResponse.setKpiName(element.getKpiName());
 
-			Map<String, ValidationData> mapOfSprintAndData = element.getMapOfSprintAndData();
-			kpiExcelValidationDataResponse.setMapOfSprintAndData(mapOfSprintAndData);
 			kpiExcelValidationDataResponse.setExcelData(element.getExcelData());
 			kpiExcelValidationDataResponse.setExcelColumns(element.getExcelColumns());
 		});

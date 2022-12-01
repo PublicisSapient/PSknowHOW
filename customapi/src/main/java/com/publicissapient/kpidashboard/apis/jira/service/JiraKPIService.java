@@ -22,15 +22,13 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -38,8 +36,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have to
@@ -95,33 +91,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name());
 	}
 
-	/**
-	 * This method populates KPI Element with Validation data. It will be triggered
-	 * only for request originated to get Excel data.
-	 *
-	 * @param kpiElement           KpiElement
-	 * @param requestTrackerId     request id
-	 * @param validationDataKey    validation data key
-	 * @param validationDataMap    validation data map
-	 * @param storyIdList          story id list
-	 * @param sprintWiseDefectList sprints defect list
-	 * @param storyPointList       the story point list
-	 */
-	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
-			Map<String, ValidationData> validationDataMap, List<String> storyIdList,
-			List<JiraIssue> sprintWiseDefectList, List<String> storyPointList) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(storyIdList);
-			validationData.setStoryPointList(storyPointList);
-			validationData.setDefectKeyList(
-					sprintWiseDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			validationDataMap.put(validationDataKey, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
-
 	public Map<String, Double> getLastNMonth(int count) {
 		Map<String, Double> lastNMonth = new LinkedHashMap<>();
 		DateTime currentDate = DateTime.now();
@@ -137,15 +106,15 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 		return lastNMonth;
 	}
 	
-	public  long calcWeekDays(final LocalDate start, final LocalDate end) {
-	    final DayOfWeek startW = start.getDayOfWeek();
-	    final DayOfWeek endW = end.getDayOfWeek();
+	public long calcWeekDays(final LocalDate start, final LocalDate end) {
+		final DayOfWeek startW = start.getDayOfWeek();
+		final DayOfWeek endW = end.getDayOfWeek();
 
-	    final long days = ChronoUnit.DAYS.between(start, end);
-	    final long daysWithoutWeekends = days - 2 * ((days + startW.getValue())/7);
+		final long days = ChronoUnit.DAYS.between(start, end);
+		final long daysWithoutWeekends = days - 2 * ((days + startW.getValue()) / 7);
 
-	    //adjust for starting and ending on a Sunday:
-	    return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
+		// adjust for starting and ending on a Sunday:
+		return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
 	}
 
 }

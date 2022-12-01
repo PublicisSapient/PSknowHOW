@@ -85,10 +85,6 @@ public class KpiElement implements Serializable { // NOPMD
 	@JsonIgnore
 	private Map<Pair<String, String>, Node> nodeWiseKPIValue;
 
-	// To be used for giving data for the validation functionality on the UI
-	@JsonIgnore
-	private transient Map<String, ValidationData> mapOfSprintAndData;
-
 	private transient List<DataCount> trendValueListClosedTickets;
 
 	@JsonIgnore
@@ -160,24 +156,6 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public void setGroupId(Integer groupId) {
 		this.groupId = groupId;
-	}
-
-	/**
-	 * Gets map of sprint and data.
-	 *
-	 * @return the map of sprint and data
-	 */
-	public Map<String, ValidationData> getMapOfSprintAndData() {
-		return mapOfSprintAndData;
-	}
-
-	/**
-	 * Sets map of sprint and data.
-	 *
-	 * @param mapOfSprintAndData the map of sprint and data
-	 */
-	public void setMapOfSprintAndData(Map<String, ValidationData> mapOfSprintAndData) {
-		this.mapOfSprintAndData = mapOfSprintAndData;
 	}
 
 	/**
