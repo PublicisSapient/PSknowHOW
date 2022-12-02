@@ -112,7 +112,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 					HttpEntity<String> httpEntity = zephyrUtil.buildAuthHeaderUsingToken(accessToken);
 					ResponseEntity<String> response = restTemplate.exchange(testCaseUrl, HttpMethod.GET, httpEntity,
 							String.class);
-					if (response.getStatusCode() == HttpStatus.OK) {
+					if (response.getStatusCode() == HttpStatus.OK && Objects.nonNull(response.getBody())) {
 						parseResponseAndPrepareTestCases(testCaseList, accessToken, jiraCloudCredential, response,
 								folderMap);
 					} else {

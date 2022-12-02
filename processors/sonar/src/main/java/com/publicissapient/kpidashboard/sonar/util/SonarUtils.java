@@ -120,8 +120,11 @@ public final class SonarUtils {
 			toolCredential.setUsername(sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim());
 			if (sonarServer.isCloudEnv()) {
 				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+			} else if (sonarServer.isAccessTokenEnabled()) {
+				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+			} else {
+				toolCredential.setPassword(sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim());
 			}
-			toolCredential.setPassword(sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim());
 		}
 
 		return toolCredential;

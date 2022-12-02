@@ -87,8 +87,6 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 	private JiraRestClientFactory jiraRestClientFactory;
 
-	private SprintClient sprintClient;
-
 
 	/**
 	 * Run.
@@ -104,7 +102,6 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			if (jiraProcessorConfig.isFetchMetadata()) {
 				collectMetadata(jiraAdapter, onlineLineprojectConfigMap);
 			}
-			collectSprintReportData(jiraAdapter, onlineLineprojectConfigMap);
 			collectJiraIssueData(jiraAdapter, onlineLineprojectConfigMap);
 			collectReleaseData(jiraAdapter, onlineLineprojectConfigMap);
 			log.info("END - Jira processing finished for project {}",
@@ -157,7 +154,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
 							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
 							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory, SprintClient sprintClient) { // NOPMD
+							  JiraRestClientFactory jiraRestClientFactory) { // NOPMD
 		this.latch = latch;
 		this.jiraAdapter = jiraAdapter;
 		this.onlineLineprojectConfigMap = onlineLineprojectConfigMap;
@@ -170,7 +167,6 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.jiraRestClientFactory = jiraRestClientFactory;
-		this.sprintClient = sprintClient;
 	}
 
 	/**
@@ -196,13 +192,6 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		releaseData.processReleaseInfo(projectConfig);
 		long end = System.currentTimeMillis();
 		MDC.put("ReleaseDataEndTime", String.valueOf(end));
-	}
-	private void collectSprintReportData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
-		log.info("START - SprintReport fetching start");
-		if(!projectConfig.isKanban()) {
-			sprintClient.createSprintDetailBasedOnBoard(projectConfig, jiraAdapter);
-		}
-		log.info("END - SprintReport fetching End");
 	}
 
 		/**

@@ -65,8 +65,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password', 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault', 'password', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password',['Use Password', 'Use Token'],'Password', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
     },
     {
       connectionType: 'Jenkins',
@@ -138,7 +138,8 @@ export class ConnectionListComponent implements OnInit {
               field:'apiKey',
               isEnabled: false
             }
-          ]
+          ],
+          accessTokenEnabled:[]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -194,7 +195,8 @@ export class ConnectionListComponent implements OnInit {
                 field:'apiKey',
                 isEnabled: false
               }
-          ]
+          ],
+          accessTokenEnabled:[]
     }
   };
 
@@ -587,6 +589,11 @@ export class ConnectionListComponent implements OnInit {
       reqData['baseUrl'] = this.basicConnectionForm.controls['baseUrl']['value'];
     }
 
+
+    if(this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true){
+      reqData['accessTokenEnabled'] =true;
+    }
+
     // reqData['type'] = reqData['type'].replace(' ', '');
     // this.connection.type = this.connection.type.replace(' ', '');
 
@@ -731,15 +738,23 @@ export class ConnectionListComponent implements OnInit {
     } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
+      this.basicConnectionForm.controls['accessTokenEnabled'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
     } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
       this.basicConnectionForm.controls['username'].enable();
       this.basicConnectionForm.controls['password'].enable();
+      this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
     }
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
+      this.basicConnectionForm.controls['accessTokenEnabled'].disable();
+    }
+    if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true){
+      this.basicConnectionForm.controls['username'].disable();
+      this.basicConnectionForm.controls['password'].disable();
+      this.basicConnectionForm.controls['accessToken'].enable();
     }
   }
 
@@ -799,6 +814,15 @@ export class ConnectionListComponent implements OnInit {
       }
     }
 
+
+    if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
+      if (event.checked) {
+        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
+      } else {
+        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
+      }
+    }
+
     this.checkBitbucketValue(event.checked, field, type);
 
     this.checkZephyr();
@@ -826,6 +850,9 @@ export class ConnectionListComponent implements OnInit {
       reqData['pat'] = '';
       reqData['accessToken'] = '';
       reqData['apiKey'] = '';
+    }
+    if(this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true){
+      reqData['accessTokenEnabled'] =true;
     }
     this.testConnectionMsg = '';
     this.testConnectionValid = true;
@@ -896,7 +923,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
       case 'Sonar':
-        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault']).subscribe(next => {
+        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'], reqData['accessTokenEnabled']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1131,6 +1158,27 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
       }
+
+      if (this.connection['cloudEnv'] === true || this.connection['vault'] === true) {
+        this.basicConnectionForm.controls['accessTokenEnabled'].disable();
+      } else {
+        this.basicConnectionForm.controls['accessTokenEnabled'].enable();
+        this.enableDisableFieldsOnAccessTokenORPasswordToggle();
+      }
+    }
+  }
+
+  enableDisableFieldsOnAccessTokenORPasswordToggle() {
+    if (this.connection['accessTokenEnabled'] === true) {
+      this.basicConnectionForm.controls['username'].setValue('');
+      this.basicConnectionForm.controls['username'].disable();
+      this.basicConnectionForm.controls['password'].setValue('');
+      this.basicConnectionForm.controls['password'].disable();
+      this.basicConnectionForm.controls['accessToken']?.enable();
+    } else {
+      this.basicConnectionForm.controls['password'].enable();
+      this.basicConnectionForm.controls['accessToken']?.setValue('');
+      this.basicConnectionForm.controls['accessToken']?.disable();
     }
   }
 

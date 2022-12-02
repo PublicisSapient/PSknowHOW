@@ -119,9 +119,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	private SubProjectRepository subProjectRepository;
 
 	@Autowired
-	private SprintClient sprintClient;
-
-	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
 
@@ -166,8 +163,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
-									sprintClient);// NOPMD
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory);// NOPMD
 							executor.execute(worker);
 						}
 					}

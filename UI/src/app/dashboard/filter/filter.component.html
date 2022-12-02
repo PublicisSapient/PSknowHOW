@@ -157,21 +157,6 @@
             </ng-option>
          </ng-select>
       </div>
-      <!--start date and end date-->
-      <div class="p-d-flex p-ml-3 p-align-end" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
-         <span class="p-mr-5">
-            <h4 class="label-text p-mt-0 p-mb-2">Start Date</h4>
-            <p class="p-m-0 selected-data"
-               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
-               {{getDate('start')}}</p>
-         </span>
-         <span>
-            <h4 class="label-text p-mt-0 p-mb-2">End Date</h4>
-            <p class="p-m-0 selected-data"
-               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
-               {{getDate('end')}}</p>
-         </span>
-      </div>
    </form>
    <div class="p-d-flex p-align-center">
       <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
@@ -233,11 +218,11 @@
       <!-- Download excel Button error message end -->
    </div>
 </div>
-<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'">
+<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
 
    <div class="filter-nav">
 
-      <div class="selected-filter-row p-d-flex p-jc-between">
+      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration'">
          <ul class="p-m-0 p-pl-0 p-d-flex flex-wrap">
             <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
@@ -286,6 +271,38 @@
                <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
             </label>
          </div>
+      </div>
+      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
+      <!--start date and end date-->
+      <div class="p-d-flex p-ml-3 p-align-end" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
+         <span class="p-mr-5">
+            <h4 class="label-text p-mt-0 p-mb-2">Start Date</h4>
+            <p class="p-m-0 selected-data"
+               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
+               {{getDate('start')}}</p>
+         </span>
+         <span class="p-mr-5">
+            <h4 class="label-text p-mt-0 p-mb-2">End Date</h4>
+            <p class="p-m-0 selected-data"
+               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
+               {{getDate('end')}}</p>
+         </span>
+         <span class="p-mr-5" *ngIf="iterationConfigData?.daysLeft != undefined">
+            <h4 class="label-text p-mt-0 p-mb-2">Days Left</h4>
+            <p class="p-m-0 text-red">
+               {{iterationConfigData?.daysLeft > 0 ? iterationConfigData?.daysLeft : 0}} Days</p>
+         </span>
+         <span class="p-mr-5" *ngIf="iterationConfigData?.capacity != undefined">
+            <h4 class="label-text p-mt-0 p-mb-2">Capacity <span class="fa fa-info-circle"
+               aria-hidden="true" (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
+               <app-tooltip *ngIf="isTooltip" [data]="iterationConfigData?.capacity?.kpiInfo"
+               ></app-tooltip>
+            </span></h4>
+            <p class="p-m-0 text-blue">
+               {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours'  : 'NA'}}</p>
+         </span>
+      </div>
+      <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0" [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW" class="p-button-secondary" (click)="setKPIOrder()"></button>
       </div>
       
    </div>

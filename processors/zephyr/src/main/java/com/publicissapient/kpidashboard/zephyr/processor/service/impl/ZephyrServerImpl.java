@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -71,7 +72,7 @@ public class ZephyrServerImpl implements ZephyrClient {
 							ZephyrTestCaseDTO[].class, HttpMethod.GET,
 							zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()));
 
-					if (response.getStatusCode() == HttpStatus.OK) {
+					if (response.getStatusCode() == HttpStatus.OK && Objects.nonNull(response.getBody()) ) {
 						testCaseList = Arrays.asList(response.getBody());
 					} else {
 						String statusCode = response.getStatusCode().toString();

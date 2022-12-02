@@ -74,7 +74,7 @@ public class OfflineAdapter implements JiraAdapter {
     @Override
     public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
                                   String startDateTimeByIssueType, String userTimeZone, int pageStart,
-                                  boolean dataExist) {
+                                  boolean dataExist) throws InterruptedException{
         long t0 = System.currentTimeMillis();
         long t2 = System.currentTimeMillis();
         Iterable<Issue> jiraRawRs = searchResult.getIssues();
@@ -90,6 +90,11 @@ public class OfflineAdapter implements JiraAdapter {
         long issueFetchTime = tn - t0;
         log.info("time taken to fetch issues : {} ", issueFetchTime);
         return searchResult;
+    }
+
+    @Override
+    public SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist) {
+        return null;
     }
 
     @Override
@@ -147,7 +152,7 @@ public class OfflineAdapter implements JiraAdapter {
 	}
 
     @Override
-    public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) {
+    public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException{
         return null;
     }
 

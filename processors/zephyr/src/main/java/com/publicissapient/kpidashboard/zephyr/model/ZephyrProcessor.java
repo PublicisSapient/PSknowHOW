@@ -39,7 +39,7 @@ public class ZephyrProcessor extends Processor {
 		protoType.setOnline(true);
 		protoType.setActive(true);
 		protoType.setLastSuccess(false);
-		protoType.setProcessorType(ProcessorType.AGILE_TOOL);
+		protoType.setProcessorType(ProcessorType.TESTING_TOOLS);
 		protoType.setUpdatedTime(System.currentTimeMillis());
 
 		return protoType;

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -149,8 +150,10 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leaf.getProjectFilter().getBasicProjectConfigId());
 			if (null != fieldMapping) {
-				mapOfProjFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
+				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjFilters, fieldMapping,
+							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				}
 				uniqueProjMap.put(basicProjectConfigId.toString(), mapOfProjFilters);
 				ignoreStatusList.add(StringUtils.isEmpty(fieldMapping.getStoryFirstStatus()) ? ""
 						: fieldMapping.getStoryFirstStatus());

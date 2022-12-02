@@ -100,6 +100,8 @@ function running_js()
 
 	echo "########## insert kpi_fieldmapping to show kpiwise field mapping############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_fieldmapping_insert.js
+echo "########## insert jira test tool added for existing user using testing field mapping############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/test_tool_backward_compatibility.js
 }
 
 function cron_service()

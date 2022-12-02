@@ -608,6 +608,7 @@ public class KPIExcelUtility {
 				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
 				excelData.setStoryId(storyDetails);
 				excelData.setClosedStatus(present);
+				excelData.setStoryPoints(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 
                 kpiExcelData.add(excelData);
 

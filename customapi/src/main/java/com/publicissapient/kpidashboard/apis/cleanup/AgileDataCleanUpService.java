@@ -125,11 +125,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 					.findByBasicProjectConfigId(tool.getBasicProjectConfigId());
 			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(basicProjectConfigId,
 					tool.getToolName());
-			if (Objects.nonNull(fieldMapping)) {
-				if (fieldMapping.getJiraTestCaseType() != null) {
-					testCaseDetailsRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
-				}
-			}
+
 			if (projectBasicConfig.getIsKanban()) {
 				kanbanJiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				kanbanJiraIssueHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);

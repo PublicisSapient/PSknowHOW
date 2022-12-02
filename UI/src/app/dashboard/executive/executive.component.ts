@@ -23,7 +23,6 @@ import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
-import { Constants } from 'src/app/model/Constants';
 import { ActivatedRoute } from '@angular/router';
 import { mergeMap } from 'rxjs/operators';
 import * as Excel from 'exceljs';
@@ -241,6 +240,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
+                if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
+                    this.createTrendsData(element.kpiId);
+                }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
             }
@@ -1312,18 +1314,18 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' ? kpiData?.kpiDetail?.kpiUnit : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
-        if(item?.value?.length > 1 && kpiData?.kpiDetail?.showTrend) {
+        if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
             if(kpiData?.kpiDetail?.trendCalculative){
-                let lhs = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
-                let rhs = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
-                if(lhs < rhs){
-                    trend = '+ve';
-                }else if(lhs > rhs){
-                    trend = '-ve';
-                }else if(lhs == rhs && kpiData?.kpiId == 'kpi126'){
-                    trend = '+ve';
+                let lhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
+                let rhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
+                let lhs = item?.value[item?.value?.length - 1][lhsKey];
+                let rhs = item?.value[item?.value?.length - 1][rhsKey];
+                let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
+                let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
+                if(trendObj){
+                    trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
                 }else{
-                    trend = '-- --';
+                    trend = 'NA'
                 }
             }else{
                 let lastVal = item?.value[item?.value?.length - 1]?.value;
@@ -1353,7 +1355,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.kpiTrendsObj[kpiId] = [];
             for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
                 if(this.kpiChartData[kpiId][i]?.value?.length > 0){
-                    let trendObj = {}
+                    let trendObj = {};
                     const [latest, trend] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
                     trendObj = {
                         "hierarchyName": this.kpiChartData[kpiId][i]?.data,
@@ -1362,8 +1364,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
                                     this.checkMaturity(this.kpiChartData[kpiId][i]) 
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
+                    };
+                    if(kpiId === 'kpi997'){
+                        trendObj['value'] = 'NA';
                     }
-                    this.kpiTrendsObj[kpiId]?.push(trendObj); 
+                    this.kpiTrendsObj[kpiId]?.push(trendObj);
                 }
             }
         }

@@ -33,9 +33,11 @@ public class TestCaseDetails extends BasicModel {
 
     private ObjectId processorId;
     private String number;
+    private String originalTypeName;
     private String typeName;
     private List<String> labels;
     private String createdDate;
+    private String updateDate;
     private String projectName;
     private String projectID;
     private String basicProjectConfigId;

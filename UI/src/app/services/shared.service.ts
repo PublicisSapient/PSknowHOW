@@ -44,6 +44,8 @@ export class SharedService implements OnInit {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
+  iterationCongifData=new BehaviorSubject({});
+  kpiListNewOrder= new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
   private selectedProject;

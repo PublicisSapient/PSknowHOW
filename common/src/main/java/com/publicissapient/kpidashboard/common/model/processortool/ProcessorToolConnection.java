@@ -81,8 +81,9 @@ public class ProcessorToolConnection {
 	private boolean offline;
 	private String offlineFilePath;
 	private boolean cloudEnv;
+	private boolean accessTokenEnabled;
 	private String organizationKey;
-	//TestCase Fields
+	//TestCase Fields for Zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
 	private List<String> automatedTestValue;
@@ -92,6 +93,18 @@ public class ProcessorToolConnection {
 	private List<String> testRegressionValue;
 	private List<String> regressionAutomationFolderPath;
 	private List<String> inSprintAutomationFolderPath;
+
+	// TestCase Fields For jira test tool
+	private String[] jiraTestCaseType;
+	private String testAutomatedIdentification;
+	private String testAutomationCompletedIdentification;
+	private String testRegressionIdentification;
+	private String testAutomationCompletedByCustomField;
+	private String testRegressionByCustomField;
+	private List<String> jiraAutomatedTestValue;
+	private List<String> jiraRegressionTestValue;
+	private List<String> jiraCanBeAutomatedTestValue;
+	private List<String> testCaseStatus;
 
 	private String deploymentProjectName;
 	private String deploymentProjectId;

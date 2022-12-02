@@ -43,7 +43,7 @@ export class TrendIndicatorComponent implements OnInit {
     //   this.dataTrend = ['NA'];
     //   this.lastValue = 'NA';
     // }
-    
+
   }
 
   ngOnDestroy() {

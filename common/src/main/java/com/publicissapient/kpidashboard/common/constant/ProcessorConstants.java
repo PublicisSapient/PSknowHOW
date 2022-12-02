@@ -46,6 +46,11 @@ public final class ProcessorConstants {
 	 */
 	public static final String ZEPHYR = "Zephyr";
 
+	/**
+	 * The constant Jira Test tool.
+	 */
+	public static final String JIRA_TEST = "JiraTest";
+
 	public static final String BITBUCKET = "Bitbucket";
 	
 	

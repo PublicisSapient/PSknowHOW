@@ -176,13 +176,8 @@ describe('JiraConfigComponent', () => {
   it('should save form', () => {
     component.ngOnInit();
     component.toolForm.controls['projectKey'].setValue('1212');
-    component.toolForm.controls['boards'].setValue([
-      {
-        boardId: '123123',
-        boardName: 'Copy of ABC Kanban',
-        projectKey: 'ABC'
-      }
-    ]);
+    component.queryEnabled =true;
+    component.toolForm.controls['boardQuery'].setValue(`Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`);
     component.isEdit = false;
     component.selectedConnection = selectedConnection;
 
@@ -194,13 +189,8 @@ describe('JiraConfigComponent', () => {
   it('should submit edit form', () => {
     component.ngOnInit();
     component.toolForm.controls['projectKey'].setValue('1212');
-    component.toolForm.controls['boards'].setValue([
-      {
-        boardId: '123123',
-        boardName: 'Copy of ABC Kanban',
-        projectKey: 'ABC'
-      }
-    ]);
+    component.queryEnabled =true;
+    component.toolForm.controls['boardQuery'].setValue(`Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`);
     component.isEdit = true;
     component.selectedConnection = selectedConnection;
 

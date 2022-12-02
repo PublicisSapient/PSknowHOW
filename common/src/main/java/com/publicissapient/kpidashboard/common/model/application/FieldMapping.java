@@ -63,7 +63,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopment;
 	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
-	private List<String> testRegressionValue; // TODO delete this field
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDod;
@@ -79,8 +78,6 @@ public class FieldMapping extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
-	private List<String> regressionAutomationFolderPath;// TODO delete this field
-	private List<String> inSprintAutomationFolderPath;// TODO delete this field
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
@@ -89,8 +86,6 @@ public class FieldMapping extends BasicModel {
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
-
-	private List<String> jiraCanNotAutomatedTestValue;
 
 	private List<String> jiraSprintVelocityIssueType;
 
@@ -108,8 +103,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStoryIdentification;
 
 	private String jiraLiveStatus;
-
-	private List<String> regressionAutomationLabels;// TODO delete this field
 
 	private List<String> ticketCountIssueType;
 
@@ -142,8 +135,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraCommitmentReliabilityIssueType;
 
 	private List<String> resolutionTypeForRejection;
-
-	private List<String> jiraWasteStatus;
 	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
 	private String jiraBugRaisedByQACustomField;
@@ -169,19 +160,6 @@ public class FieldMapping extends BasicModel {
 	private String productionDefectIdentifier;
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
-
-	// testCaseMapping
-	private String[] jiraTestCaseType;
-	private String testAutomatedIdentification;
-	private String testAutomationCompletedIdentification;
-	private String testRegressionIdentification;
-	private String testAutomated;
-	private String testAutomationCompletedByCustomField;
-	private String testRegressionByCustomField;
-	private List<String> jiraAutomatedTestValue;
-	private List<String> jiraRegressionTestValue;
-	private List<String> jiraCanBeAutomatedTestValue;
-	private List<String> testCaseStatus;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -219,23 +197,5 @@ public class FieldMapping extends BasicModel {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
 	}
 
-	/**
-	 * Get jira test case type string [ ].
-	 *
-	 * @return the string [ ]
-	 */
-	public String[] getJiraTestCaseType() {
-		return jiraTestCaseType == null ? null : jiraTestCaseType.clone();
-	}
-
-	/**
-	 * Sets jira test case type.
-	 *
-	 * @param jiraTestCaseType
-	 *            the jira test case type
-	 */
-	public void setJiraTestCaseType(String[] jiraTestCaseType) {
-		this.jiraTestCaseType = jiraTestCaseType == null ? null : jiraTestCaseType.clone();
-	}
 
 }

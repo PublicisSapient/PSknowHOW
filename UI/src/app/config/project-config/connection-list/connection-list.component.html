@@ -136,18 +136,19 @@
                         </div>
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' ">
+                             *ngIf="connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled'">
 
-                            <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionLabelFields
+                            <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]
                                 }}</label>
 
                             <p-inputSwitch id="connection_{{connectionFieldLabels.inputFields[i]}}"
                                 formControlName="{{ connectionFieldLabels.inputFields[i] }}"
                                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
                                 (onChange)="enableDisableSwitch($event, connectionFieldLabels.inputFields[i], connectionFieldLabels.connectionType.toLowerCase() )"
-                                onLabel="true" offLabel="false" value="true" required>
+                                onLabel="true" offLabel="false" value="true" required class="p-ml-2 p-mr-2">
                             </p-inputSwitch>
 
+                            <label>{{ connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' ? connectionLabelFields[1] : ''}}</label>
                         </div>
 
                         <div class="p-field d-flex align-items-center"
@@ -163,7 +164,7 @@
                         </div>
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'connPrivate' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'offline' && connectionFieldLabels.inputFields[i] !== 'vault'">
+                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'connPrivate' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'offline' && connectionFieldLabels.inputFields[i] !== 'vault' && connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled'">
                             <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionLabelFields
                                 }}</label>
                             <input #inputFieldVar name="{{ connectionFieldLabels.inputFields[i] }}"

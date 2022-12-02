@@ -335,14 +335,14 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of the development team ability to remove defects prior to release",
+      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the  development team in closing defects raised because of new feature development within the sprint",
       "formula": [
         {
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects fixed in a sprint",
-            "Total no. of defects reported in a sprint"
+            "No. of defects tagged to stories in a sprint",
+            "Total no. of defects tagged to stories in a sprint"
           ]
         }
       ],
@@ -594,15 +594,15 @@ db.getCollection('kpi_master').insert(
         "operator": "<"
       },
       {
-        "type": "Neutral",
+        "type": "Upwards",
         "lhs": "value",
         "rhs": "lineValue",
-        "operator": "<"
+        "operator": "="
       },
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],
@@ -1237,11 +1237,25 @@ db.getCollection('kpi_master').insert(
           "lhs": "Sprint Predictability for a sprint",
           "operator": "division",
           "operands": [
-            "sprint velocity in last sprint.",
-            "sprint velocity in last 3 sprint"
+             "sprint velocity of the targeted sprint.",
+             "average sprint velocity of previous 3 sprints"
           ]
         }
-      ]
+      ],
+      "details": [
+              {
+                "type": "paragraph",
+                "value": "If previous 3 sprints are not available, then Predictability of targeted sprint will be 100"
+              },
+              {
+                "type": "paragraph",
+                "value": "If only previous 2 sprints are available, then it is calculating average of 2 sprints"
+              },
+              {
+                "type": "paragraph",
+                "value": "If only one previous sprint is available, then it is calculating as targeted sprint velocity divided by previous sprint velocity"
+              }
+            ]
     },
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
@@ -1970,7 +1984,7 @@ db.getCollection('kpi_master').insert(
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],
@@ -2026,7 +2040,7 @@ db.getCollection('kpi_master').insert(
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],

@@ -75,8 +75,9 @@ public class ToolDataCleanUpServiceFactory {
 		case ProcessorConstants.AZURE:
 			toolCategory = ProcessorType.AGILE_TOOL.toString();
 			break;
+		case ProcessorConstants.JIRA_TEST:
 		case ProcessorConstants.ZEPHYR:
-			toolCategory = ProcessorType.ZEPHYR.toString();
+			toolCategory = ProcessorType.TESTING_TOOLS.toString();
 			break;
 		case ProcessorConstants.SONAR:
 			toolCategory = ProcessorType.SONAR_ANALYSIS.toString();

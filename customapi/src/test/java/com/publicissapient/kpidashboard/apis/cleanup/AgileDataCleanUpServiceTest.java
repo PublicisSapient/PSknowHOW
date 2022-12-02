@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author anisingh4
@@ -141,7 +140,6 @@ public class AgileDataCleanUpServiceTest {
 
 		verify(kanbanJiraIssueRepository, times(1)).deleteByBasicProjectConfigId("6335368249794a18e8a4479f");
 		verify(kanbanJiraIssueHistoryRepository, times(1)).deleteByBasicProjectConfigId("6335368249794a18e8a4479f");
-		verify(testCaseDetailsRepository, times(1)).deleteByBasicProjectConfigId("6335368249794a18e8a4479f");
 		verify(processorExecutionTraceLogRepository, times(1)).deleteByBasicProjectConfigIdAndProcessorName("6335368249794a18e8a4479f" , ProcessorConstants.JIRA);
 	}
 
@@ -157,8 +155,6 @@ public class AgileDataCleanUpServiceTest {
 		projectToolConfig.setToolName(ProcessorConstants.JIRA);
 
 		FieldMapping fieldMapping = new FieldMapping();
-		String[] values = new String[]{"Bug","Defect"};
-		fieldMapping.setJiraTestCaseType(values);
 		when(fieldMappingRepository.findByBasicProjectConfigId(Mockito.any())).thenReturn(fieldMapping);
         when(projectToolConfigRepository.findById(Mockito.anyString())).thenReturn(projectToolConfig);
 		doNothing().when(sprintRepository).deleteByBasicProjectConfigId(Mockito.any());
@@ -172,8 +168,7 @@ public class AgileDataCleanUpServiceTest {
         verify(jiraIssueRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
         verify(jiraIssueCustomHistoryRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
 		verify(sprintRepository, times(1)).deleteByBasicProjectConfigId(new ObjectId("5e9db8f1e4b0caefbfa8e0c7"));
-		verify(testCaseDetailsRepository, times(1)).deleteByBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
-		verify(processorExecutionTraceLogRepository, times(1)).deleteByBasicProjectConfigIdAndProcessorName("5e9db8f1e4b0caefbfa8e0c7", ProcessorConstants.JIRA);
+	    verify(processorExecutionTraceLogRepository, times(1)).deleteByBasicProjectConfigIdAndProcessorName("5e9db8f1e4b0caefbfa8e0c7", ProcessorConstants.JIRA);
 
     }
 

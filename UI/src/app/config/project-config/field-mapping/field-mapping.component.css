@@ -149,3 +149,10 @@ label.btn-import-label {
   border-top-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }
+
+
+::ng-deep .configure-btn .p-disabled{
+  background-color: #06a0ff !important;
+  color: white !important;
+  opacity: 0.6;
+} 

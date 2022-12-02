@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -78,6 +79,10 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
     private static final String TOTAL = "Total In-Sprint test cases";
     private static final String DEV = "DeveloperKpi";
     private static final String ISSUE_DATA = "issueData";
+    private static final String TOOL_ZEPHYR = ProcessorConstants.ZEPHYR;
+    private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
+
+    private static final String NIN = "nin";
     @Autowired
     private JiraIssueRepository jiraIssueRepository;
     @Autowired
@@ -134,7 +139,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
         List<String> sprintList = new ArrayList<>();
         List<String> basicProjectConfigIds = new ArrayList<>();
         Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-        Map<String, Map<String, Object>> uniqueProjectMapFolder = new HashMap<>();
+        Map<String, Map<String, Object>> uniqueProjectMapForTestCase = new HashMap<>();
         Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
         Map<String, String> sprintProjectIdMap = new HashMap<>();
         Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
@@ -142,7 +147,10 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
         Map<ObjectId, FieldMapping> basicProjetWiseConfig = configHelperService.getFieldMappingMap();
         leafNodeList.forEach(leaf -> {
             ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-            List<ProjectToolConfig> tools = getAllZephyrTool(toolMap, basicProjectConfigId);
+            List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_ZEPHYR);
+
+            List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_JIRA_TEST);
+
 
             Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
             Map<String, Object> mapOfFolderPathFilters = new LinkedHashMap<>();
@@ -156,9 +164,9 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
             mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
                     CommonUtils.convertToPatternList(fieldMapping.getJiraTestAutomationIssueType()));
             // if Zephyr scale as a tool is setup with project
-            if (CollectionUtils.isNotEmpty(tools)) {
+            if (CollectionUtils.isNotEmpty(zephyrTools)) {
                 List<String> sprintAutomationFolderPath = new ArrayList<>();
-                tools.forEach(tool -> {
+                zephyrTools.forEach(tool -> {
                     if (CollectionUtils.isNotEmpty(tool.getInSprintAutomationFolderPath())) {
                         sprintAutomationFolderPath.addAll(tool.getInSprintAutomationFolderPath());
                     }
@@ -167,18 +175,21 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
                     mapOfFolderPathFilters.put(JiraFeature.ATM_TEST_FOLDER.getFieldValueInFeature(),
                             CommonUtils.convertTestFolderToPatternList(sprintAutomationFolderPath));
                 }
-            }
 
-            if (CollectionUtils.isNotEmpty(fieldMapping.getTestCaseStatus())) {
-                mapOfProjectFiltersNotIn.put(JiraFeature.TEST_CASE_STATUS.getFieldValueInFeature(),
-                        CommonUtils.convertTestFolderToPatternList(fieldMapping.getTestCaseStatus()));
+                uniqueProjectMapForTestCase.put(basicProjectConfigId.toString(), mapOfFolderPathFilters);
             }
-
             // if Zephyr squad as a jira plguin is setup with project
-            uniqueProjectMapFolder.put(basicProjectConfigId.toString(), mapOfFolderPathFilters);
+			if (CollectionUtils.isNotEmpty(jiraTestTools)) {
+				jiraTestTools.forEach(tool -> {
+					if (CollectionUtils.isNotEmpty(tool.getTestCaseStatus())) {
+						mapOfProjectFiltersNotIn.put(JiraFeature.TEST_CASE_STATUS.getFieldValueInFeature(),
+								CommonUtils.convertTestFolderToPatternList(tool.getTestCaseStatus()));
+					}
+				});
+                uniqueProjectMapForTestCase.put(basicProjectConfigId.toString(), mapOfProjectFiltersNotIn);
+			}
 
             uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-            uniqueProjectMapNotIn.put(basicProjectConfigId.toString(), mapOfProjectFiltersNotIn);
 
         });
         // additional filter
@@ -204,8 +215,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
         projectStoryNumberMap.forEach((k, v) -> {
             Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-            uniqueProjectMapFolder.putIfAbsent(k, mapOfProjectFilters);
-            uniqueProjectMapFolder.get(k).put(JiraFeature.DEFECT_STORY_ID.getFieldValueInFeature(),
+            uniqueProjectMapForTestCase.putIfAbsent(k, mapOfProjectFilters);
+            uniqueProjectMapForTestCase.get(k).put(JiraFeature.DEFECT_STORY_ID.getFieldValueInFeature(),
                     v.stream().distinct().collect(Collectors.toList()));
         });
         Map<String, List<String>> mapOfFiltersStoryQuery = new LinkedHashMap<>();
@@ -218,7 +229,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
 
         List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFiltersStoryQuery,
-                uniqueProjectMapFolder, uniqueProjectMapNotIn);
+                uniqueProjectMapForTestCase, NIN);
 
         resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
         resultListMap.put(TESTCASEKEY, testCasesList);
@@ -264,6 +275,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
                 .groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
         List<TestCaseDetails> testCaseList = (List<TestCaseDetails>) defectDataListMap.get(TESTCASEKEY);
+        Map<String, Set<JiraIssue>> projectWiseStories = ((List<JiraIssue>) defectDataListMap.get(ISSUE_DATA)).stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
+
         Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseAutoTestMap = new HashMap<>();
         Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseTotalTestMap = new HashMap<>();
         Map<Pair<String, String>, Double> sprintWisePercentage = new HashMap<>();
@@ -304,7 +317,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
             }
             mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
             populateExcelDataObject(requestTrackerId, currentSprintLeafNodeDefectDataMap,
-                    excelData, validationKey, defectDataListMap);
+                    excelData, validationKey, projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString()));
             log.debug("[TEST-AUTOMATION-SPRINT-WISE][{}]. TEST-AUTOMATION for sprint {}  is {}", requestTrackerId,
                     node.getSprintFilter().getName(), automationForCurrentLeaf);
             setHowerMap(sprintWiseAutoTestMap, sprintWiseTotalTestMap, currentNodeIdentifier, howerMap);
@@ -357,14 +370,14 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
     private void populateExcelDataObject(String requestTrackerId,
                                          Map<String, Object> currentSprintLeafNodeDefectDataMap, List<KPIExcelData> excelData,
-                                         String sprint, Map<String, Object> defectDataListMap) {
+                                         String sprint, Set<JiraIssue> jiraIssues) {
 
         if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
             List<TestCaseDetails> automatedTest = (List<TestCaseDetails>) currentSprintLeafNodeDefectDataMap
                     .get(AUTOMATEDTESTCASEKEY);
             List<TestCaseDetails> totalTest = (List<TestCaseDetails>) currentSprintLeafNodeDefectDataMap
                     .get(TESTCASEKEY);
-            KPIExcelUtility.populateInSprintAutomationExcelData(sprint, totalTest, automatedTest, (Set<JiraIssue>) defectDataListMap.get(ISSUE_DATA), excelData);
+            KPIExcelUtility.populateInSprintAutomationExcelData(sprint, totalTest, automatedTest, jiraIssues, excelData);
         }
     }
 

@@ -306,15 +306,11 @@ public class KpiHelperService { // NOPMD
 		// Fetch Defects linked with story ID's
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
 
-		//fetch jira issue based on jira number
-		Set<JiraIssue> issueData=jiraIssueRepository.findIssueAndDescByNumber(storyIdList);
-		Map<String, JiraIssue> issueMapping = new HashMap<>();
-		issueData.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(DEFECT_DATA, defectListWoDrop);
-		resultListMap.put(ISSUE_DATA, issueMapping);
+		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
 	}

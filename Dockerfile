@@ -10,6 +10,7 @@ VOLUME /app/offline_data
 VOLUME /app/certs
 
 ARG ZEPHYR_JAR_FILE=processors/zephyr/target/zephyr-processor.jar
+ARG JIRA_TEST_JAR_FILE=processors/jiratest/target/jiratest-processor.jar
 ARG BITBUCKET_JAR_FILE=processors/bitbucket/target/bitbucket-processor.jar
 ARG JENKINS_JAR_FILE=processors/jenkins/target/jenkins-processor.jar
 ARG SONAR_JAR_FILE=processors/sonar/target/sonar-processor.jar
@@ -23,11 +24,13 @@ ARG BAMBOO_PROPERTIES_FILE_NAME=bamboo.properties
 ARG BITBUCKET_PROPERTIES_FILE_NAME=bitbucket.properties
 ARG SONAR_PROPERTIES_FILE_NAME=sonar.properties
 ARG ZEPHYR_PROPERTIES_FILE_NAME=zephyr.properties
+ARG JIRATEST_PROPERTIES_FILE_NAME=jiratest.properties
 ARG TEAMCITY_PROPERTIES_FILE_NAME=teamcity.properties
 ARG GITLAB_PROPERTIES_FILE_NAME=gitlab.properties
 ARG GITHUB_PROPERTIES_FILE_NAME=github.properties
 
 ADD ${ZEPHYR_JAR_FILE} /app/zephyr.jar
+ADD ${JIRA_TEST_JAR_FILE} /app/jiratest.jar
 ADD ${JENKINS_JAR_FILE} /app/jenkins.jar
 ADD ${SONAR_JAR_FILE} /app/sonar.jar
 ADD ${BAMBOO_JAR_FILE} /app/bamboo.jar
@@ -48,6 +51,7 @@ EXPOSE 50011
 EXPOSE 50012
 EXPOSE 50014
 EXPOSE 50019
+EXPOSE 50020
 
 ADD processors/nonjira_combined_processor_docker/start_combined_collector.sh start_combined_collector.sh
 RUN ["chmod", "+x", "/app/start_combined_collector.sh"]

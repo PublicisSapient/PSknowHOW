@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,10 +85,7 @@ public class FieldMappingServiceImplTest {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
 	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-	
-	@Mock
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	@Test
 	public void getFieldMappingSuccess() {
@@ -310,6 +309,8 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class))).thenReturn(createProjectBasicConfig(false));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
+				Mockito.any(String.class))).thenReturn(createProcessorExecutionTraceLog());
 	}
 	
 	private void mockRepositoriesForKanban() {
@@ -317,6 +318,8 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class))).thenReturn(createProjectBasicConfig(true));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
+				Mockito.any(String.class))).thenReturn(Optional.empty());
 	}
 
 	private FieldMapping createFieldMappingScrum() {
@@ -363,14 +366,6 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraTechDebtCustomField(fieldMapping.getJiraTechDebtCustomField());
 		// defect
 		fieldMapping.setRootCauseValue(fieldMapping.getRootCauseValue());
-		// test case
-		fieldMapping.setJiraTestCaseType(new String[] { "abc", "xyz" });
-		fieldMapping.setRegressionAutomationFolderPath(Arrays.asList(""));
-		fieldMapping.setTestAutomated("");
-		fieldMapping.setJiraCanNotAutomatedTestValue(Arrays.asList(""));
-		fieldMapping.setJiraAutomatedTestValue(Arrays.asList(""));
-		fieldMapping.setTestRegressionValue(Arrays.asList(""));
-		fieldMapping.setJiraRegressionTestValue(Arrays.asList(""));
 
 		return fieldMapping;
 	}
@@ -406,14 +401,6 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraBugRaisedByValue(Arrays.asList("UAT_Defect"));
 		fieldMapping.setJiraBugRaisedByQACustomField("");
 		fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList(""));
-		// test case
-		fieldMapping.setJiraTestCaseType(new String[] { "abc", "xyz" });
-		fieldMapping.setRegressionAutomationFolderPath(Arrays.asList(""));
-		fieldMapping.setTestAutomated("");
-		fieldMapping.setJiraCanNotAutomatedTestValue(Arrays.asList(""));
-		fieldMapping.setJiraAutomatedTestValue(Arrays.asList(""));
-		fieldMapping.setTestRegressionValue(Arrays.asList(""));
-		fieldMapping.setJiraRegressionTestValue(Arrays.asList(""));
 
 		return fieldMapping;
 	}
@@ -434,6 +421,13 @@ public class FieldMappingServiceImplTest {
 		projectBasicConfig.setIsKanban(isKanban);
 		Optional<ProjectBasicConfig> projectBasicConfigOpt=Optional.of(projectBasicConfig);
 		return projectBasicConfigOpt;
+	}
+
+	private Optional<ProcessorExecutionTraceLog> createProcessorExecutionTraceLog() {
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setId(new ObjectId("5fa29069c5a8470e24667c36"));
+		Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogOpt = Optional.of(processorExecutionTraceLog);
+		return processorExecutionTraceLogOpt;
 	}
 
 }

@@ -43,10 +43,17 @@ public class SonarAPIUtils {
 		return header;
 	}
 
-	public static HttpHeaders getHeaders(String accessToken) {
+	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		if (accessToken != null && !accessToken.isEmpty()) {
-			headers.add("Authorization", "Bearer " + accessToken);
+			if(usingBasicAuth){
+				String authentication = accessToken + ":";
+				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
+				String authenticationHeader = "Basic " + new String(encodedAuth);
+				headers.set("Authorization", authenticationHeader);
+			}else{
+				headers.add("Authorization", "Bearer " + accessToken);
+			}
 		}
 		return headers;
 	}

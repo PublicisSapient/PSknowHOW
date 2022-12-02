@@ -49,6 +49,8 @@ public class DataCleanUpServiceFactoryTest {
 	private ScmDataCleanUpService scmDataCleanupService;
 	@Mock
 	private BuildDataCleanUpService buildDataCleanupService;
+	@Mock
+	private ZephyrDataCleanUpService zephyrDataCleanUpService;
 
 	@InjectMocks
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
@@ -63,10 +65,12 @@ public class DataCleanUpServiceFactoryTest {
 		when(sonarDataCleanupService.getToolCategory()).thenReturn(ProcessorType.SONAR_ANALYSIS.toString());
 		when(scmDataCleanupService.getToolCategory()).thenReturn(ProcessorType.SCM.toString());
 		when(buildDataCleanupService.getToolCategory()).thenReturn(ProcessorType.BUILD.toString());
+		when(zephyrDataCleanUpService.getToolCategory()).thenReturn(ProcessorType.TESTING_TOOLS.toString());
 
 		dataCleanUpServices.add(sonarDataCleanupService);
 		dataCleanUpServices.add(scmDataCleanupService);
 		dataCleanUpServices.add(buildDataCleanupService);
+		dataCleanUpServices.add(zephyrDataCleanUpService);
 
 		dataCleanUpServiceFactory.initServices();
 	}
@@ -80,11 +84,6 @@ public class DataCleanUpServiceFactoryTest {
     public void getService_UnknownTool() {
         dataCleanUpServiceFactory.getService("Test");
     }
-
-	@Test(expected = NotImplementedException.class)
-	public void getService_Zephyr() {
-		dataCleanUpServiceFactory.getService(ProcessorConstants.ZEPHYR);
-	}
 
 	@Test(expected = NotImplementedException.class)
 	public void getService_Azure() {
@@ -137,6 +136,18 @@ public class DataCleanUpServiceFactoryTest {
         ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.AZUREREPO);
         assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
     }
+
+	@Test
+	public void getService_ZEPHYR() {
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.ZEPHYR);
+		assertTrue(dataCleanUpService instanceof ZephyrDataCleanUpService);
+	}
+
+	@Test
+	public void getService_JIRATEST() {
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA_TEST);
+		assertTrue(dataCleanUpService instanceof ZephyrDataCleanUpService);
+	}
 
 
 }

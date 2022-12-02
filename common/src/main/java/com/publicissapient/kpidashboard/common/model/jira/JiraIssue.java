@@ -42,7 +42,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Document(collection = "jira_issue")
-public class JiraIssue extends BasicModel {
+public class JiraIssue extends BasicModel implements Cloneable {
 
     private ObjectId processorId;
     /*
@@ -225,4 +225,8 @@ public class JiraIssue extends BasicModel {
     private boolean productionDefect;
     @Indexed
     private String updateDate;
+
+	@Override public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

@@ -28,6 +28,7 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 declare let require: any;
 
@@ -64,6 +65,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiSelectedFilterObj = {};
   kpiChartData = {};
   updatedConfigGlobalData;
+  upDatedConfigData;
   timeRemaining = 0;
   displayModal = false;
   modalDetails: object = {
@@ -114,6 +116,10 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noSprints = res;
+      this.service.iterationCongifData.next({});
+      if(this.noSprints){
+        this.service.kpiListNewOrder.next([]);
+      }
     }));
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
@@ -127,6 +133,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
     if (this.updatedConfigGlobalData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -336,6 +343,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }*/
 
   ngOnInit() {
+    this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
     if (this.service.getFilterObject()) {
       this.receiveSharedData(this.service.getFilterObject());
@@ -518,6 +526,16 @@ export class IterationComponent implements OnInit, OnDestroy {
     if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
+    if(kpiId === 'kpi121'){
+      const iterationConfigData ={
+        daysLeft :this.timeRemaining,
+        capacity:{
+          kpiInfo:this.updatedConfigGlobalData.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiInfo,
+          value:this.kpiChartData[kpiId][0]
+        }
+      };
+      this.service.iterationCongifData.next(iterationConfigData);
+    }
   }
 
   ifKpiExist(kpiId) {
@@ -634,5 +652,20 @@ iAdjust = 1;
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event?.previousIndex !== event.currentIndex) {
+      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
+      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
+      disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
+      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
+      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length +disabledKpis.length + index + 3);
+      const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
+      if(capacityKpi){
+        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis,...hiddenkpis]);
+      }
+    }
   }
 }

@@ -25,13 +25,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -41,19 +44,25 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The class contains methods for helping kpi to prepare data
  *
  * @author anisingh4
  */
+@Slf4j
 public final class KpiDataHelper {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -319,5 +328,47 @@ public final class KpiDataHelper {
 		} else {
 			return new ArrayList<>();
 		}
+	}
+
+	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
+																   FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
+				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
+			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
+			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
+		}
+		mapOfProjectFilters.put(key, CommonUtils.convertToPatternList(kpiWiseDefectsFieldMapping));
+	}
+
+	/**
+	 * replace some details of jira issue as per sprint report
+	 *
+	 * @param sprintDetails
+	 * @param sprintIssues
+	 * @param allJiraIssue
+	 * @return
+	 */
+	public static Set<JiraIssue> getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(SprintDetails sprintDetails,
+			Set<SprintIssue> sprintIssues, List<JiraIssue> allJiraIssue) {
+		Set<JiraIssue> filteredIssues = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(sprintIssues)) {
+			sprintIssues.stream().forEach(sprintIssue -> allJiraIssue.stream().forEach(jiraIssue -> {
+				if (sprintIssue.getNumber().equals(jiraIssue.getNumber()) && (jiraIssue.getBasicProjectConfigId()
+						.equalsIgnoreCase(sprintDetails.getBasicProjectConfigId().toString()))) {
+					JiraIssue filterJiraIssue = null;
+					try {
+						filterJiraIssue = (JiraIssue) jiraIssue.clone();
+					} catch (CloneNotSupportedException e) {
+						filterJiraIssue = jiraIssue;
+						log.error("[KPIDataHelper]. exception while clone ing object jira issue{}", e);
+					}
+					filterJiraIssue.setStoryPoints(sprintIssue.getStoryPoints());
+					filterJiraIssue.setPriority(sprintIssue.getPriority());
+					filterJiraIssue.setStatus(sprintIssue.getStatus());
+					filteredIssues.add(filterJiraIssue);
+				}
+			}));
+		}
+		return filteredIssues;
 	}
 }

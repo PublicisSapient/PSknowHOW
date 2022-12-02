@@ -67,4 +67,5 @@ public class JiraProcessorConfig {
 	private String jiraEpicApi;
 	private Integer sprintReportCountToBeFetched;
 	private boolean considerStartDate;
+	private long subsequentApiCallDelayInMilli;
 }

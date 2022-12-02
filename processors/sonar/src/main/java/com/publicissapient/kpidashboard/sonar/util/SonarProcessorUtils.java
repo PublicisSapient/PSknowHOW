@@ -172,6 +172,21 @@ public final class SonarProcessorUtils {
 		return headers;
 	}
 
+	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (accessToken != null && !accessToken.isEmpty()) {
+			if(usingBasicAuth){
+				String authentication = accessToken + ":";
+				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
+				String authenticationHeader = "Basic " + new String(encodedAuth);
+				headers.set("Authorization", authenticationHeader);
+			}else{
+				headers.add("Authorization", "Bearer " + accessToken);
+			}
+		}
+		return headers;
+	}
+
 
 	/**
 	 * Provides code quality metrics status.

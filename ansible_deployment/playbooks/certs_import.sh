@@ -18,14 +18,14 @@
 #
 ################################################################################
 
-nonjira=`sudo docker ps | grep nonjira-processor | awk '{ print $1}'`
+#nonjira=`sudo docker ps | grep nonjira-processor | awk '{ print $1}'`
 
-sudo docker cp /app/apps/certs/knowhowinstaller.cer $nonjira:/app/certs &&
-sudo docker exec -t $nonjira /bin/sh -c "keytool -noprompt -importcert -alias $1 -keystore /usr/local/openjdk-8/lib/security/cacerts -storepass changeit -file certs/knowhowinstaller.cer" &&
+sudo docker cp /app/apps/certs/knowhowinstaller.cer nonjira-processor:/app/certs &&
+sudo docker exec -t nonjira-processor /bin/sh -c "keytool -noprompt -importcert -alias $1 -keystore /usr/local/openjdk-8/lib/security/cacerts -storepass changeit -file certs/knowhowinstaller.cer" &&
 
 # Adding certificate for login through PS AD
-customapi=`sudo docker ps | grep customapi | awk '{ print $1}'`
+#customapi=`sudo docker ps | grep customapi | awk '{ print $1}'`
 
-sudo docker cp /app/apps/certs/$2.cer $customapi:/app/certs &&
-sudo docker exec -t $customapi /bin/sh -c "keytool -noprompt -importcert -alias $2 -keystore /usr/local/openjdk-8/lib/security/cacerts -storepass changeit -file certs/$2.cer" &&
+sudo docker cp /app/apps/certs/$2.cer customapi:/app/certs &&
+sudo docker exec -t customapi /bin/sh -c "keytool -noprompt -importcert -alias $2 -keystore /usr/local/openjdk-8/lib/security/cacerts -storepass changeit -file certs/$2.cer" &&
 sudo docker restart customapi ui

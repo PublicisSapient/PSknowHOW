@@ -6,11 +6,9 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
@@ -47,9 +45,6 @@ public class KanbanJiraIssueClientImplTest {
 
     @Mock
     private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
-
-    @Mock
-    private TestCaseDetailsRepository testCaseDetailsRepository;
 
     @Mock
     private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
@@ -132,7 +127,6 @@ public class KanbanJiraIssueClientImplTest {
 
         verify(kanbanJiraRepo, times(1)).saveAll(Mockito.any());
         verify(kanbanIssueHistoryRepo, times(1)).saveAll(Mockito.any());
-        verify(testCaseDetailsRepository, times(1)).saveAll(Mockito.any());
         verify(processorExecutionTraceLogService, times(1)).save(Mockito.any());
     }
 
@@ -147,16 +141,10 @@ public class KanbanJiraIssueClientImplTest {
         KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
         jiraIssue.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
         kanbanJiraIssue.add(jiraIssue);
-        ArrayList<TestCaseDetails> TestCaseDetailsList = new ArrayList<>();
-        TestCaseDetails testCaseDetails = new TestCaseDetails();
-        testCaseDetails.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
-        TestCaseDetailsList.add(testCaseDetails);
         when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(kanbanIssueCustomHistories);
         when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(kanbanJiraIssue);
-        when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(TestCaseDetailsList);
         doNothing().when(kanbanJiraRepo).deleteAll(Mockito.any());
         doNothing().when(kanbanIssueHistoryRepo).deleteAll(Mockito.any());
-        doNothing().when(testCaseDetailsRepository).deleteAll(Mockito.any());
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
@@ -183,7 +171,6 @@ public class KanbanJiraIssueClientImplTest {
         kanbanJiraIssueClient.purgeJiraIssues(issues, projectConfFieldMapping);
         verify(kanbanJiraRepo, times(1)).deleteAll(kanbanJiraIssue);
         verify(kanbanIssueHistoryRepo, times(1)).deleteAll(kanbanIssueCustomHistories);
-        verify(testCaseDetailsRepository, times(1)).deleteAll(TestCaseDetailsList);
     }
 
     @Test
@@ -219,11 +206,9 @@ public class KanbanJiraIssueClientImplTest {
         srs[0]="KnowHOW";
         srs[1]="KnowHOW1";
         fieldMapping.setJiraIssueTypeNames(srs);
-        fieldMapping.setJiraTestCaseType(new String[]{"Bug","Defect"});
         Map<String, IssueField> map = new HashMap<>();
         IssueField issueField = null;
         map.put("111", issueField);
-        TestCaseDetails testCaseDetails = new TestCaseDetails();
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
         stringSet.add("KnowHOW");
@@ -232,8 +217,6 @@ public class KanbanJiraIssueClientImplTest {
                 null, null,null,null,null, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
-        testCaseDetails.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
-        kanbanJiraIssueClient.setTestAutomatedField(fieldMapping, issue, getKanbanJiraIssue(), map, testCaseDetails);
     }
 
     @Test

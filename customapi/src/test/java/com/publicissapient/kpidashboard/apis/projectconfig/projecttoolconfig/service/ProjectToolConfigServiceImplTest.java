@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -83,6 +84,8 @@ public class ProjectToolConfigServiceImplTest {
 	private SonarDataCleanUpService sonarDataCleanUpService;
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private ConnectionRepository connectionRepository;
 
 	String testId;
 	String toolName;

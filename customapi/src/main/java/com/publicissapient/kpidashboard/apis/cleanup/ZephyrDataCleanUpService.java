@@ -37,7 +37,7 @@ public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
 
     @Override
     public String getToolCategory() {
-        return ProcessorType.ZEPHYR.toString();
+        return ProcessorType.TESTING_TOOLS.toString();
     }
 
 
@@ -49,7 +49,7 @@ public class ZephyrDataCleanUpService implements ToolDataCleanUpService {
     }
 
     private void clearCache() {
-        cacheService.clearCache(CommonConstant.ZEPHYR_KPI_CACHE);
+        cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
         cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
     }
 }

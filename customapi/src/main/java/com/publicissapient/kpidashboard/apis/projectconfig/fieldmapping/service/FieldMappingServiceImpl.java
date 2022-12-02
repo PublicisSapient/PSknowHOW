@@ -21,10 +21,16 @@ package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -76,7 +82,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
 	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
@@ -156,7 +162,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void clearCache() {
 		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
-		cacheService.clearCache(CommonConstant.ZEPHYR_KPI_CACHE);
 	}
 
 	/**
@@ -197,13 +202,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			isUpdated = checkFieldsForUpdation(unsaved, saved, productionDefectFieldList);
 		}
 
-		if (!isUpdated && isZephyrTestTool(unsaved)) {
-			List<String> testCaseFieldList = Arrays.asList("jiraTestCaseType", "testAutomated",
-					"jiraCanNotAutomatedTestValue", "testAutomationStatusLabel", "jiraAutomatedTestValue","testAutomatedIdentification","testAutomationCompletedIdentification"
-					,"jiraAutomatedTestValue","testAutomationCompletedByCustomField","testRegressionByCustomField","jiraRegressionTestValue","testRegressionIdentification");
-			isUpdated = checkFieldsForUpdation(unsaved, saved, testCaseFieldList);
-		}
-
 		return isUpdated;
 	}
 
@@ -227,14 +225,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
 			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
-		}
-
-		if (!isUpdated && isZephyrTestTool(unsaved)) {
-			List<String> testCaseFieldList = Arrays.asList("jiraTestCaseType", "testAutomated",
-					"jiraCanNotAutomatedTestValue", "testAutomationStatusLabel", "jiraAutomatedTestValue","testAutomatedIdentification","testAutomationCompletedIdentification"
-					,"jiraAutomatedTestValue","testAutomationCompletedByCustomField","testRegressionByCustomField","jiraRegressionTestValue","testRegressionIdentification");
-
-			isUpdated = checkFieldsForUpdation(unsaved, saved, testCaseFieldList);
 		}
 
 		return isUpdated;
@@ -305,16 +295,22 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void updateJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
 			FieldMapping existingFieldMapping) {
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository.findById(basicProjectConfigId);
-		List<String> fieldsToUnset = new ArrayList<>();
-		fieldsToUnset.add(JiraFeature.CHANGE_DATE.getFieldValueInFeature());
 		if(projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig=projectBasicConfigOpt.get();
-		if (!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping)) {
-			jiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId.toString(), fieldsToUnset);
-		}
-		if (projectBasicConfig.getIsKanban() && isKanbanMappingUpdated(fieldMapping, existingFieldMapping)) {
-			kanbanJiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId.toString(), fieldsToUnset);
-		}
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping)) ||
+					(projectBasicConfig.getIsKanban() && isKanbanMappingUpdated(fieldMapping, existingFieldMapping))) {
+				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
+								basicProjectConfigId.toHexString());
+				ProcessorExecutionTraceLog processorExecutionTraceLog = null;
+
+				if (traceLogs.isPresent()) {
+					processorExecutionTraceLog = traceLogs.get();
+					processorExecutionTraceLog.setLastSuccessfulRun(null);
+					processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+					processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
+				}
+			}
 		}
 	}
 
@@ -324,9 +320,5 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * @param fieldMapping
 	 * @return
 	 */
-	private boolean isZephyrTestTool(FieldMapping fieldMapping) {
-
-		return null != fieldMapping.getJiraTestCaseType() && fieldMapping.getJiraTestCaseType().length > 0;
-	}
 
 }

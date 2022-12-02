@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -155,16 +155,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
 			if (CollectionUtils.isNotEmpty(sprintDetails)) {
 				sprintDetails.forEach(sd -> {
-					List<String> availableIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
-							CommonConstant.TOTAL_ISSUES);
-					List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
-							CommonConstant.COMPLETED_ISSUES);
-					Set<JiraIssue> totalIssues = allJiraIssue.stream()
-							.filter(element -> (availableIssues.contains(element.getNumber())) && (element.getBasicProjectConfigId().equalsIgnoreCase(sd.getBasicProjectConfigId().toString())))
-							.collect(Collectors.toSet());
-					Set<JiraIssue> completedIssues = allJiraIssue.stream()
-							.filter(element -> (completedSprintIssues.contains(element.getNumber())) && (element.getBasicProjectConfigId().equalsIgnoreCase(sd.getBasicProjectConfigId().toString())))
-							.collect(Collectors.toSet());
+					Set<JiraIssue> totalIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
+							sd.getTotalIssues(), allJiraIssue);
+					Set<JiraIssue> completedIssues = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getCompletedIssues(),
+									allJiraIssue);
 					sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(totalIssues));
 					sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
@@ -197,8 +192,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		sprintLeafNodeList.forEach(node -> {
-			String validationKey = node.getProjectFilter().getName() + Constant.UNDERSCORE
-					+ node.getSprintFilter().getName();
 			String trendLineName = node.getProjectFilter().getName();
 
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -291,7 +284,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
-					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
+					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		} else {
 			// start: for azure board sprint details collections put is empty due to we did
@@ -371,8 +364,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			double completedSize = completed.size();
 			issueCount = (long) ((completedSize / sprintSize) * 100);
 
-			double totalSum = totalJiraIssue.stream().mapToDouble(JiraIssue::getStoryPoints).sum();
-			double completedSum = completed.stream().mapToDouble(JiraIssue::getStoryPoints).sum();
+			double totalSum = totalJiraIssue.stream().filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
+					.mapToDouble(JiraIssue::getStoryPoints).sum();
+			double completedSum = completed.stream().filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
+					.mapToDouble(JiraIssue::getStoryPoints).sum();
 			storyCount = (long) ((completedSum / totalSum) * 100);
 			commitmentHowerMap.put(TOTAL_ISSUE_SIZE, sprintSize);
 			commitmentHowerMap.put(COMPLETED_ISSUE_SIZE, completedSize);

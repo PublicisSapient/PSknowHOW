@@ -41,7 +41,7 @@ public class ZephyrDataCleanUpServiceTest {
     @Test
     public void getToolCategory() {
         String actualResult = zephyrDataCleanUpService.getToolCategory();
-        assertEquals(ProcessorType.ZEPHYR.toString(), actualResult);
+        assertEquals(ProcessorType.TESTING_TOOLS.toString(), actualResult);
     }
 
     @Test

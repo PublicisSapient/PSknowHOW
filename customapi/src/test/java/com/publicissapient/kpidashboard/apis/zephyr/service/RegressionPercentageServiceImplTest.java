@@ -90,10 +90,6 @@ public class RegressionPercentageServiceImplTest {
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 	List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
 	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
-	private List<AccountHierarchyData> ahdList = new ArrayList<>();
-	private Map<String, Object> filterLevelMap;
-	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
@@ -112,10 +108,6 @@ public class RegressionPercentageServiceImplTest {
 		totalTestCaseList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
-		setMockFieldMapping();
-		fieldMappingList.forEach(fieldMapping -> {
-			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		});
 
 	}
 
@@ -179,27 +171,5 @@ public class RegressionPercentageServiceImplTest {
 	public void calculateKpiValueTest() {
 		Double kpiValue = regressionPercentageServiceImpl.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
-	}
-
-	private void setMockFieldMapping() {
-		FieldMapping projectOne = new FieldMapping();
-		projectOne.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
-		projectOne.setJiraTestAutomationIssueType(Arrays.asList("Story", "Tech Story"));
-		projectOne.setJiraCanBeAutomatedTestValue(Arrays.asList("Manual"));
-		projectOne.setJiraAutomatedTestValue(Arrays.asList("Automation"));
-		projectOne.setJiraRegressionTestValue(Arrays.asList("Regression"));
-		projectOne.setRegressionAutomationFolderPath(Arrays.asList("abc"));
-		projectOne.setJiraRegressionTestValue(Arrays.asList("abc"));
-
-		FieldMapping projectTwo = new FieldMapping();
-		projectTwo.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-		projectTwo.setJiraTestAutomationIssueType(Arrays.asList("Story", "Tech Story"));
-		projectTwo.setJiraRegressionTestValue(Arrays.asList("Regression"));
-		projectTwo.setTestRegressionValue(Arrays.asList("Regression"));
-		projectTwo.setRegressionAutomationFolderPath(Arrays.asList("abc"));
-		projectTwo.setJiraRegressionTestValue(Arrays.asList("abc"));
-
-		fieldMappingList.add(projectOne);
-		fieldMappingList.add(projectTwo);
 	}
 }

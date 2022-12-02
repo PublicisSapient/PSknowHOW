@@ -46,6 +46,7 @@ public class Connection extends BasicModel{
 	private String type;
 	private String connectionName;
 	private boolean cloudEnv;
+	private boolean accessTokenEnabled;
 	private String baseUrl;
 	private String username;
 	private String password;

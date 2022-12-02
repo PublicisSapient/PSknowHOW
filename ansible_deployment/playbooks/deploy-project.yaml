@@ -219,13 +219,13 @@
         mode: 0755
       ignore_errors: yes
       when: 
-        - edc is skipped
+        - selected_server is match("10.")
       
     - name: Execute certs_import  script for sape cloud
       shell: /var/knh/certs_import.sh {{edcurl}} {{ldapurl}}
       ignore_errors: yes
       when: 
-        - edc is skipped
+        - selected_server is match("10.")
 
     - name: copy certs_edc_2.sh file for EDC
       copy:

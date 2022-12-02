@@ -817,10 +817,9 @@ describe('KanbanFieldMappingComponent', () => {
       code: 'sqd'
     };
     fixture.detectChanges();
-    component.changeControl(event);
+    component.changeControl(event, component.additionalFilterIdentifier);
     fixture.detectChanges();
     expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentMultiValue']).toBeTruthy();
-    expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentSingleValue']).toBeFalsy();
 
     event = {
       originalEvent: {
@@ -828,10 +827,9 @@ describe('KanbanFieldMappingComponent', () => {
       },
       value: 'CustomField'
     };
-    component.changeControl(event);
+    component.changeControl(event, component.additionalFilterIdentifier);
     fixture.detectChanges();
     expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentSingleValue']).toBeTruthy();
-    expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentMultiValue']).toBeFalsy();
   });
 
   it('should remove additional filter mapping controls on click of remove button', () => {

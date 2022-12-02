@@ -65,10 +65,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
 	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
-
-	@Autowired
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -276,110 +272,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	}
 
 	/**
-	 * Sets test automated/zypher related fields in feature. This is used for KPI
-	 * test automated percentage. The handling is different from other test
-	 * automation plugins in manner as zypher data is being pulled from JIRA data
-	 * directly.
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param issue
-	 *            Atlassian Issue
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 * @param testCaseDetail
-	 */
-	public void setTestAutomatedField(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, // NOPMD //NOSONAR
-			Map<String, IssueField> fields, TestCaseDetails testCaseDetail) {
-
-		try {
-			if (null != fieldMapping.getJiraTestCaseType() && Arrays.asList(fieldMapping.getJiraTestCaseType()).stream()
-					.anyMatch(testType -> testType.equals(issue.getIssueType().getName()))) {
-				String testAutomated = "None";
-				String noTestAutomated = "noTestAutomated";
-				String testAutomatedValue = NormalizedJira.NO_VALUE.getValue();
-				String testCanBeAutomtedValue = NormalizedJira.YES_VALUE.getValue();
-				if (fields.get(fieldMapping.getTestAutomated()) != null
-						&& fields.get(fieldMapping.getTestAutomated()).getValue() != null) {
-					String data = fields.get(fieldMapping.getTestAutomated()).getValue().toString();
-					Object json = new JSONTokener(data).nextValue();
-
-					if (json instanceof JSONObject) {
-						testAutomated = ((JSONObject) fields.get(fieldMapping.getTestAutomated()).getValue())
-								.getString(JiraConstants.VALUE);
-						if (fieldMapping.getJiraCanNotAutomatedTestValue().contains(testAutomated)) {
-							testCanBeAutomtedValue = NormalizedJira.NO_VALUE.getValue();
-						}
-					} else if (json instanceof org.codehaus.jettison.json.JSONArray) {
-						JSONParser parser = new JSONParser();
-						org.json.simple.JSONObject jsonObject;
-						JSONArray array = (JSONArray) parser
-								.parse(fields.get(fieldMapping.getTestAutomated()).getValue().toString());
-						for (int i = 0; i < array.size(); i++) {
-							jsonObject = (org.json.simple.JSONObject) parser.parse(array.get(i).toString());
-							if (fieldMapping.getJiraAutomatedTestValue()
-									.contains(jsonObject.get(JiraConstants.VALUE).toString())) {
-								testAutomated = jsonObject.get(JiraConstants.VALUE).toString();
-							}
-							if (fieldMapping.getJiraCanNotAutomatedTestValue()
-									.contains(jsonObject.get(JiraConstants.VALUE).toString())) {
-								noTestAutomated = jsonObject.get(JiraConstants.VALUE).toString();
-							}
-						}
-						if (fieldMapping.getJiraCanNotAutomatedTestValue().contains(noTestAutomated)) {
-							testCanBeAutomtedValue = NormalizedJira.NO_VALUE.getValue();
-						}
-					}
-
-					if (fieldMapping.getJiraAutomatedTestValue().contains(testAutomated)) {
-						testAutomatedValue = NormalizedJira.YES_VALUE.getValue();
-						if (StringUtils.isBlank(jiraIssue.getTestAutomatedDate())) {
-							jiraIssue.setTestAutomatedDate(JiraProcessorUtil.getFormattedDate(
-									JiraProcessorUtil.deodeUTF8String(issue.getCreationDate().toString())));
-						}
-					}
-					if (fieldMapping.getJiraCanNotAutomatedTestValue().contains(testAutomated)) {
-						testCanBeAutomtedValue = NormalizedJira.NO_VALUE.getValue();
-					}
-				}
-				jiraIssue.setTestAutomated(testAutomated);
-				jiraIssue.setIsTestAutomated(testAutomatedValue);
-				jiraIssue.setIsTestCanBeAutomated(testCanBeAutomtedValue);
-				jiraIssue.setTypeName(NormalizedJira.TEST_TYPE.getValue());
-				testCaseDetailsData(jiraIssue, testCaseDetail);
-			}
-		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
-		}
-	}
-
-	private void testCaseDetailsData(JiraIssue jiraIssue, TestCaseDetails testCaseDetails) {
-		List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
-		testCaseDetails.setProcessorId(jiraIssue.getProcessorId());
-		testCaseDetails.setNumber(jiraIssue.getNumber());
-		testCaseDetails.setTypeName(jiraIssue.getTypeName());
-		testCaseDetails.setLabels(jiraIssue.getLabels());
-		testCaseDetails.setCreatedDate(jiraIssue.getCreatedDate());
-		testCaseDetails.setProjectName(jiraIssue.getProjectName());
-		testCaseDetails.setProjectID(jiraIssue.getProjectID());
-		testCaseDetails.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-		testCaseDetails.setTestAutomated(jiraIssue.getTestAutomated());
-		testCaseDetails.setIsTestAutomated(jiraIssue.getIsTestAutomated());
-		testCaseDetails.setIsTestCanBeAutomated(jiraIssue.getIsTestCanBeAutomated());
-		testCaseDetails.setTestCaseFolderName(jiraIssue.getTestCaseFolderName());
-		testCaseDetails.setTestAutomatedDate(jiraIssue.getTestAutomatedDate());
-		testCaseDetails.setDefectStoryID(jiraIssue.getDefectStoryID());
-		testCaseDetails.setDefectRaisedBy(jiraIssue.getDefectRaisedBy());
-		testCaseDetails.setTestCaseStatus(jiraIssue.getStatus());
-		testCaseDetailsList.add(testCaseDetails);
-		if (CollectionUtils.isNotEmpty(testCaseDetailsList)) {
-			testCaseDetailsRepository.saveAll(testCaseDetailsList);
-		}
-
-	}
-
-	/**
 	 * This method process owner and user details
 	 *
 	 * @param jiraIssue
@@ -396,7 +288,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		} else {
 			List<String> assigneeKey = new ArrayList<>();
 			List<String> assigneeName = new ArrayList<>();
-			if (user.getName().isEmpty() || (user.getName() == null)) {
+			if ((user.getName() == null) || user.getName().isEmpty()) {
 				assigneeKey = new ArrayList<>();
 				assigneeName = new ArrayList<>();
 			} else {
@@ -445,81 +337,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		return fieldValue.toString();
 	}
 
-	protected Map<String, List<String>> checkIdentifier(FieldMapping fieldMapping) {
-		Map<String, List<String>> identifierMap = new HashMap<>();
-
-		List<String> identiferLabel = new ArrayList<>();
-		List<String> identiferCustomField = new ArrayList<>();
-		if (fieldMapping.getTestAutomatedIdentification() != null
-				&& fieldMapping.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-			identiferLabel.add(JiraConstants.CAN_BE_AUTOMATED);
-		}
-		if (fieldMapping.getTestAutomationCompletedIdentification() != null && fieldMapping
-				.getTestAutomationCompletedIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-			identiferLabel.add(JiraConstants.AUTOMATION);
-		}
-		identifierMap.put(JiraConstants.LABELS, identiferLabel);
-		if (fieldMapping.getTestAutomatedIdentification() != null
-				&& fieldMapping.getTestAutomatedIdentification().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)) {
-			identiferCustomField.add(JiraConstants.CAN_BE_AUTOMATED);
-		}
-		if (fieldMapping.getTestAutomationCompletedIdentification() != null && fieldMapping
-				.getTestAutomationCompletedIdentification().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)) {
-			identiferCustomField.add(JiraConstants.AUTOMATION);
-		}
-		identifierMap.put(JiraConstants.CUSTOM_FIELD, identiferCustomField);
-		return identifierMap;
-	}
-
-	protected Map<String, String> processLabels(List<String> value, Issue issue, FieldMapping fieldMapping) {
-		Map<String, String> resultMap = new HashMap<>();
-		String testAutomatedFlag = null;
-		String testCanBeAutomatedFlag = null;
-		String automatedValue = null;
-
-		for (String identifier : value) {
-			if (identifier.equalsIgnoreCase(JiraConstants.AUTOMATION)
-					&& hasAtLeastOneCommonElement(issue.getLabels(), fieldMapping.getJiraAutomatedTestValue())) {
-				automatedValue = fieldMapping.getJiraAutomatedTestValue().get(0);
-				testAutomatedFlag = NormalizedJira.YES_VALUE.getValue();
-			}
-			if (identifier.equalsIgnoreCase(JiraConstants.CAN_BE_AUTOMATED)
-					&& hasAtLeastOneCommonElement(issue.getLabels(), fieldMapping.getJiraCanBeAutomatedTestValue())) {
-				testCanBeAutomatedFlag = NormalizedJira.YES_VALUE.getValue();
-			}
-		}
-		resultMap.put(TESTAUTOMATEDFLAG, testAutomatedFlag);
-		resultMap.put(TESTCANBEAUTOMATEDFLAG, testCanBeAutomatedFlag);
-		resultMap.put(AUTOMATEDVALUE, automatedValue);
-		return resultMap;
-	}
-
-	protected Map<String, String> processCustomField(List<String> value, FieldMapping fieldMapping,
-			Map<String, IssueField> fields) {
-		Map<String, String> resultMap = new HashMap<>();
-		String automatedValue = null;
-		String testAutomatedFlag = null;
-		String testCanBeAutomatedFlag = null;
-		for (String identifier : value) {
-			if (identifier.equalsIgnoreCase(JiraConstants.AUTOMATION)) {
-				testAutomatedFlag = processJson(fieldMapping.getTestAutomationCompletedByCustomField(), fields,
-						fieldMapping.getJiraAutomatedTestValue());
-				if (testAutomatedFlag.equalsIgnoreCase(NormalizedJira.YES_VALUE.getValue())) {
-					automatedValue = fieldMapping.getJiraAutomatedTestValue().get(0);
-				}
-
-			}
-			if (identifier.equalsIgnoreCase(JiraConstants.CAN_BE_AUTOMATED)) {
-				testCanBeAutomatedFlag = processJson(fieldMapping.getTestAutomated(), fields,
-						fieldMapping.getJiraCanBeAutomatedTestValue());
-			}
-		}
-
-		resultMap.put(TESTAUTOMATEDFLAG, testAutomatedFlag);
-		resultMap.put(TESTCANBEAUTOMATEDFLAG, testCanBeAutomatedFlag);
-		resultMap.put(AUTOMATEDVALUE, automatedValue);
-		return resultMap;
-	}
 
 	private boolean hasAtLeastOneCommonElement(Set<String> issueLabels, List<String> configuredLabels) {
 		if (org.apache.commons.collections4.CollectionUtils.isEmpty(issueLabels)) {

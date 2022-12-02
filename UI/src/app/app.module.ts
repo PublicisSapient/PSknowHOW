@@ -96,6 +96,7 @@ import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
 import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 /******************************************************/
 
@@ -161,7 +162,8 @@ import { TableComponent } from './component/table/table.component';
         InputTextareaModule,
         AccordionModule,
         DialogModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        DragDropModule
     ],
     providers: [
         ExcelService,

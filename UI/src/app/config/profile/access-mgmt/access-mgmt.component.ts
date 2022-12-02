@@ -172,7 +172,7 @@ export class AccessMgmtComponent implements OnInit {
 
 	filterByProject() {
 		if (this.searchProject.length >= 3) {
-			this.users = this.users.filter((user) => user.projectsAccess.some((obj) => obj.projects.some((proj) => proj.projectName.toLowerCase().indexOf(this.searchProject.toLowerCase()) > -1)));
+			this.users = this.users?.filter((user) => user?.projectsAccess?.some((obj) => obj?.accessNodes?.some((level) => level?.accessItems?.some((proj) => proj?.itemName?.toLowerCase().indexOf(this.searchProject.toLowerCase()) > -1))));
 		} else if (this.searchProject.length === 0) {
 			this.users = this.allUsers;
 		}

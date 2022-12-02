@@ -44,4 +44,6 @@ public interface TestCaseDetailsRepository
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 
+	TestCaseDetails findTopByBasicProjectConfigId(String basicProjectConfigId);
+
 }

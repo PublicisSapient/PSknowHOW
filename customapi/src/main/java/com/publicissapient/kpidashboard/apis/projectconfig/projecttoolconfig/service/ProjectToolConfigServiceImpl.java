@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -58,6 +60,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
+	@Autowired
+	private ConnectionRepository connectionRepository;
 	@Autowired
 	private SubProjectRepository subProjectRepository;
 	@Autowired
@@ -140,6 +144,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
 
+		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)
+				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA_TEST)) {
+			return new ServiceResponse(false, "Jira Test already configured for this project", null);
+		}
+
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.AZURE)) {
 			return new ServiceResponse(false, "Azure already configured for this project", null);
@@ -215,10 +224,24 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setRegressionAutomationFolderPath(projectToolConfig.getRegressionAutomationFolderPath());
 		projectTool.setInSprintAutomationFolderPath(projectToolConfig.getInSprintAutomationFolderPath());
 		projectTool.setOrganizationKey(projectToolConfig.getOrganizationKey());
+		projectTool.setJiraTestCaseType(projectToolConfig.getJiraTestCaseType());
+		projectTool.setTestAutomatedIdentification(projectToolConfig.getTestAutomatedIdentification());
+		projectTool.setTestAutomationCompletedIdentification(projectToolConfig.getTestAutomationCompletedIdentification());
+		projectTool.setTestRegressionIdentification(projectToolConfig.getTestRegressionIdentification());
+		projectTool.setTestAutomationCompletedByCustomField(projectToolConfig.getTestAutomationCompletedByCustomField());
+		projectTool.setTestRegressionByCustomField(projectToolConfig.getTestRegressionByCustomField());
+		projectTool.setJiraAutomatedTestValue(projectToolConfig.getJiraAutomatedTestValue());
+		projectTool.setJiraRegressionTestValue(projectToolConfig.getJiraRegressionTestValue());
+		projectTool.setJiraCanBeAutomatedTestValue(projectToolConfig.getJiraCanBeAutomatedTestValue());
+		projectTool.setTestCaseStatus(projectToolConfig.getTestCaseStatus());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR)
+				|| projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)) {
+			cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
+		}
 		return new ServiceResponse(true, "updated the project_tools Successfully", projectTool);
 	}
 
@@ -354,10 +377,30 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setDeploymentProjectId(e.getDeploymentProjectId());
 			projectConfToolDto.setDeploymentProjectName(e.getDeploymentProjectName());
 			projectConfToolDto.setParameterNameForEnvironment(e.getParameterNameForEnvironment());
+			projectConfToolDto.setConnectionName(checkConnectionName(e.getConnectionId()));
 			projectConfToolDtoList.add(projectConfToolDto);
+			projectConfToolDto.setJiraTestCaseType(e.getJiraTestCaseType());
+			projectConfToolDto.setTestAutomatedIdentification(e.getTestAutomatedIdentification());
+			projectConfToolDto.setTestAutomationCompletedIdentification(e.getTestAutomationCompletedIdentification());
+			projectConfToolDto.setTestRegressionIdentification(e.getTestRegressionIdentification());
+			projectConfToolDto.setTestAutomationCompletedByCustomField(e.getTestAutomationCompletedByCustomField());
+			projectConfToolDto.setTestRegressionByCustomField(e.getTestRegressionByCustomField());
+			projectConfToolDto.setJiraAutomatedTestValue(e.getJiraAutomatedTestValue());
+			projectConfToolDto.setJiraRegressionTestValue(e.getJiraRegressionTestValue());
+			projectConfToolDto.setJiraCanBeAutomatedTestValue(e.getJiraCanBeAutomatedTestValue());
+			projectConfToolDto.setTestCaseStatus(e.getTestCaseStatus());
 		});
 
 		return projectConfToolDtoList;
+	}
+
+	private String checkConnectionName(ObjectId connectionId) {
+		Optional<Connection> optConnection = connectionRepository.findById(connectionId);
+		if(optConnection.isPresent()) {
+			Connection connection = optConnection.get();
+			return connection.getConnectionName();
+		}
+		return null;
 	}
 
 	private boolean hasTool(ObjectId basicProjectConfigId, String type) {

@@ -212,7 +212,7 @@ public class Sonar6And7ClientTest {
 
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
@@ -230,13 +230,20 @@ public class Sonar6And7ClientTest {
 	@Test
 	public void testGetPastSonarDetails() throws IOException {
 		String historyJson = getJson("sonar6_measures_history.json");
+		String history2Json = getJson("sonar6_measures_history_empty.json");
 
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
+				METRICS, DEFAULT_DATE);
+		String historyEmptyUrl = String.format(
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=2").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+
+		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyEmptyUrl),
 				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
@@ -254,7 +261,7 @@ public class Sonar6And7ClientTest {
 
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),

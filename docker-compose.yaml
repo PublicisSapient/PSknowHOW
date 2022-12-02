@@ -118,6 +118,7 @@ services:
       - 50012:50012
       - 50014:50014
       - 50019:50019
+      - 50020:50020
     volumes:
       - /app/apps/logs/nonjira_processor:/app/logs
       - /app/apps/properties/:/app/properties/

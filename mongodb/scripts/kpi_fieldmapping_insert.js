@@ -20,14 +20,14 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Density',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraQADefectDensityIssueType'], 'Workflow Status Mapping' : ['jiraDod'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraQADefectDensityIssueType'], 'Workflow Status Mapping' : ['jiraDod'], 'Defects Mapping' : ['jiraBugRaisedByQAIdentification'] }
       },
       {
         kpiId: 'kpi35',
         kpiName: 'Defect Seepage Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' :['jiraDefectSeepageIssueType'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus'] }
+        fieldNames : {'Issue Types Mapping' :['jiraDefectSeepageIssueType'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus'], 'Defects Mapping' : ['jiraBugRaisedByIdentification'] }
       },
       {
         kpiId: 'kpi34',
@@ -195,7 +195,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Value delivered (Cost of Delay)',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : { }
+        fieldNames : {'Custom Fields Mapping' : ['epicCostOfDelay'] }
       },
 	  {
         kpiId: 'kpi5',
@@ -271,7 +271,7 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Kanban'],
 		kpiSource: 'Jira',
         kpiName: 'Value delivered (Cost of Delay)',
-        fieldNames : { }
+        fieldNames : {'Custom Fields Mapping' : ['epicCostOfDelay'] }
       },
       {
         kpiId: 'kpi74',
@@ -376,7 +376,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Estimation Hygiene',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { }
+        fieldNames : { 'Workflow Status Mapping' : ['issueStatusExcluMissingWork'] }
       },
       {
         kpiId: 'kpi125',
@@ -411,7 +411,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Production Defects Ageing',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus'], 'Defects Mapping' : ['productionDefectIdentifier'] }
       },
       {
         kpiId: 'kpi989',

@@ -85,6 +85,22 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
 			break;
 		case Constant.TOOL_SONAR:
+			if (connection.isCloudEnv()) {
+				apiUrl = createCloudApiUrl(connection.getBaseUrl(), toolName);
+				if (checkDetailsForTool(apiUrl, password)) {
+					statusCode = validateTestConn(connection, apiUrl, password, toolName);
+				}
+			} else {
+				apiUrl = createApiUrl(connection.getBaseUrl(), toolName);
+				if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()){
+					if (checkDetailsForTool(apiUrl, password)) {
+						statusCode = validateTestConn(connection, apiUrl, password, toolName);
+					}
+				}else {
+					statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
+				}
+			}
+			break;
 		case Constant.TOOL_ZEPHYR:
 			if (connection.isCloudEnv()) {
 				apiUrl = createCloudApiUrl(connection.getBaseUrl(), toolName);
@@ -125,9 +141,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password) {
+	private boolean testConnection(Connection connection, String toolName, String apiUrl,
+								   String password, boolean isSonarWithAccessToken) {
 		boolean isValidConnection;
-		HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName);
+		HttpStatus status = null;
+		status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName, isSonarWithAccessToken);
 		isValidConnection = status.is2xxSuccessful();
 		return isValidConnection;
 	}
@@ -159,13 +177,18 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				|| toolName.equals(Constant.TOOL_GITLAB)) {
 			isValid = testConnectionForTools(apiUrl, password);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-
-		} else if (toolName.equals(Constant.TOOL_SONAR) && connection.isCloudEnv()) {
-			String accessToken = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
-			isValid = testConnectionForTools(apiUrl, accessToken);
+		} else if (toolName.equals(Constant.TOOL_SONAR)) {
+			if(connection.isCloudEnv()) {
+				String accessToken = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
+				isValid = testConnectionForTools(apiUrl, accessToken);
+			} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
+				isValid = testConnection(connection, toolName, apiUrl, password, true);
+			}else{
+				isValid = testConnection(connection, toolName, apiUrl, password, false);
+			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			isValid = testConnection(connection, toolName, apiUrl, password);
+			isValid = testConnection(connection, toolName, apiUrl, password, false);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		}
 		return statusCode;
@@ -173,7 +196,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
 
-		HttpHeaders httpHeaders = createHeadersWithAuthentication(username, password);
+		HttpHeaders httpHeaders = createHeadersWithAuthentication(username, password, false);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> result = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity,
 				String.class);
@@ -247,9 +270,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create API URL using base URL and API path for bitbucket
-	 * 
-	 * @param baseUrl
-	 * @param apiEndPoint
+	 * @param connection connection
 	 * @return apiURL
 	 */
 	private String createBitBucketUrl(Connection connection) {
@@ -270,9 +291,15 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param password
 	 * @return
 	 */
-	private HttpHeaders createHeadersWithAuthentication(String username, String password) {
+	private HttpHeaders createHeadersWithAuthentication(String username, String password, boolean isSonarWithAccessToken) {
 		String decryptedPswd = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
-		String plainCreds = username + ":" + decryptedPswd;
+		String plainCreds = null;
+
+		if(isSonarWithAccessToken){
+			plainCreds = decryptedPswd + ":";
+		}else{
+			plainCreds = username + ":" + decryptedPswd;
+		}
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
 		String base64Creds = new String(base64CredsBytes);
 		HttpHeaders headers = new HttpHeaders();
@@ -288,11 +315,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param apiUrl
 	 * @return API response
 	 */
-	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName) {
+	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName
+			, boolean isSonarWithAccessToken) {
 		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
-		httpHeaders = createHeadersWithAuthentication(username, password);
+		httpHeaders = createHeadersWithAuthentication(username, password, isSonarWithAccessToken);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
 			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
@@ -302,10 +330,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 
 		Object responseBody = responseEntity.getBody();
-		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR) && responseBody != null
-				&& responseBody.toString().contains("false")) {
+		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR) && ((responseBody != null
+				&& responseBody.toString().contains("false")) || responseBody.toString().contains("</html>"))) {
 			return HttpStatus.UNAUTHORIZED;
-
 		}
 		if (toolName.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
 				&& responseEntity.getStatusCode().equals(HttpStatus.OK)) {
@@ -395,6 +422,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			return connection.getAccessToken();
 		}
 		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && connection.isCloudEnv()) {
+			return connection.getAccessToken();
+		}
+		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) &&
+				StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();

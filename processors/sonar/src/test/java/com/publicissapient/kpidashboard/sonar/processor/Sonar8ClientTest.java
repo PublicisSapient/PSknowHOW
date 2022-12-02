@@ -137,7 +137,7 @@ public class Sonar8ClientTest {
 	public void testGetPastSonarDetails() {
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 
 		doThrow(new RestClientException("rest client exception")).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
@@ -156,6 +156,7 @@ public class Sonar8ClientTest {
 		project.setInstanceUrl(SONAR_URL);
 		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject");
 		project.setProjectId("AVu3b-MAphY78UZXuYHp");
+		project.setKey("KEY");
 		return project;
 	}
 
@@ -173,11 +174,18 @@ public class Sonar8ClientTest {
 	@Test
 	public void testGetPastSonarDetails1() throws IOException {
 		String historyJson = getJson("sonar8_measures_history.json");
+		String history2Json = getJson("sonar8_measures_history_empty.json");
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
+				METRICS, DEFAULT_DATE);
+		String historyEmptyUrl = String.format(
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=2").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+
+		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyEmptyUrl),
 				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
 		SONAR_SERVER.setUsername(USER_NAME);
@@ -191,13 +199,19 @@ public class Sonar8ClientTest {
 	@Test
 	public void testGetPastSonarCloudDetails1() throws IOException {
 		String historyJson = getJson("sonar8_measures_history.json");
+		String history2Json = getJson("sonar8_measures_history_empty.json");
 		SonarProcessorItem project = getProject();
 		String historyUrl = String.format(
-				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).toString(), project.getKey(),
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=1").toString(), project.getKey(),
+				METRICS, DEFAULT_DATE);
+		String historyEmptyUrl = String.format(
+				new StringBuilder(project.getInstanceUrl()).append(URL_MEASURE_HISTORY).append("&p=2").toString(), project.getKey(),
 				METRICS, DEFAULT_DATE);
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
 				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 
+		doReturn(new ResponseEntity<>(history2Json, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyEmptyUrl),
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		SONAR_CLOUD.setAccessToken(ACCESSTOKEN);
 		List<SonarHistory> codeQualityHistories = sonar8Client.getPastSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_CLOUD.getAccessToken())), METRICS);

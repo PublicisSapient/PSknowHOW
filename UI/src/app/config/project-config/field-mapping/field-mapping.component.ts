@@ -76,6 +76,7 @@ export class FieldMappingComponent implements OnInit {
     groupFields:{},
     showAllgroups:true
   };
+  disableAdditionalFilterAdd =true;
 
   private setting = {
     element: {
@@ -256,12 +257,12 @@ export class FieldMappingComponent implements OnInit {
         }
         if (element['identifyFrom'] === 'CustomField') {
           if (!this.fieldMappingForm.controls[element.filterId + 'IdentSingleValue']) {
-            this.fieldMappingForm.addControl(element.filterId + 'IdentSingleValue', this.formBuilder.control('', [Validators.required]));
+            this.fieldMappingForm.addControl(element.filterId + 'IdentSingleValue', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'IdentSingleValue'].setValue(element['identificationField']);
           }
         } else {
           if (!this.fieldMappingForm.controls[element.filterId + 'IdentMultiValue']) {
-            this.fieldMappingForm.addControl(element.filterId + 'IdentMultiValue', this.formBuilder.control('', [Validators.required]));
+            this.fieldMappingForm.addControl(element.filterId + 'IdentMultiValue', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'IdentMultiValue'].setValue(element['values']);
           }
         }
@@ -425,10 +426,6 @@ export class FieldMappingComponent implements OnInit {
       jiraFTPRStoryIdentification: [[]],
       jiraSprintCapacityIssueType: [[]],
       jiraIssueEpicType: [[]],
-      // tech debt mapping
-      jiraTechDebtIdentification: [''],
-      jiraTechDebtValue: [[]],
-      jiraTechDebtCustomField: [''],
       // custom field mapping
       sprintName: [''],
       rootCause: [''],
@@ -458,20 +455,6 @@ export class FieldMappingComponent implements OnInit {
       productionDefectComponentValue: [''],
       productionDefectValue: [[]],
       // qaRootCauseValue: [[]],
-      // test case mapping
-      testAutomatedIdentification: [''],
-      testAutomationCompletedIdentification: [''],
-      testRegressionIdentification: [''],
-      testAutomated: [''],
-      testAutomationCompletedByCustomField: [''],
-      testRegressionByCustomField: [''],
-      jiraCanBeAutomatedTestValue: [[]],
-      jiraRegressionTestValue: [[]],
-      jiraCanNotAutomatedTestValue: [[]],
-      jiraAutomatedTestValue: [[]],
-      jiraTestCaseType: [[]],
-      testCaseStatus:[[]],
-      regressionAutomationLabels: [[]],
       excludeRCAFromFTPR: [[]]
     };
 
@@ -507,21 +490,15 @@ export class FieldMappingComponent implements OnInit {
     }
   }
 
-  changeControl(event) {
+  changeControl(event,additionalFilterIdentifier) {
     if (event.value === 'Component' || event.value === 'Labels') {
-      if (!this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentMultiValue']) {
-        this.fieldMappingForm.addControl(this.additionalFilterIdentifier.code + 'IdentMultiValue', this.formBuilder.control('', [Validators.required]));
-      }
-      if (this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentSingleValue']) {
-        this.fieldMappingForm.removeControl(this.additionalFilterIdentifier.code + 'IdentSingleValue');
+      if (!this.fieldMappingForm.controls[additionalFilterIdentifier.code + 'IdentMultiValue']) {
+        this.fieldMappingForm.addControl(additionalFilterIdentifier.code + 'IdentMultiValue', this.formBuilder.control(''));
       }
 
     } else {
-      if (!this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentSingleValue']) {
-        this.fieldMappingForm.addControl(this.additionalFilterIdentifier.code + 'IdentSingleValue', this.formBuilder.control('', [Validators.required]));
-      }
-      if (this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentMultiValue']) {
-        this.fieldMappingForm.removeControl(this.additionalFilterIdentifier.code + 'IdentMultiValue');
+      if (!this.fieldMappingForm.controls[additionalFilterIdentifier.code + 'IdentSingleValue']) {
+        this.fieldMappingForm.addControl(additionalFilterIdentifier.code + 'IdentSingleValue', this.formBuilder.control(''));
       }
     }
   }
@@ -679,7 +656,7 @@ export class FieldMappingComponent implements OnInit {
           additionalFilterObj['values'] = [];
         } else {
           additionalFilterObj['identificationField'] = '';
-          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'];
+          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'] ? submitData[element.hierarchyLevelId + 'IdentMultiValue'] : [];
         }
         submitData['additionalFilterConfig'].push(additionalFilterObj);
       }

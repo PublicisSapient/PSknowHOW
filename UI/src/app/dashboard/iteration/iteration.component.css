@@ -22,26 +22,6 @@
     cursor: pointer;
 }
 .card-type-1{
-    flex: 0 0 12%;
-    max-width: 12%;
-    position: relative;
-    width: 100%; 
-}
-.card-type-2{
-    flex: 0 0 31%;
-    max-width: 31%;
-    position: relative;
-    width: 100%; 
-}
-.card-type-3{
-    flex: 0 0 38%;
-    max-width: 38%;
-    position: relative;
-    width: 100%; 
-}
-.card-type-4{
-    flex: 0 0 50%;
-    max-width: 50%;
     position: relative;
     width: 100%; 
 }
@@ -50,3 +30,12 @@
     color: var(--color-secondary-blue);
     text-decoration: underline;
 }
+
+.p-w-50{
+    width: 50%;
+}
+
+.kpi-content-container{
+    border-right: 1px solid #c0c0c0;
+}
+

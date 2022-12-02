@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -158,8 +159,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * @param userKpiIdList
 	 */
 	private void getKpiIdListFromExistingUser(List<BoardDTO> existingUserBoardConfig, Set<String> userKpiIdList) {
-		existingUserBoardConfig.stream().forEach(kpiBoard -> kpiBoard.getKpis().stream()
-				.forEach(boardKpisDTO -> userKpiIdList.add(boardKpisDTO.getKpiId())));
+		existingUserBoardConfig.stream().forEach(kpiBoard -> {
+			kpiBoard.getKpis().removeIf(Objects::isNull);
+			Optional.ofNullable(kpiBoard.getKpis()).get().stream().filter(Objects::nonNull)
+				.forEach(boardKpisDTO -> userKpiIdList.add(Optional.ofNullable(boardKpisDTO.getKpiId()).get()));});
 	}
 
 	/**

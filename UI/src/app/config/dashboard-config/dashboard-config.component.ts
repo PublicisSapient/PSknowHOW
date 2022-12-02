@@ -37,6 +37,7 @@
     kpiData: any;
     kpiChangesObj = {};
     loader = false;
+    kpiToBeHidden;
      constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService) {
      }
      ngOnInit() {
@@ -57,6 +58,12 @@
               const kpiObjects = Object.keys(this.kpiListData);
               for(const i of kpiObjects) {
                   if (typeof this.kpiListData[i] === 'object') {
+                    //removing Capacity kpi from iteration
+                      if(i === 'scrum'){
+                        const iterationData = this.kpiListData[i].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
+                        const kpiIndex= iterationData.kpis.findIndex(kpi => kpi.kpiId === 'kpi121');
+                        this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
+                      }
                       this.tabListContent[i] =  this.kpiListData[i];
                       this.tabHeaders.push(i);
                   }
@@ -69,26 +76,26 @@
      isEmptyObject(value) {
         return Object.keys(value).length === 0 && value.constructor === Object;
      }
-     setFormControlData() {
-        const kpiObj = {};
-        const boardNames = {};
-       let list = [];
-       this.kpiData = [...this.kpiListData[this.selectedTab]];
-        this.kpiData.forEach(function(item) {
-          let trueShowCount = 0;
-          let allShownFlag = false;
-            if ((item?.boardName && item?.kpis) ) {
-                list = item.kpis.map(function(kpi) {
-                    kpiObj[kpi.kpiId] = new UntypedFormControl(kpi.shown);
-                    trueShowCount =  kpi.shown ? ++trueShowCount : trueShowCount;
-                    return kpiObj;
-                });
-                if (trueShowCount ===  item?.kpis?.length) {
-                  allShownFlag = true;
-                }
-                boardNames[item.boardName] = new UntypedFormControl(allShownFlag);
-            }
-        });
+   setFormControlData() {
+     const kpiObj = {};
+     const boardNames = {};
+     let list = [];
+     this.kpiData = [...this.kpiListData[this.selectedTab]];
+     this.kpiData.forEach((item) => {
+       let trueShowCount = 0;
+       let allShownFlag = false;
+       if ((item?.boardName && item?.kpis)) {
+         list = item.kpis.map((kpi) => {
+           kpiObj[kpi.kpiId] = new UntypedFormControl(kpi.shown);
+           trueShowCount = kpi.shown ? ++trueShowCount : trueShowCount;
+           return kpiObj;
+         });
+         if (trueShowCount === item?.kpis?.length) {
+           allShownFlag = true;
+         }
+         boardNames[item.boardName] = new UntypedFormControl(allShownFlag);
+       }
+     });
         this.kpiForm = new UntypedFormGroup({
           kpiCategories: new UntypedFormGroup(boardNames),
           kpis: new UntypedFormGroup(kpiObj)
@@ -127,25 +134,35 @@
      this.kpiListData['username'] = (localStorage.getItem('user_name'));
    }
      //update the changes to api
-     updateData() {
-	this.assignUserNameForKpiData();
-      this.loader = true;
-      this.httpService.submitShowHideKpiData(this.kpiListData)
-        .subscribe(response => {
-          this.loader = false;
-          if (response[0] === 'error') {
-            this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
-          } else {
-            if (response.success === true) {
-              this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
-              // setting in global Service
-              this.service.setDashConfigData(response.data);
-            } else {
-              this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
-            }
-          }
-        });
-     }
+   updateData() {
+     this.assignUserNameForKpiData();
+     this.loader = true;
+     //Adding Capacity kpi to the payload if selected tab is scrum
+     const kpiListPayload = JSON.parse(JSON.stringify(this.kpiListData));
+     if (this.selectedTab.toLowerCase() === 'scrum') {
+      const iterationData = JSON.parse(JSON.stringify(this.kpiData.find(kpiDetails => kpiDetails.boardName.toLowerCase() === 'iteration')));
+      iterationData.kpis = [...this.kpiToBeHidden, ...iterationData.kpis];
+      const iterationKpis = kpiListPayload['scrum'].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
+      if(iterationKpis){
+        iterationKpis.kpis = iterationData.kpis;
+      }
+    }
+     this.httpService.submitShowHideKpiData(kpiListPayload)
+       .subscribe(response => {
+         this.loader = false;
+         if (response[0] === 'error') {
+           this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
+         } else {
+           if (response.success === true) {
+             this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
+             // setting in global Service
+             this.service.setDashConfigData(response.data);
+           } else {
+             this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
+           }
+         }
+       });
+   }
      // onchanges getting kpi shown flag changes and maping its kpicategory with updated shown flag
      handleKpiChange(event, kpi, boardName, kpis) {
        const kpiObj = {...kpi};

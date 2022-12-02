@@ -7,11 +7,9 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
@@ -22,6 +20,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -47,9 +46,6 @@ public class ScrumJiraIssueClientImplTest {
     private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
     @Mock
-    private TestCaseDetailsRepository testCaseDetailsRepository;
-
-    @Mock
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
@@ -66,6 +62,9 @@ public class ScrumJiraIssueClientImplTest {
 
     @Mock
     private SprintClient sprintClient;
+
+    @Mock
+    private AdditionalFilterHelper additionalFilterHelper;
 
 
     @Test
@@ -102,12 +101,8 @@ public class ScrumJiraIssueClientImplTest {
         List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
         JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
         jiraIssueCustomHistories.add(jiraIssueCustomHistory);
-        List<TestCaseDetails> testCaseDetails = new ArrayList<>();
-        TestCaseDetails testCaseDetails1 = new TestCaseDetails();
-        testCaseDetails.add(testCaseDetails1);
         when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssues);
         when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueCustomHistories);
-        when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(testCaseDetails);
         scrumJiraIssueClient.purgeJiraIssues(issuesList, projectConfFieldMapping);
     }
 
@@ -142,12 +137,18 @@ public class ScrumJiraIssueClientImplTest {
         ArrayList<Version> alVersion = new ArrayList<>();
         Version version = null;
         alVersion.add(version);
-        Issue issue = new Issue("summary", null, "key", 121L, null,
+        ChangelogItem changelogItem = new ChangelogItem(null,"","","","","");
+        List<ChangelogItem> itemList = new ArrayList<>();
+        itemList.add(changelogItem);
+        List<ChangelogGroup> grouplist = new ArrayList<>();
+        grouplist.add(new ChangelogGroup(null,DateTime.now(),itemList));
+        BasicProject project = new BasicProject(null,"key",null, null);
+        Issue issue = new Issue("summary", null, "key", 121L, project,
                 new IssueType(null, 11L, "Defect", true, "Description", null),
                 new Status(null, null, "KnowHOW", null, null, null), "description",
                 null, null, null, null, null, DateTime.now(), DateTime.now(),
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, stringSet);
+                null, null, null, null, null, null, grouplist, null, stringSet);
         Iterable<Issue> iterable = Arrays.asList(issue);
         SearchResult searchResult = new SearchResult(0, 0, 1, iterable);
         JiraAdapter jiraAdapter = new OfflineAdapter(jiraProcessorConfig, searchResult, alVersion);
@@ -184,14 +185,11 @@ public class ScrumJiraIssueClientImplTest {
         Map<String, IssueField> map = new HashMap<>();
         IssueField issueField = null;
         map.put("111", issueField);
-        TestCaseDetails testCaseDetails = new TestCaseDetails();
-        testCaseDetails.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
                 new Status(null, null, "KnowHOW", null, null, null), "description",
                 null, null, null, null, null, DateTime.now(), DateTime.now(),
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null);
-        scrumJiraIssueClient.setTestAutomatedField(fieldMapping, issue, jiraIssue, map, testCaseDetails);
     }
 
     private static JiraToolConfig getJiraToolConfig(FieldMapping fieldMapping) {
@@ -202,7 +200,7 @@ public class ScrumJiraIssueClientImplTest {
         jiraToolConfig.setFieldMapping(fieldMapping);
         jiraToolConfig.setCreatedAt("2021-07-26T10:22:12.0000000");
         jiraToolConfig.setUpdatedAt("2021-07-26T10:22:12.0000000");
-        jiraToolConfig.setQueryEnabled(true);
+        jiraToolConfig.setQueryEnabled(false);
         jiraToolConfig.setBoardQuery("query");
         Connection connection = getConnectionObject();
         jiraToolConfig.setConnection(Optional.of(connection));

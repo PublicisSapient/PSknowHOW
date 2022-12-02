@@ -131,6 +131,25 @@ jobs:
           filters: |
             processors:
               - 'processors/**'
+      - uses: dorny/paths-filter@v2
+        id: jira-processors
+        with:
+          filters: |
+            jira-processors:
+              - 'processors/jira/**'
+      - uses: dorny/paths-filter@v2
+        id: azure-processors
+        with:
+          filters: |
+            azure-processors:
+              - 'processors/azure/azure-boards/**'
+      - uses: dorny/paths-filter@v2
+        id: nonazure-processors
+        with:
+          filters: |
+            nonazure-processors:
+              - 'processors/azurepipeline/**'
+              - 'processors/azurerepo/**'
       - name: Building and Testing CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
         id: testcustomapi
@@ -138,25 +157,25 @@ jobs:
                mvn clean install -Pcustomapi
       
       - name: Building and Testing jira processor
-        if: steps.processors.outputs.processors == 'true'
+        if: steps.jira-processors.outputs.jira-processors == 'true'
         id: testjira
         run: |
                mvn clean install -PjiraProcessor
       - name: Building and Testing Azure processor
         id: testazure
-        if: steps.processors.outputs.processors == 'true'
+        if: steps.azure-processors.outputs.azure-processors == 'true'
         run: |
-               mvn clean install -PazureProcessor 
+               mvn clean install -PazureProcessor
+      - name: Building and Testing nonAzureProcessor
+        id: testnonazure
+        if: steps.nonazure-processors.outputs.nonazure-processors == 'true'
+        run: |
+               mvn clean install -PnonAzureBoardsProcessor
       - name: Building and Testing nonJira processor
         id: testnonjira
         if: steps.processors.outputs.processors == 'true'
         run: |
                mvn clean install -PnonJiraProcessor
-      - name: Building and Testing nonAzureProcessor
-        id: testnonazure
-        if: steps.processors.outputs.processors == 'true'
-        run: |
-               mvn clean install -PnonAzureBoardsProcessor 
       
       # - name: Checking code Quality using SonarQube for processor
       #   id: Sonarprocessor

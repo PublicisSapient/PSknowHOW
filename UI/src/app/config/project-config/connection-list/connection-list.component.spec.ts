@@ -289,8 +289,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password', 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault', 'password', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password',['Use Password', 'Use Token'], 'Password', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
     },
     {
       connectionType: 'Jenkins',
@@ -438,7 +438,8 @@ describe('ConnectionListComponent', () => {
           field:'apiKey',
           isEnabled: false
         }
-      ]
+      ],
+      accessTokenEnabled:[]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -494,7 +495,8 @@ describe('ConnectionListComponent', () => {
           field:'apiKey',
           isEnabled: false
         }
-      ]
+      ],
+      accessTokenEnabled:[]
     }
   };
 
