@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,7 +62,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -1187,47 +1185,7 @@ public class KpiHelperService { // NOPMD
 		}
 		return null;
 	}
-
-	/**
-	 * prepare data for excel for cumulative kpi of Kanban on the basis of
-	 * field. field can be RCA/priority/status field values as per field of jira
-	 *
-	 * @param jiraHistoryFieldAndDateWiseIssueMap
-	 * @param fieldName
-	 * @param fieldValues
-	 * @return
-	 */
-	public ValidationData prepareExcelForKanbanCumulativeDataMap(
-			Map<String, Map<String, Set<String>>> jiraHistoryFieldAndDateWiseIssueMap, String fieldName,
-			Set<String> fieldValues) {
-
-		Map<String, Set<String>> fieldWiseIssuesLatestMap = filterKanbanDataBasedOnFieldLatestCumulativeData(
-				jiraHistoryFieldAndDateWiseIssueMap, fieldValues);
-
-		ValidationData validationData = new ValidationData();
-		List<String> fieldList = new LinkedList<>();
-		List<String> ticketsList = new LinkedList<>();
-		Map<String, Set<String>> fieldWiseIssues = fieldWiseIssuesLatestMap.entrySet().stream()
-				.sorted((i1, i2) -> i1.getKey().compareTo(i2.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-		fieldWiseIssues.entrySet().forEach(dateSet -> {
-			String field = dateSet.getKey();
-			dateSet.getValue().stream().forEach(values -> {
-				fieldList.add(field);
-				ticketsList.add(values);
-			});
-		});
-		validationData.setTicketKeyList(ticketsList);
-		if (fieldName.equalsIgnoreCase(FIELD_STATUS)) {
-			validationData.setStatus(fieldList);
-		} else if (fieldName.equalsIgnoreCase(FIELD_PRIORITY)) {
-			validationData.setDefectPriorityList(fieldList);
-		} else if (fieldName.equalsIgnoreCase(FIELD_RCA)) {
-			validationData.setDefectRootCauseList(fieldList);
-		}
-		return validationData;
-	}
-
+	
 	/**
 	 * prepare excel data only Today Cumulative data so that only latest data
 	 * values of field(status/rca/priority)

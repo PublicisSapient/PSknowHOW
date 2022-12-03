@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
@@ -63,7 +64,6 @@ import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -163,15 +163,20 @@ public class KPIExcelDataServiceTest {
 		nodeWiseKPIValue1.put(Pair.of("Alpha_Project1_Sprint1_CompId", node7.getGroupName()), node7);
 		nodeWiseKPIValue1.put(Pair.of("Alpha_Project1_Sprint1_Release1_CompId", node9.getGroupName()), node9);
 
-		Map<String, ValidationData> kpiValidationDataMap = new HashMap<>();
-		ValidationData validationData = new ValidationData();
-		validationData.setDefectKeyList(Arrays.asList("Alpha_Project1_Sprint1_name_Defect1"));
-		validationData.setStoryKeyList(Arrays.asList("Alpha_Project1_Sprint1_name_Story1"));
-		kpiValidationDataMap.put("Alpha_Project1_Sprint1_name", validationData);
+		List<KPIExcelData> excelDataList= new ArrayList<>();
+		KPIExcelData excelData= new KPIExcelData();
+		Map<String, String> story= new HashMap<>();
+		story.put("Project1_Sprint1_Story1","http://Project1_Sprint1_Story1");
+		excelData.setStoryId(story);
+		Map<String, String> defect= new HashMap<>();
+		defect.put("Project1_Sprint1_Defect1","http://Project1_Sprint1_Defect1");
+		excelData.setDefectId(defect);
+		excelDataList.add(excelData);
 
 		KpiElement kpiElement1 = setKpiElement(KPICode.DEFECT_INJECTION_RATE.getKpiId(),
 				KPICode.DEFECT_INJECTION_RATE.name(), 2d, nodeWiseKPIValue1);
-		kpiElement1.setMapOfSprintAndData(kpiValidationDataMap);
+		kpiElement1.setExcelColumns(Arrays.asList("Story", "Defect"));
+		kpiElement1.setExcelData(excelDataList);
 
 		validationJiraKpiElement = kpiElement1;
 
@@ -259,8 +264,8 @@ public class KPIExcelDataServiceTest {
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
 				.process("kpi14", level, idList, null, kpiRequest, null);
 
-		assertThat("Excel Validation Process Data: ", kpiExcelValidationDataResponse.getMapOfSprintAndData()
-				.get("Alpha_Project1_Sprint1_name").getDefectKeyList().size(), equalTo(1));
+		assertThat("Excel Validation Process Data: ", kpiExcelValidationDataResponse.getExcelData().size()
+				, equalTo(1));
 
 	}
 

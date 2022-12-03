@@ -1102,7 +1102,7 @@ public class KPIExcelUtility {
 				if (jiraIssue.getTimeSpentInMinutes() != null) {
 					daysLogged = Double.valueOf(jiraIssue.getTimeSpentInMinutes()) / 60;
 				}
-				excelData.setLoggedTime(df2.format(daysLogged));
+				excelData.setTotalTimeSpent(df2.format(daysLogged));
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1123,5 +1123,20 @@ public class KPIExcelUtility {
 		}
 	}
 
+	public static void populateStoriesWithoutEstimate(String sprint, Set<JiraIssue> jiraIssueSet,
+			List<KPIExcelData> kpiExcelData) {
+		if(CollectionUtils.isNotEmpty(jiraIssueSet)) {
+			jiraIssueSet.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprint);
+				Map<String, String> storyDetails = new HashMap<>();
+				storyDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setStoryId(storyDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setOriginalTimeEstimate(jiraIssue.getEstimate());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
 }

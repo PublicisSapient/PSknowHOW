@@ -21,11 +21,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,23 +43,22 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -245,8 +247,7 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprintID()), Collectors.toList()));
 
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-
+		List<KPIExcelData> excelData = new ArrayList<>();
 		for (Node node : sprintLeafNodeList) {
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
@@ -269,9 +270,9 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 
 			mapTmp.get(node.getId()).setValue(value);
 
-			if (CollectionUtils.isNotEmpty(totalIssuesOfSprint)) {
-				populateValidationDataObject(kpiElement, requestTrackerId, totalIssuesOfSprint, validationDataMap,
-						kpiRequest.getFilterToShowOnTrend(), node);
+			if (CollectionUtils.isNotEmpty(totalIssuesOfSprint) && requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateStoriesWithoutEstimate(node.getSprintFilter().getName(),new HashSet<>(totalIssuesOfSprint),excelData);
+
 			}
 
 			log.debug("[STORYCOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
@@ -286,8 +287,9 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 			dataCount.setEndDate(formatDate(endDate));
 			dataCount.setHoverValue(howerValues);
 			trendValueList.add(dataCount);
-
 		}
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.STORIES_WITHOUT_ESTIMATE.getColumns());
 	}
 
 	private double calculatePercentage(double obtained, double total) {
@@ -305,48 +307,4 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
 		return localDate.format(formatter);
 	}
-
-	/**
-	 * Populates Validation Data Object
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param sprintWiseStoriesList
-	 * @param validationDataMap
-	 * @param filterToShowOnTrend
-	 * @param node
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap,
-			String filterToShowOnTrend, Node node) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String keyForValidation = sprintWiseStoriesList.get(0).getSprintName();
-			List<String> storyKeyList = new ArrayList<>();
-			List<String> estimates = new ArrayList<>();
-
-			sprintWiseStoriesList.stream().forEach(jiraIssue -> {
-				storyKeyList.add(jiraIssue.getNumber());
-				estimates.add(jiraIssue.getEstimate());
-			});
-
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(storyKeyList);
-			if (isEstimatesAreInStoryPoint(node)) {
-				validationData.setStoryPointList(estimates);
-			} else {
-				validationData.setEstimateTimeList(estimates);
-			}
-
-			validationDataMap.put(keyForValidation, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
-
-	private boolean isEstimatesAreInStoryPoint(Node node) {
-
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(node.getProjectFilter().getBasicProjectConfigId());
-		return "Story Point".equals(fieldMapping.getEstimationCriteria());
-	}
-
 }

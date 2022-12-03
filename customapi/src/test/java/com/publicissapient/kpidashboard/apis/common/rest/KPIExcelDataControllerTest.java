@@ -27,11 +27,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +48,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.KPIExcelDataService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelValidationDataResponse;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
 /**
  * @author tauakram
@@ -57,7 +58,6 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 public class KPIExcelDataControllerTest {
 
 	private MockMvc mockMvc;
-	private Map<String, ValidationData> kpiValidationDataMap = new HashMap<>();
 	private KPIExcelValidationDataResponse kpiExcelValidationDataResponse = new KPIExcelValidationDataResponse();
 
 	@Mock
@@ -69,16 +69,17 @@ public class KPIExcelDataControllerTest {
 	@Before
 	public void setup() {
 		mockMvc = MockMvcBuilders.standaloneSetup(kpiExcelDataController).build();
-
-		ValidationData validationData = new ValidationData();
-		validationData.setStoryKeyList(
-				Arrays.asList("Project1_Sprint1_Story1", "Project1_Sprint1_Story2", "Project1_Sprint1_Story3"));
-		validationData.setDefectKeyList(
-				Arrays.asList("Project1_Sprint1_Defect1", "Project1_Sprint1_Defect2", "Project1_Sprint1_Defect3"));
-
-		kpiValidationDataMap.put("Project1_Sprint1", validationData);
-
-		kpiExcelValidationDataResponse.setMapOfSprintAndData(kpiValidationDataMap);
+		List<KPIExcelData> excelDataList= new ArrayList<>();
+		KPIExcelData excelData= new KPIExcelData();
+		Map<String, String> story= new HashMap<>();
+		story.put("Project1_Sprint1_Story1","http://Project1_Sprint1_Story1");
+		excelData.setStoryId(story);
+		Map<String, String> defect= new HashMap<>();
+		defect.put("Project1_Sprint1_Defect1","http://Project1_Sprint1_Defect1");
+		excelData.setDefectId(defect);
+		excelDataList.add(excelData);
+		kpiExcelValidationDataResponse.setExcelColumns(Arrays.asList("Story", "Defect"));
+		kpiExcelValidationDataResponse.setExcelData(excelDataList);
 
 	}
 

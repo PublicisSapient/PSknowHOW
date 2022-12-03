@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -219,7 +218,6 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 
 	private void kpiWithFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 

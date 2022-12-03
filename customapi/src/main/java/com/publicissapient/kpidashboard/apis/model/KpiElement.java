@@ -18,18 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.model;//NOPMD
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.KpiInfo;
 import com.publicissapient.kpidashboard.common.model.application.TotalDefectAgingResponse;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Represents Kpi element. KPI detail.

@@ -131,6 +131,8 @@ public enum KPIExcelColumn {
 
     DAILY_CLOSURES("kpi125", Arrays.asList("Sprint Name", "Ticket Issue ID", "Issue Description","Issue Type")),
 
+    STORIES_WITHOUT_ESTIMATE("kpi81", Arrays.asList("Sprint Name", "Story ID", "Issue Description","Original Time Estimate (in hours)")),
+
 	INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 
     // @formatter:on

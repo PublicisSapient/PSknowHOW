@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,11 +71,8 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service for managing code build time for scrum.
@@ -320,26 +319,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	private String createDurationString(long minutes, long seconds) {
 		return minutes == 0L ? seconds + Constant.SEC : minutes + Constant.MIN + seconds + Constant.SEC;
 	}
-
-	/**
-	 * Creates validation data for node.
-	 *
-	 * @param codeBuildTimeInfo
-	 * @return ValidationData object
-	 */
-	private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-		ValidationData validationData = new ValidationData();
-		validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-		validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-		validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-		validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-		validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-		validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-		validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-		validationData.setDuration(codeBuildTimeInfo.getDurationList());
-		return validationData;
-	}
-
+	
 	/**
 	 * Set data to display on trend line.
 	 *
