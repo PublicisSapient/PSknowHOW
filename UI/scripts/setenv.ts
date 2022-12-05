@@ -11,7 +11,7 @@ console.log(require('dotenv').config());
 const isProduction = environment === 'prod';
 
 const targetPath = isProduction
-   ? `./src/environments/environment.prod.ts`
+   ? `./src/environments/environment.docker.ts`
    : `./src/environments/environment.ts`;
 
 // we have access to our environment variables
@@ -19,8 +19,8 @@ const targetPath = isProduction
 const environmentFileContent = `
 export const environment = {
    production: ${isProduction},
-   GS_ENVIRONMENT: ${process.env.SSO_LOGIN},
-   baseUrl: 'http://localhost:8080'
+   SSO_LOGIN: ${process.env.SSO_LOGIN},
+   baseUrl: "${process.env.baseUrl}"
 };
 `;
 
