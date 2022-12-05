@@ -20,7 +20,7 @@ const environmentFileContent = `
 export const environment = {
    production: ${isProduction},
    SSO_LOGIN: ${process.env.SSO_LOGIN},
-   baseUrl: "${process.env.baseUrl}"
+   baseUrl: "${process.env.BASEURL}"
 };
 `;
 
