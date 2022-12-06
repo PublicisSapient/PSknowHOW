@@ -130,7 +130,7 @@ public final class CommonConstant {
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
-	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
+	public static final String MODAL_HEAD_ISSUE_TYPE = KPIExcelConstant.ISSUE_TYPE;
 
 
 

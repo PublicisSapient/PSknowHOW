@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.publicissapient.kpidashboard.apis.constant.KPIExcelConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,10 +41,10 @@ import lombok.Setter;
 @Setter
 public class KPIExcelData {
 
-	@JsonProperty("Sprint Name")
+	@JsonProperty(KPIExcelConstant.SPRINT_NAME)
 	private String sprintName;
 
-	@JsonProperty("Original Time Estimate (in hours)")
+	@JsonProperty(KPIExcelConstant.ORIGINAL_TIME_ESTIMATE_IN_HOURS)
 	private String originalTimeEstimate;
 
 	@JsonProperty("Total Time Spent (in hours)")
@@ -52,43 +53,43 @@ public class KPIExcelData {
 	@JsonProperty("Closed")
 	private String closedStatus;
 
-	@JsonProperty("Project Name")
+	@JsonProperty(KPIExcelConstant.PROJECT_NAME)
 	private String projectName;
 
-	@JsonProperty("Issue Type")
+	@JsonProperty(KPIExcelConstant.ISSUE_TYPE)
 	private String issueType;
 
-	@JsonProperty("Resolution Time(In Days)")
+	@JsonProperty(KPIExcelConstant.RESOLUTION_TIME)
 	private String resolutionTime;
 
-	@JsonProperty("Story ID")
+	@JsonProperty(KPIExcelConstant.STORY_ID)
 	private Map<String, String> storyId;
 
-	@JsonProperty("Issue Description")
+	@JsonProperty(KPIExcelConstant.ISSUE_DESCRIPTION)
 	private String issueDesc;
 
-	@JsonProperty("Story Size(In story point)")
+	@JsonProperty(KPIExcelConstant.STORY_SIZE_SP)
 	private String storyPoints;
 
-	@JsonProperty("Intake to DOR(In Days)")
+	@JsonProperty(KPIExcelConstant.INTAKE_TO_DOR)
 	private String intakeToDOR;
 
-	@JsonProperty("DOR to DOD (In Days)")
+	@JsonProperty(KPIExcelConstant.DOR_TO_DOD)
 	private String dorToDod;
 
-	@JsonProperty("DOD TO Live (In Days)")
+	@JsonProperty(KPIExcelConstant.DOD_TO_LIVE)
 	private String dodToLive;
 
-	@JsonProperty("Open to Triage(In Days)")
+	@JsonProperty(KPIExcelConstant.OPEN_TO_TRIAGE)
 	private String openToTriage;
 
-	@JsonProperty("Triage to Complete (In Days)")
+	@JsonProperty(KPIExcelConstant.TRIAGE_TO_COMPLETE)
 	private String triageToComplete;
 
-	@JsonProperty("Complete TO Live (In Days)")
+	@JsonProperty(KPIExcelConstant.COMPLETE_TO_LIVE)
 	private String completeToLive;
 
-	@JsonProperty("Lead Time (In Days)")
+	@JsonProperty(KPIExcelConstant.LEAD_TIME)
 	private String leadTime;
 
 	@JsonProperty("Linked Defects")
@@ -115,7 +116,7 @@ public class KPIExcelData {
 	@JsonProperty("Resolved")
 	private String resolvedTickets;
 
-	@JsonProperty("Defect ID")
+	@JsonProperty(KPIExcelConstant.DEFECT_ID)
 	private Map<String, String> defectId;
 
 	@JsonProperty("Created Defect ID")
@@ -127,10 +128,10 @@ public class KPIExcelData {
 	@JsonProperty("Automated")
 	private String automated;
 
-	@JsonProperty("Project")
+	@JsonProperty(KPIExcelConstant.PROJECT)
 	private String project;
 
-	@JsonProperty("Job Name")
+	@JsonProperty(KPIExcelConstant.JOB_NAME)
 	private String jobName;
 
 	@JsonProperty("Unit Coverage")
@@ -142,7 +143,7 @@ public class KPIExcelData {
 	@JsonProperty("Sonar Violations")
 	private String sonarViolation;
 
-	@JsonProperty("Weeks")
+	@JsonProperty(KPIExcelConstant.WEEKS)
 	private String weeks;
 
 	@JsonProperty("Linked Story ID")
@@ -217,46 +218,46 @@ public class KPIExcelData {
     @JsonProperty("Execution Date")
     private String executionDate;
 
-    @JsonProperty("Ticket Issue ID")
+    @JsonProperty(KPIExcelConstant.TICKET_ISSUE_ID)
     private Map<String, String> ticketIssue;
 
     @JsonProperty("Closed Ticket Issue ID")
     private Map<String, String> closedTicket;
 
-	@JsonProperty("Start Time")
+	@JsonProperty(KPIExcelConstant.START_TIME)
 	private String startTime;
 
-	@JsonProperty("End Time")
+	@JsonProperty(KPIExcelConstant.END_TIME)
 	private String endTime;
 
-	@JsonProperty("Duration")
+	@JsonProperty(KPIExcelConstant.DURATION)
 	private String duration;
 
-	@JsonProperty("Build Status")
+	@JsonProperty(KPIExcelConstant.BUILD_STATUS)
 	private String buildStatus;
 
 	@JsonProperty("Started By")
 	private String startedBy;
 
-	@JsonProperty("Build Url")
+	@JsonProperty(KPIExcelConstant.BUILD_URL)
 	private Map<String, String> buildUrl;
 
-	@JsonProperty("Repository Url")
+	@JsonProperty(KPIExcelConstant.REPOSITORY_URL)
 	private Map<String, String> repositoryURL;
 
-	@JsonProperty("Branch")
+	@JsonProperty(KPIExcelConstant.BRANCH)
 	private String branch;
 
-	@JsonProperty("Mean Time To Merge (In Hours)")
+	@JsonProperty(KPIExcelConstant.MEAN_TIME_TO_MERGE)
 	private String meanTimetoMerge;
 
-	@JsonProperty("Day")
+	@JsonProperty(KPIExcelConstant.DAY)
 	private String days;
 
-	@JsonProperty("No. Of Commit")
+	@JsonProperty(KPIExcelConstant.COMMITS)
 	private String numberOfCommit;
 
-	@JsonProperty("No. of Merge")
+	@JsonProperty(KPIExcelConstant.MERGE)
 	private String numberOfMerge;
 
 	@JsonProperty("Created Date")
@@ -265,7 +266,7 @@ public class KPIExcelData {
     @JsonProperty("Closed Ticket Issue Type")
     private String closedTicketIssueType;
 
-    @JsonProperty("Day/Week/Month")
+    @JsonProperty(KPIExcelConstant.DAY_WEEK_MONTH)
     private String dayWeekMonth;
 
     @JsonProperty("Issue Priority")
