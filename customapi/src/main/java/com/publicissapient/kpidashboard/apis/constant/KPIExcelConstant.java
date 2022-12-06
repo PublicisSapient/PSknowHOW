@@ -55,7 +55,7 @@ public class KPIExcelConstant {
 	public static final String OPEN_TO_TRIAGE="Open to Triage(In Days)";
 	public static final String TRIAGE_TO_COMPLETE="Triage to Complete (In Days)";
 	public static final String COMPLETE_TO_LIVE="Complete TO Live (In Days)";
-	public static final String COMPLETE_TO_LIVE=;
+	public static final String COMPLETE_TO_LIVEgg="";
 	public static final String ORIGINAL_TIME_ESTIMATE_IN_HOURS="Original Time Estimate (in hours)";
 
 	private KPIExcelConstant() {
