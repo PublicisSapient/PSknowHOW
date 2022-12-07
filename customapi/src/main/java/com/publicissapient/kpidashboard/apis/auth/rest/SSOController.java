@@ -20,7 +20,7 @@ public class SSOController {
     @Autowired
     private UserInfoService userInfoService;
 
-    @PostMapping(value = "/saveOrGetProjectAccess/{username}" , consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/users/{username}" , consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceResponse> fetchOrSaveUserInfo(@PathVariable String username){
         ServiceResponse response = new ServiceResponse(false, "Unauthorized", null);
         UserInfoDTO userInfoDTO = userInfoService.getOrSaveDefaultUserInfo(username,AuthType.SSO,null);
