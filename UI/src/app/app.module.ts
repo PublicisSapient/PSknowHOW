@@ -113,7 +113,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
                     console.log(env);
-                    environment['baseUrl'] = env['baseUrl'] || '//';
+                    environment['baseUrl'] = env['baseUrl'] || 'https://1.2.3.4:123';
                     console.log('environment' , environment);
                 }));
 
