@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +109,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
 			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
 					authorities);
-			authenticationSso.setDetails("SSO");
+			authenticationSso.setDetails(AuthType.SSO);
 			return authenticationSso;
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
