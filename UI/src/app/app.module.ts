@@ -104,17 +104,14 @@ import { tap } from 'rxjs/operators';
 
 const initializeAppFactory = (http: HttpClient): () => void  =>{
     if (!environment.production) {
-        console.log('local', environment);
         return  ()=>{
-            environment['baseUrl']='localhost:8080';
+           // environment['baseUrl']='localhost:8080';
         };
     } else {
         return async () => {
         const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
-                    console.log(env);
-                    environment['baseUrl'] = env['baseUrl'] || 'https://1.2.3.4:123';
-                    console.log('environment' , environment);
+                    environment['baseUrl'] = env['baseUrl'] || '//';
                 }));
 
         await env$.toPromise().then(res => console.log);
