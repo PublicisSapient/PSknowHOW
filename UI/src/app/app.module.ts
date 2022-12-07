@@ -116,6 +116,8 @@ function initializeAppFactory(http: HttpClient):() => void{
                 tap(env => {
                     console.log(env);
                     environment['baseUrl'] = env['baseUrl'] || '//';
+                    console.log('environment' , environment);
+                    
                 })).subscribe();
         }
     }

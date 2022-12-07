@@ -128,7 +128,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
 
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { 
+        console.log(environment);
+        
+    }
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
