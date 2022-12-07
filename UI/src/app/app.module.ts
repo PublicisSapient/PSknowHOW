@@ -111,7 +111,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         return async () => {
         const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
-                    environment['baseUrl'] = env['baseUrl'] || '//';
+                    environment['baseUrl'] = env['baseUrl'] || '';
                 }));
 
         await env$.toPromise().then(res => console.log);
