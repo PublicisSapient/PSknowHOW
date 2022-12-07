@@ -50,7 +50,7 @@
                                 Definition:
                                 Default status when a Story is opened. <br>
                                 Example: Open <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Jira Processor History
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -69,7 +69,7 @@
                                 Definition:
                                 Status from workflow on which ticket is considered as delivered. <br>
                                 Example : Closed <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Ticket Velocity.
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -89,8 +89,8 @@
                                 Definition:
                                 Status from workflow on which ticket is considered as Triaged. <br>
                                 Example : In progress <hr>
-                                KPI Impacted : 
-                                Cycle Time 
+                                KPI Impacted :
+                                Cycle Time
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
@@ -110,8 +110,8 @@
                                 Definition:
                                 Status from workflow on which ticket is considered as Rejected/Dropped. <br>
                                 Example : Rejected <hr>
-                                KPI Impacted : 
-                                WIP vs Closed 
+                                KPI Impacted :
+                                WIP vs Closed
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
@@ -131,7 +131,7 @@
                                 Definition:
                                 Status from workflow on which ticket is considered as Resolved. <br>
                                 Example : Closed <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Total Ticket Count, WIP vs Closed, Cycle Time, Throughput
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -152,7 +152,7 @@
                                 Definition:
                                 Provide any status from workflow on which Live is considered. <br>
                                 Example: Live <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Cycle Time - Complete to Live
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -182,7 +182,7 @@
                                 Definition:
                                 Issue Type in Jira. These issue type are fetched in Speedy dashboard. <br>
                                 Example : Story, Defect, Risk, Change Request, Test <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Jira/Azure Processor and all KPIs
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -255,7 +255,7 @@
                         *ngIf="fieldstoShow?.includes('kanbanCycleTimeIssueType') || fieldstoShow.length === 0">
                         <label class="field-title">kanban Cycle Time Issue Type <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
-                            KPI Impacted : 
+                            KPI Impacted :
                             Cycle time
                             </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -366,7 +366,7 @@
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation.<br />
                                 Example : customfield_19121 <hr>
-                                KPI Impacted : 
+                                KPI Impacted :
                                 Jira/Azure processor and Net Open Ticket Count By RCA Kpi.
                           </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -387,7 +387,7 @@
                             JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                             Provide value of Cost Of delay field for Epics that need to show on Trend line.<br />
                            Example:customfield_11111 <hr>
-                            KPI Impacted : 
+                            KPI Impacted :
                             Cost of delay
                           </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -422,7 +422,7 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('epicUserBusinessValue') || fieldstoShow.length === 0">
                         <label class="field-title">Epic Business Value <span class="fa fa-info-circle"
-                                aria-hidden="true" pTooltip='<span> 
+                                aria-hidden="true" pTooltip='<span>
                             Definition:
                             JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                             Provide value of User-Business Value for Epic that is required to calculated Cost of delay .<br />
@@ -443,12 +443,12 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('epicWsjf') || fieldstoShow.length === 0">
                         <label class="field-title">Epic WSJF <span class="fa fa-info-circle" aria-hidden="true"
-                                pTooltip='<span> 
+                                pTooltip='<span>
                             Definition:
                             JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                             Provide value of WSJF value that is required to calculated Cost of delay <br />
                             Example:customfield_11111 <hr>
-                            KPI Impacted: 
+                            KPI Impacted:
                             Cost of delay
             </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
@@ -462,7 +462,7 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('epicTimeCriticality') || fieldstoShow.length === 0">
                         <label class="field-title">Epic Time Criticality <span class="fa fa-info-circle"
-                                aria-hidden="true" pTooltip='<span> 
+                                aria-hidden="true" pTooltip='<span>
                             Definition:
                             JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                             Provide value of Time Criticality value on Epic that is required to calculated Cost of delay. <br>
@@ -482,7 +482,7 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('epicJobSize') || fieldstoShow.length === 0">
                         <label class="field-title">Epic Job Size <span class="fa fa-info-circle" aria-hidden="true"
-                                pTooltip='<span> 
+                                pTooltip='<span>
                             Definition:
                             JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                             Provide value of Job size on EPIC that is required to calculated WSJF. <br>
@@ -516,7 +516,7 @@
                                 Definition:
                                 This field is used to identify Additional Filters. <br>
                                  Example: SQUAD <hr>
-                                 KPI Impacted: 
+                                 KPI Impacted:
                                  Filters
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                             tooltipPosition="top"></span></label>
@@ -559,7 +559,7 @@
                                                     formControlName="{{ filter.code + 'Identifier'}}"
                                                     value="{{additionalFilter.value}}"
                                                     label="{{additionalFilter.value}}" class="p-m-2"
-                                                    (onClick)="changeControl($event, filter)">
+                                                    (onClick)="changeControl($event,filter)">
                                                 </p-radioButton>
                                             </ng-container>
                                         </div>
