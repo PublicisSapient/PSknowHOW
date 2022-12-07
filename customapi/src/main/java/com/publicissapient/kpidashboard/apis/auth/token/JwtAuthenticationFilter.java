@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,16 +43,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	@Autowired
 	private CookieUtil cookieUtil;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
 			throws IOException, ServletException {
 
 		if (request != null) {
 			Cookie authCookie=cookieUtil.getAuthCookie((HttpServletRequest) request);
-			if (authCookie == null ) {
+
+			if (!customApiConfig.isSsoLogin() && authCookie == null){
 				filterChain.doFilter(request, response);
 				return;
 			}
+
 		}
 
 		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request);

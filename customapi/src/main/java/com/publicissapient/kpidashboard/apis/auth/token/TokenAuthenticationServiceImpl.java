@@ -30,6 +30,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	private CookieUtil cookieUtil;
 
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
@@ -98,36 +103,47 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request) {
 
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		if (StringUtils.isBlank(authCookie.getValue())) {
-			return null;
-		}
-
-		String token = authCookie.getValue();
-
-		UserTokenData data = null;
-
-		data = userTokenReopository.findByUserToken(token);
-
-		if (null == data) {
-			return null;
-		}
-
-		try {
-			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
-					.getBody();
-			String username = claims.getSubject();
-			Collection<? extends GrantedAuthority> authorities = getAuthorities(
-					claims.get(ROLES_CLAIM, Collection.class));
-			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
+		if (customApiConfig.isSsoLogin()){
+			Collection<GrantedAuthority> authorities = Sets.newHashSet();
+			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
 					authorities);
-			authentication.setDetails(claims.get(DETAILS_CLAIM));
+			authenticationSso.setDetails("SSO");
+			return authenticationSso;
+		} else {
+			Cookie authCookie = cookieUtil.getAuthCookie(request);
+			if (StringUtils.isBlank(authCookie.getValue())) {
+				return null;
+			}
 
-			return authentication;
+			String token = authCookie.getValue();
 
-		} catch (ExpiredJwtException e) {
-			return null;
+			UserTokenData data = null;
+
+			data = userTokenReopository.findByUserToken(token);
+
+			if (null == data) {
+				return null;
+			}
+
+			try {
+				Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+						.getBody();
+				String username = claims.getSubject();
+				Collection<? extends GrantedAuthority> authorities = getAuthorities(
+						claims.get(ROLES_CLAIM, Collection.class));
+				PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
+						authorities);
+				authentication.setDetails(claims.get(DETAILS_CLAIM));
+
+				return authentication;
+
+			} catch (ExpiredJwtException e) {
+				return null;
+			}
 		}
+
+
 	}
 
 	@SuppressWarnings("unchecked")

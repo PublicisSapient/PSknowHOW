@@ -183,6 +183,8 @@ public class CustomApiConfig {// NOPMD
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
 
+	private boolean ssoLogin;
+
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
 	}
@@ -878,5 +880,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNumberOfFutureDaysForKanbanTestExecution(int numberOfFutureDaysForKanbanTestExecution) {
 		this.numberOfFutureDaysForKanbanTestExecution = numberOfFutureDaysForKanbanTestExecution;
+	}
+
+	public boolean isSsoLogin() {
+		return ssoLogin;
+	}
+
+	public void setSsoLogin(boolean ssoLogin) {
+		this.ssoLogin = ssoLogin;
 	}
 }
