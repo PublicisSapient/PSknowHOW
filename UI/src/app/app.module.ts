@@ -102,26 +102,26 @@ import { tap } from 'rxjs/operators';
 
 /******************************************************/
 
-function initializeAppFactory(http: HttpClient):() => void{
-    
+const initializeAppFactory = (http: HttpClient): () => void  =>{
     if (!environment.production) {
         console.log('local', environment);
         return  ()=>{
-            // environment['baseUrl']='localhost:8080';
-        }
-        
+            environment['baseUrl']='localhost:8080';
+        };
     } else {
-        return () => {
-            http.get('assets/env.json').pipe(
+        return async () => {
+        const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
                     console.log(env);
                     environment['baseUrl'] = env['baseUrl'] || '//';
                     console.log('environment' , environment);
-                    
-                })).subscribe();
-        }
+                }));
+
+        await env$.toPromise().then(res => console.log);
+        };
     }
-}
+};
+
 
 @NgModule({
     declarations: [

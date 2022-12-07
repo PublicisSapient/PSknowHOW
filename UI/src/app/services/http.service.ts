@@ -135,6 +135,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
+        console.log(this.analyticsSwitchUrl);
+        
         return this.http.get(this.analyticsSwitchUrl);
     }
 
@@ -476,6 +478,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** get pending request notifications */
     getAccessRequestsNotifications() {
+        console.log('notification');
+        
         return this.http.get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
             .pipe(map(requests => requests));
     }
