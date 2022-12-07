@@ -223,5 +223,5 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range,
 			String mapStatusCriteria, boolean isProductionDefect);
 
-	public Set<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
+	List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
 }

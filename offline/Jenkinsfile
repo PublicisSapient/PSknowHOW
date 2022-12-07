@@ -9,7 +9,7 @@ pipeline {
 		}
 		stage('Checkout') {
 			steps {
-               checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/PublicisSapient/KnowHow.git',credentialsId: 'githubcred']], branches: [[name: '${SBRANCH}']]], poll: false
+               checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/PublicisSapient/PSknowHOW.git',credentialsId: 'githubcred']], branches: [[name: '${SBRANCH}']]], poll: false
 			}
 		}
 		stage('Capture Version') {
@@ -17,14 +17,12 @@ pipeline {
                 script {
 					def pom = readMavenPom file: 'pom.xml'
 					env.version = pom.version
-					echo "${pom.version}"
-					echo "${env.version}"
-
 					if(env.version.contains("SNAPSHOT")) {
 						env.version=env.version.replaceAll("-SNAPSHOT","")
 					}
 
 					version = env.version
+					println version
                 }
 			}
 		}
@@ -71,12 +69,10 @@ pipeline {
 					cp -r $workspace/offline/scripts /tmp/${env.version}/
 					cd $workspace && zip -r dockers.zip *.zip
 					cp -r $workspace/dockers.zip /tmp/${env.version}
-					cp -r $workspace/offline/apex.json /tmp/${env.version}/
-					cp -r $workspace/offline/appx.json /tmp/${env.version}/
 					cp -r $workspace/offline/upgrade.sh /tmp/${env.version}/scripts
 					cp -r $workspace/offline/migration.sh /tmp/${env.version}/scripts
 					cd /tmp/${env.version}/
-					zip -r Speedy-${env.version}.zip dockers.zip readme.md docker-compose.yaml scripts apex.json appx.json
+					zip -r Speedy-${env.version}.zip dockers.zip readme.md docker-compose.yaml scripts
                 """
 			}
 		}

@@ -263,6 +263,7 @@ db.getCollection('kpi_fieldmapping').insert(
       {
         kpiId: 'kpi53',
         kpiName: 'Lead Time',
+        kpiSource:'Jira',
         type: ['Kanban'],
         fieldNames : {'Workflow Status Mapping' : ['jiraTicketTriagedStatus', 'jiraTicketClosedStatus', 'jiraLiveStatus'] }
       },

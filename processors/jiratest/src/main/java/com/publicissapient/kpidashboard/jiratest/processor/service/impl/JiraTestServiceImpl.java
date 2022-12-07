@@ -927,13 +927,13 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 */
 	private void setRegressionLabel(ProcessorToolConnection jiraTestToolInfo, Map<String, IssueField> customFieldMap,
 			TestCaseDetails testCaseDetails) {
-		if (CollectionUtils.isNotEmpty(jiraTestToolInfo.getTestRegressionValue())
+		if (CollectionUtils.isNotEmpty(jiraTestToolInfo.getJiraRegressionTestValue())
 				&& (jiraTestToolInfo.getTestRegressionByCustomField() != null)) {
 			String regressionLabels = processJsonForCustomFields(jiraTestToolInfo.getTestRegressionByCustomField(),
 					customFieldMap, jiraTestToolInfo.getJiraRegressionTestValue());
 			if (StringUtils.isNotEmpty(regressionLabels)) {
 				Set<String> regressionCustomValueList = new HashSet<>(Arrays.asList(regressionLabels.split(", ")));
-				if (CollectionUtils.containsAny(jiraTestToolInfo.getTestRegressionValue(), regressionCustomValueList)) {
+				if (CollectionUtils.containsAny(jiraTestToolInfo.getJiraRegressionTestValue(), regressionCustomValueList)) {
 					if (CollectionUtils.isNotEmpty(testCaseDetails.getLabels())) {
 						regressionCustomValueList.addAll(testCaseDetails.getLabels());
 					}

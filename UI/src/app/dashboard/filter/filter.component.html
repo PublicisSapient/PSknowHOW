@@ -204,7 +204,7 @@
       
       <!-- Download button start -->
        <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
-      <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" *ngIf="!kanban && selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'" 
+      <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'" 
       id="Filter-Download-Btn" (click)="exportToExcel($event)"
          [ngClass]="{'disabled': showChart}" [attr.title]="'Export View'"
          >

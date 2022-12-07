@@ -90,6 +90,8 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 	
 	private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
 	private static final String TESTCASEKEY = "testCaseData";
+
+	private static final String NIN = "nin";
 	private static final String AUTOMATED_TESTCASE_KEY = "automatedTestCaseData";
 
 	public abstract String getQualifierType();
@@ -254,14 +256,12 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
 				.cacheProjectToolConfigMapData();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			Map<String, Object> mapOfProjectFiltersNotIn = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_ZEPHYR);
@@ -275,7 +275,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 				setZephyrScaleConfig(zephyrTools, regressionLabels, regressionAutomationFolderPath);
 			}
 			if (CollectionUtils.isNotEmpty(jiraTestTools)) {
-				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFiltersNotIn);
+				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
 			}
 
 			if (CollectionUtils.isNotEmpty(regressionLabels)) {
@@ -288,7 +288,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 			}
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			uniqueProjectMapNotIn.put(basicProjectConfigId.toString(),mapOfProjectFiltersNotIn);
 
 		});
 
@@ -301,7 +300,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 
 
 		List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap,
-				uniqueProjectMapNotIn);
+				NIN);
 
 		Map<String, List<TestCaseDetails>> towerWiseTotalMap = testCasesList.stream()
 				.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));

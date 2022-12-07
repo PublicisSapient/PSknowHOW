@@ -14,7 +14,7 @@ VERSION: "{{ VERSION }}"
 FROMVERSION: "{{ FROMVERSION }}"
 aws_secret_key: "{{aws_secret_key}}"
 aws_access_key: "{{aws_access_key}}"
-
+JAVA_OPTS: "-XX:+HeapDumpOnOutOfMemoryError"
 
 CUSTOMAPI_IMAGE: "{{ select_docker_registry }}/speedy/customapi"
 CUSTOMAPI_MEMORY_LIMIT: "4096m"

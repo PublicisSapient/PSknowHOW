@@ -46,6 +46,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -245,14 +246,14 @@ public class SprintClientImpl implements SprintClient {
 						+ projectConfig.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
 						+ projectConfig.getBasicProjectConfigId();
 				sprintDetails.setSprintID(sprintId);
-				sprintDetails.setStartDate(
-						sprintJson.get(STARTDATE) == null ? null : sprintJson.get(STARTDATE).toString());
+				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null
+						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(STARTDATE).toString()));
 				sprintDetails.setEndDate(
-						sprintJson.get(ENDDATE) == null ? null : sprintJson.get(ENDDATE).toString());
+						sprintJson.get(ENDDATE) == null ? null : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ENDDATE).toString()));
 				sprintDetails.setCompleteDate(sprintJson.get(COMPLETEDATE) == null ? null
-						: sprintJson.get(COMPLETEDATE).toString());
+						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(COMPLETEDATE).toString()));
 				sprintDetails.setActivatedDate(sprintJson.get(ACTIVATEDDATE) == null ? null
-						: sprintJson.get(ACTIVATEDDATE).toString());
+						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ACTIVATEDDATE).toString()));
 				sprintDetails.setGoal(sprintJson.get(GOAL) == null ? null : sprintJson.get(GOAL).toString());
 				sprintDetailsSet.add(sprintDetails);
 			}

@@ -9,6 +9,7 @@ MONGODB_APPLICATION_USER: "devadmin"
 MONGODB_APPLICATION_PASS: "admin@123"
 INSTANCE_ROLE: "PRODUCER"
 VERTICALS: "{{ verticalIds }}"
+JAVA_OPTS: "-XX:+HeapDumpOnOutOfMemoryError"
 
 CUSTOMAPI_IMAGE: "{{ select_docker_registry }}/speedy/customapi"
 CUSTOMAPI_MEMORY_LIMIT: "4096m"

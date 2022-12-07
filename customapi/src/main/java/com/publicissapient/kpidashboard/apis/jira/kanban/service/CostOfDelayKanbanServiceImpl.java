@@ -214,11 +214,11 @@ public class CostOfDelayKanbanServiceImpl extends JiraKPIService<Double, List<Ob
         for (LocalDate currentDate = dateRange.getStartDate(); currentDate.compareTo(dateRange.getStartDate()) >= 0
                 && dateRange.getEndDate().compareTo(currentDate) >= 0; currentDate = currentDate.plusDays(1)) {
             dummyList.add(KanbanJiraIssue.builder().costOfDelay(0.0d).projectName("").build());
-            kanbanJiraIssueList.addAll(dateWiseIssue.getOrDefault(currentDate.toString(), dummyList));
             issueList.addAll(dateWiseIssue.getOrDefault(currentDate.toString(), dummyList));
         }
 
         if (CollectionUtils.isNotEmpty(issueList)) {
+            kanbanJiraIssueList.addAll(issueList);
             cod = issueList.stream().mapToDouble(KanbanJiraIssue::getCostOfDelay).sum();
         }
 

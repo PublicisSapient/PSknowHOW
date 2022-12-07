@@ -238,7 +238,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		do {
 			final List<ZephyrTestCaseDTO> testCase = zephyrClient.getTestCase(testCaseCount.get(), projectConfigMap);
 			if (CollectionUtils.isNotEmpty(testCase)) {
-				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPath, testCase);
+				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPath, testCase , processorToolConnection.isCloudEnv());
 				zephyrDBService.processTestCaseInfoToDB(filteredTestCasesList, processorToolConnection, projectConfigMap.isKanban(),
 						processorToolConnection.isCloudEnv());
 				testCaseCount.updateAndGet(test -> test + testCase.size());
@@ -364,7 +364,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		setProjectsBasicConfigIds(null);
 	}
 
-	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(String folderPath, List<ZephyrTestCaseDTO> totalTestCasesList) {
+	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(String folderPath, List<ZephyrTestCaseDTO> totalTestCasesList , boolean cloud) {
 		List<ZephyrTestCaseDTO> filteredTestCasesList = new ArrayList<>();
 		totalTestCasesList.stream().forEach(testCases->{
 			Optional<String> folderName = Optional.ofNullable(testCases.getFolder());
@@ -372,11 +372,25 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 			Optional<String> updatedOnDate = Optional.ofNullable(testCases.getUpdatedOn());
 			LocalDateTime instant = LocalDateTime.now();
 			LocalDateTime currentDateMinus15Months = instant.minusMonths(15);
-				if((folderName.isPresent() && folderName.get().contains(folderPath))
-					&& ((updatedOnDate.isPresent() && DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC).isAfter(currentDateMinus15Months))
-					|| (createdOnDate.isPresent() && DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC).isAfter(currentDateMinus15Months)))) {
-						filteredTestCasesList.add(testCases);
+			if (cloud) {
+				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+								.isAfter(currentDateMinus15Months))
+						|| (createdOnDate.isPresent() && DateUtil
+								.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+								.isAfter(currentDateMinus15Months)))) {
+					filteredTestCasesList.add(testCases);
 				}
+			} else {
+				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+								.isAfter(currentDateMinus15Months))
+						|| (createdOnDate.isPresent()
+								&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isAfter(currentDateMinus15Months)))) {
+					filteredTestCasesList.add(testCases);
+				}
+			}
 		});
 		return filteredTestCasesList;
 	}

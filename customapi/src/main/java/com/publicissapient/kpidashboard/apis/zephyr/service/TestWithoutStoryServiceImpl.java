@@ -70,6 +70,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 	private static final String TEST_TITLE = "Test Cases without any story link";
 	private static final String STORY_LIST = "stories";
 	private static final String TOTAL_TEST_CASES = "Total Test Cases";
+	private static final String NIN = "nin";
 	private static final String TOOL_ZEPHYR = ProcessorConstants.ZEPHYR;
 	private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
 	@Autowired
@@ -120,7 +121,6 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMapForStories = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
 		List<String> storyType = new ArrayList<>();
 		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
 				.cacheProjectToolConfigMapData();
@@ -137,22 +137,17 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 			FieldMapping fieldMapping = basicProjetWiseConfig.get(basicProjectConfigId);
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			Map<String, Object> mapOfStoriesFilter = new LinkedHashMap<>();
-			Map<String, Object> mapOfProjectFiltersNotIn = new LinkedHashMap<>();
 
 			if (CollectionUtils.isNotEmpty(zephyrTools)) {
 				setZephyrScaleConfig(zephyrTools, regressionLabels, sprintAutomationFolderPath);
 			}
 			if (CollectionUtils.isNotEmpty(jiraTestTools)){
-				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFiltersNotIn);
+				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
 			}
 			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(), Arrays.asList("Regression"));
 			if (CollectionUtils.isNotEmpty(regressionLabels)) {
 				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(regressionLabels));
-			}
-
-			if (MapUtils.isNotEmpty(mapOfProjectFiltersNotIn)) {
-				uniqueProjectMapNotIn.put(basicProjectConfigId.toString(), mapOfProjectFiltersNotIn);
 			}
 
 			if (CollectionUtils.isNotEmpty(sprintAutomationFolderPath)) {
@@ -187,7 +182,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 
 		resultListMap.put(TOTAL_TEST_CASES,
-				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, uniqueProjectMapNotIn));
+				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, NIN));
 		return resultListMap;
 	}
 

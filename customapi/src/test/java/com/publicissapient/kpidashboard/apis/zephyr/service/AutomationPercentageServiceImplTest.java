@@ -112,7 +112,7 @@ public class AutomationPercentageServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
-	Set<JiraIssue> issues = new HashSet<>();
+	List<JiraIssue> issues = new ArrayList<>();
 	private final static String TESTCASEKEY = "testCaseData";
 	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	private KpiRequest kpiRequest;
@@ -132,7 +132,7 @@ public class AutomationPercentageServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalTestCaseList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
-		issues = new HashSet<>(JiraIssueDataFactory.newInstance().getStories());
+		issues = new ArrayList<>(JiraIssueDataFactory.newInstance().getStories());
 		setMockFieldMapping();
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);

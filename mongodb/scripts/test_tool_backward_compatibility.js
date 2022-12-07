@@ -1,26 +1,46 @@
+print("Start : backward compatibility script for test tool");
 function hasTestConfigInFieldMapping(fm){
     return fm.jiraTestCaseType && fm.jiraTestCaseType.length !== 0;
 }
 
-function createTestTool(jiraTool, fm){
+function getValueAsString(inputValue){
+    if(inputValue){
+        return inputValue;
+    }
+    return "";
+}
+
+function getValueAsArray(inputArray){
+    if(inputArray && inputArray.length > 0){
+        return inputArray;
+    }
+    return [];
+}
+
+function currentDateAsString(){
+
+    return new Date().toISOString().slice(0,-5);
+}
+
+function createTestTool(jiraTool, fm) {
     var testTool = {};
     testTool["toolName"] = "JiraTest";
     testTool["basicProjectConfigId"] = fm.basicProjectConfigId;
     testTool["connectionId"] = jiraTool.connectionId;
     testTool["projectKey"] = jiraTool.projectKey;
-    testTool["createdAt"] = new Date();
-    testTool["updatedAt"] = new Date();
-    testTool["testAutomated"] = fm.testAutomated;
-    testTool["jiraTestCaseType"] = fm.jiraTestCaseType;
-    testTool["testAutomatedIdentification"] = fm.testAutomatedIdentification;
-    testTool["testAutomationCompletedIdentification"] = fm.testAutomationCompletedIdentification;
-    testTool["testRegressionIdentification"] = fm.testRegressionIdentification;
-    testTool["testAutomationCompletedByCustomField"] = fm.testAutomationCompletedByCustomField;
-    testTool["testRegressionByCustomField"] = fm.testRegressionByCustomField;
-    testTool["jiraAutomatedTestValue"] = fm.jiraAutomatedTestValue;
-    testTool["jiraRegressionTestValue"] = fm.jiraRegressionTestValue;
-    testTool["jiraCanBeAutomatedTestValue"] = fm.jiraCanBeAutomatedTestValue;
-    testTool["testCaseStatus"] = fm.testCaseStatus;
+    testTool["createdAt"] = currentDateAsString();
+    testTool["updatedAt"] = currentDateAsString();
+    testTool["testAutomated"] = getValueAsString(fm.testAutomated);
+    testTool["jiraTestCaseType"] = getValueAsArray(fm.jiraTestCaseType);
+    testTool["testAutomatedIdentification"] = getValueAsString(fm.testAutomatedIdentification);
+    testTool["testAutomationCompletedIdentification"] = getValueAsString(fm.testAutomationCompletedIdentification);
+    testTool["testRegressionIdentification"] = getValueAsString(fm.testRegressionIdentification);
+    testTool["testAutomationCompletedByCustomField"] = getValueAsString(fm.testAutomationCompletedByCustomField);
+    testTool["testRegressionByCustomField"] = getValueAsString(fm.testRegressionByCustomField);
+    testTool["jiraAutomatedTestValue"] = getValueAsArray(fm.jiraAutomatedTestValue);
+    testTool["jiraRegressionTestValue"] = getValueAsArray(fm.jiraRegressionTestValue);
+    testTool["jiraCanBeAutomatedTestValue"] = getValueAsArray(fm.jiraCanBeAutomatedTestValue);
+    testTool["testCaseStatus"] = getValueAsArray(fm.testCaseStatus);
     testTool["_class"] = "com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig";
 
    return testTool;
@@ -42,4 +62,4 @@ fieldMappings.forEach(function(fm){
 
     }
 });
-
+print("End : backward compatibility script for test tool");

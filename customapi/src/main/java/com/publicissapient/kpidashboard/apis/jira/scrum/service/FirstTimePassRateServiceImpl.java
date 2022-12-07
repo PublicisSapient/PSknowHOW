@@ -154,8 +154,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		Map<String, JiraIssue> issueData = (Map<String, JiraIssue>) resultMap.get(ISSUE_DATA);
-
+		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
+		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 		Map<Pair<String, String>, Double> sprintWiseFTPRMap = new HashMap<>();
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseFTPListMap = new HashMap<>();
@@ -199,8 +199,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
 					List<JiraIssue> ftpStoriesList = sprintWiseFTPListMap.get(currentNodeIdentifier);
+					Set<JiraIssue> jiraIssues = projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Map<String, JiraIssue> issueMapping = new HashMap<>();
+					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList, ftpStoriesList, excelData,
-							issueData);
+							issueMapping);
 				}
 			} else {
 				ftprForCurrentLeaf = 0.0d;
@@ -333,13 +336,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));
-		Set<JiraIssue> issueData = jiraIssueRepository.findIssueAndDescByNumber(storyIdList);
-		Map<String, JiraIssue> issueMapping = new HashMap<>();
-		issueData.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
-
 		resultListMap.put(SPRINT_WISE_CLOSED_STORIES, sprintWiseStories);
 		resultListMap.put(FIRST_TIME_PASS_STORIES, defectListWoDrop);
-		resultListMap.put(ISSUE_DATA, issueMapping);
+		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 		return resultListMap;
 	}
 

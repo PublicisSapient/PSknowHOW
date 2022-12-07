@@ -111,7 +111,7 @@ public class TestWithoutStoryServiceImplTest {
         });
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.anyMap(), Mockito.anyMap())).thenReturn(storyList);
-        when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),Mockito.anyMap())).thenReturn(totalTestCaseList);
+        when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),Mockito.anyString())).thenReturn(totalTestCaseList);
         Map<String, Object> map = testWithoutStoryService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
         assertThat("output map size :", map.size(),
                 equalTo(2));

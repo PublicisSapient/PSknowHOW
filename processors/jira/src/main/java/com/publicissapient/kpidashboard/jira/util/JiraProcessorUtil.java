@@ -211,16 +211,16 @@ public final class JiraProcessorUtil {
                         sprint.setSprintName(valueAsStr);
                         break;
                     case STARTDATE:
-                        sprint.setStartDate(valueAsStr);
+                        sprint.setStartDate(getFormattedDateForSprintDetails(valueAsStr));
                         break;
                     case ENDDATE:
-                        sprint.setEndDate(valueAsStr);
+                        sprint.setEndDate(getFormattedDateForSprintDetails(valueAsStr));
                         break;
                     case COMPLETEDATE:
-                        sprint.setCompleteDate(valueAsStr);
+                        sprint.setCompleteDate(getFormattedDateForSprintDetails(valueAsStr));
                         break;
                     case ACTIVATEDDATE:
-                        sprint.setActivatedDate(valueAsStr);
+                        sprint.setActivatedDate(getFormattedDateForSprintDetails(valueAsStr));
                         break;
                     case GOAL:
                         sprint.setGoal(valueAsStr);
@@ -259,13 +259,13 @@ public final class JiraProcessorUtil {
             sprint.setOriginBoardId(boardIdList);
             sprint.setSprintName(jsonNode.get(NAME) == null ? null : jsonNode.get(NAME).asText());
             sprint.setStartDate(
-                    jsonNode.get(STARTDATE) == null ? null : convertToNewFormat(jsonNode.get(STARTDATE).asText()));
+                    jsonNode.get(STARTDATE) == null ? null : getFormattedDateForSprintDetails(jsonNode.get(STARTDATE).asText()));
             sprint.setEndDate(
-                    jsonNode.get(ENDDATE) == null ? null : convertToNewFormat(jsonNode.get(ENDDATE).asText()));
+                    jsonNode.get(ENDDATE) == null ? null : getFormattedDateForSprintDetails(jsonNode.get(ENDDATE).asText()));
             sprint.setCompleteDate(jsonNode.get(COMPLETEDATE) == null ? null
-                    : convertToNewFormat(jsonNode.get(COMPLETEDATE).asText()));
+                    : getFormattedDateForSprintDetails(jsonNode.get(COMPLETEDATE).asText()));
             sprint.setActivatedDate(jsonNode.get(ACTIVATEDDATE) == null ? null
-                    : convertToNewFormat(jsonNode.get(ACTIVATEDDATE).asText()));
+                    : getFormattedDateForSprintDetails(jsonNode.get(ACTIVATEDDATE).asText()));
             sprint.setGoal(jsonNode.get(GOAL) == null ? null : jsonNode.get(GOAL).asText());
 
 
@@ -464,5 +464,17 @@ public final class JiraProcessorUtil {
         return destFormat.format(convertedDate);
     }
 
+    public static String getFormattedDateForSprintDetails(String date) {
+        if (date != null && !date.isEmpty()) {
+            try {
+                DateTime dateTime = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
+                return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dateTime) + "Z";
+            } catch (IllegalArgumentException e) {
+                log.error("error while parsing date: {} {}", date, e);
+            }
+        }
+
+        return "";
+    }
 
 }

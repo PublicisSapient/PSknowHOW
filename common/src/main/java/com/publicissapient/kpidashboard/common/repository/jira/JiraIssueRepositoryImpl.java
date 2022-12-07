@@ -593,7 +593,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	@Override
-	public Set<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber) {
+	public List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber) {
 
 		Criteria criteria = new Criteria();
 		criteria = criteria.and(NUMBER).in(storyNumber);
@@ -602,7 +602,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NUMBER);
 		query.fields().include(NAME);
 		query.fields().include(URL);
-		return new HashSet<>(operations.find(query, JiraIssue.class));
+		query.fields().include(CONFIG_ID);
+		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
 

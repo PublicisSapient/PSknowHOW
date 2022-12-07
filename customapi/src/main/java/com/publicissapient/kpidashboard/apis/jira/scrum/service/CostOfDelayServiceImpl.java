@@ -185,8 +185,8 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
                         .appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
                 LocalDateTime dateValue = LocalDateTime.parse(dateTime, formatter);
                 String date = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
-                epicList.add(js);
                 lastNMonthMap.computeIfPresent(date, (key, value) -> {
+                    epicList.add(js);
                     Integer costOfDelay = (int) js.getCostOfDelay();
                     Map<String, Integer> epicWiseCost = new HashMap<>();
                     epicWiseCost.put(number, costOfDelay);

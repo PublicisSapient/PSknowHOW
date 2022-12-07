@@ -56,7 +56,7 @@ echo -e "${GREEN}[\xE2\x9C\x94] extract Docker Image from tar.gz files ${RESET}"
 function extract_zip()
 {
 echo -e "${GREEN}[\xE2\x9C\x94] extract Docker Image from zip files ${RESET}"
- find /KnowHOW5.1.1 -type f -name "dockers.zip" | while read zip; do
+ find /KnowHOW6.0.0 -type f -name "dockers.zip" | while read zip; do
   unzip ${zip} -d ${TAR_DIR}
     if [ $? -eq  0 ]; then
         echo -e "    ${GREEN}[\xE2\x9C\x94] extracted Docker image from ${TAR_DIR},${CYAN} ${RESET}"

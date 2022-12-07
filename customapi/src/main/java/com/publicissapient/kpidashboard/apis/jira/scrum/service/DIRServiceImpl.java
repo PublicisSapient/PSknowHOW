@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -165,7 +166,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
-		Map<String, JiraIssue> issueData = (Map<String, JiraIssue>) storyDefectDataListMap.get(ISSUE_DATA);
+		List<JiraIssue> jiraIssueList = (List<JiraIssue>) storyDefectDataListMap.get(ISSUE_DATA);
+		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
@@ -213,8 +215,11 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
 					List<JiraIssue> defectList = sprintWiseDefectListMap.get(currentNodeIdentifier);
+					Set<JiraIssue> jiraIssues = projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Map<String, JiraIssue> issueMapping = new HashMap<>();
+					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateDirExcelData(node.getSprintFilter().getName(), totalStoryIdList, defectList, excelData,
-							issueData);
+							issueMapping);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;

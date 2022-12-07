@@ -44,36 +44,8 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 	
 	private static final String UNCHECKED = "unchecked";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
-	
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<TestCaseDetails> findTestCases(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
-		Criteria criteria = new Criteria();
-
-		// map of common filters Project and Sprint
-		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
-		// Project level storyType filters
-		List<Criteria> projectCriteriaList = new ArrayList<>();
-		uniqueProjectMap.forEach((project, filterMap) -> {
-			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
-			projectCriteriaList.add(projectCriteria);
-		});
-
-		Query query = new Query(criteria);
-		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-
-			query = new Query(criteriaProjectLevelAdded);
-		}
-
-		return operations.find(query, TestCaseDetails.class);
-
-	}
+	private static final String NIN = "nin";
+	private static final String TEST_CASE_STATUS =  "testCaseStatus";
 
 	/**
 	 * 
@@ -90,39 +62,9 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 		}
 		return theCriteria;
 	}
-	
-	@Override
-	@SuppressWarnings(UNCHECKED)
-	public List<TestCaseDetails> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
-		Criteria criteria = new Criteria();
-
-		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
-		// Project level storyType filters
-		List<Criteria> projectCriteriaList = new ArrayList<>();
-		uniqueProjectMap.forEach((project, filterMap) -> {
-			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			filterMap.forEach((subk, subv) -> {
-				if (subk.equalsIgnoreCase("labels")) {
-					projectCriteria.and(subk).nin((List<Pattern>) subv);
-				} else {
-					projectCriteria.and(subk).in((List<Pattern>) subv);
-				}
-
-			});
-			projectCriteriaList.add(projectCriteria);
-		});
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
-		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-		Query query = new Query(criteriaProjectLevelAdded);
-
-		return operations.find(query, TestCaseDetails.class);
-	}
 
 	public List<TestCaseDetails> findNonRegressionTestDetails(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria) {
 		Criteria criteria = new Criteria();
 
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
@@ -134,6 +76,8 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 			filterMap.forEach((subk, subv) -> {
 				if (subk.equalsIgnoreCase("labels")) {
 					projectCriteria.and(subk).nin((List<Pattern>) subv);
+				} else if (subk.equals(TEST_CASE_STATUS) && mapStatusCriteria.equalsIgnoreCase(NIN)) {
+					projectCriteria.and(subk).nin((List<Pattern>) subv);
 				} else {
 					projectCriteria.and(subk).in((List<Pattern>) subv);
 				}
@@ -142,17 +86,6 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		uniqueProjectMapNotIn.forEach((project, filterMap) -> {
-			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			filterMap.forEach((subk, subv) -> {
-				if (subk.equalsIgnoreCase("labels")) {
-					projectCriteria.and(subk).nin((List<Pattern>) subv);
-				}
-
-			});
-			projectCriteriaList.add(projectCriteria);
-		});
 		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
@@ -163,7 +96,7 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 
 	@Override
 	public List<TestCaseDetails> findTestDetails(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -173,17 +106,14 @@ public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryC
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
 			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			filterMap.forEach((subk, subv) -> {
+				if (subk.equals(TEST_CASE_STATUS) && mapStatusCriteria.equalsIgnoreCase(NIN)) {
+					projectCriteria.and(subk).nin((List<Pattern>) subv);
+				} else {
+					projectCriteria.and(subk).in((List<Pattern>) subv);
+				}
+			});
 			projectCriteriaList.add(projectCriteria);
-		});
-
-		uniqueProjectMapNotIn.forEach((project, filterMap) -> {
-			if(MapUtils.isNotEmpty(filterMap)) {
-				Criteria projectCriteria = new Criteria();
-				projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-				filterMap.forEach((subk, subv) -> projectCriteria.and(subk).nin((List<Pattern>) subv));
-				projectCriteriaList.add(projectCriteria);
-			}
 		});
 
 		Query query = new Query(criteria);

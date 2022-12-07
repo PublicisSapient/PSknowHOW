@@ -144,6 +144,7 @@ public class DIRServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put("storyData", storyData);
 		resultListMap.put("defectData", defectData);
+		resultListMap.put("issueData", jiraIssueDataFactory.getJiraIssues());
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
