@@ -18,10 +18,10 @@
 
 
 /******************* Modules   ***********************/
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule } from '@angular/common';
@@ -96,9 +96,30 @@ import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
 import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
+import { environment } from 'src/environments/environment';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 /******************************************************/
 
+function initializeAppFactory(http: HttpClient):() => void{
+    
+    if (!environment.production) {
+        console.log('local', environment);
+        return  ()=>{
+            // environment['baseUrl']='localhost:8080';
+        }
+        
+    } else {
+        return () => {
+            http.get('assets/env.json').pipe(
+                tap(env => {
+                    console.log(env);
+                    environment['baseUrl'] = env['baseUrl'] || '//';
+                }))
+        }
+    }
+}
 
 @NgModule({
     declarations: [
@@ -175,7 +196,13 @@ import { TableComponent } from './component/table/table.component';
         MessageService,
         TextEncryptionService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeAppFactory,
+            deps: [HttpClient],
+            multi: true
+          }
     ],
     bootstrap: [AppComponent]
 })
