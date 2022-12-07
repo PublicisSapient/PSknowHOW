@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -130,4 +131,6 @@ public interface UserInfoService {
 	ServiceResponse deleteUser(String username);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
+
+	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
 }

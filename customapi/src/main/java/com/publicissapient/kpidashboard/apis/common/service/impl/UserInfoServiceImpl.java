@@ -397,6 +397,20 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfoRepository.findByAuthType(authType);
     }
 
+    @Override
+    public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email){
+        UserInfo userInfo = getUserInfo(username);
+        if(null == userInfo){
+            userInfo = createDefaultUserInfo(username,authType,email);
+            userInfo = save(userInfo);
+        }
+        UserInfoDTO userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername())
+                .authType(userInfo.getAuthType()).authorities(userInfo.getAuthorities())
+                .emailAddress(userInfo.getEmailAddress()).projectsAccess(userInfo.getProjectsAccess())
+                .build();
+        return userInfoDTO;
+    }
+
     private void cleanAllCache() {
         cacheService.clearAllCache();
         log.info("cache cleared");
