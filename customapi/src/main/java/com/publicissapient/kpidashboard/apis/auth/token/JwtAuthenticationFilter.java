@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		if (request != null) {
 			Cookie authCookie=cookieUtil.getAuthCookie((HttpServletRequest) request);
 
-			if (!customApiConfig.isSsoLogin() && authCookie == null){
+			if (authCookie == null){
 				filterChain.doFilter(request, response);
 				return;
 			}

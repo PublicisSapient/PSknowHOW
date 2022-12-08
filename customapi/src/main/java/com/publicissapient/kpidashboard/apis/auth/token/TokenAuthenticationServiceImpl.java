@@ -105,12 +105,19 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public Authentication getAuthentication(HttpServletRequest request) {
 
 		if (customApiConfig.isSsoLogin()){
-			Collection<GrantedAuthority> authorities = Sets.newHashSet();
-			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
-					authorities);
-			authenticationSso.setDetails(AuthType.SSO);
-			return authenticationSso;
+//			Collection<GrantedAuthority> authorities = Sets.newHashSet();
+//			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+//			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
+//					authorities);
+//			authenticationSso.setDetails(AuthType.SSO);
+
+			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
+			if (StringUtils.isBlank(authCookieSso.getValue())) {
+				return null;
+			}
+
+			String tokenSso = authCookieSso.getValue();
+			return createAuthenticationForSso(tokenSso);
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
@@ -127,24 +134,49 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				return null;
 			}
 
-			try {
-				Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
-						.getBody();
-				String username = claims.getSubject();
-				Collection<? extends GrantedAuthority> authorities = getAuthorities(
-						claims.get(ROLES_CLAIM, Collection.class));
-				PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
-						authorities);
-				authentication.setDetails(claims.get(DETAILS_CLAIM));
-
-				return authentication;
-
-			} catch (ExpiredJwtException e) {
-				return null;
-			}
+			return createAuthentication(token);
 		}
 
 
+
+
+	}
+
+
+	private Authentication createAuthentication(String token) {
+		try {
+			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+					.getBody();
+			String username = claims.getSubject();
+			Collection<? extends GrantedAuthority> authorities = getAuthorities(
+					claims.get(ROLES_CLAIM, Collection.class));
+			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
+					authorities);
+			authentication.setDetails(claims.get(DETAILS_CLAIM));
+
+			return authentication;
+
+		} catch (ExpiredJwtException e) {
+			return null;
+		}
+	}
+
+	private Authentication createAuthenticationForSso(String token){
+		try {
+			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+					.getBody();
+			String username = claims.getSubject();
+			Collection<? extends GrantedAuthority> authorities = getAuthorities(
+					claims.get(ROLES_CLAIM, Collection.class));
+			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
+					authorities);
+			authentication.setDetails(claims.get(DETAILS_CLAIM));
+
+			return authentication;
+
+		} catch (ExpiredJwtException e) {
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")

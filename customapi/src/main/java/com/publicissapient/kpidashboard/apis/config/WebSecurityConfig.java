@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Properties;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.token.StubSSOAuthFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -57,6 +59,9 @@ import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoi
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
 
 /**
  * Extension of {@link WebSecurityConfigurerAdapter} to provide configuration
@@ -111,6 +116,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		this.customApiConfig = customApiConfig;
 	}
 
+	@Autowired
+	private StubSSOAuthFilter stubSSOAuthFilter;
+
 	/**
 	 * Added below fixes for security scan: - commented the headers in the response
 	 * - added CorsFilter in filter chain for endpoints mentioned in the method
@@ -128,6 +136,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/error").permitAll()
 				.antMatchers("/authenticationProviders").permitAll()
 				.antMatchers("/auth-types-status").permitAll()
+				.antMatchers("/sso/stub-auth").permitAll()
 
 				// management metrics
 				.antMatchers("/info").permitAll().antMatchers("/health").permitAll()
@@ -233,5 +242,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
+
+	@Bean
+	public FilterRegistrationBean stubSSOAuthFilterRegistration(){
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(stubSSOAuthFilter);
+		registration.addUrlPatterns("/sso/stub-auth");
+		registration.setName("stubSSOAuthFilter");
+		registration.setOrder(1);
+		return registration;
+	}
+
 	
 }
