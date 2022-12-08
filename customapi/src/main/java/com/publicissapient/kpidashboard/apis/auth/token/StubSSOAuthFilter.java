@@ -51,6 +51,7 @@ public class StubSSOAuthFilter implements Filter {
 
         httpServletResponse.addHeader(AUTH_RESPONSE_HEADER, jwt);
         httpServletResponse.addHeader("username", USERNAME);
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "username");
         Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
         httpServletResponse.addCookie(cookie);
         cookieUtil.addSameSiteCookieAttribute(httpServletResponse);
