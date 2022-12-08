@@ -1,12 +1,15 @@
 package com.publicissapient.kpidashboard.apis.auth.rest;
 
+import com.publicissapient.kpidashboard.apis.auth.token.StubSSOUserService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,9 @@ public class SSOController {
     @Autowired
     private UserInfoService userInfoService;
 
+    @Autowired
+    private StubSSOUserService stubSSOUserService;
+
     @PostMapping(value = "/users/{username}" , consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceResponse> fetchOrSaveUserInfo(@PathVariable String username){
         ServiceResponse response = new ServiceResponse(false, "Unauthorized", null);
@@ -28,5 +34,18 @@ public class SSOController {
             response = new ServiceResponse(true, "Success", userInfoDTO);
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/stub-auth")
+    public ResponseEntity<ServiceResponse> simulateSSOAuth(){
+
+        ServiceResponse response = new ServiceResponse(true, "Success", null);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Authentication-Token", stubSSOUserService.createJwtToken());
+        headers.add("username", stubSSOUserService.getUsername());
+
+       return ResponseEntity.status(HttpStatus.OK)
+               .headers(headers)
+               .body(response);
     }
 }
