@@ -127,6 +127,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private getSSOUserInfoUrl = this.baseUrl + '/api/sso/users/';
+    private getSSOUserAuthInfoUrl = this.baseUrl + '/api/sso/stub-auth';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
@@ -686,6 +688,14 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getEmmStats(): Observable<any> {
         return this.http.get<any>(this.getEmmStatsUrl);
+    }
+
+    getSSOUserInfo(userName){
+        return this.http.post(this.getSSOUserInfoUrl + userName,{});
+    }
+
+    getSSOUserAuthInfo(){
+        return this.http.get(this.getSSOUserAuthInfoUrl ,{observe: 'response'});
     }
 
     private handleError<T>(operation = 'operation', result?: T) {

@@ -15,9 +15,10 @@
  * limitations under the License.
  *
  ******************************************************************************/
+.container{
+    height: 100%;
+}
 
-export const environment = {
-  production: true,
-    baseUrl: '',
-    SSO_LOGIN: false
-};
+ .message{
+    font-size: 3rem;
+ }

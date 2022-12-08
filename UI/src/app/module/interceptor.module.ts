@@ -81,7 +81,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             localStorage.removeItem('user_name');
                             localStorage.removeItem('authorities');
-                            this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                            if(!environment.SSO_LOGIN){
+                                this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                            }
                         }
                     } else {
                         if (httpErrorHandler !== 'local') {

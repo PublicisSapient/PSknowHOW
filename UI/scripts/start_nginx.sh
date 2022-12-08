@@ -36,6 +36,6 @@ API_PORT=${API_PORT:-8080}
 
 sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/ui2.conf
 sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/ui2.conf
-
+envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
 nginx -g "daemon off;"
 /bin/sh
