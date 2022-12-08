@@ -37,6 +37,7 @@ pipeline {
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/ui:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/customapi:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/mongodb:$version
+		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/azure-processor:$version
 		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/nonazureboards-processor:$version
 		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/zookeeper:$version
@@ -48,6 +49,7 @@ pipeline {
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/ui:$version -o ui.zip
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/customapi:$version -o customapi.zip
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/mongodb:$version -o mongo.zip
+		   docker save setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps:$version -o mongo-ps.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/azure-processor:$version -o azure-processor.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/nonazureboards-processor:$version -o nonazureboards-processor.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/zookeeper:$version -o zookeeper.zip

@@ -37,6 +37,7 @@ $ tree /KnowHOWX.Y.Z
 
 ******For Fresh installation please follow below steps****
 * ./scripts/dir.sh
+* if you want PS DB use setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps image in docker-compose.yaml file else use setup-speedy.tools.publicis.sapient.com/speedy/mongodb
 * ./scripts/docker-images-up.sh
 
 

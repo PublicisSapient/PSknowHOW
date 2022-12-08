@@ -1,7 +1,7 @@
 version: "2"
 services:
   MongoDB:
-    image: setup-speedy.tools.publicis.sapient.com/speedy/mongodb:offline_release-version
+    image: setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps:offline_release-version
     tty: true
     container_name: mongodb
     restart: on-failure
