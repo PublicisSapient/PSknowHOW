@@ -9,6 +9,9 @@ VOLUME /app/properties
 VOLUME /app/offline_data
 VOLUME /app/certs
 
+COPY LDAPSP_2021_BASE64.cer /app/certs/
+COPY LDAPSP_2021_DER.cer /app/certs/
+
 ENV CONFIG_LOCATION="/app/properties/customapi.properties"
 ENV JAVA_OPTS=""
 

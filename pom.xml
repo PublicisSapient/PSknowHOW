@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.1-BOC</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
@@ -46,17 +46,11 @@
                 <module>customapi</module>
                 <module>processors/zephyr</module>
                 <module>processors/bitbucket</module>
-                <module>processors/gitlab</module>
                 <module>processors/github</module>
                 <module>processors/sonar</module>
                 <module>processors/jira</module>
                 <module>processors/jiratest</module>
                 <module>processors/jenkins</module>
-                <module>processors/bamboo</module>
-                <module>processors/teamcity</module>
-                <module>processors/azurepipeline</module>
-                <module>processors/azurerepo</module>
-                <module>processors/azure/azure-boards</module>
                 <module>notification-consumer</module>
             </modules>
             <build>
@@ -98,12 +92,9 @@
                 <module>processors/zephyr</module>
                 <module>processors/jiratest</module>
                 <module>processors/bitbucket</module>
-                <module>processors/gitlab</module>
                 <module>processors/github</module>
                 <module>processors/sonar</module>
                 <module>processors/jenkins</module>
-                <module>processors/bamboo</module>
-                <module>processors/teamcity</module>
             </modules>
             <build>
                 <plugins>
@@ -129,68 +120,9 @@
                                         <ZEPHYR_JAR_FILE>processors/zephyr/target/zephyr-processor-exec.jar</ZEPHYR_JAR_FILE>
                                         <JIRA_TEST_JAR_FILE>processors/jiratest/target/jiratest-processor-exec.jar</JIRA_TEST_JAR_FILE>
                                         <BITBUCKET_JAR_FILE>processors/bitbucket/target/bitbucket-processor-exec.jar</BITBUCKET_JAR_FILE>
-                                        <GITLAB_JAR_FILE>processors/gitlab/target/gitlab-processor-exec.jar</GITLAB_JAR_FILE>
                                         <GITHUB_JAR_FILE>processors/github/target/github-processor-exec.jar</GITHUB_JAR_FILE>
                                         <SONAR_JAR_FILE>processors/sonar/target/sonar-processor-exec.jar</SONAR_JAR_FILE>
                                         <JENKINS_JAR_FILE>processors/jenkins/target/jenkins-processor-exec.jar</JENKINS_JAR_FILE>
-                                        <BAMBOO_JAR_FILE>processors/bamboo/target/bamboo-processor-exec.jar</BAMBOO_JAR_FILE>
-                                        <TEAMCITY_JAR_FILE>processors/teamcity/target/teamcity-processor-exec.jar</TEAMCITY_JAR_FILE>
-                                    </buildArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.0.0-M1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-                <testResources>
-                    <testResource>
-                        <directory>src/test/resources</directory>
-                    </testResource>
-                </testResources>
-            </build>
-        </profile>
-        <profile>
-            <id>nonAzureBoardsProcessor</id>
-            <modules>
-                <module>common</module>
-                <module>processors/azurepipeline</module>
-                <module>processors/azurerepo</module>
-            </modules>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>build</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <dockerfile>processors/nonazureboards_combined_processor_docker/Dockerfile</dockerfile>
-                                    <repository>nonazureboards-processor</repository>
-                                    <tag>${project.version}</tag>
-                                    <buildArgs>
-                                        <AZUREPIPELINE_JAR_FILE>processors/azurepipeline/target/azurepipeline-processor-exec.jar</AZUREPIPELINE_JAR_FILE>
-                                        <AZUREREPO_JAR_FILE>processors/azurerepo/target/azurerepo-processor-exec.jar</AZUREREPO_JAR_FILE>
                                     </buildArgs>
                                 </configuration>
                             </execution>
@@ -222,13 +154,6 @@
             <modules>
                 <module>common</module>
                 <module>processors/jira</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>azureProcessor</id>
-            <modules>
-                <module>common</module>
-                <module>processors/azure/azure-boards</module>
             </modules>
         </profile>
         <profile>
