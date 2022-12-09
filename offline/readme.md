@@ -45,4 +45,4 @@ $ tree /KnowHOWX.Y.Z
 * ./scripts/backup.sh 
 * ./scripts/dir.sh
 * ./scripts/docker-images-up.sh
-* ./scripts/restore.sh
+
