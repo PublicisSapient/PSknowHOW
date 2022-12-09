@@ -38,5 +38,5 @@ sudo docker cp $mongo:/tmp/kpidashboard/ /app/backupsnew/
 echo -e " ${GREEN}[\xE2\x9C\x94] Shutting down containers ...${RESET}"
 cd "${COMPOSE}/"
 sudo docker-compose down
-sudo mv /app/apps/db_data/ /tmp/
+#sudo mv /app/apps/db_data/ /tmp/
 
