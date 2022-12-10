@@ -18,8 +18,12 @@
 
 package com.publicissapient.kpidashboard.common.executor;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -35,12 +39,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Component
 @Slf4j
@@ -48,8 +49,16 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	private final TaskScheduler taskScheduler;
 	private final String processorName;
-
 	private List<String> projectsBasicConfigIds;
+	private ExecutionLogContext executionLogContext= new ExecutionLogContext();
+
+	public ExecutionLogContext getExecutionLogContext() {
+		return executionLogContext;
+	}
+
+	public void setExecutionLogContext(ExecutionLogContext executionLogContext) {
+		this.executionLogContext = executionLogContext;
+	}
 
 	public List<String> getProjectsBasicConfigIds() {
 		return projectsBasicConfigIds;

@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -87,9 +89,12 @@ public class ProcessorController {
 	@PreAuthorize("hasPermission(#projectBasicConfigIds, 'TRIGGER_PROCESSOR')")
 	public ResponseEntity<ServiceResponse> triggerProcessor(@PathVariable String processorName,
 			@RequestBody List<String> projectBasicConfigIds) {
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig= new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(projectBasicConfigIds);
+		processorExecutionBasicConfig.setLogContext(ExecutionLogContext.getContext());
 
 		// NOSONAR
-		ServiceResponse response = processorService.runProcessor(processorName, projectBasicConfigIds);
+		ServiceResponse response = processorService.runProcessor(processorName, processorExecutionBasicConfig);
 
 		HttpStatus responseStatus = HttpStatus.OK;
 		if (null == response) {

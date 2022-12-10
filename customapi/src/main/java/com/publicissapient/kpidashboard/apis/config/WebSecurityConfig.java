@@ -40,6 +40,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -100,6 +101,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
+
+	@Autowired
+	private LoginInterceptor loginInterceptor;
+
 
 	@Autowired
 	public void setRsaEncryptionService(RsaEncryptionService rsaEncryptionService) {
@@ -232,6 +237,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry){
+		registry.addInterceptor(loginInterceptor);
 	}
 	
 }

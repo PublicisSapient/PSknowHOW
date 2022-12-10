@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -105,6 +106,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
+	PSLogData psLogData=new PSLogData();
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -196,6 +198,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				List<Issue> issues = getIssuesFromResult(searchResult);
 				if (total == 0) {
 					total = getTotal(searchResult);
+					psLogData.setTotalIssues(String.valueOf(total));
 				}
 
 				// in case of offline method issues size can be greater than
@@ -269,6 +272,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 			for(BoardDetails board : boardDetailsList) {
+				psLogData.setBoardId(board.getBoardId());
 				int boardTotal = 0;
 				boolean latestDataFetched = false;
 				int pageSize = jiraAdapter.getPageSize();

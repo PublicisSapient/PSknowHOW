@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.client.metadata;
 
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**
@@ -29,7 +30,8 @@ public interface MetadataClient {
      * Process metadata.
      *
      * @param projectConfig the project config
+     * @param psLogData
      * @return boolean value
      */
-    boolean processMetadata(ProjectConfFieldMapping projectConfig);
+    boolean processMetadata(ProjectConfFieldMapping projectConfig, PSLogData psLogData);
 }

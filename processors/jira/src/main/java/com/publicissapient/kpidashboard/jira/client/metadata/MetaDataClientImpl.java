@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 /**
  * The type Release data client. Store Release data for the projects in
@@ -86,9 +89,9 @@ public class MetaDataClientImpl implements MetadataClient {
 
 	@Override
 	@Transactional
-	public boolean processMetadata(ProjectConfFieldMapping projectConfig) {
+	public boolean processMetadata(ProjectConfFieldMapping projectConfig, PSLogData psLogData) {
 		boolean isSuccess = false;
-		log.info("Fetching metadata. Project name : {}", projectConfig.getProjectName());
+		log.info("Fetching metadata start for project name : {}", projectConfig.getProjectName());
 		List<Field> fieldList = jiraAdapter.getField();
 		List<IssueType> issueTypeList = jiraAdapter.getIssueType();
 		List<Status> statusList = jiraAdapter.getStatus();
@@ -111,14 +114,17 @@ public class MetaDataClientImpl implements MetadataClient {
 			boardMetadata.setMetadata(fullMetaDataList);
 			if (null == projectConfig.getFieldMapping()) {
 				FieldMapping fieldMapping = mapFieldMapping(boardMetadata, projectConfig);
-				log.info("Saving fieldmapping into db for Project : {}", projectConfig.getProjectName());
 				fieldMappingRepository.save(fieldMapping);
+				psLogData.setFieldMappingToDB("true");
+				log.info("Saving fieldmapping into db", kv(CommonConstant.PSLOGDATA,psLogData));
 				projectConfig.setFieldMapping(fieldMapping);
 				isSuccess = true;
 			}
 
-			log.info("Saving metadata into db for Project : {}", projectConfig.getProjectName());
 			boardMetadataRepository.save(boardMetadata);
+			psLogData.setMetaDataToDB("true");
+			log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA,psLogData));
+
 
 		}
 		return isSuccess;

@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.jira.processor.mode.impl.online;
 
 import java.util.concurrent.CountDownLatch;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import org.slf4j.MDC;
@@ -45,6 +47,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 /**
  * The Class JiraOnlineRunnable.
  */
@@ -53,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 /** The Constant log. */
 @Slf4j
 public class JiraOnlineRunnable implements Runnable {// NOPMD
-
+	PSLogData psLogData = new PSLogData();
 	/** The latch. */
 	private CountDownLatch latch;
 
@@ -95,21 +99,21 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	public void run() {
 
 		try {
-			long start = System.currentTimeMillis();
-			MDC.put("ProjectDataStartTime", String.valueOf(start));
-			log.info("START - Jira processing started for project {}",
-					onlineLineprojectConfigMap.getProjectName());
+			ExecutionLogContext context = ExecutionLogContext.getContext();
+			context.setProjectName(onlineLineprojectConfigMap.getProjectName());
+			ExecutionLogContext.set(context);
+			psLogData.setProjectName(onlineLineprojectConfigMap.getProjectName());
+			log.info("START - Jira processing started for project",
+					kv(CommonConstant.PSLOGDATA, psLogData));
 			if (jiraProcessorConfig.isFetchMetadata()) {
 				collectMetadata(jiraAdapter, onlineLineprojectConfigMap);
 			}
 			collectJiraIssueData(jiraAdapter, onlineLineprojectConfigMap);
 			collectReleaseData(jiraAdapter, onlineLineprojectConfigMap);
 			log.info("END - Jira processing finished for project {}",
-					onlineLineprojectConfigMap.getBasicProjectConfigId().toString());
+					kv(CommonConstant.PSLOGDATA, psLogData));
 			long end = System.currentTimeMillis();
 			MDC.put("ProjectDataEndTime", String.valueOf(end));
-
-
 
 		} catch (Exception ex){
 			log.error(ex.getMessage(), ex);
@@ -224,11 +228,9 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 */
 	private void collectMetadata(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
-			long metaDataStart = System.currentTimeMillis();
-			MDC.put("MetaData Collection StartTime", String.valueOf(metaDataStart));
 			MetaDataClientImpl metadata = new MetaDataClientImpl(jiraAdapter, boardMetadataRepository,
 					fieldMappingRepository, metadataIdentifierRepository);
-			boolean isSuccess = metadata.processMetadata(projectConfig);
+			boolean isSuccess = metadata.processMetadata(projectConfig, psLogData);
 			if(isSuccess){
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_FIELD_MAPPING_MAP);
@@ -236,9 +238,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}
 			MDC.put("Fetched metadata", String.valueOf(isSuccess));
-			long end = System.currentTimeMillis();
-			MDC.put("metaDataEndTime", String.valueOf(end));
 		}
+		log.info("metadata already present in db");
 	}
 
 }

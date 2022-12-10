@@ -28,10 +28,12 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
@@ -78,6 +80,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 /**
  * Default JIRA client which interacts with Java JIRA API to extract data for
  * projects based on the configurations provided
@@ -108,6 +112,7 @@ public class OnlineAdapter implements JiraAdapter {
     private JiraProcessorConfig jiraProcessorConfig;
     private AesEncryptionService aesEncryptionService;
     private ProcessorJiraRestClient client;
+    PSLogData psLogData= new PSLogData();
 
     public OnlineAdapter() {
     }
@@ -146,8 +151,8 @@ public class OnlineAdapter implements JiraAdapter {
             String query = StringUtils.EMPTY;
             try {
                 query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
-
-                log.info("jql= " + query);
+                psLogData.setJql(query);
+                log.info("jql= " + query, kv(CommonConstant.PSLOGDATA,psLogData));
                 Instant start = Instant.now();
 
                 Promise<SearchResult> promisedRs = client.getCustomIssueClient().searchBoardIssue(boardDetails.getBoardId(), query,
@@ -157,12 +162,12 @@ public class OnlineAdapter implements JiraAdapter {
                 long timeElapsed = Duration.between(start, finish).toMillis();
                 log.info("Time taken to fetch the data is {} milliseconds", timeElapsed);
                 if (searchResult != null) {
-                    log.info("Processing issues {} - {} out of {}", pageStart,
-                            Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
+                    psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
+                    log.info(String.format("Processing issues {} - {} out of {}", pageStart,
+                            Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+                            kv(CommonConstant.PSLOGDATA,psLogData));
                 }
-                log.info("Fetch jira board issues Api call delay started for project {}",projectConfig.getProjectName());
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                log.info("Fetch jira board issues Api call delay ended for project {}",projectConfig.getProjectName());
             } catch (RestClientException e) {
                 if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
                     log.error(ERROR_MSG_401);
@@ -214,6 +219,7 @@ public class OnlineAdapter implements JiraAdapter {
 
                 query.append(JiraProcessorUtil.processJql(projectConfig.getJira().getBoardQuery(),
                         startDateTimeStrByIssueType, dataExist));
+                psLogData.setJql(query.toString());
                 log.info("jql= " + query.toString());
                 Instant start = Instant.now();
 
@@ -222,8 +228,13 @@ public class OnlineAdapter implements JiraAdapter {
                 searchResult = promisedRs.claim();
                 Instant finish = Instant.now();
                 long timeElapsed = Duration.between(start, finish).toMillis();
+                psLogData.setJql(query.toString());
+                psLogData.setTimeElapsed(String.valueOf(timeElapsed));
                 log.info("Time taken to fetch the data is {} milliseconds", timeElapsed);
                 if (searchResult != null) {
+                    psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
+
+
                     log.info("Processing issues {} - {} out of {}", pageStart,
                             Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
                 }

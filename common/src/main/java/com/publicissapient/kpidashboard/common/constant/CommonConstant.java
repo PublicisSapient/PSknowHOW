@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+
 /**
  * Defines the constants that can be used across modules.
  *
@@ -131,6 +133,15 @@ public final class CommonConstant {
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
 	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
+
+	public static final String PSLOGDATA = "PSLogData";
+	public static final String REQUESTID = "requestId";
+	public static final String USER_NAME = "userName";
+	public static final String ENVIRONMENT = "environment";
+	public static final String PROJECTNAME = "projectName";
+
+
+
 
 
 

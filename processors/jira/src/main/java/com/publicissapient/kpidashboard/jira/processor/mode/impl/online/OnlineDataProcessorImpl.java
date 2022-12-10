@@ -29,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.config.AsyncContextResolver;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
@@ -139,7 +140,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 			Map<String, ProjectConfFieldMapping> onlineLineprojectConfigMap = createProjectConfigMap(
 					getRelevantProjects(projectConfigList), fieldMappingList);
-			MDC.put("OnlineProjectCount", String.valueOf(onlineLineprojectConfigMap.size()));
 			executor = Executors.newFixedThreadPool(jiraProcessorConfig.getThreadPoolSize());
 
 			CountDownLatch latch = new CountDownLatch(onlineLineprojectConfigMap.size());
@@ -164,7 +164,9 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
 									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory);// NOPMD
-							executor.execute(worker);
+							Runnable decorate = new AsyncContextResolver().decorate(worker);
+							executor.execute(decorate);
+
 						}
 					}
 				}

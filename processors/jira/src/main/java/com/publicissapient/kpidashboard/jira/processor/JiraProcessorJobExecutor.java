@@ -24,7 +24,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -45,13 +48,15 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 /**
  * Collects {@link JiraProcessor} data from feature content source system.
  */
 @Component
 @Slf4j
 public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor> {
-
+	PSLogData psLogData=new PSLogData();
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
 
@@ -101,12 +106,18 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		boolean executionStatus = true;
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
-		MDC.put("processorExecutionUid", uid);
-		MDC.put("processorStartTime", String.valueOf(start));
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		MDC.put("TotalSelectedProjectsForProcessing", String.valueOf(projectConfigList.size()));
-		clearSelectedBasicProjectConfigIds();
+		if(StringUtils.isNotEmpty(getExecutionLogContext().getRequestId())){
+			ExecutionLogContext.set(getExecutionLogContext());
+		}else{
+			ExecutionLogContext cronExecutionContext = getExecutionLogContext();
+			cronExecutionContext.setRequestId(uid);
+			ExecutionLogContext.set(cronExecutionContext);
+		}
+		psLogData.setProcessorStartTime(String.valueOf(start));
+		log.info("Jira Processor Started", kv(CommonConstant.PSLOGDATA, psLogData));
 
+		clearSelectedBasicProjectConfigIds();
 		fetchIssueDetail(executionStatus, projectConfigList);
 
 		long endTime = System.currentTimeMillis();

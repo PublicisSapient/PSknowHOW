@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
 import java.util.List;
 
@@ -42,6 +43,6 @@ public interface ProcessorService {
 	 * @param processorName name of the processor same as in the processor collection
 	 * @return {@code ServiceResponse}
 	 */
-	ServiceResponse runProcessor(String processorName, List<String> projectBasicConfigIds);
+	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);
 
 }

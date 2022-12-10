@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.config.AsyncContextResolver;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -53,22 +56,19 @@ public class RunProcessorController {
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
 
-
-	/**
-	 * Run processor
-	 * @param projectsBasicConfigIds
-	 * @return processors running status
-	 */
 	@RequestMapping(value = "/processor/run", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map> runProcessorForProjects(@RequestBody List<String> projectsBasicConfigIds) {
+	public ResponseEntity<Map> runProcessorForProjects(@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
+		ExecutionLogContext.set(processorExecutionBasicConfig.getLogContext());
 		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
 		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Received request to run the processor: {} for projects {}",
-				jobExecuter.getProcessor().getProcessorName(), projectsBasicConfigIds);
+				jobExecuter.getProcessor().getProcessorName(), processorExecutionBasicConfig.getProjectBasicConfigIds());
 
-		jobExecuter.setProjectsBasicConfigIds(projectsBasicConfigIds);
+		jobExecuter.setProjectsBasicConfigIds(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		jobExecuter.setExecutionLogContext(ExecutionLogContext.getContext());
 
-		PROCESSOR_EXECUTORS.execute(jobExecuter);
+		Runnable decorate = new AsyncContextResolver().decorate(jobExecuter);
+		PROCESSOR_EXECUTORS.execute(decorate);
 
 		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Processor execution called");
