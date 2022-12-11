@@ -112,7 +112,7 @@ public class OnlineAdapter implements JiraAdapter {
     private JiraProcessorConfig jiraProcessorConfig;
     private AesEncryptionService aesEncryptionService;
     private ProcessorJiraRestClient client;
-    PSLogData psLogData= new PSLogData();
+    PSLogData psLogData;
 
     public OnlineAdapter() {
     }
@@ -127,6 +127,7 @@ public class OnlineAdapter implements JiraAdapter {
         this.jiraProcessorConfig = jiraProcessorConfig;
         this.client = client;
         this.aesEncryptionService = aesEncryptionService;
+        psLogData=new PSLogData();
 
     }
 
@@ -151,6 +152,7 @@ public class OnlineAdapter implements JiraAdapter {
             String query = StringUtils.EMPTY;
             try {
                 query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
+                psLogData.setUserTimeZone(userTimeZone);
                 psLogData.setJql(query);
                 log.info("jql= " + query, kv(CommonConstant.PSLOGDATA,psLogData));
                 Instant start = Instant.now();
@@ -163,17 +165,17 @@ public class OnlineAdapter implements JiraAdapter {
                 log.info("Time taken to fetch the data is {} milliseconds", timeElapsed);
                 if (searchResult != null) {
                     psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
-                    log.info(String.format("Processing issues {} - {} out of {}", pageStart,
+                    log.info(String.format("Processing issues %d - %d out of %d", pageStart,
                             Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
                             kv(CommonConstant.PSLOGDATA,psLogData));
                 }
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
             } catch (RestClientException e) {
                 if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-                    log.error(ERROR_MSG_401);
+                    log.error(ERROR_MSG_401, kv(CommonConstant.PSLOGDATA,psLogData));
                 } else {
-                    log.info(NO_RESULT_QUERY, query);
-                    log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+                    log.info(NO_RESULT_QUERY, query,kv(CommonConstant.PSLOGDATA,psLogData));
+                    log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause(), kv(CommonConstant.PSLOGDATA,psLogData));
                 }
             }
 
@@ -219,6 +221,8 @@ public class OnlineAdapter implements JiraAdapter {
 
                 query.append(JiraProcessorUtil.processJql(projectConfig.getJira().getBoardQuery(),
                         startDateTimeStrByIssueType, dataExist));
+                psLogData.setUserTimeZone(userTimeZone);
+                psLogData.setSprintId(null);
                 psLogData.setJql(query.toString());
                 log.info("jql= " + query.toString());
                 Instant start = Instant.now();
@@ -228,19 +232,15 @@ public class OnlineAdapter implements JiraAdapter {
                 searchResult = promisedRs.claim();
                 Instant finish = Instant.now();
                 long timeElapsed = Duration.between(start, finish).toMillis();
-                psLogData.setJql(query.toString());
                 psLogData.setTimeElapsed(String.valueOf(timeElapsed));
-                log.info("Time taken to fetch the data is {} milliseconds", timeElapsed);
+                log.info("jql query processed", kv(CommonConstant.PSLOGDATA,psLogData));
                 if (searchResult != null) {
                     psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
-
-
-                    log.info("Processing issues {} - {} out of {}", pageStart,
-                            Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
+                    log.info(String.format("Processing issues %d - %d out of %d", pageStart,
+                                    Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+                            kv(CommonConstant.PSLOGDATA,psLogData));
                 }
-                log.info("Fetch jira board issues Api call delay started for project {}",projectConfig.getProjectName());
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                log.info("Fetch jira board issues Api call delay ended for project {}",projectConfig.getProjectName());
             } catch (RestClientException e) {
                 if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
                     log.error(ERROR_MSG_401);
@@ -255,7 +255,7 @@ public class OnlineAdapter implements JiraAdapter {
         return searchResult;
     }
 
-    public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProjectConfFieldMapping projectConfFieldMapping) throws InterruptedException{
+    public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, PSLogData logData) throws InterruptedException{
         List<Issue> issueList = new ArrayList<>();
         SearchResult searchResult = null;
         try {
@@ -278,15 +278,16 @@ public class OnlineAdapter implements JiraAdapter {
                         fetchedEpic += searchResult.getMaxResults();
                         pageStart += searchResult.getMaxResults() + 1;
                     }
-                    log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                    log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
                 } while (totalEpic < fetchedEpic);
+                logData.setTotalIssues(String.valueOf(totalEpic));
+                logData.setJql(query);
+                log.info("Epics Fetched from jira",kv(CommonConstant.PSLOGDATA,logData));
             } else {
-                log.info("No Epic Found to fetch");
+                log.info("No Epic Found to fetch",kv(CommonConstant.PSLOGDATA,logData));
             }
         } catch (RestClientException e) {
-            log.error("error fetching epic", e.getCause());
+            log.error("Error while fetching epic", e.getCause(),kv(CommonConstant.PSLOGDATA,logData));
         }
         return issueList;
     }
@@ -566,25 +567,24 @@ public class OnlineAdapter implements JiraAdapter {
     @Override
     public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
                                 SprintDetails sprint, SprintDetails dbSprintDetails) {
-        log.info("Start Calling sprint report api. Sprint Id : {} , Board Id : {}", sprintId, boardId);
-        try {
+          try {
             JiraToolConfig jiraToolConfig = projectConfig.getJira();
-
+              psLogData.setBoardId(boardId);
+              psLogData.setSprintId(sprintId);
             if (null != jiraToolConfig) {
                 URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
                 URLConnection connection;
-
                 connection = url.openConnection();
                 getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig, dbSprintDetails, boardId);
             }
-            log.info("End sprint report api. Sprint Id : {} , Board Id : {}", sprintId, boardId);
+            log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),kv(CommonConstant.PSLOGDATA,psLogData));
         } catch (RestClientException rce) {
-            log.error("Client exception when loading sprint report", rce);
+            log.error("Client exception when loading sprint report "+ rce,kv(CommonConstant.PSLOGDATA,psLogData));
             throw rce;
         } catch (MalformedURLException mfe) {
-            log.error("Malformed url for loading sprint report", mfe);
+            log.error("Malformed url for loading sprint report", mfe,kv(CommonConstant.PSLOGDATA,psLogData));
         } catch (IOException ioe) {
-            log.error("IOException", ioe);
+            log.error("IOException", ioe,kv(CommonConstant.PSLOGDATA,psLogData));
         }
     }
 
@@ -868,6 +868,7 @@ public class OnlineAdapter implements JiraAdapter {
 
     public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException {
         List<String> epicList = new ArrayList<>();
+        PSLogData logData= new PSLogData();
         try {
             JiraToolConfig jiraToolConfig = projectConfig.getJira();
             if (null != jiraToolConfig) {
@@ -877,21 +878,25 @@ public class OnlineAdapter implements JiraAdapter {
                     URL url = getEpicUrl(projectConfig, boardId, startIndex);
                     URLConnection connection;
                     connection = url.openConnection();
+                    logData.setBoardId(boardId);
+                    logData.setUrl(url.toString());
                     String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
                     isLast = populateData(jsonResponse, epicList);
                     startIndex = epicList.size() + 1;
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                 } while (!isLast);
+                logData.setEpicListFetched(epicList);
+                log.info("Epics fetched through board",kv(CommonConstant.PSLOGDATA,logData));
             }
         } catch (RestClientException rce) {
-            log.error("Client exception when loading sprint report", rce);
+            log.error("Client exception when loading sprint report", rce,kv(CommonConstant.PSLOGDATA,logData));
             throw rce;
         } catch (MalformedURLException mfe) {
-            log.error("Malformed url for loading sprint report", mfe);
+            log.error("Malformed url for loading sprint report", mfe,kv(CommonConstant.PSLOGDATA,logData));
         } catch (IOException ioe) {
-            log.error("IOException", ioe);
+            log.error("IOException", ioe,kv(CommonConstant.PSLOGDATA,logData));
         }
-        return getEpicIssuesQuery(epicList, projectConfig);
+        return getEpicIssuesQuery(epicList, logData);
     }
 
     private boolean populateData(String sprintReportObj, List<String> epicList) {

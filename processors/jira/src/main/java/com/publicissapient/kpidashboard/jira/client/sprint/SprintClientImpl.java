@@ -39,9 +39,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -65,6 +67,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 /**
  * @author yasbano
@@ -112,9 +116,11 @@ public class SprintClientImpl implements SprintClient {
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
+			PSLogData psLogData = new PSLogData();
 			for(SprintDetails sprint : sprintDetailsSet ) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
+				psLogData.setBoardId(boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
@@ -139,16 +145,16 @@ public class SprintClientImpl implements SprintClient {
 				}
 
 				if(fetchReport){
-					log.info("Sprint report Api call delay started");
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-					log.info("Sprint report Api call delay ended");
 					getSprintReport(sprint, jiraAdapter, projectConfig, boardId,
 							dbSprintDetailMap.get(sprint.getSprintID()));
 					sprintToSave.add(sprint);
 				}
 			}
 			sprintRepository.saveAll(sprintToSave);
-			log.info("{} sprints found", sprintDetailsSet.size());
+			psLogData.setSprintListSaved(sprintToSave.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			psLogData.setSprintListFetched(sprintDetailsSet.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			log.info("Processed Sprints for a board",kv(CommonConstant.PSLOGDATA,psLogData));
 		}
 	}
 

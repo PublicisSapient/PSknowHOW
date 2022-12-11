@@ -103,20 +103,17 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			context.setProjectName(onlineLineprojectConfigMap.getProjectName());
 			ExecutionLogContext.set(context);
 			psLogData.setProjectName(onlineLineprojectConfigMap.getProjectName());
-			log.info("START - Jira processing started for project",
+			log.info("START - Jira processing started for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 			if (jiraProcessorConfig.isFetchMetadata()) {
 				collectMetadata(jiraAdapter, onlineLineprojectConfigMap);
 			}
 			collectJiraIssueData(jiraAdapter, onlineLineprojectConfigMap);
 			collectReleaseData(jiraAdapter, onlineLineprojectConfigMap);
-			log.info("END - Jira processing finished for project {}",
+			log.info("END - Jira processing finished for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
-			long end = System.currentTimeMillis();
-			MDC.put("ProjectDataEndTime", String.valueOf(end));
-
 		} catch (Exception ex){
-			log.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), kv(CommonConstant.PSLOGDATA, psLogData));
 
 		} finally {
 			latch.countDown();
@@ -207,15 +204,10 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
          *            Project Configuration map
          */
 	private void collectJiraIssueData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
-		long storyDataStart = System.currentTimeMillis();
-		MDC.put("storyDataStartTime", String.valueOf(storyDataStart));
 		projectConfig.setIssueCount(0);
 		JiraIssueClient jiraIssueClient = factory.getJiraIssueDataClient(projectConfig);
 		int count = jiraIssueClient.processesJiraIssues(projectConfig, jiraAdapter, false);
 		projectConfig.setIssueCount(count);
-		MDC.put("JiraIssueCount", String.valueOf(count));
-		long end = System.currentTimeMillis();
-		MDC.put("storyDataEndTime", String.valueOf(end));
 	}
 
 	/**

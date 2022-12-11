@@ -98,6 +98,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 /**
  * This is an implemented/extended storyDataClient for configured Scrum
  * projects, Which extracts the story data using the java JIRA api, and store it
@@ -152,6 +154,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		log.info("Start Processing Jira Issues",kv(CommonConstant.PSLOGDATA,psLogData));
 		if(projectConfig.getProjectToolConfig().isQueryEnabled()){
 			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
 		}else{
@@ -220,21 +223,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					setForCacheClean.clear();
 					log.info("latest sprint fetched cache cleaned.");
 				}
-				MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
-				MDC.put("IssueCount", String.valueOf(issues.size()));
+				//MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
+				//MDC.put("IssueCount", String.valueOf(issues.size()));
 				// will result in an extra call if number of results == pageSize
 				// but I would rather do that then complicate the jira client
 				// implementation
+
 				if (issues.size() < pageSize) {
 					break;
 				}
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
-			log.error("Error while updating Story information in scrum client", e);
+			log.error("Error while updating Story information in scrum client", e, kv(CommonConstant.PSLOGDATA,psLogData));
 			lastSavedJiraIssueChangedDateByType.clear();
 		} catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e);
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA,psLogData));
 			lastSavedJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		}finally {
@@ -246,6 +250,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(),QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA,psLogData));
 		}
 
 		return savedIsuesCount;
@@ -304,8 +309,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						setForCacheClean.clear();
 						log.info("latest sprint fetched cache cleaned.");
 					}
-					MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
-					MDC.put("IssueCount", String.valueOf(issues.size()));
+					//MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
+					//MDC.put("IssueCount", String.valueOf(issues.size()));
 					// will result in an extra call if number of results == pageSize
 					// but I would rather do that then complicate the jira client
 					// implementation
@@ -313,7 +318,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						break;
 					}
 				}
-				log.info("fetching epic");
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
 				saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
 						jiraAdapter, true);
@@ -377,6 +381,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
+		psLogData.setTotalIssues(String.valueOf(total));
+		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
 		return savedCount > 0 && total == savedCount && processorFetchingComplete;
 	}
 
@@ -425,6 +431,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		psLogData.setProcessorExecutionTraceLog(processorExecutionTraceLog);
+		psLogData.setIssueMap(null);
+		log.info("last execution time of {} for project {} is {}. status is {}",
+				processorExecutionTraceLog.getProcessorName(), processorExecutionTraceLog.getBasicProjectConfigId(),
+				processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess()
+		,kv(CommonConstant.PSLOGDATA,psLogData));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
 
@@ -492,8 +504,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		Map<String, String> issueEpics = new HashMap<>();
+		Map<String, String> issueProcessed = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
+
 		for (Issue issue : currentPagedJiraRs) {
 			FieldMapping fieldMapping = projectConfig.getFieldMapping();
 
@@ -532,8 +546,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			if (issueTypeNames.contains(
 					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
-				log.debug(String.format("[%-12s] %s", JiraProcessorUtil.deodeUTF8String(issue.getKey()),
-						JiraProcessorUtil.deodeUTF8String(issue.getSummary())));
+				issueProcessed.put(issue.getKey(),issue.getSummary());
+				//log.debug(String.format("[%-12s] %s", JiraProcessorUtil.deodeUTF8String(issue.getKey()),
+				//		JiraProcessorUtil.deodeUTF8String(issue.getSummary())));
 				// collectorId
 				jiraIssue.setProcessorId(jiraProcessorId);
 
@@ -584,6 +599,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			}
 		}
+		psLogData.setIssueMap(issueProcessed);
+		log.info("Issue Processed",kv(CommonConstant.PSLOGDATA,psLogData));
 
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
