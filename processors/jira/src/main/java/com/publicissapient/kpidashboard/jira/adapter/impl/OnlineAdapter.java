@@ -787,7 +787,7 @@ public class OnlineAdapter implements JiraAdapter {
 					connection = url.openConnection();
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateData(jsonResponse, epicList);
-					startIndex = epicList.size() + 1;
+					startIndex = epicList.size();
 				}while(!isLast);
 			}
 		} catch (RestClientException rce) {

@@ -191,7 +191,7 @@ public class SprintClientImpl implements SprintClient {
 					connection = url.openConnection();
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
-					startIndex = sprintDetailsList.size() + 1;
+					startIndex = sprintDetailsList.size();
 				}while(!isLast);
 			}
 		} catch (RestClientException rce) {
