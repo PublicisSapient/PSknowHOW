@@ -600,7 +600,7 @@ export class JiraConfigComponent implements OnInit {
     //TODO: Refactor needed.
     console.log(value);
     if (value) {
-      const selectedJobNameDefinition = this.azurePipelineResponseList.filter(data => data.name === value.name)[0].code;
+      const selectedJobNameDefinition = this.azurePipelineResponseList.filter(data => data.code === value)[0]?.code;
       this.toolForm.controls['jobName'].setValue(selectedJobNameDefinition);
     }
   };

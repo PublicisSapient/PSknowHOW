@@ -160,9 +160,9 @@ public class OnlineAdapter implements JiraAdapter {
                     log.info("Processing issues {} - {} out of {}", pageStart,
                             Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
                 }
-                log.info("Fetch jira board issues Api call delay started");
+                log.info("Fetch jira board issues Api call delay started for project {}",projectConfig.getProjectName());
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                log.info("Fetch jira board issues Api call delay ended");
+                log.info("Fetch jira board issues Api call delay ended for project {}",projectConfig.getProjectName());
             } catch (RestClientException e) {
                 if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
                     log.error(ERROR_MSG_401);
@@ -227,9 +227,9 @@ public class OnlineAdapter implements JiraAdapter {
                     log.info("Processing issues {} - {} out of {}", pageStart,
                             Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
                 }
-                log.info("Fetch jira issues Api call delay started");
+                log.info("Fetch jira board issues Api call delay started for project {}",projectConfig.getProjectName());
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                log.info("Fetch jira issues Api call delay ended");
+                log.info("Fetch jira board issues Api call delay ended for project {}",projectConfig.getProjectName());
             } catch (RestClientException e) {
                 if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
                     log.error(ERROR_MSG_401);
@@ -244,7 +244,7 @@ public class OnlineAdapter implements JiraAdapter {
         return searchResult;
     }
 
-    public List<Issue> getEpicIssuesQuery(List<String> epicKeyList) throws InterruptedException{
+    public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProjectConfFieldMapping projectConfFieldMapping) throws InterruptedException{
         List<Issue> issueList = new ArrayList<>();
         SearchResult searchResult = null;
         try {
@@ -267,9 +267,9 @@ public class OnlineAdapter implements JiraAdapter {
                         fetchedEpic += searchResult.getMaxResults();
                         pageStart += searchResult.getMaxResults() + 1;
                     }
-                    log.info("epic Api call delay started");
+                    log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                    log.info("epic Api call delay ended");
+                    log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
                 } while (totalEpic < fetchedEpic);
             } else {
                 log.info("No Epic Found to fetch");
@@ -880,7 +880,7 @@ public class OnlineAdapter implements JiraAdapter {
         } catch (IOException ioe) {
             log.error("IOException", ioe);
         }
-        return getEpicIssuesQuery(epicList);
+        return getEpicIssuesQuery(epicList, projectConfig);
     }
 
     private boolean populateData(String sprintReportObj, List<String> epicList) {
