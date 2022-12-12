@@ -265,7 +265,7 @@ public class OnlineAdapter implements JiraAdapter {
                             issueList.add(issue);
                         });
                         fetchedEpic += searchResult.getMaxResults();
-                        pageStart += searchResult.getMaxResults() + 1;
+                        pageStart += searchResult.getMaxResults();
                     }
                     log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
@@ -868,7 +868,7 @@ public class OnlineAdapter implements JiraAdapter {
                     connection = url.openConnection();
                     String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
                     isLast = populateData(jsonResponse, epicList);
-                    startIndex = epicList.size() + 1;
+                    startIndex = epicList.size();
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                 } while (!isLast);
             }
