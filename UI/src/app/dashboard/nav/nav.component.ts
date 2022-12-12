@@ -28,6 +28,7 @@ import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TextEncryptionService } from '../../services/text.encryption.service';
 import { NotificationDTO, NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-nav',
@@ -57,6 +58,7 @@ export class NavComponent implements OnInit {
   mainTab: string;
   boardNameArr: any[] = [];
   boardId = 1;
+  ssoLogin= environment.SSO_LOGIN;
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,

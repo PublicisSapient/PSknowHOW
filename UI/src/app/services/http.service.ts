@@ -694,7 +694,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.post(this.getSSOUserInfoUrl + userName,{});
     }
 
-    getSSOUserAuthInfo(){
+    getSSOUserAuthInfo(): Observable<any>{
         return this.http.get(this.getSSOUserAuthInfoUrl ,{observe: 'response'});
     }
 

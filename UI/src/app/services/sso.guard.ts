@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { first, mergeMap } from 'rxjs/operators';
+import { catchError, first, map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { HttpService } from './http.service';
 import { TextEncryptionService } from './text.encryption.service';
@@ -20,30 +20,44 @@ export class SSOGuard implements CanActivate {
     if (!environment.SSO_LOGIN) {
       return true;
     } else {
-      //fetch token and user name
-      this.getSSOUserAuthInfo().pipe(first(), mergeMap(res => {
-        if (res['status'] === 200 && res.headers.get('username')) {
-          const userName = res.headers.get('username');
-          const checkifUserAlreadyLoggedIn = localStorage.getItem('user_name') ? (localStorage.getItem('user_name') === userName)  : false;
+      return this.getSSOUserAuthInfo();
+    }
+  }
 
-          if(!checkifUserAlreadyLoggedIn){
+  getSSOUserAuthInfo() {
+    return this.httpService.getSSOUserAuthInfo().pipe(mergeMap(res => {
+      if (res['status'] === 200 && res['headers']?.get('username')) {
+        const userName = res['headers']?.get('username');
+        const checkifUserAlreadyLoggedIn = localStorage.getItem('user_name') ? (localStorage.getItem('user_name') === userName) : false;
+        if(!checkifUserAlreadyLoggedIn){
             return this.getSSOUserInfo(userName);
-          }else{
-            return of({userName, authenticated : true});
-          }
         }else{
-          return throwError('Authentication Failed!!!');
+          if (this.redirectToProfile()) {
+            this.router.navigate(['./dashboard/Config/Profile']);
+            return of(false);
+          } else {
+            this.router.navigate(['./dashboard/']);
+            return of(false);
+          }
+        }
+      }
+    }),
+      catchError((error) => {
+        this.router.navigate(['./authentication-fail']);
+        return of(false);
+      }), first());
+  }
+
+  getSSOUserInfo(userName) {
+    return this.httpService.getSSOUserInfo(userName).pipe(map(response =>{
+      if (response['success'] || response['authenticated']) {
+        if(response['success']){
+          localStorage.setItem('user_name', response['data']?.username);
+          localStorage.setItem('projectsAccess', JSON.stringify(response['data']['projectsAccess']));
+          localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(response['data']['authorities']), 'encrypt'));
         }
 
-      })).subscribe(response =>{
-        if (response['success'] || response['authenticated']) {
-          if(response['success']){
-            localStorage.setItem('user_name', response['data']?.username);
-            localStorage.setItem('projectsAccess', JSON.stringify(response['data']['projectsAccess']));
-            localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(response['data']['authorities']), 'encrypt'));
-          }
-
-          //navigate to profile or dashboard screen
+         //navigate to profile or dashboard screen
           if (this.redirectToProfile()) {
             this.router.navigate(['./dashboard/Config/Profile']);
             return false;
@@ -51,29 +65,8 @@ export class SSOGuard implements CanActivate {
             this.router.navigate(['./dashboard/']);
             return false;
           }
-          return false;
-
-        } else {
-          this.router.navigate(['./authentication-fail']);
-          return false;
-        }
-      },
-      error =>{
-        this.router.navigate(['./authentication-fail']);
-        return false;
-      });
-    }
-  }
-
-
-  getSSOUserInfo(userName) {
-    return this.httpService.getSSOUserInfo(userName);
-  }
-
-  getSSOUserAuthInfo(){
-    return this.httpService.getSSOUserAuthInfo();
-
-    // return of({});
+      }
+    }));
   }
 
   redirectToProfile() {
