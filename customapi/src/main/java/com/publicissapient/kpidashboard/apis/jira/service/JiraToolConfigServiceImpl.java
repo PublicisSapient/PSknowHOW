@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -46,6 +48,9 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
+
+	@Autowired
+	private ToolCredentialProvider toolCredentialProvider;
 
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
@@ -106,9 +111,22 @@ public class JiraToolConfigServiceImpl {
 	}
 
 	private HttpEntity<?> getHttpEntity(Connection connection) {
-		String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-		String password = connection.getPassword() == null ? null
-				: restAPIUtils.decryptPassword(connection.getPassword());
+
+		String username = "";
+		String password = "";
+
+		if (connection.isVault()){
+			ToolCredential credential = toolCredentialProvider.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
+			if (credential != null){
+				username = credential.getUsername();
+				password = credential.getPassword();
+			}
+		} else {
+			username = connection.getUsername() == null ? null : connection.getUsername().trim();
+			password = connection.getPassword() == null ? null
+					: restAPIUtils.decryptPassword(connection.getPassword());
+		}
+
 		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
 		return new HttpEntity<>(headers);
 	}
