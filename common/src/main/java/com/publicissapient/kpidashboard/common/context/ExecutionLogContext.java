@@ -21,6 +21,7 @@ public class ExecutionLogContext implements Serializable {
 	private String userName;
 	private String environment;
 	private String projectName;
+	private String projectBasicConfgId;
 	private int threadId;
 
 	private static final ThreadLocal<ExecutionLogContext> EXECUTION_CONTEXT = new ImprovedThreadLocal<ExecutionLogContext>() {
@@ -38,6 +39,16 @@ public class ExecutionLogContext implements Serializable {
 	public void setUserName(String userName) {
 		MDC.put(CommonConstant.USER_NAME, userName);
 		this.userName = userName;
+	}
+
+
+	public String getProjectBasicConfgId() {
+		return projectBasicConfgId;
+	}
+
+	public void setProjectBasicConfgId(String projectBasicConfgId) {
+		MDC.put(CommonConstant.PROJECT_CONFIG_ID, projectBasicConfgId);
+		this.projectBasicConfgId = projectBasicConfgId;
 	}
 
 	public String getProjectName() {
@@ -121,6 +132,7 @@ public class ExecutionLogContext implements Serializable {
 		currentContext.setEnvironment(context.getEnvironment());
 		currentContext.setUserName(context.getUserName());
 		currentContext.setProjectName(context.getProjectName());
+		currentContext.setProjectBasicConfgId(context.getProjectBasicConfgId());
 		return currentContext;
 	}
 

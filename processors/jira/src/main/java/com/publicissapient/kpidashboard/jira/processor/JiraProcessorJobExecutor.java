@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -114,17 +116,18 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 			cronExecutionContext.setRequestId(uid);
 			ExecutionLogContext.set(cronExecutionContext);
 		}
-		psLogData.setProcessorStartTime(String.valueOf(start));
+		psLogData.setProcessorStartTime(convertMillisToDateTime(start));
 		log.info("Jira Processor Started", kv(CommonConstant.PSLOGDATA, psLogData));
 
 		clearSelectedBasicProjectConfigIds();
 		fetchIssueDetail(executionStatus, projectConfigList);
 
 		long endTime = System.currentTimeMillis();
-		MDC.put("processorEndTime", String.valueOf(endTime));
-		MDC.put("executionTime", String.valueOf(endTime - start));
-		MDC.put("executionStatus", String.valueOf(executionStatus));
-		log.info("Jira execution completed");
+		psLogData.setProcessorEndTime(convertMillisToDateTime(endTime));
+		psLogData.setTimeTaken( String.valueOf(endTime - start));
+		psLogData.setExecutionStatus(String.valueOf(executionStatus));
+		log.info("Jira execution completed",kv(CommonConstant.PSLOGDATA, psLogData));
+		ExecutionLogContext.getContext().destroy();
 		MDC.clear();
 		return executionStatus;
 	}
@@ -147,7 +150,6 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 				});
 			} catch (RuntimeException e) {
 				log.error("Got error while validateAndCollectIssues", e);
-				MDC.put("error", e.getMessage());
 				executionStatus = false;
 			}
 		}
@@ -170,8 +172,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	private List<ProjectBasicConfig> getSelectedProjects() {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
 
-		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
-
+		psLogData.setTotalConfiguredProject(String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
@@ -185,6 +186,12 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
+	}
+
+	private String convertMillisToDateTime(long milliSeconds){
+		return Instant.ofEpochMilli(milliSeconds)
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime().toString();
 	}
 
 }

@@ -18,7 +18,9 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -415,6 +417,12 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			localDateTime = LocalDateTime.now().minusMonths(6);
 		}
 		jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
+	}
+
+	public String convertMillisToDateTime(long milliSeconds){
+		return Instant.ofEpochMilli(milliSeconds)
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime().toString();
 	}
 
 }

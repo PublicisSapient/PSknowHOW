@@ -154,17 +154,15 @@ public class OnlineAdapter implements JiraAdapter {
                 query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
                 psLogData.setUserTimeZone(userTimeZone);
                 psLogData.setJql(query);
-                log.info("jql= " + query, kv(CommonConstant.PSLOGDATA,psLogData));
                 Instant start = Instant.now();
-
                 Promise<SearchResult> promisedRs = client.getCustomIssueClient().searchBoardIssue(boardDetails.getBoardId(), query,
                         jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
                 searchResult = promisedRs.claim();
                 Instant finish = Instant.now();
-                long timeElapsed = Duration.between(start, finish).toMillis();
-                log.info("Time taken to fetch the data is {} milliseconds", timeElapsed);
+                psLogData.setTimeTaken(String.valueOf(Duration.between(start, finish).toMillis()));
+                log.info("Fetching Issues", kv(CommonConstant.PSLOGDATA,psLogData));
                 if (searchResult != null) {
-                    psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
+                    psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
                     log.info(String.format("Processing issues %d - %d out of %d", pageStart,
                             Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
                             kv(CommonConstant.PSLOGDATA,psLogData));
@@ -232,10 +230,10 @@ public class OnlineAdapter implements JiraAdapter {
                 searchResult = promisedRs.claim();
                 Instant finish = Instant.now();
                 long timeElapsed = Duration.between(start, finish).toMillis();
-                psLogData.setTimeElapsed(String.valueOf(timeElapsed));
+                psLogData.setTimeTaken(String.valueOf(timeElapsed));
                 log.info("jql query processed", kv(CommonConstant.PSLOGDATA,psLogData));
                 if (searchResult != null) {
-                    psLogData.setTotalIssues(String.valueOf(searchResult.getTotal()));
+                    psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
                     log.info(String.format("Processing issues %d - %d out of %d", pageStart,
                                     Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
                             kv(CommonConstant.PSLOGDATA,psLogData));
@@ -280,7 +278,7 @@ public class OnlineAdapter implements JiraAdapter {
                     }
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                 } while (totalEpic < fetchedEpic);
-                logData.setTotalIssues(String.valueOf(totalEpic));
+                logData.setTotalFetchedIssues(String.valueOf(totalEpic));
                 logData.setJql(query);
                 log.info("Epics Fetched from jira",kv(CommonConstant.PSLOGDATA,logData));
             } else {
@@ -573,6 +571,7 @@ public class OnlineAdapter implements JiraAdapter {
               psLogData.setSprintId(sprintId);
             if (null != jiraToolConfig) {
                 URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
+                psLogData.setUrl(url.toString());
                 URLConnection connection;
                 connection = url.openConnection();
                 getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig, dbSprintDetails, boardId);

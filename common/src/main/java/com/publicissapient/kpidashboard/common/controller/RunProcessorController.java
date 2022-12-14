@@ -72,6 +72,7 @@ public class RunProcessorController {
 
 		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Processor execution called");
+		ExecutionLogContext.getContext().destroy();
 		MDC.clear();
 		Map response = new HashMap();
 		response.put("status", "processing");
