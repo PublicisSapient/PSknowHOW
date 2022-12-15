@@ -827,6 +827,7 @@ public class OnlineAdapter implements JiraAdapter {
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateData(jsonResponse, epicList);
 					startIndex = epicList.size();
+					TimeUnit.MILLISECONDS.sleep(500);
 				}while(!isLast);
 			}
 		} catch (RestClientException rce) {
@@ -836,6 +837,8 @@ public class OnlineAdapter implements JiraAdapter {
 			log.error("Malformed url for loading sprint report", mfe);
 		} catch (IOException ioe) {
 			log.error("IOException", ioe);
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return getEpicIssuesQuery(epicList, projectConfig);
 	}

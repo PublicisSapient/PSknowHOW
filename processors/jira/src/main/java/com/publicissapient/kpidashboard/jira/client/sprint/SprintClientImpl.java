@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -197,6 +198,7 @@ public class SprintClientImpl implements SprintClient {
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
+					TimeUnit.MILLISECONDS.sleep(500);
 				}while(!isLast);
 			}
 		} catch (RestClientException rce) {
@@ -206,6 +208,8 @@ public class SprintClientImpl implements SprintClient {
 			log.error("Malformed url for loading sprint report", mfe);
 		} catch (IOException ioe) {
 			log.error("IOException", ioe);
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return sprintDetailsList;
 	}
