@@ -228,7 +228,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
 			MetaDataClientImpl metadata = new MetaDataClientImpl(jiraAdapter, boardMetadataRepository,
 					fieldMappingRepository, metadataIdentifierRepository);
-			boolean isSuccess = metadata.processMetadata(projectConfig, psLogData);
+			boolean isSuccess = metadata.processMetadata(projectConfig);
 			if (isSuccess) {
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_FIELD_MAPPING_MAP);

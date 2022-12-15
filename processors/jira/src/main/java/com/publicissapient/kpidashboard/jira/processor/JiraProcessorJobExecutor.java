@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -121,14 +122,14 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 			cronExecutionContext.setIsCron("true");
 			ExecutionLogContext.set(cronExecutionContext);
 		}
-		psLogData.setProcessorStartTime(convertMillisToDateTime(start));
+		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
 		log.info("Jira Processor Started", kv(CommonConstant.PSLOGDATA, psLogData));
 
 		clearSelectedBasicProjectConfigIds();
 		fetchIssueDetail(executionStatus, projectConfigList);
 
 		long endTime = System.currentTimeMillis();
-		psLogData.setProcessorEndTime(convertMillisToDateTime(endTime));
+		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));
 		psLogData.setTimeTaken(String.valueOf(endTime - start));
 		psLogData.setExecutionStatus(String.valueOf(executionStatus));
 		log.info("Jira execution completed", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -193,11 +194,4 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
-	private String convertMillisToDateTime(long milliSeconds){
-		return Instant.ofEpochMilli(milliSeconds)
-				.atZone(ZoneId.systemDefault())
-				.toLocalDateTime().toString();
-	}
-
 }

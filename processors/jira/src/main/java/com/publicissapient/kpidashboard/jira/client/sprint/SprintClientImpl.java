@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.client.sprint;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,9 +29,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,17 +38,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -59,16 +50,22 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
-
-import lombok.extern.slf4j.Slf4j;
-
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 /**
  * @author yasbano
@@ -78,6 +75,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Service
 @Slf4j
 public class SprintClientImpl implements SprintClient {
+	PSLogData psLogData= new PSLogData();
 	private static final String ID = "id";
 
 	private static final String STATE = "state";
@@ -120,7 +118,6 @@ public class SprintClientImpl implements SprintClient {
 			for(SprintDetails sprint : sprintDetailsSet ) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				psLogData.setBoardId(boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
@@ -152,11 +149,15 @@ public class SprintClientImpl implements SprintClient {
 				}
 			}
 			sprintRepository.saveAll(sprintToSave);
-			psLogData.setSprintListSaved(sprintToSave.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			psLogData.setSprintListSaved(
+					sprintToSave.stream().map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
+							.collect(Collectors.toList()));
 			psLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-			psLogData.setSprintListFetched(sprintDetailsSet.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			psLogData.setSprintListFetched(sprintDetailsSet.stream()
+					.map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
+					.collect(Collectors.toList()));
 			psLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Processed Sprints for a board",kv(CommonConstant.PSLOGDATA,psLogData));
+			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 	}
 
@@ -201,6 +202,7 @@ public class SprintClientImpl implements SprintClient {
 				int startIndex = 0;
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
+					psLogData.setUrl(url.toString());
 					URLConnection connection;
 					connection = url.openConnection();
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
@@ -230,7 +232,12 @@ public class SprintClientImpl implements SprintClient {
 					valuesJson = (JSONArray)obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
+				psLogData.setBoardId(boardId);
+				psLogData.setSprintListFetched(sprintDetailsSet.stream()
+						.map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
+						.collect(Collectors.toList()));
 				isLast = Boolean.valueOf(obj.get("isLast").toString());
+				log.info("Sprints Fetched for Board", kv(CommonConstant.PSLOGDATA, psLogData));
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}

@@ -30,8 +30,7 @@ public interface MetadataClient {
      * Process metadata.
      *
      * @param projectConfig the project config
-     * @param psLogData
      * @return boolean value
      */
-    boolean processMetadata(ProjectConfFieldMapping projectConfig, PSLogData psLogData);
+    boolean processMetadata(ProjectConfFieldMapping projectConfig);
 }

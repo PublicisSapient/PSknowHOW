@@ -327,14 +327,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	private void savingTraceLogToLog(ProcessorExecutionTraceLog processorExecutionTraceLog) {
-		psLogData.setExecutionEndedAt(convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
-		psLogData.setExecutionStartedAt(convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
+		psLogData.setExecutionEndedAt(DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
+		psLogData.setExecutionStartedAt(DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
 		psLogData.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
 		psLogData.setIssueAndDesc(null);
 		List<String> logJiraIssueChange = new ArrayList<>();
 		if (MapUtils.isNotEmpty(processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())) {
 			processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType()
-					.forEach((k, v) -> logJiraIssueChange.add(k + CommonConstant.ARROW + v.toString()));
+					.forEach((issue, updateDated) -> logJiraIssueChange.add(issue + CommonConstant.ARROW + updateDated.toString() + CommonConstant.NEWLINE));
 			psLogData.setLastSavedJiraIssueChangedDateByType(logJiraIssueChange);
 		}
 		log.info("last execution time of {} for project {} is {}. status is {}",
@@ -495,7 +495,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			if (issueTypeNames.contains(
 					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 
-				issueProcessed.add(issue.getKey()+CommonConstant.ARROW+issue.getSummary());
+				issueProcessed.add(issue.getKey() + CommonConstant.ARROW + issue.getSummary() + CommonConstant.NEWLINE);
 				// collectorId
 				jiraIssue.setProcessorId(jiraIssueId);
 				// ID

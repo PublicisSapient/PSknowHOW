@@ -98,6 +98,7 @@ public final class CommonConstant {
 	public static final String ENG_MATURITY_MASTER = "ENG_MATURITY_MASTER";
 	
 	public static final String ARROW = "->";
+	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
