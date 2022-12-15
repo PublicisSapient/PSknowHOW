@@ -155,6 +155,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
 		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("false");
 		log.info("Start Processing Jira Issues", kv(CommonConstant.PSLOGDATA, psLogData));
 		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
 			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);

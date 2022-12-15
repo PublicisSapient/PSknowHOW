@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.jira.client.metadata;
 
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**

@@ -136,7 +136,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
 		psLogData.setProjectName(projectConfig.getProjectName());
-		log.info("Start Processing Jira Issues",kv(CommonConstant.PSLOGDATA,psLogData));
+		psLogData.setKanban("true");
+		log.info("Start Processing Jira Issues", kv(CommonConstant.PSLOGDATA, psLogData));
 		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
 			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
 		} else {
