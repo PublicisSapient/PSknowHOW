@@ -123,7 +123,7 @@ public class OnlineAdapter implements JiraAdapter {
 		this.jiraProcessorConfig = jiraProcessorConfig;
 		this.client = client;
 		this.aesEncryptionService = aesEncryptionService;
-
+		this.toolCredentialProvider = toolCredentialProvider;
 	}
 
 	/**
