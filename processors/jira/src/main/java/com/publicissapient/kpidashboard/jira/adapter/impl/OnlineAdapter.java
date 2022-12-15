@@ -162,7 +162,7 @@ public class OnlineAdapter implements JiraAdapter {
                         jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
                 searchResult = promisedRs.claim();
                 Instant finish = Instant.now();
-                psLogData.setTimeTaken(String.valueOf(Duration.between(start, finish).toMillis()));
+                psLogData.setTimeTaken(String.valueOf(Duration.between(finish, start).toMillis()));
                 log.info("Fetching Issues", kv(CommonConstant.PSLOGDATA,psLogData));
                 if (searchResult != null) {
                     psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
@@ -232,7 +232,7 @@ public class OnlineAdapter implements JiraAdapter {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				Instant finish = Instant.now();
-				long timeElapsed = Duration.between(start, finish).toMillis();
+				long timeElapsed = Duration.between(finish, start).toMillis();
 				psLogData.setTimeTaken(String.valueOf(timeElapsed));
 				log.info("jql query processed", kv(CommonConstant.PSLOGDATA, psLogData));
 				if (searchResult != null) {

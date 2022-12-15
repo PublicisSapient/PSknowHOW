@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -44,6 +45,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class ModeBasedProcessor { // NOSONAR
+
+	public ModeBasedProcessor() {
+		ExecutionLogContext.set(ExecutionLogContext.getContext());
+	}
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
