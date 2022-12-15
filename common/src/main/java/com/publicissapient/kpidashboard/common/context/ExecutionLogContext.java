@@ -22,6 +22,7 @@ public class ExecutionLogContext implements Serializable {
 	private String environment;
 	private String projectName;
 	private String projectBasicConfgId;
+	private String isCron;
 	private int threadId;
 
 	private static final ThreadLocal<ExecutionLogContext> EXECUTION_CONTEXT = new ImprovedThreadLocal<ExecutionLogContext>() {
@@ -58,6 +59,14 @@ public class ExecutionLogContext implements Serializable {
 	public void setProjectName(String projectName) {
 		MDC.put(CommonConstant.PROJECTNAME, projectName);
 		this.projectName = projectName;
+	}
+	public String getIsCron() {
+		return isCron;
+	}
+
+	public void setIsCron(String isCron) {
+		MDC.put(CommonConstant.CRON, isCron);
+		this.isCron = isCron;
 	}
 
 	public String getEnvironment() {
@@ -133,6 +142,7 @@ public class ExecutionLogContext implements Serializable {
 		currentContext.setUserName(context.getUserName());
 		currentContext.setProjectName(context.getProjectName());
 		currentContext.setProjectBasicConfgId(context.getProjectBasicConfgId());
+		currentContext.setIsCron(context.getIsCron());
 		return currentContext;
 	}
 

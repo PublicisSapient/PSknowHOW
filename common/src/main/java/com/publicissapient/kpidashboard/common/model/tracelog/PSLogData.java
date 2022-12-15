@@ -23,6 +23,8 @@ public class PSLogData {
     private String sprintId;
     private String totalFetchedIssues;
     private String totalSavedIssues;
+    private String totalFetchedSprints;
+    private String totalSavedSprints;
     private List<String> issueAndDesc;
     private String url;
     private String jql;

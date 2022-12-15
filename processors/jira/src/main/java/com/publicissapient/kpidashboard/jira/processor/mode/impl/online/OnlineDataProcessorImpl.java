@@ -164,6 +164,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
 									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory);// NOPMD
+							//Change 3--required when thread changes
 							Runnable decorate = new AsyncContextResolver().decorate(worker);
 							executor.execute(decorate);
 

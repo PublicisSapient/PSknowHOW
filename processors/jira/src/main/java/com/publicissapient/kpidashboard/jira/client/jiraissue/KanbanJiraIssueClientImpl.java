@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,10 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -67,14 +67,18 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -82,10 +86,6 @@ import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-
-import lombok.extern.slf4j.Slf4j;
-
-import static net.logstash.logback.argument.StructuredArguments.kv;
 
 /**
  * This is an implemented/extended storyDataClient for configured kanban
@@ -95,6 +95,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Service
 @Slf4j
 public class KanbanJiraIssueClientImpl extends JiraIssueClient {
+	PSLogData psLogData = new PSLogData();
 
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
@@ -134,18 +135,17 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 */
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
-		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
 		log.info("Start Processing Jira Issues",kv(CommonConstant.PSLOGDATA,psLogData));
 		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
-			return processesJiraIssuesJQL(projectConfig, jiraAdapter,psLogData, isOffline);
+			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
 		} else {
-			return processesJiraIssuesBoard(projectConfig, jiraAdapter,psLogData, isOffline);
+			return processesJiraIssuesBoard(projectConfig, jiraAdapter, isOffline);
 		}
 
 	}
 
-	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, PSLogData psLogData, boolean isOffline) {
+	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
 		int savedIsuesCount = 0;
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
@@ -179,7 +179,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 						pageSize = issues.size() + 1;
 					}
 					if (CollectionUtils.isNotEmpty(issues)) {
-						List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig,psLogData);
+						List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 						findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 						savedIsuesCount += issues.size();
 					}
@@ -190,35 +190,36 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 						break;
 					}
 				}
-
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
-				saveJiraIssueDetails(epicIssue, projectConfig, psLogData);
+				saveJiraIssueDetails(epicIssue, projectConfig);
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while updating Story information in kanban client through board", e, kv(CommonConstant.PSLOGDATA,psLogData));
+			log.error("JIRA Processor | Error while updating Story information in kanban client through board", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
-		}catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA,psLogData));
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
 			if (!isAttemptSuccess) {
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
 				lastSavedKanbanJiraIssueChangedDateByType.clear();
-			}else{
-				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(),QUERYDATEFORMAT));
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedKanbanJiraIssueChangedDateByType,
-					isAttemptSuccess, psLogData);
-			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA,psLogData));
+					isAttemptSuccess);
+			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 
 		return savedIsuesCount;
 	}
 
-	public int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, PSLogData psLogData, boolean isOffline) {
+	public int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
 		int savedIsuesCount = 0;
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
@@ -259,7 +260,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					pageSize = issues.size() + 1;
 				}
 				if (CollectionUtils.isNotEmpty(issues)) {
-					List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig, psLogData);
+					List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 					findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
 				}
@@ -272,23 +273,25 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while updating Story information in kanban client", e, kv(CommonConstant.PSLOGDATA,psLogData));
+			log.error("JIRA Processor | Error while updating Story information in kanban client", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
-		}catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA,psLogData));
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete,psLogData);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
 			if (!isAttemptSuccess) {
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
 				lastSavedKanbanJiraIssueChangedDateByType.clear();
-			}else{
-				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(),QUERYDATEFORMAT));
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedKanbanJiraIssueChangedDateByType,
-					isAttemptSuccess,psLogData);
-			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA,psLogData));
+					isAttemptSuccess);
+			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 
 		return savedIsuesCount;
@@ -309,7 +312,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	private void saveExecutionTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog,
-									   Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType, boolean isSuccess, PSLogData psLogData) {
+			Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType, boolean isSuccess) {
 
 		if (lastSavedKanbanJiraIssueChangedDateByType.isEmpty()) {
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(null);
@@ -319,16 +322,16 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		savingTraceLogToLog(processorExecutionTraceLog, psLogData);
+		savingTraceLogToLog(processorExecutionTraceLog);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
 
-	private void savingTraceLogToLog(ProcessorExecutionTraceLog processorExecutionTraceLog, PSLogData psLogData) {
+	private void savingTraceLogToLog(ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		psLogData.setExecutionEndedAt(convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
 		psLogData.setExecutionStartedAt(convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
 		psLogData.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
 		psLogData.setIssueAndDesc(null);
-		List<String> logJiraIssueChange= new ArrayList<>();
+		List<String> logJiraIssueChange = new ArrayList<>();
 		if (MapUtils.isNotEmpty(processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())) {
 			processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType()
 					.forEach((k, v) -> logJiraIssueChange.add(k + CommonConstant.ARROW + v.toString()));
@@ -336,8 +339,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		log.info("last execution time of {} for project {} is {}. status is {}",
 				processorExecutionTraceLog.getProcessorName(), processorExecutionTraceLog.getBasicProjectConfigId(),
-				processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess()
-				,kv(CommonConstant.PSLOGDATA, psLogData));
+				processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess(),
+				kv(CommonConstant.PSLOGDATA, psLogData));
 
 	}
 
@@ -401,7 +404,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return capturedDate;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData) {
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
 		psLogData.setTotalFetchedIssues(String.valueOf(total));
 		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
 		return savedCount > 0 && total == savedCount && processorFetchingComplete;
@@ -444,12 +447,11 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 *
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
-	 * @param psLogData
 	 * @throws JSONException
 	 *             error while parsing JSON response
 	 */
 	private List<KanbanJiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs,
-													   ProjectConfFieldMapping projectConfig, PSLogData psLogData)// NOPMD
+			ProjectConfFieldMapping projectConfig)// NOPMD
 			// //NOSONAR
 			throws JSONException {
 
@@ -534,13 +536,12 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 			}
 		}
-
-		psLogData.setIssueAndDesc(issueProcessed);
-		log.info("Issue Processed for project {}",psLogData.getProjectName(),kv(CommonConstant.PSLOGDATA,psLogData));
-
+		
 		// Saving back to MongoDB
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
+		psLogData.setIssueAndDesc(issueProcessed);
+		log.info("Saved Issues for project {}",psLogData.getProjectName(),kv(CommonConstant.PSLOGDATA,psLogData));
 		saveKanbanAccountHierarchy(kanbanIssuesToSave, projectConfig);
 
 		return kanbanIssuesToSave;

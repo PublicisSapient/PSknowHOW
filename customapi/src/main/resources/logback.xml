@@ -27,7 +27,7 @@
  <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- rollover daily -->
-      <fileNamePattern>logs/customapi-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>logs/ps-customapi-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy
             class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <!-- or whenever the file size reaches 100MB -->
@@ -36,7 +36,7 @@
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+    <!--<jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>-->
             <providers>
                 <pattern>
 			      <pattern>
@@ -90,7 +90,7 @@
  <appender name="CustomApiAuditLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- rollover daily -->
-      <fileNamePattern>logs/customapi-audit-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>logs/ps-customapi-audit-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <!-- or whenever the file size reaches 100MB -->
         <maxFileSize>20MB</maxFileSize>

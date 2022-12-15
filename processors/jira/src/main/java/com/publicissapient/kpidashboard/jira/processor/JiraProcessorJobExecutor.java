@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.processor;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -26,8 +28,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -37,8 +39,10 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
@@ -47,10 +51,6 @@ import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-
-import lombok.extern.slf4j.Slf4j;
-
-import static net.logstash.logback.argument.StructuredArguments.kv;
 
 /**
  * Collects {@link JiraProcessor} data from feature content source system.
@@ -109,11 +109,16 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		if(StringUtils.isNotEmpty(getExecutionLogContext().getRequestId())){
+		//change 2--
+		if (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId())) {
+			//setting execution context as per user request
+			getExecutionLogContext().setIsCron("false");
 			ExecutionLogContext.set(getExecutionLogContext());
-		}else{
+		} else {
+			//setting execution context as per for cron job uuid
 			ExecutionLogContext cronExecutionContext = getExecutionLogContext();
 			cronExecutionContext.setRequestId(uid);
+			cronExecutionContext.setIsCron("true");
 			ExecutionLogContext.set(cronExecutionContext);
 		}
 		psLogData.setProcessorStartTime(convertMillisToDateTime(start));
@@ -124,9 +129,10 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 
 		long endTime = System.currentTimeMillis();
 		psLogData.setProcessorEndTime(convertMillisToDateTime(endTime));
-		psLogData.setTimeTaken( String.valueOf(endTime - start));
+		psLogData.setTimeTaken(String.valueOf(endTime - start));
 		psLogData.setExecutionStatus(String.valueOf(executionStatus));
-		log.info("Jira execution completed",kv(CommonConstant.PSLOGDATA, psLogData));
+		log.info("Jira execution completed", kv(CommonConstant.PSLOGDATA, psLogData));
+		// Change 6-- clear Execution context
 		ExecutionLogContext.getContext().destroy();
 		MDC.clear();
 		return executionStatus;

@@ -140,6 +140,7 @@ public final class CommonConstant {
 	public static final String ENVIRONMENT = "environment";
 	public static final String PROJECTNAME = "projectName";
 	public static final String PROJECT_CONFIG_ID = "projectBasicConfigId";
+	public static final String CRON = "cron";
 
 
 

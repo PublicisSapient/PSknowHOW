@@ -153,7 +153,9 @@ public class SprintClientImpl implements SprintClient {
 			}
 			sprintRepository.saveAll(sprintToSave);
 			psLogData.setSprintListSaved(sprintToSave.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			psLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
 			psLogData.setSprintListFetched(sprintDetailsSet.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()));
+			psLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
 			log.info("Processed Sprints for a board",kv(CommonConstant.PSLOGDATA,psLogData));
 		}
 	}

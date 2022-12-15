@@ -95,11 +95,14 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	public void run() {
 
 		try {
+			//Change-4-- as thread changed context is to be get
 			ExecutionLogContext context = ExecutionLogContext.getContext();
 			context.setProjectName(onlineLineprojectConfigMap.getProjectName());
 			context.setProjectBasicConfgId(onlineLineprojectConfigMap.getBasicProjectConfigId().toHexString());
 			ExecutionLogContext.set(context);
 			psLogData.setProjectName(onlineLineprojectConfigMap.getProjectName());
+			//Change-5  when inserting logs as per the requirement add fileg in the PSLogData class
+			// and use in below manner
 			log.info("START - Jira processing started for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 			if (jiraProcessorConfig.isFetchMetadata()) {
