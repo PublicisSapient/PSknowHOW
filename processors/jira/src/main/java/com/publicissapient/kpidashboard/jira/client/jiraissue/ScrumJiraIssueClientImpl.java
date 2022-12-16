@@ -22,6 +22,8 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -198,6 +201,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 
 			for (int i = 0; hasMore; i += pageSize) {
+				Instant startProcessingJiraIssues = Instant.now();
 				SearchResult searchResult = jiraAdapter.getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
 						userTimeZone, i, dataExist);
 				List<Issue> issues = getIssuesFromResult(searchResult);
@@ -213,12 +217,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					pageSize = issues.size() + 1;
 				}
 				if (CollectionUtils.isNotEmpty(issues)) {
-
 					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
-							jiraAdapter,false);
+							jiraAdapter, false);
 					findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
-					log.info("latest sprint fetched cache cleaned.");
+					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false);
 				}
 
 				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -245,15 +248,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorFetchingComplete = false;
 		} finally {
 			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
 						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
-			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 
 		return savedIsuesCount;
@@ -286,6 +291,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				int pageSize = jiraAdapter.getPageSize();
 				boolean hasMore = true;
 				for (int i = 0; hasMore; i += pageSize) {
+					Instant startProcessingJiraIssues = Instant.now();
 					SearchResult searchResult = jiraAdapter.getIssues(board,projectConfig, queryDate,
 							userTimeZone, i, dataExist);
 					List<Issue> issues = getIssuesFromResult(searchResult);
@@ -302,10 +308,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						pageSize = issues.size() + 1;
 					}
 					if (CollectionUtils.isNotEmpty(issues)) {
-
 						List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
 								jiraAdapter, true);
 						savedIsuesCount += issues.size();
+						findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
+						savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false);
 					}
 
 					if (!latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -320,9 +327,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						break;
 					}
 				}
+				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
-				saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
+				List<JiraIssue> jiraEpicIssueList = saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
 						jiraAdapter, true);
+				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime,true);
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -335,17 +344,44 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorFetchingComplete = false;
 		} finally {
 			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through board", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
 						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
-			log.info("Saving Last Execution Time", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 		return savedIsuesCount;
+	}
+
+	private void savingIssueLogs(int savedIssuesCount, List<JiraIssue> jiraIssues, Instant startProcessingJiraIssues,
+			boolean isEpic) {
+		PSLogData saveIssueLog = new PSLogData();
+		saveIssueLog.setIssueAndDesc(jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+		saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
+		psLogData.setAction(CommonConstant.SAVED_ISSUES);
+		psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
+		psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
+		psLogData.setSprintListFetched(null);
+		psLogData.setTotalFetchedSprints(null);
+		if (!isEpic) {
+			saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
+			log.debug("Saved Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, saveIssueLog));
+			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, psLogData));
+		} else {
+			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, saveIssueLog));
+			log.info("Processed Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, psLogData));
+
+		}
 	}
 
 	private void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
@@ -431,7 +467,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} else {
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(lastSavedJiraIssueChangedDateByType);
 		}
-
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		savingTraceLogToLog(processorExecutionTraceLog);
@@ -439,20 +474,25 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void savingTraceLogToLog(ProcessorExecutionTraceLog processorExecutionTraceLog) {
-		psLogData.setExecutionEndedAt(DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
-		psLogData.setExecutionStartedAt(DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
-		psLogData.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
-		psLogData.setIssueAndDesc(null);
+		PSLogData traceLog = new PSLogData();
+		traceLog.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
+		traceLog.setExecutionEndedAt(
+				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
+		traceLog.setExecutionStartedAt(
+				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
+		traceLog.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
+		traceLog.setProjectExecutionStatus(String.valueOf(processorExecutionTraceLog.isExecutionSuccess()));
 		List<String> logJiraIssueChange = new ArrayList<>();
 		if (MapUtils.isNotEmpty(processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())) {
 			processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType()
-					.forEach((issue, updateDated) -> logJiraIssueChange.add(issue + CommonConstant.ARROW + updateDated.toString() + CommonConstant.NEWLINE));
-			psLogData.setLastSavedJiraIssueChangedDateByType(logJiraIssueChange);
+					.forEach((issue, updateDated) -> logJiraIssueChange
+							.add(issue + CommonConstant.ARROW + updateDated.toString() + CommonConstant.NEWLINE));
+			traceLog.setLastSavedJiraIssueChangedDateByType(logJiraIssueChange);
 		}
 		log.info("last execution time of {} for project {} is {}. status is {}",
 				processorExecutionTraceLog.getProcessorName(), processorExecutionTraceLog.getBasicProjectConfigId(),
 				processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess(),
-				kv(CommonConstant.PSLOGDATA, psLogData));
+				kv(CommonConstant.PSLOGDATA, traceLog));
 	}
 
 	private boolean cleanCache() {
@@ -519,7 +559,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		Map<String, String> issueEpics = new HashMap<>();
-		List<String> issueProcessed = new ArrayList<>();
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
@@ -561,7 +600,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			if (issueTypeNames.contains(
 					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
-				issueProcessed.add(issue.getKey() + CommonConstant.ARROW + issue.getSummary() + CommonConstant.NEWLINE);
 				// collectorId
 				jiraIssue.setProcessorId(jiraProcessorId);
 
@@ -616,17 +654,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		psLogData.setIssueAndDesc(issueProcessed);
-		log.debug("Saved Issues for project {}", psLogData.getProjectName(), kv(CommonConstant.PSLOGDATA, psLogData));
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
 		if (!dataFromBoard) {
-			psLogData.setSprintListFetched(sprintDetailsSet.stream()
-					.map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
-					.collect(Collectors.toList()));
-			psLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Processed Sprint for JQL", kv(CommonConstant.PSLOGDATA,psLogData));
 			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter);
-
 		}
 
 		setForCacheClean.addAll(sprintDetailsSet.stream()

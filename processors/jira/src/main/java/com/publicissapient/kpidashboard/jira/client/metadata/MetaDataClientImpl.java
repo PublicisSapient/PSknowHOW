@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.jira.client.metadata;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,6 +95,8 @@ public class MetaDataClientImpl implements MetadataClient {
 	public boolean processMetadata(ProjectConfFieldMapping projectConfig) {
 		boolean isSuccess = false;
 		log.info("Fetching metadata start for project name : {}", projectConfig.getProjectName());
+		Instant statProcessingMetadata = Instant.now();
+		psLogData.setAction(CommonConstant.METADATA);
 		List<Field> fieldList = jiraAdapter.getField();
 		List<IssueType> issueTypeList = jiraAdapter.getIssueType();
 		List<Status> statusList = jiraAdapter.getStatus();
@@ -124,6 +128,7 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			boardMetadataRepository.save(boardMetadata);
 			psLogData.setMetaDataToDB("true");
+			psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata,Instant.now()).toMillis()));
 			log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 		return isSuccess;

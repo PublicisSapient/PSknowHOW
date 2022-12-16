@@ -15,6 +15,8 @@ public class PSLogData {
     private String projectName;
     private String projectKey;
     private String kanban;
+    private String projectStartTime;
+    private String projectEndTime;
     private String processorStartTime;
     private String processorEndTime;
     private String fieldMappingToDB;
@@ -40,5 +42,7 @@ public class PSLogData {
     private String lastSuccessfulRun;
     private String totalConfiguredProject;
     private List<String> lastSavedJiraIssueChangedDateByType;
+    private String action;
+    private String projectExecutionStatus;
 
 }

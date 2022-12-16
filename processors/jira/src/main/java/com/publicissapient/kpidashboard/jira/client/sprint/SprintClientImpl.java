@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -114,7 +116,7 @@ public class SprintClientImpl implements SprintClient {
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
-			PSLogData psLogData = new PSLogData();
+			PSLogData sprintLogData = new PSLogData();
 			for(SprintDetails sprint : sprintDetailsSet ) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
@@ -149,15 +151,22 @@ public class SprintClientImpl implements SprintClient {
 				}
 			}
 			sprintRepository.saveAll(sprintToSave);
-			psLogData.setSprintListSaved(
-					sprintToSave.stream().map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
-							.collect(Collectors.toList()));
-			psLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-			psLogData.setSprintListFetched(sprintDetailsSet.stream()
-					.map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
-					.collect(Collectors.toList()));
-			psLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, psLogData));
+			sprintLogData.setAction(CommonConstant.SPRINT_DATA);
+			sprintLogData
+					.setSprintListSaved(
+							sprintToSave.stream()
+									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
+											+ sprintDetails.getState() + CommonConstant.NEWLINE)
+									.collect(Collectors.toList()));
+			sprintLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
+			sprintLogData
+					.setSprintListFetched(
+							sprintDetailsSet.stream()
+									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
+											+ sprintDetails.getState() + CommonConstant.NEWLINE)
+									.collect(Collectors.toList()));
+			sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
+			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
 		}
 	}
 
@@ -195,11 +204,13 @@ public class SprintClientImpl implements SprintClient {
 
 	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
+		psLogData.setBoardId(boardId);
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
 				int startIndex = 0;
+				Instant start = Instant.now();
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
 					psLogData.setUrl(url.toString());
@@ -209,14 +220,16 @@ public class SprintClientImpl implements SprintClient {
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
 				}while(!isLast);
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+				log.info("Fetch Sprint for Board",kv(CommonConstant.PSLOGDATA,psLogData));
 			}
 		} catch (RestClientException rce) {
-			log.error("Client exception when loading sprint report", rce);
+			log.error("Client exception when fetching sprints for board", rce,kv(CommonConstant.PSLOGDATA,psLogData));
 			throw rce;
 		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading sprint report", mfe);
+			log.error("Malformed url for loading sprint sprints for board", mfe,kv(CommonConstant.PSLOGDATA,psLogData));
 		} catch (IOException ioe) {
-			log.error("IOException", ioe);
+			log.error("IOException", ioe,kv(CommonConstant.PSLOGDATA,psLogData));
 		}
 		return sprintDetailsList;
 	}
@@ -232,12 +245,7 @@ public class SprintClientImpl implements SprintClient {
 					valuesJson = (JSONArray)obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
-				psLogData.setBoardId(boardId);
-				psLogData.setSprintListFetched(sprintDetailsSet.stream()
-						.map(sprintDetails -> sprintDetails.getSprintName() + CommonConstant.NEWLINE)
-						.collect(Collectors.toList()));
 				isLast = Boolean.valueOf(obj.get("isLast").toString());
-				log.info("Sprints Fetched for Board", kv(CommonConstant.PSLOGDATA, psLogData));
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}

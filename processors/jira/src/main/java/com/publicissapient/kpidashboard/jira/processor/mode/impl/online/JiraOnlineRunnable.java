@@ -20,8 +20,11 @@ package com.publicissapient.kpidashboard.jira.processor.mode.impl.online;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.MDC;
@@ -101,7 +104,10 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			context.setProjectBasicConfgId(onlineLineprojectConfigMap.getBasicProjectConfigId().toHexString());
 			ExecutionLogContext.set(context);
 			psLogData.setProjectName(onlineLineprojectConfigMap.getProjectName());
-			//Change-5  when inserting logs as per the requirement add fileg in the PSLogData class
+			psLogData.setAction(CommonConstant.PROJECT_RUN);
+			long start = System.currentTimeMillis();
+			psLogData.setProjectStartTime(DateUtil.convertMillisToDateTime(start));
+			//Change-5  when inserting logs as per the requirement add field in the PSLogData class
 			// and use in below manner
 			log.info("START - Jira processing started for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
@@ -110,6 +116,9 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			}
 			collectJiraIssueData(jiraAdapter, onlineLineprojectConfigMap);
 			collectReleaseData(jiraAdapter, onlineLineprojectConfigMap);
+			long end = System.currentTimeMillis();
+			psLogData.setProjectEndTime(DateUtil.convertMillisToDateTime(end));
+			psLogData.setTimeTaken(String.valueOf(end - start));
 			log.info("END - Jira processing finished for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} catch (Exception ex){
@@ -187,13 +196,13 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 * 
 	 */
 	private void collectReleaseData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
-		long releaseDataStart = System.currentTimeMillis();
+		Instant start = Instant.now();
 		ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraAdapter, projectReleaseRepo,
 				accountHierarchyRepository, kanbanAccountHierarchyRepo);
 		releaseData.processReleaseInfo(projectConfig);
-		psLogData.setTimeTaken(String.valueOf(releaseDataStart-System.currentTimeMillis()));
-		log.info("Time Taken to process release data",kv(CommonConstant.PSLOGDATA,psLogData));
-
+		psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+		psLogData.setAction(CommonConstant.RELEASE_DATA);
+		log.info("Time Taken to process release data", kv(CommonConstant.PSLOGDATA, psLogData));
 
 	}
 
@@ -211,8 +220,9 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		JiraIssueClient jiraIssueClient = factory.getJiraIssueDataClient(projectConfig);
 		int count = jiraIssueClient.processesJiraIssues(projectConfig, jiraAdapter, false);
 		projectConfig.setIssueCount(count);
-		psLogData.setTimeTaken(String.valueOf(startJiraIssueTime-System.currentTimeMillis()));
-		log.info("Time Taken to process Jira Issue",kv(CommonConstant.PSLOGDATA,psLogData));
+		psLogData.setTimeTaken(String.valueOf(System.currentTimeMillis() - startJiraIssueTime));
+		psLogData.setAction(CommonConstant.JIRAISSUE_DATA);
+		log.info("Time Taken to process Jira Issue", kv(CommonConstant.PSLOGDATA, psLogData));
 
 	}
 
@@ -226,6 +236,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 */
 	private void collectMetadata(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
+			psLogData.setAction(CommonConstant.METADATA);
 			MetaDataClientImpl metadata = new MetaDataClientImpl(jiraAdapter, boardMetadataRepository,
 					fieldMappingRepository, metadataIdentifierRepository);
 			boolean isSuccess = metadata.processMetadata(projectConfig);

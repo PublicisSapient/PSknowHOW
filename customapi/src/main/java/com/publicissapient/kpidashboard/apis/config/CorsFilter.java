@@ -78,7 +78,7 @@ public class CorsFilter extends OncePerRequestFilter {
 		List<String> originWhiteList = apiSettings.getCorsFilterValidOrigin();
 		Boolean result = Boolean.FALSE;
 		String origin = request.getHeader(CORSConstants.HEADER_VALUE_ACCESS_CONTROL_ORIGIN);
-		log.info("Value of Origin header in request : {}", origin);
+		log.debug("Value of Origin header in request : {}", origin);
 		if (StringUtils.isNotBlank(origin)) {
 			if (CollectionUtils.isNotEmpty(originWhiteList)) {
 				result = validateOriginWithWhitelist(originWhiteList, result, origin);

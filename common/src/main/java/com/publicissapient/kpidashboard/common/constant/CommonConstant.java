@@ -141,7 +141,18 @@ public final class CommonConstant {
 	public static final String ENVIRONMENT = "environment";
 	public static final String PROJECTNAME = "projectName";
 	public static final String PROJECT_CONFIG_ID = "projectBasicConfigId";
+	public static final String FETCHING_ISSUE = "fetchingIssue";
+	public static final String SPRINT_REPORTDATA = "collectSprintReport";
+	public static final String SAVED_ISSUES = "savedIssues";
+	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
+	public static final String SPRINT_DATA = "collectSprintData";
+	public static final String RELEASE_DATA = "collectReleaseData";
+	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
+	public static final String EPIC_DATA = "collectEpicData";
+	public static final String METADATA = "collectMetaData";
+	public static final String PROJECT_RUN = "projectRun";
 	public static final String CRON = "cron";
+
 
 
 

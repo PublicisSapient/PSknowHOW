@@ -73,6 +73,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig) {
 		PSLogData psLogData = new PSLogData();
+		psLogData.setAction(CommonConstant.RELEASE_DATA);
 		String projectKey = projectConfig.getJira().getProjectKey();
 		boolean isKanban = projectConfig.isKanban();
 		psLogData.setProjectKey(projectKey);
@@ -153,7 +154,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();
 		currentPagedJiraRs.forEach(version -> {
 			logProjectVesion
-					.add(version.getName() + CommonConstant.ARROW + version.getDescription() + CommonConstant.NEWLINE);
+					.add(String.valueOf(version.getId()));
 			projectVersionList.add(new ProjectVersion(version.getId(), version.getName(), version.getDescription(),
 					version.isArchived(), version.isReleased(), version.getReleaseDate()));
 
