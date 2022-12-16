@@ -27,13 +27,14 @@ import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
@@ -71,11 +72,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.CHANGELOG;
-import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.NAMES;
-import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.SCHEMA;
 
 /**
  * Default JIRA client which interacts with Java JIRA API to extract data for
@@ -107,6 +105,8 @@ public class OnlineAdapter implements JiraAdapter {
 	private AesEncryptionService aesEncryptionService;
 	private ProcessorJiraRestClient client;
 
+	private ToolCredentialProvider toolCredentialProvider;
+
 	public OnlineAdapter() {
 	}
 
@@ -119,11 +119,11 @@ public class OnlineAdapter implements JiraAdapter {
 	 *            aesEncryptionService
 	 */
 	public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-			AesEncryptionService aesEncryptionService) {
+			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider) {
 		this.jiraProcessorConfig = jiraProcessorConfig;
 		this.client = client;
 		this.aesEncryptionService = aesEncryptionService;
-
+		this.toolCredentialProvider = toolCredentialProvider;
 	}
 
 	/**
@@ -180,16 +180,40 @@ public class OnlineAdapter implements JiraAdapter {
 		return searchResult;
 	}
 
-	public List<Issue> getEpicIssues(List<String> epicKeyList) {
+	public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProjectConfFieldMapping projectConfFieldMapping) {
 		List<Issue> issueList = new ArrayList<>();
+		SearchResult searchResult = null;
 		try {
-			epicKeyList.forEach(epicKey -> {
-				Promise<Issue> promise = client.getCustomIssueClient().
-						getIssue(epicKey, ImmutableList.of(SCHEMA, NAMES, CHANGELOG));
-				issueList.add(promise.claim());
-			});
+			if (CollectionUtils.isNotEmpty(epicKeyList)) {
+				String query = "key in (" + String.join(",", epicKeyList) + ")";
+				int pageStart = 0;
+				int totalEpic = 0;
+				int fetchedEpic = 0;
+				do {
+					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
+							jiraProcessorConfig.getPageSize(), pageStart, null);
+					searchResult = promise.claim();
+					if (searchResult != null) {
+						if (totalEpic == 0) {
+							totalEpic = searchResult.getTotal();
+						}
+						searchResult.getIssues().forEach(issue -> {
+							issueList.add(issue);
+						});
+						fetchedEpic += searchResult.getMaxResults();
+						pageStart += searchResult.getMaxResults();
+					}
+					log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
+					TimeUnit.MILLISECONDS.sleep(500);
+					log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
+				} while (totalEpic < fetchedEpic);
+			} else {
+				log.info("No Epic Found to fetch");
+			}
 		} catch (RestClientException e) {
 			log.error("error fetching epic", e.getCause());
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return issueList;
 	}
@@ -394,8 +418,23 @@ public class OnlineAdapter implements JiraAdapter {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 
-		String username = connectionOptional.map(Connection::getUsername).orElse(null);
-		String password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+		String username = null;
+		String password = null;
+
+		if(connectionOptional.isPresent()) {
+			Connection conn = connectionOptional.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+
+			} else {
+				username = connectionOptional.map(Connection::getUsername).orElse(null);
+				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			}
+		}
 		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();
@@ -787,7 +826,8 @@ public class OnlineAdapter implements JiraAdapter {
 					connection = url.openConnection();
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateData(jsonResponse, epicList);
-					startIndex = epicList.size() + 1;
+					startIndex = epicList.size();
+					TimeUnit.MILLISECONDS.sleep(500);
 				}while(!isLast);
 			}
 		} catch (RestClientException rce) {
@@ -797,8 +837,10 @@ public class OnlineAdapter implements JiraAdapter {
 			log.error("Malformed url for loading sprint report", mfe);
 		} catch (IOException ioe) {
 			log.error("IOException", ioe);
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
-		return getEpicIssues(epicList);
+		return getEpicIssuesQuery(epicList, projectConfig);
 	}
 
 	private boolean populateData(String sprintReportObj, List<String> epicList) {
