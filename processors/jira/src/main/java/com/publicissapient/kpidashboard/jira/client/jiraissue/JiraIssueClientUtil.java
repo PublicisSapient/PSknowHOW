@@ -138,12 +138,15 @@ public final class JiraIssueClientUtil {
      */
     public static List<ChangelogGroup> sortChangeLogGroup(Issue issue) {
         Iterable<ChangelogGroup> changelogItr = issue.getChangelog();
-        List<ChangelogGroup> changeLogList = Lists.newArrayList(changelogItr.iterator());
-        changeLogList.sort((ChangelogGroup obj1, ChangelogGroup obj2) -> {
-            DateTime activityDate1 = obj1.getCreated();
-            DateTime activityDate2 = obj2.getCreated();
-            return activityDate1.compareTo(activityDate2);
-        });
+        List<ChangelogGroup> changeLogList = new ArrayList<>();
+        if(null != changelogItr) {
+            changeLogList = Lists.newArrayList(changelogItr.iterator());
+            changeLogList.sort((ChangelogGroup obj1, ChangelogGroup obj2) -> {
+                DateTime activityDate1 = obj1.getCreated();
+                DateTime activityDate2 = obj2.getCreated();
+                return activityDate1.compareTo(activityDate2);
+            });
+        }
         return changeLogList;
     }
 
