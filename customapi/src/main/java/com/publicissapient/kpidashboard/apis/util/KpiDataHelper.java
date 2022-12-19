@@ -351,24 +351,33 @@ public final class KpiDataHelper {
 	public static Set<JiraIssue> getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(SprintDetails sprintDetails,
 			Set<SprintIssue> sprintIssues, List<JiraIssue> allJiraIssue) {
 		Set<JiraIssue> filteredIssues = new HashSet<>();
+		Map<String, SprintIssue> issueKeyWiseSprintIssue = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(sprintIssues)) {
-			sprintIssues.stream().forEach(sprintIssue -> allJiraIssue.stream().forEach(jiraIssue -> {
-				if (sprintIssue.getNumber().equals(jiraIssue.getNumber()) && (jiraIssue.getBasicProjectConfigId()
-						.equalsIgnoreCase(sprintDetails.getBasicProjectConfigId().toString()))) {
-					JiraIssue filterJiraIssue = null;
-					try {
-						filterJiraIssue = (JiraIssue) jiraIssue.clone();
-					} catch (CloneNotSupportedException e) {
-						filterJiraIssue = jiraIssue;
-						log.error("[KPIDataHelper]. exception while clone ing object jira issue{}", e);
-					}
-					filterJiraIssue.setStoryPoints(sprintIssue.getStoryPoints());
-					filterJiraIssue.setPriority(sprintIssue.getPriority());
-					filterJiraIssue.setStatus(sprintIssue.getStatus());
-					filteredIssues.add(filterJiraIssue);
-				}
-			}));
+			sprintIssues.stream()
+					.forEach(sprintIssue -> issueKeyWiseSprintIssue.put(sprintIssue.getNumber(), sprintIssue));
+		} else {
+			CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream()
+					.forEach(sprintIssue -> issueKeyWiseSprintIssue.put(sprintIssue.getNumber(), sprintIssue));
+			CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream()
+					.forEach(sprintIssue -> issueKeyWiseSprintIssue.put(sprintIssue.getNumber(), sprintIssue));
 		}
+		allJiraIssue.stream().forEach(jiraIssue -> {
+			if (Objects.nonNull(issueKeyWiseSprintIssue.get(jiraIssue.getNumber()))) {
+				JiraIssue filterJiraIssue = null;
+				try {
+					filterJiraIssue = (JiraIssue) jiraIssue.clone();
+				} catch (CloneNotSupportedException e) {
+					filterJiraIssue = jiraIssue;
+					log.error("[KPIDataHelper]. exception while clone ing object jira issue{}", e);
+				}
+				SprintIssue sprintIssue = issueKeyWiseSprintIssue.get(jiraIssue.getNumber());
+				filterJiraIssue.setStoryPoints(sprintIssue.getStoryPoints());
+				filterJiraIssue.setPriority(sprintIssue.getPriority());
+				filterJiraIssue.setStatus(sprintIssue.getStatus());
+				filterJiraIssue.setTypeName(sprintIssue.getTypeName());
+				filteredIssues.add(filterJiraIssue);
+			}
+		});
 		return filteredIssues;
 	}
 }

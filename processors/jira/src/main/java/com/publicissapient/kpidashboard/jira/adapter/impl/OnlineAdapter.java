@@ -266,6 +266,9 @@ public class OnlineAdapter implements JiraAdapter {
                         });
                         fetchedEpic += searchResult.getMaxResults();
                         pageStart += searchResult.getMaxResults();
+                        if (totalEpic <= fetchedEpic) {
+                            fetchedEpic = totalEpic;
+                        }
                     }
                     log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());

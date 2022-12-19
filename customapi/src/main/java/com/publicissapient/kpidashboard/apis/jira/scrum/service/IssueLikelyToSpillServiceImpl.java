@@ -129,7 +129,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(notCompletedIssues,
 							basicProjectConfigId);
-					resultListMap.put(ISSUES, issueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getNotCompletedIssues(), issueList);
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT_STATE, sprintDetails.getState());
 					resultListMap.put(SPRINT_END_DATE, sprintDetails.getEndDate());
 				}
