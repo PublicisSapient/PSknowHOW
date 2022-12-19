@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -137,10 +136,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueList);
-					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(ISSUES, issueList);
 					resultListMap.put(SPRINT, sprintDetails);
 				}
 			}

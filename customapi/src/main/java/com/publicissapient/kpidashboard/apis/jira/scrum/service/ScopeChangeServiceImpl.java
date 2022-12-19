@@ -121,18 +121,12 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getPuntedIssues(), issueList);
-					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(PUNTED_ISSUES, issueList);
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(new ArrayList<>(addedIssues),
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									new HashSet<>(), issueList);
-					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(ADDED_ISSUES, issueList);
 				}
 			}
 		}
