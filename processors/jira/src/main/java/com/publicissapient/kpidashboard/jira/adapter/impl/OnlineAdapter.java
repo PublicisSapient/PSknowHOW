@@ -253,6 +253,7 @@ public class OnlineAdapter implements JiraAdapter {
 				int pageStart = 0;
 				int totalEpic = 0;
 				int fetchedEpic = 0;
+                boolean continueFlag = true;
 				do {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
@@ -270,6 +271,7 @@ public class OnlineAdapter implements JiraAdapter {
 						pageStart += issueCount;
 						if (totalEpic <= fetchedEpic) {
 							fetchedEpic = totalEpic;
+                            continueFlag = false;
 						}
 					} else {
 						break;
@@ -277,7 +279,7 @@ public class OnlineAdapter implements JiraAdapter {
 					log.info("epic Api call delay started for project {}", projectConfFieldMapping.getProjectName());
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 					log.info("epic Api call delay ended for project {}", projectConfFieldMapping.getProjectName());
-				} while (totalEpic < fetchedEpic || totalEpic != 0);
+				} while (totalEpic < fetchedEpic || continueFlag);
 			} else {
                 log.info("No Epic Found to fetch");
             }
