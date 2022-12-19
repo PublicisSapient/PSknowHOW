@@ -232,7 +232,7 @@ public class CommitmentReliabilityServiceImplTest {
 		Map<String, Object> predictList = commitmentReliabilityImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Sprint story size :", ((List<JiraIssue>) predictList.get(PROJECT_WISE_TOTAL_ISSUE)).size(),
-				equalTo(17));
+				equalTo(19));
 	}
 
 	/**
