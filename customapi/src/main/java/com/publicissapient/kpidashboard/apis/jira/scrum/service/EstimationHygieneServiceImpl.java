@@ -117,10 +117,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueList);
-					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(ISSUES, issueList);
 				}
 			}
 		}
