@@ -39,10 +39,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
@@ -92,6 +94,9 @@ public class SprintClientImpl implements SprintClient {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
+
+	@Autowired
+	private ToolCredentialProvider toolCredentialProvider;
 
 	/**
 	 * This method handles sprint detailsList
@@ -264,8 +269,23 @@ public class SprintClientImpl implements SprintClient {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 
-		String username = connectionOptional.map(Connection::getUsername).orElse(null);
-		String password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+		String username = null;
+		String password = null;
+
+		if(connectionOptional.isPresent()) {
+			Connection conn = connectionOptional.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+
+			} else {
+				username = connectionOptional.map(Connection::getUsername).orElse(null);
+				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			}
+		}
 		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();

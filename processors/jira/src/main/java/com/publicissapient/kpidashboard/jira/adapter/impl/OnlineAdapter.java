@@ -28,11 +28,13 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
@@ -109,6 +111,8 @@ public class OnlineAdapter implements JiraAdapter {
     private AesEncryptionService aesEncryptionService;
     private ProcessorJiraRestClient client;
 
+    private ToolCredentialProvider toolCredentialProvider;
+
     public OnlineAdapter() {
     }
 
@@ -116,13 +120,14 @@ public class OnlineAdapter implements JiraAdapter {
      * @param jiraProcessorConfig  jira processor configuration
      * @param client               ProcessorJiraRestClient instance
      * @param aesEncryptionService aesEncryptionService
+     * @param toolCredentialProvider toolCredentialProvider
      */
     public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-                         AesEncryptionService aesEncryptionService) {
+                         AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider) {
         this.jiraProcessorConfig = jiraProcessorConfig;
         this.client = client;
         this.aesEncryptionService = aesEncryptionService;
-
+        this.toolCredentialProvider = toolCredentialProvider;
     }
 
     /**
@@ -270,7 +275,7 @@ public class OnlineAdapter implements JiraAdapter {
                     log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                     log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
-                } while (totalEpic < fetchedEpic);
+                } while (totalEpic < fetchedEpic || totalEpic != 0);
             } else {
                 log.info("No Epic Found to fetch");
             }
@@ -478,8 +483,23 @@ public class OnlineAdapter implements JiraAdapter {
         HttpURLConnection request = connection;
         Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 
-        String username = connectionOptional.map(Connection::getUsername).orElse(null);
-        String password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+        String username = null;
+        String password = null;
+
+        if(connectionOptional.isPresent()) {
+            Connection conn = connectionOptional.get();
+            if (conn.isVault()) {
+                ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+                if (toolCredential != null) {
+                    username = toolCredential.getUsername();
+                    password = toolCredential.getPassword();
+                }
+
+            } else {
+                username = connectionOptional.map(Connection::getUsername).orElse(null);
+                password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+            }
+        }
         request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
         request.connect();
         StringBuilder sb = new StringBuilder();

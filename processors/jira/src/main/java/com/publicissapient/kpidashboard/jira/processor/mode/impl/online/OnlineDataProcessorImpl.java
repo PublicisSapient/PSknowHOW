@@ -159,7 +159,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							client = getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
 
 							JiraAdapter jiraAdapter = new OnlineAdapter(jiraProcessorConfig, client,
-									aesEncryptionService);
+									aesEncryptionService, toolCredentialProvider);
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
