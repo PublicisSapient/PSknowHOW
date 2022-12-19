@@ -257,7 +257,7 @@ public class OnlineAdapter implements JiraAdapter {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
 					searchResult = promise.claim();
-					if (searchResult != null) {
+                    if (null != searchResult && null != searchResult.getIssues()) {
 						if (totalEpic == 0) {
 							totalEpic = searchResult.getTotal();
 						}
