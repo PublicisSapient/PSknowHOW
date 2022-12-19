@@ -57,7 +57,13 @@ export class AccessMgmtComponent implements OnInit {
 	allProjectsData = <any>[];
 	enableAddBtn = false;
 	accessConfirm: boolean;
-
+	showAddUserForm: boolean = false;
+	addData: object = {
+		"authType": 'SSO',
+		"username": '',
+		"emailAddress": '',
+		"projectsAccess": []
+	};
 	constructor(private service: SharedService, private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
 
@@ -395,5 +401,13 @@ export class AccessMgmtComponent implements OnInit {
 			reject: () => {
 			}
 		});
+	}
+
+	checkIfDisabled(){
+		let res = true;
+		if(this.addData['username'] && this.addData['emailAddress'] && this.addData['projectsAccess']?.length > 0){
+			res = false;
+		}
+		return res;
 	}
 }
