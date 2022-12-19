@@ -248,30 +248,37 @@ public class OnlineAdapter implements JiraAdapter {
         List<Issue> issueList = new ArrayList<>();
         SearchResult searchResult = null;
         try {
-            if (CollectionUtils.isNotEmpty(epicKeyList)) {
-                String query = "key in (" + String.join(",", epicKeyList) + ")";
-                int pageStart = 0;
-                int totalEpic = 0;
-                int fetchedEpic = 0;
-                do {
-                    Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
-                            jiraProcessorConfig.getPageSize(), pageStart, null);
-                    searchResult = promise.claim();
-                    if (searchResult != null) {
-                        if (totalEpic == 0) {
-                            totalEpic = searchResult.getTotal();
-                        }
-                        searchResult.getIssues().forEach(issue -> {
-                            issueList.add(issue);
-                        });
-                        fetchedEpic += searchResult.getMaxResults();
-                        pageStart += searchResult.getMaxResults();
-                    }
-                    log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
-                    TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                    log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
-                } while (totalEpic < fetchedEpic);
-            } else {
+			if (CollectionUtils.isNotEmpty(epicKeyList)) {
+				String query = "key in (" + String.join(",", epicKeyList) + ")";
+				int pageStart = 0;
+				int totalEpic = 0;
+				int fetchedEpic = 0;
+				do {
+					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
+							jiraProcessorConfig.getPageSize(), pageStart, null);
+					searchResult = promise.claim();
+					if (null != searchResult && null != searchResult.getIssues()) {
+						if (totalEpic == 0) {
+							totalEpic = searchResult.getTotal();
+						}
+						int issueCount = 0;
+						for (Issue issue : searchResult.getIssues()) {
+							issueList.add(issue);
+							issueCount++;
+						}
+						fetchedEpic += issueCount;
+						pageStart += issueCount;
+						if (totalEpic <= fetchedEpic) {
+							fetchedEpic = totalEpic;
+						}
+					} else {
+						break;
+					}
+					log.info("epic Api call delay started for project {}", projectConfFieldMapping.getProjectName());
+					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					log.info("epic Api call delay ended for project {}", projectConfFieldMapping.getProjectName());
+				} while (totalEpic < fetchedEpic || totalEpic != 0);
+			} else {
                 log.info("No Epic Found to fetch");
             }
         } catch (RestClientException e) {
