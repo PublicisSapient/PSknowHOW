@@ -193,12 +193,6 @@ export class JiraConfigComponent implements OnInit {
             this.toolForm.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
-            if (this.toolForm.controls['jobType'].value.name === 'Build') {
-              this.messenger.add({
-                severity: 'error',
-                summary: data.message,
-              });
-            }
 
           }
         } catch (error) {
@@ -588,6 +582,12 @@ export class JiraConfigComponent implements OnInit {
     switch (this.urlParam) {
       case 'Bamboo':
         if (value.toLowerCase() === 'build') {
+          if (this.bambooPlanList?.length == 0) {
+            this.messenger.add({
+              severity: 'error',
+              summary: 'No plan details found',
+            });
+          }
           this.hideFormElements(['deploymentProject',]);
           this.showFormElements(['planName', 'planKey', 'branchName', 'branchKey']);
         } else if (value.toLowerCase() === 'deploy') {
