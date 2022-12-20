@@ -89,7 +89,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 2,
     "kpiSource": "Jira",
     "groupId": 1,
-    "thresholdValue": "",
+    "thresholdValue": "75",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -169,7 +169,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 3,
     "kpiSource": "Jira",
     "groupId": 1,
-    "thresholdValue": "",
+    "thresholdValue": "25",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -1147,7 +1147,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 18,
     "kpiSource": "Jira",
     "groupId": 2,
-    "thresholdValue": "10",
+    "thresholdValue": "85",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
