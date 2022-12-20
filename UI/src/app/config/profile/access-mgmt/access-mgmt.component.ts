@@ -20,6 +20,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { environment } from "../../../../environments/environment";
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
 @Component({
 	selector: 'app-access-mgmt',
@@ -64,10 +66,14 @@ export class AccessMgmtComponent implements OnInit {
 		"emailAddress": '',
 		"projectsAccess": []
 	};
-	constructor(private service: SharedService, private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
+	ssoLogin = environment.SSO_LOGIN;
+	isSuperAdmin: boolean = false;
+
+	constructor(private service: SharedService, private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService, private authService: GetAuthorizationService) { }
 
 
 	ngOnInit() {
+		this.isSuperAdmin = this.authService.checkIfSuperUser();
 		this.getRolesList();
 		this.getUsers();
 		this.subscription = this.service.passAllProjectsData.subscribe((allProjectsData) => {
@@ -293,7 +299,13 @@ export class AccessMgmtComponent implements OnInit {
 		if (!this.displayDuplicateProject) {
 			this.httpService.updateAccess(userData, userData.username).subscribe((response) => {
 				if (response['success']) {
-					this.messageService.add({ severity: 'success', summary: 'Access updated.', detail: '' });
+					if(this.showAddUserForm){
+						this.showAddUserForm = false;
+						this.messageService.add({ severity: 'success', summary: 'User added.', detail: '' });
+						this.resetAddDataForm();
+					}else{
+						this.messageService.add({ severity: 'success', summary: 'Access updated.', detail: '' });
+					}
 				} else {
 					this.messageService.add({ severity: 'error', summary: 'Error in updating project access. Please try after some time.' });
 				}
@@ -409,5 +421,14 @@ export class AccessMgmtComponent implements OnInit {
 			res = false;
 		}
 		return res;
+	}
+
+	resetAddDataForm(){
+		this.addData = {
+			"authType": 'SSO',
+			"username": '',
+			"emailAddress": '',
+			"projectsAccess": []
+		};
 	}
 }

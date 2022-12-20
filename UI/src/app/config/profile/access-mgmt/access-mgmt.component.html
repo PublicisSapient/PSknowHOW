@@ -37,21 +37,20 @@
           <tr>
             <th class="p-text-center p-d-flex">
               <input pInputText type="text" id="searchByName"
-                (input)="dt.filter($event.target.value, 'username', 'contains')" class="p-inputtext p-column-filter p-input-custom"
+                (input)="dt.filter($event.target.value, 'username', 'contains')" class="p-inputtext p-column-filter" [ngClass]="{'p-input-custom': ssoLogin && isSuperAdmin}"
                 placeholder="Search by Name">
-              <button type="button" pRipple pButton (click)="showAddUserForm = !showAddUserForm" class="p-d-flex p-jc-center add-btn-custom">
-                <span class="p-mr-1">+</span>
-                <span>Add</span>
+              <button type="button" pRipple pButton *ngIf="ssoLogin && isSuperAdmin" (click)="showAddUserForm = !showAddUserForm" icon="pi pi-plus"
+              iconPos="left" class="p-d-flex p-jc-center add-btn-custom" label="Add">
               </button>
             </th>
             <th class="p-text-center">
               <input pInputText type="text" id="searchByEmail"
-                (input)="dt.filter($event.target.value, 'emailAddress', 'contains')" class="p-inputtext p-column-filter p-input-custom"
+                (input)="dt.filter($event.target.value, 'emailAddress', 'contains')" class="p-inputtext p-column-filter"
                 placeholder="Search by Email">
             </th>
             <th class="p-text-center" colspan="2">
               <input pInputText type="text" [(ngModel)]="searchProject" id="searchByProject" (input)="filterByProject()"
-                class="p-inputtext p-column-filter p-input-custom" [style]="{'width':'100%'}" placeholder="Search by Project">
+                class="p-inputtext p-column-filter" [style]="{'width':'100%'}" placeholder="Search by Project">
             </th>
             <th colspan="1">
               <p-dropdown id="searchRole" class="p-column-filter" [autoDisplayFirst]="false" [options]="searchRoleList"
@@ -66,7 +65,7 @@
                 placeholder="Enter Username" />
             </th>
             <th class='p-text-center' style="background-color: #e8e8e8;">
-              <input pInputText type="text" [(ngModel)]="addData.emailAddress" id="emailAddress" class="p-inputtext p-column-filter w-100"
+              <input pInputText type="email" name="email" pattern='^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$' [(ngModel)]="addData.emailAddress" id="emailAddress" class="p-inputtext p-column-filter w-100"
                 placeholder="Enter Email" />
             </th>
             <th colspan="3" class="custom-td pad-0" style="background-color: #e8e8e8;">
