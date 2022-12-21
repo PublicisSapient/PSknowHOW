@@ -298,6 +298,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     public ServiceResponse updateUserRole(String username, UserInfo userInfo) {
         UserInfo existingUserInfo = userInfoRepository.findByUsername(username);
 
+        existingUserInfo = createUserInCaseSSOUserNotFound(existingUserInfo,userInfo);
+
         if (existingUserInfo == null) {
             return new ServiceResponse(false, "No user in user_info collection", userInfo);
         }
@@ -306,6 +308,16 @@ public class UserInfoServiceImpl implements UserInfoService {
             return new ServiceResponse(false, "Unable to update Role.", null);
         }
         return new ServiceResponse(true, "Updated the role Successfully", resultUserInfo);
+    }
+
+    private UserInfo createUserInCaseSSOUserNotFound(UserInfo existingUserInfo, UserInfo userInfo) {
+        if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) &&
+                null != userInfo.getAuthType() && userInfo.getAuthType().equals(AuthType.SSO)) {
+            UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
+                    userInfo.getEmailAddress());
+            existingUserInfo = save(defaultUserInfo);
+        }
+        return existingUserInfo;
     }
 
     /**
@@ -404,10 +416,18 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo = createDefaultUserInfo(username,authType,email);
             userInfo = save(userInfo);
         }
-        UserInfoDTO userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername())
-                .authType(userInfo.getAuthType()).authorities(userInfo.getAuthorities())
-                .emailAddress(userInfo.getEmailAddress()).projectsAccess(userInfo.getProjectsAccess())
-                .build();
+        UserInfoDTO userInfoDTO = convertToDTOObject(userInfo);
+        return userInfoDTO;
+    }
+
+    private UserInfoDTO convertToDTOObject(UserInfo userInfo){
+        UserInfoDTO userInfoDTO = null;
+        if(null != userInfo) {
+            userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername())
+                    .authType(userInfo.getAuthType()).authorities(userInfo.getAuthorities())
+                    .emailAddress(userInfo.getEmailAddress()).projectsAccess(userInfo.getProjectsAccess())
+                    .build();
+        }
         return userInfoDTO;
     }
 
