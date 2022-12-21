@@ -329,6 +329,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
+				psLogData.setEpicIssuesFetched(String.valueOf(epicIssue.size()));
 				List<JiraIssue> jiraEpicIssueList = saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
 						jiraAdapter, true);
 				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime,true);
@@ -376,6 +377,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} else {
+			saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
 			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
 			log.info("Processed Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),

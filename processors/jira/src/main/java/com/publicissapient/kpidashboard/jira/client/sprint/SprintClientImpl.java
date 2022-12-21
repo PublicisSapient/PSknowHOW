@@ -205,6 +205,7 @@ public class SprintClientImpl implements SprintClient {
 	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		psLogData.setBoardId(boardId);
+		psLogData.setAction(CommonConstant.SPRINT_DATA);
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {

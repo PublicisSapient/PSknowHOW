@@ -199,6 +199,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				}
 				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
+				psLogData.setEpicIssuesFetched(String.valueOf(epicIssue.size()));
 				List<KanbanJiraIssue> kanbanJiraIssueList = saveJiraIssueDetails(epicIssue, projectConfig);
 				savingIssueLogs(kanbanJiraIssueList.size(), kanbanJiraIssueList, epicProcessStartTime,true);
 			}
@@ -328,6 +329,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} else {
+			saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
 			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
 			log.info("Processed Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),

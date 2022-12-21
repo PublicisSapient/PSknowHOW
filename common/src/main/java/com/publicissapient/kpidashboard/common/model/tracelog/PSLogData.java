@@ -27,6 +27,7 @@ public class PSLogData {
     private String totalSavedIssues;
     private String totalFetchedSprints;
     private String totalSavedSprints;
+    private String epicIssuesFetched;
     private List<String> issueAndDesc;
     private String url;
     private String jql;
