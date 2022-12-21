@@ -25,10 +25,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -59,6 +60,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -102,13 +104,13 @@ public class IssueLikelyToSpillServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		storyList = jiraIssueDataFactory.findIssueInTypeNames(Arrays.asList("Story"));
-
 		setMockProjectConfig();
 		setMockFieldMapping();
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
-
+		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
+				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 	}
 
 	private void setMockProjectConfig() {

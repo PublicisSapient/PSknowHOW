@@ -29,7 +29,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -101,14 +104,15 @@ public class ScopeChangeServiceImplTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		storyList = jiraIssueDataFactory.findIssueInTypeNames(Arrays.asList("Story"));
-
+		
 		setMockProjectConfig();
 		setMockFieldMapping();
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
 
+		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
+				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 	}
 
 	private void setMockProjectConfig() {

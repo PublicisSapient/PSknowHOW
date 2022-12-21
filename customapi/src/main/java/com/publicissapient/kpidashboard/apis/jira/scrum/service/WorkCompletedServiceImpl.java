@@ -102,7 +102,10 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
-					resultListMap.put(ISSUES, issueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getCompletedIssues(), issueList);
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
 		}

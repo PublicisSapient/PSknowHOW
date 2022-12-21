@@ -171,7 +171,7 @@ public class DRRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(REJECTED_DEFECT_PRTA, canceledBugList);
 		filterComponentIdWiseDefectMap.put(TOTAL_DEFECT_PRTA, totalBugList);
 		Double drrValue = dRRServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DRR value :", drrValue, equalTo(88.0));
+		assertThat("DRR value :", drrValue, equalTo(89.0));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -194,9 +194,9 @@ public class DRRServiceImplTest {
 		Map<String, Object> defectDataListMap = dRRServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Rejects Defects value :", ((List<JiraIssue>) defectDataListMap.get(REJECTED_DEFECT_PRTA)).size(),
-				equalTo(17));
+				equalTo(19));
 		assertThat("Total Defects value :", ((List<JiraIssue>) defectDataListMap.get(TOTAL_DEFECT_PRTA)).size(),
-				equalTo(17));
+				equalTo(19));
 	}
 
 	@Test

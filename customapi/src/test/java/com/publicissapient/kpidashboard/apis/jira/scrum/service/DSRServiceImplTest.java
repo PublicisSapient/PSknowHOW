@@ -170,7 +170,7 @@ public class DSRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(UATBUGKEY, uatBugList);
 		filterComponentIdWiseDefectMap.put(TOTALBUGKEY, totalBugList);
 		Double dsrValue = dsrServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DSR value :", dsrValue, equalTo(53.0));
+		assertThat("DSR value :", dsrValue, equalTo(47.0));
 	}
 
 	@SuppressWarnings("unchecked")
