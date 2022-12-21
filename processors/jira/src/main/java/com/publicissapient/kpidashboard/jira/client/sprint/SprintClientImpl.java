@@ -31,7 +31,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +42,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -66,8 +75,8 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author yasbano
@@ -96,6 +105,9 @@ public class SprintClientImpl implements SprintClient {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
+
+	@Autowired
+	private ToolCredentialProvider toolCredentialProvider;
 
 	/**
 	 * This method handles sprint detailsList
@@ -288,8 +300,23 @@ public class SprintClientImpl implements SprintClient {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 
-		String username = connectionOptional.map(Connection::getUsername).orElse(null);
-		String password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+		String username = null;
+		String password = null;
+
+		if(connectionOptional.isPresent()) {
+			Connection conn = connectionOptional.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+
+			} else {
+				username = connectionOptional.map(Connection::getUsername).orElse(null);
+				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			}
+		}
 		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();

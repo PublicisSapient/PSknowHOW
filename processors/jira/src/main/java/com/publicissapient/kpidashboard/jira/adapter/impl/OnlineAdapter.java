@@ -18,7 +18,40 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Field;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.atlassian.jira.rest.client.api.domain.Project;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+import io.atlassian.util.concurrent.Promise;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,43 +80,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.Field;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Project;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-
-import io.atlassian.util.concurrent.Promise;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 /**
  * Default JIRA client which interacts with Java JIRA API to extract data for
@@ -117,6 +114,8 @@ public class OnlineAdapter implements JiraAdapter {
     private ProcessorJiraRestClient client;
     private PSLogData psLogData;
 
+    private ToolCredentialProvider toolCredentialProvider;
+
     public OnlineAdapter() {
     }
 
@@ -124,12 +123,14 @@ public class OnlineAdapter implements JiraAdapter {
      * @param jiraProcessorConfig  jira processor configuration
      * @param client               ProcessorJiraRestClient instance
      * @param aesEncryptionService aesEncryptionService
+     * @param toolCredentialProvider toolCredentialProvider
      */
     public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-                         AesEncryptionService aesEncryptionService) {
+                         AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider) {
         this.jiraProcessorConfig = jiraProcessorConfig;
         this.client = client;
         this.aesEncryptionService = aesEncryptionService;
+        this.toolCredentialProvider = toolCredentialProvider;
         psLogData=new PSLogData();
 
     }
@@ -255,42 +256,52 @@ public class OnlineAdapter implements JiraAdapter {
     }
 
     public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, PSLogData logData) throws InterruptedException{
-		List<Issue> issueList = new ArrayList<>();
-		SearchResult searchResult = null;
-		try {
+        List<Issue> issueList = new ArrayList<>();
+        SearchResult searchResult = null;
+        try {
 			if (CollectionUtils.isNotEmpty(epicKeyList)) {
 				String query = "key in (" + String.join(",", epicKeyList) + ")";
 				int pageStart = 0;
 				int totalEpic = 0;
 				int fetchedEpic = 0;
+                boolean continueFlag  = true;
                 Instant start = Instant.now();
-                do {
+				do {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
 					searchResult = promise.claim();
-					if (searchResult != null) {
+					if (null != searchResult && null != searchResult.getIssues()) {
 						if (totalEpic == 0) {
 							totalEpic = searchResult.getTotal();
 						}
-						searchResult.getIssues().forEach(issue -> {
+						int issueCount = 0;
+						for (Issue issue : searchResult.getIssues()) {
 							issueList.add(issue);
-						});
-						fetchedEpic += searchResult.getMaxResults();
-						pageStart += searchResult.getMaxResults();
+							issueCount++;
+						}
+						fetchedEpic += issueCount;
+						pageStart += issueCount;
+						if (totalEpic <= fetchedEpic) {
+							fetchedEpic = totalEpic;
+                            continueFlag = false;
+						}
+					} else {
+						break;
 					}
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-				} while (totalEpic < fetchedEpic);
+				} while (totalEpic < fetchedEpic || continueFlag);
                 logData.setTimeTaken(String.valueOf(Duration.between( start,Instant.now()).toMillis()));
-				logData.setTotalFetchedIssues(String.valueOf(totalEpic));
-				logData.setJql(query);
-				log.info("Issues in epic", kv(CommonConstant.PSLOGDATA, logData));
-			} else {
-				log.info("No Epic Found to fetch", kv(CommonConstant.PSLOGDATA, logData));
-			}
-		} catch (RestClientException e) {
-			log.error("Error while fetching issues", e.getCause(), kv(CommonConstant.PSLOGDATA, logData));
-		}
-		return issueList;
+                logData.setTotalFetchedIssues(String.valueOf(totalEpic));
+                logData.setJql(query);
+                log.info("Issues in epic", kv(CommonConstant.PSLOGDATA, logData));
+
+            } else {
+                log.info("No Epic Found to fetch", kv(CommonConstant.PSLOGDATA, logData));
+            }
+        } catch (RestClientException e) {
+            log.error("Error while fetching issues", e.getCause(), kv(CommonConstant.PSLOGDATA, logData));
+        }
+        return issueList;
     }
 
     /**
@@ -491,8 +502,23 @@ public class OnlineAdapter implements JiraAdapter {
         HttpURLConnection request = connection;
         Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 
-        String username = connectionOptional.map(Connection::getUsername).orElse(null);
-        String password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+        String username = null;
+        String password = null;
+
+        if(connectionOptional.isPresent()) {
+            Connection conn = connectionOptional.get();
+            if (conn.isVault()) {
+                ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+                if (toolCredential != null) {
+                    username = toolCredential.getUsername();
+                    password = toolCredential.getPassword();
+                }
+
+            } else {
+                username = connectionOptional.map(Connection::getUsername).orElse(null);
+                password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+            }
+        }
         request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
         request.connect();
         StringBuilder sb = new StringBuilder();

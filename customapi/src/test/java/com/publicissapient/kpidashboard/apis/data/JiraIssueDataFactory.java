@@ -123,6 +123,10 @@ public class JiraIssueDataFactory {
 				.collect(Collectors.toList());
 	}
 
+	public List<JiraIssue> findIssueByNumberList(List<String> ids) {
+		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+	}
+
 	public List<JiraIssue> findIssueByStatusInTypeNames(String status, List<String> typeName) {
 		return jiraIssues.stream()
 				.filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName()) && jiraIssue.getState().equals(status))
