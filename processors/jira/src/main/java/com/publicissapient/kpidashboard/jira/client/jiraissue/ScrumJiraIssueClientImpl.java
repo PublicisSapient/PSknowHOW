@@ -111,8 +111,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 @Service
 @Slf4j
 public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
-	PSLogData psLogData = new PSLogData();
-	
+
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -157,9 +156,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
-		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
-		log.info("Start Processing Jira Issues", kv(CommonConstant.PSLOGDATA, psLogData));
+		log.info("Start Processing Jira Issues");
 		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
 			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
 		} else {
@@ -168,7 +165,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
-
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("false");
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -221,7 +220,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 							jiraAdapter, false);
 					findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
-					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false);
+					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
 				}
 
 				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -247,7 +246,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			lastSavedJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete,psLogData);
 			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
@@ -265,7 +264,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
-
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("false");
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -312,7 +313,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 								jiraAdapter, true);
 						savedIsuesCount += issues.size();
 						findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
-						savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false);
+						savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false, psLogData);
 					}
 
 					if (!latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -332,7 +333,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				psLogData.setEpicIssuesFetched(String.valueOf(epicIssue.size()));
 				List<JiraIssue> jiraEpicIssueList = saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
 						jiraAdapter, true);
-				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime,true);
+				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime,true, psLogData);
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -344,7 +345,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			lastSavedJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
 			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
@@ -361,22 +362,25 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void savingIssueLogs(int savedIssuesCount, List<JiraIssue> jiraIssues, Instant startProcessingJiraIssues,
-			boolean isEpic) {
+								 boolean isEpic, PSLogData psLogData) {
 		PSLogData saveIssueLog = new PSLogData();
 		saveIssueLog.setIssueAndDesc(jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-		saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
-		psLogData.setAction(CommonConstant.SAVED_ISSUES);
+		saveIssueLog.setTotalSavedIssues(String.valueOf(savedIssuesCount));
 		psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
 		psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
 		psLogData.setSprintListFetched(null);
 		psLogData.setTotalFetchedSprints(null);
 		if (!isEpic) {
+			saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_ISSUES);
 			saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
 			log.debug("Saved Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
 			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} else {
+			saveIssueLog.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_EPIC_ISSUES);
 			saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
 			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
@@ -421,7 +425,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return capturedDate;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData) {
 		psLogData.setTotalFetchedIssues(String.valueOf(total));
 		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
 		return savedCount > 0 && total == savedCount && processorFetchingComplete;

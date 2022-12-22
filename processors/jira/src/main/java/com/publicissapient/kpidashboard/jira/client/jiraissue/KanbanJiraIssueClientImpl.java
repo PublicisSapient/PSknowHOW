@@ -98,7 +98,6 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 @Service
 @Slf4j
 public class KanbanJiraIssueClientImpl extends JiraIssueClient {
-	PSLogData psLogData = new PSLogData();
 
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
@@ -138,9 +137,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 */
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
-		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("true");
-		log.info("Start Processing Jira Issues", kv(CommonConstant.PSLOGDATA, psLogData));
+		log.info("Start Processing Jira Issues");
 		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
 			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
 		} else {
@@ -150,6 +147,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("true");
 		int savedIsuesCount = 0;
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
@@ -188,7 +188,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 						List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 						findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 						savedIsuesCount += issues.size();
-						savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false);
+						savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false, psLogData);
 					}
 					if (CollectionUtils.isNotEmpty(purgeIssues)) {
 						purgeJiraIssues(purgeIssues, projectConfig);
@@ -201,7 +201,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
 				psLogData.setEpicIssuesFetched(String.valueOf(epicIssue.size()));
 				List<KanbanJiraIssue> kanbanJiraIssueList = saveJiraIssueDetails(epicIssue, projectConfig);
-				savingIssueLogs(kanbanJiraIssueList.size(), kanbanJiraIssueList, epicProcessStartTime,true);
+				savingIssueLogs(kanbanJiraIssueList.size(), kanbanJiraIssueList, epicProcessStartTime,true, psLogData);
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -213,7 +213,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete,psLogData);
 			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
@@ -232,6 +232,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	public int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("true");
 		int savedIsuesCount = 0;
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
@@ -276,7 +279,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 					findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
-					savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false);
+					savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false, psLogData);
 				}
 				if (CollectionUtils.isNotEmpty(purgeIssues)) {
 					purgeJiraIssues(purgeIssues, projectConfig);
@@ -295,7 +298,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			lastSavedKanbanJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
 			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
@@ -313,22 +316,24 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return savedIsuesCount;
 	}
 
-	private void savingIssueLogs(int savedIssuesCount, List<KanbanJiraIssue> kanbanJiraIssues, Instant startProcessingJiraIssues, boolean isEpic) {
+	private void savingIssueLogs(int savedIssuesCount, List<KanbanJiraIssue> kanbanJiraIssues, Instant startProcessingJiraIssues, boolean isEpic, PSLogData psLogData) {
 		PSLogData saveIssueLog = new PSLogData();
 		saveIssueLog.setIssueAndDesc(kanbanJiraIssues.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
-		saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
-		psLogData.setAction(CommonConstant.SAVED_ISSUES);
 		psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
 		psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
 		psLogData.setSprintListFetched(null);
 		psLogData.setTotalFetchedSprints(null);
 		if (!isEpic) {
+			saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_ISSUES);
 			saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
 			log.debug("Saved Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
 			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} else {
+			saveIssueLog.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_EPIC_ISSUES);
 			saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
 			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
 					kv(CommonConstant.PSLOGDATA, saveIssueLog));
@@ -450,7 +455,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return capturedDate;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData) {
 		psLogData.setTotalFetchedIssues(String.valueOf(total));
 		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
 		return savedCount > 0 && total == savedCount && processorFetchingComplete;

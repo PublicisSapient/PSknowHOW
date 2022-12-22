@@ -144,6 +144,7 @@ public final class CommonConstant {
 	public static final String FETCHING_ISSUE = "fetchingIssue";
 	public static final String SPRINT_REPORTDATA = "collectSprintReport";
 	public static final String SAVED_ISSUES = "savedIssues";
+	public static final String SAVED_EPIC_ISSUES = "saveEpicIssues";
 	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
 	public static final String SPRINT_DATA = "collectSprintData";
 	public static final String RELEASE_DATA = "collectReleaseData";
