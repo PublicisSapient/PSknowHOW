@@ -33,6 +33,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -87,6 +89,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	@Autowired
+	private  CacheService cacheService;
 	private static final String ITERATION = "Iteration";
 
 	private static final String BACKLOG = "Backlog";
@@ -110,7 +114,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		if (null == existingUserBoardConfig) {
-			setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			return defaultUserBoardConfigDTO;
 		} else {
 			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
@@ -126,6 +130,35 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			}
 			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
 			return existingUserBoardConfigDTO;
+		}
+	}
+
+	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO, List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
+		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+
+		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
+		if(findFirstUserBoard.isPresent()) {
+			UserBoardConfig finalBoardConfig = findFirstUserBoard.get();
+			List<Board> scrum = finalBoardConfig.getScrum();
+			List<Board> kanban = finalBoardConfig.getKanban();
+			List<Board> others = finalBoardConfig.getOthers();
+			Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
+			CollectionUtils.emptyIfNull(scrum).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+			CollectionUtils.emptyIfNull(kanban).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+			CollectionUtils.emptyIfNull(others).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getScrum()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getKanban()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getOthers()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
 		}
 	}
 
@@ -479,6 +512,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				userBoardConfigRepository.saveAll(userBoardConfigs);
 			}
 		}
+		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		return convertToUserBoardConfigDTO(boardConfig);
 	}
 
