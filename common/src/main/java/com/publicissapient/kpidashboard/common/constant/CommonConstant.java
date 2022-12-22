@@ -101,7 +101,8 @@ public final class CommonConstant {
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
 	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
 	public static final String CACHE_PROJECT_BASIC_TREE="cache_project_basic_tree";
-	
+	public static final String CACHE_USER_BOARD_CONFIG="cache_user_board_config";
+
 	public static final String OVERALL = "Overall";
 	
 	public static final String WEEK = "WEEKS";
