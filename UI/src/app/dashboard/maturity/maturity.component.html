@@ -15,11 +15,9 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
-<div class="chart123" *ngIf="selectedtype === 'Scrum';else noData;" ></div>
-
-<ng-template #noData>
-    <div class="min-ht">
-       <div class="err">No Data Available</div>
-    </div>
- </ng-template>
+<div class="maturity-container">
+   <button pButton pRipple type="button" *ngFor="let board of tabs; let i=index"
+      [label]="i===0 ?  'OVERALL' : (board.boardName | uppercase)" class=" p-m-2"
+      [ngClass]="{'p-button-outlined' : selectedTabIndex !== i}" (click)="handleTabChange(i)"></button>
+   <div class="chart123"></div>
+</div>
