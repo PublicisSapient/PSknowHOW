@@ -160,10 +160,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		List<String> testingStatuses = fieldMapping.getJiraStatusForQa();
 		Double minutesInDay = fieldMapping.getWorkingHoursDayCPT() * 60;
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(ISSUES))) {
-			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ISSUES)).stream().filter(
-					issue -> testingStatuses.contains(issue.getStatus()) || (null != issue.getRemainingEstimateMinutes()
-							&& issue.getRemainingEstimateMinutes()>0
-							&& issue.getRemainingEstimateMinutes() <= minutesInDay))
+			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ISSUES)).stream()
+					.filter(issue -> testingStatuses.contains(issue.getStatus())
+							|| (null != issue.getRemainingEstimateMinutes() && issue.getRemainingEstimateMinutes() > 0
+									&& issue.getRemainingEstimateMinutes() <= minutesInDay))
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
