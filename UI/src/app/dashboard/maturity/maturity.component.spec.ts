@@ -106,7 +106,7 @@ describe('MaturityComponent', () => {
 
 
 
-  it('should call kpi grouping methos on receiveing data',()=>{
+  it('should call kpi grouping methods on receiveing data',()=>{
     const event ={
       masterData :[],
       filterData:[],
@@ -122,6 +122,7 @@ describe('MaturityComponent', () => {
     };
     const spy = spyOn(service,'getSelectedTab').and.returnValue('Maturity');
     const spyongetMasterData = spyOn(service,'getMasterData').and.returnValue(masterData);
+    component.selectedtype ='Scrum';
     // let spyDrawAreaChart =spyOn(component,'drawAreaChart');
     const groupingMethods =['groupJenkinsKpi','groupZypherKpi','groupBitBucketKpi','groupSonarKpi','groupJiraKpi'];
     const spyGroupingMthods =[];
@@ -661,7 +662,9 @@ describe('MaturityComponent', () => {
   component.zypherKpiRequest='';
   component.sonarKpiRequest='';
   component.bitBucketKpiRequest='';
+  component.selectedtype = 'Scrum';
   const spydrawAreaChart =spyOn(component,'drawAreaChart');
+  const spyhandleTabChange = spyOn(component,'handleTabChange');
   const sources =['sonar','jenkins','zypher','jira','bitbucket'];
   const postMethods =['postSonarKpi','postJenkinsKpi','postZypherKpi','postJiraKpi','postBitBucketKpi'];
   const fakeResponses = [fakeSonarResponse,fakeJenkinsResponse,fakeZypherResponse,fakeJiraGroupId1,fakeBitbucketResponse];
@@ -677,6 +680,7 @@ describe('MaturityComponent', () => {
   expect(Object.keys(component.zypherKpiData).length).toEqual(zypherKpiData.length);
   expect(Object.keys(component.jiraKpiData).length).toEqual(jiraKpiData.length);
   expect(Object.keys(component.bitBucketKpiData).length).toEqual(bitBucketKpiData.length);
+  expect(spyhandleTabChange).toHaveBeenCalled();
   }));
 
   it('should receive data on passDataToDashboard',()=>{

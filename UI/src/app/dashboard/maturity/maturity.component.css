@@ -23,6 +23,8 @@
 .chart123{
 	display: flex;
 	margin:0 10px 10px 60px;
+	align-items: center;
+	position: relative;
 }
 .min-ht{
 	position: unset;
@@ -32,6 +34,12 @@
 }
 ::ng-deep  .tooltip_{
 	margin:40px;
+	background-color: white;
+    padding: 1rem;
+    border: 1px solid lightgrey;
+    height: max-content;
+	width: 40%;
+    color: rgba(0, 0, 0, 0.54);
 }
 ::ng-deep .maturity-level-header {
 	margin: 0;
@@ -62,7 +70,7 @@
 }
 
 ::ng-deep .group-3-on {
-	fill: #d74f14;
+	fill: #295098;
 }
 
 ::ng-deep .group-4-off {
@@ -70,16 +78,16 @@
 }
 
 ::ng-deep .group-4-on {
-	fill: #31a354;
+	fill: #0B7A75;
 }
 
 ::ng-deep .labelText {
-	font-size: 10px;
-	fill: #000;
+	font-size: 12px;
+	fill: white;
 }
 
 ::ng-deep .labelTextBackground {
-	fill: #B6B6B6;
+	fill: white;
 }
 
 ::ng-deep .highlight {
@@ -106,3 +114,95 @@
 	font-size: 2em;
 	fill: #000;
 }
+
+.maturity-container {
+	margin: 1rem;
+}
+
+:host .maturity-container ::ng-deep.p-button{
+	background-color: #079fff;;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button:nth-child(2){
+	background-color: #ff953b;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button:nth-child(3){
+	background-color: #295098;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button:nth-child(4){
+	background-color: #0B7A75;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button.p-button-outlined{
+	color: #079fff;
+	background-color: white;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(2){
+	color: #ff953b;
+	background-color: white;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(3){
+	color: #295098;
+	background-color: white;
+	font-weight: bold;
+}
+
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(4){
+	color: #0B7A75;
+	background-color: white;
+	font-weight: bold;
+}
+
+::ng-deep .tooltip-group-2{
+	color:#ff953b;
+}
+
+::ng-deep .tooltip-group-3{
+	color:#295098;
+}
+
+::ng-deep .tooltip-group-4{
+	color:#0B7A75;
+}
+
+::ng-deep .tooltipForCategory{
+	position: absolute;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: inherit;
+	background: rgba(250, 250, 250, 0.95);
+	opacity: 1;
+	box-shadow: 0px 0px 6px #b9b9bb;
+	border-radius: 3px;
+	max-width: 550px;
+	min-width: 50px;
+	color: rgba(0, 0, 0, 0.54);
+	margin-left: -14px;
+	text-align: center;
+	box-sizing: border-box;
+	padding:8px;
+}
+
+::ng-deep .tooltipForCategory::after {
+	content: '';
+	width: 0;
+	height: 0;
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-top: 8px solid #fafafaf2;
+	position: absolute;
+	top: 32px;
+	-webkit-filter:  drop-shadow(0px 2px 1px #b9b9bb);
+	filter:  drop-shadow(0px 2px 1px #b9b9bb);
+	left: 40%;
+  }
