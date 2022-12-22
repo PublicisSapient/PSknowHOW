@@ -33,8 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +43,8 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
@@ -133,11 +133,13 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		}
 	}
 
-	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO, List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
+	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
+			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
 		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 
-		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
-		if(findFirstUserBoard.isPresent()) {
+		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils
+				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
+		if (findFirstUserBoard.isPresent()) {
 			UserBoardConfig finalBoardConfig = findFirstUserBoard.get();
 			List<Board> scrum = finalBoardConfig.getScrum();
 			List<Board> kanban = finalBoardConfig.getKanban();
