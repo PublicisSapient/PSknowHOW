@@ -21,3 +21,4 @@
       [ngClass]="{'p-button-outlined' : selectedTabIndex !== i}" (click)="handleTabChange(i)"></button>
    <div class="chart123"></div>
 </div>
+<app-page-loader *ngIf="loader"></app-page-loader>
