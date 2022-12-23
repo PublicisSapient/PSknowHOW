@@ -118,7 +118,10 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
 							basicProjectConfigId);
-					resultListMap.put(ISSUES, issueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getTotalIssues(), issueList);
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
 		}

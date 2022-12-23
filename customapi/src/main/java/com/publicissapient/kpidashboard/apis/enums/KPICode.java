@@ -343,7 +343,11 @@ public enum KPICode {
 	/**
 	 * Invalid kpi code.
 	 */
-	INVALID("INVALID_KPI", "Invalid");
+	INVALID("INVALID_KPI", "Invalid"),
+	/**
+	 * Work Completed
+	 */
+	WORK_COMPLETED("kpi128", KPISource.JIRA.name());
 
 	// @formatter:on
 

@@ -123,7 +123,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(notCompletedIssues, basicProjectConfigId);
-					resultListMap.put(ISSUES, issueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getNotCompletedIssues(), issueList);
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
 		}

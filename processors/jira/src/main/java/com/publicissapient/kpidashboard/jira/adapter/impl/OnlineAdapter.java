@@ -189,24 +189,33 @@ public class OnlineAdapter implements JiraAdapter {
 				int pageStart = 0;
 				int totalEpic = 0;
 				int fetchedEpic = 0;
+				boolean continueFlag  = true;
 				do {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
 					searchResult = promise.claim();
-					if (searchResult != null) {
+					if (null != searchResult && null != searchResult.getIssues()) {
 						if (totalEpic == 0) {
 							totalEpic = searchResult.getTotal();
 						}
-						searchResult.getIssues().forEach(issue -> {
+						int issueCount = 0;
+						for (Issue issue : searchResult.getIssues()) {
 							issueList.add(issue);
-						});
-						fetchedEpic += searchResult.getMaxResults();
-						pageStart += searchResult.getMaxResults();
+							issueCount++;
+						}
+						fetchedEpic += issueCount;
+						pageStart += issueCount;
+						if (totalEpic <= fetchedEpic) {
+							fetchedEpic = totalEpic;
+							continueFlag = false;
+						}
+					} else {
+						break;
 					}
-					log.info("epic Api call delay started for project {}",projectConfFieldMapping.getProjectName());
+					log.info("epic Api call delay started for project {}", projectConfFieldMapping.getProjectName());
 					TimeUnit.MILLISECONDS.sleep(500);
-					log.info("epic Api call delay ended for project {}",projectConfFieldMapping.getProjectName());
-				} while (totalEpic < fetchedEpic);
+					log.info("epic Api call delay ended for project {}", projectConfFieldMapping.getProjectName());
+				} while (totalEpic < fetchedEpic || continueFlag);
 			} else {
 				log.info("No Epic Found to fetch");
 			}

@@ -128,7 +128,8 @@ public final class CommonConstant {
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
-
+	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
+	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
 
 
 
