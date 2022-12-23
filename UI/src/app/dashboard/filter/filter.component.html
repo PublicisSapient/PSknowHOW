@@ -5,7 +5,7 @@
 
    <!--Scrum/Kanban Switch starts-->
    <div
-      *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog' && router.url.split('/')[2]?.toLowerCase() !== 'maturity'">
+      *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
       <input id="tab1" class="tab1" type="radio" name="tabs" [checked]='!kanban'>
       <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedType('Scrum')" id="Layout-Scrum">
          <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
