@@ -230,7 +230,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 							jiraIssue.getNumber(), jiraIssue.getUrl());
 					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(iterationKpiModalColoumn,
-							jiraIssue.getName());
+							jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
 					modalValues.add(iterationKpiModalValue);
 					overAllmodalValues.add(iterationKpiModalValue);
 					issueCount = issueCount + 1;

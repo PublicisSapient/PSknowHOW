@@ -209,8 +209,6 @@ public class RCAServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("defectRCA", Arrays.asList("-5", "5-15", "15-30", "30-50", "50-"));
 
-		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
 
 		when(featureRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
