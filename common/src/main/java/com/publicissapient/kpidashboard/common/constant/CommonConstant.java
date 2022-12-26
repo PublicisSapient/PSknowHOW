@@ -132,7 +132,8 @@ public final class CommonConstant {
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
 	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
-
+	public static final String MODAL_HEAD_ISSUE_ESTIMATE = "Size";
+	public static final String MODAL_HEAD_REMAINING_HOURS = "Remaining Hours";
 
 
 

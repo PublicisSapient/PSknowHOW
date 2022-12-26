@@ -185,8 +185,13 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					for (JiraIssue jiraIssue : issues) {
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
+						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+						iterationKpiModalValue.setCol1(iterationKpiModalColoumn);
+						iterationKpiModalValue.setDescription(jiraIssue.getName());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+						iterationKpiModalValue.setSize(jiraIssue.getStoryPoints().toString());
+						System.out.println("===================="+jiraIssue.getStoryPoints());
 						modalValues.add(iterationKpiModalValue);
 						overAllmodalValues.add(iterationKpiModalValue);
 						issueCount = issueCount + 1;
@@ -220,7 +225,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 				// Modal Heads Options
 				List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-						CommonConstant.MODAL_HEAD_ISSUE_TYPE);
+						CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_ESTIMATE);
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());

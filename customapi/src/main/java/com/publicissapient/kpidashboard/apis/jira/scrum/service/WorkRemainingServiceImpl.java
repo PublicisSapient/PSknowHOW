@@ -177,8 +177,13 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					for (JiraIssue jiraIssue : issues) {
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
+						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+						iterationKpiModalValue.setCol1(iterationKpiModalColoumn);
+						iterationKpiModalValue.setDescription(jiraIssue.getName());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+						iterationKpiModalValue.setSize(jiraIssue.getStoryPoints().toString());
+						iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes().toString());
 						modalValues.add(iterationKpiModalValue);
 						overAllmodalValues.add(iterationKpiModalValue);
 						issueCount = issueCount + 1;
@@ -225,7 +230,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			// Modal Heads Options
 			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
+					CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_ESTIMATE, CommonConstant.MODAL_HEAD_REMAINING_HOURS);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());

@@ -20,13 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * object used to bind iteration kpi's value
@@ -44,5 +38,12 @@ public class IterationKpiModalValue implements Serializable {
 	private String description;
 	private String issueStatus;
 	private String issueType;
-
+	private String size;
+    private String remainingTime;
+	public IterationKpiModalValue(IterationKpiModalColoumn iterationKpiModalColoumn, String name, String status, String typeName) {
+		this.col1 = iterationKpiModalColoumn;
+		this.description = name;
+		this.issueStatus = status;
+		this.issueType = typeName;
+	}
 }

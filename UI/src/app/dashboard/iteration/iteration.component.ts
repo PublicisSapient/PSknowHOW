@@ -343,6 +343,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   }*/
 
   ngOnInit() {
+
+    console.log(this.modalDetails);
     this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
     if (this.service.getFilterObject()) {
@@ -652,6 +654,7 @@ iAdjust = 1;
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+    console.log(this.modalDetails);
   }
 
   drop(event: CdkDragDrop<string[]>) {
