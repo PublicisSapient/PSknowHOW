@@ -403,11 +403,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
         if(!(this.tabs.length > 0 && this.selectedTabKpis.length >0)){
             this.configGlobalData = this.service.getDashConfigData();
             this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration');
-            this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
         }
         this.selectedTabKpis = this.tabs[index].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
         const allCategoriesKpis = [this.jiraKpiData, this.jenkinsKpiData, this.sonarKpiData, this.zypherKpiData, this.bitBucketKpiData];
-
         //updated the maturityValue with selected Category kpi
         for (const category of allCategoriesKpis) {
             for (const obj in category) {
@@ -576,7 +574,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     maturityRange: undefined
                 });
             }
-
             if (this.selectedTab !== 'Overall') {
                 root.textLines = [...root.textLines, '(M' + getAverageMaturityValue(sumOfMatirity / root.children.length) + ')'];
             } else {
@@ -584,9 +581,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 const tabCategory = {};
                 this.tabs.forEach((tab, index) => {
                     if (index !== 0) {
-                        tabCategory[tab.boardName] = tab.kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
+                        tabCategory[tab.boardName] = tab.kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown).map(kpi => kpi.kpiId);
                     }
                 });
+                const kpisInOverAllTab = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
                 const children = [];
                 sumOfMatirity = 0;
                 for (const category in tabCategory) {
@@ -595,7 +593,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                         maturityRange: 'undefined',
                         group: children.length + 2
                     };
-                    const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId));
+                    const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId) && kpisInOverAllTab.includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
                     tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 0);
                     sumOfMatirity += +tab['maturity'];
@@ -799,7 +797,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                             if (self.selectedTab === 'Overall') {
                                 tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
                                 tooltipForMainCategoryDiv.transition()
-                                    .duration(500)
                                     .style('opacity', 1)
                                     .style('display', 'inline-block')
                                     .style('left', event.offsetX + 'px')
