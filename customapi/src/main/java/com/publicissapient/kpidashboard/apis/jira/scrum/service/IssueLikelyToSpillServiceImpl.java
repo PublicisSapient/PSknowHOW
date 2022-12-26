@@ -270,8 +270,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
+			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS, CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_SIZE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
