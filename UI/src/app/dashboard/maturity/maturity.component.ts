@@ -923,8 +923,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
 
         function maturityLevelTooltip(maturityLevelData) {
-            console.log(maturityLevelData);
-            
             if (maturityLevelData.maturityRange === undefined) {
                 maturityLevelData.maturityRange = ['NA', 'NA', 'NA', 'NA', 'NA'];
             }
