@@ -541,16 +541,18 @@ export class MaturityComponent implements OnInit, OnDestroy {
             if (Object.keys(this.maturityValue).length > 0) {
                 for (const kpi in this.maturityValue) {
                     if (kpi === 'kpi3' || kpi === 'kpi53') {
+                        let maturiyRangeValue = 5;
                         this.maturityValue[kpi]['trendValueList']?.forEach((kpiValue, index) => {
                             if (index !== 0) {
                                 root.children.push({
                                     textLines: [kpiValue.filter],
                                     maturity: getMaturityValue(undefinedCheck(this.maturityValue[kpi]) || undefinedCheck(this.maturityValue[kpi].trendValueList) || undefinedCheck(this.maturityValue[kpi].trendValueList[index]) ? -1 : this.maturityValue[kpi].trendValueList[index].value[0].maturity),
-                                    maturityRange: undefinedCheck(this.maturityValue[kpi]) || undefinedCheck(this.maturityValue[kpi].maturityRange) ? 'undefined' : this.maturityValue[kpi].maturityRange.slice(5, 11),
+                                    maturityRange: undefinedCheck(this.maturityValue[kpi]) || undefinedCheck(this.maturityValue[kpi].maturityRange) ? 'undefined' : this.maturityValue[kpi].maturityRange.slice(maturiyRangeValue, maturiyRangeValue + 5),
                                     group: this.maturityValue[kpi].group ? this.maturityValue[kpi].group : 1,
                                     kpiDefinition: this.maturityValue[kpi].kpiInfo.definition,
                                     kpiId: kpi
                                 });
+                                maturiyRangeValue = maturiyRangeValue + 5;
                                 sumOfMatirity += +getMaturityValue(undefinedCheck(this.maturityValue[kpi]) || undefinedCheck(this.maturityValue[kpi].trendValueList) || undefinedCheck(this.maturityValue[kpi].trendValueList[index]) ? -1 : this.maturityValue[kpi].trendValueList[index].value[0].maturity);
                             }
                         });
@@ -595,7 +597,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     };
                     const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
-                    tab['maturity'] = sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 0;
+                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 0);
                     sumOfMatirity += +tab['maturity'];
                     children.push(tab);
                 }
@@ -933,10 +935,14 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
             renderDescription += '<div class="p-grid justify-content-start maturity-level-header" ><span class="p-col" style="padding-left:0"><strong>Maturity Level :</strong></span>';
 
-            if (maturityLevelData.maturityRange[0].charAt(0) === '-' && (textLine !== 'Defect Removal Efficiency' && textLine !== 'Sprint Predictability' && textLine !== 'Sprint Velocity' && textLine !== 'Regression Automation Coverage' && textLine !== 'In-sprint Automation Coverage')) {
-                maturityLevelData.maturityRange[0] = '>=' + maturityLevelData.maturityRange[0].substring(1);
+            let kpiIdWithMaturityRangePrefixZero = ['kpi82','kpi34','kpi42','kpi16','kpi17','kpi70','kpi72','kpi11','kpi118','kpi63','kpi62','kpi71','kpi65'];
+            
+            if (maturityLevelData.maturityRange[0].charAt(0) === '-'
+                && !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
+                maturityLevelData.maturityRange[0] = '>= ' + maturityLevelData.maturityRange[0].substring(1);
             }
-            if (maturityLevelData.maturityRange[0].charAt(0) === '-' && (textLine === 'Defect Removal Efficiency' || textLine === 'Sprint Predictability' || textLine === 'Sprint Velocity' || textLine === 'Regression Automation Coverage' || textLine === 'In-sprint Automation Coverage')) {
+            if (maturityLevelData.maturityRange[0].charAt(0) === '-'
+                && kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
                 maturityLevelData.maturityRange[0] = '0 - ' + maturityLevelData.maturityRange[0].substring(1);
             }
 
@@ -949,11 +955,13 @@ export class MaturityComponent implements OnInit, OnDestroy {
             renderDescription += '<span class="p-col"><strong>M4</strong></br><sub>' + maturityLevelData.maturityRange[3] + '</sub></span>';
 
 
-            if (maturityLevelData.maturityRange[4].slice(-1) === '-' && (textLine !== 'Defect Removal Efficiency' && textLine !== 'Sprint Predictability' && textLine !== 'Sprint Velocity' && textLine !== 'Regression Automation Coverage' && textLine !== 'In-sprint Automation Coverage')) {
+            if (maturityLevelData.maturityRange[4].slice(-1) === '-' 
+            && !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
                 maturityLevelData.maturityRange[4] = maturityLevelData.maturityRange[4] + '0';
             }
-            if (maturityLevelData.maturityRange[4].slice(-1) === '-' && (textLine === 'Defect Removal Efficiency' || textLine === 'Sprint Predictability' || textLine === 'Sprint Velocity' || textLine === 'Regression Automation Coverage' || textLine === 'In-sprint Automation Coverage')) {
-                maturityLevelData.maturityRange[4] = maturityLevelData.maturityRange[4].slice(0, -1) + '>=';
+            if (maturityLevelData.maturityRange[4].slice(-1) === '-' 
+            && kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
+                maturityLevelData.maturityRange[4] = maturityLevelData.maturityRange[4].slice(0, -1) + ' >=';
             }
 
             renderDescription += '<span class="p-col"><strong>M5</strong></br><sub>' + maturityLevelData.maturityRange[4] + '</sub></span>';
