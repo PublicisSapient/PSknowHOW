@@ -170,8 +170,13 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				for (JiraIssue jiraIssue : issues) {
 					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 							jiraIssue.getNumber(), jiraIssue.getUrl());
-					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(iterationKpiModalColoumn,
-							jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
+					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+					iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
+					iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+					iterationKpiModalValue.setDescription(jiraIssue.getName());
+					iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+					iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+					iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
 					modalValues.add(iterationKpiModalValue);
 					overAllmodalValues.add(iterationKpiModalValue);
 

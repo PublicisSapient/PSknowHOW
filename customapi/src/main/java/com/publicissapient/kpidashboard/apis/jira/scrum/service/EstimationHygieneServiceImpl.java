@@ -185,8 +185,14 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						// set modal values
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
+						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
+						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+						iterationKpiModalValue.setDescription(jiraIssue.getName());
+						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+
 						withoutEstmodalValues.add(iterationKpiModalValue);
 						overAllWithoutEstmodalValues.add(iterationKpiModalValue);
 					}
@@ -198,8 +204,14 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						// set modal values
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
+						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
+						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+						iterationKpiModalValue.setDescription(jiraIssue.getName());
+						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+
 						missingmodalValues.add(iterationKpiModalValue);
 						overAllMissingModalValues.add(iterationKpiModalValue);
 					}
