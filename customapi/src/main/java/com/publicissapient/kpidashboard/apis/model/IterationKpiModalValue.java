@@ -57,10 +57,10 @@ public class IterationKpiModalValue implements Serializable {
 	private String remainingTime;
 
 	@JsonProperty("Logged Time")
-	private String timeSpentInMinutes;
+	private Integer timeSpentInMinutes;
 
 	@JsonProperty("Original Estimate")
-	private String originalEstimateMinutes;
+	private Integer originalEstimateMinutes;
 	public IterationKpiModalValue(String issueId, String issueURL, String name, String status, String typeName) {
 		this.issueId = issueId;
 		this.issueURL = issueURL;
