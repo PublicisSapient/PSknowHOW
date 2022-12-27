@@ -237,7 +237,9 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes());
+		if(jiraIssue.getRemainingEstimateMinutes() != null) {
+			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
+		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
