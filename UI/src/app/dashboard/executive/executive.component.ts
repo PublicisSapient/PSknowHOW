@@ -854,6 +854,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         this.loaderJiraKanbanArray.splice(this.loaderJiraKanbanArray.indexOf(element.kpiId), 1);
                     });
                 }
+                this.kpiLoader =false;
             });
     }
 
@@ -1061,8 +1062,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
-        
-        
     }
 
     ifKpiExist(kpiId) {
