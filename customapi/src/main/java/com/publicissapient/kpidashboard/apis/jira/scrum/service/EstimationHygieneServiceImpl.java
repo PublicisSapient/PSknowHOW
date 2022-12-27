@@ -42,7 +42,6 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalColoumn;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -183,8 +182,6 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueWithoutEstimate++;
 						overAllWithoutEstimate.set(0, overAllWithoutEstimate.get(0) + 1);
 						// set modal values
-						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
 						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -202,8 +199,6 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueMissingLog++;
 						overAllMissingLog.set(0, overAllMissingLog.get(0) + 1);
 						// set modal values
-						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
 						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
