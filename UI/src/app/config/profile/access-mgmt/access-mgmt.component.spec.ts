@@ -47,7 +47,8 @@ describe('AccessMgmtComponent', () => {
   const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
   const fakeServiceInputInvalid = require('../../../../test/resource/fakeUserDataChange.json');
   const fakeServiceInputValid = require('../../../../test/resource/fakeUserDataChangeValid.json');
-
+  const fakeFilterByProjectData = require('../../../../test/resource/fakeFilterByProjectData.json');
+  const fakeFilterByRoleData = require('../../../../test/resource/fakeFilterByRoleData.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AccessMgmtComponent],
@@ -130,5 +131,19 @@ describe('AccessMgmtComponent', () => {
     expect(component.displayDuplicateProject).toBeFalsy();
     httpMock.expectOne(baseUrl + '/api/userinfo/' + fakeServiceInputValid.username);
     done();
+  });
+
+  it('should filter by project', ()=>{
+    component.searchProject = 'KnowHOW';
+    component.filterByProject();
+    component.users = fakeFilterByProjectData;
+    expect(component.users[0].projectsAccess[0].accessNodes[0].accessItems[0].itemName).toContain('KnowHOW');
+  });
+
+  it('should filter by role', ()=>{
+    component.searchRole = 'ROLE_SUPERADMIN';
+    component.filterByRole();
+    component.users = fakeFilterByRoleData;
+    expect(component.users[0].projectsAccess[0].role).toContain('ROLE_SUPERADMIN');
   });
 });
