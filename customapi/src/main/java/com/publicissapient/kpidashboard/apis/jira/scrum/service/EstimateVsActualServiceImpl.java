@@ -177,6 +177,11 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 					iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 					iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 					iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+					if(null!=jiraIssue.getOriginalEstimateMinutes())
+					iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(jiraIssue.getOriginalEstimateMinutes()+" hrs"));
+					else
+						iterationKpiModalValue.setOriginalEstimateMinutes(0+" hrs");
+					iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(jiraIssue.getTimeSpentInMinutes()+" hrs"));
 					modalValues.add(iterationKpiModalValue);
 					overAllmodalValues.add(iterationKpiModalValue);
 
