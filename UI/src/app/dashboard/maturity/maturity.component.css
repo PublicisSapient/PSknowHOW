@@ -24,7 +24,6 @@
 	display: flex;
 	margin:0 10px 10px 60px;
 	align-items: center;
-	position: relative;
 }
 .min-ht{
 	position: unset;
