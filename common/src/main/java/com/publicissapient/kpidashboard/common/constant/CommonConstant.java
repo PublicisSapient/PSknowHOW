@@ -134,6 +134,8 @@ public final class CommonConstant {
 	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
 	public static final String MODAL_HEAD_ISSUE_ESTIMATE = "Size";
 	public static final String MODAL_HEAD_REMAINING_HOURS = "Remaining Hours";
+	public static final String MODAL_HEAD_ISSUE_SIZE = "Issue Size";
+
 
 
 

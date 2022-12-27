@@ -663,6 +663,7 @@ describe('MaturityComponent', () => {
   component.sonarKpiRequest='';
   component.bitBucketKpiRequest='';
   component.selectedtype = 'Scrum';
+  component.noOfJiraGroups =1;
   const spydrawAreaChart =spyOn(component,'drawAreaChart');
   const spyhandleTabChange = spyOn(component,'handleTabChange');
   const sources =['sonar','jenkins','zypher','jira','bitbucket'];

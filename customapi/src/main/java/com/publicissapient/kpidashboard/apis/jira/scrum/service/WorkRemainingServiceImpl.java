@@ -178,12 +178,13 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-						iterationKpiModalValue.setCol1(iterationKpiModalColoumn);
+						iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 						iterationKpiModalValue.setDescription(jiraIssue.getName());
-						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-						iterationKpiModalValue.setSize(jiraIssue.getStoryPoints().toString());
-						iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes().toString());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+
 						modalValues.add(iterationKpiModalValue);
 						overAllmodalValues.add(iterationKpiModalValue);
 						issueCount = issueCount + 1;

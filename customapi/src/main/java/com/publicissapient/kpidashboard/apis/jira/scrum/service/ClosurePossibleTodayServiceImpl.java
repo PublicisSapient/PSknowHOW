@@ -186,12 +186,13 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
 								jiraIssue.getNumber(), jiraIssue.getUrl());
 						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-						iterationKpiModalValue.setCol1(iterationKpiModalColoumn);
+						iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 						iterationKpiModalValue.setDescription(jiraIssue.getName());
-						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-						iterationKpiModalValue.setSize(jiraIssue.getStoryPoints().toString());
-						System.out.println("===================="+jiraIssue.getStoryPoints());
+						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+
 						modalValues.add(iterationKpiModalValue);
 						overAllmodalValues.add(iterationKpiModalValue);
 						issueCount = issueCount + 1;

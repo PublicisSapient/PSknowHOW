@@ -20,7 +20,14 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * object used to bind iteration kpi's value
@@ -34,16 +41,27 @@ import lombok.*;
 @ToString
 public class IterationKpiModalValue implements Serializable {
 	private static final long serialVersionUID = -6376203644006393547L;
-	private IterationKpiModalColoumn col1;
+	@JsonProperty("Issue Id")
+	private String issueId;
+	@JsonProperty("Issue URL")
+	private String issueURL;
+	@JsonProperty("Issue Description")
 	private String description;
+	@JsonProperty("Issue Status")
 	private String issueStatus;
+	@JsonProperty("Issue Type")
 	private String issueType;
-	private String size;
-    private String remainingTime;
-	public IterationKpiModalValue(IterationKpiModalColoumn iterationKpiModalColoumn, String name, String status, String typeName) {
-		this.col1 = iterationKpiModalColoumn;
+	@JsonProperty("Issue Size")
+	private String issueSize;
+	@JsonProperty("Remaining Time")
+	private String remainingTime;
+	public IterationKpiModalValue(String issueId, String issueURL, String name, String status, String typeName) {
+		this.issueId = issueId;
+		this.issueURL = issueURL;
 		this.description = name;
 		this.issueStatus = status;
 		this.issueType = typeName;
 	}
+
+
 }
