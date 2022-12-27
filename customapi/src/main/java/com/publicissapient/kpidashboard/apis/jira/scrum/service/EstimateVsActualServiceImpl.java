@@ -167,9 +167,11 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<IterationKpiModalValue> modalValues = new ArrayList<>();
 				int origEstData = 0;
 				int logWorkData = 0;
+
 				for (JiraIssue jiraIssue : issues) {
 
 					populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
+
 
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
@@ -217,13 +219,23 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	}
 
 	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+		int originalEstimate = 0;
+		int loggedTime = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		if(null!=jiraIssue.getOriginalEstimateMinutes()){
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
+			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
+		}
+		else
+			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
+		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
+		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}

@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.kafka.common.protocol.types.Field;
 
 /**
  * object used to bind iteration kpi's value
@@ -40,7 +41,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class IterationKpiModalValue implements Serializable {
-
 	private static final long serialVersionUID = -6376203644006393547L;
 	@JsonProperty("Issue Id")
 	private String issueId;
@@ -56,6 +56,10 @@ public class IterationKpiModalValue implements Serializable {
 	private Double issueSize;
 	@JsonProperty("Remaining Time")
 	private Integer remainingTime;
+	@JsonProperty("Logged Time")
+	private String timeSpentInMinutes;
+	@JsonProperty("Original Estimate")
+	private String originalEstimateMinutes;
 
 
 }
