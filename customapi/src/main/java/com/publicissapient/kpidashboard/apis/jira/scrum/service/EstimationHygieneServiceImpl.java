@@ -191,7 +191,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						iterationKpiModalValue.setDescription(jiraIssue.getName());
 						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
 
 						withoutEstmodalValues.add(iterationKpiModalValue);
 						overAllWithoutEstmodalValues.add(iterationKpiModalValue);
@@ -210,8 +210,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						iterationKpiModalValue.setDescription(jiraIssue.getName());
 						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-
+						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
 						missingmodalValues.add(iterationKpiModalValue);
 						overAllMissingModalValues.add(iterationKpiModalValue);
 					}

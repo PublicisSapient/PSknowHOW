@@ -168,17 +168,8 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				int origEstData = 0;
 				int logWorkData = 0;
 				for (JiraIssue jiraIssue : issues) {
-					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-							jiraIssue.getNumber(), jiraIssue.getUrl());
-					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-					iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-					iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-					iterationKpiModalValue.setDescription(jiraIssue.getName());
-					iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-					iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-					iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-					modalValues.add(iterationKpiModalValue);
-					overAllmodalValues.add(iterationKpiModalValue);
+
+					populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
 
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
@@ -224,4 +215,17 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
+
+	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
 }

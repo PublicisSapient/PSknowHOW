@@ -228,18 +228,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				int issueCount = 0;
 				double storyPoints = 0;
 				for (JiraIssue jiraIssue : issues) {
-					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-							jiraIssue.getNumber(), jiraIssue.getUrl());
-					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-					iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-					iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-					iterationKpiModalValue.setDescription(jiraIssue.getName());
-					iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-					iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-					iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-
-					modalValues.add(iterationKpiModalValue);
-					overAllmodalValues.add(iterationKpiModalValue);
+					populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();
@@ -264,4 +253,17 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 
 		});
 	}
+
+	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
 }

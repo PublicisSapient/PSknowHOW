@@ -202,20 +202,9 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
 							Integer timeRemaining = jiraIssue.getRemainingEstimateMinutes();
 							if (null != timeRemaining && timeRemaining > timeRemainingInSprintMin.get(0)) {
-
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-								IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-										jiraIssue.getNumber(), jiraIssue.getUrl());
-								IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-								iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-								iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-								iterationKpiModalValue.setDescription(jiraIssue.getName());
-								iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-								iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-								iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-								modalValues.add(iterationKpiModalValue);
-								overAllmodalValues.add(iterationKpiModalValue);
+								populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
 								if (null != jiraIssue.getStoryPoints()) {
 									storyPoint = storyPoint + jiraIssue.getStoryPoints();
 									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -224,17 +213,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						} else {
 							riskIssueCount = riskIssueCount + 1;
 							overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-							IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-									jiraIssue.getNumber(), jiraIssue.getUrl());
-							IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-							iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
-							iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-							iterationKpiModalValue.setDescription(jiraIssue.getName());
-							iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-							iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-							iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-							modalValues.add(iterationKpiModalValue);
-							overAllmodalValues.add(iterationKpiModalValue);
+							populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
 							if (null != jiraIssue.getStoryPoints()) {
 								storyPoint = storyPoint + jiraIssue.getStoryPoints();
 								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -277,5 +256,17 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			kpiElement.setModalHeads(modalHeads);
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
 	}
 }

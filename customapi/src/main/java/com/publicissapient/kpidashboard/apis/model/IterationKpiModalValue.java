@@ -40,6 +40,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class IterationKpiModalValue implements Serializable {
+
 	private static final long serialVersionUID = -6376203644006393547L;
 	@JsonProperty("Issue Id")
 	private String issueId;
@@ -52,16 +53,9 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Issue Type")
 	private String issueType;
 	@JsonProperty("Issue Size")
-	private String issueSize;
+	private Double issueSize;
 	@JsonProperty("Remaining Time")
-	private String remainingTime;
-	public IterationKpiModalValue(String issueId, String issueURL, String name, String status, String typeName) {
-		this.issueId = issueId;
-		this.issueURL = issueURL;
-		this.description = name;
-		this.issueStatus = status;
-		this.issueType = typeName;
-	}
+	private Integer remainingTime;
 
 
 }

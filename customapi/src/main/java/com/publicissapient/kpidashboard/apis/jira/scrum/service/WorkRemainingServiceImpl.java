@@ -175,18 +175,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					Double storyPoint = 0.0;
 					int remHours = 0;
 					for (JiraIssue jiraIssue : issues) {
-						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-						iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-						iterationKpiModalValue.setDescription(jiraIssue.getName());
-						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-
-						modalValues.add(iterationKpiModalValue);
-						overAllmodalValues.add(iterationKpiModalValue);
+						populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -238,5 +227,18 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			kpiElement.setModalHeads(modalHeads);
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
 	}
 }
