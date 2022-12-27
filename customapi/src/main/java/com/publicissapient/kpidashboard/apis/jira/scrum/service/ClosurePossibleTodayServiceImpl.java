@@ -215,7 +215,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 				// Modal Heads Options
 				List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-						CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_ESTIMATE);
+						CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_SIZE);
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());

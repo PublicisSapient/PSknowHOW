@@ -220,7 +220,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			// Modal Heads Options
 			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_ESTIMATE, CommonConstant.MODAL_HEAD_REMAINING_HOURS);
+					CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_SIZE, CommonConstant.MODAL_HEAD_REMAINING_HOURS);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
