@@ -2375,16 +2375,49 @@ describe('IterationComponent', () => {
     });
 
     it('should get dropdown array for kpi', () => {
-        const idx = component.ifKpiExist('kpi75');
-        const filters = component.allKpiArray['kpi75'].filters;
-        const dropdownArr = [];
-        Object.keys(filters).forEach(x => {
-            dropdownArr.push(filters[x]);
-        });
-        expect(dropdownArr).toEqual(kpiDropdowns['kpi75']);
+        spyOn(component, 'ifKpiExist').and.returnValue('0');
+        component.allKpiArray = [{
+            'kpiId': 'kpi75',
+            filters: {
+                "filter1": {
+                    "filterType": "Filter by issue type",
+                    "options": [
+                        "Tech Story",
+                        "Technical Debt",
+                        "Bug",
+                        "Story"
+                    ]
+                }
+            }
+        }]
+        component.getDropdownArray('kpi75');
+        expect(component.kpiDropdowns['kpi75'].length).toEqual(kpiDropdowns['kpi75'].length);
     });
 
     it('should handle selected option', () => {
+        const event = {
+            "filter1": [
+                "Tech Story"
+            ],
+            "filter2": [
+                "Medium"
+            ]
+        };
+        const kpi = {
+            'kpiId': 'kpi123'
+        }
+        component.handleSelectedOption(event, kpi)
+        component.kpiSelectedFilterObj['kpi123'] = {};
+        component.kpiSelectedFilterObj['kpi123'] = event
+        spyOn(component, 'getChartData');
+        service.setKpiSubFilterObj(component.kpiSelectedFilterObj)
+        expect(Object.keys(component.kpiSelectedFilterObj['kpi123']).length).toEqual(Object.keys(event).length);
+    });
 
+    it('should convert to hours if time', ()=>{
+        const time = '14880';
+        const unit = 'hours';
+        const convertedTime = component.convertToHoursIfTime(time, unit);
+        expect(convertedTime).toEqual('248h');
     });
 });
