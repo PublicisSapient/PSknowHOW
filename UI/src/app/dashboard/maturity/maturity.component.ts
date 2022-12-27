@@ -791,24 +791,52 @@ export class MaturityComponent implements OnInit, OnDestroy {
                             return d.data.textLines[d.data.textLines.length - 1 - i];
                         });
                     //show tooltip when  Overall Tab is selected
-                    svg.selectAll('.labelarc')
-                        .style('cursor', 'pointer')
-                        .on('mouseover', function (event, d) {
-                            if (self.selectedTab === 'Overall') {
-                                tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                    svg.selectAll('.labelarc').filter(function (d) {
+                        d3.select(this)
+                            .on('mouseover', function (event, d) {
+                                d3.select(this).style('cursor', 'pointer')
+                                if (self.selectedTab === 'Overall') {
+                                    const arc = event.target.parentElement.lastElementChild.lastElementChild;
+                                    let yPosition = arc?.getBoundingClientRect()?.top;
+                                    let xPosition = arc?.getBoundingClientRect()?.right;
+                                    tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                    tooltipForMainCategoryDiv.transition()
+                                        .style('opacity', 1)
+                                        .style('display', 'block')
+                                        .style('left', xPosition + window.scrollX - 30 + 'px')
+                                        .style('top', yPosition + window.scrollY - 40 + 'px')
+                                }
+                            })
+                            .on('mouseout', function (event, d) {
                                 tooltipForMainCategoryDiv.transition()
                                     .style('opacity', 1)
-                                    .style('display', 'inline-block')
-                                    .style('left', event.offsetX + 'px')
-                                    .style('top', event.offsetY + 'px')
-                            }
-                        })
-                        .on('mouseout', function (event, d) {
+                                    .style('display', 'none');
+                            });
+                    });
+
+                    svg.selectAll('.labelText')
+                    .style('cursor', 'pointer')
+                    .on('mouseover', function (event, d) {
+                        d3.select(this).style('cursor', 'pointer')
+                        if (self.selectedTab === 'Overall') {
+                            const arc = event.target;
+                            const {
+                                top: yPosition,
+                                right: xPosition
+                            } = arc?.getBoundingClientRect();
+                            tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
                             tooltipForMainCategoryDiv.transition()
-                                .duration(500)
                                 .style('opacity', 1)
-                                .style('display', 'none');
-                        });
+                                .style('display', 'block')
+                                .style('left', xPosition + window.scrollX - 30 + 'px')
+                                .style('top', yPosition + window.scrollY - 40 + 'px')
+                        }
+                    })
+                    .on('mouseout', function (event, d) {
+                        tooltipForMainCategoryDiv.transition()
+                            .style('opacity', 1)
+                            .style('display', 'none');
+                    });
 
                     // Center labels
                     const cg = svg.append('g');
