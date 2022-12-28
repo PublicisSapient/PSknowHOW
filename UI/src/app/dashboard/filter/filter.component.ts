@@ -249,16 +249,14 @@ export class FilterComponent implements OnInit {
             this.kanban = false;
         }
 
-        //no calls for Kanban on KPI Maturity
-        if (!this.kanban || (this.kanban && this.router.url !== '/dashboard/Maturity')) {
-            if (this.kanban !== this.previousType) {
-                this.filterForm?.reset();
-                this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
-            }
-            this.setLevels();
-            this.getFilterDataOnLoad();
-            this.previousType = this.kanban;
+
+        if (this.kanban !== this.previousType) {
+            this.filterForm?.reset();
+            this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         }
+        this.setLevels();
+        this.getFilterDataOnLoad();
+        this.previousType = this.kanban;
         this.service.setSelectedType(type);
 
         const data = {
