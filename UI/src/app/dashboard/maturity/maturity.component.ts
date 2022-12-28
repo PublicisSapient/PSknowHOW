@@ -794,49 +794,56 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     svg.selectAll('.labelarc').filter(function (d) {
                         d3.select(this)
                             .on('mouseover', function (event, d) {
-                                d3.select(this).style('cursor', 'pointer')
                                 if (self.selectedTab === 'Overall') {
+                                    d3.select(this).style('cursor', 'pointer');
                                     const arc = event.target.parentElement.lastElementChild.lastElementChild;
                                     let yPosition = arc?.getBoundingClientRect()?.top;
                                     let xPosition = arc?.getBoundingClientRect()?.right;
                                     tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
                                     tooltipForMainCategoryDiv.transition()
+                                        .duration(500)
                                         .style('opacity', 1)
-                                        .style('display', 'block')
                                         .style('left', xPosition + window.scrollX - 30 + 'px')
                                         .style('top', yPosition + window.scrollY - 40 + 'px')
+                                        .style('display', 'block')
                                 }
                             })
                             .on('mouseout', function (event, d) {
                                 tooltipForMainCategoryDiv.transition()
-                                    .style('opacity', 1)
-                                    .style('display', 'none');
+                                    .duration(200)
+                                    .style('left', 'unset')
+                                    .style('top', 'unset')
+                                    .style('display', 'none')
+                                    .style('opacity', 0);
                             });
                     });
 
                     svg.selectAll('.labelText')
-                    .style('cursor', 'pointer')
-                    .on('mouseover', function (event, d) {
-                        d3.select(this).style('cursor', 'pointer')
-                        if (self.selectedTab === 'Overall') {
-                            const arc = event.target;
-                            const {
-                                top: yPosition,
-                                right: xPosition
-                            } = arc?.getBoundingClientRect();
-                            tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                        .on('mouseover', function (event, d) {
+                            if (self.selectedTab === 'Overall') {
+                                d3.select(this).style('cursor', 'pointer');
+                                const arc = event.target;
+                                const {
+                                    top: yPosition,
+                                    right: xPosition
+                                } = arc?.getBoundingClientRect();
+                                tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                tooltipForMainCategoryDiv.transition()
+                                    .duration(500)
+                                    .style('opacity', 1)
+                                    .style('left', xPosition + window.scrollX + 'px')
+                                    .style('top', yPosition + window.scrollY + 50 + 'px')
+                                    .style('display', 'block')
+                            }
+                        })
+                        .on('mouseout', function (event, d) {
                             tooltipForMainCategoryDiv.transition()
-                                .style('opacity', 1)
-                                .style('display', 'block')
-                                .style('left', xPosition + window.scrollX - 30 + 'px')
-                                .style('top', yPosition + window.scrollY - 40 + 'px')
-                        }
-                    })
-                    .on('mouseout', function (event, d) {
-                        tooltipForMainCategoryDiv.transition()
-                            .style('opacity', 1)
-                            .style('display', 'none');
-                    });
+                                .duration(200)
+                                .style('left', 'unset')
+                                .style('top', 'unset')
+                                .style('display', 'none')
+                                .style('opacity', 0);
+                        });
 
                     // Center labels
                     const cg = svg.append('g');
