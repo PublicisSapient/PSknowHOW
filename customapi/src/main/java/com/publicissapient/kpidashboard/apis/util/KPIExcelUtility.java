@@ -646,6 +646,22 @@ public class KPIExcelUtility {
         }
     }
 
+	public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel){
+
+		if(CollectionUtils.isNotEmpty(issuesExcel)) {
+			KPIExcelData excelData = new KPIExcelData();
+			issuesExcel.forEach((e) -> {
+				Map<String, String> epicLink = new HashMap<>();
+				epicLink.put(e.getNumber(), checkEmptyURL(e));
+				excelData.setDate(e.getChangeDate());
+				excelData.setIssueType(e.getTypeName());
+				excelData.setIssueID(epicLink);
+				excelData.setIssueDesc(e.getName());
+				excelDataList.add(excelData);
+			});
+		}
+	}
+
     public static void populateKanbanCODExcelData(String projectName, List<KanbanJiraIssue> epicList,
                                                   List<KPIExcelData> kpiExcelData) {
         if(CollectionUtils.isNotEmpty(epicList)) {

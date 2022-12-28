@@ -29,6 +29,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,6 +171,8 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+		List<JiraIssue> issuesExcel=new ArrayList<>();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
@@ -193,7 +198,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			for (LocalDate date = end; date.isAfter(start); date = date.minusDays(1)) {
 				dateWiseDataCount.put(date.format(YYYY_MM_DD_FORMATTER), new DataCount());
 			}
-			List<JiraIssue> issuesExcel=new ArrayList<>();
 			List<DataCount> data = new ArrayList<>();
 			dateWiseDataCount.forEach((date, dataCount) -> {
 				Map<String, Integer> value = new HashMap<>();
@@ -213,8 +217,13 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				data.add(dataCount);
 			});
 			trendValueList.add(new DataCount(latestSprint.getProjectFilter().getName(), Lists.reverse(data)));
-			populateValidationDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
+			//populateValidationDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
+			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+				KPIExcelUtility.populateDailyClosureExcelData(excelDataList,issuesExcel);
+			}
 		}
+		kpiElement.setExcelData(excelDataList);
+		kpiElement.setExcelColumns(KPIExcelColumn.DAILY_CLOSURES.getColumns());
 	}
 
 	/**
@@ -231,32 +240,32 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * @param sprint
 	 *            unique key
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> issuesExcel,Node sprint) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			Map<String, ValidationData> validationDataMap = new HashMap<>();
-			List<String> types = new ArrayList<>();
-			List<String> jiraIssues = new ArrayList<>();
-
-			
-			for (JiraIssue jiraIssue : issuesExcel) {
-
-				jiraIssues.add(jiraIssue.getNumber());
-				types.add(jiraIssue.getTypeName());
-			}
-			
-			ValidationData validationData = new ValidationData();
-			validationData.setIssues(jiraIssues);
-			validationData.setIssueTypeList(types);
-			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				String key =sprint.getSprintFilter().getId();
-				validationDataMap.put(key, validationData);
-				kpiElement.setMapOfSprintAndData(validationDataMap);
-			}
-		
-		}
-	}
+//	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
+//			List<JiraIssue> issuesExcel,Node sprint) {
+//
+//		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+//			Map<String, ValidationData> validationDataMap = new HashMap<>();
+//			List<String> types = new ArrayList<>();
+//			List<String> jiraIssues = new ArrayList<>();
+//
+//
+//			for (JiraIssue jiraIssue : issuesExcel) {
+//
+//				jiraIssues.add(jiraIssue.getNumber());
+//				types.add(jiraIssue.getTypeName());
+//			}
+//
+//			ValidationData validationData = new ValidationData();
+//			validationData.setIssues(jiraIssues);
+//			validationData.setIssueTypeList(types);
+//			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+//				String key =sprint.getSprintFilter().getId();
+//				validationDataMap.put(key, validationData);
+//				kpiElement.setMapOfSprintAndData(validationDataMap);
+//			}
+//
+//		}
+//	}
 
 	@Override
 	public Map<String, Long> calculateKpiValue(List<Map<String, Long>> valueList, String kpiName) {

@@ -64,6 +64,9 @@ public class KPIExcelData {
 	@JsonProperty("Story ID")
 	private Map<String, String> storyId;
 
+	@JsonProperty("Issue ID")
+	private Map<String, String> issueID;
+
 	@JsonProperty("Issue Description")
 	private String issueDesc;
 
