@@ -21,12 +21,10 @@ package com.publicissapient.kpidashboard.common.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.config.AsyncContextResolver;
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import org.slf4j.Logger;
@@ -66,13 +64,12 @@ public class RunProcessorController {
 
 		jobExecuter.setProjectsBasicConfigIds(processorExecutionBasicConfig.getProjectBasicConfigIds());
 		jobExecuter.setExecutionLogContext(ExecutionLogContext.getContext());
-
-		Runnable decorate = new AsyncContextResolver().decorate(jobExecuter);
-		PROCESSOR_EXECUTORS.execute(decorate);
+		PROCESSOR_EXECUTORS.execute(jobExecuter);
 
 		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Processor execution called");
 		ExecutionLogContext.getContext().destroy();
+		jobExecuter.getExecutionLogContext().destroy();
 		MDC.clear();
 		Map response = new HashMap();
 		response.put("status", "processing");

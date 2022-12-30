@@ -22,9 +22,9 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.MDC;
@@ -39,6 +39,7 @@ import com.publicissapient.kpidashboard.common.repository.application.KanbanAcco
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
@@ -90,6 +91,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 	private JiraRestClientFactory jiraRestClientFactory;
 
+	private ExecutionLogContext executionLogContext;
+
 
 	/**
 	 * Run.
@@ -98,6 +101,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	public void run() {
 
 		try {
+			setMDCContext();
 			//Change-4-- as thread changed context is to be get
 			ExecutionLogContext context = ExecutionLogContext.getContext();
 			context.setProjectName(onlineLineprojectConfigMap.getProjectName());
@@ -123,12 +127,20 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} catch (Exception ex){
 			log.error("Exception in processing Jira Project",ex);
-			ExecutionLogContext.getContext().destroy();
-			MDC.clear();
 		} finally {
 			latch.countDown();
+			ExecutionLogContext.getContext().destroy();
+			MDC.clear();
 		}
 
+	}
+
+	private void setMDCContext() {
+		ExecutionLogContext context = executionLogContext;
+		if (Objects.nonNull(context) && Objects.nonNull(context.getRequestId())) {
+			ExecutionLogContext.updateContext(context);
+		}
+		executionLogContext=null;
 	}
 
 	/**
@@ -165,7 +177,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
 							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
 							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory) { // NOPMD
+							  JiraRestClientFactory jiraRestClientFactory, ExecutionLogContext executionLogContext) //NOPMD
+	{
 		this.latch = latch;
 		this.jiraAdapter = jiraAdapter;
 		this.onlineLineprojectConfigMap = onlineLineprojectConfigMap;
@@ -178,6 +191,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.jiraRestClientFactory = jiraRestClientFactory;
+		this.executionLogContext=executionLogContext;
 	}
 
 	/**

@@ -25,7 +25,7 @@ public class ExecutionLogContext implements Serializable {
 	private String isCron;
 	private int threadId;
 
-	private static final ThreadLocal<ExecutionLogContext> EXECUTION_CONTEXT = new ImprovedThreadLocal<ExecutionLogContext>() {
+	private static final ThreadLocal<ExecutionLogContext> EXECUTION_CONTEXT = new ThreadLocal<ExecutionLogContext>() {
 
 		@Override
 		protected ExecutionLogContext initialValue() {
@@ -102,18 +102,6 @@ public class ExecutionLogContext implements Serializable {
 		return EXECUTION_CONTEXT.get();
 	}
 
-
-	public static synchronized ExecutionLogContext getContextByRequestId(String requestId) {
-
-		if (Objects.isNull(EXECUTION_CONTEXT.get())) {
-			EXECUTION_CONTEXT.set(new ExecutionLogContext(nextId.getAndIncrement()));
-		} else {
-			if (EXECUTION_CONTEXT.get().getRequestId().equalsIgnoreCase(requestId)) {
-				return EXECUTION_CONTEXT.get();
-			}
-		}
-		return EXECUTION_CONTEXT.get();
-	}
 
 	public static void set(ExecutionLogContext executionContextUtil) {
 		if (Objects.nonNull(executionContextUtil)) {

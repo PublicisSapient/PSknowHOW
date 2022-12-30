@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.executor;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -50,7 +51,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	private final TaskScheduler taskScheduler;
 	private final String processorName;
 	private List<String> projectsBasicConfigIds;
-	private ExecutionLogContext executionLogContext= new ExecutionLogContext();
+	private ExecutionLogContext executionLogContext;
 
 	public ExecutionLogContext getExecutionLogContext() {
 		return executionLogContext;
@@ -58,6 +59,12 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	public void setExecutionLogContext(ExecutionLogContext executionLogContext) {
 		this.executionLogContext = executionLogContext;
+	}
+
+	public void destroyLogContext() {
+		this.executionLogContext.destroy();
+		this.executionLogContext=null;
+
 	}
 
 	public List<String> getProjectsBasicConfigIds() {
@@ -76,6 +83,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	@Override
 	public final synchronized void run() {
+		setMDCContext();
 		log.debug("Running Processor: {}", processorName);
 		T processor = getProcessorRepository().findByProcessorName(processorName);
 		if (processor == null) {
@@ -115,6 +123,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	@PreDestroy
 	public void onShutdown() {
 		setOnline(false);
+		destroyLogContext();
 	}
 
 	public abstract T getProcessor();
@@ -166,6 +175,13 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		} else {
 			log.error("[TOOL-ITEM-CACHE-EVICT]. Error while evicting cache: {}",
 					CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		}
+	}
+
+	private void setMDCContext() {
+		ExecutionLogContext context = getExecutionLogContext();
+		if (Objects.nonNull(context) && Objects.nonNull(context.getRequestId())) {
+			ExecutionLogContext.updateContext(context);
 		}
 	}
 }

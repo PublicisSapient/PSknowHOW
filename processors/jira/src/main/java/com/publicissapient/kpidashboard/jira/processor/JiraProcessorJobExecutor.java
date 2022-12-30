@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +30,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,30 +110,32 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
 		//change 2--
-		if (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId())) {
+		if (ObjectUtils.isNotEmpty(getExecutionLogContext())&&(StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {
 			//setting execution context as per user request
 			getExecutionLogContext().setIsCron("false");
-			ExecutionLogContext.set(getExecutionLogContext());
-		} else {
+			} else {
 			//setting execution context as per for cron job uuid
-			ExecutionLogContext cronExecutionContext = getExecutionLogContext();
+			ExecutionLogContext cronExecutionContext = new ExecutionLogContext();
 			cronExecutionContext.setRequestId(uid);
 			cronExecutionContext.setIsCron("true");
-			ExecutionLogContext.set(cronExecutionContext);
+			setExecutionLogContext(cronExecutionContext);
 		}
 		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
 		log.info("Jira Processor Started", kv(CommonConstant.PSLOGDATA, psLogData));
 
 		clearSelectedBasicProjectConfigIds();
-		fetchIssueDetail(executionStatus, projectConfigList);
+		ExecutionLogContext executionLocalLogContext = getExecutionLogContext();
+		fetchIssueDetail(executionStatus, projectConfigList,executionLocalLogContext);
 
 		long endTime = System.currentTimeMillis();
 		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));
 		psLogData.setTimeTaken(String.valueOf(endTime - start));
 		psLogData.setExecutionStatus(String.valueOf(executionStatus));
+		ExecutionLogContext.updateContext(executionLocalLogContext);
 		log.info("Jira execution completed", kv(CommonConstant.PSLOGDATA, psLogData));
 		// Change 6-- clear Execution context
 		ExecutionLogContext.getContext().destroy();
+		destroyLogContext();
 		MDC.clear();
 		return executionStatus;
 	}
@@ -142,15 +143,17 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	/**
 	 * @param executionStatus
 	 * @param projectConfigList
+	 * @param executionLogContext
 	 * @return
 	 */
-	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList) {
+	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList, ExecutionLogContext executionLogContext) {
 		AtomicReference<Integer> scrumIssueCount = new AtomicReference<>(0);
 		AtomicReference<Integer> kanbanIssueCount = new AtomicReference<>(0);
 
 		if (!modeBasedProcessors.isEmpty() && CollectionUtils.isNotEmpty(projectConfigList)) {
 			try {
 				modeBasedProcessors.parallelStream().forEach(modeBasedProcessor -> {
+					modeBasedProcessor.setExecutionLogContext(executionLogContext);
 					Map<String, Integer> issueCountMap = modeBasedProcessor.validateAndCollectIssues(projectConfigList);
 					scrumIssueCount.updateAndGet(v -> v + issueCountMap.get(JiraConstants.SCRUM_DATA));
 					kanbanIssueCount.updateAndGet(v -> v + issueCountMap.get(JiraConstants.KANBAN_DATA));
