@@ -20,8 +20,8 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ProcessorService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for CRUD operations related to all processors details running on
@@ -89,7 +89,7 @@ public class ProcessorController {
 	@PreAuthorize("hasPermission(#projectBasicConfigIds, 'TRIGGER_PROCESSOR')")
 	public ResponseEntity<ServiceResponse> triggerProcessor(@PathVariable String processorName,
 			@RequestBody List<String> projectBasicConfigIds) {
-		ProcessorExecutionBasicConfig processorExecutionBasicConfig= new ProcessorExecutionBasicConfig();
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
 		processorExecutionBasicConfig.setProjectBasicConfigIds(projectBasicConfigIds);
 		processorExecutionBasicConfig.setLogContext(ExecutionLogContext.getContext());
 
