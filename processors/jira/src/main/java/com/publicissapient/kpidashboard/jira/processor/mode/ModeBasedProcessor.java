@@ -54,6 +54,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	@Autowired
 	private ConnectionRepository connectionRepository;
 
+	private ExecutionLogContext executionLogContext;
+
 	public ExecutionLogContext getExecutionLogContext() {
 		return executionLogContext;
 	}
@@ -63,12 +65,12 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	}
 
 	public void destroyLogContext() {
-		this.executionLogContext.destroy();
-		this.executionLogContext=null;
-
+		if (this.executionLogContext != null) {
+			this.executionLogContext.destroy();
+			this.executionLogContext = null;
+		}
 	}
 
-	ExecutionLogContext executionLogContext;
 
 	/**
 	 * Validate and Collects Issues and data

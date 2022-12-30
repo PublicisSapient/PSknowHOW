@@ -21,6 +21,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
+import lombok.SneakyThrows;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -112,8 +113,9 @@ public class ScrumJiraIssueClientImplTest {
         assertEquals(false, flag);
     }
 
+
     @Test
-    public void processesJiraIssues() {
+    public void processesJiraIssues() throws InterruptedException {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
