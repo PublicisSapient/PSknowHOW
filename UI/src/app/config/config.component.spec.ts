@@ -47,10 +47,12 @@ import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings
 import { CheckboxModule } from 'primeng/checkbox';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
+import { GetAuthorizationService } from '../services/get-authorization.service';
 
 describe('ConfigComponent', () => {
   let component: ConfigComponent;
   let fixture: ComponentFixture<ConfigComponent>;
+  let getAuthorizationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -84,7 +86,7 @@ describe('ConfigComponent', () => {
         ScrumKanbanPipe,
         // TextMaskPipe,
       ],
-      providers: [MessageService, ConfirmationService]
+      providers: [MessageService, ConfirmationService, GetAuthorizationService]
     })
       .compileComponents();
   });
@@ -92,6 +94,7 @@ describe('ConfigComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfigComponent);
     component = fixture.componentInstance;
+    getAuthorizationService = TestBed.inject(GetAuthorizationService);
     // fixture.detectChanges();
   });
 
@@ -99,4 +102,12 @@ describe('ConfigComponent', () => {
     expect(component).toBeTruthy();
     done();
   });
+
+  it('should check if superadmin has access', () => {
+    component.ngOnInit();
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
+    
+    expect(component.hasAccess).toBe(true);
+   
+  })
 });
