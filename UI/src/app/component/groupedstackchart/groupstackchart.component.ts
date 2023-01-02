@@ -84,7 +84,7 @@ export class GroupstackchartComponent implements OnChanges {
     const thresholdValue = this.thresholdValue;
     const barWidth = 20;
     // let width = this.dataLength * barWidth * 8;
-    const width = this.dataLength <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataLength * barWidth * 8;
+    const width = this.dataLength <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataLength * barWidth * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     const spacingVariable = 50;
     const height = 190;
@@ -131,16 +131,12 @@ export class GroupstackchartComponent implements OnChanges {
     divisor = Math.pow(10, power > 1 ? power - 1 : 1);
 
 
-    if (this.maxYValue > 0 && this.maxYValue <= 50) {
-this.maxYValue = 50;
-} else if (this.maxYValue > 50 && this.maxYValue <= 100) {
-this.maxYValue = 100;
-} else if (this.maxYValue > 100 && this.maxYValue <= 200) {
-this.maxYValue = 200;
-} else if (this.maxYValue > 200 && this.maxYValue <= 500) {
-this.maxYValue = 500;
-} else if (this.maxYValue > 500) {
-this.maxYValue += divisor;
+
+if(!(this.maxYValue >=5)){
+  this.maxYValue =5;
+}else{
+  this.maxYValue = Math.ceil(this.maxYValue/5) *5;
+
 }
 
 
@@ -210,7 +206,7 @@ this.maxYValue += divisor;
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
-    const xTick = self.dataPoints === 1 ? width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
+    const xTick = self.dataPoints === 1 ? width > 1600 ? 20 :width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
     svgX
       .select('.xAxis')
       .selectAll('.tick text')
