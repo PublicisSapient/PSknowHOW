@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-
 import java.util.Arrays;
 import java.util.List;
 

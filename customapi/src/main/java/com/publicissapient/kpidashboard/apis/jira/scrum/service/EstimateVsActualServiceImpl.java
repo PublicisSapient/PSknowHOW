@@ -167,10 +167,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				int logWorkData = 0;
 
 				for (JiraIssue jiraIssue : issues) {
-
 					populateIterationData(overAllmodalValues, modalValues, jiraIssue);
-
-
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
 						overAllOrigEst.set(0, overAllOrigEst.get(0) + jiraIssue.getOriginalEstimateMinutes());
