@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.kafka.common.protocol.types.Field;
 
 /**
  * object used to bind iteration kpi's value
