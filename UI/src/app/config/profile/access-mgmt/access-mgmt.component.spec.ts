@@ -198,12 +198,8 @@ describe('AccessMgmtComponent', () => {
 
   it('should check access deletion status', () => {
     const isSuperAdmin = false;
-    const response = fakeDeleteAccess;
-    component.accessDeletionStatus(response, isSuperAdmin);
-    if (response.success) {
-      // message = response.data;
-      spyOn(component, 'getUsers');
-    }
+    component.accessDeletionStatus(fakeDeleteAccess, isSuperAdmin);
+    spyOn(component, 'getUsers');
     expect(component.accessConfirm).toBe(false);
   });
 
