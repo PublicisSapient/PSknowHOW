@@ -59,7 +59,7 @@
 
                     <!--chart container-->
                     <ng-template #chart>
-                      <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart" >
+                      <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart p-w-50" >
                         <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                           (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                           [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
