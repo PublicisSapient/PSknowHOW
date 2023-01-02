@@ -791,23 +791,58 @@ export class MaturityComponent implements OnInit, OnDestroy {
                             return d.data.textLines[d.data.textLines.length - 1 - i];
                         });
                     //show tooltip when  Overall Tab is selected
-                    svg.selectAll('.labelarc')
-                        .style('cursor', 'pointer')
+                    svg.selectAll('.labelarc').filter(function (d) {
+                        d3.select(this)
+                            .on('mouseover', function (event, d) {
+                                if (self.selectedTab === 'Overall') {
+                                    d3.select(this).style('cursor', 'pointer');
+                                    const arc = event.target.parentElement.lastElementChild.lastElementChild;
+                                    let yPosition = arc?.getBoundingClientRect()?.top;
+                                    let xPosition = arc?.getBoundingClientRect()?.right;
+                                    tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                    tooltipForMainCategoryDiv.transition()
+                                        .duration(500)
+                                        .style('opacity', 1)
+                                        .style('left', xPosition + window.scrollX - 30 + 'px')
+                                        .style('top', yPosition + window.scrollY - 40 + 'px')
+                                        .style('display', 'block')
+                                }
+                            })
+                            .on('mouseout', function (event, d) {
+                                tooltipForMainCategoryDiv.transition()
+                                    .duration(200)
+                                    .style('left', 'unset')
+                                    .style('top', 'unset')
+                                    .style('display', 'none')
+                                    .style('opacity', 0);
+                            });
+                    });
+
+                    svg.selectAll('.labelText')
                         .on('mouseover', function (event, d) {
                             if (self.selectedTab === 'Overall') {
+                                d3.select(this).style('cursor', 'pointer');
+                                const arc = event.target;
+                                const {
+                                    top: yPosition,
+                                    right: xPosition
+                                } = arc?.getBoundingClientRect();
                                 tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
                                 tooltipForMainCategoryDiv.transition()
+                                    .duration(500)
                                     .style('opacity', 1)
-                                    .style('display', 'inline-block')
-                                    .style('left', event.offsetX + 'px')
-                                    .style('top', event.offsetY + 'px')
+                                    .style('left', xPosition + window.scrollX + 'px')
+                                    .style('top', yPosition + window.scrollY + 50 + 'px')
+                                    .style('display', 'block')
                             }
                         })
                         .on('mouseout', function (event, d) {
                             tooltipForMainCategoryDiv.transition()
-                                .duration(500)
-                                .style('opacity', 1)
-                                .style('display', 'none');
+                                .duration(200)
+                                .style('left', 'unset')
+                                .style('top', 'unset')
+                                .style('display', 'none')
+                                .style('opacity', 0);
                         });
 
                     // Center labels
