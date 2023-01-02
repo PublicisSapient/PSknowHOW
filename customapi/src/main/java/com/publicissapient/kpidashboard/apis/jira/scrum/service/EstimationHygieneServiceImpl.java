@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +65,6 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	private static final Logger LOGGER = LoggerFactory.getLogger(EstimationHygieneServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUES_WITHOUT_ESTIMATES = "Issue without estimates";
 	private static final String ISSUES_MISSING_WORKLOGS = "Issue with missing worklogs";
 	private static final String OVERALL = "Overall";
@@ -182,16 +181,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueWithoutEstimate++;
 						overAllWithoutEstimate.set(0, overAllWithoutEstimate.get(0) + 1);
 						// set modal values
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
-						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-						iterationKpiModalValue.setDescription(jiraIssue.getName());
-						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-
-						withoutEstmodalValues.add(iterationKpiModalValue);
-						overAllWithoutEstmodalValues.add(iterationKpiModalValue);
+						populateIterationData(withoutEstmodalValues, overAllWithoutEstmodalValues, jiraIssue);
 					}
 
 					if ((jiraIssue.getTimeSpentInMinutes() == null || jiraIssue.getTimeSpentInMinutes() == 0)
@@ -199,15 +189,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueMissingLog++;
 						overAllMissingLog.set(0, overAllMissingLog.get(0) + 1);
 						// set modal values
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-						iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
-						iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-						iterationKpiModalValue.setDescription(jiraIssue.getName());
-						iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-						iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-						iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-						missingmodalValues.add(iterationKpiModalValue);
-						overAllMissingModalValues.add(iterationKpiModalValue);
+						populateIterationData(missingmodalValues, overAllMissingModalValues, jiraIssue);
 					}
 
 				}
@@ -239,13 +221,10 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_HYGINE.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}

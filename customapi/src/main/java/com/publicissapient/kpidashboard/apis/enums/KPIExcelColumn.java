@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -127,7 +129,28 @@ public enum KPIExcelColumn {
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
-	INVALID("INVALID_KPI", Arrays.asList("Invalid"));
+    ISSUES_LIKELY_TO_SPILL("kpi123",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
+
+    SCOPE_CHANGE("kpi120",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    ESTIMATE_HYGINE("kpi124",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    ESTIMATE_VS_ACTUAL("kpi75",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
+
+    WORK_COMPLETED("kpi128",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    WORK_REMAINING("kpi119",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Remaining Hours")),
+
+    CLOSURES_POSSIBLE_TODAY("kpi122",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
+
+    INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 
     // @formatter:on
 

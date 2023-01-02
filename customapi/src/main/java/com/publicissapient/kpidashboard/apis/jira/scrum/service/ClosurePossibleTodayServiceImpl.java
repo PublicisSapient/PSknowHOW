@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,6 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String STORY_POINT = "Story Point";
 	private static final String OVERALL = "Overall";
@@ -182,7 +181,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					int issueCount = 0;
 					Double storyPoint = 0.0;
 					for (JiraIssue jiraIssue : issues) {
-						populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -212,27 +211,13 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				// Create kpi level filters
 				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-				// Modal Heads Options
-				List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-						CommonConstant.MODAL_HEAD_ISSUE_TYPE, CommonConstant.MODAL_HEAD_ISSUE_SIZE);
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
-				kpiElement.setModalHeads(modalHeads);
+				kpiElement.setModalHeads(KPIExcelColumn.CLOSURES_POSSIBLE_TODAY.getColumns());
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
 	}
 
-	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
-	}
 }

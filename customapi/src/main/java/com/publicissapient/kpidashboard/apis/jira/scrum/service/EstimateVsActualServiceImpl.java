@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +64,6 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ORIGINAL_ESTIMATES = "Original Estimates";
 	private static final String LOGGED_WORK = "Logged Work";
 	private static final String OVERALL = "Overall";
@@ -169,7 +168,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 
 				for (JiraIssue jiraIssue : issues) {
 
-					populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 
 
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
@@ -206,37 +205,12 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_VS_ACTUAL.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
-	}
-
-	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		int originalEstimate = 0;
-		int loggedTime = 0;
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getIssueId());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		if(null!=jiraIssue.getOriginalEstimateMinutes()){
-			originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
-		}
-		else
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
-		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
-		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
 }

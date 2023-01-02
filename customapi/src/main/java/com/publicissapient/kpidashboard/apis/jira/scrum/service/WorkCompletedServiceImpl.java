@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.*;
@@ -48,8 +49,6 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String SEARCH_BY_PRIORITY = "Filter by status";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String STORY_POINT = "Story Point";
 	private static final String OVERALL = "Overall";
@@ -154,7 +153,7 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 					int issueCount = 0;
 					Double storyPoint = 0.0;
 					for (JiraIssue jiraIssue : issues) {
-						populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -187,26 +186,12 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.WORK_COMPLETED.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 
-	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
-	}
 }

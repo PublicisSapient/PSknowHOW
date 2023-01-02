@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,6 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	public static final String UNCHECKED = "unchecked";
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String SCOPE_ADDED = "Scope added";
 	private static final String LABEL_INFO = "(Issue Count/Story Points)";
 	private static final String SCOPE_REMOVED = "Scope removed";
@@ -204,13 +203,10 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.SCOPE_CHANGE.getColumns());
 		}
 		kpiElement.setTrendValueList(trendValue);
 	}
@@ -227,7 +223,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				int issueCount = 0;
 				double storyPoints = 0;
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationKpiModalValue(overAllmodalValues, modalValues, jiraIssue);
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();
@@ -251,18 +247,6 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			});
 
 		});
-	}
-
-	public void populateIterationKpiModalValue(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
 }

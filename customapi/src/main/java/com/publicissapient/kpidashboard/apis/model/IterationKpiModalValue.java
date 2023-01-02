@@ -55,7 +55,7 @@ public class IterationKpiModalValue implements Serializable {
 	private Double issueSize;
 	@JsonProperty("Remaining Hours")
 	private Integer remainingTime;
-	@JsonProperty("Logged Time")
+	@JsonProperty("Logged Work")
 	private String timeSpentInMinutes;
 	@JsonProperty("Original Estimate")
 	private String originalEstimateMinutes;
