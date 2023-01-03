@@ -295,4 +295,29 @@ describe('JiraConfigComponent', () => {
     expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
   }));
 
+  it('should get azure release pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    component.selectedConnection = true;
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(fakeAzurePipelinesList))
+    component.getAzureReleasePipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(fakeAzurePipelinesList.data.length);
+  }));
+
+  it('should fail getting azure release pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of({"message":"No Azure Builds found","success":false}))
+    component.getAzureReleasePipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
+  }));
+
 });
