@@ -1,0 +1,22 @@
+{
+    "message": "FETCHED_SUCCESSFULLY",
+    "success": true,
+    "data": [
+        {
+            "jobNameKey": "BAMPRA-BAMPLA",
+            "projectAndPlanName": "BambooProjA - BambooPlanA"
+        },
+        {
+            "jobNameKey": "BAMPRB-BAMPLB",
+            "projectAndPlanName": "BambooProjB - BambooPlanB"
+        },
+        {
+            "jobNameKey": "DUM-TES",
+            "projectAndPlanName": "Dummy - TestPlan"
+        },
+        {
+            "jobNameKey": "KNOW-KNOW",
+            "projectAndPlanName": "KnowHowProject - KnowHowPlan"
+        }
+    ]
+}

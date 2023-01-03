@@ -199,19 +199,19 @@ export class JiraConfigComponent implements OnInit {
             this.hideLoadingOnFormElement('planName');
           } else {
             this.bambooPlanList = [];
-            this.toolForm.controls['planKey'].setValue('');
-            this.toolForm.controls['branchKey'].setValue('');
+            this.toolForm?.controls['planKey'].setValue('');
+            this.toolForm?.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
 
           }
         } catch (error) {
           this.bambooPlanList = [];
-          this.toolForm.controls['planKey'].setValue('');
-          this.toolForm.controls['branchKey'].setValue('');
+          this.toolForm?.controls['planKey'].setValue('');
+          this.toolForm?.controls['branchKey'].setValue('');
           this.bambooBranchList = [];
           this.hideLoadingOnFormElement('planName');
-          if (this.toolForm.controls['jobType'].value === 'Build') {
+          if (this.toolForm?.controls['jobType'].value === 'Build') {
             this.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -248,7 +248,7 @@ export class JiraConfigComponent implements OnInit {
           this.hideLoadingOnFormElement('deploymentProject');
         } catch (error) {
           self.deploymentProjectList = [];
-          if (this.toolForm.controls['jobType'].value && this.toolForm.controls['jobType'].value.name === 'Deploy') {
+          if (this.toolForm?.controls['jobType'].value && this.toolForm?.controls['jobType'].value.name === 'Deploy') {
             self.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -496,7 +496,6 @@ export class JiraConfigComponent implements OnInit {
   };
 
   selectJIRAType = (event) => {
-
   };
 
   onBoardUnselect = (value) => {
