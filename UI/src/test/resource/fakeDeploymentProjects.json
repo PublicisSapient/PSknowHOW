@@ -1,0 +1,54 @@
+{
+    "message": "FETCHED_SUCCESSFULLY",
+    "success": true,
+    "data": [
+        {
+            "deploymentProjectName": "Deployment for Data-Conversion",
+            "deploymentProjectId": "120356867"
+        },
+        {
+            "deploymentProjectName": "DLI 3 Pre-Prod Deployment",
+            "deploymentProjectId": "163545089"
+        },
+        {
+            "deploymentProjectName": "Email Sign Static POC Deploy",
+            "deploymentProjectId": "200015886"
+        },
+        {
+            "deploymentProjectName": "Email Sign static preprod Deployment Plan",
+            "deploymentProjectId": "200015881"
+        },
+        {
+            "deploymentProjectName": "Email Sign static PROD Deployment Plan",
+            "deploymentProjectId": "200015880"
+        },
+        {
+            "deploymentProjectName": "ETA22 static PreProd Deployment Plan",
+            "deploymentProjectId": "200015883"
+        },
+        {
+            "deploymentProjectName": "ETA22 static Prod Deployment Plan",
+            "deploymentProjectId": "200015884"
+        },
+        {
+            "deploymentProjectName": "ETA22 static QA Deployment Plan",
+            "deploymentProjectId": "200015882"
+        },
+        {
+            "deploymentProjectName": "KnowHowDeployemnt",
+            "deploymentProjectId": "190709761"
+        },
+        {
+            "deploymentProjectName": "PS THOWC Static Dev Deployment Plan",
+            "deploymentProjectId": "122585091"
+        },
+        {
+            "deploymentProjectName": "PS THOWC Static Prod Deployment Plan",
+            "deploymentProjectId": "122585093"
+        },
+        {
+            "deploymentProjectName": "PS THOWC Static UAT Deployment Plan",
+            "deploymentProjectId": "122585092"
+        }
+    ]
+}

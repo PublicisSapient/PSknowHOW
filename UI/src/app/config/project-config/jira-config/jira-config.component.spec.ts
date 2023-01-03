@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { JiraConfigComponent } from './jira-config.component';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -52,8 +52,12 @@ describe('JiraConfigComponent', () => {
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' })
   };
-
+  const fakeSonarVersionsList = require('../../../../test/resource/fakeSonarVersionsList.json');
   const fakeJiraConnections = require('../../../../test/resource/fakeJiraConnections.json');
+  const fakeBambooPlans = require('../../../../test/resource/fakeBambooPlans.json');
+  const fakeDeploymentProjects = require('../../../../test/resource/fakeDeploymentProjects.json');
+  const fakeJenkinsJobNames = require('../../../../test/resource/fakeJenkinsJobNames.json');
+  const fakeAzurePipelinesList = require('../../../../test/resource/fakeAzurePipelinesList.json');
   const fakeSelectedTool = [{
     id: '5fc086b9410df80001701334',
     toolName: 'Jira',
@@ -199,4 +203,121 @@ describe('JiraConfigComponent', () => {
     fixture.detectChanges();
     httpMock.match(`${baseUrl}/api/basicconfigs/${sharedService.getSelectedProject().id}/tools/${component.selectedToolConfig[0].id}`)[0].flush(successResponse);
   });
+
+  it('should get sonar version list', () => {
+    component.ngOnInit();
+    component.urlParam = 'Sonar';
+    const sonarVersionListLen = 11;
+    const sonarCloudVersionListLen = 13;
+    httpMock.match(`${baseUrl}/api/sonar/version`)[0].flush(fakeSonarVersionsList);
+    fixture.detectChanges();
+    expect(component.versionList.length).toEqual(fakeSonarVersionsList.data.length);
+    expect(component.sonarVersionList.length).toEqual(sonarVersionListLen);
+    expect(component.sonarCloudVersionList.length).toEqual(sonarCloudVersionListLen);
+  })
+
+  it('should get plans for bamboo', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getPlansForBamboo').and.returnValue(of(fakeBambooPlans))
+    component.getPlansForBamboo('63b2bf2544af1c3bc6553977');
+    tick();
+    expect(Object.keys(component.bambooProjectDataFromAPI).length).toEqual(fakeBambooPlans.data.length);
+  }));
+
+  it('should fail getting plans for bamboo', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getPlansForBamboo').and.returnValue(of({"message":"No plans found","success":false}))
+    component.getPlansForBamboo('63b2bf2544af1c3bc6553977');
+    tick();
+    expect(Object.keys(component.bambooProjectDataFromAPI).length).toEqual(0);
+  }));
+
+  it('should get deployment projects', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of(fakeDeploymentProjects))
+    component.getDeploymentProjects('63b2bf2544af1c3bc6553977');
+    tick();
+    expect(Object.keys(component.deploymentProjectList).length).toEqual(fakeDeploymentProjects.data.length);
+  }));
+
+  it('should fail getting deployment projects', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of({'error':'Failed getting projects'}))
+    component.getDeploymentProjects('63b2bf2544af1c3bc6553977');
+    tick();
+    expect(Object.keys(component.deploymentProjectList).length).toEqual(0);
+  }));
+
+  it('should get jenkins job names', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of(fakeJenkinsJobNames))
+    component.getJenkinsJobNames('63b4055f8ec44416b3ce96a8');
+    tick();
+    expect(Object.keys(component.jenkinsJobNameList).length).toEqual(fakeJenkinsJobNames.data.length);
+  }));
+
+  it('should fail getting jenkins job names', fakeAsync(() => {
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of({"message":"No Jobs details found","success":false}))
+    component.getJenkinsJobNames('63b4055f8ec44416b3ce96a8');
+    tick();
+    expect(Object.keys(component.jenkinsJobNameList).length).toEqual(0);
+  }));
+
+  it('should get azure build pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    component.selectedConnection = true;
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzurePipelineList').and.returnValue(of(fakeAzurePipelinesList))
+    component.getAzureBuildPipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(fakeAzurePipelinesList.data.length);
+  }));
+
+  it('should fail getting azure build pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzurePipelineList').and.returnValue(of({"message":"No Azure Builds found","success":false}))
+    component.getAzureBuildPipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
+  }));
+
+  it('should get azure release pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    component.selectedConnection = true;
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(fakeAzurePipelinesList))
+    component.getAzureReleasePipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(fakeAzurePipelinesList.data.length);
+  }));
+
+  it('should fail getting azure release pipelines', fakeAsync(() => {
+    const connection = {
+      "id": "63809ba89939e165ba1e663f",
+    }
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of({"message":"No Azure Builds found","success":false}))
+    component.getAzureReleasePipelines(connection);
+    tick();
+    expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
+  }));
+
 });

@@ -34,6 +34,7 @@ import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
 import { GetAuthService } from '../../services/getauth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { of } from 'rxjs';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
@@ -933,6 +934,109 @@ const fakeTestExecutionData = {
     httpMock.match(baseUrl + '/api/testexecution/'+ projectId)[0].flush(fakeTestExecutionData);
     expect(component.testExecutionScrumData).toEqual(fakeTestExecutionData['data']);
   });
+
+  it('testing Switch View for upload tab', () => {
+    const event = {
+      originalEvent: {
+        isTrusted: true,
+      },
+      item: {
+        label: 'Upload Logo',
+        icon: 'pi pi-image',
+        expanded: true,
+      },
+    };
+    component.switchView(event);
+    fixture.detectChanges();
+    expect(component.selectedView).toBe('logo_upload');
+  });
+
+  it('All Tabs should visible for superadmin user', () => {
+    component.ngOnInit();
+    fixture.detectChanges();
+    if (component.isSuperAdmin) {
+      expect(component.items.length).toBe(3);
+    } else {
+      expect(component.items.length).toBe(2);
+    }
+  });
+
+  it('resetProjectSelection()', () => {
+    component.resetProjectSelection();
+    fixture.detectChanges();
+    expect(component.projectListArr.length).toBe(0);
+    expect(component.trendLineValueList.length).toBe(0);
+  });
+
+  it('getFilterDataOnLoad() success', () => {
+    const response = {
+      data: [
+        {
+          basicProjectConfigId: '638f095eaf42db1df033a49a',
+          labelName: 'project',
+          level: 4,
+          nodeId: 'Jenkinsproj_638f095eaf42db1df033a49a',
+          nodeName: 'Jenkinsproj',
+          parentId: ['Level3_hierarchyLevelThree'],
+          path: ['Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne']
+        },
+      ],
+      message: 'fetched successfully',
+      success: true,
+    };
+    spyOn(httpService,'getFilterData').and.returnValue(of(response));
+    component.getFilterDataOnLoad();
+    fixture.detectChanges();
+    expect(component.projectListArr.length).toBeGreaterThan(0)
+  });
+
+  it('getFilterDataOnLoad() Fail', () => {
+    const response = ['error'];
+    spyOn(httpService, 'getFilterData').and.returnValue(of(response));
+    spyOn(component, 'resetProjectSelection')
+    component.getFilterDataOnLoad();
+    fixture.detectChanges();
+    expect(component.resetProjectSelection).toHaveBeenCalled()
+ 
+  });
+
+  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'",()=>{
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.setFormControlValues();
+    component.popupForm.get('capacity').setValue('Enter Value')
+    spyOn(component,'enableDisableCapacitySubmitButton')
+    component.enableDisableSubmitButton();
+    fixture.detectChanges();
+    expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled()
+
+  })
+
+  it("enableDisableSubmitButton() when selectedView === 'upload_tep'",()=>{
+    component.selectedView = 'upload_tep'
+    spyOn(component,'enableDisableTestExecutionSubmitButton')
+    component.enableDisableSubmitButton();
+    fixture.detectChanges();
+    expect(component.enableDisableTestExecutionSubmitButton).toHaveBeenCalled()
+
+  })
+
+  it("enableDisableCapacitySubmitButton() for capacity",()=>{
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.setFormControlValues();
+    component.popupForm.get('capacity').setValue('Enter Value')
+    component.enableDisableCapacitySubmitButton();
+    fixture.detectChanges();
+    expect(component.isCapacitySaveDisabled).toBeTrue();
+    expect(component.capacityErrorMessage).toBe('Please enter Capacity');
+  })
+
+  it("enableDisableCapacitySubmitButton()",()=>{
+    component.enableDisableCapacitySubmitButton();
+    fixture.detectChanges();
+    expect(component.isCapacitySaveDisabled).toBeTrue()
+  })
+
+
 
 
 });
