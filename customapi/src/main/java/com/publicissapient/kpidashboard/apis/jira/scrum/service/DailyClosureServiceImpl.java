@@ -217,7 +217,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				data.add(dataCount);
 			});
 			trendValueList.add(new DataCount(latestSprint.getProjectFilter().getName(), Lists.reverse(data)));
-			//populateValidationDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 				KPIExcelUtility.populateDailyClosureExcelData(excelDataList,issuesExcel);
 			}
@@ -225,47 +224,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		kpiElement.setExcelData(excelDataList);
 		kpiElement.setExcelColumns(KPIExcelColumn.DAILY_CLOSURES.getColumns());
 	}
-
-	/**
-	 * This method check for API request source. If it is Excel it populates the
-	 * validation data node of the KPI element.
-	 * 
-	 * @param kpiElement
-	 *            KpiElement
-	 * @param requestTrackerId
-	 *            request id
-	 * @param issuesExcel
-	 *            list of jiraIssues
-	
-	 * @param sprint
-	 *            unique key
-	 */
-//	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-//			List<JiraIssue> issuesExcel,Node sprint) {
-//
-//		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-//			Map<String, ValidationData> validationDataMap = new HashMap<>();
-//			List<String> types = new ArrayList<>();
-//			List<String> jiraIssues = new ArrayList<>();
-//
-//
-//			for (JiraIssue jiraIssue : issuesExcel) {
-//
-//				jiraIssues.add(jiraIssue.getNumber());
-//				types.add(jiraIssue.getTypeName());
-//			}
-//
-//			ValidationData validationData = new ValidationData();
-//			validationData.setIssues(jiraIssues);
-//			validationData.setIssueTypeList(types);
-//			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-//				String key =sprint.getSprintFilter().getId();
-//				validationDataMap.put(key, validationData);
-//				kpiElement.setMapOfSprintAndData(validationDataMap);
-//			}
-//
-//		}
-//	}
 
 	@Override
 	public Map<String, Long> calculateKpiValue(List<Map<String, Long>> valueList, String kpiName) {
