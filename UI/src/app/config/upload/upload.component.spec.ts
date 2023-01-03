@@ -1000,6 +1000,16 @@ const fakeTestExecutionData = {
  
   });
 
+  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'",()=>{
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.setFormControlValues();
+    component.popupForm.get('capacity').setValue('Enter Value')
+    spyOn(component,'enableDisableCapacitySubmitButton')
+    component.enableDisableSubmitButton();
+    fixture.detectChanges();
+    expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled()
+
+  })
 
   it("enableDisableSubmitButton() when selectedView === 'upload_tep'",()=>{
     component.selectedView = 'upload_tep'
