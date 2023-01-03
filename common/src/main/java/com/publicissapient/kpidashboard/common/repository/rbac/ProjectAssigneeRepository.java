@@ -30,14 +30,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 /**
  * Interface for roles collection
  */
-public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId>, QuerydslPredicateExecutor<ProjectAssignee> {
+public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
 
-	/**
-	 * Fetch all roles by roleName.
-	 *
-	 * @return {@link RoleData}
-	 */
-	ProjectAssignee findByProjectId(String projectId);
 
 }
 
