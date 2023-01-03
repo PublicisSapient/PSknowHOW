@@ -130,6 +130,7 @@ public final class CommonConstant {
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
+	public static final String JIRA = "Jira";
 
 
 

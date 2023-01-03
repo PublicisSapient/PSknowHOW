@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -42,6 +44,8 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * @author yasbano
@@ -147,5 +151,18 @@ public class ProjectToolConfigController {
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
+	}
+
+	@RequestMapping(value = "/jira/projectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ServiceResponse getJiraProjectList() {
+		ServiceResponse response;
+		List<ProjectBasicConfig> projectList = toolService.getJiraProjects();
+		if (CollectionUtils.isEmpty(projectList)) {
+			response = new ServiceResponse(false,
+					"Not found any configure board details with provided connection details", null);
+		} else {
+			response = new ServiceResponse(true, "Successfully fetched board details list", projectList);
+		}
+		return response;
 	}
 }

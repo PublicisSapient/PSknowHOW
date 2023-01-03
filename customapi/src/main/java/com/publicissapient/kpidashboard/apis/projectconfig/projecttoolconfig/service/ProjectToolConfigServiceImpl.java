@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,9 +68,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private SubProjectRepository subProjectRepository;
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
+	@Autowired
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	private static final String SUCCESS_MSG ="Successfully fetched all records for projectToolConfig";
@@ -419,6 +422,27 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			log.error("basicConfigId = {}, toolConfigId = {} - not found", basicProjectConfigId, projectToolId);
 			throw new ToolNotFoundException("Tool not found");
 		}
+	}
+
+	public List<ProjectBasicConfig> getJiraProjects() {
+		List<ProjectBasicConfig> projectList = new ArrayList<>();
+		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(CommonConstant.JIRA);
+		for(ProjectToolConfig projectToolConfig : projectToolConfigList) {
+			projectList.add(getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId()));
+		}
+		return projectList;
+	}
+
+	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId) {
+		Optional<ProjectBasicConfig> projectBasicConfig = Optional.empty();
+		ProjectBasicConfig projectBasicConfigObj=null;
+		if (null != basicProjectConfigId) {
+			projectBasicConfig = projectBasicConfigRepository.findById(basicProjectConfigId);
+		}
+		if(projectBasicConfig.isPresent()) {
+			projectBasicConfigObj=projectBasicConfig.get();
+		}
+		return projectBasicConfigObj;
 	}
 
 }
