@@ -60,7 +60,7 @@ public class ProjectAssigneeController {
 	@Autowired	
 	private ProjectAssigneeService assigneeService;
 
-	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getAllRoles() {
 		log.info("Fetching all assigness");
 		ServiceResponse serviceResponse = null;
@@ -73,14 +73,14 @@ public class ProjectAssigneeController {
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getRoleByProjectId(@PathVariable("id") String id) {
 		ServiceResponse serviceResponse = null;
 		ProjectAssignee projectAssignee = assigneeService.getAssigneeByProjectConfigId(id);
 		if (null == projectAssignee) {
 			serviceResponse = new ServiceResponse(false, "No assignees found", null);
 		} else {
-			serviceResponse = new ServiceResponse(true, "list of assignees", projectAssignee);
+			serviceResponse = new ServiceResponse(true, "project assignees", projectAssignee);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
