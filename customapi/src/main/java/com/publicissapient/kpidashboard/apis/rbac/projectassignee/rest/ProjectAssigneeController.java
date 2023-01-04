@@ -26,9 +26,7 @@ import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssi
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.bson.json.JsonObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,7 +89,7 @@ public class ProjectAssigneeController {
 //		ProjectAssignee assignee = modelMapper.map(projectAssigneeDTO, ProjectAssignee.class);
 //
 //		log.info("role@{} updated", id);
-//		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssigness());
+//		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssignees());
 //	}
 
 
