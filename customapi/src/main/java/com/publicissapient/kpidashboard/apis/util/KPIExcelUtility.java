@@ -657,7 +657,7 @@ public class KPIExcelUtility {
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
-                excelData.setIssueSize(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                excelData.setSizeInStoryPoints(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
                 excelDataList.add(excelData);
             });
         }
