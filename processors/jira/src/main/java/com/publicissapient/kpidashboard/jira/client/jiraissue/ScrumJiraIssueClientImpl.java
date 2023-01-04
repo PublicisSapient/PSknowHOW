@@ -70,6 +70,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -338,7 +339,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
-											  Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
+			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
 		Map<String, List<JiraIssue>> issuesByType = CollectionUtils.emptyIfNull(jiraIssues)
 				.stream()
 				.sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
@@ -553,7 +554,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				setAdditionalFilters(jiraIssue, issue, projectConfig);
 
 				setStoryLinkWithDefect(issue, jiraIssue);
-
+				setStoryLinkWithsubtaskDefect(issue,jiraIssue,fields);
 				// ADD QA identification field to feature
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 				setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
@@ -784,11 +785,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					}
 				} else if (null != featureConfig.getJiraBugRaisedByQAIdentification()
 						&& featureConfig.getJiraBugRaisedByQAIdentification().trim()
-								.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+						.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
 						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()) != null
 						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraBugRaisedByQAValue(),
-								fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue())) {
+						fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue())) {
 					feature.setDefectRaisedByQA(true);
 				} else {
 					feature.setDefectRaisedByQA(false);
@@ -816,15 +817,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					}
 				} else if (null != featureConfig.getProductionDefectIdentifier()
 						&& featureConfig.getProductionDefectIdentifier().trim()
-								.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+						.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()) != null
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getProductionDefectValue(),
-								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue())) {
+						fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue())) {
 					feature.setProductionDefect(true);
 				} else if (null != featureConfig.getProductionDefectIdentifier()
 						&& featureConfig.getProductionDefectIdentifier().trim()
-								.equalsIgnoreCase(JiraConstants.COMPONENT)
+						.equalsIgnoreCase(JiraConstants.COMPONENT)
 						&& null != featureConfig.getProductionDefectComponentValue()
 						&& isComponentMatchWithJiraComponent(issue, featureConfig)) {
 					feature.setProductionDefect(true);
@@ -884,13 +885,35 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
+
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
 						&& jiraProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
 					break;
 				}
 				defectStorySet.add(issueLink.getTargetIssueKey());
+			}
+			jiraIssue.setDefectStoryID(defectStorySet);
+		}
+	}
+
+	private void setStoryLinkWithsubtaskDefect(Issue issue, JiraIssue jiraIssue,Map<String, IssueField> fields) {
+		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
+				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
+			Set<String> defectStorySet = new HashSet<>();
+			String parentKey = null;
+
+			if(issue.getIssueType().isSubtask()){
+				if(MapUtils.isNotEmpty(fields)){
+					try {
+						parentKey=((JSONObject)fields.get("parent").getValue()).get("key").toString();
+					} catch (JSONException e) {
+						log.error("JIRA Processor | Error while parsing third party key {}", e);
+						throw new RuntimeException(e);
+					}
+					defectStorySet.add(parentKey);
+				}
 			}
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
@@ -940,11 +963,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
 			if (StringUtils.isNotBlank(fieldMapping.getJiraBugRaisedByIdentification())
 					&& fieldMapping.getJiraBugRaisedByIdentification().trim()
-							.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue() != null
 					&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByValue(),
-							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue())) {
+					fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue())) {
 				jiraIssue.setDefectRaisedBy(NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue());
 			} else {
 				jiraIssue.setDefectRaisedBy("");
@@ -984,7 +1007,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
 					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
-							.get(JiraConstants.VALUE).toString().toLowerCase())) {
+					.get(JiraConstants.VALUE).toString().toLowerCase())) {
 				isRaisedByThirdParty = true;
 			}
 
@@ -1210,7 +1233,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @return
 	 */
 	private List<JiraIssueSprint> getChangeLog(JiraIssue jiraIssue, List<ChangelogGroup> changeLogList, // NOPMD
-																										// //NOSONAR
+			// //NOSONAR
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {
 
 		List<JiraIssueSprint> issueHistory = new ArrayList<>();
@@ -1541,9 +1564,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * * Set Details related to issues with Epic Issue type
 	 *
 	 * @param fieldMapping
-	 * 
+	 *
 	 * @param jiraIssue
-	 * 
+	 *
 	 * @param fields
 	 */
 	private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
