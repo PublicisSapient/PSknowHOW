@@ -154,15 +154,15 @@ public class ProjectToolConfigController {
 	}
 
 	@RequestMapping(value = "/jiraProjectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getJiraProjectList() {
-		ServiceResponse response;
+	public ResponseEntity<ServiceResponse> getJiraProjectList() {
+		ServiceResponse serviceResponse = null;
 		List<ProjectBasicConfig> projectList = toolService.getJiraProjects();
 		if (CollectionUtils.isEmpty(projectList)) {
-			response = new ServiceResponse(false,
+			serviceResponse = new ServiceResponse(false,
 					"No jira projects found", null);
 		} else {
-			response = new ServiceResponse(true, "list of jira projects", projectList);
+			serviceResponse = new ServiceResponse(true, "list of jira projects", projectList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 }

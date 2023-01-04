@@ -23,15 +23,15 @@ package com.publicissapient.kpidashboard.common.repository.rbac;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
+import java.util.List;
 
 /**
  * Interface for roles collection
  */
 public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
 
+    ProjectAssignee findByProjectId(String projectId);
 
 }
 
