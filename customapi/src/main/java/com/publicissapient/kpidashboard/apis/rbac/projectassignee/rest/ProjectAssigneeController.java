@@ -23,16 +23,17 @@ import javax.validation.Valid;
 import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.ProjectAssigneeService;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
-import com.publicissapient.kpidashboard.common.model.rbac.AuthenticationDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,9 +41,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.rbac.roles.service.RolesHelperService;
-import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
-import com.publicissapient.kpidashboard.common.model.rbac.RoleDataDTO;
 
 import java.util.List;
 
@@ -58,26 +56,25 @@ public class ProjectAssigneeController {
 	private ProjectAssigneeRepository projectAssigneeRepository;
 	private final ModelMapper mapper = new ModelMapper();
 
+	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ProjectAssignee> getAllRoles() {
+	public ResponseEntity<ServiceResponse> getAllRoles() {
 		log.info("Fetching all assigness");
-		return ResponseEntity.status(HttpStatus.OK).body(mapper.map(assigneeService.getAllAssigness(),
-				new TypeToken<List<ProjectAssigneeDTO>>() {
-				}.getType()));
+		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssigness());
 	}
 
-
+	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ProjectAssignee> getRoleByProjectId(@PathVariable("id") String id) {
+	public ResponseEntity<ServiceResponse> getRoleByProjectId(@PathVariable("id") String id) {
 		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAssigneeByProjectConfigId(id));
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ProjectAssignee> saveAssignee(@PathVariable("id") String id, @Valid @RequestBody ProjectAssigneeDTO projectAssigneeDTO) {
+	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@PathVariable("id") String id, @Valid @RequestBody ProjectAssigneeDTO projectAssigneeDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
 		ProjectAssignee assignee = modelMapper.map(projectAssigneeDTO, ProjectAssignee.class);
-		log.info("role@{} updated", id);
-		return ResponseEntity.status(HttpStatus.OK).body(projectAssigneeRepository.save(assignee));
+		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.updateOrSaveAssineeByProjectConfigId(id,assignee));
 	}
 
 
