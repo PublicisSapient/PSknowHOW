@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
@@ -39,7 +40,7 @@ import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 public class ProjectAssigneeDTO extends BasicModel {
 
 	private String projectName;
-	private String projectId;
+	private ObjectId basicProjectConfigId;
 	private List<AssigneeRoles> assigneeRoles;
 
 }

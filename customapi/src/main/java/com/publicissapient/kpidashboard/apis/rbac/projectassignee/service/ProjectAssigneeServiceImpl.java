@@ -18,24 +18,26 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.projectassignee.service;
 
+import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
+
+import java.util.List;
 
 @Service
 @Slf4j
 public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 
 	@Autowired
-	private RolesRepository repository;
+	private ProjectAssigneeRepository projectAssigneeRepository;
 
 	@Override
-	public ProjectAssignee getAllAssigness() {
-		return null;
+	public List<ProjectAssignee> getAllAssigness() {
+		return projectAssigneeRepository.findAll();
 	}
 
 	@Override
