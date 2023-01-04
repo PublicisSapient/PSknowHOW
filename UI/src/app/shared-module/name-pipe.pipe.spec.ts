@@ -7,7 +7,7 @@ describe('Pipe: Default', () => {
     pipe = new NamePipePipe();
   });
 
-  it('When passing as blank', () => {
+  it('When passing as blank - if case', () => {
     const hierarchyData = [
       {
         level: 1,
@@ -50,7 +50,7 @@ describe('Pipe: Default', () => {
     expect(pipe.transform('')).toBe('');
   });
 
-  it('When passing value', () => {
+  it('When passing value - else case', () => {
     const hierarchyData = [
       {
         level: 1,
