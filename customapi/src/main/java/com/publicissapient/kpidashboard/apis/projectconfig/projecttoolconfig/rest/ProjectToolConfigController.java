@@ -153,15 +153,15 @@ public class ProjectToolConfigController {
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 
-	@RequestMapping(value = "/jira/projectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/jiraProjectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ServiceResponse getJiraProjectList() {
 		ServiceResponse response;
 		List<ProjectBasicConfig> projectList = toolService.getJiraProjects();
 		if (CollectionUtils.isEmpty(projectList)) {
 			response = new ServiceResponse(false,
-					"Not found any configure board details with provided connection details", null);
+					"No jira projects found", null);
 		} else {
-			response = new ServiceResponse(true, "Successfully fetched board details list", projectList);
+			response = new ServiceResponse(true, "list of jira projects", projectList);
 		}
 		return response;
 	}
