@@ -16,15 +16,33 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.rbac;
+package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.Date;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
+import org.springframework.data.mongodb.core.mapping.Document;
 
-	ProjectAssignee findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+/**
+ * The type Project release.
+ */
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "assignee_roles")
+public class ProjectAssigneeRolesData {
+
+	private String roleName;
+	private String roleDisplayName;
+	private Date createdDate;
 
 }

@@ -18,13 +18,12 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectAssigneeRolesData;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 
-public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
-
-	ProjectAssignee findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+public interface ProjectAssigneeRolesRepository extends MongoRepository<ProjectAssigneeRolesData, ObjectId> {
 
 }

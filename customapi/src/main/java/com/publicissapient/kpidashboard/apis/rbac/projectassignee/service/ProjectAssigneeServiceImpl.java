@@ -40,24 +40,26 @@ public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 	@Override
 	public ServiceResponse getAllAssigness() {
 		List<ProjectAssignee> projectAssignee = projectAssigneeRepository.findAll();
-		if(projectAssignee==null){
-			return new ServiceResponse(false,"No Configuration Found",null);
+		if (projectAssignee == null) {
+			return new ServiceResponse(false, "No Configuration Found", null);
 		}
-		return new ServiceResponse(true,"Found Assignees",projectAssignee);
+		return new ServiceResponse(true, "Found Assignees", projectAssignee);
 	}
 
 	@Override
 	public ServiceResponse getAssigneeByProjectConfigId(String projectConfigid) {
-		ProjectAssignee projectAssignee = projectAssigneeRepository.findByBasicProjectConfigId(new ObjectId(projectConfigid));
-		if(projectAssignee==null){
-			return new ServiceResponse(false,"No Configuration Found",null);
+		ProjectAssignee projectAssignee = projectAssigneeRepository
+				.findByBasicProjectConfigId(new ObjectId(projectConfigid));
+		if (projectAssignee == null) {
+			return new ServiceResponse(false, "No Configuration Found", null);
 		}
-		return new ServiceResponse(true,"Found Assignees",projectAssignee);
+		return new ServiceResponse(true, "Found Assignees", projectAssignee);
 	}
 
 	@Override
 	public ServiceResponse updateOrSaveAssineeByProjectConfigId(String projectConfigid, ProjectAssignee assignee) {
-		ProjectAssignee existingProjectAssignee = projectAssigneeRepository.findByBasicProjectConfigId(new ObjectId(projectConfigid));
+		ProjectAssignee existingProjectAssignee = projectAssigneeRepository
+				.findByBasicProjectConfigId(new ObjectId(projectConfigid));
 
 		if (existingProjectAssignee == null) {
 			projectAssigneeRepository.save(assignee);
@@ -76,6 +78,5 @@ public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 		existingProjectAssignee.setAssigneeRoles(assignee.getAssigneeRoles());
 		return existingProjectAssignee;
 	}
-
 
 }
