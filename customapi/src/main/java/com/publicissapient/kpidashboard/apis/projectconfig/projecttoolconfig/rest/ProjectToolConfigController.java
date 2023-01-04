@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -42,6 +45,8 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * @author yasbano
@@ -146,6 +151,12 @@ public class ProjectToolConfigController {
 			serviceResponse = new ServiceResponse(false, "Failed to delete tool data", null);
 		}
 
+		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
+	}
+
+	@RequestMapping(value = "/jiraProjectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> getJiraProjectList() {
+		ServiceResponse serviceResponse = toolService.getJiraProjects();
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 }

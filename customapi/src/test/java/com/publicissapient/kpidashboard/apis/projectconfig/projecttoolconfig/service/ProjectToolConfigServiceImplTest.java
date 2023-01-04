@@ -34,14 +34,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.*;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.cleanup.SonarDataCleanUpService;
@@ -50,9 +54,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
-import com.publicissapient.kpidashboard.common.model.application.Subproject;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 
@@ -86,6 +87,8 @@ public class ProjectToolConfigServiceImplTest {
 	private CacheService cacheService;
 	@Mock
 	private ConnectionRepository connectionRepository;
+	@Mock
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	String testId;
 	String toolName;
@@ -482,6 +485,28 @@ public class ProjectToolConfigServiceImplTest {
 
 			assertTrue(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
 		});
+	}
+
+	@Test
+	public void testGetJiraProjects1() {
+		toolType = "Jira";
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5d0533b0ff45ea9c730bb718"));
+		Optional<ProjectBasicConfig> projectBasicConfigOpt=Optional.of(projectBasicConfig);
+		List<ProjectToolConfig> projectToolConfigDataList = new ArrayList<>();
+		projectToolConfigDataList.add(listProjectTool);
+		when(toolRepositroy.findByToolName(toolType)).thenReturn(projectToolConfigDataList);
+		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
+		ServiceResponse serviceResponse = projectToolServiceImpl.getJiraProjects();
+		assertEquals(true, serviceResponse.getSuccess());
+	}
+
+	@Test
+	public void testGetJiraProjects2() {
+		toolType = "Jira";
+		when(toolRepositroy.findByToolName(toolType)).thenReturn(null);
+		ServiceResponse serviceResponse = projectToolServiceImpl.getJiraProjects();
+		assertEquals(false, serviceResponse.getSuccess());
 	}
 
 	private ProjectToolConfig findToolById(String id) {
