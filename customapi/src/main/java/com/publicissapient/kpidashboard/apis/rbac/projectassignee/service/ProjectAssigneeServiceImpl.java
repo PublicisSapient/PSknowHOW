@@ -38,7 +38,7 @@ public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 	private ProjectAssigneeRepository projectAssigneeRepository;
 
 	@Override
-	public ServiceResponse getAllAssigness() {
+	public ServiceResponse getAllAssignees() {
 		List<ProjectAssignee> projectAssignee = projectAssigneeRepository.findAll();
 		if (projectAssignee == null) {
 			return new ServiceResponse(false, "No Configuration Found", null);

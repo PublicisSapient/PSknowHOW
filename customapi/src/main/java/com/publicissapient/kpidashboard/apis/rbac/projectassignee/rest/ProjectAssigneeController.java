@@ -62,7 +62,7 @@ public class ProjectAssigneeController {
 	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getAllAssigness() {
 		log.info("Fetching all assigness");
-		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssigness());
+		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssignees());
 	}
 
 	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")

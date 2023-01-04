@@ -5,7 +5,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee
 
 public interface ProjectAssigneeService {
 
-	ServiceResponse getAllAssigness();
+	ServiceResponse getAllAssignees();
 
 	ServiceResponse getAssigneeByProjectConfigId(String projectConfigid);
 
