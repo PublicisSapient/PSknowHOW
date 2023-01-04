@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -155,14 +156,7 @@ public class ProjectToolConfigController {
 
 	@RequestMapping(value = "/jiraProjectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getJiraProjectList() {
-		ServiceResponse serviceResponse = null;
-		List<ProjectBasicConfig> projectList = toolService.getJiraProjects();
-		if (CollectionUtils.isEmpty(projectList)) {
-			serviceResponse = new ServiceResponse(false,
-					"No jira projects found", null);
-		} else {
-			serviceResponse = new ServiceResponse(true, "list of jira projects", projectList);
-		}
+		ServiceResponse serviceResponse = toolService.getJiraProjects();
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -42,9 +42,6 @@ import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFacto
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
-import com.publicissapient.kpidashboard.common.model.application.Subproject;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -424,13 +421,22 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 	}
 
-	public List<ProjectBasicConfig> getJiraProjects() {
-		List<ProjectBasicConfig> projectList = new ArrayList<>();
+	public ServiceResponse getJiraProjects() {
+		List<ProjectAssignee> projectList = new ArrayList<>();
 		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(CommonConstant.JIRA);
-		for(ProjectToolConfig projectToolConfig : projectToolConfigList) {
-			projectList.add(getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId()));
+		if(null != projectToolConfigList) {
+			for (ProjectToolConfig projectToolConfig : projectToolConfigList) {
+				ProjectBasicConfig projectBasicConfig = getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId());
+				ProjectAssignee projectAssignee = new ProjectAssignee();
+				projectAssignee.setBasicProjectConfigId(projectBasicConfig.getId());
+				projectAssignee.setProjectName(projectBasicConfig.getProjectName());
+				projectList.add(projectAssignee);
+			}
+			if (CollectionUtils.isNotEmpty(projectList)) {
+				return new ServiceResponse(true, "List of Projects", projectList);
+			}
 		}
-		return projectList;
+		return new ServiceResponse(false,"No Projects Found",null);
 	}
 
 	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId) {

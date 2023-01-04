@@ -21,8 +21,10 @@ package com.publicissapient.kpidashboard.common.repository.rbac;
 
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.List;
 
@@ -31,7 +33,8 @@ import java.util.List;
  */
 public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
 
-    ProjectAssignee findByProjectId(String projectId);
+    ProjectAssignee findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
 
 }
 

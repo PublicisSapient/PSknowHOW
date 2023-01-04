@@ -3,13 +3,11 @@ package com.publicissapient.kpidashboard.apis.rbac.projectassignee.service;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 
-import java.util.List;
-
 public interface ProjectAssigneeService {
 
-    List<ProjectAssignee> getAllAssignees();
+    ServiceResponse getAllAssignees();
 
-    ProjectAssignee saveProjectAssignee(ProjectAssignee projectAssignee);
+    ServiceResponse getAssigneeByProjectConfigId(String projectConfigid);
 
-    ProjectAssignee getAssigneeByProjectConfigId(String projectConfigid);
+    ServiceResponse updateOrSaveAssineeByProjectConfigId(String projectConfigid, ProjectAssignee assignee);
 }

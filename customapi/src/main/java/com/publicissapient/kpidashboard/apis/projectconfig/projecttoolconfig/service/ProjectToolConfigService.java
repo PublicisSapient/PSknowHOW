@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.se
 import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
@@ -92,7 +93,7 @@ public interface ProjectToolConfigService {
 
 	boolean cleanToolData(String basicProjectConfigId, String projectToolId);
 
-	public List<ProjectBasicConfig> getJiraProjects();
+	public ServiceResponse getJiraProjects();
 
 	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId);
 }

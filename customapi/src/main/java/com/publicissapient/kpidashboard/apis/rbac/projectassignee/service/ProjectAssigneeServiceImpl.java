@@ -21,11 +21,14 @@ package com.publicissapient.kpidashboard.apis.rbac.projectassignee.service;
 import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 
 import java.util.List;
 
@@ -34,23 +37,48 @@ import java.util.List;
 public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 
 	@Autowired
-	private RolesRepository repository;
-
-	@Autowired
 	private ProjectAssigneeRepository projectAssigneeRepository;
 
 	@Override
-	public List<ProjectAssignee> getAllAssignees() {
-		return projectAssigneeRepository.findAll();
+	public ServiceResponse getAllAssignees() {
+		List<ProjectAssignee> projectAssignee =  projectAssigneeRepository.findAll();
+		if(CollectionUtils.isEmpty(projectAssignee)){
+			return new ServiceResponse(false,"No Assignees Found",null);
+		}
+		return new ServiceResponse(true,"List of Assignees",projectAssignee);
+	}
+
+
+	@Override
+	public ServiceResponse getAssigneeByProjectConfigId(String projectConfigid) {
+		ProjectAssignee projectAssignee = projectAssigneeRepository.findByBasicProjectConfigId(new ObjectId(projectConfigid));
+		if(projectAssignee==null){
+			return new ServiceResponse(false,"No Assignees Found for project",null);
+		}
+		return new ServiceResponse(true,"Found Assignees for project",projectAssignee);
 	}
 
 	@Override
-	public ProjectAssignee saveProjectAssignee(ProjectAssignee projectAssignee) {
-		return projectAssigneeRepository.save(projectAssignee);
+	public ServiceResponse updateOrSaveAssineeByProjectConfigId(String projectConfigid, ProjectAssignee assignee) {
+		ProjectAssignee existingProjectAssignee = projectAssigneeRepository.findByBasicProjectConfigId(new ObjectId(projectConfigid));
+
+		if (existingProjectAssignee == null) {
+			projectAssigneeRepository.save(assignee);
+			return new ServiceResponse(true, "Assignees Saved", assignee);
+		}
+		existingProjectAssignee = updateAssineeRoles(existingProjectAssignee, assignee);
+		if (existingProjectAssignee == null) {
+			return new ServiceResponse(false, "Unable to Update Role.", null);
+		}
+		projectAssigneeRepository.save(existingProjectAssignee);
+		return new ServiceResponse(true, "Updated the Role Successfully", existingProjectAssignee);
+
 	}
 
-	@Override
-	public ProjectAssignee getAssigneeByProjectConfigId(String projectConfigid) {
-		return projectAssigneeRepository.findByProjectId(projectConfigid);
+	public ProjectAssignee updateAssineeRoles(ProjectAssignee existingProjectAssignee, ProjectAssignee assignee) {
+		existingProjectAssignee.setAssigneeRoles(assignee.getAssigneeRoles());
+		return existingProjectAssignee;
 	}
+
+
 }
