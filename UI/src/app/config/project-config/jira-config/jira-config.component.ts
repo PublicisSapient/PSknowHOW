@@ -195,23 +195,22 @@ export class JiraConfigComponent implements OnInit {
               name: element.planName,
               code: element.planName
             }));
-            console.log(this.bambooPlanList);
             this.hideLoadingOnFormElement('planName');
           } else {
             this.bambooPlanList = [];
-            this.toolForm.controls['planKey'].setValue('');
-            this.toolForm.controls['branchKey'].setValue('');
+            this.toolForm?.controls['planKey'].setValue('');
+            this.toolForm?.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
 
           }
         } catch (error) {
           this.bambooPlanList = [];
-          this.toolForm.controls['planKey'].setValue('');
-          this.toolForm.controls['branchKey'].setValue('');
+          this.toolForm?.controls['planKey'].setValue('');
+          this.toolForm?.controls['branchKey'].setValue('');
           this.bambooBranchList = [];
           this.hideLoadingOnFormElement('planName');
-          if (this.toolForm.controls['jobType'].value === 'Build') {
+          if (this.toolForm?.controls['jobType'].value === 'Build') {
             this.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -248,7 +247,7 @@ export class JiraConfigComponent implements OnInit {
           this.hideLoadingOnFormElement('deploymentProject');
         } catch (error) {
           self.deploymentProjectList = [];
-          if (this.toolForm.controls['jobType'].value && this.toolForm.controls['jobType'].value.name === 'Deploy') {
+          if (this.toolForm?.controls['jobType'].value && this.toolForm?.controls['jobType'].value.name === 'Deploy') {
             self.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -496,7 +495,6 @@ export class JiraConfigComponent implements OnInit {
   };
 
   selectJIRAType = (event) => {
-
   };
 
   onBoardUnselect = (value) => {
@@ -592,7 +590,6 @@ export class JiraConfigComponent implements OnInit {
 
   pipeLineDropdownHandler = (value: any, elementId?) => {
     //TODO: Refactor needed.
-    console.log(value);
     if (value) {
       const selectedJobNameDefinition = this.azurePipelineResponseList.filter(data => data.code === value)[0]?.code;
       this.toolForm.controls['jobName'].setValue(selectedJobNameDefinition);
@@ -795,11 +792,7 @@ export class JiraConfigComponent implements OnInit {
   };
 
   bambooDeploymentPjojectSelectionHandler = (value: any, elementId?) => {
-    console.log('deployment project selected called');
-    console.log(value);
-    this.selectedDeploymentProject = value;
-
-
+    this.selectedDeploymentProject = this.deploymentProjectList?.filter(x => x.code == value)[0];
   };
 
 
@@ -2106,15 +2099,15 @@ export class JiraConfigComponent implements OnInit {
 
     // TODO: Need to refactor
     if (this.selectedConnection.type === 'Bamboo') {
-      submitData.jobType = this.tool['jobType'].value.name;
+      submitData.jobType = this.tool['jobType'].value;
 
-      if (this.tool['jobType'].value.name === 'Build') {
+      if (this.tool['jobType'].value === 'Build') {
         submitData.jobName = this.tool['planKey'].value;
 
         if (this.tool['branchKey'].value) {
           submitData.branch = this.tool['branchKey'].value;
         }
-      } else if (this.tool['jobType'].value.name === 'Deploy') {
+      } else if (this.tool['jobType'].value === 'Deploy') {
         submitData.deploymentProjectName = this.selectedDeploymentProject.name;
         submitData.deploymentProjectId = this.selectedDeploymentProject.code;
       }
