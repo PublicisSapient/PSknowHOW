@@ -421,12 +421,14 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 	}
 
+	@Override
 	public ServiceResponse getJiraProjects() {
 		List<ProjectAssignee> projectList = new ArrayList<>();
-		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(CommonConstant.JIRA);
-		if(null != projectToolConfigList) {
+		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(ProcessorConstants.JIRA);
+		if (null != projectToolConfigList) {
 			for (ProjectToolConfig projectToolConfig : projectToolConfigList) {
-				ProjectBasicConfig projectBasicConfig = getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId());
+				ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository
+						.findById(projectToolConfig.getBasicProjectConfigId()).get();
 				ProjectAssignee projectAssignee = new ProjectAssignee();
 				projectAssignee.setBasicProjectConfigId(projectBasicConfig.getId());
 				projectAssignee.setProjectName(projectBasicConfig.getProjectName());
@@ -436,19 +438,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				return new ServiceResponse(true, "List of Projects", projectList);
 			}
 		}
-		return new ServiceResponse(false,"No Projects Found",null);
-	}
-
-	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId) {
-		Optional<ProjectBasicConfig> projectBasicConfig = Optional.empty();
-		ProjectBasicConfig projectBasicConfigObj=null;
-		if (null != basicProjectConfigId) {
-			projectBasicConfig = projectBasicConfigRepository.findById(basicProjectConfigId);
-		}
-		if(projectBasicConfig.isPresent()) {
-			projectBasicConfigObj=projectBasicConfig.get();
-		}
-		return projectBasicConfigObj;
+		return new ServiceResponse(false, "No Projects Found", null);
 	}
 
 }

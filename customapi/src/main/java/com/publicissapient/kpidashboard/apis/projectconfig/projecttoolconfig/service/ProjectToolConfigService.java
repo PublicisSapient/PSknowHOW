@@ -93,7 +93,6 @@ public interface ProjectToolConfigService {
 
 	boolean cleanToolData(String basicProjectConfigId, String projectToolId);
 
-	public ServiceResponse getJiraProjects();
+	ServiceResponse getJiraProjects();
 
-	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId);
 }
