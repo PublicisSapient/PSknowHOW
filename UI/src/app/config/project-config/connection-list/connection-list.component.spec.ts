@@ -36,6 +36,7 @@ import { ConnectionListComponent } from './connection-list.component';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
@@ -1215,7 +1216,6 @@ describe('ConnectionListComponent', () => {
       accessTokenEnabled: [],
     },
   };
-  const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -1235,7 +1235,6 @@ describe('ConnectionListComponent', () => {
         ConfirmationService,
         RsaEncryptionService,
         { provide: APP_CONFIG, useValue: AppConfig },
-        { provide: UntypedFormBuilder, useValue: formBuilder },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
@@ -1450,7 +1449,7 @@ describe('ConnectionListComponent', () => {
     expect(component.disableConnectionTypeDropDown).toBeTrue();
   });
 
-  it('getZephyrUrl()', () => {
+  it('should get zypherURL', () => {
     const response = {
       data: 'https://api.zephyrscale.smartbear.com/v2/',
       message: 'Fetched Zephyr Cloud Base Url successfully',
@@ -1464,7 +1463,7 @@ describe('ConnectionListComponent', () => {
     );
   });
 
-  it('When zyper selected validating fileds', () => {
+  it('should validate fields when zypher connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
     component.connection['type'] = 'zephyr';
@@ -1483,7 +1482,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('When zyper selected validating fileds', () => {
+  it('should validate fields when zypher connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
     component.connection['type'] = 'zephyr';
@@ -1500,7 +1499,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('When zyper selected validating fileds', () => {
+  it('should validate fields when zypher connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
     component.connection['type'] = 'zephyr';
@@ -1517,7 +1516,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('When zyper selected validating fileds', () => {
+  it('should validate fields when zypher connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
     component.connection['type'] = 'zephyr';
