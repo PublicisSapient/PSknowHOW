@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ProjectAssigneeRolesDataDTO {
-	private String roleName;
+	private String roleId;
 	private String roleDisplayName;
 	private Date createdDate;
 }

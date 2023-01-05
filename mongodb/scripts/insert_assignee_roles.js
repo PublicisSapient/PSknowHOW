@@ -1,17 +1,17 @@
 db.getCollection('assignee_roles').remove({});
 db.assignee_roles.insertMany([
 {
-    roleName :"BackendDeveloper",
+    roleId :"backend_developer",
     roleDisplayName: "Backend Developer",
     createdDate: new Date(Date.now())
 }, 
 {   
-    roleName :"FrontendDeveloper",
+    roleId :"frontend_developer",
     roleDisplayName: "Frontend Developer",
     createdDate: new Date(Date.now())
 }, 
 {   
-    roleName :"Tester",
+    roleId :"tester",
     roleDisplayName: "Tester",
     createdDate: new Date(Date.now())
 }

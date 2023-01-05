@@ -20,9 +20,8 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import org.apache.commons.collections.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -43,10 +42,6 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigService;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * @author yasbano

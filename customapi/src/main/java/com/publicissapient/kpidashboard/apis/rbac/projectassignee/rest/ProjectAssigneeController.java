@@ -61,14 +61,12 @@ public class ProjectAssigneeController {
 	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getAllAssigness() {
-		log.info("Fetching all assigness");
 		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssignees());
 	}
 
 	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getAssigneeByProjectConfigId(@PathVariable("id") String id) {
-		log.info("Fetching assigness for projectId " + id);
 		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAssigneeByProjectConfigId(id));
 	}
 
@@ -82,6 +80,7 @@ public class ProjectAssigneeController {
 				.body(assigneeService.updateOrSaveAssineeByProjectConfigId(id, assignee));
 	}
 
+	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@GetMapping("/roles")
 	public ResponseEntity<List<ProjectAssigneeRolesDataDTO>> assigneeRolesSuggestion() {
 		return ResponseEntity.status(HttpStatus.OK)

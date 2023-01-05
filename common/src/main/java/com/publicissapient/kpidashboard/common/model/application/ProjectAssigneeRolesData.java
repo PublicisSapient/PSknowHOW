@@ -41,7 +41,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "assignee_roles")
 public class ProjectAssigneeRolesData {
 
-	private String roleName;
+	private String roleId;
 	private String roleDisplayName;
 	private Date createdDate;
 
