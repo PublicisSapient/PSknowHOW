@@ -1,0 +1,10 @@
+{
+    "message": "Fetched successfully",
+    "success": true,
+    "data": [
+        {
+            "jobBranchKey": "REL-BAM0",
+            "branchName": "feature"
+        }
+    ]
+}
