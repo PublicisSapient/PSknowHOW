@@ -110,7 +110,7 @@ services:
       - <Location-of-knowhow>/PSKnowhow/app/apps/certs:/app/certs/
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-	  - producer.instanceName=<Your-IP>
+      - producer.instanceName=<Your-IP>
     links:
       - MongoDB:mongodb
     networks:
