@@ -22,7 +22,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, FormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -319,5 +319,19 @@ describe('JiraConfigComponent', () => {
     tick();
     expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
   }));
+
+  it('should enable organization key', () => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.enableDisableOrganizationKey(true);
+    expect(component.toolForm.controls['organizationKey'].disabled).toBeFalsy();
+  })
+
+  it('should disable organization key', () => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.enableDisableOrganizationKey(false);
+    expect(component.toolForm.controls['organizationKey'].disabled).toBeTruthy();
+  })
 
 });
