@@ -27,7 +27,11 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.*;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
+import com.publicissapient.kpidashboard.common.model.application.Subproject;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -423,13 +427,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Override
 	public ServiceResponse getJiraProjects() {
-		List<ProjectAssignee> projectList = new ArrayList<>();
+		List<ProjectAssigneeDTO> projectList = new ArrayList<>();
 		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(ProcessorConstants.JIRA);
 		if (null != projectToolConfigList) {
 			for (ProjectToolConfig projectToolConfig : projectToolConfigList) {
 				ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository
 						.findById(projectToolConfig.getBasicProjectConfigId()).get();
-				ProjectAssignee projectAssignee = new ProjectAssignee();
+				ProjectAssigneeDTO projectAssignee = new ProjectAssigneeDTO();
 				projectAssignee.setBasicProjectConfigId(projectBasicConfig.getId());
 				projectAssignee.setProjectName(projectBasicConfig.getProjectName());
 				projectList.add(projectAssignee);
