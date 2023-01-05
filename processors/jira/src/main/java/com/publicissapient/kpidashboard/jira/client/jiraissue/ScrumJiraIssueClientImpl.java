@@ -18,6 +18,42 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.StringEscapeUtils;
+import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
@@ -60,43 +96,8 @@ import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
-import org.bson.types.ObjectId;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This is an implemented/extended storyDataClient for configured Scrum
@@ -554,7 +555,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				setAdditionalFilters(jiraIssue, issue, projectConfig);
 
 				setStoryLinkWithDefect(issue, jiraIssue,fields);
-				/*setStoryLinkWithsubtaskDefect(issue,jiraIssue,fields);*/
+
 				// ADD QA identification field to feature
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 				setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
@@ -881,7 +882,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param issue
 	 * @param jiraIssue
 	 */
-	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue,Map<String, IssueField> fields) {
+	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
@@ -890,16 +891,16 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
 						&& jiraProcessorConfig.getExcludeLinks().stream()
-						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
 					break;
 				}
 				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
 
-			if(issue.getIssueType().isSubtask()){
-				if(MapUtils.isNotEmpty(fields)){
+			if (issue.getIssueType().isSubtask()) {
+				if (MapUtils.isNotEmpty(fields)) {
 					try {
-						parentKey=((JSONObject)fields.get("parent").getValue()).get("key").toString();
+						parentKey = ((JSONObject) fields.get("parent").getValue()).get("key").toString();
 					} catch (JSONException e) {
 						log.error("JIRA Processor | Error while parsing third party key {}", e);
 						throw new RuntimeException(e);
@@ -911,27 +912,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
-	/*private void setStoryLinkWithsubtaskDefect(Issue issue, JiraIssue jiraIssue,Map<String, IssueField> fields) {
-		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
-				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
-			Set<String> defectStorySet = new HashSet<>();
-			String parentKey = null;
-
-			if(issue.getIssueType().isSubtask()){
-				if(MapUtils.isNotEmpty(fields)){
-					try {
-						parentKey=((JSONObject)fields.get("parent").getValue()).get("key").toString();
-					} catch (JSONException e) {
-						log.error("JIRA Processor | Error while parsing third party key {}", e);
-						throw new RuntimeException(e);
-					}
-					defectStorySet.add(parentKey);
-				}
-			}
-			jiraIssue.setDefectStoryID(defectStorySet);
-		}
-	}
-*/
+	
 	/**
 	 * Finds one JiraIssue by issueId
 	 *
