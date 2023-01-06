@@ -258,7 +258,7 @@ describe('ConnectionListComponent', () => {
   ];
 
 
-  const getConnectionsResponse = require('../../../../test/resource/FakeGetConnectionResponse.json');
+  const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
   
 
   const connectionLabelsFields = [
@@ -703,6 +703,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'accessToken',
         'connPrivate',
+        "accessTokenEnabled",
       ],
     },
     {
@@ -1263,4 +1264,169 @@ describe('ConnectionListComponent', () => {
       expect(component.basicConnectionForm.get('password').value).toBe('');
     });
   });
+
+  it('should be username,accesstoken blank when Sonar connection selected and cloudEnv switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('username').value).toBe('');
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+      expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+    });
+  });
+
+  it('should be password blank when Sonar connection selected and vault switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be password blank when cloudEnv switch is true and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be accesstoken blank when cloudEnv switch is false and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+     expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+     });
+  });
+
+  it("should be password blank when accessToken or password is toggling",()=>{
+    component.connection['accessTokenEnabled'] = true;
+    component.enableDisableFieldsOnAccessTokenORPasswordToggle();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].value).toBe("")
+  })
+
+  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTruthy();
+  })
+
+  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
+  })
+
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
+
+
+  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+  })
+
+  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalsy();
+
+  })
+
+  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
+  })
+
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['vault'].setValue("Any value")
+    component.connection['vault'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
+  })
+
+
+  
+
 });
