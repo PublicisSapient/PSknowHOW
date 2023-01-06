@@ -422,7 +422,7 @@ export class JiraConfigComponent implements OnInit {
           // prefetch boards if projectKey is present
           if (this.urlParam === 'Jira') {
             if (this.toolForm.controls['projectKey'].value) {
-              this.fetchBoards(null, this);
+              this.fetchBoards(this);
             }
           }
         }
@@ -451,7 +451,7 @@ export class JiraConfigComponent implements OnInit {
     return false;
   };
 
-  fetchBoards(event, self) {
+  fetchBoards(self) {
     if (self.selectedConnection && self.selectedConnection.id) {
       if (self.toolForm.controls['projectKey'].dirty && self.toolForm.controls['projectKey'].value && self.toolForm.controls['projectKey'].value.length) {
         const postData = {};
@@ -705,7 +705,8 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-  apiVersionHanlder = (version: any, elementId?) => {
+  apiVersionHandler = (version: any, elementId?) => {
+
     try {
       const selectedConnectionId = this.selectedConnection?.id;
       const organizationKey = this.tool['organizationKey'].value ? this.tool['organizationKey'].value : null;
@@ -805,7 +806,7 @@ export class JiraConfigComponent implements OnInit {
   bambooPlanSelectHandler = (value: any, elementId?) => {
     this.showLoadingOnFormElement('branchName');
     this.bambooPlanKeyForSelectedPlan = [...this.bambooProjectDataFromAPI]
-      .filter((item) => item.projectAndPlanName === value)[0]?.jobNameKey;
+    .filter((item) => item.projectAndPlanName === value)[0]?.jobNameKey;
     this.toolForm.controls['planKey'].setValue(this.bambooPlanKeyForSelectedPlan);
     if (this.bambooPlanKeyForSelectedPlan) {
       try {
@@ -1221,7 +1222,7 @@ export class JiraConfigComponent implements OnInit {
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 optionsList: this.sonarVersionFinalList,
-                changeHandler: this.apiVersionHanlder,
+                changeHandler: this.apiVersionHandler,
                 show: true,
                 tooltip: `This property is used in Sonar processor.
               <br /><i>
@@ -2022,7 +2023,7 @@ export class JiraConfigComponent implements OnInit {
   }
 
   projectKeyChanged(event, self) {
-    self.fetchBoards(event, self);
+    self.fetchBoards(self);
   }
 
   jiraMethodChange(event = null, self) {
