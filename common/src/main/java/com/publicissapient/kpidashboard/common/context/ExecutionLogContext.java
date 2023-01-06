@@ -18,7 +18,6 @@ public class ExecutionLogContext implements Serializable {
 
 	private static final String CONTEXT_ERROR = "Unauthorize to access.";
 	private String requestId;
-	private String userName;
 	private String environment;
 	private String projectName;
 	private String projectBasicConfgId;
@@ -32,15 +31,6 @@ public class ExecutionLogContext implements Serializable {
 			return new ExecutionLogContext(nextId.getAndIncrement());
 		}
 	};
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		MDC.put(CommonConstant.USER_NAME, userName);
-		this.userName = userName;
-	}
 
 
 	public String getProjectBasicConfgId() {
@@ -127,7 +117,6 @@ public class ExecutionLogContext implements Serializable {
 		currentContext.setRequestId(context.getRequestId());
 		currentContext.setThreadId(context.getThreadId());
 		currentContext.setEnvironment(context.getEnvironment());
-		currentContext.setUserName(context.getUserName());
 		currentContext.setProjectName(context.getProjectName());
 		currentContext.setProjectBasicConfgId(context.getProjectBasicConfgId());
 		currentContext.setIsCron(context.getIsCron());

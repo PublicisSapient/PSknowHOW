@@ -102,7 +102,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 		try {
 			setMDCContext();
-			//Change-4-- as thread changed context is to be get
+			// Change-4-- as thread changed context is to be get
 			ExecutionLogContext context = ExecutionLogContext.getContext();
 			context.setProjectName(onlineLineprojectConfigMap.getProjectName());
 			context.setProjectBasicConfgId(onlineLineprojectConfigMap.getBasicProjectConfigId().toHexString());
@@ -111,7 +111,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			psLogData.setAction(CommonConstant.PROJECT_RUN);
 			long start = System.currentTimeMillis();
 			psLogData.setProjectStartTime(DateUtil.convertMillisToDateTime(start));
-			//Change-5  when inserting logs as per the requirement add field in the PSLogData class
+			// Change-5 when inserting logs as per the requirement add field in the
+			// PSLogData class
 			// and use in below manner
 			log.info("START - Jira processing started for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
@@ -125,8 +126,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 			psLogData.setTimeTaken(String.valueOf(end - start));
 			log.info("END - Jira processing finished for project {}", onlineLineprojectConfigMap.getProjectName(),
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (Exception ex){
-			log.error("Exception in processing Jira Project",ex);
+		} catch (Exception ex) {
+			log.error("Exception in processing Jira Project", ex);
 		} finally {
 			latch.countDown();
 			ExecutionLogContext.getContext().destroy();

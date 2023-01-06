@@ -71,7 +71,6 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		}
 	}
 
-
 	/**
 	 * Validate and Collects Issues and data
 	 * 
@@ -157,7 +156,6 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		return toolObj;
 	}
 
-
 	/**
 	 * This method gets list of RelevantProjects based on mode
 	 * 
@@ -167,9 +165,5 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	 *         list
 	 */
 	public abstract List<ProjectBasicConfig> getRelevantProjects(List<ProjectBasicConfig> projectConfigList);
-
-
-
-
 
 }

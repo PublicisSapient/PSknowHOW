@@ -31,9 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,17 +40,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -66,19 +55,21 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
-
-import lombok.extern.slf4j.Slf4j;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 /**
  * @author yasbano
@@ -92,7 +83,6 @@ public class SprintClientImpl implements SprintClient {
 	private static final String ID = "id";
 
 	private static final String STATE = "state";
-	private static final String RAPIDVIEWID = "rapidViewId";
 	private static final String NAME = "name";
 	private static final String STARTDATE = "startDate";
 	private static final String ENDDATE = "endDate";
@@ -121,7 +111,7 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	@Override
 	public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			JiraAdapter jiraAdapter) throws InterruptedException{
+			JiraAdapter jiraAdapter) throws InterruptedException {
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -131,24 +121,24 @@ public class SprintClientImpl implements SprintClient {
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
 			PSLogData sprintLogData = new PSLogData();
-			for(SprintDetails sprint : sprintDetailsSet ) {
+			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
-					SprintDetails dbSprintDetails =  dbSprintDetailMap.get(sprint.getSprintID());
+					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
 					sprint.setId(dbSprintDetails.getId());
-					//case 1 : same sprint different board id
+					// case 1 : same sprint different board id
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
-					}//case 2 : sprint state is active or changed which is present in db
-					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE) ||
-							!sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
+					} // case 2 : sprint state is active or changed which is present in db
+					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
+							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
-					}else {
+					} else {
 						log.info("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
 								sprint.getState());
 						fetchReport = false;
@@ -157,7 +147,7 @@ public class SprintClientImpl implements SprintClient {
 					fetchReport = true;
 				}
 
-				if(fetchReport){
+				if (fetchReport) {
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 					getSprintReport(sprint, jiraAdapter, projectConfig, boardId,
 							dbSprintDetailMap.get(sprint.getSprintID()));
@@ -185,10 +175,9 @@ public class SprintClientImpl implements SprintClient {
 	}
 
 	private void getSprintReport(SprintDetails sprint, JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig,
-								 String boardId,SprintDetails dbSprintDetails) {
-		if(sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null){
-			jiraAdapter.getSprintReport(projectConfig, sprint.getOriginalSprintId(),
-					boardId, sprint, dbSprintDetails);
+			String boardId, SprintDetails dbSprintDetails) {
+		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null) {
+			jiraAdapter.getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails);
 		}
 	}
 

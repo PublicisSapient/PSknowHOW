@@ -26,7 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
@@ -58,7 +58,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 @Component
 @Slf4j
 public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor> {
-	PSLogData psLogData=new PSLogData();
+	PSLogData psLogData = new PSLogData();
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
 
@@ -109,12 +109,13 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		//change 2--
-		if (ObjectUtils.isNotEmpty(getExecutionLogContext())&&(StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {
-			//setting execution context as per user request
+		// change 2--
+		if (ObjectUtils.isNotEmpty(getExecutionLogContext())
+				&& (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {
+			// setting execution context as per user request
 			getExecutionLogContext().setIsCron("false");
-			} else {
-			//setting execution context as per for cron job uuid
+		} else {
+			// setting execution context as per for cron job uuid
 			ExecutionLogContext cronExecutionContext = new ExecutionLogContext();
 			cronExecutionContext.setRequestId(uid);
 			cronExecutionContext.setIsCron("true");
@@ -125,7 +126,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 
 		clearSelectedBasicProjectConfigIds();
 		ExecutionLogContext executionLocalLogContext = getExecutionLogContext();
-		fetchIssueDetail(executionStatus, projectConfigList,executionLocalLogContext);
+		fetchIssueDetail(executionStatus, projectConfigList, executionLocalLogContext);
 
 		long endTime = System.currentTimeMillis();
 		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));

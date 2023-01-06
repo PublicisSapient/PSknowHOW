@@ -114,7 +114,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 	 * @param psLogData
 	 */
 	private void saveProjectRelease(String projectKey, boolean isKanban, String projectName,
-									AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
+			AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
 		List<Version> versions = jiraAdapter.getVersions(projectKey.toUpperCase());
 		List<String> projectVesion = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(versions)) {
