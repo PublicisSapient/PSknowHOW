@@ -63,7 +63,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	public void destroyLogContext() {
 		this.executionLogContext.destroy();
-		this.executionLogContext=null;
+		this.executionLogContext = null;
 
 	}
 
