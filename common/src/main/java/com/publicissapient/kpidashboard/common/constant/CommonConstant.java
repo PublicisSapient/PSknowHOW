@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-
 /**
  * Defines the constants that can be used across modules.
  *
@@ -98,7 +96,6 @@ public final class CommonConstant {
 	public static final String ENG_MATURITY_MASTER = "ENG_MATURITY_MASTER";
 	
 	public static final String ARROW = "->";
-	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
@@ -133,8 +130,6 @@ public final class CommonConstant {
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
-	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
-	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
 
 	public static final String PSLOGDATA = "PSLogData";
 	public static final String REQUESTID = "requestId";
