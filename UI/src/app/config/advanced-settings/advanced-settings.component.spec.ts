@@ -272,7 +272,7 @@ describe('AdvancedSettingsComponent', () => {
     expect(component.toolConfigsDetails.length).toEqual(fakeGetAllTools.data.length);
   }))
 
-  fit('should get processors trace logs for project', fakeAsync(() => {
+  it('should get processors trace logs for project', fakeAsync(() => {
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
