@@ -1265,7 +1265,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should be username,accesstoken blank when Sonar connection selected', () => {
+  it('should be username,accesstoken blank when Sonar connection selected and cloudEnv switch is enabled', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = true;
@@ -1283,7 +1283,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should be password blank when Sonar connection selected', () => {
+  it('should be password blank when Sonar connection selected and vault switch is enabled', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = true;
