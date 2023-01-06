@@ -1265,7 +1265,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should validate fields when Sonar connection selected', () => {
+  it('should be username,accesstoken blank when Sonar connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = true;
@@ -1283,7 +1283,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should validate fields when Sonar connection selected', () => {
+  it('should be password blank when Sonar connection selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = true;
@@ -1299,7 +1299,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should validate fields when Sonar connection selected', () => {
+  it('should be password blank when cloudEnv switch is true and sonar connection is selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = false;
@@ -1315,7 +1315,7 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should validate fields when Sonar connection selected', () => {
+  it('should be accesstoken blank when cloudEnv switch is false and sonar connection is selected', () => {
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connection['vault'] = false;
@@ -1331,14 +1331,14 @@ describe('ConnectionListComponent', () => {
      });
   });
 
-  it("Should enable field on accesstoken enabled",()=>{
+  it("should be password blank when accessToken or password is toggling",()=>{
     component.connection['accessTokenEnabled'] = true;
     component.enableDisableFieldsOnAccessTokenORPasswordToggle();
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['password'].value).toBe("")
   })
 
-  it("Should enable/disable fields based on connection and selected connection ",()=>{
+  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled",()=>{
     component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
     component.connection['isOAuth'] =true;
     component.defaultEnableDisableSwitch();
@@ -1347,7 +1347,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTruthy();
   })
 
-  it("Should enable/disable fields based on connection and selected connection ",()=>{
+  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled",()=>{
     component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
     component.connection['isOAuth'] =false;
     component.defaultEnableDisableSwitch();
@@ -1356,7 +1356,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
   })
 
-  it("Should enable/disable fields based on connection and selected connection",()=>{
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1371,7 +1371,7 @@ describe('ConnectionListComponent', () => {
   })
 
 
-  it("Should enable/disable fields based on connection and selected connection",()=>{
+  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1384,7 +1384,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
   })
 
-  it("Should enable/disable fields based on connection and selected connection",()=>{
+  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled",()=>{
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1399,7 +1399,7 @@ describe('ConnectionListComponent', () => {
 
   })
 
-  it("Should enable/disable fields based on connection and selected connection",()=>{
+  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled",()=>{
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1413,7 +1413,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
   })
 
-  it("Should enable/disable fields based on connection and selected connection defaultEnableDisableSwitch",()=>{
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
