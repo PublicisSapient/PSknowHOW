@@ -1426,7 +1426,128 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
   })
 
+  it("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['accessTokenEnabled'].setValue("Any value")
+    component.connection['accessTokenEnabled'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
 
-  
+  it("should be fields enable when checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+
+  it("should be privatekey enabled when isOAuth key is true", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(true);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeTruthy();
+  })
+
+  it("should be privatekey disabled when isOAuth key is false", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeFalsy();
+  })
+
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+  it("should enable form control while testing connections",()=>{
+
+    component.testingConnection = true;
+    const reqData = {};
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+    component.connectionTypeFieldsAssignment();
+    component.testConnection();
+    fixture.detectChanges();
+    component.addEditConnectionFieldsNlabels.forEach(data => {
+      if (!!component.connection.type && !!data.connectionType && (component.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
+        data.inputFields.forEach(inputField => {
+          if (component.basicConnectionForm.value[inputField] !== undefined && component.basicConnectionForm.value[inputField] !== '' && component.basicConnectionForm.value[inputField] !== 'undefined') {
+            expect(reqData[inputField]).toEqual(component.basicConnectionForm.value[inputField])
+          }
+        });
+      }
+    });
+
+  })
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is unchecked ", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
 
 });
