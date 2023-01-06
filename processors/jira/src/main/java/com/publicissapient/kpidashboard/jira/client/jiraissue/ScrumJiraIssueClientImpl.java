@@ -70,7 +70,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -553,7 +552,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// Set additional filters
 				setAdditionalFilters(jiraIssue, issue, projectConfig);
 
-				setStoryLinkWithDefect(issue, jiraIssue,fields);
+				setStoryLinkWithDefect(issue, jiraIssue);
 
 				// ADD QA identification field to feature
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
@@ -881,12 +880,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param issue
 	 * @param jiraIssue
 	 */
-	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			String parentKey = null;
-
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
 						&& jiraProcessorConfig.getExcludeLinks().stream()
@@ -894,18 +891,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					break;
 				}
 				defectStorySet.add(issueLink.getTargetIssueKey());
-			}
-
-			if (issue.getIssueType().isSubtask()) {
-				if (MapUtils.isNotEmpty(fields)) {
-					try {
-						parentKey = ((JSONObject) fields.get("parent").getValue()).get("key").toString();
-					} catch (JSONException e) {
-						log.error("JIRA Processor | Error while parsing third party key {}", e);
-						throw new RuntimeException(e);
-					}
-					defectStorySet.add(parentKey);
-				}
 			}
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
