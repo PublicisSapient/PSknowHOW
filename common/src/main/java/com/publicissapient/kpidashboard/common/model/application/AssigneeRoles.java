@@ -19,20 +19,20 @@ import lombok.ToString;
 public class AssigneeRoles {
     private String name;
     private String displayName;
-    private String roles;
+    private String role;
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof AssigneeRoles) {
             AssigneeRoles that = (AssigneeRoles) obj;
-            return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName) && Objects.equal(this.roles, that.roles);
+            return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName) && Objects.equal(this.role, that.role);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name, roles);
+        return Objects.hashCode(name, role);
     }
 
 }

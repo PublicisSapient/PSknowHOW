@@ -80,11 +80,11 @@ public class ProjectAssigneeServiceImpl implements ProjectAssigneeService {
 	}
 
 	private void checkAssigneeRoles(ProjectAssignee projectAssignee) {
-		projectAssignee
-				.setAssigneeRoles(projectAssignee.getAssigneeRoles().stream()
-						.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getName())
-								&& (StringUtils.isNotEmpty(assigneeRole.getDisplayName())))
-						.collect(Collectors.toList()));
+		projectAssignee.setAssigneeRoles(projectAssignee.getAssigneeRoles().stream()
+				.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getName())
+						&& (StringUtils.isNotEmpty(assigneeRole.getDisplayName()))
+						&& (StringUtils.isNotEmpty(assigneeRole.getRole())))
+				.collect(Collectors.toList()));
 	}
 
 	private ProjectAssignee updateAssineeRoles(ProjectAssignee existingProjectAssignee, ProjectAssignee assignee) {
