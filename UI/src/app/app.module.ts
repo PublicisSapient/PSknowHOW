@@ -113,6 +113,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
                     environment['baseUrl'] = env['baseUrl'] || '';
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
                 }));
 
         await env$.toPromise().then(res => console.log);
