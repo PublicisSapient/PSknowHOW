@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -33,6 +33,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
 import { TextEncryptionService } from '../../services/text.encryption.service';
+import { of } from 'rxjs';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
@@ -172,6 +173,8 @@ describe('AdvancedSettingsComponent', () => {
     }
   };
 
+  const fakeGetAllTools = require('../../../test/resource/fakeGetAllTools.json');
+  const fakeProcessorsTracelog = require('../../../test/resource/fakeProcessorsTracelog.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AdvancedSettingsComponent],
@@ -260,4 +263,20 @@ describe('AdvancedSettingsComponent', () => {
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({ message: 'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run', success: true });
   });
+
+  it('should all tools config', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(fakeGetAllTools));
+    component.getAllToolConfigs(basicProjectConfigId);
+    tick();
+    expect(component.toolConfigsDetails.length).toEqual(fakeGetAllTools.data.length);
+  }))
+
+  fit('should get processors trace logs for project', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
+    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+    tick();
+    expect(component.processorsTracelogs.length).toEqual(fakeProcessorsTracelog.data.length);
+  }));
 });
