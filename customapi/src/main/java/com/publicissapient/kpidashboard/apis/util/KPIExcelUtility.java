@@ -649,14 +649,15 @@ public class KPIExcelUtility {
     public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
-            KPIExcelData excelData = new KPIExcelData();
             issuesExcel.forEach((e) -> {
+                KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
                 excelData.setDate(e.getChangeDate());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
+                excelData.setSizeInStoryPoints(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
                 excelDataList.add(excelData);
             });
         }
