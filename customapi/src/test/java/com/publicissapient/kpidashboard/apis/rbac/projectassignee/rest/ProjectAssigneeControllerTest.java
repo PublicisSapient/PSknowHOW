@@ -52,13 +52,13 @@ public class ProjectAssigneeControllerTest {
 		AssigneeRoles assigneeRoles1 = new AssigneeRoles();
 		assigneeRoles1.setName("testName1");
 		assigneeRoles1.setDisplayName("testDisplayName1");
-		assigneeRoles1.setRoles("testRole1");
+		assigneeRoles1.setRole("testRole1");
 		assigneeRolesList.add(assigneeRoles1);
 
 		AssigneeRoles assigneeRoles2 = new AssigneeRoles();
 		assigneeRoles1.setName("testName2");
 		assigneeRoles1.setDisplayName("testDisplayName2");
-		assigneeRoles1.setRoles("testRole2");
+		assigneeRoles1.setRole("testRole2");
 		assigneeRolesList.add(assigneeRoles2);
 
 		projectAssignee.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
