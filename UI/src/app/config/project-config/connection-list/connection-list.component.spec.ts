@@ -1413,6 +1413,19 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
   })
 
+  it("Should enable/disable fields based on connection and selected connection defaultEnableDisableSwitch",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['vault'].setValue("Any value")
+    component.connection['vault'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
+  })
+
 
   
 
