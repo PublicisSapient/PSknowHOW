@@ -752,7 +752,7 @@ public class OnlineAdapter implements JiraAdapter {
     private Set<String> setAddedIssues(JSONObject addedIssuesJson, Set<String> addedIssues) {
         Set<String> keys = addedIssuesJson.keySet();
         if (CollectionUtils.isNotEmpty(keys)) {
-            addedIssues = keys.stream().collect(Collectors.toSet());
+            addedIssues.addAll(keys.stream().collect(Collectors.toSet()));
         }
         return addedIssues;
     }
