@@ -16,7 +16,7 @@
       when: ansible_facts['distribution'] == 'Ubuntu'
       # ignore_errors: yes
   vars:
-    ansible_python_interpreter: /usr/bin/python3
+    ansible_python_interpreter: /usr/local/bin/python2.7
   environment:
       OLD_VERSION: '{{ OLD_VERSION }}'
 

@@ -1,5 +1,8 @@
 pipeline {
    agent any
+   parameters {
+           gitParameter defaultValue: 'origin/master', name: 'SBRANCH', type: 'PT_BRANCH_TAG',quickFilterEnabled:true ,description: 'Select Branch'
+	   }
    stages {
 
 		stage('Clean workspace') {
