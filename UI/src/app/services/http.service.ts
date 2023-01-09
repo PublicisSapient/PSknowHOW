@@ -128,7 +128,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
     private getSSOUserInfoUrl = this.baseUrl + '/api/sso/users/';
-    private getSSOUserAuthInfoUrl = this.baseUrl + '/api/sso/stub-auth';
+    private getSSOUserAuthInfoUrl = this.baseUrl + '/api/sso/auth';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 

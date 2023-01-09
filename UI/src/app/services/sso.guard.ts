@@ -26,10 +26,15 @@ export class SSOGuard implements CanActivate {
 
   getSSOUserAuthInfo() {
     return this.httpService.getSSOUserAuthInfo().pipe(mergeMap(res => {
+      console.log('Response -->',res);
+      console.log('response Headers --> ',res['headers']);
+      console.log('username from response headers -->',res['headers']?.get('username'));
       if (res['status'] === 200 && res['headers']?.get('username')) {
         const userName = res['headers']?.get('username');
+        console.log('userName -->',res['headers']?.get('username'));
         const checkifUserAlreadyLoggedIn = localStorage.getItem('user_name') ? (localStorage.getItem('user_name') === userName) : false;
         if(!checkifUserAlreadyLoggedIn){
+          console.log('calling user info api using username');
             return this.getSSOUserInfo(userName);
         }else{
           if (this.redirectToProfile()) {
@@ -43,6 +48,7 @@ export class SSOGuard implements CanActivate {
       }
     }),
       catchError((error) => {
+        console.log('error -->',error);
         this.router.navigate(['./authentication-fail']);
         return of(false);
       }), first());
@@ -50,8 +56,10 @@ export class SSOGuard implements CanActivate {
 
   getSSOUserInfo(userName) {
     return this.httpService.getSSOUserInfo(userName).pipe(map(response =>{
+      console.log('response from user info call',response);
       if (response['success'] || response['authenticated']) {
         if(response['success']){
+          console.log('setting localstorage');
           localStorage.setItem('user_name', response['data']?.username);
           localStorage.setItem('projectsAccess', JSON.stringify(response['data']['projectsAccess']));
           localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(response['data']['authorities']), 'encrypt'));
