@@ -363,6 +363,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 				testCaseDetail.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 
 				testCaseDetail.setOriginalTypeName(issueType.getName());
+				testCaseDetail.setName(issueType.getDescription());
 				testCaseDetail.setTypeName(NormalizedJira.TEST_TYPE.getValue());
 
 				processJiraIssueData(testCaseDetail, issue);

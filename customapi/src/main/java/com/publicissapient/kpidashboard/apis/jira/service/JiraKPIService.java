@@ -178,17 +178,15 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
 														 TestCaseDetails testCaseDetails) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setProjectName(testCaseDetails.getProjectName());
-		iterationKpiModalValue.setTestCaseId(testCaseDetails.getNumber());
+		iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
+		iterationKpiModalValue.setDescription(testCaseDetails.getName());
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
 	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
 														   JiraIssue jiraIssue) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setProjectName(jiraIssue.getProjectName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setDefectsWithoutStoryLink(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		overAllModalValues.add(iterationKpiModalValue);

@@ -325,8 +325,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
         IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
         iterationKpiValues.add(overAllIterationKpiValue);
         trendValue.setValue(iterationKpiValues);
-        kpiElement.setModalHeads(KPIExcelColumn.TEST_WITHOUT_STORY_LINK.getColumns());
-        kpiElement.setModalHeadsForMultipleModals(KPIExcelColumn.DEFECTS_WITHOUT_STORY_LINK.getColumns());
+        kpiElement.setModalHeads(KPIExcelColumn.ISSUES_WITHOUT_STORY_LINK.getColumns());
         kpiElement.setTrendValueList(trendValue);
 
     }

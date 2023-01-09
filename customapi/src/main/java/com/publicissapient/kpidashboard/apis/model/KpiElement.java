@@ -99,7 +99,6 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient IterationKpiFilters filters;
 	private String sprint;
 	private List<String> modalHeads;
-	private List<String> modalHeadsForMultipleModals;
 
 	@JsonIgnore
 	private transient List<KPIExcelData> excelData;
@@ -777,11 +776,5 @@ public class KpiElement implements Serializable { // NOPMD
 		this.excelData = excelData;
 	}
 
-	public List<String> getModalHeadsForMultipleModals() {
-		return modalHeadsForMultipleModals;
-	}
 
-	public void setModalHeadsForMultipleModals(List<String> modalHeadsForMultipleModals) {
-		this.modalHeadsForMultipleModals = modalHeadsForMultipleModals;
-	}
 }
