@@ -79,7 +79,6 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 @Service
 @Slf4j
 public class SprintClientImpl implements SprintClient {
-	PSLogData psLogData= new PSLogData();
 	private static final String ID = "id";
 
 	private static final String STATE = "state";
@@ -100,6 +99,8 @@ public class SprintClientImpl implements SprintClient {
 
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
+
+	private PSLogData psLogData = new PSLogData();
 
 	/**
 	 * This method handles sprint detailsList
@@ -181,12 +182,11 @@ public class SprintClientImpl implements SprintClient {
 		}
 	}
 
-
 	public void createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter)
 			throws InterruptedException {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
-		for(BoardDetails boardDetails : boardDetailsList){
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId());
+		for (BoardDetails boardDetails : boardDetailsList) {
+			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
@@ -197,7 +197,7 @@ public class SprintClientImpl implements SprintClient {
 	private Set<SprintDetails> limitSprint(List<SprintDetails> sprintDetailsList) {
 		Set<SprintDetails> sd = sprintDetailsList.stream()
 				.filter(sprintDetails -> sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
-				.sorted((sprint1,sprint2)->sprint2.getStartDate().compareTo(sprint1.getStartDate()))
+				.sorted((sprint1, sprint2) -> sprint2.getStartDate().compareTo(sprint1.getStartDate()))
 				.limit(jiraProcessorConfig.getSprintReportCountToBeFetched()).collect(Collectors.toSet());
 		sd.addAll(sprintDetailsList.stream()
 				.filter(sprintDetails -> !sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
@@ -223,30 +223,31 @@ public class SprintClientImpl implements SprintClient {
 					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
-				}while(!isLast);
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
-				log.info("Fetch Sprint for Board",kv(CommonConstant.PSLOGDATA,psLogData));
+				} while (!isLast);
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+				log.info("Fetch Sprint for Board", kv(CommonConstant.PSLOGDATA, psLogData));
 			}
 		} catch (RestClientException rce) {
-			log.error("Client exception when fetching sprints for board", rce,kv(CommonConstant.PSLOGDATA,psLogData));
+			log.error("Client exception when fetching sprints for board", rce, kv(CommonConstant.PSLOGDATA, psLogData));
 			throw rce;
 		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading sprint sprints for board", mfe,kv(CommonConstant.PSLOGDATA,psLogData));
+			log.error("Malformed url for loading sprint sprints for board", mfe,
+					kv(CommonConstant.PSLOGDATA, psLogData));
 		} catch (IOException ioe) {
-			log.error("IOException", ioe,kv(CommonConstant.PSLOGDATA,psLogData));
+			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 		return sprintDetailsList;
 	}
 
-	private boolean populateSprintDetailsList(String sprintReportObj,List<SprintDetails> sprintDetailsSet,
-								ProjectConfFieldMapping projectConfig,String boardId) {
+	private boolean populateSprintDetailsList(String sprintReportObj, List<SprintDetails> sprintDetailsSet,
+			ProjectConfFieldMapping projectConfig, String boardId) {
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray valuesJson = new JSONArray();
 			try {
-				JSONObject obj = (JSONObject)new JSONParser().parse(sprintReportObj);
-				if(null!=obj) {
-					valuesJson = (JSONArray)obj.get("values");
+				JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
+				if (null != obj) {
+					valuesJson = (JSONArray) obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
 				isLast = Boolean.valueOf(obj.get("isLast").toString());
@@ -257,11 +258,11 @@ public class SprintClientImpl implements SprintClient {
 		return isLast;
 	}
 
-	private void setSprintDetails(JSONArray valuesJson,List<SprintDetails> sprintDetailsSet,
-								  ProjectConfFieldMapping projectConfig,String boardId) {
-		valuesJson.forEach(values->{
+	private void setSprintDetails(JSONArray valuesJson, List<SprintDetails> sprintDetailsSet,
+			ProjectConfFieldMapping projectConfig, String boardId) {
+		valuesJson.forEach(values -> {
 			JSONObject sprintJson = (JSONObject) values;
-			if(null != sprintJson) {
+			if (null != sprintJson) {
 				SprintDetails sprintDetails = new SprintDetails();
 				sprintDetails.setSprintName(sprintJson.get(NAME).toString());
 				List<String> boardList = new ArrayList<>();
@@ -275,8 +276,8 @@ public class SprintClientImpl implements SprintClient {
 				sprintDetails.setSprintID(sprintId);
 				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(STARTDATE).toString()));
-				sprintDetails.setEndDate(
-						sprintJson.get(ENDDATE) == null ? null : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ENDDATE).toString()));
+				sprintDetails.setEndDate(sprintJson.get(ENDDATE) == null ? null
+						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ENDDATE).toString()));
 				sprintDetails.setCompleteDate(sprintJson.get(COMPLETEDATE) == null ? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(COMPLETEDATE).toString()));
 				sprintDetails.setActivatedDate(sprintJson.get(ACTIVATEDDATE) == null ? null
@@ -286,6 +287,7 @@ public class SprintClientImpl implements SprintClient {
 			}
 		});
 	}
+
 	private String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
 			throws IOException {
 		HttpURLConnection request = connection;
@@ -294,7 +296,7 @@ public class SprintClientImpl implements SprintClient {
 		String username = null;
 		String password = null;
 
-		if(connectionOptional.isPresent()) {
+		if (connectionOptional.isPresent()) {
 			Connection conn = connectionOptional.get();
 			if (conn.isVault()) {
 				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
@@ -312,7 +314,7 @@ public class SprintClientImpl implements SprintClient {
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
-			 BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -322,25 +324,24 @@ public class SprintClientImpl implements SprintClient {
 		}
 		return sb.toString();
 	}
+
 	private String encodeCredentialsToBase64(String username, String password) {
 		String cred = username + ":" + password;
 		return Base64.getEncoder().encodeToString(cred.getBytes());
 	}
 
-
 	private String decryptJiraPassword(String encryptedPassword) {
 		return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
 	}
-
 
 	private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		String serverURL = jiraProcessorConfig.getJiraSprintByBoardUrlApi();
-		serverURL = serverURL.replace("{startAtIndex}",String.valueOf(startIndex)).replace("{boardId}",boardId);
+		serverURL = serverURL.replace("{startAtIndex}", String.valueOf(startIndex)).replace("{boardId}", boardId);
 		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/")  + serverURL);
+		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
 
 }

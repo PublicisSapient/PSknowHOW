@@ -128,7 +128,7 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			boardMetadataRepository.save(boardMetadata);
 			psLogData.setMetaDataToDB("true");
-			psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata,Instant.now()).toMillis()));
+			psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata, Instant.now()).toMillis()));
 			log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 		return isSuccess;

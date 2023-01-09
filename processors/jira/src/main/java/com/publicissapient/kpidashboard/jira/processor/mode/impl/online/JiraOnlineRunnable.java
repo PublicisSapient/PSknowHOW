@@ -57,7 +57,6 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 /** The Constant log. */
 @Slf4j
 public class JiraOnlineRunnable implements Runnable {// NOPMD
-	PSLogData psLogData = new PSLogData();
 	/** The latch. */
 	private CountDownLatch latch;
 
@@ -93,6 +92,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 	private ExecutionLogContext executionLogContext;
 
+	private PSLogData psLogData = new PSLogData();
 
 	/**
 	 * Run.

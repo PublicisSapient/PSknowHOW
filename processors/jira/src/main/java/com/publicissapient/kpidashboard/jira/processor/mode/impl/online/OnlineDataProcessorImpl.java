@@ -29,8 +29,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -52,6 +53,7 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
@@ -65,8 +67,6 @@ import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -161,7 +161,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,getExecutionLogContext());// NOPMD
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
+									getExecutionLogContext());// NOPMD
 							executor.execute(worker);
 
 						}
