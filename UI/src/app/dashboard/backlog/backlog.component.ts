@@ -594,11 +594,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   handleArrowClick(kpi, label, tableValues) {
+    this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
-    this.downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.additionalFilterSupport)
   }
 
   applyAggregationLogic(arr) {
