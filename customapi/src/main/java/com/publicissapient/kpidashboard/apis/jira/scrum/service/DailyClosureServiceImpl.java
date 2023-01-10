@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,11 +30,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,7 +86,13 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
     private JiraIssueRepository jiraIssueRepository;
 
     @Autowired
+    private JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
+
+    @Autowired
     private SprintRepository sprintRepository;
+
+    @Autowired
+    private ConfigHelperService configHelperService;
 
     /**
      * {@inheritDoc}
@@ -132,16 +146,25 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
             String basicProjectConfigId = leafNode.getProjectFilter()
                     .getBasicProjectConfigId().toString();
             String sprintId = leafNode.getSprintFilter().getId();
+            FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+                    .get(leafNode.getProjectFilter().getBasicProjectConfigId());
             SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-            if (null != sprintDetails) {
-                List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+            if (null != sprintDetails && CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())) {
+                List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
                         CommonConstant.COMPLETED_ISSUES);
-                if (CollectionUtils.isNotEmpty(totalIssues)) {
-                    List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
+                if (CollectionUtils.isNotEmpty(completedIssues)) {
+                    List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(completedIssues,
                             basicProjectConfigId);
                     Set<JiraIssue> filtersIssuesList = KpiDataHelper
                             .getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
                                     sprintDetails.getTotalIssues(), issueList);
+                    if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())) {
+                        List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository.
+                                findByStoryIDInAndBasicProjectConfigIdIn(completedIssues, Arrays.asList(basicProjectConfigId));
+                        Map<String, String> activityMap = getDodDateMap(completedJiraIssuesHistory, fieldMapping.getJiraDod());
+                        filtersIssuesList.forEach(issue -> issue.setUpdateDate(activityMap.getOrDefault(issue.getNumber(),
+                                issue.getUpdateDate())));
+                    }
                     resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
                     resultListMap.put(SPRINT, sprintDetails);
                 }
@@ -150,6 +173,49 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
         return resultListMap;
     }
 
+    /**
+     * This method get DOD map
+     *
+     * @param completedJiraIssuesHistory completedJiraIssuesHistory
+     * @param dodStatus dodStatus
+     * @return
+     */
+    private Map<String,String> getDodDateMap(List<JiraIssueCustomHistory> completedJiraIssuesHistory, List<String> dodStatus) {
+        Map<String,String> dodDateMap = new HashMap<>();
+        completedJiraIssuesHistory.stream().forEach(
+                jiraIssueCustomHistory -> {
+                    List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
+                    if (CollectionUtils.isNotEmpty(storySprintDetail)) {
+                        for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
+                            if (null != jiraIssueSprint.getFromStatus() &&
+                                    dodStatus.contains(jiraIssueSprint.getFromStatus())) {
+                                dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
+                                        getFormattedDate(jiraIssueSprint.getActivityDate()));
+                                break;
+                            }
+                        }
+                    }
+                }
+        );
+        return dodDateMap;
+    }
+
+    /**
+     *
+     * @param dateTime dateTime
+     * @return
+     */
+    private static String getFormattedDate(DateTime dateTime ) {
+        if (dateTime != null) {
+            try {
+                return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dateTime) + "0000";
+            } catch (IllegalArgumentException e) {
+                log.error("error while parsing date: {} {}", dateTime, e);
+            }
+        }
+
+        return "";
+    }
     /**
      * This method populates KPI value to sprint leaf nodes. It also gives the
      * trend analysis at sprint wise.
@@ -200,7 +266,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                     typeWiseMap.forEach((type, issues) -> {
                         value.put(type, issues.size());
                         issuesExcel.addAll(issues);
-
                     });
                 }
                 dataCount.setValue(value);

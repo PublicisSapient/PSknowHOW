@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +32,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -40,16 +42,34 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 public abstract class ModeBasedProcessor { // NOSONAR
+
+	public ModeBasedProcessor() {
+	}
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
+
+	private ExecutionLogContext executionLogContext;
+
+	public ExecutionLogContext getExecutionLogContext() {
+		return executionLogContext;
+	}
+
+	public void setExecutionLogContext(ExecutionLogContext executionLogContext) {
+		this.executionLogContext = executionLogContext;
+	}
+
+	public void destroyLogContext() {
+		if (this.executionLogContext != null) {
+			this.executionLogContext.destroy();
+			this.executionLogContext = null;
+		}
+	}
 
 	/**
 	 * Validate and Collects Issues and data
@@ -136,7 +156,6 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		return toolObj;
 	}
 
-
 	/**
 	 * This method gets list of RelevantProjects based on mode
 	 * 
@@ -146,9 +165,5 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	 *         list
 	 */
 	public abstract List<ProjectBasicConfig> getRelevantProjects(List<ProjectBasicConfig> projectConfigList);
-
-
-
-
 
 }

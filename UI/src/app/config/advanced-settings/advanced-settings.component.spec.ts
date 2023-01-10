@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -33,6 +33,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
 import { TextEncryptionService } from '../../services/text.encryption.service';
+import { of } from 'rxjs';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
@@ -172,6 +173,8 @@ describe('AdvancedSettingsComponent', () => {
     }
   };
 
+  const fakeGetAllTools = require('../../../test/resource/fakeGetAllTools.json');
+  const fakeProcessorsTracelog = require('../../../test/resource/fakeProcessorsTracelog.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AdvancedSettingsComponent],
@@ -260,4 +263,78 @@ describe('AdvancedSettingsComponent', () => {
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({ message: 'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run', success: true });
   });
+
+  it('should all tools config', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(fakeGetAllTools));
+    component.getAllToolConfigs(basicProjectConfigId);
+    tick();
+    expect(component.toolConfigsDetails.length).toEqual(fakeGetAllTools.data.length);
+  }))
+
+  it('should get processors trace logs for project', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
+    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+    tick();
+    expect(component.processorsTracelogs.length).toEqual(fakeProcessorsTracelog.data.length);
+  }));
+
+  it('should disable processor when user is not Super admin', () => {
+    const getAuthorizationService = TestBed.inject(GetAuthorizationService);
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
+    expect(component.shouldDisableRunProcessor()).toBe(false);
+  });
+
+  it('should disable processor when user is not Project admin', () => {
+    const getAuthorizationService = TestBed.inject(GetAuthorizationService);
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true);
+    expect(component.shouldDisableRunProcessor()).toBe(false);
+  });
+
+  it('should enable processor when user is Project admin/Super Admin', () => {
+    const getAuthorizationService = TestBed.inject(GetAuthorizationService);
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(
+      false,
+    );
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
+    expect(component.shouldDisableRunProcessor()).toBe(true);
+  });
+
+  it('should delete tool when trying to delete for any project', () => {
+    const processDetails = {
+      active: true,
+      errors: [],
+      id: '63b3f50b6d8d7f44def6ec2f',
+      lastSuccess: true,
+      online: true,
+      processorName: 'Jira',
+      processorType: 'AgileTool',
+      updatedTime: 1673222624309,
+    };
+    const selectedProject = {
+      id: '63b51633f33fd2360e9e72bd',
+      name: 'DOTC',
+    };
+
+    component.toolConfigsDetails = [
+      {
+        basicProjectConfigId: '63b51633f33fd2360e9e72bd',
+        boardQuery: '',
+        boards: [],
+        connectionId: '62fcbe4adac8a44cd2cb9576',
+        connectionName: 'Sunbelt Rental JIra',
+        createdAt: '2023-01-04T06:02:20',
+        id: '63b5166cf33fd2360e9e72c2',
+        projectKey: 'DOTC',
+        queryEnabled: false,
+        toolName: 'Jira',
+        updatedAt: '2023-01-04T06:02:20',
+      },
+    ];
+    component.deleteProcessorDataReq(processDetails,selectedProject);
+    expect(component.getToolDetailsForProcessor('Jira').length).toBeGreaterThan(0);
+  });
+
+  
 });

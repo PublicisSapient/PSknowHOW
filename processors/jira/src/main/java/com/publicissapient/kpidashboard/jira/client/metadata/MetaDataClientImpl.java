@@ -18,6 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.client.metadata;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +48,13 @@ import com.publicissapient.kpidashboard.common.model.jira.Identifier;
 import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * The type Release data client. Store Release data for the projects in
@@ -62,6 +67,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	private final BoardMetadataRepository boardMetadataRepository;
 	private final FieldMappingRepository fieldMappingRepository;
 	private final MetadataIdentifierRepository metadataIdentifierRepository;
+	private PSLogData psLogData= new PSLogData();
 
 	/**
 	 * Creates object
@@ -88,7 +94,9 @@ public class MetaDataClientImpl implements MetadataClient {
 	@Transactional
 	public boolean processMetadata(ProjectConfFieldMapping projectConfig) {
 		boolean isSuccess = false;
-		log.info("Fetching metadata. Project name : {}", projectConfig.getProjectName());
+		log.info("Fetching metadata start for project name : {}", projectConfig.getProjectName());
+		Instant statProcessingMetadata = Instant.now();
+		psLogData.setAction(CommonConstant.METADATA);
 		List<Field> fieldList = jiraAdapter.getField();
 		List<IssueType> issueTypeList = jiraAdapter.getIssueType();
 		List<Status> statusList = jiraAdapter.getStatus();
@@ -111,15 +119,17 @@ public class MetaDataClientImpl implements MetadataClient {
 			boardMetadata.setMetadata(fullMetaDataList);
 			if (null == projectConfig.getFieldMapping()) {
 				FieldMapping fieldMapping = mapFieldMapping(boardMetadata, projectConfig);
-				log.info("Saving fieldmapping into db for Project : {}", projectConfig.getProjectName());
 				fieldMappingRepository.save(fieldMapping);
+				psLogData.setFieldMappingToDB("true");
+				log.info("Saving fieldmapping into db", kv(CommonConstant.PSLOGDATA, psLogData));
 				projectConfig.setFieldMapping(fieldMapping);
 				isSuccess = true;
 			}
 
-			log.info("Saving metadata into db for Project : {}", projectConfig.getProjectName());
 			boardMetadataRepository.save(boardMetadata);
-
+			psLogData.setMetaDataToDB("true");
+			psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata, Instant.now()).toMillis()));
+			log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 		return isSuccess;
 	}

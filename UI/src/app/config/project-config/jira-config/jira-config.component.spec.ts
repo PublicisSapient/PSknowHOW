@@ -22,7 +22,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, FormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -52,12 +52,16 @@ describe('JiraConfigComponent', () => {
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' })
   };
+  const fakeFetchBoards = require('../../../../test/resource/fakeFetchBoards.json');
   const fakeSonarVersionsList = require('../../../../test/resource/fakeSonarVersionsList.json');
   const fakeJiraConnections = require('../../../../test/resource/fakeJiraConnections.json');
   const fakeBambooPlans = require('../../../../test/resource/fakeBambooPlans.json');
   const fakeDeploymentProjects = require('../../../../test/resource/fakeDeploymentProjects.json');
   const fakeJenkinsJobNames = require('../../../../test/resource/fakeJenkinsJobNames.json');
   const fakeAzurePipelinesList = require('../../../../test/resource/fakeAzurePipelinesList.json');
+  const fakeProjectKeyList = require('../../../../test/resource/fakeProjectKeyList.json');
+  const fakeBranchesForProject = require('../../../../test/resource/fakeBranchesForProject.json');
+  const fakeConfiguredTools = require('../../../../test/resource/fakeConfiguredTools.json');
   const fakeSelectedTool = [{
     id: '5fc086b9410df80001701334',
     toolName: 'Jira',
@@ -70,6 +74,7 @@ describe('JiraConfigComponent', () => {
     queryEnabled: true,
     boardQuery: ''
   }];
+  const fakeBranchListForProject = require('../../../../test/resource/fakeBranchListForProject.json')
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',
@@ -319,5 +324,169 @@ describe('JiraConfigComponent', () => {
     tick();
     expect(Object.keys(component.azurePipelineResponseList).length).toEqual(0);
   }));
+
+  it('should enable organization key', () => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.enableDisableOrganizationKey(true);
+    expect(component.toolForm.controls['organizationKey'].disabled).toBeFalsy();
+  })
+
+  it('should disable organization key', () => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.enableDisableOrganizationKey(false);
+    expect(component.toolForm.controls['organizationKey'].disabled).toBeTruthy();
+  });
+
+  it('should fetch boards', fakeAsync(() => {
+    component.urlParam = 'Jira'
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    fixture.detectChanges();
+    spyOn(httpService, 'getAllBoards').and.returnValue(of(fakeFetchBoards));
+    component.fetchBoards(component);
+    tick();
+    expect(component.boardsData.length).toEqual(fakeFetchBoards.data.length);
+  }));
+
+  it('should clear sonar form', ()=>{
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.clearSonarForm();
+    expect(component.toolForm.controls['organizationKey'].value).toBe('');
+    expect(component.toolForm.controls['apiVersion'].value).toBe('');
+    expect(component.toolForm.controls['projectKey'].value).toBe('');
+    expect(component.toolForm.controls['branch'].value).toBe('');
+  });
+
+  it('should handle api version', fakeAsync(()=>{
+    component.urlParam = 'Sonar';
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.initializeFields(component.urlParam);
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'isVersionSupported').and.returnValue(true);
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getProjectKeyList').and.returnValue(of(fakeProjectKeyList));
+    component.apiVersionHandler('9.x', 'apiVersion');
+    tick();
+    expect(component.projectKeyList.length).toEqual(fakeProjectKeyList.data.length);
+  }))
+
+  it('should handle project key click', fakeAsync(() => {
+    component.urlParam = 'Sonar';
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.initializeFields(component.urlParam);
+    component.disableBranchDropDown = true;
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getBranchListForProject').and.returnValue(of(fakeBranchListForProject));
+    component.projectKeyClickHandler('ENGINEERING.KPIDASHBOARD.PROCESSORS');
+    tick();
+    expect(component.branchList.length).toEqual(fakeBranchListForProject.data.length);
+  }))
+
+  it('should handle bamboo plan select', fakeAsync(() => {
+    component.urlParam = 'Bamboo';
+    component.selectedConnection = {
+      "id": "63b409e88ec44416b3ce96b3",
+    }
+    component.initializeFields(component.urlParam);
+    component.bambooProjectDataFromAPI = [{
+      "jobNameKey": "REL-BAM",
+      "projectAndPlanName": "12th oct - bamboo-upgrade"
+    }];
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getBranchesForProject').and.returnValue(of(fakeBranchListForProject));
+    component.bambooPlanSelectHandler('12th oct - bamboo-upgrade', 'planName');
+    tick();
+    expect(component.bambooBranchDataFromAPI.length).toEqual(fakeBranchListForProject.data.length);
+  }))
+
+  it('should delete tool', fakeAsync(() => {
+    const tool = {
+      "id": "63b5277cf33fd2360e9e72dd",
+      "toolName": "Bamboo",
+      "basicProjectConfigId": "63b3f9098ec44416b3ce9699",
+      "connectionId": "63b409e88ec44416b3ce96b3",
+      "connectionName": "Bamboo Connection",
+      "jobName": "REL-BAM",
+      "jobType": "Build",
+      "createdAt": "2023-01-04T07:15:08",
+      "updatedAt": "2023-01-04T07:15:08",
+      "queryEnabled": false,
+      "boards": [
+          null
+      ]
+    };
+    component.configuredTools = fakeConfiguredTools;
+    spyOn(httpService, 'deleteProjectToolConfig').and.returnValue(of({"message":"Tool deleted successfully","success":true}));
+    component.deleteTool(tool);
+    tick();
+    expect(component.configuredTools).not.toContain(tool);
+  }))
+
+  it('should Edit tool', fakeAsync(() => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    const tool = {
+      id: "5fc643cd11193836e6545560",
+      toolName: "Bamboo",
+      basicProjectConfigId: "63b3f9098ec44416b3ce9699",
+      connectionId: "5fc643cd11193836e6545560",
+      connectionName: "Bamboo Connection",
+      jobName: "REL-BAM",
+      jobType: "Build",
+      createdAt: "2023-01-04T07:15:08",
+      updatedAt: "2023-01-04T07:15:08",
+      queryEnabled: false,
+      boards: [
+          null
+      ]
+    };
+    component.connections = fakeJiraConnections.data;
+    component.editTool(tool);
+    expect(component.isEdit).toBeTruthy();  
+  }))
+
+  it("should add new tool",()=>{
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.addNewTool();
+    expect(component.isEdit).toBeFalse();
+  })
+
+  it('should be loding disabled when connection is already Jira', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Jira',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+    expect(component.isLoading).toBeFalse();
+
+  });
+ 
 
 });

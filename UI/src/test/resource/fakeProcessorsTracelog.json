@@ -1,0 +1,15 @@
+{
+    "message": "Processor trace logs",
+    "success": true,
+    "data": [
+        {
+            "id": "63b517e507dfa40ac2e70883",
+            "processorName": "Jira",
+            "basicProjectConfigId": "63b51633f33fd2360e9e72bd",
+            "executionStartedAt": 1672812170422,
+            "executionEndedAt": 1672963381469,
+            "executionSuccess": true,
+            "lastSuccessfulRun": "2023-01-06 00:03"
+        }
+    ]
+}

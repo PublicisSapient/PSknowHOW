@@ -18,8 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.executor;
 
+import java.util.List;
+import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -35,12 +40,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Component
 @Slf4j
@@ -48,8 +50,22 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	private final TaskScheduler taskScheduler;
 	private final String processorName;
-
 	private List<String> projectsBasicConfigIds;
+	private ExecutionLogContext executionLogContext;
+
+	public ExecutionLogContext getExecutionLogContext() {
+		return executionLogContext;
+	}
+
+	public void setExecutionLogContext(ExecutionLogContext executionLogContext) {
+		this.executionLogContext = executionLogContext;
+	}
+
+	public void destroyLogContext() {
+		this.executionLogContext.destroy();
+		this.executionLogContext = null;
+
+	}
 
 	public List<String> getProjectsBasicConfigIds() {
 		return projectsBasicConfigIds;
@@ -67,6 +83,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	@Override
 	public final synchronized void run() {
+		setMDCContext();
 		log.debug("Running Processor: {}", processorName);
 		T processor = getProcessorRepository().findByProcessorName(processorName);
 		if (processor == null) {
@@ -106,6 +123,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	@PreDestroy
 	public void onShutdown() {
 		setOnline(false);
+		destroyLogContext();
 	}
 
 	public abstract T getProcessor();
@@ -157,6 +175,13 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		} else {
 			log.error("[TOOL-ITEM-CACHE-EVICT]. Error while evicting cache: {}",
 					CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		}
+	}
+
+	private void setMDCContext() {
+		ExecutionLogContext context = getExecutionLogContext();
+		if (Objects.nonNull(context) && Objects.nonNull(context.getRequestId())) {
+			ExecutionLogContext.updateContext(context);
 		}
 	}
 }

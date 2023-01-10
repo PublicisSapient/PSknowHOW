@@ -23,7 +23,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,473 +36,918 @@ import { ConnectionListComponent } from './connection-list.component';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
-
+import { of } from 'rxjs';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
   let fixture: ComponentFixture<ConnectionListComponent>;
   let httpMock;
+  let httpService;
   const baseUrl = environment.baseUrl;
   const connectionTableData = [
     {
       connectionName: 'jenkinsJenkins',
       type: 'Jenkins',
       username: 'userNameJenkins',
-      baseUrl: 'baseUrlJenkins'
+      baseUrl: 'baseUrlJenkins',
     },
     {
       connectionName: 'DojoJira',
       type: 'Jira',
       username: 'fds',
-      baseUrl: 'fdsf'
+      baseUrl: 'fdsf',
     },
     {
       connectionName: 'dsadsa',
-      type: 'Azure Boards'
+      type: 'Azure Boards',
     },
     {
       connectionName: 'ConnectBit12',
       type: 'Bitbucket',
       username: 'userNameBitbucket12',
-      baseUrl: 'baseBitbucket12'
+      baseUrl: 'baseBitbucket12',
     },
     {
       connectionName: 'Git7',
       type: 'GITLAB',
       username: 'Git7',
-      baseUrl: 'Git7'
+      baseUrl: 'Git7',
     },
     {
       connectionName: 'Team1',
       type: 'TEAMCITY',
       username: 'Team1',
-      baseUrl: 'Team1'
+      baseUrl: 'Team1',
     },
     {
       connectionName: 'sonar121',
       type: 'SONAR',
       username: 'sonar121',
-      baseUrl: 'sonar132'
+      baseUrl: 'sonar132',
     },
     {
       connectionName: 'Sonar2',
       type: 'SONAR',
       username: 'Sonar2',
-      baseUrl: 'Sonar2'
+      baseUrl: 'Sonar2',
     },
     {
       connectionName: 'sonar3',
       type: 'SONAR',
       username: 'sonar3',
-      baseUrl: 'sonar3'
+      baseUrl: 'sonar3',
     },
     {
       connectionName: 'connectNameSonar321',
       type: 'Sonar',
       username: 'userNameSonar321',
-      baseUrl: 'baseSonar321'
+      baseUrl: 'baseSonar321',
     },
     {
       connectionName: 'Git1Connect',
       type: 'GitLab',
       username: 'Git1connect',
-      baseUrl: 'Git1connect'
+      baseUrl: 'Git1connect',
     },
     {
       connectionName: 'Git30',
       type: 'GITLAB',
       username: 'Git30',
-      baseUrl: 'Git30'
+      baseUrl: 'Git30',
     },
     {
       connectionName: 'Azure pipeline 1',
       type: 'AZURE PIPELINE',
-      baseUrl: 'Azure pipeline 1'
+      baseUrl: 'Azure pipeline 1',
     },
     {
       connectionName: 'Azure pipeline 2',
       type: 'Azure Pipeline',
-      baseUrl: 'Azure pipeline 2'
+      baseUrl: 'Azure pipeline 2',
     },
     {
       connectionName: 'sonar41',
       type: 'Sonar',
       username: 'sonar41',
-      baseUrl: 'sonar41'
+      baseUrl: 'sonar41',
     },
     {
       connectionName: 'git6',
       type: 'GitLab',
       username: 'git6',
-      baseUrl: 'git6'
+      baseUrl: 'git6',
     },
     {
       connectionName: 'Sonar 513',
       type: 'Sonar',
       username: 'Sonar 513',
-      baseUrl: 'Sonar 513'
+      baseUrl: 'Sonar 513',
     },
     {
       connectionName: 'Sonar Connec1',
       type: 'Sonar',
       username: 'sonarusername1',
-      baseUrl: 'baseurl1'
+      baseUrl: 'baseurl1',
     },
     {
       connectionName: 'bambooConnection1',
       type: 'Bamboo',
       username: 'bambooUsername1',
-      baseUrl: 'bambooBaseUrl1'
+      baseUrl: 'bambooBaseUrl1',
     },
     {
       connectionName: 'teamCityConnec3',
       type: 'Teamcity',
       username: 'teamCityUsername143',
-      baseUrl: 'teamCityBaseUrl223'
+      baseUrl: 'teamCityBaseUrl223',
     },
     {
       connectionName: 'Azure p4',
       type: 'Azure Pipeline',
-      baseUrl: 'azureBase4'
+      baseUrl: 'azureBase4',
     },
     {
       connectionName: 'azureR4',
       type: 'Azure Repository',
-      baseUrl: 'azureBaseR3'
+      baseUrl: 'azureBaseR3',
     },
     {
       connectionName: 'Git432',
       type: 'GitLab',
       username: 'Hit3214',
-      baseUrl: 'Git42342'
+      baseUrl: 'Git42342',
     },
     {
       connectionName: 'DojoJira2',
       type: 'Jira',
       username: 'SUPERADMIN',
-      baseUrl: 'https://test.com/jira/'
+      baseUrl: 'https://test.com/jira/',
     },
     {
       connectionName: 'JiraConnection11',
       type: 'Jira',
       username: 'jiraUser11',
-      baseUrl: 'JiraBase11'
+      baseUrl: 'JiraBase11',
     },
     {
       connectionName: 'dsf',
       type: 'Jira',
       username: 'rfrsd',
-      baseUrl: 'fds'
+      baseUrl: 'fds',
     },
     {
       connectionName: 'connecJira101',
       type: 'Jira',
       username: 'userConnect101',
-      baseUrl: 'baseConnect101'
+      baseUrl: 'baseConnect101',
     },
     {
       connectionName: 'connectJira101',
       type: 'Jira',
       username: 'username102',
-      baseUrl: 'baseUrlConnect101'
+      baseUrl: 'baseUrlConnect101',
     },
     {
       connectionName: 'jiraConnect103',
       type: 'Jira',
       username: 'usernameConnect103',
-      baseUrl: 'baseUrl103'
+      baseUrl: 'baseUrl103',
     },
     {
       connectionName: '104ConnectName',
       type: 'Jira',
       username: '104Username',
-      baseUrl: '104BaseUrl'
+      baseUrl: '104BaseUrl',
     },
     {
       connectionName: 'dfgfvd',
       type: 'Azure',
       username: 'dsvfd',
-      baseUrl: 'dsfgvfd'
+      baseUrl: 'dsfgvfd',
     },
     {
       connectionName: 'Bit200Connect',
       type: 'Bitbucket',
       username: 'userConnect200',
-      baseUrl: 'base200Base'
+      baseUrl: 'base200Base',
     },
     {
       connectionName: 'ConnectJira300',
       type: 'Jira',
       username: 'user300',
-      baseUrl: 'base300'
+      baseUrl: 'base300',
     },
     {
       connectionName: 'connect301',
       type: 'Jira',
       username: 'user301',
-      baseUrl: 'base301'
+      baseUrl: 'base301',
     },
     {
       connectionName: 'connect302',
       type: 'Jira',
       username: 'user302',
-      baseUrl: 'base302'
+      baseUrl: 'base302',
     },
     {
       connectionName: 'connect302',
       type: 'Zephyr',
       username: 'user302',
-      baseUrl: 'base302'
-    }
+      baseUrl: 'base302',
+    },
   ];
 
-  const getConnectionsResponse = { message: 'Found all connectionData', success: true, data: [{ id: '601a3fd369515b0001fe072e', type: 'Jira', connectionName: 'jira connection', cloudEnv: false, baseUrl: 'https://test.com/jira', username: 'tst-11', apiEndPoint: 'rest/api/1.0', isOAuth: false, offline: false, createdAt: '2021-02-03T06:16:51', updatedAt: '2021-03-25T03:37:42', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '601baea569515b0001d6816c', type: 'Jenkins', connectionName: 'testjenkins', cloudEnv: false, baseUrl: 'http://10.148.241.13:8080/', username: 'user- speedy_test', isOAuth: false, offline: false, createdAt: '2021-02-04T08:21:57', updatedAt: '2021-03-25T09:40:03', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '601bd7f669515b0001d68187', type: 'Jira', connectionName: 'DOJO', cloudEnv: false, baseUrl: 'https://test.com/jira', username: 'ritsharm0', apiEndPoint: 'rest/api/2', isOAuth: false, offline: false, createdAt: '2021-02-04T11:18:14', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '6020f77ee077d700018adc4a', type: 'Sonar', connectionName: 'Sonar DOJO', cloudEnv: false, baseUrl: 'https://test.com/sonar', username: 'tst-1', isOAuth: false, offline: false, createdAt: '2021-02-08T08:34:06', updatedAt: '2021-03-25T09:39:41', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '602117b2e077d700018adc59', type: 'Sonar', connectionName: 'DOJO Sonar', cloudEnv: false, baseUrl: 'https://test.com/sonar', username: 'ritsharm0', isOAuth: false, offline: false, createdAt: '2021-02-08T10:51:30', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '602267059c0b1500015c011e', type: 'GitLab', connectionName: 'ndsb fan', cloudEnv: false, baseUrl: 'dsbfn/fgdsg', username: 'fdsfdsg', isOAuth: false, offline: false, createdAt: '2021-02-09T10:42:13', updatedAt: '2021-02-09T10:42:26', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '6023b045b86e73000106d5fc', type: 'Jenkins', connectionName: 'Jenkins', cloudEnv: false, baseUrl: 'http://10.148.241.13:8080/', username: 'svc-apac-ps-fcadevop', isOAuth: false, offline: false, createdAt: '2021-02-10T10:07:01', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '60263c56387a4900015537ef', type: 'NewRelic', connectionName: 'TestConnectionRishabhNewRelic', cloudEnv: false, apiEndPoint: 'https://insights-api.newrelic.com/v1/accounts/729003/query?nrql=', isOAuth: false, apiKeyFieldName: 'X-Query-Key', offline: false, createdAt: '2021-02-12T08:29:10', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '60263d17387a4900015537f0', type: 'GitLab', connectionName: 'TestConnectionRishabhGitLab', cloudEnv: false, baseUrl: 'https://pscode.lioncloud.net', username: 'risshukl0', isOAuth: false, offline: false, createdAt: '2021-02-12T08:32:23', updatedAt: '2021-02-12T08:32:52', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '60263d95387a4900015537f1', type: 'Azure', connectionName: 'TestConnectionRishabhAzureBoards', cloudEnv: false, baseUrl: 'https://dev.azure.com/sundeepm/AzureSpeedy', username: 'risshukl0', isOAuth: false, offline: false, createdAt: '2021-02-12T08:34:29', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '603f67f5ec57dc0001405ebf', type: 'AzureRepository', connectionName: 'AzureRepo1', cloudEnv: false, baseUrl: 'https://dev.azure.com/ankbhard/KnowHOW', isOAuth: false, offline: false, createdAt: '2021-03-03T10:41:57', updatedAt: '2021-03-25T09:37:06', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '603f6a8bec57dc0001405ec3', type: 'Bamboo', connectionName: 'BambooTool1', cloudEnv: false, baseUrl: 'https://test.com/bamboo/browse/BAMUP', username: 'tst-1', isOAuth: false, offline: false, createdAt: '2021-03-03T10:52:59', updatedAt: '2021-03-25T09:37:59', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '603f6ab1ec57dc0001405ec4', type: 'GitLab', connectionName: 'Gitlab', cloudEnv: false, baseUrl: 'https://pscode.lioncloud.net', username: 'risshukl0', isOAuth: false, offline: false, createdAt: '2021-03-03T10:53:37', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '6040a1683b3af5000151b2b6', type: 'Sonar', connectionName: 'sonartest123', cloudEnv: false, baseUrl: 'https://test.com/sonar/', username: 'sansharm13', isOAuth: false, offline: false, createdAt: '2021-03-04T08:59:21', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '6040d76b3b3af5000151b3be', type: 'AzurePipeline', connectionName: 'Azure-pipline-conn1', cloudEnv: false, baseUrl: 'https://dev.azure.com/sundeepm/AzureSpeedy', isOAuth: false, offline: false, createdAt: '2021-03-04T12:49:47', updatedAt: '2021-03-25T09:37:23', createdBy: 'superadmin2', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['superadmin2'] }, { id: '6041ac7f3b3af5000121a690', type: 'Bitbucket', connectionName: 'bitbucket test connection', cloudEnv: false, baseUrl: 'https://test.com/KNOW/KnowHOWRepo', username: 'tst-1', apiEndPoint: '/bitbucket/rest/api/1.0/', isOAuth: false, offline: false, createdAt: '2021-03-05T03:58:55', updatedAt: '2021-04-01T11:58:50', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }, { id: '605c5bfbf0fb3000015e96d1', type: 'Teamcity', connectionName: 'Teamcity', cloudEnv: false, baseUrl: 'https://budp-tc.bunnings.com.au/', username: 'speedysvc@publicissapient.com', isOAuth: false, offline: false, createdAt: '2021-03-25T09:46:35', createdBy: 'SUPERADMIN', connPrivate: false, updatedBy: 'SUPERADMIN', connectionUsers: ['SUPERADMIN'] }] };
+
+  const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
+  
 
   const connectionLabelsFields = [
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private'],
-       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Api End Point',
+        'IsOAuth',
+        'Private Key',
+        'Consumer Key',
+        'Is Offline',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'isOAuth',
+        'privateKey',
+        'consumerKey',
+        'offline',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Repo Ownername',
+        'Use vault password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'accessToken',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'accessToken',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password','Password', 'API End Point', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','password', 'apiEndPoint', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'API End Point',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password',['Use Password', 'Use Token'], 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        ['Use Password', 'Use Token'],
+        'Password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'accessTokenEnabled',
+        'password',
+        'accessToken',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Api Key',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'apiKey',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password','Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault','password', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
-    }
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Api End Point',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'accessToken',
+        'connPrivate',
+      ],
+    },
   ];
 
   const fieldsAndLabels = [
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private'],
-       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Api End Point',
+        'IsOAuth',
+        'Private Key',
+        'Consumer Key',
+        'Is Offline',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'isOAuth',
+        'privateKey',
+        'consumerKey',
+        'offline',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Repo Ownername',
+        'Use vault password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'accessToken',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'accessToken',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password','Password', 'API End Point', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','password', 'apiEndPoint', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'API End Point',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password', 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault', 'password', 'accessToken', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'accessToken',
+        'connPrivate',
+        "accessTokenEnabled",
+      ],
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Api Key',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'apiKey',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password','Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault','password', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Use vault password',
+        'PAT',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'vault',
+        'pat',
+        'connPrivate',
+      ],
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
-    }
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Is Cloud Environment',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Api End Point',
+        'Access Token',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'cloudEnv',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'apiEndPoint',
+        'accessToken',
+        'connPrivate',
+      ],
+    },
   ];
 
-  const connectionList = ['Jira', 'Azure', 'GitHub', 'GitLab', 'Bitbucket', 'Sonar', 'Jenkins', 'Bamboo', 'Teamcity', 'AzurePipeline', 'AzureRepository','Zephyr'];
+  const connectionList = [
+    'Jira',
+    'Azure',
+    'GitHub',
+    'GitLab',
+    'Bitbucket',
+    'Sonar',
+    'Jenkins',
+    'Bamboo',
+    'Teamcity',
+    'AzurePipeline',
+    'AzureRepository',
+    'Zephyr',
+  ];
   const enableDisableMatrix = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [
-      ],
+      offline: [],
       isOAuth: [
         {
           field: 'privateKey',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'consumerKey',
-          isEnabled: false
-        }
+          isEnabled: false,
+        },
       ],
       vault: [
         {
           field: 'password',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'accessToken',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'pat',
-          isEnabled: false
+          isEnabled: false,
         },
         {
-          field:'apiKey',
-          isEnabled: false
-        }
+          field: 'apiKey',
+          isEnabled: false,
+        },
       ],
-      accessTokenEnabled:[]
+      accessTokenEnabled: [],
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
       offline: [
         {
           field: 'cloudEnv',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'baseUrl',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'username',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'password',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'apiEndPoint',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'isOAuth',
-          isEnabled: true
+          isEnabled: true,
         },
         {
           field: 'privateKey',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'consumerKey',
-          isEnabled: false
-        }
+          isEnabled: false,
+        },
       ],
       isOAuth: [],
       vault: [
         {
           field: 'password',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'accessToken',
-          isEnabled: false
+          isEnabled: false,
         },
         {
           field: 'pat',
-          isEnabled: false
+          isEnabled: false,
         },
         {
-          field:'apiKey',
-          isEnabled: false
-        }
+          field: 'apiKey',
+          isEnabled: false,
+        },
       ],
-      accessTokenEnabled:[]
-    }
+      accessTokenEnabled: [],
+    },
   };
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -511,25 +959,23 @@ describe('ConnectionListComponent', () => {
         HttpClientTestingModule,
         TableModule,
         ConfirmDialogModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
-      declarations: [
-        ConnectionListComponent
-      ],
+      declarations: [ConnectionListComponent],
       providers: [
         HttpService,
         ConfirmationService,
         RsaEncryptionService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConnectionListComponent);
     component = fixture.componentInstance;
+    httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
@@ -544,25 +990,34 @@ describe('ConnectionListComponent', () => {
 
   it('Should test all connections are present', () => {
     connectionList.forEach((connection, index) => {
-      expect(component.addEditConnectionFieldsNlabels[index].connectionType).toEqual(connection);
+      expect(
+        component.addEditConnectionFieldsNlabels[index].connectionType,
+      ).toEqual(connection);
     });
   });
 
   it('Should test all the fields exist in the Add/Edit connection popup', () => {
     connectionLabelsFields.forEach((connectionData, index) => {
-      expect(component.addEditConnectionFieldsNlabels[index].connectionType).toEqual(connectionData.connectionType);
+      expect(
+        component.addEditConnectionFieldsNlabels[index].connectionType,
+      ).toEqual(connectionData.connectionType);
       connectionData.labels.forEach((label, innerIndex) => {
-        expect(component.addEditConnectionFieldsNlabels[index].labels[innerIndex]).toEqual(label);
+        expect(
+          component.addEditConnectionFieldsNlabels[index].labels[innerIndex],
+        ).toEqual(label);
       });
       connectionData.inputFields.forEach((field, innerIndex) => {
-        expect(component.addEditConnectionFieldsNlabels[index].inputFields[innerIndex]).toEqual(field);
+        expect(
+          component.addEditConnectionFieldsNlabels[index].inputFields[
+            innerIndex
+          ],
+        ).toEqual(field);
       });
     });
-
   });
 
   it('Should test connection list table is rendering', () => {
-    connectionTableData.forEach(connectionRecord => {
+    connectionTableData.forEach((connectionRecord) => {
       expect(connectionRecord.connectionName.length).toBeGreaterThan(0);
       expect(connectionRecord.type.length).toBeGreaterThan(0);
     });
@@ -606,8 +1061,12 @@ describe('ConnectionListComponent', () => {
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
     fixture.detectChanges();
-    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeTrue();
-    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTrue();
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeTrue();
+    expect(
+      component.basicConnectionForm.controls['consumerKey'].enabled,
+    ).toBeTrue();
   });
 
   it('should disable fields depending on inputs', () => {
@@ -616,14 +1075,20 @@ describe('ConnectionListComponent', () => {
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
     fixture.detectChanges();
-    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalse();
-    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalse();
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeFalse();
+    expect(
+      component.basicConnectionForm.controls['consumerKey'].enabled,
+    ).toBeFalse();
   });
 
   it('should fetch and render connections list', () => {
     component.getConnectionList();
     fixture.detectChanges();
-    httpMock.match(`${baseUrl}/api/connections`)[0].flush(getConnectionsResponse);
+    httpMock
+      .match(`${baseUrl}/api/connections`)[0]
+      .flush(getConnectionsResponse);
   });
 
   it('should save connection', () => {
@@ -635,12 +1100,18 @@ describe('ConnectionListComponent', () => {
     component.connectionTypeFieldsAssignment();
     fixture.detectChanges();
     component.basicConnectionForm.controls['type'].setValue('Jira');
-    component.basicConnectionForm.controls['connectionName'].setValue('TestConnectionRishabhJira4');
+    component.basicConnectionForm.controls['connectionName'].setValue(
+      'TestConnectionRishabhJira4',
+    );
     component.basicConnectionForm.controls['cloudEnv'].setValue(false);
-    component.basicConnectionForm.controls['baseUrl'].setValue('https://test.com/jira');
+    component.basicConnectionForm.controls['baseUrl'].setValue(
+      'https://test.com/jira',
+    );
     component.basicConnectionForm.controls['username'].setValue('tst-1');
     component.basicConnectionForm.controls['password'].setValue('test');
-    component.basicConnectionForm.controls['apiEndPoint'].setValue('rest/api/2');
+    component.basicConnectionForm.controls['apiEndPoint'].setValue(
+      'rest/api/2',
+    );
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.basicConnectionForm.controls['offline'].setValue(false);
     component.basicConnectionForm.controls['connPrivate'].setValue(true);
@@ -651,7 +1122,26 @@ describe('ConnectionListComponent', () => {
     component.saveConnection();
     fixture.detectChanges();
     expect(component.basicConnectionForm.valid).toBeTruthy();
-    httpMock.match(`${baseUrl}/api/connections`)[0].flush({ message: 'created and saved new connection', success: true, data: { id: '6066c07569515b0001df160f', type: 'Jira', connectionName: 'TestConnectionRishabh4', cloudEnv: true, baseUrl: ' https://test.com/jira', username: 'tst-1', password: '', apiEndPoint: 'rest/api/2', isOAuth: false, offline: false, createdBy: 'SUPERADMIN', connPrivate: true, updatedBy: 'SUPERADMIN', connectionUser: ['SUPERADMIN'] } });
+    httpMock.match(`${baseUrl}/api/connections`)[0].flush({
+      message: 'created and saved new connection',
+      success: true,
+      data: {
+        id: '6066c07569515b0001df160f',
+        type: 'Jira',
+        connectionName: 'TestConnectionRishabh4',
+        cloudEnv: true,
+        baseUrl: ' https://test.com/jira',
+        username: 'tst-1',
+        password: '',
+        apiEndPoint: 'rest/api/2',
+        isOAuth: false,
+        offline: false,
+        createdBy: 'SUPERADMIN',
+        connPrivate: true,
+        updatedBy: 'SUPERADMIN',
+        connectionUser: ['SUPERADMIN'],
+      },
+    });
   });
 
   it('should hide dialog', () => {
@@ -679,10 +1169,8 @@ describe('ConnectionListComponent', () => {
       createdBy: 'SUPERADMIN',
       connPrivate: true,
       updatedBy: 'SUPERADMIN',
-      connectionUsers: [
-        'SUPERADMIN'
-      ],
-      vault: false
+      connectionUsers: ['SUPERADMIN'],
+      vault: false,
     };
     component.editConnection(connection);
     fixture.detectChanges();
@@ -692,4 +1180,374 @@ describe('ConnectionListComponent', () => {
     expect(component.selectedConnectionType).toBe('Jira');
     expect(component.disableConnectionTypeDropDown).toBeTrue();
   });
+
+  it('should get zypherURL', () => {
+    const response = {
+      data: 'https://api.zephyrscale.smartbear.com/v2/',
+      message: 'Fetched Zephyr Cloud Base Url successfully',
+      success: true,
+    };
+    spyOn(httpService, 'getZephyrUrl').and.returnValue(of(response));
+    component.getZephyrUrl();
+    fixture.detectChanges();
+    expect(component.zephyrUrl).toBe(
+      'https://api.zephyrscale.smartbear.com/v2/',
+    );
+  });
+
+  it('should validate fields when zypher connection selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
+    component.connection['type'] = 'zephyr';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'zephyr';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.checkZephyr();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('baseUrl').value).toBe(
+        'https://api.zephyrscale.smartbear.com/v2/',
+      );
+    });
+  });
+
+  it('should validate fields when zypher connection selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
+    component.connection['type'] = 'zephyr';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'zephyr';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.checkZephyr();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should validate fields when zypher connection selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
+    component.connection['type'] = 'zephyr';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'zephyr';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.checkZephyr();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should validate fields when zypher connection selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.zephyrUrl = 'https://api.zephyrscale.smartbear.com/v2/';
+    component.connection['type'] = 'zephyr';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'zephyr';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.checkZephyr();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be username,accesstoken blank when Sonar connection selected and cloudEnv switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('username').value).toBe('');
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+      expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+    });
+  });
+
+  it('should be password blank when Sonar connection selected and vault switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be password blank when cloudEnv switch is true and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be accesstoken blank when cloudEnv switch is false and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+     expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+     });
+  });
+
+  it("should be password blank when accessToken or password is toggling",()=>{
+    component.connection['accessTokenEnabled'] = true;
+    component.enableDisableFieldsOnAccessTokenORPasswordToggle();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].value).toBe("")
+  })
+
+  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTruthy();
+  })
+
+  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
+  })
+
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
+
+
+  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+  })
+
+  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalsy();
+
+  })
+
+  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
+  })
+
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['vault'].setValue("Any value")
+    component.connection['vault'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
+  })
+
+  it("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['accessTokenEnabled'].setValue("Any value")
+    component.connection['accessTokenEnabled'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
+
+  it("should be fields enable when checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+
+  it("should be privatekey enabled when isOAuth key is true", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(true);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeTruthy();
+  })
+
+  it("should be privatekey disabled when isOAuth key is false", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeFalsy();
+  })
+
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+  it("should enable form control while testing connections",()=>{
+
+    component.testingConnection = true;
+    const reqData = {};
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+    component.connectionTypeFieldsAssignment();
+    component.testConnection();
+    fixture.detectChanges();
+    component.addEditConnectionFieldsNlabels.forEach(data => {
+      if (!!component.connection.type && !!data.connectionType && (component.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
+        data.inputFields.forEach(inputField => {
+          if (component.basicConnectionForm.value[inputField] !== undefined && component.basicConnectionForm.value[inputField] !== '' && component.basicConnectionForm.value[inputField] !== 'undefined') {
+            expect(reqData[inputField]).toEqual(component.basicConnectionForm.value[inputField])
+          }
+        });
+      }
+    });
+
+  })
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is unchecked ", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
 });
