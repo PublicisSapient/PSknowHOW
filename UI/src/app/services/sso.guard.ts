@@ -27,8 +27,7 @@ export class SSOGuard implements CanActivate {
   getSSOUserInfo() {
     return this.httpService.getSSOUserInfo().pipe(map(response =>{
       console.log('response from user info call',response);
-      if (response['status'] === 200 && response['success'] ) {
-          console.log('setting localstorage');
+      if (response['success']) {
           localStorage.setItem('user_name', response['data']?.username);
           localStorage.setItem('projectsAccess', JSON.stringify(response['data']['projectsAccess']));
           localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(response['data']['authorities']), 'encrypt'));
