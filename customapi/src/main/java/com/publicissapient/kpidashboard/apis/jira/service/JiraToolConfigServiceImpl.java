@@ -204,7 +204,7 @@ public class JiraToolConfigServiceImpl {
 		return assigneeRolesList;
 	}
 
-	private List<AssigneeRoles> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
+	public List<AssigneeRoles> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
 			String url) {
 
 

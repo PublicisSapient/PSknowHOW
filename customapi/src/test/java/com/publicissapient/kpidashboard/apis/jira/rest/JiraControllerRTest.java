@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.rest;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +29,9 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -232,5 +236,27 @@ public class JiraControllerRTest {
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
+	@Test
+	public void getJiraAssigneesListReturnError() throws Exception{
+		mockMvc.perform(get("/jira/assignees/").contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andDo(print()).andExpect(status().isNotFound());
+	}
+@Test
+	public void getJiraAssigneesListReturnValue() throws Exception{
+		String request="634fdf4ec859a424263dc035";
+	ProjectAssigneeDTO projectAssigneeDTO=new ProjectAssigneeDTO();
+	List<AssigneeRoles> assigneeRolesList=new ArrayList<>();
+	AssigneeRoles roles=new AssigneeRoles();
+	roles.setName("Raghu");
+	roles.setDisplayName("Raghavendra");
+	roles.setRole("Developer");
+	assigneeRolesList.add(roles);
 
+	projectAssigneeDTO.setProjectName("ABC");
+	projectAssigneeDTO.setBasicProjectConfigId(new ObjectId(request));
+	projectAssigneeDTO.setAssigneeRoles(assigneeRolesList);
+	when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(projectAssigneeDTO);
+	mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andExpect(status().is2xxSuccessful());
+}
 }
