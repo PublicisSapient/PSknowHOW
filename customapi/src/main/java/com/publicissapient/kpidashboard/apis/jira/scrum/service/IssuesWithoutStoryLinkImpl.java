@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 
@@ -35,12 +53,16 @@ import java.util.stream.Collectors;
 @Component
 public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-    private static final String TESTCASES_WITHOUT_STORY_LINK = "Test Cases without Story link";
+    private static final String TESTCASES_WITHOUT_STORY_LINK = "Test Cases Without Story Link";
     private static final String DEFECTS_WITHOUT_STORY_LINK = "Defects Without Story Link";
     private static final String TOOL_ZEPHYR = ProcessorConstants.ZEPHYR;
     private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
     private static final String STORY_LIST = "stories";
     private static final String TOTAL_TEST_CASES = "Total Test Cases";
+    private static final String TEST_WITHOUT_STORY_LIST = "Test Without Story list";
+    private static final String TEST_WITHOUT_STORY_TEST_CASES = "Test Without Story Test Cases";
+    private static final String DEFECTS_WITHOUT_STORY_LIST = "Defects Without Story List";
+    private static final String DEFECTS_WITHOUT_STORY_DEFECTS_LIST = "Defects Without Story Defects List";
     private static final String NIN = "nin";
     private static final String DEFECT_LIST = "Total Defects";
     private static final String OVERALL = "Overall";
@@ -60,8 +82,34 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
     }
 
     @Override
+    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+                                 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+        DataCount trendValue = new DataCount();
+        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+
+            Filters filters = Filters.getFilter(k);
+            if (Filters.SPRINT == filters) {
+                projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
+            }
+        });
+        return kpiElement;
+    }
+
+    @Override
     public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
-        return null;
+        Map<String, Object> map = new HashMap<>();
+        leafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
+        List<Node> latestSprintNode = new ArrayList<>();
+        Node latestSprint = leafNodeList.get(0);
+        Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+        Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(latestSprintNode);
+        map.put(TEST_WITHOUT_STORY_LIST, resultMapForTestWithoutStory.get(STORY_LIST));
+        map.put(TEST_WITHOUT_STORY_TEST_CASES, resultMapForTestWithoutStory.get(TOTAL_TEST_CASES));
+        Map<String, Object> resultMapDefectsWithoutStoryLink =
+                fetchKPIDataFromDbForDefectsWithoutStoryLink(latestSprintNode);
+        map.put(DEFECTS_WITHOUT_STORY_LIST, resultMapDefectsWithoutStoryLink.get(STORY_LIST));
+        map.put(DEFECTS_WITHOUT_STORY_DEFECTS_LIST, resultMapDefectsWithoutStoryLink.get(DEFECT_LIST));
+        return map;
     }
 
     public Map<String, Object> fetchKPIDataFromDbForTestWithoutStory(List<Node> leafNodeList) {
@@ -247,44 +295,31 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
         return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
     }
 
-    @Override
-    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-        DataCount trendValue = new DataCount();
-        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+    private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue,
+                                          KpiElement kpiElement, KpiRequest kpiRequest) {
 
-            Filters filters = Filters.getFilter(k);
-            if (Filters.SPRINT == filters) {
-                projectWiseLeafNodeValue(v, trendValue, kpiElement);
-            }
-        });
-        return kpiElement;
-    }
-
-    private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement) {
-        sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
-        List<Node> latestSprintNode = new ArrayList<>();
         String requestTrackerId = getRequestTrackerId();
+        sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
         List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
         List<KPIExcelData> excelDataForTestWithoutStory = new ArrayList<>();
         List<KPIExcelData> excelDataDefectsWithoutStoryLink = new ArrayList<>();
         Node latestSprint = sprintLeafNodeList.get(0);
         List<IterationKpiModalValue> testCasesWithoutStoryLinkModals = new ArrayList<>();
         List<IterationKpiModalValue> defectWithoutStoryLinkModals = new ArrayList<>();
-        Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
-        Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(latestSprintNode);
-        List<String> storiesInProject = (List<String>) resultMapForTestWithoutStory.get(STORY_LIST);
-        List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) resultMapForTestWithoutStory.get(TOTAL_TEST_CASES);
+        Map<String, Object> returnMap = fetchKPIDataFromDb(sprintLeafNodeList,
+                null, null, kpiRequest);
+
+        List<String> storiesInProject = (List<String>) returnMap.get(TEST_WITHOUT_STORY_LIST);
+        List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) returnMap
+                .get(TEST_WITHOUT_STORY_TEST_CASES);
         List<TestCaseDetails> testWithoutStory = totalTestNonRegression.stream()
                 .filter(t -> (t.getDefectStoryID() == null
                         || !CollectionUtils.containsAny(t.getDefectStoryID(), storiesInProject)))
                 .collect(Collectors.toList());
 
-        Map<String, Object> resultMapDefectsWithoutStoryLink =
-                fetchKPIDataFromDbForDefectsWithoutStoryLink(latestSprintNode);
-        List<JiraIssue> totalDefects = checkPriority((List<JiraIssue>) resultMapDefectsWithoutStoryLink.get(DEFECT_LIST));
-        List<JiraIssue> totalStories = (List<JiraIssue>) resultMapDefectsWithoutStoryLink.get(STORY_LIST);
+        List<JiraIssue> totalDefects = checkPriority((List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_DEFECTS_LIST));
+        List<JiraIssue> totalStories = (List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_LIST);
         List<JiraIssue> defectWithoutStory = new ArrayList<>();
         defectWithoutStory.addAll(
                 totalDefects.stream().filter(f -> !CollectionUtils.containsAny(f.getDefectStoryID(), totalStories))

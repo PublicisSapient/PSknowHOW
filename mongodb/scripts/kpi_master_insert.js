@@ -3336,7 +3336,8 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "isSquadSupport": false,
-    "kpiFilter": "multiSelectDropDown",
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
     "boxType": "3_column",
     "calculateMaturity": false
   },

@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.*;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
@@ -39,8 +40,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.util.*;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,17 +62,18 @@ public class IssuesWithoutStoryLinkImplTest {
     private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
     private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
     private KpiRequest kpiRequest;
+    private KpiElement kpiElement;
     List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 
     @Before
     public void setup() {
-        KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest("kpi129");
-        kpiRequest.setLabel("PROJECT");
-
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+        KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+        kpiRequest = kpiRequestFactory.findKpiRequest("kpi129");
+        kpiRequest.setLabel("PROJECT");
+        kpiElement = kpiRequest.getKpiList().get(0);
         totalTestCaseList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
         setMockProjectConfig();
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -90,21 +91,6 @@ public class IssuesWithoutStoryLinkImplTest {
         projectConfig.setProjectName("Scrum Project");
         projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
     }
-
-	@Test
-	public void testGetKpiData() throws ApplicationException {
-
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put("defectRemovalEfficiency", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
-		try {
-			KpiElement kpiElement = issuesWithoutStoryLink.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull(kpiElement);
-		} catch (Exception exception) {
-		}
-	}
 
     @Test
     public void testFetchKPIDataFromDbForTestWithoutStory() throws ApplicationException {
@@ -131,7 +117,39 @@ public class IssuesWithoutStoryLinkImplTest {
     }
 
     @Test
+    public void testFetchKPIDataFromDb() throws ApplicationException {
+        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+        List<Node> leafNodeList = new ArrayList<>();
+        leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        Map<String, Object> defectDataListMap = issuesWithoutStoryLink.fetchKPIDataFromDb(leafNodeList,
+                null, null, kpiRequest);
+        assertNotNull(defectDataListMap);
+    }
+
+    @Test
     public void testGetQualifierType() {
         assertThat(issuesWithoutStoryLink.getQualifierType(), equalTo("ISSUES_WITHOUT_STORY_LINK"));
+    }
+
+    @Test
+    public void testCalculateKPIMetrics() {
+        assertThat("Total Defects value :", issuesWithoutStoryLink.calculateKPIMetrics(null), equalTo(null));
+    }
+
+    @Test
+    public void testGetKpiData() throws ApplicationException {
+        List<Node> leafNodeList = new ArrayList<>();
+        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+            if (Filters.getFilter(k) == Filters.SPRINT) {
+                leafNodeList.addAll(v);
+            }
+        });
+        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        KpiElement kpiData = issuesWithoutStoryLink.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
+        assertEquals(null, kpiData.getValue());
     }
 }
