@@ -433,4 +433,60 @@ describe('JiraConfigComponent', () => {
     expect(component.configuredTools).not.toContain(tool);
   }))
 
+  it('should Edit tool', fakeAsync(() => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    const tool = {
+      id: "5fc643cd11193836e6545560",
+      toolName: "Bamboo",
+      basicProjectConfigId: "63b3f9098ec44416b3ce9699",
+      connectionId: "5fc643cd11193836e6545560",
+      connectionName: "Bamboo Connection",
+      jobName: "REL-BAM",
+      jobType: "Build",
+      createdAt: "2023-01-04T07:15:08",
+      updatedAt: "2023-01-04T07:15:08",
+      queryEnabled: false,
+      boards: [
+          null
+      ]
+    };
+    component.connections = fakeJiraConnections.data;
+    component.editTool(tool);
+    expect(component.isEdit).toBeTruthy();  
+  }))
+
+  it("should add new tool",()=>{
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.addNewTool();
+    expect(component.isEdit).toBeFalse();
+  })
+
+  it('should be loding disabled when connection is already Jira', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Jira',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+    expect(component.isLoading).toBeFalse();
+
+  });
+ 
+
 });
