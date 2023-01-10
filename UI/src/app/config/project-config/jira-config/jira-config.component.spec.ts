@@ -487,6 +487,186 @@ describe('JiraConfigComponent', () => {
     expect(component.isLoading).toBeFalse();
 
   });
- 
+
+  it('should be loding disabled when connection is Sonar', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Jira',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Bamboo';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'getPlansForBamboo')
+    spyOn(component,'getDeploymentProjects')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.getPlansForBamboo).toHaveBeenCalled();
+   expect(component.getDeploymentProjects).toHaveBeenCalled();
+  });
+
+  it('should be clear sonar form  when connection changed to Sonar', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Sonar',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'clearSonarForm')
+    spyOn(component,'updateSonarConnectionTypeAndVersionList')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.clearSonarForm).toHaveBeenCalled();
+   expect(component.updateSonarConnectionTypeAndVersionList).toHaveBeenCalled();
+  });
+
+  it('should be get jenkin job name when connction changes to jenkins', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Sonar',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Jenkins';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'getJenkinsJobNames')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.getJenkinsJobNames).toHaveBeenCalled();
+  });
+
+  it("should load elements for customfield",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testAutomatedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1)
+  })
+
+  it("should load elements for lables",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testAutomatedIdentification";
+    spyOn(component, 'showFormElements');
+    spyOn(component, 'hideFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+    expect(component.hideFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for customfield and elementID is testAutomationCompletedIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testAutomationCompletedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for labels and elementID is testAutomationCompletedIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testAutomationCompletedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for labels and elementID is testRegressionIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testRegressionIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+
+
+  it("should load and hide elements for customfield and elementID is testRegressionIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testRegressionIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should blank for branch field",()=>{
+    const id  = 'projectKey';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
+
+  it("should getOPtionlist for testRegressionIdentification field",()=>{
+    const id  = 'testAutomatedIdentification';
+    const fakeResponse = [
+      {
+        code: '',
+        name: 'Select',
+      },
+      {
+        code: 'CustomField',
+        name: 'CustomField',
+      },
+      {
+        code: 'Labels',
+        name: 'Labels',
+      },
+    ];
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual(fakeResponse);
+  })
+
+  it("should blank for apiVersion field",()=>{
+    const id  = 'apiVersion';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
+
+  it("should blank for branch field",()=>{
+    const id  = 'branch';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
 
 });
