@@ -197,7 +197,6 @@ public class JiraToolConfigServiceImpl {
 					if (roles.getName().equals(assigneeRoles.getName())
 							&& roles.getDisplayName().equals(assigneeRoles.getDisplayName())) {
 						assigneeRoles.setRole(roles.getRole());
-						//assigneeRoles.setRoles(roles.getRoles());
 					}
 				}
 			}
