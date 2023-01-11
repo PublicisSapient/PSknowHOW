@@ -1553,7 +1553,7 @@ describe('ConnectionListComponent', () => {
     );
   })
 
-  it("should empty url for Zepher",()=>{
+  it("should empty url for Zephyr",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1652,7 +1652,7 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should empty url for Zepher",()=>{
+  it("should empty url for Zephyr",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
