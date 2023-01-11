@@ -463,7 +463,7 @@ describe('JiraConfigComponent', () => {
     expect(component.isEdit).toBeFalse();
   })
 
-  it('should be loding disabled when connection is already Jira', () => {
+  it('should disable loading when connection is already Jira', () => {
    
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
@@ -488,12 +488,12 @@ describe('JiraConfigComponent', () => {
 
   });
 
-  it('should be loding disabled when connection is Sonar', () => {
+  it('should disable loading when connection is Bamboo', () => {
    
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
-      type: 'Jira',
-      connectionName: 'Test Internal -Jira Connection',
+      type: 'Bamboo',
+      connectionName: 'Test Internal -Bamboo Connection',
       cloudEnv: false,
       baseUrl: 'https://tools.test.test2.com/jira',
       username: '',
@@ -515,12 +515,12 @@ describe('JiraConfigComponent', () => {
    expect(component.getDeploymentProjects).toHaveBeenCalled();
   });
 
-  it('should be clear sonar form  when connection changed to Sonar', () => {
+  it('should clear sonar form  when connection changed to Sonar', () => {
    
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
       type: 'Sonar',
-      connectionName: 'Test Internal -Jira Connection',
+      connectionName: 'Test Internal -Sonar Connection',
       cloudEnv: false,
       baseUrl: 'https://tools.test.test2.com/jira',
       username: '',
@@ -542,12 +542,12 @@ describe('JiraConfigComponent', () => {
    expect(component.updateSonarConnectionTypeAndVersionList).toHaveBeenCalled();
   });
 
-  it('should be get jenkin job name when connction changes to jenkins', () => {
+  it('should get jenkins job name when connection changes to jenkins', () => {
    
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
-      type: 'Sonar',
-      connectionName: 'Test Internal -Jira Connection',
+      type: 'Jenkins',
+      connectionName: 'Test Internal -Jenkins Connection',
       cloudEnv: false,
       baseUrl: 'https://tools.test.test2.com/jira',
       username: '',
@@ -637,7 +637,7 @@ describe('JiraConfigComponent', () => {
     expect(component.getOptionList(id)).toEqual([]);
   })
 
-  it("should getOPtionlist for testRegressionIdentification field",()=>{
+  it("should getOptionlist for testRegressionIdentification field",()=>{
     const id  = 'testAutomatedIdentification';
     const fakeResponse = [
       {
