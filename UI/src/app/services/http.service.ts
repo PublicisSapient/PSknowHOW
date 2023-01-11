@@ -334,8 +334,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
 
     /** POST: This make kpi call of scrum */
-    postKpi(data, source): Observable<object> {
-        return this.http.post<object>(this.getDataUrl + source + '/kpi', data)
+    postKpi(data, source): Observable<any> {
+        return this.http.post<any>(this.getDataUrl + source + '/kpi', data)
             .pipe(catchError(this.handleKpiError));
     }
 
