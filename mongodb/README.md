@@ -8,6 +8,25 @@ cd mongodb
 docker build -t mongodb .
 ```
 
+### Custom mongo image
+
+base image is mongo:4.4.1-bionic which is comapetatively large in size with unused mongo libraries like mongostat, mongoimport which we dont use offten so removed it 
+Made custom image from mongo:4.4.1-bionic by removing unused libraries and pushed to DockerHUB with name *** 
+
+### How to build Custom Mongo image 
+
+docker pull  mongo:4.4.1-bionic
+docker run -d --name mongodb-bionic mongo:4.4.1-bionic
+docker exec -it mongodb-bionic /bin/bash
+rm -rf  rm -rf /usr/bin/mongos && rm -rf /usr/bin/mongoimport && rm -rf /usr/bin/mongoexport && rm -rf /usr/bin/mongofiles && rm -rf /usr/bin/mongotop && rm -rf /usr/bin/mongostat
+exit
+docker export mongodb-bionic > mongodb-baseimage.tar
+docker import mongodb-baseimage.tar
+sha256:c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f
+docker tag c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f psknowhow/mongodb-baseimage:latest
+docker push psknowhow/mongodb-baseimage:latest
+
+refference : https://medium.com/@samhavens/how-to-make-a-docker-container-smaller-by-deleting-files-7354b5c6c8f1
 ### Run Mongodb
 ```
 docker run -d -p 27017:27017 -v <volumes>:/data/db mongodb
@@ -62,7 +81,4 @@ services:
 
 networks:
   Network_app:
-```
-####  
-
 ```

@@ -48,11 +48,11 @@ echo -e " ${GREEN}[\xE2\x9C\x94] Createing Backup Archive...${RESET}"
 echo ""
 
 mongo=`docker ps | grep mongodb | awk '{ print $1}'`
-docker exec -t $mongo mongodump --db kpidashboard --username devadmin --password admin@123 --out /tmp
+sudo docker exec -t $mongo mongodump --db kpidashboard --username devadmin --password admin@123 --out /tmp
 echo " ${GREEN}[\xE2\x9C\x94] Creating Backup .....${RESET}"
 
 
-docker cp $mongo:/tmp/kpidashboard /var/backups
+sudo docker cp $mongo:/tmp/kpidashboard /var/backups
 echo " ${GREEN}[\xE2\x9C\x94] Coping backup to $BACKUPS_DIR .....${RESET}"
 
 tar -czf $BACKUPS_DIR/$MONGO_DATABASE-$TIMESTAMP.tar.gz  $BACKUPS_DIR/kpidashboard
