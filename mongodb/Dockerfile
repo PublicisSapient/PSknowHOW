@@ -1,4 +1,4 @@
-FROM mongo:4.4.1-bionic
+FROM psknowhow/mongo:beta-13
 
 LABEL version "VERSION"
 LABEL description "Docker image of dashboard mongo database"
