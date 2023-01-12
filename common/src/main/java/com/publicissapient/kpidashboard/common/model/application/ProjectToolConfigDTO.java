@@ -20,11 +20,16 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
-import lombok.*;
-
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author dilipKr
@@ -89,5 +94,5 @@ public class ProjectToolConfigDTO {
 	private String deploymentProjectId;
 
 	private String parameterNameForEnvironment;
-	private boolean saveAssigneeDetails;
+
 }

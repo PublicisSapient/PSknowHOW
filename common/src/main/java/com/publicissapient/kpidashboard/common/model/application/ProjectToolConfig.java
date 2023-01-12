@@ -94,5 +94,4 @@ public class ProjectToolConfig extends BasicModel {
 	private String deploymentProjectId;
 
 	private String parameterNameForEnvironment;
-	private boolean saveAssigneeDetails;
 }
