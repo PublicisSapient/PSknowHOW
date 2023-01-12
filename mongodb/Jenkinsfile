@@ -62,7 +62,7 @@ pipeline {
                 sh """
                     cd mongodb
                     pwd
-                    docker build -t mongodb:${env.version} .
+                    docker build --squash -t mongodb:${env.version} .
                     cd ..
                 """
             }
