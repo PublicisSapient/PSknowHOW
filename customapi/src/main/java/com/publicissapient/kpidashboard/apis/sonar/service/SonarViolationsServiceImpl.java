@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -57,8 +59,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author prigupta8
@@ -225,13 +225,13 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 			List<String> versionDate) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
-		List<Map<String, Integer>> globalSonarViolationsHowerMap = new ArrayList<>();
+		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();
 		history.values().stream().forEach(sonarDetails -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
 
-			Map<String, Integer> sonarViolationsHowerMap = new LinkedHashMap<>();
+			Map<String, Object> sonarViolationsHowerMap = new LinkedHashMap<>();
 			evaluateViolations(metricMap.get(Constant.CRITICAL_VIOLATIONS), sonarViolationsHowerMap, CRITICAL);
 			evaluateViolations(metricMap.get(Constant.BLOCKER_VIOLATIONS), sonarViolationsHowerMap, BLOCKER);
 			evaluateViolations(metricMap.get(Constant.MAJOR_VIOLATIONS), sonarViolationsHowerMap, MAJOR);
@@ -239,12 +239,13 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 			evaluateViolations(metricMap.get(Constant.INFO_VIOLATIONS), sonarViolationsHowerMap, INFO);
 
 			sonarViolationsHowerMap = sonarViolationsHowerMap.entrySet().stream()
-					.sorted((i1, i2) -> i2.getValue().compareTo(i1.getValue())).collect(Collectors
+					.sorted((i1, i2) -> ((Integer) i2.getValue()).compareTo((Integer) i1.getValue())).collect(Collectors
 							.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
 			globalSonarViolationsHowerMap.add(sonarViolationsHowerMap);
 
-			Long sonarViolations = sonarViolationsHowerMap.values().stream().mapToLong(val -> val).sum();
+			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(a -> (Integer) a).mapToLong(val -> val)
+					.sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
 			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
@@ -294,7 +295,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		return historyMap;
 	}
 
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Integer> sonarViolationsHowerMap,
+	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
 			String projectName, String date, String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sonarViolations));
@@ -326,13 +327,11 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	}
 
 	/**
-	 *
-	 * @param violations
+	 *  @param violations
 	 * @param valueMap
 	 * @param key
 	 */
-	private void evaluateViolations(Object violations, Map<String, Integer> valueMap, String key) {
-		if (violations != null) {
+	private void evaluateViolations(Object violations, Map<String, Object> valueMap, String key) {
 			if (violations instanceof Double) {
 				valueMap.put(key, ((Double) violations).intValue());
 			} else if (violations instanceof String) {
@@ -341,7 +340,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 				valueMap.put(key, (Integer) violations);
 			}
 		}
-	}
+
 
 	/**
 	 * Not used

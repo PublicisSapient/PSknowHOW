@@ -276,7 +276,7 @@ public class DefectsWithoutStoryLinkServiceImpl extends JiraKPIService<Integer, 
 		dataCount.setSProjectName(latestSprint.getProjectFilter().getName());
 		dataCount.setKpiGroup(group);
 		dataCount.setValue(withoutStoryDefect);
-		Map<String, Integer> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new HashMap<>();
 		howerMap.put(DEFECT_LIST, totalDefect.intValue());
 		howerMap.put(DEFECT_WITHOUT_STORY_LINK, withoutStoryDefect.intValue());
 		dataCount.setHoverValue(howerMap);

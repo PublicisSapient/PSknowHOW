@@ -218,7 +218,7 @@ public class TestWithoutStoryServiceImpl extends ZephyrKPIService<Double, List<O
 				.filter(t -> (t.getDefectStoryID() == null
 						|| !CollectionUtils.containsAny(t.getDefectStoryID(), storiesInProject)))
 				.collect(Collectors.toList());
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		howerMap.put(TOTAL_TEST_CASES, totalTestNonRegression.size());
 		howerMap.put(TEST_TITLE, testWithoutStory.size());
 

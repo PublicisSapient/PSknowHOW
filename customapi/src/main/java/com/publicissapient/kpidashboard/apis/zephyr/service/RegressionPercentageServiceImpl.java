@@ -145,7 +145,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 
-			Map<String, Integer> howerMap = new LinkedHashMap<>();
+			Map<String, Object> howerMap = new LinkedHashMap<>();
 			String basicProjectConfId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			List<TestCaseDetails> totalTest = total.get(basicProjectConfId);
 			List<TestCaseDetails> automatedTest = automated.get(basicProjectConfId);
@@ -232,7 +232,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	 * @param howerMap
 	 */
 	private void setHowerMap(List<TestCaseDetails> sprintWiseAutomated, List<TestCaseDetails> sprintWiseTotal,
-			Map<String, Integer> howerMap, String key1, String key2) {
+			Map<String, Object> howerMap, String key1, String key2) {
 		if (CollectionUtils.isNotEmpty(sprintWiseAutomated)) {
 			howerMap.put(key1, sprintWiseAutomated.size());
 		} else {

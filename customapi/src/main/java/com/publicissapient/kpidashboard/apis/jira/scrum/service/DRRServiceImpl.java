@@ -232,7 +232,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Double> sprintWiseDRRMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseRejectedDefectListMap = new HashMap<>();
 
@@ -398,9 +398,9 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param rejected
 	 * @param total
 	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<JiraIssue> rejected, List<JiraIssue> total) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(rejected)) {
 			howerMap.put(REJECTED, rejected.size());
 		} else {

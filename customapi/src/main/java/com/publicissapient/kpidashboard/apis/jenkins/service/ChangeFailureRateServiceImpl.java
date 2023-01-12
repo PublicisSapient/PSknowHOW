@@ -444,7 +444,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		dataCount.setSprintNames(Arrays.asList(date));
 		dataCount.setCount(totalCount);
 		dataCount.setValue(valueForCurrentLeaf);
-		Map<String, Integer> hoverMap = new HashMap<>();
+		Map<String, Object> hoverMap = new HashMap<>();
 		hoverMap.put(FAILED_CHANGES, failureCount);
 		hoverMap.put(TOTAL_CHANGES, totalCount);
 		dataCount.setHoverValue(hoverMap);
@@ -476,15 +476,15 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 				Object obj = dc.getValue();
 				Double value = obj instanceof Integer ? ((Integer) obj).doubleValue() : ((Double) obj).doubleValue();
 				if (null != dc.getHoverValue().get(TOTAL_CHANGES)) {
-					totalBuilds = totalBuilds + dc.getHoverValue().get(TOTAL_CHANGES);
+					totalBuilds = totalBuilds + (Integer)dc.getHoverValue().get(TOTAL_CHANGES);
 				}
 				if (null != dc.getHoverValue().get(FAILED_CHANGES)) {
-					failedBuilds = failedBuilds + dc.getHoverValue().get(FAILED_CHANGES);
+					failedBuilds = failedBuilds + (Integer)dc.getHoverValue().get(FAILED_CHANGES);
 				}
 				values.add(value);
 			}
 			Double aggregatedValue = calculateKpiValue(values, kpiId);
-			Map<String, Integer> hoverMap = new HashMap<>();
+			Map<String, Object> hoverMap = new HashMap<>();
 			hoverMap.put(TOTAL_CHANGES, totalBuilds);
 			hoverMap.put(FAILED_CHANGES, failedBuilds);
 			dataCount.setProjectNames(new ArrayList<>(projectNames));

@@ -288,7 +288,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
         dataCount.setDate(month);
         dataCount.setKpiGroup(envName);
         dataCount.setValue(envCount);
-        Map<String, Integer> hoverMap = new HashMap<>();
+        Map<String, Object> hoverMap = new HashMap<>();
         hoverMap.put(envName, envCount.intValue());
         dataCount.setHoverValue(hoverMap);
         return dataCount;
@@ -352,7 +352,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
             Set<String> projectNames = new HashSet<>();
             DataCount dataCount = new DataCount();
             List<Long> values = new ArrayList<>();
-            Map<String, Integer> hoverMap = new HashMap<>();
+            Map<String, Object> hoverMap = new HashMap<>();
             for (DataCount dc : data) {
                 projectNames.add(dc.getSProjectName());
                 Object obj = dc.getValue();
