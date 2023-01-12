@@ -10,7 +10,7 @@ docker build -t mongodb .
 
 ### Run Mongodb
 ```
-docker run -d -p27017:27017 -v <volumes>:/data/db mongodb
+docker run -d -p 27017:27017 -v <volumes>:/data/db mongodb
 OR
 docker-compose up -d
 ```
@@ -62,6 +62,7 @@ services:
 
 networks:
   Network_app:
-
+```
+####  
 
 ```

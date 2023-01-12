@@ -1,6 +1,7 @@
 ---
 - name: Deploying Components on Dev Server
   hosts: server
+  become: true
   vars_files:
     - vars/defaults.yml
     - vars/app.yml
