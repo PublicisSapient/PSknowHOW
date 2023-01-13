@@ -222,7 +222,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	}
 
 	private List<JiraIssue> excludeOnHoldStatusIssue(FieldMapping fieldMapping, List<JiraIssue> allIssues) {
-		if (fieldMapping.getIssueOnHoldStatusExcluClosurePossible() != null) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getIssueOnHoldStatusExcluClosurePossible())) {
 			allIssues = allIssues.stream().filter(
 					issue -> !fieldMapping.getIssueOnHoldStatusExcluClosurePossible().contains(issue.getStatus()))
 					.collect(Collectors.toList());
