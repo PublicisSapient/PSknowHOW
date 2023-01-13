@@ -10,8 +10,8 @@ docker build -t mongodb .
 
 ### Custom mongo image
 
-base image is mongo:4.4.1-bionic which is comapetatively large in size with unused mongo libraries like mongostat, mongoimport which we dont use offten so removed it 
-Made custom image from mongo:4.4.1-bionic by removing unused libraries and pushed to DockerHUB with name *** 
+base image is mongo:4.4.1-bionic which is large in size with unused mongo libraries like mongostat, mongoimport, mongoexport which we dont use offten so removed it 
+Made custom image from mongo:4.4.1-bionic with name psknowhow/mongo-base:4.4.1-bionic 
 
 ### How to build Custom Mongo image 
 

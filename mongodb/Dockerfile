@@ -1,5 +1,6 @@
-FROM psknowhow/mongo:beta-13
+FROM psknowhow/mongo-base:4.4.1-bionic
 
+# If psknowhow/mongo-base:4.4.1-bionic image is not downloadable follow README.md to geneteate new
 LABEL version "VERSION"
 LABEL description "Docker image of dashboard mongo database"
 LABEL keywords "infra-devops_mongodb"
@@ -23,7 +24,7 @@ RUN \
     \
     apt-get install dos2unix && chmod +x /docker-entrypoint-initdb.d/mongodb_start.sh /docker-entrypoint-initdb.d/create_db_user.sh && dos2unix /docker-entrypoint-initdb.d/mongodb_start.sh && dos2unix /docker-entrypoint-initdb.d/create_db_user.sh && \
     \
-    rm -rf /var/cache/apk/* && rm -rf /usr/bin/mongos && rm -rf /usr/bin/mongoimport && rm -rf /usr/bin/mongoexport && rm -rf /usr/bin/mongofiles && rm -rf /usr/bin/mongotop && rm -rf /usr/bin/mongostat
+    rm -rf /var/cache/apk/*
 
 EXPOSE 27017
 WORKDIR /docker-entrypoint-initdb.d/
