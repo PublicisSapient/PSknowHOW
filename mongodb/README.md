@@ -20,8 +20,12 @@ rm -rf  rm -rf /usr/bin/mongos && rm -rf /usr/bin/mongoimport && rm -rf /usr/bin
 exit
 docker export mongodb-bionic > mongodb-baseimage.tar
 docker import mongodb-baseimage.tar
-sha256:c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f
-docker tag c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f psknowhow/mongodb-baseimage:latest
+```
+output of docker import mongodb-baseimage.taris ``` sha256:examplesha256xxxxxxxxxxxxxxxxxxxxxxxxxxxx ```
+will output the sha256 as shown above, copy the value and replace in next command. 
+
+```
+docker tag examplesha256xxxxxxxxxxxxxxxxxxxxxxxxxxxx psknowhow/mongodb-baseimage:latest
 docker push psknowhow/mongodb-base:4.4.1-bionic
 ```
 refference : https://medium.com/@samhavens/how-to-make-a-docker-container-smaller-by-deleting-files-7354b5c6c8f1
