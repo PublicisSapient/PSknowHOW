@@ -47,6 +47,7 @@ export class BasicConfigComponent implements OnInit {
   getFieldsResponse: any;
   public form: UntypedFormGroup = this.formBuilder.group({});
   blocked = true;
+  assigneeSwitchInfo = "On Enable of Assignee Switch It started saving assignee data and can't be change later.";
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private aesEncryption: TextEncryptionService) {
     this.projectTypeOptions = [
@@ -88,6 +89,16 @@ export class BasicConfigComponent implements OnInit {
         required: true
       }
     );
+    this.formData.push(
+      {
+        level: this.formData.length,
+        hierarchyLevelId: 'assigneeDetails',
+        hierarchyLevelName: 'Save Assignee Details',
+        inputType: 'boolean',
+        value: false,
+        required: false
+      }
+    );
 
     this.formData.forEach(control => {
       this.form.addControl(
@@ -118,6 +129,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['projectName'] = formValue['projectName'];
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
+    submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
 
     this.getFieldsResponse.forEach(element => {
       submitData['hierarchy'].push({

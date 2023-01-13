@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 @Component({
   selector: 'app-tool-menu',
@@ -36,7 +36,9 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService) {
+  isAssigneeSwitchChecked : boolean = false;
+  isAssigneeSwitchDisabled : boolean = false;
+  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService,) {
 
   }
 
@@ -47,6 +49,8 @@ export class ToolMenuComponent implements OnInit {
     ];
 
     this.selectedProject = this.sharedService.getSelectedProject();
+    this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;  
+
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     } else {
@@ -195,6 +199,9 @@ export class ToolMenuComponent implements OnInit {
         ];
       }
     }
+    if(this.isAssigneeSwitchChecked){
+      this.isAssigneeSwitchDisabled = true;
+    }
   }
 
   projectTypeChange(event, isClicked) {
@@ -249,4 +256,67 @@ export class ToolMenuComponent implements OnInit {
   }
   // Preserve original property order
   originalOrder = (a: KeyValue<number,string>, b: KeyValue<number,string>): number => 0;
+
+  onAssigneeSwitchChange(){
+    if(this.isAssigneeSwitchChecked){
+      this.isAssigneeSwitchDisabled = true;
+    }
+    this.confirmationService.confirm({
+      message: `On Enable of Assignee Switch It started saving assignee data.Once Enable can't disable.are you sure you want to enable it? `,
+      header: 'Enable Assignee Details switch',
+      icon: 'pi pi-info-circle',
+      key: 'confirmToDeleteDialog',
+      accept: () => {
+      this.updateProjectDetails();
+      },
+      reject: () => {
+        this.isAssigneeSwitchChecked = false;
+        this.isAssigneeSwitchDisabled = false;
+      }
+    });
+  }
+
+  updateProjectDetails(){
+
+    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    let hierarchyData = JSON.parse(JSON.stringify(formFieldData));
+
+    const updatedDetails = {};
+    updatedDetails['projectName'] = this.selectedProject['Project'];
+    updatedDetails['kanban'] = this.selectedProject['Type'];
+    updatedDetails['hierarchy'] = [];
+    updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
+    updatedDetails['id'] = this.selectedProject['id'];
+
+    hierarchyData.forEach(element => {
+     updatedDetails['hierarchy'].push({
+       hierarchyLevel: {
+         level: element.level,
+         hierarchyLevelId: element.hierarchyLevelId,
+         hierarchyLevelName: element.hierarchyLevelName
+       },
+       value: this.selectedProject[element.hierarchyLevelName]
+     });
+   });
+
+   this.http.updateProjectDetails(updatedDetails,this.selectedProject.id).subscribe(response=>{
+    if (response && response.serviceResponse && response.serviceResponse.success) {
+      this.isAssigneeSwitchDisabled = true;
+      this.messenger.add({
+        severity: 'success',
+        summary: 'Assignee Switch Enabled  successfully.'
+      });
+    }else{
+      this.isAssigneeSwitchChecked = false;
+      this.isAssigneeSwitchDisabled = false;
+      this.messenger.add({
+        severity: 'error',
+        summary: 'Some error occurred. Please try again later.'
+      });
+
+    }
+
+   })
+
+  }
 }

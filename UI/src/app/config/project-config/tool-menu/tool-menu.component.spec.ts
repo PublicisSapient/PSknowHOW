@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
-import { MessageService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 
 import { DataViewModule } from 'primeng/dataview';
 
@@ -64,6 +64,7 @@ describe('ToolMenuComponent', () => {
         HttpService,
         SharedService,
         MessageService,
+        ConfirmationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -85,6 +86,7 @@ describe('ToolMenuComponent', () => {
   });
 
   it('should fetch fetch all tool configs', () => {
+    component.isAssigneeSwitchChecked = true;
     spyOn(httpService, 'getAllToolConfigs').and.callThrough();
     component.ngOnInit();
     expect(httpService.getAllToolConfigs).toHaveBeenCalledTimes(1);
@@ -100,6 +102,9 @@ describe('ToolMenuComponent', () => {
       expect(mappingsReq.request.method).toBe('GET');
       mappingsReq.flush(mappingData);
     }
+    if(component.isAssigneeSwitchChecked){
+      expect(component.isAssigneeSwitchDisabled).toBeTruthy();
+    }
   });
 
   it('should navigate back to Projects List if no selected project is there', () => {
@@ -108,4 +113,48 @@ describe('ToolMenuComponent', () => {
     component.ngOnInit();
     expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
   });
+
+  it("should disable assignee switch once assignee switch is on",()=>{
+    component.isAssigneeSwitchChecked = true;
+    const confirmationService = TestBed.get(ConfirmationService); // grab a handle of confirmationService
+    spyOn(component,'updateProjectDetails');
+    spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+      params.accept();
+      params.reject();
+    }); 
+    component.onAssigneeSwitchChange();
+    if(component.isAssigneeSwitchChecked){
+      expect(component.isAssigneeSwitchDisabled).toBeTruthy();
+    }
+  })
+
+  it("should prepare data for update project",()=>{
+    const hierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelId: 'hierarchyLevelOne',
+        hierarchyLevelName: 'Level One',
+      },
+      {
+        level: 2,
+        hierarchyLevelId: 'hierarchyLevelTwo',
+        hierarchyLevelName: 'Level Two',
+      },
+      {
+        level: 3,
+        hierarchyLevelId: 'hierarchyLevelThree',
+        hierarchyLevelName: 'Level Three',
+      },
+    ];
+    component.selectedProject = {
+      Project : "My Project",
+      Type : 'kanban',
+      ["Level One"] : "T1",
+      ["Level Two"] : "T2",
+      ["Level Three"] : "T3",
+
+    }
+    localStorage.setItem("hierarchyData",JSON.stringify(hierarchyData));
+    component.updateProjectDetails();
+  })
 });

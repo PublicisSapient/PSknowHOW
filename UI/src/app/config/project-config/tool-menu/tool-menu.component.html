@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main">
     <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
         <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
@@ -41,6 +41,15 @@
                 <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name"
                     [(ngModel)]="selectedType" (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
                 </p-selectButton>
+                <div class="p-d-flex mar-t-10">
+                    <label for="assigneeSwitch">
+                        Save Assignee Details :&nbsp;&nbsp;
+                    </label>
+                    <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"  [(ngModel)]="isAssigneeSwitchChecked" [disabled]="isAssigneeSwitchDisabled"
+                    (onChange)="onAssigneeSwitchChange($event)"
+                    >
+                    </p-inputSwitch>
+                </div>
                 <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
             </div>
         </ng-template>
@@ -99,3 +108,6 @@
     </p-dataView>
 
 </div>
+
+<p-confirmDialog key="confirmToDeleteDialog" [style]="{width: '50vw'}">
+</p-confirmDialog>
