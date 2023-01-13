@@ -220,15 +220,15 @@
       ignore_errors: yes
       when: 
         - selected_server is match("10.")
-      
+    
     - name: Executing SSL cert import script for sape cloud
-      shell: /var/knh/ldap_certs_import_sapecloud.sh {{edcurl}}
+      shell: /var/knh/ssl_cert_import_sapecloud.sh {{edcurl}}
       ignore_errors: yes
       when: 
         - selected_server is match("10.")
-    
+
     - name: Executing LDAP cert import script for sape cloud
-      shell: /var/knh/ssl_cert_import_sapecloud.sh {{ldapurl}}
+      shell: /var/knh/ldap_certs_import_sapecloud.sh {{ldapurl}}
       when: 
         - selected_server is match("10.")
 
