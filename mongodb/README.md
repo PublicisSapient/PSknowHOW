@@ -14,7 +14,7 @@ base image is mongo:4.4.1-bionic which is large in size with unused mongo librar
 Made custom image from mongo:4.4.1-bionic with name psknowhow/mongo-base:4.4.1-bionic 
 
 ### How to build Custom Mongo image 
-
+```
 docker pull  mongo:4.4.1-bionic
 docker run -d --name mongodb-bionic mongo:4.4.1-bionic
 docker exec -it mongodb-bionic /bin/bash
@@ -25,7 +25,7 @@ docker import mongodb-baseimage.tar
 sha256:c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f
 docker tag c11d39f80f9111fc5eb31fa71c7c32c91644d86afa47961ffe365638ae99a01f psknowhow/mongodb-baseimage:latest
 docker push psknowhow/mongodb-baseimage:latest
-
+```
 refference : https://medium.com/@samhavens/how-to-make-a-docker-container-smaller-by-deleting-files-7354b5c6c8f1
 ### Run Mongodb
 ```
