@@ -1,4 +1,4 @@
-# Open source PsKnowHOW MongoDB
+# Open source PSknowHOW MongoDB
 
 Kpidashboard application using MongoDB-4.4.1 to save the processor's data. Each processor accessing data from source and transforming and pushing it in mongodb. 
 
