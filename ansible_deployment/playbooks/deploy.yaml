@@ -161,11 +161,15 @@
     - name: Copying script file
       copy: src={{ item.src }} dest={{ item.dest }} mode=0755
       with_items:
-        - {src: '../playbooks/certs_import.sh', dest: '/var/knh/certs_import.sh'}
+        - {src: '../playbooks/ssl_cert_import_sapecloud.sh', dest: '/var/knh/ssl_cert_import_sapecloud.sh'}
+        - {src: '../playbooks/ldap_certs_import_sapecloud.sh', dest: '/var/knh/ldap_certs_import_sapecloud.sh'}
         - {src: '../playbooks/cleanup.sh', dest: '/var/knh/cleanup.sh'}
       
     - name: Execute certs_import  script
-      shell: /var/knh/certs_import.sh {{edcurl}} {{ldapurl}} 
+      shell: /var/knh/ssl_cert_import_sapecloud.sh {{edcurl}}
+    
+    - name: Execute Ldap cert script
+      shell: /var/knh/ldap_certs_import_sapecloud.sh {{ldapurl}} 
 
     - name: clean Sapce
       shell: docker image prune -a -f && docker volume prune -f && docker system prune -f
