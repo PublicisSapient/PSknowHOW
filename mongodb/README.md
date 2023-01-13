@@ -21,8 +21,8 @@ exit
 docker export mongodb-bionic > mongodb-baseimage.tar
 docker import mongodb-baseimage.tar
 ```
-output of docker import mongodb-baseimage.taris ``` sha256:examplesha256xxxxxxxxxxxxxxxxxxxxxxxxxxxx ```
-will output the sha256 as shown above, copy the value and replace in next command. 
+output of ```docker import mongodb-baseimage.tar``` will give ``` sha256:examplesha256xxxxxxxxxxxxxxxxxxxxxxxxxxxx ```
+Copy the value and replace in next command. 
 
 ```
 docker tag examplesha256xxxxxxxxxxxxxxxxxxxxxxxxxxxx psknowhow/mongodb-baseimage:latest
