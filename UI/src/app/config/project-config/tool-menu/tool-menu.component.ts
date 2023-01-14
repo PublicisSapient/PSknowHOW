@@ -283,10 +283,11 @@ export class ToolMenuComponent implements OnInit {
 
     const updatedDetails = {};
     updatedDetails['projectName'] = this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['Type'];
+    updatedDetails['kanban'] = this.selectedProject['Type'] === 'kanban' ? true : false ;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject['id'];
+    updatedDetails["createdAt"] = new Date().toISOString();
 
     hierarchyData.forEach(element => {
      updatedDetails['hierarchy'].push({

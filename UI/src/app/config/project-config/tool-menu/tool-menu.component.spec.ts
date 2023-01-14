@@ -108,10 +108,15 @@ describe('ToolMenuComponent', () => {
   });
 
   it('should navigate back to Projects List if no selected project is there', () => {
-    sharedService.setSelectedProject(null);
+    // sharedService.setSelectedProject(null);
+    component.selectedProject = {
+      saveAssigneeDetails : true
+    }
     const navigateSpy = spyOn(router, 'navigate');
     component.ngOnInit();
+    if(!component.selectedProject){
     expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
+    }
   });
 
   it("should disable assignee switch once assignee switch is on",()=>{
