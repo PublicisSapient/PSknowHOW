@@ -203,6 +203,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
+				basicConfig.setEnableAssigneeDetailToggle(savedConfig.isEnableAssigneeDetailToggle());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);

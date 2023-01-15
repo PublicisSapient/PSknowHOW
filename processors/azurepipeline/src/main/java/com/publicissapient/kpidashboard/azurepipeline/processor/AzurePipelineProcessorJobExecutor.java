@@ -206,10 +206,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 							deploymentJobs);
 					if (azurePipelineServer.getJobType().equalsIgnoreCase(BUILD)) {
 						count = buildJobs(processor, startTime, existingJobs, activeBuildJobs, count,
-								azurePipelineServer, lastStartTimeOfJobs);
+								azurePipelineServer, lastStartTimeOfJobs,proBasicConfig);
 					} else {
 						count = deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
-								lastStartTimeOfJobs);
+								lastStartTimeOfJobs,proBasicConfig);
 					}
 					log.info("Finished : {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
@@ -249,10 +249,11 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	}
 
 	private int deployJobs(AzurePipelineProcessor processor, long startTime, List<Deployment> deploymentJobs,
-			List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs) {
+			List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs,
+			ProjectBasicConfig proBasicConfig) {
 
 		Map<Deployment, Set<Deployment>> deploymentsByJob = azurePipelineClient.getDeploymentJobs(azurePipelineServer,
-				lastStartTimeOfJobs);
+				lastStartTimeOfJobs, proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 		activeDeployJobs.addAll(deploymentsByJob.keySet());
 		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
@@ -261,9 +262,9 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	private int buildJobs(AzurePipelineProcessor processor, long startTime, List<AzurePipelineJob> existingJobs,
 			List<AzurePipelineJob> activeBuildJobs, int count, ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+			long lastStartTimeOfJobs,ProjectBasicConfig proBasicConfig) {
 		Map<AzurePipelineJob, Set<Build>> buildsByJob = azurePipelineClient.getInstanceJobs(azurePipelineServer,
-				lastStartTimeOfJobs);
+				lastStartTimeOfJobs,proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 		activeBuildJobs.addAll(buildsByJob.keySet());
 		addNewJobs(buildsByJob.keySet(), existingJobs, processor);

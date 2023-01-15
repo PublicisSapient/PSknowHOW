@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
 
@@ -48,5 +49,6 @@ public interface TeamcityClient {
      * @param teamcityServer the teamcity server
      * @return a Build instance or null
      */
-    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer);
+    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+            ProjectBasicConfig proBasicConfig);
 }

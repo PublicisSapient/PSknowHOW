@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.jenkins.processor.adapter.impl;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
@@ -200,7 +201,8 @@ public class JenkinsDeployClient implements JenkinsClient {
 	}
 
 	@Override
-	public Map<JenkinsJob, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer) {
+	public Map<JenkinsJob, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer,
+			ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 

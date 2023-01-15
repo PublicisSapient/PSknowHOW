@@ -329,7 +329,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 											+ " and branch : " + entry.getBranch());
 
 							List<CommitDetails> commitDetailList = gitLabClient.fetchAllCommits(gitRepo, firstTimeRun,
-									entry);
+									entry,proBasicConfig);
 							List<CommitDetails> unsavedCommits = commitDetailList.stream()
 									.filter(commit -> isNewCommit(gitRepo, commit)).collect(Collectors.toList());
 							unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitRepo.getId()));
@@ -342,7 +342,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 										Long.toString(commitDetailList.get(0).getCommitTimestamp()));
 							}
 							List<MergeRequests> mergeRequestsList = gitLabClient.fetchAllMergeRequest(gitRepo,
-									firstTimeRun, entry);
+									firstTimeRun, entry, proBasicConfig);
 							List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 									.filter(mergReq -> isNewMergeReq(gitRepo, mergReq)).collect(Collectors.toList());
 							unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(gitRepo.getId()));

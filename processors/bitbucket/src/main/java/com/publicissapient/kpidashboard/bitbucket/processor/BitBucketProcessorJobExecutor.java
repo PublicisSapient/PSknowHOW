@@ -194,7 +194,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 							"Bitbucket Processor started collecting data for Url: " + tool.getUrl() + ", branch : "
 									+ tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					BitBucketClient bitBucketClient = bitBucketClientFactory.getBitbucketClient(tool.isCloudEnv());
-					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool);
+					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool,proBasicConfig);
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(bitRepo, commit)).collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(bitRepo.getId()));
@@ -205,7 +205,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 					}
 
 					List<MergeRequests> mergeRequestsList = bitBucketClient.fetchMergeRequests(bitRepo, firstTimeRun,
-							tool);
+							tool, proBasicConfig);
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(bitRepo, mergReq)).collect(Collectors.toList());
 					unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(bitRepo.getId()));

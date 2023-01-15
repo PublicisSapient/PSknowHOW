@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -76,7 +77,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -92,7 +93,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 				JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 				JSONArray jsonArray = (JSONArray) responseJson.get(BitBucketConstants.RESP_VALUES_KEY);
 				String nextPageIndex = getString(responseJson, BitBucketConstants.RESP_NEXTPAGE_START);
-				initializeCommitDetails(commits, jsonArray, bitBucketServerInfo);
+				initializeCommitDetails(commits, jsonArray, bitBucketServerInfo, proBasicConfig);
 				isLast = parseResp(jsonArray, firstRun, nextPageIndex, responseJson);
 				log.info(String.format("Retrieving page : {%s}", nextPageIndex));
 				if (nextPageIndex != null && !"null".equals(nextPageIndex)) {
@@ -125,7 +126,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 	}
 
 	private void initializeCommitDetails(List<CommitDetails> commits, JSONArray jsonArray,
-			ProcessorToolConnection bitbucketServerInfo) {
+			ProcessorToolConnection bitbucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			JSONObject commitObject = (JSONObject) jsonObj;
 			String scmRevisionNumber = getString(commitObject, BitBucketConstants.RESP_ID_KEY);
@@ -140,20 +141,22 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 					parentList.add(getString((JSONObject) parentObj, BitBucketConstants.RESP_ID_KEY));
 				}
 			}
-			commitDetails(commits, scmRevisionNumber, message, author, timestamp, parentList, bitbucketServerInfo);
+			commitDetails(commits, scmRevisionNumber, message, author, timestamp, parentList, bitbucketServerInfo, proBasicConfig);
 
 		}
 	}
 
 	private void commitDetails(List<CommitDetails> commits, String scmRevisionNumber, String message, String author,
-			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo) {
+			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitBucketCommit = new CommitDetails();
 		bitBucketCommit.setBranch(bitbucketServerInfo.getBranch());
 		bitBucketCommit.setUrl(bitbucketServerInfo.getUrl());
 		bitBucketCommit.setRepoSlug(bitbucketServerInfo.getRepoSlug());
 		bitBucketCommit.setTimestamp(System.currentTimeMillis());
 		bitBucketCommit.setRevisionNumber(scmRevisionNumber);
-		bitBucketCommit.setAuthor(author);
+		if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+			bitBucketCommit.setAuthor(author);
+		}
 		bitBucketCommit.setCommitLog(message);
 		bitBucketCommit.setParentRevisionNumbers(parentList);
 		bitBucketCommit.setCommitTimestamp(timestamp);
@@ -163,7 +166,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -180,7 +183,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 				if (!isLastPage){
 					start = (long) responseJson.get(BitBucketConstants.RESP_NEXTPAGE_START);
 				}
-				initializeMergeRequests(mergeRequests, jsonArray);
+				initializeMergeRequests(mergeRequests, jsonArray, proBasicConfig);
 			}
 			repo.setUpdatedTime(System.currentTimeMillis());
 		} catch (URISyntaxException | RestClientException | ParseException | UnsupportedEncodingException ex) {
@@ -198,7 +201,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 	 * @param mergeRequests
 	 * @param jsonArray
 	 */
-	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray) {
+	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -242,7 +245,9 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			mergeReq.setAuthor(author);
+			if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
 			mergeRequests.add(mergeReq);

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
@@ -58,7 +59,8 @@ public interface BambooClient {
 	Build getBuildDetailsFromServer(String buildUrl, String instanceUrl, ProcessorToolConnection bambooServer);
 
 
-	Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer) throws ParseException, MalformedURLException;
+	Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig projectBasicConfig) throws ParseException, MalformedURLException;
 
 	/**
 	 * Joins a base url to another path or paths - this will handle trailing or //

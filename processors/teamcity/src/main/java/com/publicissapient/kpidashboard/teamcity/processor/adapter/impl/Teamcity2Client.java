@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -355,7 +356,8 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides Build Details.
 	 */
 	@Override
-	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer) {
+	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 
 		return null;
 	}

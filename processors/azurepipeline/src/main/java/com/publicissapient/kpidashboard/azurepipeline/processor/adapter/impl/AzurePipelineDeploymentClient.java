@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
@@ -76,7 +77,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfDeployment) {
+			long lastStartTimeOfDeployment, ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getInstanceJobs");
 		Map<Deployment, Set<Deployment>> result = new LinkedHashMap<>();
 
@@ -95,7 +96,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody());
+			processResponse(azurePipelineServer, result, responseEntity.getBody(), proBasicConfig);
 
 		} catch (RestClientException exception) {
 			log.error("client exception loading jobs details", exception);
@@ -105,7 +106,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<Deployment, Set<Deployment>> result,
-			String body) {
+			String body,ProjectBasicConfig projectBasicConfig) {
 
 		try {
 			JSONParser parser = new JSONParser();
@@ -126,7 +127,9 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 				deploymentJob.setProjectToolConfigId(azurePipelineServer.getId());
 				deploymentJob.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				deploymentJob.setCreatedAt(String.valueOf(System.currentTimeMillis()));
+				if(projectBasicConfig.isEnableAssigneeDetailToggle()){
 				deploymentJob.setDeployedBy(AzurePipelineUtils.getString(jsonDeployedBy, "displayName"));
+				}
 				deploymentJob.setDeploymentStatus(getDeploymentStatus(jsonDeploy));
 				deploymentJob.setNumber(String.valueOf(jsonDeploy.get("id")));
 				deploymentJob.setJobId(azurePipelineServer.getJobName());
@@ -173,7 +176,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 
 	@Override
 	public Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+			long lastStartTimeOfJobs,ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 

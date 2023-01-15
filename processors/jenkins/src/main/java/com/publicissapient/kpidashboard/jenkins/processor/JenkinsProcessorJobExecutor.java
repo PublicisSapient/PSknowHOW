@@ -180,10 +180,10 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count);
+						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count,proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
-						processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
+						processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog,proBasicConfig);
 					}
 				} catch (RestClientException exception) {
 					executionStatus = false;
@@ -208,8 +208,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	private void processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
-			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count) {
-		Map<JenkinsJob, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer);
+			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count,ProjectBasicConfig proBasicConfig) {
+		Map<JenkinsJob, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer,proBasicConfig);
 		if (MapUtils.isNotEmpty(buildsByJob)) {
 			JenkinsJob jobFromConfig = buildsByJob.keySet().iterator().next();
 			JenkinsJob savedJob = addJenkinsJobItem(jobFromConfig, processor, jenkinsServer);
@@ -225,7 +225,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	private void processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
-			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog) {
+			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig) {
 		Map<String, Set<Deployment>> deploymentsByJob = jenkinsClient.getDeployJobsFromServer(jenkinsServer, processor);
 		List<Deployment> existingDeployments = deploymentRepository
 				.findByProjectToolConfigIdAndJobName(jenkinsServer.getId(), jenkinsServer.getJobName());

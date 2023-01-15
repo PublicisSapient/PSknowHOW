@@ -216,7 +216,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					boolean firstTimeRun = (gitHubProcessorItem.getLastUpdatedCommit() == null);
 
 					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
-							firstTimeRun, tool);
+							firstTimeRun, tool, proBasicConfig);
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(gitHubProcessorItem, commit)).collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitHubProcessorItem.getId()));
@@ -227,7 +227,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					}
 
 					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
-							firstTimeRun, tool);
+							firstTimeRun, tool,proBasicConfig);
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(gitHubProcessorItem, mergReq))
 							.collect(Collectors.toList());

@@ -46,6 +46,8 @@ public class ProjectBasicConfigDTO {
 	private String updatedAt;
 
 	private String consumerCreatedOn;
+
+	private boolean enableAssigneeDetailToggle;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
 

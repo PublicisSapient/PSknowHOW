@@ -304,8 +304,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				if (CollectionUtils.isNotEmpty(azureRepoInfo)) {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
-					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount);
-					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount);
+					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount,proBasicConfig);
+					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount,proBasicConfig);
 					MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -346,13 +346,12 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * 
 	 * @param azurerepoRepos  azurerepoRepos
 	 * @param azureRepoInfo   azureRepoInfo
-	 * @param commitsCount    commitsCount
 	 * @param reposCount      reposCount
-	 * @param executionStatus
+	 * @param projectBasicConfig
 	 * @return executionStatus
 	 */
 	private int processRepoData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount) {
+			int reposCount,ProjectBasicConfig projectBasicConfig) {
 		int commitsCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
@@ -364,7 +363,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 										+ " and branch : " + entry.getBranch());
 
 						List<CommitDetails> commitDetailList = azureRepoClient.fetchAllCommits(azureRepo, firstTimeRun,
-								entry);
+								entry, projectBasicConfig);
 						List<CommitDetails> unsavedCommits = commitDetailList.stream()
 								.filter(commit -> isNewCommit(azureRepo, commit)).collect(Collectors.toList());
 						unsavedCommits.forEach(commit -> commit.setProcessorItemId(azureRepo.getId()));
@@ -393,7 +392,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 	
 	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount) {
+			int reposCount,ProjectBasicConfig proBasicConfig) {
 		
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
@@ -406,7 +405,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 										+ " and branch : " + entry.getBranch());
 
 						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo, firstTimeRun,
-								entry);
+								entry, proBasicConfig);
 						List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 								.filter(mergReq ->  isNewMergeReq(azureRepo, mergReq)).collect(Collectors.toList());
 						unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(azureRepo.getId()));
