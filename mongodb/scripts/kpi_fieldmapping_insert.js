@@ -363,7 +363,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Closure Possible Today',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForQa'], 'Custom Fields Mapping' : ['workingHoursDayCPT'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForQa'], 'Custom Fields Mapping' : ['workingHoursDayCPT'] , 'Workflow Status Mapping' : ['jiraStatusForQa']}
       },
       {
         kpiId: 'kpi120',
