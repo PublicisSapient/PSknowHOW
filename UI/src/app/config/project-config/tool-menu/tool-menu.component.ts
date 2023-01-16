@@ -266,10 +266,6 @@ export class ToolMenuComponent implements OnInit {
       message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
       header: 'Enable Individual KPIs',
       key: 'confirmToEnableDialog',
-      acceptLabel : 'Enable',
-      rejectLabel : 'Cancel',
-      acceptIcon : 'false',
-      rejectIcon : 'false',
       accept: () => {
       this.updateProjectDetails();
       },

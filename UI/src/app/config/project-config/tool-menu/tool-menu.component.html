@@ -48,7 +48,7 @@
                         </p-inputSwitch>
                         <label for="assigneeSwitch" class="p-mr-5">
                             &nbsp;&nbsp;Individual KPIs
-                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" (mouseover)="showTooltip(true)"
+                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
                                 pTooltip="{{assigneeSwitchInfo}}" tooltipPosition="bottom"></span>
                         </label>
                     </div>
@@ -113,5 +113,9 @@
 
 </div>
 
-<p-confirmDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
+<p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
+    </p-footer>
 </p-confirmDialog>
