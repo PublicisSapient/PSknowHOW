@@ -38,6 +38,7 @@ export class ToolMenuComponent implements OnInit {
   selectedTools: Array<any> = [];
   isAssigneeSwitchChecked : boolean = false;
   isAssigneeSwitchDisabled : boolean = false;
+  assigneeSwitchInfo = "(*Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project)";
   constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService,) {
 
   }
@@ -262,10 +263,13 @@ export class ToolMenuComponent implements OnInit {
       this.isAssigneeSwitchDisabled = true;
     }
     this.confirmationService.confirm({
-      message: `On Enable of Assignee Switch It started saving assignee data.Once Enable can't disable.are you sure you want to enable it? `,
-      header: 'Enable Assignee Details switch',
-      icon: 'pi pi-info-circle',
-      key: 'confirmToDeleteDialog',
+      message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
+      header: 'Enable Individual KPIs',
+      key: 'confirmToEnableDialog',
+      acceptLabel : 'Enable',
+      rejectLabel : 'Cancel',
+      acceptIcon : 'false',
+      rejectIcon : 'false',
       accept: () => {
       this.updateProjectDetails();
       },

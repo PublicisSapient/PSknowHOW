@@ -47,7 +47,7 @@ export class BasicConfigComponent implements OnInit {
   getFieldsResponse: any;
   public form: UntypedFormGroup = this.formBuilder.group({});
   blocked = true;
-  assigneeSwitchInfo = "On Enable of Assignee Switch It started saving assignee data and can't be change later.";
+  assigneeSwitchInfo = "(*Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project)";
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private aesEncryption: TextEncryptionService) {
     this.projectTypeOptions = [
@@ -93,7 +93,8 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'assigneeDetails',
-        hierarchyLevelName: 'Save Assignee Details',
+        label1:'Enable Individual KPIs',
+        label2: this.assigneeSwitchInfo,
         inputType: 'boolean',
         value: false,
         required: false
@@ -149,6 +150,7 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['id'] = response.serviceResponse.data['id'];
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
+        this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['assigneeDetails'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });

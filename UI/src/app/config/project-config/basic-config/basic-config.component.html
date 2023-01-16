@@ -70,15 +70,18 @@
                         </div>
                         <div *ngSwitchCase="'boolean'" class="p-mb-3">
                             <ng-container>
-                                <label for="{{field.hierarchyLevelId}}">
-                                    {{
-                                    field.hierarchyLevelName
-                                    }}
-                                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" (mouseover)="showTooltip(true)" pTooltip="{{assigneeSwitchInfo}}" tooltipPosition="bottom"></span>
-                                    :&nbsp;&nbsp;</label>
                                 <p-inputSwitch name="{{field.hierarchyLevelId}}" id="{{field.hierarchyLevelId}}"
-                                [formControlName]="field.hierarchyLevelId">
+                                    [formControlName]="field.hierarchyLevelId">
                                 </p-inputSwitch>
+                                <label for="{{field.hierarchyLevelId}}">
+                                    {{field.label1}}
+                                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" (mouseover)="showTooltip(true)"
+                                        pTooltip="{{assigneeSwitchInfo}}" tooltipPosition="bottom"></span>
+                                    </label>
+                                    <br>
+                                <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #202020;">
+                                    {{field.label2}}
+                                </span>
                             </ng-container>
                         </div>
                         <div *ngSwitchDefault>
