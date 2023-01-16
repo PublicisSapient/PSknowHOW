@@ -61,8 +61,6 @@ public class JiraToolConfigServiceImplTest {
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 	@Mock
 	private ProjectToolConfigRepository projectToolConfigRepository;
-	@Mock
-	private ProjectAssigneeRepository projectAssigneeRepository;
 	@InjectMocks
 	private JiraToolConfigServiceImpl jiraToolConfigService;
 
@@ -176,8 +174,6 @@ public class JiraToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
 				.thenReturn(projectToolConfigs);
-		when(projectAssigneeRepository.findByBasicProjectConfigId(new ObjectId(basicConfigId)))
-				.thenReturn(projectAssignee);
 		HttpHeaders header = new HttpHeaders();
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);

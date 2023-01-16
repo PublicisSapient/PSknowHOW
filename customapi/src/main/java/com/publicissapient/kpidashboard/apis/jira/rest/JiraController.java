@@ -160,13 +160,7 @@ public class JiraController {
 	public ServiceResponse getJiraAssigneesList(@PathVariable("id") String projectConfigId) {
 		ServiceResponse response;
 		ProjectAssigneeDTO projectAssigneeDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
-
-		if (null == projectAssigneeDTO) {
-			response = new ServiceResponse(false, "Not found any assignee details with provided connection details",
-					null);
-		} else {
-			response = new ServiceResponse(true, "Successfully fetched assignee list", projectAssigneeDTO);
-		}
+		response = new ServiceResponse(true, "Successfully fetched assignee list", projectAssigneeDTO);
 		return response;
 	}
 }

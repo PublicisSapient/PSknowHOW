@@ -143,26 +143,26 @@ public class JiraToolConfigServiceImpl {
 		}
 		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
 		return new HttpEntity<>(headers);
+
 	}
 
 	public ProjectAssigneeDTO getProjectAssigneeDetails(String projectConfigId) {
-		ProjectAssigneeDTO projectAssigneeDTO=new ProjectAssigneeDTO();
-		List<AssigneeRoles> assigneeDetailsResponseList=new ArrayList<>();
-		Optional<ProjectBasicConfig>  basicConfig  = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
-		if(basicConfig.isPresent()) {
+		ProjectAssigneeDTO projectAssigneeDTO = new ProjectAssigneeDTO();
+		List<AssigneeRoles> assigneeDetailsResponseList = new ArrayList<>();
+		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
+		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
 			List<ProjectToolConfig> projectToolConfigs = projectToolConfigRepository
 					.findByToolNameAndBasicProjectConfigId("Jira", new ObjectId(projectConfigId));
-
 			projectToolConfigs.stream().forEach(projectToolConfig -> {
-
 				Optional<Connection> optConnection = connectionRepository.findById(projectToolConfig.getConnectionId());
 				if (optConnection.isPresent()) {
 					Connection connection = optConnection.get();
 					String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 					String endPoint = connection.getApiEndPoint() == null ? null : connection.getApiEndPoint().trim();
-					String projectKey = projectToolConfig.getProjectKey().trim();
-					getApiCreationAndCall(projectConfigId, assigneeDetailsResponseList, projectToolConfig, connection, baseUrl, endPoint, projectKey);
+					String url = createApiUrl(baseUrl, endPoint);
+					getApiCreationAndCall( assigneeDetailsResponseList, projectToolConfig, connection,
+							url);
 				}
 			});
 
@@ -173,57 +173,36 @@ public class JiraToolConfigServiceImpl {
 		return projectAssigneeDTO;
 	}
 
-	private void getApiCreationAndCall(String projectConfigId, List<AssigneeRoles> assigneeDetailsResponseList, ProjectToolConfig projectToolConfig, Connection connection, String baseUrl, String endPoint, String projectKey) {
-		String url = createApiUrl(baseUrl, endPoint);
+	private void getApiCreationAndCall(List<AssigneeRoles> assigneeDetailsResponseList,
+			ProjectToolConfig projectToolConfig, Connection connection, String url) {
 		if (StringUtils.isNotEmpty(url)) {
-			url = url + RESOURCE_JIRA_ASSINGEE_ENDPOINT + projectKey;
+			url = url + RESOURCE_JIRA_ASSINGEE_ENDPOINT + projectToolConfig.getProjectKey().trim();
 			HttpEntity<?> httpEntity = getHttpEntity(connection);
-			List<AssigneeRoles> assigneeRolesList = fetchAssigneeDetailsRestAPICall(projectToolConfig,
-					httpEntity, url);
-			getAssigneeRoleCheck(projectConfigId, assigneeRolesList);
-			assigneeDetailsResponseList.addAll(assigneeRolesList);
+			List<AssigneeRoles> assigneeDetailsResponse = fetchAssigneeDetailsRestAPICall(projectToolConfig, httpEntity,
+					url);
+			assigneeDetailsResponseList.addAll(assigneeDetailsResponse);
 
 		}
 	}
-
-	private List<AssigneeRoles> getAssigneeRoleCheck(String projectConfigId, List<AssigneeRoles> assigneeRolesList) {
-
-		ProjectAssignee projectAssignee = projectAssigneeRepository
-				.findByBasicProjectConfigId(new ObjectId(projectConfigId));
-		if (null != projectAssignee) {
-			List<AssigneeRoles> existingRoles = projectAssignee.getAssigneeRoles();
-			for (AssigneeRoles roles : existingRoles) {
-				for (AssigneeRoles assigneeRoles : assigneeRolesList) {
-					if (roles.getName().equals(assigneeRoles.getName())
-							&& roles.getDisplayName().equals(assigneeRoles.getDisplayName())) {
-						assigneeRoles.setRole(roles.getRole());
-					}
-				}
-			}
-		}
-		return assigneeRolesList;
-	}
-
 	public List<AssigneeRoles> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
 			String url) {
 
-
 		List<AssigneeRoles> assigneeRoles = new ArrayList<>();
 
-			try {
-				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-				if (response.getStatusCode() == HttpStatus.OK) {
-					log.info(response.getBody());
-					assigneeRoles = convertListFromArray(response, assigneeRoles);
-				} else {
-					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
-				}
-
-			} catch (Exception exception) {
-				log.error("Error while fetching assignees for projectKey Id {}:  {}", toolConfig.getProjectKey(),
-						exception.getMessage());
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+			if (response.getStatusCode() == HttpStatus.OK) {
+				log.info(response.getBody());
+				assigneeRoles = convertListFromArray(response, assigneeRoles);
+			} else {
+				String statusCode = response.getStatusCode().toString();
+				log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
 			}
+
+		} catch (Exception exception) {
+			log.error("Error while fetching assignees for projectKey Id {}:  {}", toolConfig.getProjectKey(),
+					exception.getMessage());
+		}
 
 		return assigneeRoles;
 	}
