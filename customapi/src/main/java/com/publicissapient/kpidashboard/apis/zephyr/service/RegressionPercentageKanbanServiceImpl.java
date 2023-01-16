@@ -25,12 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -52,21 +50,8 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @Qualifier("RegressionPercentageKanban")
@@ -188,7 +173,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 				List<DataCount> dc = new ArrayList<>();
 
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
-					Map<String, Integer> hoverMap = new LinkedHashMap<>();
+					Map<String, Object> hoverMap = new LinkedHashMap<>();
 					// fetch date range based on period for which request came
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
@@ -227,7 +212,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	}
 
 	private DataCount getDataCountObject(double automation, String projectName, String date, String projectNodeId,
-			Map<String, Integer> hoverMap) {
+			Map<String, Object> hoverMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(automation));
 		dataCount.setSProjectName(projectName);
@@ -328,7 +313,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	 * @param total
 	 * @param hoverMap
 	 */
-	private void setHoverMap(List automated, List<TestCaseDetails> total, Map<String, Integer> hoverMap, String key1,
+	private void setHoverMap(List automated, List<TestCaseDetails> total, Map<String, Object> hoverMap, String key1,
 			String key2) {
 		if (CollectionUtils.isNotEmpty(automated)) {
 			hoverMap.put(key1, automated.size());

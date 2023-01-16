@@ -354,7 +354,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		Map<String, Integer> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new HashMap<>();
 		howerMap.put(OPENED_TICKET, value.intValue());
 		howerMap.put(CLOSED_TICKET, lineValue.intValue());
 		dataCount.setHoverValue(howerMap);

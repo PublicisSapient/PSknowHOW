@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +50,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DIR and trend analysis of the DIR.
@@ -174,7 +174,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Double> sprintWiseDIRMap = new HashMap<>();
 
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseDefectListMap = new HashMap<>();
 
@@ -258,9 +258,9 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param sprintWiseDefectList
 	 *            defects linked to story
 	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(sprintWiseDefectList)) {
 			howerMap.put(DEFECT, sprintWiseDefectList.size());
 		} else {
