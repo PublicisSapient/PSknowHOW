@@ -1,4 +1,6 @@
-FROM mongo:4.4.1-bionic
+FROM psknowhow/mongo-base:4.4.1-bionic
+
+# If psknowhow/mongo-base:4.4.1-bionic image is not downloadable follow README.md to geneteate new
 
 LABEL version "VERSION"
 LABEL description "Docker image of dashboard mongo database"
