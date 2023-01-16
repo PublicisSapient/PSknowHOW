@@ -52,16 +52,7 @@ pipeline {
                       }else{
                         env.customapistatus = false
                         echo "There are some commits in Customapi folder for last 24 hrs"
-                      }
-
-                def mongodbfoldercommits = sh (script: 'git log --since="24 hours ago" -- mongodb', returnStdout: true)
-                      if (mongodbfoldercommits.isEmpty()) {
-                        env.mongodbstatus = true
-                      echo "There are no commits in mongodb folder for last 24 hrs "
-                      }else{
-                        env.mongodbstatus = false
-                        echo "There are some commits in mongodb folder for last 24 hrs"
-                      }      
+                      }   
 
                 def processorfoldercommits = sh (script: 'git log --since="24 hours ago" -- processors', returnStdout: true)
                       if (processorfoldercommits.isEmpty()) {
