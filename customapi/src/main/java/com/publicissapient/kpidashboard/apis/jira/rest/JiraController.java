@@ -46,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceI
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
@@ -159,7 +159,7 @@ public class JiraController {
 	@GetMapping(value = "/jira/assignees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ServiceResponse getJiraAssigneesList(@PathVariable("id") String projectConfigId) {
 		ServiceResponse response;
-		ProjectAssigneeDTO projectAssigneeDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
+		AssigneeResponseDTO projectAssigneeDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
 		response = new ServiceResponse(true, "Successfully fetched assignee list", projectAssigneeDTO);
 		return response;
 	}

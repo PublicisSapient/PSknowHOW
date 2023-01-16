@@ -23,11 +23,10 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -146,9 +145,9 @@ public class JiraToolConfigServiceImpl {
 
 	}
 
-	public ProjectAssigneeDTO getProjectAssigneeDetails(String projectConfigId) {
-		ProjectAssigneeDTO projectAssigneeDTO = new ProjectAssigneeDTO();
-		List<AssigneeRoles> assigneeDetailsResponseList = new ArrayList<>();
+	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
+		AssigneeResponseDTO projectAssigneeDTO = new AssigneeResponseDTO();
+		List<AssigneeDetails> assigneeDetailsResponseList = new ArrayList<>();
 		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
 		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
@@ -161,33 +160,33 @@ public class JiraToolConfigServiceImpl {
 					String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 					String endPoint = connection.getApiEndPoint() == null ? null : connection.getApiEndPoint().trim();
 					String url = createApiUrl(baseUrl, endPoint);
-					getApiCreationAndCall( assigneeDetailsResponseList, projectToolConfig, connection,
-							url);
+					getApiCreationAndCall(assigneeDetailsResponseList, projectToolConfig, connection, url);
 				}
 			});
 
 			projectAssigneeDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
-			projectAssigneeDTO.setAssigneeRoles(assigneeDetailsResponseList);
+			projectAssigneeDTO.setAssigneeDetailsList(assigneeDetailsResponseList);
 			projectAssigneeDTO.setProjectName(projectBasicConfig.getProjectName());
 		}
 		return projectAssigneeDTO;
 	}
 
-	private void getApiCreationAndCall(List<AssigneeRoles> assigneeDetailsResponseList,
+	private void getApiCreationAndCall(List<AssigneeDetails> assigneeDetailsResponseList,
 			ProjectToolConfig projectToolConfig, Connection connection, String url) {
 		if (StringUtils.isNotEmpty(url)) {
 			url = url + RESOURCE_JIRA_ASSINGEE_ENDPOINT + projectToolConfig.getProjectKey().trim();
 			HttpEntity<?> httpEntity = getHttpEntity(connection);
-			List<AssigneeRoles> assigneeDetailsResponse = fetchAssigneeDetailsRestAPICall(projectToolConfig, httpEntity,
-					url);
+			List<AssigneeDetails> assigneeDetailsResponse = fetchAssigneeDetailsRestAPICall(projectToolConfig,
+					httpEntity, url);
 			assigneeDetailsResponseList.addAll(assigneeDetailsResponse);
 
 		}
 	}
-	public List<AssigneeRoles> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
+
+	public List<AssigneeDetails> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
 			String url) {
 
-		List<AssigneeRoles> assigneeRoles = new ArrayList<>();
+		List<AssigneeDetails> assigneeRoles = new ArrayList<>();
 
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
@@ -207,14 +206,14 @@ public class JiraToolConfigServiceImpl {
 		return assigneeRoles;
 	}
 
-	public List<AssigneeRoles> convertListFromArray(ResponseEntity<String> response, List<AssigneeRoles> list) {
+	public List<AssigneeDetails> convertListFromArray(ResponseEntity<String> response, List<AssigneeDetails> list) {
 		JSONParser jsonParser = new JSONParser();
 		JSONArray jsonArray = null;
 		try {
 			jsonArray = (JSONArray) jsonParser.parse(response.getBody());
 
 			for (Object obj : jsonArray) {
-				AssigneeRoles assigneeRole = new AssigneeRoles();
+				AssigneeDetails assigneeRole = new AssigneeDetails();
 				JSONObject jsonObject = (JSONObject) obj;
 				if (jsonObject != null) {
 					assigneeRole.setName(jsonObject.get("name").toString());

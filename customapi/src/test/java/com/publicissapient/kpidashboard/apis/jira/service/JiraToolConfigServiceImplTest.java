@@ -29,15 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 
 /**
  *
@@ -192,7 +188,7 @@ public class JiraToolConfigServiceImplTest {
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraAssigneeListResponse.json"), HttpStatus.OK))
 				.when(restTemplate)
 				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		List<AssigneeRoles> testRoles = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
+		List<AssigneeDetails> testRoles = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
 				RESOURCE_JIRA_BOARD_ENDPOINT);
 		assertEquals(testRoles.size(), assigneeRoles.size());
 	}
@@ -203,7 +199,7 @@ public class JiraToolConfigServiceImplTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate)
 				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		List<AssigneeRoles> assignee = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
+		List<AssigneeDetails> assignee = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
 				RESOURCE_JIRA_BOARD_ENDPOINT);
 		assertEquals(0, assignee.size());
 	}
