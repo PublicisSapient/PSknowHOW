@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,8 +49,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -306,14 +306,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 * @param key
 	 * @return
 	 */
-	private Map<String, Integer> generateHowerMap(Map<String, Double> commitmentHowerMap, String key) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+	private Map<String, Object> generateHowerMap(Map<String, Double> commitmentHowerMap, String key) {
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (ISSUE_COUNT.equalsIgnoreCase(key)) {
-			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d).intValue());
-			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d).intValue());
+			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
+			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
 		} else {
-			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d).intValue());
-			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_STORY_POINTS, 0.0d).intValue());
+			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d));
+			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_STORY_POINTS, 0.0d));
 
 		}
 		return howerMap;

@@ -52,7 +52,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -311,8 +310,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		return Math.round((100.0 * executed) / total);
 	}
 
-	private Map<String, Integer> getHoverValue(int total, int executed, int passed) {
-		Map<String, Integer> hoverData = new HashMap<>();
+	private Map<String, Object> getHoverValue(int total, int executed, int passed) {
+		Map<String, Object> hoverData = new HashMap<>();
 		hoverData.put(TOTAL, total);
 		hoverData.put(EXECUTED, executed);
 		hoverData.put(PASSED, passed);

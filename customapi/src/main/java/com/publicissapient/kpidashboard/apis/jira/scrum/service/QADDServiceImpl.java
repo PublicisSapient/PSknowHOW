@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -54,8 +56,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the QA Defect Density KPI and trend analysis of the
@@ -163,7 +163,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 		Map<Pair<String, String>, Double> sprintWiseQADDMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 
 		Map<Pair<String, String>,List<String>> sprintWiseStoryMAP= new HashMap<>();
 		Map<Pair<String, String>,Set<JiraIssue>> sprintWiseDefectListMap=new HashMap<>();
@@ -231,21 +231,22 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 * @param sprintWiseDefectList
 	 *            the sprint wise defect list
 	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<JiraIssue> storyList, Set<JiraIssue> sprintWiseDefectList) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		double storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();
 		if (CollectionUtils.isNotEmpty(sprintWiseDefectList)) {
 			howerMap.put(DEFECT, sprintWiseDefectList.size());
 		} else {
 			howerMap.put(DEFECT, 0);
 		}
-		howerMap.put(STORY_POINTS_DATA, (int) storyPointsTotal);
+		howerMap.put(STORY_POINTS_DATA, storyPointsTotal);
 		sprintWiseHowerMap.put(sprint, howerMap);
 	}
 
 	/**
 	 * Process hower map and sets sprintwise KPI value map.
+	 * 
 	 * @param sprintWiseMap
 	 * @param storyDefectDataListMap
 	 * @param sprintWiseQADDMap
@@ -256,9 +257,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 */
 	private void processHowerMap(Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap, // NOPMD//NOSONAR
 			Map<String, Object> storyDefectDataListMap, Map<Pair<String, String>, Double> sprintWiseQADDMap, // NOSONAR
-			Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap, List<JiraIssue> storyFilteredList,Map<Pair<String, String>,List<String>> sprintWiseStoryMAP,
-								 Map<Pair<String, String>,Set<JiraIssue>> sprintWiseDefectListMap
-	) {// NOSONAR
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, List<JiraIssue> storyFilteredList,
+			Map<Pair<String, String>, List<String>> sprintWiseStoryMAP,
+			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap) {// NOSONAR
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			Set<JiraIssue> sprintWiseDefectList = new HashSet<>();
 			List<Double> qaddList = new ArrayList<>();
@@ -273,8 +274,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 			double sprintWiseQADD = calculateKpiValue(qaddList, KPICode.DEFECT_DENSITY.getKpiId());
 			sprintWiseQADDMap.put(sprint, sprintWiseQADD);
-			sprintWiseStoryMAP.put(sprint,totalStoryIdList);
-			sprintWiseDefectListMap.put(sprint,sprintWiseDefectList);
+			sprintWiseStoryMAP.put(sprint, totalStoryIdList);
+			sprintWiseDefectListMap.put(sprint, sprintWiseDefectList);
 
 			setHowerMap(sprintWiseHowerMap, sprint, storyList, sprintWiseDefectList);
 		});

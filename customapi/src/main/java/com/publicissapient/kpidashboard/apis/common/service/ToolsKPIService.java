@@ -238,7 +238,7 @@ public abstract class ToolsKPIService<R, S> {
 				// if 2nd chart is line on same chart
 				List<R> lineValues = new ArrayList<>();
 				List<R> aggregatedMapValues = new ArrayList<>();
-				Map<String, Integer> hoverValue = new HashMap<>();
+				Map<String, Object> hoverValue = new HashMap<>();
 				for (DataCount dc : indexWiseValuesList.get(i)) {
 					if (CollectionUtils.isNotEmpty(dc.getSprintIds())) {
 						sprintIds.addAll(dc.getSprintIds());
@@ -263,13 +263,27 @@ public abstract class ToolsKPIService<R, S> {
 		return aggregatedDataCount;
 	}
 
-	private void collectHoverData(Map<String, Integer> hoverValue, DataCount dc) {
+	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc) {
 		if (MapUtils.isNotEmpty(dc.getHoverValue())) {
-			Map<String, Integer> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
+			Map<String, Object> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
 			if (MapUtils.isNotEmpty(hoverValuee)) {
 				hoverValuee.forEach((key, value) -> {
-					hoverValue.computeIfPresent(key, (k, v) -> v + value);
-					hoverValue.putIfAbsent(key, value);
+					if(value instanceof Integer){
+						hoverValue.computeIfPresent(key, (k, v) -> (Integer)v + (Integer) value);
+						hoverValue.putIfAbsent(key, value);
+					}
+					else if(value instanceof Double){
+						hoverValue.computeIfPresent(key, (k, v) -> (Double)v + (Double) value);
+						hoverValue.putIfAbsent(key, value);
+					}
+					else if(value instanceof Long){
+						hoverValue.computeIfPresent(key, (k, v) -> (Long)v + (Long) value);
+						hoverValue.putIfAbsent(key, value);
+					}
+					else {
+						hoverValue.putIfAbsent(key, value);
+					}
+
 				});
 			}
 		}
@@ -726,13 +740,15 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return result
 	 */
-	public Map<String, Integer> calculateKpiValueForIntMap(List<Map<String, Integer>> values, String kpiId) {
+	public Map<String, Object> calculateKpiValueForIntMap(List<Map<String, Object>> values, String kpiId) {
 		String aggregationCriteria = configHelperService.calculateCriteria().get(kpiId);
-		Map<String, Integer> resultMap = new HashMap<>();
-		Map<String, List<Integer>> aggMap = values.stream().flatMap(m -> m.entrySet().stream()).collect(
+		Map<String, Object> resultMap = new HashMap<>();
+		Map<String, List<Object>> aggMap = values.stream().flatMap(m -> m.entrySet().stream()).collect(
 				Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
 
-		aggMap.forEach((key, value) -> {
+		aggMap.forEach((key, objectList) -> {
+			List<Integer> value = objectList.stream().map(Integer.class::cast).collect(Collectors.toList());
+			;
 			if (Constant.PERCENTILE.equalsIgnoreCase(aggregationCriteria)) {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesInteger(value, 90.0D));
@@ -750,7 +766,7 @@ public abstract class ToolsKPIService<R, S> {
 		});
 
 		resultMap.remove(Constant.DEFAULT);
-		return resultMap.entrySet().stream().sorted((i1, i2) -> i2.getValue().compareTo(i1.getValue()))
+		return resultMap.entrySet().stream().sorted((i1, i2) -> ((Integer)i2.getValue()).compareTo((Integer) i1.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 

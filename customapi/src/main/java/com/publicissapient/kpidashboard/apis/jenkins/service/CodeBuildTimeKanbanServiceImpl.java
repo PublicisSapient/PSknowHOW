@@ -456,7 +456,6 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
                 values.add(value);
             }
             Long aggregatedValue = calculateKpiValue(values, kpiId);
-            Map<String, Integer> hoverMap = new HashMap<>();
             dataCount.setProjectNames(new ArrayList<>(projectNames));
             dataCount.setSSprintID(date);
             dataCount.setSSprintName(date);
@@ -466,7 +465,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
             dataCount.setValue(aggregatedValue);
             dataCount.setData(aggregatedValue.toString());
             dataCount.setDate(date);
-            dataCount.setHoverValue(hoverMap);
+            dataCount.setHoverValue(new HashMap<>());
             aggregatedDataCount.add(dataCount);
         });
         return aggregatedDataCount;
