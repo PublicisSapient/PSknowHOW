@@ -405,7 +405,7 @@ export class FieldMappingComponent implements OnInit {
       jiraDor: [''],
       jiraDefectRejectionStatus: [''],
       issueStatusExcluMissingWork: [],
-      issueOnHoldStatusExcluClosurePossible: [],
+      jiraOnHoldStatus: [],
       jiraDod: [[]],
       jiraIssueDeliverdStatus: [[]],
       jiraDefectRemovalStatus: [[]],
