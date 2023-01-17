@@ -1,8 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.*;
-import java.util.stream.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,16 +19,12 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +35,11 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByRCAServiceImpl.class);
 
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "filter1";
 	public static final String UNCHECKED = "unchecked";
-	private static final String SPRINT_WISE_STORY_DATA = "storyData";
 	private static final String COMPLETED_ISSUES = "completedIssues";
-	private static final String RCA_NAME = "RCAName";
-	private static final String ISSUE_TYPE = "Defect";
-	private static final String MODAL_VALUES = "modalValues";
-	private static final String RCA_VALUE = "value";
-
 	private static final String RCA_SIZE = "RCACount";
 	private static final String OVERALL = "Overall";
-	private static final String SP = "SP";
-	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
