@@ -57,7 +57,7 @@ public enum KPIExcelColumn {
     DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Priority")),
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
-
+    DEFECT_COUNT_BY_ROOT_CAUSE("kpi130", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
     CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),

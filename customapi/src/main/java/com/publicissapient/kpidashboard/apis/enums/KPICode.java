@@ -348,8 +348,12 @@ public enum KPICode {
 	/**
 	 * Work Completed
 	 */
-	WORK_COMPLETED("kpi128", KPISource.JIRA.name());
+	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
 
+	/**
+	 * Defect rca kpi code.
+	 */
+	DEFECT_COUNT_BY_RCA_PIECHART("kpi130", KPISource.JIRA.name());
 	// @formatter:on
 
 	private String kpiId;

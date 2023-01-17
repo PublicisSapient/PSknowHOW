@@ -3297,6 +3297,44 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+      "kpiId": "kpi130",
+      "kpiName": "Defects by Root Cause",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 10,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "pieChart",
+      "kpiInfo": {
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
+          },
+          {
+            "type": "paragraph",
+            "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
+          },
+          {
+            "type": "paragraph",
+            "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          }
+        ]
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropdown",
+      "boxType": "chart",
+      "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi79",
     "kpiName": "Test Cases Without Story Link",
     "maxValue": "5000",
