@@ -69,17 +69,16 @@
                             </div>
                         </div>
                         <div *ngSwitchCase="'boolean'" class="p-mb-3">
-                            <ng-container>
+                            <ng-container *ngIf="ifSuperUser === true || isProjectAdmin === true">
                                 <p-inputSwitch name="{{field.hierarchyLevelId}}" id="{{field.hierarchyLevelId}}"
                                     [formControlName]="field.hierarchyLevelId">
                                 </p-inputSwitch>
                                 <label for="{{field.hierarchyLevelId}}">
                                     {{field.label1}}
-                                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" (mouseover)="showTooltip(true)"
-                                        pTooltip="{{assigneeSwitchInfo}}" tooltipPosition="bottom"></span>
                                     </label>
                                     <br>
-                                <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #202020;">
+                                <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" for="{{field.hierarchyLevelId}}"></span>
+                                <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #333;">
                                     {{field.label2}}
                                 </span>
                             </ng-container>
