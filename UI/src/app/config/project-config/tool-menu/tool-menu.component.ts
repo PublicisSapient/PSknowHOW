@@ -20,6 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 @Component({
@@ -38,8 +39,10 @@ export class ToolMenuComponent implements OnInit {
   selectedTools: Array<any> = [];
   isAssigneeSwitchChecked : boolean = false;
   isAssigneeSwitchDisabled : boolean = false;
-  assigneeSwitchInfo = "(*Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project)";
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService,) {
+  isProjectAdmin : boolean = false;
+  isSuperAdmin : boolean = false;
+  assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService,private getAuthorizationService : GetAuthorizationService) {
 
   }
 
@@ -51,6 +54,8 @@ export class ToolMenuComponent implements OnInit {
 
     this.selectedProject = this.sharedService.getSelectedProject();
     this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;  
+    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();    
 
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -278,8 +283,8 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectDetails(){
 
-    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
-    let hierarchyData = JSON.parse(JSON.stringify(formFieldData));
+    // const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    let hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
 
     const updatedDetails = {};
     updatedDetails['projectName'] = this.selectedProject['Project'];
