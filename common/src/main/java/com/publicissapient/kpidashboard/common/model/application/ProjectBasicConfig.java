@@ -18,18 +18,11 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.util.List;
-
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 /**
  * @author anisingh4
@@ -41,49 +34,50 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "project_basic_configs")
-public class ProjectBasicConfig extends BasicModel{
+public class ProjectBasicConfig extends BasicModel {
 
-	private String emmUpdatedOn;
-	private String consumerCreatedOn;
+    private String emmUpdatedOn;
+    private String consumerCreatedOn;
 
-	private String projectName;
-	private String createdAt;
-	private String updatedAt;
-	private boolean kanban;
-	private List<HierarchyValue> hierarchy;
+    private String projectName;
+    private String createdAt;
+    private String updatedAt;
+    private boolean kanban;
+    private List<HierarchyValue> hierarchy;
+    private boolean saveAssigneeDetails;
 
-	/**
-	 * set isKanban value
-	 *
-	 * @param isKanban boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
+    /**
+     * set isKanban value
+     *
+     * @param isKanban boolean value
+     */
+    public void setIsKanban(boolean isKanban) {
+        this.kanban = isKanban;
+    }
 
-	/**
-	 * @return isKanban value
-	 */
-	public boolean getIsKanban() {
-		return this.kanban;
-	}
+    /**
+     * @return isKanban value
+     */
+    public boolean getIsKanban() {
+        return this.kanban;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-		ProjectBasicConfig that = (ProjectBasicConfig) o;
+        ProjectBasicConfig that = (ProjectBasicConfig) o;
 
-		return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
-	}
+        return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
+    }
 
-	@Override
-	public int hashCode() {
-		return getId() != null ? getId().hashCode() : 0;
-	}
+    @Override
+    public int hashCode() {
+        return getId() != null ? getId().hashCode() : 0;
+    }
 }

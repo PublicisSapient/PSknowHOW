@@ -15,11 +15,11 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main">
     <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
         <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
-            <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div" *ngIf="project?.key?.toLowerCase() !== 'id'">
+            <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div" *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' ">
                 <p class="form_title p-text-capitalize">{{project?.key}}</p>
                 <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
             </div>
@@ -41,7 +41,20 @@
                 <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name"
                     [(ngModel)]="selectedType" (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
                 </p-selectButton>
-                <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                <div class="p-d-flex">
+                    <div class="mar-t-10">
+                        <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
+                            [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                        </p-inputSwitch>
+                        <label for="assigneeSwitch" class="p-mr-5">
+                            &nbsp;&nbsp;Individual KPIs
+                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                                pTooltip="{{assigneeSwitchInfo}}" tooltipPosition="bottom"></span>
+                        </label>
+                    </div>
+                    <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                </div>
+               
             </div>
         </ng-template>
         <ng-template let-tool pTemplate="listItem">
@@ -99,3 +112,10 @@
     </p-dataView>
 
 </div>
+
+<p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
+    </p-footer>
+</p-confirmDialog>
