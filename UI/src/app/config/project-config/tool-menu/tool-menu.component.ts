@@ -287,8 +287,8 @@ export class ToolMenuComponent implements OnInit {
     let hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
 
     const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['name'];
-    updatedDetails['kanban'] = this.selectedProject['Type'] === 'kanban' ? true : false ;
+   updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
+   updatedDetails['kanban'] = this.selectedProject['Type'] === 'Kanban' ? true : false ;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject['id'];
