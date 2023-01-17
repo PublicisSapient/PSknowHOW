@@ -18,13 +18,20 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;
 
-import lombok.*;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author narsingh9
+ *
  */
 @Data
 @Builder
@@ -33,29 +40,28 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectBasicConfigDTO {
-    private ObjectId id;
-    private String projectName;
-    private String createdAt;
-    private String updatedAt;
+	private ObjectId id;
+	private String projectName;
+	private String createdAt;
+	private String updatedAt;
 
-    private String consumerCreatedOn;
-    private boolean kanban;
-    private List<HierarchyValueDTO> hierarchy;
-    private boolean saveAssigneeDetails;
+	private String consumerCreatedOn;
+	private boolean kanban;
+	private List<HierarchyValueDTO> hierarchy;
 
-    /**
-     * set isKanban value
-     *
-     * @param isKanban boolean value
-     */
-    public void setIsKanban(boolean isKanban) {
-        this.kanban = isKanban;
-    }
+	/**
+	 * set isKanban value
+	 * 
+	 * @param isKanban boolean value
+	 */
+	public void setIsKanban(boolean isKanban) {
+		this.kanban = isKanban;
+	}
 
-    /**
-     * @return isKanban value
-     */
-    public boolean getIsKanban() {
-        return this.kanban;
-    }
+	/**
+	 * @return isKanban value
+	 */
+	public boolean getIsKanban() {
+		return this.kanban;
+	}
 }

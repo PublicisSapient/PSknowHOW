@@ -20,7 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 @Component({
   selector: 'app-tool-menu',
@@ -36,10 +36,7 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
-  isAssigneeSwitchChecked : boolean = false;
-  isAssigneeSwitchDisabled : boolean = false;
-  assigneeSwitchInfo = "(*Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project)";
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService,) {
+  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService) {
 
   }
 
@@ -50,8 +47,6 @@ export class ToolMenuComponent implements OnInit {
     ];
 
     this.selectedProject = this.sharedService.getSelectedProject();
-    this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;  
-
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     } else {
@@ -200,9 +195,6 @@ export class ToolMenuComponent implements OnInit {
         ];
       }
     }
-    if(this.isAssigneeSwitchChecked){
-      this.isAssigneeSwitchDisabled = true;
-    }
   }
 
   projectTypeChange(event, isClicked) {
@@ -257,67 +249,4 @@ export class ToolMenuComponent implements OnInit {
   }
   // Preserve original property order
   originalOrder = (a: KeyValue<number,string>, b: KeyValue<number,string>): number => 0;
-
-  onAssigneeSwitchChange(){
-    if(this.isAssigneeSwitchChecked){
-      this.isAssigneeSwitchDisabled = true;
-    }
-    this.confirmationService.confirm({
-      message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
-      header: 'Enable Individual KPIs',
-      key: 'confirmToEnableDialog',
-      accept: () => {
-      this.updateProjectDetails();
-      },
-      reject: () => {
-        this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
-      }
-    });
-  }
-
-  updateProjectDetails(){
-
-    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
-    let hierarchyData = JSON.parse(JSON.stringify(formFieldData));
-
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['Type'] === 'kanban' ? true : false ;
-    updatedDetails['hierarchy'] = [];
-    updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject['id'];
-    updatedDetails["createdAt"] = new Date().toISOString();
-
-    hierarchyData.forEach(element => {
-     updatedDetails['hierarchy'].push({
-       hierarchyLevel: {
-         level: element.level,
-         hierarchyLevelId: element.hierarchyLevelId,
-         hierarchyLevelName: element.hierarchyLevelName
-       },
-       value: this.selectedProject[element.hierarchyLevelName]
-     });
-   });
-
-   this.http.updateProjectDetails(updatedDetails,this.selectedProject.id).subscribe(response=>{
-    if (response && response.serviceResponse && response.serviceResponse.success) {
-      this.isAssigneeSwitchDisabled = true;
-      this.messenger.add({
-        severity: 'success',
-        summary: 'Assignee Switch Enabled  successfully.'
-      });
-    }else{
-      this.isAssigneeSwitchChecked = false;
-      this.isAssigneeSwitchDisabled = false;
-      this.messenger.add({
-        severity: 'error',
-        summary: 'Some error occurred. Please try again later.'
-      });
-
-    }
-
-   })
-
-  }
 }

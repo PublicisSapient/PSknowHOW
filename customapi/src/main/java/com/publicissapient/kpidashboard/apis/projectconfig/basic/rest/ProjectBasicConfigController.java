@@ -124,7 +124,6 @@ public class ProjectBasicConfigController {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, message, returnObj));
 	}
 
-
 	/**
 	 * 
 	 * Returns the list of project's basic configuration.

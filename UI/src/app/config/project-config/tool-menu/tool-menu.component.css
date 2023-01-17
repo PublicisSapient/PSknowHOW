@@ -404,12 +404,3 @@ background-color: rgb(158,158,158); }
   background-color: rgb(255,160,0); }
 .bg--5 {
   background-color: rgb(158,158,158); }
-
-  ::ng-deep .p-dialog.p-confirm-dialog .p-confirm-dialog-message{
-    margin-left: 0px;
-  }
-
-  .enable-dialog-btn{
-    background-color:white;color: black;border: 1px solid;box-sizing: border-box;padding: 9px 13px;
-  }
- 
