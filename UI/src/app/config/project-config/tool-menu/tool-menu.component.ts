@@ -53,9 +53,9 @@ export class ToolMenuComponent implements OnInit {
     ];
 
     this.selectedProject = this.sharedService.getSelectedProject();
-    this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;  
+    this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
-    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();    
+    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
 
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -200,7 +200,7 @@ export class ToolMenuComponent implements OnInit {
             queryParams1: 'GitHub',
             index: 10
           },
-          
+
 
         ];
       }
@@ -287,7 +287,7 @@ export class ToolMenuComponent implements OnInit {
     let hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
 
     const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['Project'];
+    updatedDetails['projectName'] = this.selectedProject['name'];
     updatedDetails['kanban'] = this.selectedProject['Type'] === 'kanban' ? true : false ;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
