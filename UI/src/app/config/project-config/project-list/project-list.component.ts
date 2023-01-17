@@ -136,8 +136,7 @@ export class ProjectListComponent implements OnInit {
             const obj = {
               id: this.projectList[i]?.id,
               name: this.projectList[i]?.projectName,
-              type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
-              saveAssigneeDetails : this.projectList[i]?.saveAssigneeDetails,
+              type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum'
             };
             for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
               obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
@@ -239,12 +238,11 @@ export class ProjectListComponent implements OnInit {
   editConfiguration(project) {
     const newProjectObj = {};
     Object.keys(project).forEach((key) => {
-      if (key !== 'id' && key !== 'saveAssigneeDetails') {
+      if (key !== 'id') {
         newProjectObj[this.cols.filter((col) => col.id === key)[0].heading] = project[key];
       }
     });
     newProjectObj['id'] = project['id'];
-    newProjectObj['saveAssigneeDetails']= project["saveAssigneeDetails"];
     this.sharedService.setSelectedProject(newProjectObj);
     this.router.navigate(['/dashboard/Config/ToolMenu']);
 
