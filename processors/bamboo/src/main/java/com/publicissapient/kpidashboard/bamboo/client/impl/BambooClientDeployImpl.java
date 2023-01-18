@@ -105,7 +105,7 @@ public class BambooClientDeployImpl implements BambooClient {
 											convertToString(resultObject, "deploymentState").toLowerCase()));
 					JSONObject deploymentVersion = (JSONObject) (resultObject).get("deploymentVersion");
 					deployment.setNumber(convertToString(resultObject, "id"));
-					if(projectBasicConfig.isEnableAssigneeDetailToggle()) {
+					if(projectBasicConfig.isSaveAssigneeDetails()) {
 						deployment.setDeployedBy(convertToString(deploymentVersion, "creatorUserName"));
 					}
 					settingTime(resultObject, deployment);

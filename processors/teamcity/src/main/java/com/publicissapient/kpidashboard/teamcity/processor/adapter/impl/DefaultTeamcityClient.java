@@ -360,7 +360,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 
 	private Build createBuild(String buildUrl, ProcessorToolConnection teamcityServer, JSONObject buildJson,ProjectBasicConfig proBasicConfig) {
 		Build build = new Build();
-		if (proBasicConfig.isEnableAssigneeDetailToggle())
+		if (proBasicConfig.isSaveAssigneeDetails())
 		{
 			build.setStartedBy(ProcessorUtils.firstCulprit(buildJson));
 	}

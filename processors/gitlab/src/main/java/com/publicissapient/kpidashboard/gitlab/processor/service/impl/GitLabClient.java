@@ -249,7 +249,7 @@ public class GitLabClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(projectBasicConfig.isEnableAssigneeDetailToggle()) {
+			if(projectBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
@@ -280,7 +280,7 @@ public class GitLabClient {
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+		if(proBasicConfig.isSaveAssigneeDetails()) {
 			gitLabCommit.setAuthor(author);
 		}
 		gitLabCommit.setCommitLog(message);

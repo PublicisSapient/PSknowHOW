@@ -154,7 +154,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 		bitBucketCommit.setRepoSlug(bitbucketServerInfo.getRepoSlug());
 		bitBucketCommit.setTimestamp(System.currentTimeMillis());
 		bitBucketCommit.setRevisionNumber(scmRevisionNumber);
-		if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+		if(proBasicConfig.isSaveAssigneeDetails()) {
 			bitBucketCommit.setAuthor(author);
 		}
 		bitBucketCommit.setCommitLog(message);
@@ -245,7 +245,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+			if(proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);

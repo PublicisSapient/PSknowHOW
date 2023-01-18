@@ -281,7 +281,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+			if(proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
@@ -312,7 +312,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 		azureRepoCommit.setUrl(azureRepoProcessorInfo.getUrl());
 		azureRepoCommit.setTimestamp(System.currentTimeMillis());
 		azureRepoCommit.setRevisionNumber(commitId);
-		if(projectBasicConfig.isEnableAssigneeDetailToggle()) {
+		if(projectBasicConfig.isSaveAssigneeDetails()) {
 			azureRepoCommit.setAuthor(author);
 		}
 		azureRepoCommit.setCommitLog(comment);

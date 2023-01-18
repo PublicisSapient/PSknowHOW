@@ -289,7 +289,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 				log.debug("Adding build & Updated URL to map LocalHost for Docker: {}", buildURL);
 			}
 
-			if(basicConfig.isEnableAssigneeDetailToggle()) {
+			if(basicConfig.isSaveAssigneeDetails()) {
 				jenkinsBuild.setStartedBy(ProcessorUtils.firstCulprit(jsonBuild));
 			}
 			jenkinsBuild.setBuildUrl(buildURL);

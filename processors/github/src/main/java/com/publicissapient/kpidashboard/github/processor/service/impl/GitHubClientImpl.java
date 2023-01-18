@@ -264,7 +264,7 @@ public class GitHubClientImpl implements GitHubClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+			if(proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
@@ -296,7 +296,7 @@ public class GitHubClientImpl implements GitHubClient {
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		if (proBasicConfig.isEnableAssigneeDetailToggle()) {
+		if (proBasicConfig.isSaveAssigneeDetails()) {
 			gitLabCommit.setAuthor(author);
 		}
 		gitLabCommit.setCommitLog(message);

@@ -180,7 +180,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	private Build createBuild(JSONObject buildJson,ProjectBasicConfig proBasicConfig) {
 		JSONObject jsonRequestedFor = AzurePipelineUtils.getJsonObject(buildJson, "requestedFor");
 		Build build = new Build();
-		if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+		if(proBasicConfig.isSaveAssigneeDetails()) {
 			build.setStartedBy(AzurePipelineUtils.getString(jsonRequestedFor, "displayName"));
 		}
 		build.setBuildUrl(AzurePipelineUtils.getString(buildJson, "url"));

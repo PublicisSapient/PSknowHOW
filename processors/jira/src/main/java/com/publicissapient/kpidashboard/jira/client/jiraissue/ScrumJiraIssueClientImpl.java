@@ -455,7 +455,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		if (CollectionUtils.isNotEmpty(traceLogs)) {
 			processorExecutionTraceLog = traceLogs.get(0);
-			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isEnableAssigneeDetailToggle() != processorExecutionTraceLog.isLastEnableAssigneeToggleState() ){
+			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState() ){
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
 			}
 		}else {
@@ -464,7 +464,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-			processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isEnableAssigneeDetailToggle());
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 		}
 		return processorExecutionTraceLog;
 	}
@@ -647,7 +647,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				if(projectConfig.getProjectBasicConfig().isEnableAssigneeDetailToggle()) {
+				if(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 					setJiraAssigneeDetails(jiraIssue, assignee);
 				}
 

@@ -127,7 +127,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 				deploymentJob.setProjectToolConfigId(azurePipelineServer.getId());
 				deploymentJob.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				deploymentJob.setCreatedAt(String.valueOf(System.currentTimeMillis()));
-				if(projectBasicConfig.isEnableAssigneeDetailToggle()){
+				if(projectBasicConfig.isSaveAssigneeDetails()){
 				deploymentJob.setDeployedBy(AzurePipelineUtils.getString(jsonDeployedBy, "displayName"));
 				}
 				deploymentJob.setDeploymentStatus(getDeploymentStatus(jsonDeploy));

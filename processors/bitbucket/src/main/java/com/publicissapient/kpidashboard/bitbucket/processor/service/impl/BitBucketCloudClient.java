@@ -151,7 +151,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		bitbucketCommit.setUrl(bitBucketServerInfo.getUrl());
 		bitbucketCommit.setTimestamp(System.currentTimeMillis());
 		bitbucketCommit.setCommitLog(message);
-		if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+		if(proBasicConfig.isSaveAssigneeDetails()) {
 			bitbucketCommit.setAuthor(author);
 		}
 		bitbucketCommit.setRevisionNumber(hash);
@@ -359,7 +359,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeReq.setFromBranch(fromBranch);
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
-			if(proBasicConfig.isEnableAssigneeDetailToggle()) {
+			if(proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
