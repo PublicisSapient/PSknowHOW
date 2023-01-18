@@ -219,7 +219,7 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		dataCount.setDate(date);
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
-		Map<String, Integer> hoverValue = new HashMap<>();
+		Map<String, Object> hoverValue = new HashMap<>();
 		hoverValue.put("Total Velocity", value.intValue());
 		dataCount.setHoverValue(hoverValue);
 		return dataCount;

@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
@@ -166,6 +166,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 						allIssues.size());
+				allIssues = excludeOnHoldStatusIssue(fieldMapping, allIssues);
 
 				Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 						.collect(Collectors.groupingBy(JiraIssue::getTypeName));
@@ -218,6 +219,15 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
+	}
+
+	private List<JiraIssue> excludeOnHoldStatusIssue(FieldMapping fieldMapping, List<JiraIssue> allIssues) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatus())) {
+			allIssues = allIssues.stream().filter(
+					issue -> !fieldMapping.getJiraOnHoldStatus().contains(issue.getStatus()))
+					.collect(Collectors.toList());
+		}
+		return allIssues;
 	}
 
 }

@@ -50,7 +50,7 @@ public class ProjectBasicConfigDTO {
 	private boolean enableAssigneeDetailToggle;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
-
+	private boolean saveAssigneeDetails;
 	/**
 	 * set isKanban value
 	 * 

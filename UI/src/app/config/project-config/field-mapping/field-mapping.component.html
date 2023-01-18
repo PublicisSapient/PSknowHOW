@@ -298,6 +298,21 @@
                                 (click)="showDialogToAddValue(false, 'jiraStatusForQa', 'workflow')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraOnHoldStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Issue On hold status to be excluded from Closure possible <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            Issue tagged to the workflow status mentioned in this field should be excluded from Closure possible today KPI
+                                               </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraOnHoldStatus" formControlName="jiraOnHoldStatus"
+                                placeholder="Enter Status to Identify 'On Hold' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraOnHoldStatus', 'workflow')"></button>
+                        </div>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"

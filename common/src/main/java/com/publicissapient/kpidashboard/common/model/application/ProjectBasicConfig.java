@@ -50,10 +50,8 @@ public class ProjectBasicConfig extends BasicModel{
 	private String createdAt;
 	private String updatedAt;
 	private boolean kanban;
-	private boolean enableAssigneeDetailToggle;
 	private List<HierarchyValue> hierarchy;
-
-
+	private boolean saveAssigneeDetails;
 	/**
 	 * set isKanban value
 	 *

@@ -23,10 +23,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +32,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,10 +43,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
@@ -130,7 +133,7 @@ public class JiraController {
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
 			throw new MissingServletRequestParameterException("kpiList", "List");
-		} 
+		}
 
 		List<KpiElement> responseList = jiraServiceKanban.process(kpiRequest);
 		MDC.put("TotalJiraKanbanRequestTime", String.valueOf(System.currentTimeMillis() - jiraKanbanRequestStartTime));
@@ -155,6 +158,14 @@ public class JiraController {
 		} else {
 			response = new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList);
 		}
+		return response;
+	}
+
+	@GetMapping(value = "/jira/assignees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ServiceResponse getJiraAssigneesList(@PathVariable("id") String projectConfigId) {
+		ServiceResponse response;
+		AssigneeResponseDTO projectAssigneeDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
+		response = new ServiceResponse(true, "Successfully fetched assignee list", projectAssigneeDTO);
 		return response;
 	}
 }

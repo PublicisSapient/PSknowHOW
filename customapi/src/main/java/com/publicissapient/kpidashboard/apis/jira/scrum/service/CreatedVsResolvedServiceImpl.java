@@ -312,7 +312,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 
-			Map<String, Integer> hoverValue = new HashMap<>();
+			Map<String, Object> hoverValue = new HashMap<>();
 
 			double createdForCurrentLeaf = 0.0d;
 			double resolvedForCurrentLeaf = 0.0d;

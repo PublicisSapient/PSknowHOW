@@ -194,7 +194,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
             String currentSprintComponentId = node.getSprintFilter().getId();
             String trendLineName = node.getProjectFilter().getName();
 
-            Map<String, Integer> hoverValue = new HashMap<>();
+            Map<String, Object> hoverValue = new HashMap<>();
             Pair<String, String> currentNodeIdentifier = Pair
                     .of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
             Pair<String, String> currentNodeEstimateTime = Pair.of(node.getProjectFilter().getBasicProjectConfigId().toString(),
