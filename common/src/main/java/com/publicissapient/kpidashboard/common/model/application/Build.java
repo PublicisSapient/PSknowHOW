@@ -31,8 +31,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
-
 @Data
 @Getter
 @Setter
@@ -55,19 +53,5 @@ public class Build extends BasicModel {
 	private BuildStatus buildStatus;
 	private String startedBy;
 	private String log;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Build that = (Build) o;
-		return projectToolConfigId.equals(that.projectToolConfigId) && number.equals(that.number);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(projectToolConfigId, number);
-	}
-
 
 }
