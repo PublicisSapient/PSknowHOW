@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.rest;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,8 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,9 +41,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 /**
  * This class test the Jira Controller. In no way this representation of an
@@ -88,7 +92,7 @@ public class JiraControllerRTest {
 
 	@Test
 	public void getJiraKPIMetricReturnsValue() throws Exception {
-		//TODO GIRISH here discuss with team
+		// TODO GIRISH here discuss with team
 		//@formatter:off
 		String request = "{\n" +
 				"  \"kpiList\": [\n" +
@@ -233,4 +237,27 @@ public class JiraControllerRTest {
 
 	}
 
+	@Test
+	public void getJiraAssigneesListReturnError() throws Exception {
+		mockMvc.perform(get("/jira/assignees/").contentType(MediaType.APPLICATION_JSON_UTF8)).andDo(print())
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getJiraAssigneesListReturnValue() throws Exception {
+		String request = "634fdf4ec859a424263dc035";
+		AssigneeResponseDTO projectAssigneeDTO = new AssigneeResponseDTO();
+		List<AssigneeDetails> assigneeRolesList = new ArrayList<>();
+		AssigneeDetails roles = new AssigneeDetails();
+		roles.setName("Raghu");
+		roles.setDisplayName("Raghavendra");
+		assigneeRolesList.add(roles);
+
+		projectAssigneeDTO.setProjectName("ABC");
+		projectAssigneeDTO.setBasicProjectConfigId(new ObjectId(request));
+		projectAssigneeDTO.setAssigneeDetailsList(assigneeRolesList);
+		when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(projectAssigneeDTO);
+		mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().is2xxSuccessful());
+	}
 }
