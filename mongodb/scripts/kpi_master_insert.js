@@ -3259,6 +3259,23 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+      "kpiId": "kpi999",
+      "kpiName": "Delay Days",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 10,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "2_column",
+      "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",

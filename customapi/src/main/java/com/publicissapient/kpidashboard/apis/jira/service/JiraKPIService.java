@@ -149,6 +149,24 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 	    return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
 	}
 
+	public void populateIssueWiseData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, IterationKpiModalValue iterationKpiModalValue){
+		int originalEstimate = 0;
+		int loggedTime = 0;
+		IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(iterationKpiModalValue.getIssueId());
+		iterationKpiModalValue.setIssueType(iterationKpiModalValue.getIssueType());
+		iterationKpiModalValue.setPriority(iterationKpiModalValue.getPriority());
+		iterationKpiModalValue.setDescription(iterationKpiModalValue.getDescription());
+		iterationKpiModalValue.setIssueStatus(iterationKpiModalValue.getIssueStatus());
+		iterationKpiModalValue.setDueDate(iterationKpiModalValue.getDueDate());
+		if(iterationKpiModalValue.getRemainingEstimateMinutes() != null) {
+			iterationKpiModalValue.setRemainingTime(iterationKpiModalValue.getRemainingEstimateMinutes()/60);
+		}
+		iterationKpiModalValue.setDelay(iterationKpiModalValue.getDelay());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
 		int originalEstimate = 0;
 		int loggedTime = 0;

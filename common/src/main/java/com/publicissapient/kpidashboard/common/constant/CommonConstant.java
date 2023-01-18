@@ -46,6 +46,8 @@ public final class CommonConstant {
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
 	
 	public static final String SPRINT = "sprint";
+	public static final String JIRAISSUEMAP = "jiraIssueMap";
+	public static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
 	public static final String BUG = "bug";
 	public static final String ISSUE_TYPE = "issuetype";
 	public static final String FIRST_STATUS = "firststatus";
@@ -126,6 +128,7 @@ public final class CommonConstant {
 
 	public static final String COMPLETED_ISSUES = "completedIssues";
 	public static final String TOTAL_ISSUES = "totalIssues";
+	public static final String TOTAL_ISSUES_KEYS = "totalIssuesKeys";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";

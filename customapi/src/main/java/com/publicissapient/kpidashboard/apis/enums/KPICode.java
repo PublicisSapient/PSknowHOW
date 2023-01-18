@@ -299,6 +299,8 @@ public enum KPICode {
 	 * Work Remaining
 	 */
 	WORK_REMAINING("kpi119", KPISource.JIRA.name()),
+
+	DELAY_DAYS("kpi999", KPISource.JIRA.name()),
 	
 	/**
 	 * Scope Change
