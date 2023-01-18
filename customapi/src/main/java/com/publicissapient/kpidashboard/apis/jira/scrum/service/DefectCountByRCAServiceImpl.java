@@ -117,15 +117,14 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
-		List<String> testingStatuses = fieldMapping.getJiradefecttype();
-		Double minutesInDay = fieldMapping.getWorkingHoursDayCPT() * 60;
+		List<String> defectStatuses = fieldMapping.getJiradefecttype();
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(COMPLETED_ISSUES))) {
 			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(COMPLETED_ISSUES)).stream()
-					.filter(issue -> testingStatuses.contains(issue.getTypeName())).collect(Collectors.toList());
+					.filter(issue -> defectStatuses.contains(issue.getTypeName())).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				LOGGER.info("RCA count  -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
-				Map<String, Map<String, List<JiraIssue>>> typeWiseIssues = allIssues.stream()
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseRCA = allIssues.stream()
 						.collect(Collectors.groupingBy(JiraIssue::getPriority,
 								Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
 
@@ -134,7 +133,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<Integer> overAllIssueCount = Arrays.asList(0);
 				List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 				List<IterationKpiData> overAllRCAdata = new ArrayList<>();
-				typeWiseIssues.forEach((issueType, issues) -> {
+				priorityWiseRCA.forEach((issueType, issues) -> {
 					issueTypes.add(issueType);
 					List<IterationKpiData> data = new ArrayList<>();
 					issues.forEach((key, values) -> {
@@ -156,7 +155,19 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				IterationKpiData overAllCount = new IterationKpiData(RCA_SIZE, Double.valueOf(overAllIssueCount.get(0)),
 						null, null, "", overAllmodalValues);
 				data.add(overAllCount);
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, overAllRCAdata);
+				//filter and group the overall modal
+				Map<String, IterationKpiData> groupedDataMap = new HashMap<>();
+				for (IterationKpiData item : overAllRCAdata) {
+					IterationKpiData existingData = groupedDataMap.get(item.getLabel());
+					if (existingData == null) {
+						groupedDataMap.put(item.getLabel(), item);
+					} else {
+						existingData.setValue(existingData.getValue() + item.getValue());
+						existingData.getModalValues().addAll(item.getModalValues());
+					}
+				}
+				List<IterationKpiData> groupedData = new ArrayList<>(groupedDataMap.values());
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, groupedData);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
 				// Create kpi level filters
