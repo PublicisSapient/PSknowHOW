@@ -666,7 +666,7 @@ describe('FilterComponent', () => {
     component.additionalFiltersDdn = [];
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
-    component.handleIterationFilters('project');
+    component.handleIterationFilters('project', 2);
     expect(spy).toHaveBeenCalled();
   });
 
