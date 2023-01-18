@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.ProjectAssigneeService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
-import com.publicissapient.kpidashboard.common.model.application.Assignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,14 +45,14 @@ public class ProjectAssigneeControllerTest {
 		testId = "5ca455aa70c53c4f50076e34";
 
 		projectAssignee = new ProjectAssignee();
-		List<Assignee> assigneeRolesList = new ArrayList<>();
-		Assignee assigneeRoles1 = new Assignee();
+		List<AssigneeCapacity> assigneeRolesList = new ArrayList<>();
+		AssigneeCapacity assigneeRoles1 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName1");
 		assigneeRoles1.setUserName("testDisplayName1");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles1);
 
-		Assignee assigneeRoles2 = new Assignee();
+		AssigneeCapacity assigneeRoles2 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName2");
 		assigneeRoles1.setUserName("testDisplayName2");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);

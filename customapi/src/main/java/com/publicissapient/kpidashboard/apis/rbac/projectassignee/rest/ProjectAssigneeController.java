@@ -52,22 +52,10 @@ public class ProjectAssigneeController {
 	CapacityMasterService capacityMasterService;
 
 	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
-	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> getAllAssigness() {
-		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAllAssignees());
-	}
-
-	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> getAssigneeByProjectConfigId(@PathVariable("id") String id) {
-		return ResponseEntity.status(HttpStatus.OK).body(assigneeService.getAssigneeByProjectConfigId(id));
-	}
-
-	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@Valid @RequestBody CapacityMaster capacityMaster) {
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse(true, "", capacityMasterService.processCapacityData(capacityMaster)));
+				.body(new ServiceResponse(true, "Assignees Saved Successfully", capacityMasterService.processCapacityData(capacityMaster)));
 	}
 
 	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")

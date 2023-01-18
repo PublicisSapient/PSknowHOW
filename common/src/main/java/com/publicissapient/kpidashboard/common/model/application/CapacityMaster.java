@@ -1,13 +1,13 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
-import org.bson.types.ObjectId;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  * @author narsingh9
@@ -28,7 +28,7 @@ public class CapacityMaster {
 	private String startDate; // format yyyy-mm-dd
 	private String endDate; // format yyyy-mm-dd
 	private ObjectId basicProjectConfigId; // not passed from UIL
-	private List<Assignee> assignee;
+	private List<AssigneeCapacity> assigneeCapacity;
 	private boolean kanban;
 	private boolean assigneeDetails;
 }

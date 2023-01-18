@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
@@ -156,7 +157,7 @@ public class JiraToolConfigServiceImpl {
 		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
 			List<ProjectToolConfig> projectToolConfigs = projectToolConfigRepository
-					.findByToolNameAndBasicProjectConfigId("Jira", new ObjectId(projectConfigId));
+					.findByToolNameAndBasicProjectConfigId(Constant.TOOL_JIRA, new ObjectId(projectConfigId));
 			projectToolConfigs.stream().forEach(projectToolConfig -> {
 				Optional<Connection> optConnection = connectionRepository.findById(projectToolConfig.getConnectionId());
 				if (optConnection.isPresent()) {

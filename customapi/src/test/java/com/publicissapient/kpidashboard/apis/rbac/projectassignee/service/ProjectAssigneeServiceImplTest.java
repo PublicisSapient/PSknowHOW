@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.Assignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 
@@ -43,14 +43,14 @@ public class ProjectAssigneeServiceImplTest {
 
 		testId = "5ca455aa70c53c4f50076e34";
 		projectAssigneeList = new ArrayList<>();
-		List<Assignee> assigneeRolesList = new ArrayList<>();
-		Assignee assigneeRoles1 = new Assignee();
+		List<AssigneeCapacity> assigneeRolesList = new ArrayList<>();
+		AssigneeCapacity assigneeRoles1 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName1");
 		assigneeRoles1.setUserName("testDisplayName1");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles1);
 
-		Assignee assigneeRoles2 = new Assignee();
+		AssigneeCapacity assigneeRoles2 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName2");
 		assigneeRoles1.setUserName("testDisplayName2");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
@@ -75,14 +75,14 @@ public class ProjectAssigneeServiceImplTest {
 		testId = "5ca455aa70c53c4f50076e34";
 		projectAssigneeList = new ArrayList<>();
 		projectAssignee = new ProjectAssignee();
-		List<Assignee> assigneeRolesList = new ArrayList<>();
-		Assignee assigneeRoles1 = new Assignee();
+		List<AssigneeCapacity> assigneeRolesList = new ArrayList<>();
+		AssigneeCapacity assigneeRoles1 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName1");
 		assigneeRoles1.setUserName("testDisplayName1");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles1);
 
-		Assignee assigneeRoles2 = new Assignee();
+		AssigneeCapacity assigneeRoles2 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName2");
 		assigneeRoles1.setUserName("testDisplayName2");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);

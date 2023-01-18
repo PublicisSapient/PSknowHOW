@@ -18,17 +18,19 @@ import com.publicissapient.kpidashboard.common.constant.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Assignee {
+
+public class AssigneeCapacity {
 	private String userId;
 	private String userName;
 	private Role role;
-	private Double capacity;
+	private Double plannedCapacity;
 	private Double leaves;
+	private Double availableCapacity;
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Assignee) {
-			Assignee that = (Assignee) obj;
+		if (obj instanceof AssigneeCapacity) {
+			AssigneeCapacity that = (AssigneeCapacity) obj;
 			return Objects.equal(this.userId, that.userId) && Objects.equal(this.userName, that.userName);
 		}
 		return false;

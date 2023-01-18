@@ -19,7 +19,7 @@
 
 package com.publicissapient.kpidashboard.common.model.excel;
 
-import com.publicissapient.kpidashboard.common.model.application.Assignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -50,7 +50,7 @@ public class CapacityKpiData extends BasicModel {
 	private String projectId;
 	private Double capacityPerSprint;
 	private ObjectId basicProjectConfigId;
-	private List<Assignee> assignee;
+	private List<AssigneeCapacity> assigneeCapacity;
 
 	@Override
 	public String toString() {

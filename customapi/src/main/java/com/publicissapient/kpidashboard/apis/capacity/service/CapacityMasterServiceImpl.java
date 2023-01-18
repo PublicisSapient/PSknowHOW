@@ -26,7 +26,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.Assignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
@@ -340,14 +340,15 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	}
 
 	private void createScrumAssigneeData(CapacityKpiData data, CapacityMaster capacityMaster) {
-		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssignee())) {
-			List<Assignee> assigneeList = capacityMaster.getAssignee().stream()
+		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
+			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
 					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
 							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
 					.collect(Collectors.toList());
-			double sum = assigneeList.stream().mapToDouble(assignee -> Optional.ofNullable(assignee.getCapacity()).orElse(0.0d) - Optional.ofNullable(assignee.getLeaves()).orElse(0.0d))
-					.sum();
-			data.setAssignee(assigneeList);
+
+			double sum = assigneeList.stream()
+					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
+			data.setAssigneeCapacity(assigneeList);
 			data.setCapacityPerSprint(sum);
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
@@ -356,14 +357,14 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	}
 
 	private void createKanbanAssigneeData(KanbanCapacity data, CapacityMaster capacityMaster) {
-		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssignee())) {
-			List<Assignee> assigneeList = capacityMaster.getAssignee().stream()
+		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
+			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
 					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
 							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
 					.collect(Collectors.toList());
-			double sum = assigneeList.stream().mapToDouble(assignee -> Optional.ofNullable(assignee.getCapacity()).orElse(0.0d) - Optional.ofNullable(assignee.getLeaves()).orElse(0.0d))
-					.sum();
-			data.setAssignee(assigneeList);
+			double sum = assigneeList.stream()
+					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
+			data.setAssigneeCapacity(assigneeList);
 			data.setCapacity(sum);
 		} else {
 			data.setCapacity(capacityMaster.getCapacity());

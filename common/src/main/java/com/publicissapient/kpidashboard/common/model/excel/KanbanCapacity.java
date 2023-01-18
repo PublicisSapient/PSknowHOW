@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.excel;
 
-import com.publicissapient.kpidashboard.common.model.application.Assignee;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -51,6 +51,6 @@ public class KanbanCapacity extends BasicModel {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private ObjectId basicProjectConfigId;
-	private List<Assignee> assignee;
+	private List<AssigneeCapacity> assigneeCapacity;
 
 }
