@@ -83,7 +83,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private changePasswordUrl = this.baseUrl + '/api/changePassword';
     private changeEmailUrl = this.baseUrl + '/api/users/';
     private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
-    private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
+    // private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
     private getAllUsersUrl = this.baseUrl + '/api/userinfo';
     private updateAccessUrl = this.baseUrl + '/api/userinfo/';
     private getKPIConfigMetadataUrl = this.baseUrl + '/api/editConfig/jira/editKpi/';
@@ -646,7 +646,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     deleteProject(project) {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.append('httpErrorHandler', 'local');
-        return this.http.delete(this.deleteProjectUrl + `/${project.id}`, { headers });
+        return this.http.delete(this.basicConfigUrl + `/${project.id}`, { headers });
     }
 
     /** Get all Field Mappings */
@@ -854,6 +854,11 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
     deleteProcessorData(toolId, projectId) {
-        return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
+        return this.http.delete(this.basicConfigUrl + `/${projectId}/tools/clean/` + toolId);
+    }
+
+    /* Update project details  */
+    updateProjectDetails(updatedDetails,id){
+        return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
     }
 }
