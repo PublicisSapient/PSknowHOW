@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * @author narsingh9
  *
@@ -25,6 +27,8 @@ public class CapacityMaster {
 	private Double capacity;
 	private String startDate; // format yyyy-mm-dd
 	private String endDate; // format yyyy-mm-dd
-	private ObjectId basicProjectConfigId; // not passed from UI
+	private ObjectId basicProjectConfigId; // not passed from UIL
+	private List<Assignee> assignee;
 	private boolean kanban;
+	private boolean assigneeDetails;
 }

@@ -1,0 +1,42 @@
+package com.publicissapient.kpidashboard.common.model.application;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import com.google.common.base.Objects;
+import com.publicissapient.kpidashboard.common.constant.Role;
+
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Assignee {
+	private String userId;
+	private String userName;
+	private Role role;
+	private Double capacity;
+	private Double leaves;
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Assignee) {
+			Assignee that = (Assignee) obj;
+			return Objects.equal(this.userId, that.userId) && Objects.equal(this.userName, that.userName);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(userId, role);
+	}
+
+}

@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.Role;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -20,9 +21,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.ProjectAssigneeService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
+import com.publicissapient.kpidashboard.common.model.application.Assignee;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRolesRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectAssigneeControllerTest {
@@ -35,9 +35,6 @@ public class ProjectAssigneeControllerTest {
 	@Mock
 	private ProjectAssigneeService assigneeService;
 
-	@Mock
-	private ProjectAssigneeRolesRepository assigneeRolesRepository;
-
 	private ProjectAssignee projectAssignee;
 
 	private String testId;
@@ -48,22 +45,22 @@ public class ProjectAssigneeControllerTest {
 		testId = "5ca455aa70c53c4f50076e34";
 
 		projectAssignee = new ProjectAssignee();
-		List<AssigneeRoles> assigneeRolesList = new ArrayList<>();
-		AssigneeRoles assigneeRoles1 = new AssigneeRoles();
-		assigneeRoles1.setName("testName1");
-		assigneeRoles1.setDisplayName("testDisplayName1");
-		assigneeRoles1.setRole("testRole1");
+		List<Assignee> assigneeRolesList = new ArrayList<>();
+		Assignee assigneeRoles1 = new Assignee();
+		assigneeRoles1.setUserId("testName1");
+		assigneeRoles1.setUserName("testDisplayName1");
+		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles1);
 
-		AssigneeRoles assigneeRoles2 = new AssigneeRoles();
-		assigneeRoles1.setName("testName2");
-		assigneeRoles1.setDisplayName("testDisplayName2");
-		assigneeRoles1.setRole("testRole2");
+		Assignee assigneeRoles2 = new Assignee();
+		assigneeRoles1.setUserId("testName2");
+		assigneeRoles1.setUserName("testDisplayName2");
+		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles2);
 
 		projectAssignee.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
 		projectAssignee.setProjectName("testProjectName");
-		projectAssignee.setAssigneeRoles(assigneeRolesList);
+		projectAssignee.setAssignee(assigneeRolesList);
 
 	}
 

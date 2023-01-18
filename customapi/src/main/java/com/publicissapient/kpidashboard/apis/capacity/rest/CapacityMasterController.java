@@ -75,4 +75,5 @@ public class CapacityMasterController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
 }

@@ -8,6 +8,4 @@ public interface ProjectAssigneeService {
 	ServiceResponse getAllAssignees();
 
 	ServiceResponse getAssigneeByProjectConfigId(String projectConfigid);
-
-	ServiceResponse updateOrSaveAssineeByProjectConfigId(String projectConfigid, ProjectAssignee assignee);
 }

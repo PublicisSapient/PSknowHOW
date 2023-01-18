@@ -46,6 +46,6 @@ public class ProjectAssignee extends BasicModel {
 
 	private String projectName;
 	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
+	private List<Assignee> assignee;
 
 }

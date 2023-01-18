@@ -93,6 +93,4 @@ public interface ProjectToolConfigService {
 
 	boolean cleanToolData(String basicProjectConfigId, String projectToolId);
 
-	ServiceResponse getJiraProjects();
-
 }
