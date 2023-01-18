@@ -190,7 +190,7 @@ if(!(this.maxYValue >=5)){
       groupData = Array.from(groupData).map(function(d) {
  return d[1];
 });
-      console.log(groupData);
+
     const stackData = stack
       .keys(keys)(groupData);
 
@@ -283,7 +283,6 @@ if(!(this.maxYValue >=5)){
 })
       .attr('width', barWidth)
       .on('click', function(d, i) {
- console.log('serie-rect click d', i, d);
 })
       .on('mouseover', function(event,d) {
         const topValue = 75;

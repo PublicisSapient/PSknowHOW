@@ -52,7 +52,7 @@ pipeline {
                       }else{
                         env.customapistatus = false
                         echo "There are some commits in Customapi folder for last 24 hrs"
-                      }
+                      }   
 
                 def processorfoldercommits = sh (script: 'git log --since="24 hours ago" -- processors', returnStdout: true)
                       if (processorfoldercommits.isEmpty()) {
@@ -125,6 +125,32 @@ pipeline {
                 }
          }
      }
+     stage('Building Mongodb Docker Image') {
+        when{
+                   expression { env.mongodbstatus == 'false' }
+         }
+        steps {
+                sh """
+                cd mongodb
+                docker build -t mongodb:${env.version} .
+                """
+        }
+     }
+     stage('Push mongo image') {
+              when {
+                 expression { env.mongodbstatus == 'false' }
+              }
+              steps {
+                  withCredentials([usernamePassword(credentialsId: env.registryCredId, passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
+                      sh """
+                          docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${env.select_docker_registry}
+                          docker tag mongodb:${env.version} ${env.select_docker_registry}/speedy/mongodb:${env.version}
+                          docker push ${env.select_docker_registry}/speedy/mongodb:${env.version}
+                          docker logout ${env.select_docker_registry}
+                         """
+                }
+              }
+        }
       stage('Building CUSTOMAPI skipping Unit Test') {
            when{
                    expression { env.customapistatus == 'false' }
