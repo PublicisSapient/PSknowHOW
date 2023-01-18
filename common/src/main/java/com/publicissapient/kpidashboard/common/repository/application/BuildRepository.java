@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.repository.application;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -61,5 +62,9 @@ public interface BuildRepository
 	 * @param processorItemIds processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
+
+	void deleteByProjectToolConfigId(ObjectId projectToolConfigId);
+
+	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
 
 }
