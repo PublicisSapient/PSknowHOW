@@ -110,6 +110,7 @@ export class FilterComponent implements OnInit {
     iterationConfigData={};
     kpisNewOrder=[];
     isTooltip = false;
+    projectIndex: number = 0;
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private elemRef: ElementRef, private getAuthorizationService: GetAuthorizationService, public router: Router, private ga: GoogleAnalyticsService, private messageService: MessageService, private helperService: HelperService) {
         this.service.setSelectedType('Scrum');
         this.selectedTab = (this.service.getSelectedTab() || 'mydashboard');
@@ -119,6 +120,7 @@ export class FilterComponent implements OnInit {
             if (this.selectedTab?.toLowerCase() == 'iteration') {
                 this.service.setEmptyFilter();
                 this.service.setSelectedType('Scrum');
+                this.projectIndex = 0;
             }
             const type = this.service.getSelectedType();
             if (type === 'Scrum') {
@@ -412,7 +414,7 @@ export class FilterComponent implements OnInit {
         this.masterData = masterData;
         this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
         if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'backlog') {
-            this.handleIterationFilters('project');
+            this.handleIterationFilters('project', 1);
         } else {
             this.applyChanges();
         }
@@ -886,7 +888,10 @@ export class FilterComponent implements OnInit {
         return isDisabled;
     }
 
-    handleIterationFilters(level) {
+    /*'type' argument: to understand onload or onchange
+    1: onload
+    2: onchange */
+    handleIterationFilters(level, type) {
         if (this.filterForm?.get('selectedProjectValue')?.value != '') {
             let selectedSprint = {};
             let activeSprints = [];
@@ -933,6 +938,11 @@ export class FilterComponent implements OnInit {
                 this.selectedFilterArray.push(selectedSprint);
                 this.createFilterApplyData();
                 this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+            }else{
+                if(type == 1){
+                    this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+                    this.handleIterationFilters('project', 1);
+                }
             }
 
 
