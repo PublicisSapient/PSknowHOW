@@ -120,8 +120,8 @@ export class FilterComponent implements OnInit {
             if (this.selectedTab?.toLowerCase() == 'iteration') {
                 this.service.setEmptyFilter();
                 this.service.setSelectedType('Scrum');
-                this.projectIndex = 0;
             }
+            this.projectIndex = 0;
             const type = this.service.getSelectedType();
             if (type === 'Scrum') {
                 this.kanban = false;
