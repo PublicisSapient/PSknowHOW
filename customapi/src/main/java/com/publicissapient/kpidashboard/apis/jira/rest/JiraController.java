@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -33,7 +32,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -80,7 +85,7 @@ public class JiraController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
@@ -116,7 +121,7 @@ public class JiraController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/jirakanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
