@@ -86,7 +86,7 @@ export class ForgotPasswordComponent implements OnInit {
                     if (error.status === 0) {// in case of connection timeout
                         this.error = 'Could not send email, connection timed out!';
                     } else {
-                        this.error = 'Some error occured, please try after some time!';
+                        this.error = 'Please check your email/notification setup';
                     }
                     this.router.navigate([this.router.url]);
                 }
