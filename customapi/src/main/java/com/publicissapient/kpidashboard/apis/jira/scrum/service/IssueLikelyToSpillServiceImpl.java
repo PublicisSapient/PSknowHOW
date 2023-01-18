@@ -71,11 +71,9 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 	private static final String ISSUES = "issues";
 	private static final String SPRINT_STATE = "sprintState";
 	private static final String ISSUES_AT_RISK = "Issues at Risk";
-	private static final String STORYPOINTS = "Story Point";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	private static final String SPRINT_END_DATE = "endDate";
-	private static final String SP = "SP";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -173,6 +171,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllIssueCount = Arrays.asList(0);
 			List<Double> overAllStoryPoints = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			List<Integer> overAllriskIssueCount = Arrays.asList(0);
 			String sprintState = (String) resultMap.get(SPRINT_STATE);
 			String sprintEndDate = (String) resultMap.get(SPRINT_END_DATE);
@@ -194,6 +193,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 					int issueCount = 0;
 					int riskIssueCount = 0;
 					Double storyPoint = 0.0;
+					Double originalEstimate = 0.0;
 					for (JiraIssue jiraIssue : issues) {
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
@@ -202,27 +202,42 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 							if (null != timeRemaining && timeRemaining > timeRemainingInSprintMin.get(0)) {
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-								populateIterationData(overAllmodalValues, modalValues, jiraIssue);
+								populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 								if (null != jiraIssue.getStoryPoints()) {
 									storyPoint = storyPoint + jiraIssue.getStoryPoints();
 									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+								}
+								if (null != jiraIssue.getOriginalEstimateMinutes()) {
+									originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+									overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
 								}
 							}
 						} else {
 							riskIssueCount = riskIssueCount + 1;
 							overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-							populateIterationData(overAllmodalValues, modalValues, jiraIssue);
+							populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 							if (null != jiraIssue.getStoryPoints()) {
 								storyPoint = storyPoint + jiraIssue.getStoryPoints();
 								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
 							}
+							if (null != jiraIssue.getOriginalEstimateMinutes()) {
+								originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+								overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+							}
 						}
 					}
 					List<IterationKpiData> data = new ArrayList<>();
+					IterationKpiData issueAtRiskSp;
 					IterationKpiData issueAtRisk = new IterationKpiData(ISSUES_AT_RISK, Double.valueOf(riskIssueCount),
 							Double.valueOf(issueCount), null, "", modalValues);
-					IterationKpiData issueAtRiskSp = new IterationKpiData(STORYPOINTS, storyPoint, null, null, SP,
-							null);
+					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+						issueAtRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
+								null, null, CommonConstant.SP, null);
+					} else {
+						issueAtRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
+								null, null, CommonConstant.HOURS, null);
+					}
 					data.add(issueAtRisk);
 					data.add(issueAtRiskSp);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
@@ -235,8 +250,15 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			IterationKpiData overAllIssuesAtRisk = new IterationKpiData(ISSUES_AT_RISK,
 					Double.valueOf(overAllriskIssueCount.get(0)), Double.valueOf(overAllIssueCount.get(0)), null, "",
 					overAllmodalValues);
-			IterationKpiData overAlllRiskSp = new IterationKpiData(STORYPOINTS, overAllStoryPoints.get(0), null, null,
-					SP, null);
+			IterationKpiData overAlllRiskSp;
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				overAlllRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
+						null, null, CommonConstant.SP, null);
+			} else {
+				overAlllRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+						null, null, CommonConstant.HOURS, null);
+			}
 			data.add(overAllIssuesAtRisk);
 			data.add(overAlllRiskSp);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);

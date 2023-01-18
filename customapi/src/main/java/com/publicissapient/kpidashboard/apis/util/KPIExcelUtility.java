@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -646,7 +647,8 @@ public class KPIExcelUtility {
         }
     }
 
-    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel) {
+    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
+                                                     FieldMapping fieldMapping) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
             issuesExcel.forEach((e) -> {
@@ -657,7 +659,12 @@ public class KPIExcelUtility {
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
-                excelData.setSizeInStoryPoints(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                if ( null != e.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(String.valueOf(e.getStoryPoints()));
+                }else if (null != e.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(String.valueOf(e.getOriginalEstimateMinutes()/60)+" hrs");
+                }
                 excelDataList.add(excelData);
             });
         }

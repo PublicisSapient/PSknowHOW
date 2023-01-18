@@ -24,10 +24,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -150,7 +154,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 	    return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
 	}
 
-	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue>
+			modalValues, JiraIssue jiraIssue, boolean flag, FieldMapping fieldMapping) {
 		int originalEstimate = 0;
 		int loggedTime = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -159,16 +164,28 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		if (flag) {
+			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+			}
+			if (null!=jiraIssue.getOriginalEstimateMinutes() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+				originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
+				iterationKpiModalValue.setIssueSize(originalEstimate+" hrs");
+			}
+		} else {
+			iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+			if(null!=jiraIssue.getOriginalEstimateMinutes()){
+				originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
+				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
+			}
+			else
+				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
+		}
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
 		}
-		if(null!=jiraIssue.getOriginalEstimateMinutes()){
-			originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
-		}
-		else
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
 		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
 		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
 		modalValues.add(iterationKpiModalValue);
