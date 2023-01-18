@@ -222,7 +222,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 			kanbanCapacityList.addAll(dateWiseKanbanCapacity.getOrDefault(currentDate.toString(), dummyList));
 		}
 		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
-			capacity = kanbanCapacityList.stream().mapToDouble(KanbanCapacity::getCapacity).sum();
+			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity->kanbanCapacity.getCapacity()/7).sum();
 		}
 		return capacity;
 	}

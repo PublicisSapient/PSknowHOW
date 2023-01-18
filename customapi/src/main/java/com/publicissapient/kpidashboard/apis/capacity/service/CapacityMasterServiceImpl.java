@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				sprintDetailsService.getSprintDetails(project.getId().toHexString()));
 		List<String> sprintIds = sprintDetails.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 		List<CapacityKpiData> capacityKpiDataList = capacityKpiDataRepository.findBySprintIDIn(sprintIds);
-
+		//Collections.reverse(sprintDetails);
+		List<AssigneeCapacity> assigneeCapacityList=null;
 		for (SprintDetails sprint : sprintDetails) {
 			CapacityKpiData capacityKpiData = capacityKpiDataList.stream()
 					.filter(capacityData -> capacityData.getSprintID().equals(sprint.getSprintID())).findAny()
@@ -125,10 +127,15 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(capacityKpiData.getCapacityPerSprint());
+				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
+					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
+					assigneeCapacityList=unsetAssigneeCapacityData(capacityKpiData.getAssigneeCapacity());
+				}
 			} else {
 				capacityMaster.setId(null);
 				capacityMaster.setCapacity(0D);
 			}
+			settingFutureAssigneeDetails(assigneeCapacityList, capacityMaster);
 			capacityMaster.setSprintName(sprint.getSprintName());
 			capacityMaster.setSprintState(sprint.getState());
 			capacityMaster.setSprintNodeId(sprint.getSprintID());
@@ -138,7 +145,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacityMasterList.add(capacityMaster);
 
 		}
-
+		Collections.reverse(capacityMasterList);
 		return capacityMasterList;
 	}
 
@@ -159,14 +166,15 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_FUTURE.equalsIgnoreCase(sprintDetails.getState()))
 				.collect(Collectors.toList());
 
-		if (CollectionUtils.isNotEmpty(futureSprints)) {
-			sprints.addAll(futureSprints);
+		if (CollectionUtils.isNotEmpty(closedSprints)) {
+			Collections.reverse(closedSprints);
+			sprints.addAll(closedSprints);
 		}
 		if (CollectionUtils.isNotEmpty(activeSprints)) {
 			sprints.addAll(activeSprints);
 		}
-		if (CollectionUtils.isNotEmpty(closedSprints)) {
-			sprints.addAll(closedSprints);
+		if (CollectionUtils.isNotEmpty(futureSprints)) {
+			sprints.addAll(futureSprints);
 		}
 
 		return sprints;
@@ -174,6 +182,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	private List<CapacityMaster> getCapacityDataForKanban(ProjectBasicConfig project) {
 		List<CapacityMaster> capacityMasterList = new ArrayList<>();
+		List<AssigneeCapacity> assigneeCapacity=null;
 		List<KanbanCapacity> kanbanCapacitiesAll = kanbanCapacityRepository.findByBasicProjectConfigId(project.getId());
 		List<Week> weeksToShow = getWeeksToShow();
 
@@ -189,6 +198,10 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
+					if(CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
+						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
+						assigneeCapacity=unsetAssigneeCapacityData(kanbanCapacity.getAssigneeCapacity());
+					}
 				} else {
 					capacityMasterKanban.setId(null);
 					capacityMasterKanban.setCapacity(0D);
@@ -204,13 +217,33 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMasterKanban.setStartDate(week.getStartDate().format(formatter));
 				capacityMasterKanban.setEndDate(week.getEndDate().format(formatter));
 			}
-
+			settingFutureAssigneeDetails(assigneeCapacity, capacityMasterKanban);
 			setProjectMeta(capacityMasterKanban, project);
 
 			capacityMasterList.add(capacityMasterKanban);
 
 		}
 		return capacityMasterList;
+	}
+
+	private void settingFutureAssigneeDetails(List<AssigneeCapacity> assigneeCapacity, CapacityMaster capacityMasterKanban) {
+
+			if (assigneeCapacity != null && CollectionUtils.isEmpty(capacityMasterKanban.getAssigneeCapacity())) {
+				capacityMasterKanban.setAssigneeCapacity(assigneeCapacity);
+			}
+
+	}
+
+	private List<AssigneeCapacity> unsetAssigneeCapacityData(List<AssigneeCapacity> assigneeCapacity) {
+		List<AssigneeCapacity> newAssigneeList=new ArrayList<>();
+		assigneeCapacity.stream().forEach(assignee->{
+			AssigneeCapacity capacity= new AssigneeCapacity();
+			capacity.setUserId(assignee.getUserId());
+			capacity.setUserName(assignee.getUserName());
+			capacity.setRole(assignee.getRole());
+			newAssigneeList.add(capacity);
+		});
+		return newAssigneeList;
 	}
 
 	private void setProjectMeta(CapacityMaster capacityMaster, ProjectBasicConfig project) {
