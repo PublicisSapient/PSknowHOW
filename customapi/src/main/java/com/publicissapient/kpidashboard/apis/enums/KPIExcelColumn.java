@@ -149,6 +149,9 @@ public enum KPIExcelColumn {
     WORK_REMAINING("kpi119",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Remaining Hours")),
 
+    DEFECT_RAISED("kpi131",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Priority")),
+
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
 

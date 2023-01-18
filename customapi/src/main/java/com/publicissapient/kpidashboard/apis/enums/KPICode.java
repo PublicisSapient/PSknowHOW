@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
+
 import java.util.Arrays;
 
 /**
@@ -341,11 +342,17 @@ public enum KPICode {
 	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
 
 	/**
+	 * Work Completed
+	 */
+	DEFECT_RAISED("kpi131", KPISource.JIRA.name()),
+
+	/**
 	 * Issues Without Story Link
 	 */
 	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name());
 
 	// @formatter:on
+
 
 	private String kpiId;
 
