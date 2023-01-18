@@ -34,6 +34,7 @@ import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccessMgmtComponent } from './access-mgmt.component';
+import { of } from 'rxjs';
 describe('AccessMgmtComponent', () => {
   let component: AccessMgmtComponent;
   let fixture: ComponentFixture<AccessMgmtComponent>;
@@ -42,6 +43,7 @@ describe('AccessMgmtComponent', () => {
   let messageService;
   let confirmationService;
   const baseUrl = environment.baseUrl;  // Servers Env
+  let sharedService : SharedService;
 
   const fakeUserData = require('../../../../test/resource/fakeUserData.json');
   const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
@@ -82,6 +84,7 @@ describe('AccessMgmtComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     messageService = TestBed.inject(MessageService);
     confirmationService = TestBed.inject(ConfirmationService);
+    sharedService = TestBed.inject(SharedService);
     // fixture.detectChanges();
   });
 
@@ -277,4 +280,95 @@ describe('AccessMgmtComponent', () => {
     component.mouseEnter(event, item, node);
     expect(component.toolTipHtml).not.toContain('Project');
   })
+
+  it("should receive project data",()=>{
+    const fakeProject = [
+          {
+              "id": "6375c3d6b8336258af26e2d9",
+              "projectName": "FASTREPLAT",
+              "createdAt": "2022-11-17T06:37:53",
+              "kanban": false,
+              "hierarchy": [
+                  {
+                      "hierarchyLevel": {
+                          "level": 1,
+                          "hierarchyLevelId": "hierarchy1",
+                          "hierarchyLevelName": "Hierarchy One"
+                      },
+                      "value": "Test"
+                  },
+              ],
+              "isKanban": false
+          }
+        ]
+
+        component.receiveProjectsData(fakeProject);
+        expect(component.allProjectsData).toEqual(fakeProject);
+
+  })
+
+  it("should false tooltip on mouse leave",()=>{
+        component.mouseLeave()
+        expect(component.showToolTip).toBeFalsy();
+  })
+
+  it("should filter clear on add project",()=>{
+    const accessItem = {
+      hierarchyArr : ["hierarchyLevelOne","hierarchyLevelTwo","hierarchyLevelThree"],
+      valueRemoved : {
+        val : {}
+      }
+    }
+    component.projectSelectedEvent(accessItem);
+    expect(component.addedProjectsOrNodes.length).toBe(0);
+  })
+
+  it("should select some filter for project",()=>{
+    const accessItem = {
+      hierarchyArr : ["hierarchyLevelOne","hierarchyLevelTwo","hierarchyLevelThree"],
+      valueRemoved : {
+        val : {}
+      },
+      accessType : "project",
+      value : ["v1","v2"]
+    }
+    component.projectSelectedEvent(accessItem);
+  })
+
+  it("should accessconfirm enabled and superadmin should enabled for superadmin user",()=>{
+    const userName = "userName";
+    const userRole = ['ROLE_VIEWER', 'ROLE_SUPERADMIN'];
+    component.deleteUser(userName,userRole);
+    expect(component.accessConfirm).toBeTruthy();
+  })
+
+  it("should delete project",()=>{
+    const userName = "userName";
+    const isSuperAdmin = true
+    spyOn(component,'accessDeletionStatus');
+    spyOn(httpService,'deleteAccess').and.returnValue(of({data:{
+      message : "Deleted"
+    }}))
+    component.deleteAccessReq(userName,isSuperAdmin);
+    expect(component.accessDeletionStatus).toHaveBeenCalled();
+  })
+
+  it("should superadmin delete project",()=>{
+    const data = {
+      message : "Deleted",
+      success : false
+    }
+    const isSuperAdmin = true
+    component.accessDeletionStatus(data,isSuperAdmin);
+  })
+
+  it("should fail delete response",()=>{
+    const data = {
+      message : "Something went wrong",
+      success : false
+    }
+    const isSuperAdmin = false
+    component.accessDeletionStatus(data,isSuperAdmin);
+  })
+
 });
