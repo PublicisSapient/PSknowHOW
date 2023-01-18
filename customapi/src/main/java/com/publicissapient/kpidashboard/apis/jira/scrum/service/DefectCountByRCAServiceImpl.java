@@ -117,7 +117,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
-
 		List<String> testingStatuses = fieldMapping.getJiradefecttype();
 		Double minutesInDay = fieldMapping.getWorkingHoursDayCPT() * 60;
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(COMPLETED_ISSUES))) {
@@ -134,6 +133,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 				List<Integer> overAllIssueCount = Arrays.asList(0);
 				List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+				List<IterationKpiData> overAllRCAdata = new ArrayList<>();
 				typeWiseIssues.forEach((issueType, issues) -> {
 					issueTypes.add(issueType);
 					List<IterationKpiData> data = new ArrayList<>();
@@ -147,6 +147,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 							}
 						}
 						data.add(issueCounts);
+						overAllRCAdata.add(issueCounts);
 					});
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, null, data);
 					iterationKpiValues.add(iterationKpiValue);
@@ -155,7 +156,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				IterationKpiData overAllCount = new IterationKpiData(RCA_SIZE, Double.valueOf(overAllIssueCount.get(0)),
 						null, null, "", overAllmodalValues);
 				data.add(overAllCount);
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, overAllRCAdata);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
 				// Create kpi level filters
