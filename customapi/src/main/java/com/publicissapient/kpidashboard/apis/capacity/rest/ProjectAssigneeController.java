@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.rbac.projectassignee.rest;
+package com.publicissapient.kpidashboard.apis.capacity.rest;
 
 import javax.validation.Valid;
 
@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.ProjectAssigneeService;
 import com.publicissapient.kpidashboard.common.constant.Role;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 
@@ -44,9 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 @RequestMapping("/assignee")
 @Slf4j
 public class ProjectAssigneeController {
-
-	@Autowired
-	private ProjectAssigneeService assigneeService;
 
 	@Autowired
 	CapacityMasterService capacityMasterService;

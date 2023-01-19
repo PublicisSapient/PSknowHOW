@@ -204,7 +204,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
 		Map<String, Object> hoverValue = new HashMap<>();
-		hoverValue.put("Total Capacity", value.intValue());
+		hoverValue.put("Total Capacity", String.format("%.2f", value));
 		dataCount.setHoverValue(hoverValue);
 		return dataCount;
 	}

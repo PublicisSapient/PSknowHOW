@@ -34,7 +34,6 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;

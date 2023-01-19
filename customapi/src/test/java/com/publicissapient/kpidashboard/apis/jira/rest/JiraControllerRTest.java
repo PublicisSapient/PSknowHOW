@@ -246,17 +246,17 @@ public class JiraControllerRTest {
 	@Test
 	public void getJiraAssigneesListReturnValue() throws Exception {
 		String request = "634fdf4ec859a424263dc035";
-		AssigneeResponseDTO projectAssigneeDTO = new AssigneeResponseDTO();
+		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
 		List<AssigneeDetails> assigneeRolesList = new ArrayList<>();
 		AssigneeDetails roles = new AssigneeDetails();
 		roles.setName("Raghu");
 		roles.setDisplayName("Raghavendra");
 		assigneeRolesList.add(roles);
 
-		projectAssigneeDTO.setProjectName("ABC");
-		projectAssigneeDTO.setBasicProjectConfigId(new ObjectId(request));
-		projectAssigneeDTO.setAssigneeDetailsList(assigneeRolesList);
-		when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(projectAssigneeDTO);
+		assigneeResponseDTO.setProjectName("ABC");
+		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(request));
+		assigneeResponseDTO.setAssigneeDetailsList(assigneeRolesList);
+		when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(assigneeResponseDTO);
 		mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().is2xxSuccessful());
 	}

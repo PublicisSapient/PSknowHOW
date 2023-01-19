@@ -1,11 +1,10 @@
-package com.publicissapient.kpidashboard.apis.rbac.projectassignee.rest;
+package com.publicissapient.kpidashboard.apis.capacity.rest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.constant.Role;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -19,10 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.ProjectAssigneeService;
+import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
+import com.publicissapient.kpidashboard.common.constant.Role;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectAssigneeControllerTest {
@@ -33,18 +33,15 @@ public class ProjectAssigneeControllerTest {
 	ProjectAssigneeController projectAssigneeController;
 
 	@Mock
-	private ProjectAssigneeService assigneeService;
+	private CapacityMasterService assigneeService;
 
-	private ProjectAssignee projectAssignee;
-
-	private String testId;
+	private CapacityMaster capacityMaster;
 
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(projectAssigneeController).build();
-		testId = "5ca455aa70c53c4f50076e34";
 
-		projectAssignee = new ProjectAssignee();
+		capacityMaster = new CapacityMaster();
 		List<AssigneeCapacity> assigneeRolesList = new ArrayList<>();
 		AssigneeCapacity assigneeRoles1 = new AssigneeCapacity();
 		assigneeRoles1.setUserId("testName1");
@@ -58,35 +55,23 @@ public class ProjectAssigneeControllerTest {
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles2);
 
-		projectAssignee.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-		projectAssignee.setProjectName("testProjectName");
-		projectAssignee.setAssignee(assigneeRolesList);
+		capacityMaster.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
+		capacityMaster.setAssigneeCapacity(assigneeRolesList);
 
 	}
 
 	@After
 	public void after() {
 		mockMvc = null;
-		testId = null;
-	}
-
-	@Test
-	public void testGetAllAssignees() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/assignee").contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	public void testGetRoleByProjectId() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/assignee/" + testId).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void testSaveOrUpdateAssignee() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/assignee/" + testId)
-				.content(TestUtil.convertObjectToJsonBytes(projectAssignee))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/assignee").content(TestUtil.convertObjectToJsonBytes(capacityMaster))
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+
 	}
 
 	@Test

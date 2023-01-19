@@ -115,7 +115,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				sprintDetailsService.getSprintDetails(project.getId().toHexString()));
 		List<String> sprintIds = sprintDetails.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 		List<CapacityKpiData> capacityKpiDataList = capacityKpiDataRepository.findBySprintIDIn(sprintIds);
-		//Collections.reverse(sprintDetails);
 		List<AssigneeCapacity> assigneeCapacityList=null;
 		for (SprintDetails sprint : sprintDetails) {
 			CapacityKpiData capacityKpiData = capacityKpiDataList.stream()
@@ -151,12 +150,19 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	private List<SprintDetails> filterSprints(List<SprintDetails> allSprints) {
 		List<SprintDetails> sprints = new ArrayList<>();
+		List<SprintDetails> closedSprints = new ArrayList<>();
 
-		List<SprintDetails> closedSprints = allSprints.stream()
+		List<SprintDetails> sortedClosedSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_CLOSED.equalsIgnoreCase(sprintDetails.getState()))
-				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime.parse(sprintDetails.getStartDate(),
-						DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))).reversed())
-				.limit(customApiConfig.getSprintCountForFilters()).collect(Collectors.toList());
+				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime
+						.parse(sprintDetails.getStartDate(), DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))))
+				.collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(sortedClosedSprints)) {
+			closedSprints = sortedClosedSprints.subList(
+					sortedClosedSprints.size() - customApiConfig.getSprintCountForFilters(),
+					sortedClosedSprints.size());
+		}
 
 		List<SprintDetails> activeSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState()))
@@ -167,7 +173,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				.collect(Collectors.toList());
 
 		if (CollectionUtils.isNotEmpty(closedSprints)) {
-			Collections.reverse(closedSprints);
 			sprints.addAll(closedSprints);
 		}
 		if (CollectionUtils.isNotEmpty(activeSprints)) {
