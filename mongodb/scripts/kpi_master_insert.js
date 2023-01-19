@@ -3259,33 +3259,33 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-  "kpiId": "kpi131",
-  "kpiName": "Defect Raised",
-      "maxValue": "",
-      "kpiUnit": "",
-      "isDeleted": "False",
-      "defaultOrder": 11,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "isAdditionalFilterSupport": false,
-      "calculateMaturity": false,
-      "kanban": false,
-      "chartType": null,
-      "kpiInfo": {
-         "definition": "Defect Raised gives the information about defects linked/unlinked with the story and Defect density",
-               "formula": [
-                 {
-                   "lhs": "Defect Density",
-                   "operator": "division",
-                   "operands": [
-                     " All defects added to the Sprint (post sprint start) and linked to stories",
-                     "Storypoint of all linked stories"
+    "kpiId": "kpi131",
+    "kpiName": "Defect Raised",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 12,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+    "definition": "Defect Raised gives the information about defects linked/unlinked with the story and Defect density",
+     "formula": [
+        {
+          "lhs": "Defect Density",
+          "operator": "division",
+          "operands": [
+          "All defects added to the Sprint (post sprint start) and linked to stories",
+          "Storypoint of all linked stories"
                    ]
-                 }
+        }
                ],
-               "details": [
+       "details": [
                  {
                    "type": "paragraph",
                    "value": " Defect density - DEFECT DENSITY measures the total number of defects against the size of a story"
@@ -3297,19 +3297,17 @@ db.getCollection('kpi_master').insert(
                  {
                    "type": "paragraph",
                    "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
-                 },
+                 }
 
-               ],
+                 ]
             },
-            "xAxisLabel": "",
-            "yAxisLabel": "",
-            "isPositiveTrend": true,
-            "showTrend": false,
-            "isAdditionalFilterSupport": false,
-            "kpiFilter": "multiSelectDropDown",
-            "boxType": "3_column",
-            "calculateMaturity": false
-        },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "kpiFilter": "multiSelectDropDown",
+     "showTrend": false,
+     "boxType": "3_column"
+   },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
