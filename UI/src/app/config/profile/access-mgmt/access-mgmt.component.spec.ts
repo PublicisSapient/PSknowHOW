@@ -333,6 +333,7 @@ describe('AccessMgmtComponent', () => {
       value : ["v1","v2"]
     }
     component.projectSelectedEvent(accessItem);
+    expect(component.addedProjectsOrNodes.length).not.toBeNull();
   })
 
   it("should accessconfirm enabled and superadmin should enabled for superadmin user",()=>{
@@ -354,21 +355,25 @@ describe('AccessMgmtComponent', () => {
   })
 
   it("should superadmin delete project",()=>{
+    spyOn<any>(confirmationService, 'confirm');
     const data = {
       message : "Deleted",
       success : false
     }
     const isSuperAdmin = true
     component.accessDeletionStatus(data,isSuperAdmin);
+    expect(confirmationService.confirm).toHaveBeenCalled();
   })
 
   it("should fail delete response",()=>{
+    spyOn<any>(confirmationService, 'confirm');
     const data = {
       message : "Something went wrong",
       success : false
     }
     const isSuperAdmin = false
     component.accessDeletionStatus(data,isSuperAdmin);
+    expect(confirmationService.confirm).toHaveBeenCalled();
   })
 
 });
