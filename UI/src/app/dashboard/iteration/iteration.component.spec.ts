@@ -2420,4 +2420,34 @@ describe('IterationComponent', () => {
         const convertedTime = component.convertToHoursIfTime(time, unit);
         expect(convertedTime).toEqual('248h');
     });
+
+    it("should issue details view shown on arrow click",()=>{
+        const kpi = {
+          isEnabled: true,
+          kpiDetail: {
+            id: '63c85780f1cc727f444c6f0d',
+            kpiId: 'kpi119',
+            kpiName: 'Work Remaining',
+            isDeleted: 'False',
+            defaultOrder: 3,
+          },
+          kpiId: 'kpi119',
+          kpiName: 'Work Remaining',
+          order: 3,
+          shown: true,
+        };
+        const tableValues = {
+          ['Issue Description']:
+            'Playground server is failing with OutOfMemoryError',
+          ['Issue Id']: 'DTS-20225',
+          ['Issue Status']: 'In Investigation',
+          ['Issue Type']: 'Defect',
+          ['Issue URL']: 'https://tools.publicis.sapient.com/jira/browse/DTS-20225',
+          ['Logged Work']: '0 hrs',
+          ['Original Estimate']: '0 hrs',
+        };
+        component.handleArrowClick(kpi,"Issue Count",tableValues);
+        expect(component.displayModal).toBeTruthy();
+    })
+
 });

@@ -17,15 +17,51 @@
  ******************************************************************************/
 
 import { ProfileModule } from './profile.module';
+import { ProfileComponent } from './profile.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
 describe('ProfileModule', () => {
+  let fixture: ComponentFixture<ProfileComponent>;
   let profileModule: ProfileModule;
+  let component : ProfileComponent ;
+  let authService : GetAuthorizationService
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations : [ProfileComponent],
+      imports : [RouterTestingModule],
+      providers : [GetAuthorizationService]
+
+    }).compileComponents();
     profileModule = new ProfileModule();
+    fixture = TestBed.createComponent(ProfileComponent);
+    component = fixture.componentInstance;
+    authService = TestBed.inject(GetAuthorizationService);
   });
 
   it('should create an instance', () => {
     expect(profileModule).toBeTruthy();
   });
+
+  it("should user login as super admin",()=>{
+    spyOn(authService,'checkIfSuperUser').and.returnValue(true);
+    component.ngOnInit();
+    expect(component.isSuperAdmin).toBeTruthy();
+  })
+
+  it("should user login as project admin",()=>{
+    spyOn(authService,'checkIfProjectAdmin').and.returnValue(true);
+    component.ngOnInit();
+    expect(component.isProjectAdmin).toBeTruthy();
+  })
+
+  it("should AD login enable and change password disable",()=>{
+   localStorage.setItem('loginType',"AD");
+    component.ngOnInit();
+    expect(component.changePswdDisabled).toBeTruthy();
+    expect(component.adLogin).toBeTruthy();
+  })
+
 });

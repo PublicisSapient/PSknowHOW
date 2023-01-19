@@ -33,6 +33,7 @@ import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 
 import { environment } from 'src/environments/environment';
 import { TextEncryptionService } from '../../../services/text.encryption.service';
+import { of } from 'rxjs';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -320,4 +321,103 @@ describe('ProjectListComponent', () => {
     httpMock.expectOne(baseUrl + '/api/basicconfigs/631f394dcfef11709d7ddc7b').flush(deleteResponse);
     fixture.detectChanges();
   });
+
+  it("should route on tool component on edit button ",()=>{
+
+    component.cols = [
+      {
+        heading: 'Project',
+        id: 'name',
+      },
+      {
+        heading: 'Level Three',
+        id: 'hierarchyLevelThree',
+      },
+      {
+        heading: 'Level Two',
+        id: 'hierarchyLevelTwo',
+      },
+      {
+        heading: 'Level One',
+        id: 'hierarchyLevelOne',
+      },
+      {
+        heading: 'Type',
+        id: 'type',
+      },
+    ];
+
+    const fakeProject = {
+      hierarchyLevelOne: 'T1',
+      hierarchyLevelThree: 'T3',
+      hierarchyLevelTwo: 'T2',
+      id: '63b3f9098ec44416b3ce9699',
+      name: 'JIRAPROJ',
+      type: 'Scrum',
+    };
+    const navigateSpy = spyOn(router, 'navigate');
+    spyOn(sharedService , 'setSelectedProject');
+    component.editConfiguration(fakeProject);
+    expect(sharedService.setSelectedProject).toHaveBeenCalled();
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ToolMenu']);
+  })
+
+  it("should get HierarchyLevels",()=>{
+    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
+    component.getHierarchy();
+  })
+
+  it("should get success response while getting project list",()=>{
+    const fakeResponse = [{
+      message: "Fetched successfully",
+      success: true,
+      data: [
+        {
+          id: "631f394dcfef11709d7ddc7b",
+          projectName: "MAP",
+          createdAt: "2022-09-12T19:21:09",
+          kanban: false,
+          hierarchy: [
+            {
+              hierarchyLevel: {
+                level: 1,
+                hierarchyLevelId: "country",
+                hierarchyLevelName: "Country"
+              },
+              value: "India"
+            },
+            {
+              hierarchyLevel: {
+                level: 2,
+                hierarchyLevelId: "state",
+                hierarchyLevelName: "State"
+              },
+              value: "Haryana"
+            },
+            {
+              hierarchyLevel: {
+                level: 3,
+                hierarchyLevelId: "city",
+                hierarchyLevelName: "City"
+              },
+              value: "Gurgaon"
+            }
+          ],
+          isKanban: false
+        }
+      ]
+    }];
+    spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponse));
+    component.getData();
+    expect(component.loading).toBeFalse();
+    expect(component.projectList.length).toBeGreaterThan(0);
+  })
+
+  it("should project list zero while getting project list",()=>{
+   
+    spyOn(httpService,'getProjectListData').and.returnValue(of(projectListData.data));
+    component.getData();
+    expect(component.loading).toBeFalse();
+    expect(component.projectList.length).toBe(0)
+  })
 });
