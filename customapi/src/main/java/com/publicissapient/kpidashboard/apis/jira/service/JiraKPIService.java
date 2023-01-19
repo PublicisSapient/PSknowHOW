@@ -159,6 +159,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		iterationKpiModalValue.setRootCause(jiraIssue.getRootCauseList().get(0));
+
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
 		}

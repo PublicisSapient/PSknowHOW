@@ -53,6 +53,10 @@ public class IterationKpiModalValue implements Serializable {
 	private String issueType;
 	@JsonProperty("Size")
 	private Double issueSize;
+	@JsonProperty("RootCause")
+	private String rootCause;
+	@JsonProperty("Priority")
+	private String priority;
 	@JsonProperty("Remaining Hours")
 	private Integer remainingTime;
 	@JsonProperty("Logged Work")
