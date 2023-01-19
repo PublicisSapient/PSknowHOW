@@ -93,7 +93,13 @@ public class BambooClientBuildImpl implements BambooClient {
 	@Autowired
 	private BambooConfig settings;
 
-
+	/**
+	 * fetch jobs based on job key and branch key
+	 *
+	 * @param bambooServer {@link ProcessorToolConnection}
+	 * @return
+	 * @throws ParseException
+	 */
 	@Override
 	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
 			throws ParseException {

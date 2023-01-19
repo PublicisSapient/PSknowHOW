@@ -122,7 +122,6 @@ public class BambooProcessorJobExecuterTests {
 	@InjectMocks
 	private BambooProcessorJobExecuter task;
 
-
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
@@ -291,7 +290,7 @@ public class BambooProcessorJobExecuterTests {
 	public void collectJobsAdded() throws MalformedURLException, ParseException {
 		try {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
-			jobs.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
+			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			when(bambooClient.getJobsFromServer(any())).thenReturn(jobs);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -304,12 +303,11 @@ public class BambooProcessorJobExecuterTests {
 	}
 
 	@Test
-	public void collectJobsAddedWithNiceName() throws MalformedURLException, ParseException {
+	public void collectJobsAddedWithNewJob() throws MalformedURLException, ParseException {
 
 		try {
-			BambooProcessor processor = processorWithOneServer();
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
-			jobs.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
+			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			when(bambooClient.getJobsFromServer(any())).thenReturn(jobs);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
@@ -328,7 +326,7 @@ public class BambooProcessorJobExecuterTests {
 
 			Build build = build("1", JOB1_1_URL);
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
-			buildMap.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
+			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			when(bambooClient.getJobsFromServer(any())).thenReturn(buildMap);
 			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
@@ -368,7 +366,7 @@ public class BambooProcessorJobExecuterTests {
 			Build build = build("1", JOB1_1_URL);
 
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
-			buildMap.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
+			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			when(bambooClient.getJobsFromServer(any())).thenReturn(buildMap);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -386,9 +384,10 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			BambooProcessor processor = processorWithOneServer();
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
-			buildMap.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
-			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, buildMap,
-					BAMBOOSAMPLESERVER2 , processor.getId());
+			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
+			List<Build> activeBuildJobs = new ArrayList<>();
+			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, activeBuildJobs, buildMap,
+					BAMBOOSAMPLESERVER2, processor.getId());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
 		}
@@ -405,9 +404,11 @@ public class BambooProcessorJobExecuterTests {
 			Build build = build("1", JOB1_1_URL);
 			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
-			buildMap.put(new ObjectId("6296661b307f0239477f1e9e") , buildSet);
-			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, buildMap,
-					BAMBOOSAMPLESERVER , processor.getId());
+			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
+			List<Build> activeBuildJobs = new ArrayList<>();
+			activeBuildJobs.add(build);
+			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, activeBuildJobs, buildMap,
+					BAMBOOSAMPLESERVER, processor.getId());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
 		}
