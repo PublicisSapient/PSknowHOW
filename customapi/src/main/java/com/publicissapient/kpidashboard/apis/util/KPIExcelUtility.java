@@ -596,7 +596,8 @@ public class KPIExcelUtility {
      */
 
     public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
+                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData,
+                                                      FieldMapping fieldMapping) {
         if (MapUtils.isNotEmpty(totalStoriesMap)) {
             List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
                     .collect(Collectors.toList());
@@ -609,7 +610,12 @@ public class KPIExcelUtility {
                 storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                 excelData.setStoryId(storyDetails);
                 excelData.setClosedStatus(present);
-                excelData.setStoryPoints(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(jiraIssue.getOriginalEstimateMinutes() / 60 + " hrs");
+                }
 
                 kpiExcelData.add(excelData);
 
@@ -659,11 +665,11 @@ public class KPIExcelUtility {
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
-                if ( null != e.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-                    excelData.setStoryPoint(String.valueOf(e.getStoryPoints()));
+                    excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
                 }else if (null != e.getOriginalEstimateMinutes()) {
-                    excelData.setStoryPoint(String.valueOf(e.getOriginalEstimateMinutes()/60)+" hrs");
+                    excelData.setStoryPoint(e.getOriginalEstimateMinutes()/60+" hrs");
                 }
                 excelDataList.add(excelData);
             });
