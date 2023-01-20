@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,6 +62,10 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	private static final String STR_USERNAME = "username";
 	private static final String STR_PASSWORD = "password"; // NOSONAR
+
+	public JiraRestClientFactory() {
+		ExecutionLogContext.set(ExecutionLogContext.getContext());
+	}
 
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -204,7 +209,6 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 	 * @return jira rest client
 	 */
 	public ProcessorJiraRestClient getJiraClient(JiraInfo jiraInfo) {
-
 		String username = jiraInfo.getUsername();
 		String password = jiraInfo.getPassword();
 		String jiraConfigBaseUrl = jiraInfo.getJiraConfigBaseUrl();
@@ -232,7 +236,6 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
-
 			LOGGER.debug("Exception", e);
 		}
 

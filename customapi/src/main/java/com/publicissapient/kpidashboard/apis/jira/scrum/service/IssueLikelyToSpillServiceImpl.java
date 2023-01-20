@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalColoumn;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -70,8 +70,6 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
 	private static final String SPRINT_STATE = "sprintState";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUES_AT_RISK = "Issues at Risk";
 	private static final String STORYPOINTS = "Story Point";
 	private static final String OVERALL = "Overall";
@@ -202,15 +200,9 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
 							Integer timeRemaining = jiraIssue.getRemainingEstimateMinutes();
 							if (null != timeRemaining && timeRemaining > timeRemainingInSprintMin.get(0)) {
-
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-								IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-										jiraIssue.getNumber(), jiraIssue.getUrl());
-								IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-										iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
-								modalValues.add(iterationKpiModalValue);
-								overAllmodalValues.add(iterationKpiModalValue);
+								populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 								if (null != jiraIssue.getStoryPoints()) {
 									storyPoint = storyPoint + jiraIssue.getStoryPoints();
 									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -219,12 +211,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						} else {
 							riskIssueCount = riskIssueCount + 1;
 							overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-							IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-									jiraIssue.getNumber(), jiraIssue.getUrl());
-							IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-									iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
-							modalValues.add(iterationKpiModalValue);
-							overAllmodalValues.add(iterationKpiModalValue);
+							populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 							if (null != jiraIssue.getStoryPoints()) {
 								storyPoint = storyPoint + jiraIssue.getStoryPoints();
 								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -260,13 +247,12 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.ISSUES_LIKELY_TO_SPILL.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
+
 }

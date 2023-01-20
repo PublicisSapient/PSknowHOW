@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -64,8 +66,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class fetches the defect count KPI along with trend analysis. Trend
@@ -320,7 +320,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			Map<String, Long> priorityMap = sprintWiseDCPriorityMap.getOrDefault(currentNodeIdentifier,
 					new HashMap<>());
 			Map<String, Long> finalMap = new HashMap<>();
-			Map<String, Integer> overAllHoverValueMap = new HashMap<>();
+			Map<String, Object> overAllHoverValueMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
 				projectWisePriorityList.forEach(priority -> {
 					Long rcaWiseCount = priorityMap.getOrDefault(priority, 0L);
@@ -354,7 +354,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	}
 
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @param trendLineName
 	 * @param overAllHoverValueMap
@@ -362,7 +362,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	 * @param value
 	 * @return
 	 */
-	private DataCount getDataCountObject(Node node, String trendLineName, Map<String, Integer> overAllHoverValueMap,
+	private DataCount getDataCountObject(Node node, String trendLineName, Map<String, Object> overAllHoverValueMap,
 			String key, Long value) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
@@ -371,7 +371,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		dataCount.setValue(value);
 		dataCount.setKpiGroup(key);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {

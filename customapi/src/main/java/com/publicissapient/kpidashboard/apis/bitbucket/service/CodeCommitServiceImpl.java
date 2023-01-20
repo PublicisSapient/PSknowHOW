@@ -325,7 +325,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		while (DateTimeComparator.getDateOnlyInstance().compare(startDateTime, end) <= 0) {
 			String currentDate = formatter.print(startDateTime);
 			DataCount dataCount = new DataCount();
-			Map<String, Integer> hoverValues = new HashMap<>();
+			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
 				excelDataLoader.put(formatDate(currentDate), commitForDay);

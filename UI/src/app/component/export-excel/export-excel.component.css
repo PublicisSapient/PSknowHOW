@@ -1,0 +1,38 @@
+.text-blue{
+    color: var(--color-secondary-blue);
+    text-decoration: underline;
+}
+
+:host::ng-deep .p-dialog{
+    width: auto !important;
+    max-width: 90vw !important;
+    min-width: 544px;
+}
+
+:host ::ng-deep.p-dialog-header-icons{
+    top: -8px;
+    right: -8px;
+    border-radius: 2px;
+    background-color: black;
+    border: none;
+    padding: 5px;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+  }
+
+.column-content-spacing{
+    margin: 0px 0px 4px 0px;
+    display: inline-block;
+}
+
+.export-button{
+    position: absolute;
+    right: 10px;
+    top: 14px;
+}
+
+::ng-deep .p-overflow-hidden{
+    overflow: unset;
+}

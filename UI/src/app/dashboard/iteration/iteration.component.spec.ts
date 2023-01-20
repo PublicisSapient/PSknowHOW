@@ -34,6 +34,7 @@ import { of } from 'rxjs/internal/observable/of';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -1978,7 +1979,7 @@ describe('IterationComponent', () => {
                 RouterTestingModule.withRoutes(routes),
             ],
             declarations: [IterationComponent,
-                MultilineComponent, DashboardComponent],
+                MultilineComponent, DashboardComponent,ExportExcelComponent],
             providers: [
                 HelperService,
                 { provide: APP_CONFIG, useValue: AppConfig },
@@ -2221,8 +2222,8 @@ describe('IterationComponent', () => {
     it('should call downloadExcel', () => {
         component.filterApplyData = [];
         component.filterData = [];
-        const spy = spyOn(helperService, 'downloadExcel');
-        component.downloadExcel('kpi14', 'Lead Time', false);
+        const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
+        component.downloadExcel('kpi14', 'Lead Time', false,false);
         expect(spy).toHaveBeenCalled();
     });
 

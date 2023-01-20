@@ -28,10 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +58,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -69,8 +69,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -160,7 +158,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseFTPListMap = new HashMap<>();
 
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			List<Double> addFilterFtprList = new ArrayList<>();
@@ -230,9 +228,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	}
 
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseFtpStories) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(sprintWiseFtpStories)) {
 			howerMap.put(HOVER_KEY_FTP_STORIES, sprintWiseFtpStories.size());
 		} else {

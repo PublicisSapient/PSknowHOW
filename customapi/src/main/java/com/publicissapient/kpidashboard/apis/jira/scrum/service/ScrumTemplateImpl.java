@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -200,7 +199,7 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 
 		Map<Pair<String, String>, Double> sprintWiseDIRMap = new HashMap<>();
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		
 		// transforming data coming from db and calculating Kpi information for each sprint
 		sprintWiseMap.forEach((sprint, subCategoryMap) -> {
@@ -381,9 +380,9 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 	 * @param storyIdList          story id list
 	 * @param sprintWiseDefectList defects linked to story
 	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(sprintWiseDefectList)) {
 			howerMap.put(DEFECT, sprintWiseDefectList.size());
 		} else {

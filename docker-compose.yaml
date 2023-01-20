@@ -61,6 +61,7 @@ services:
       - 443:443
     volumes:
       - /app/apps/logs/ui:/var/log/nginx
+      #- /app/apps/certs/:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
     environment:
       - API_HOST=customapi
       - API_PORT=8080

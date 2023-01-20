@@ -306,7 +306,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
                     .of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
             String validationKey = node.getSprintFilter().getName();
 
-            Map<String, Integer> howerMap = new LinkedHashMap<>();
+            Map<String, Object> howerMap = new LinkedHashMap<>();
             Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
             currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
                     sprintWiseAutoTestMap.get(currentNodeIdentifier));
@@ -383,13 +383,12 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
     /**
      * Sets Hower map
-     *
-     * @param sprintId
+     *  @param sprintId
      * @param howerMap
      */
     private void setHowerMap(Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseAutomatedMap,
                              Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseTotalMap, Pair<String, String> sprintId,
-                             Map<String, Integer> howerMap) {
+                             Map<String, Object> howerMap) {
         if (CollectionUtils.isNotEmpty(sprintWiseAutomatedMap.get(sprintId))) {
             howerMap.put(AUTOMATED, sprintWiseAutomatedMap.get(sprintId).size());
         } else {

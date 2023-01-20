@@ -97,6 +97,7 @@ import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-
 import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 
 /******************************************************/
 
@@ -135,7 +136,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
         NoAccessComponent,
         GroupedColumnPlusLineChartComponent,
         BacklogComponent,
-        TableComponent
+        TableComponent,
+        ExportExcelComponent
     ],
     imports: [
         DropdownModule,

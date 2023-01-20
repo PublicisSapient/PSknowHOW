@@ -37,12 +37,12 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalColoumn;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -66,8 +66,6 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String STORY_POINT = "Story Point";
 	private static final String OVERALL = "Overall";
@@ -168,6 +166,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 						allIssues.size());
+				allIssues = excludeOnHoldStatusIssue(fieldMapping, allIssues);
 
 				Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 						.collect(Collectors.groupingBy(JiraIssue::getTypeName));
@@ -183,12 +182,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					int issueCount = 0;
 					Double storyPoint = 0.0;
 					for (JiraIssue jiraIssue : issues) {
-						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
-						modalValues.add(iterationKpiModalValue);
-						overAllmodalValues.add(iterationKpiModalValue);
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -218,15 +212,22 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				// Create kpi level filters
 				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-				// Modal Heads Options
-				List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-						CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
-				kpiElement.setModalHeads(modalHeads);
+				kpiElement.setModalHeads(KPIExcelColumn.CLOSURES_POSSIBLE_TODAY.getColumns());
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
 	}
+
+	private List<JiraIssue> excludeOnHoldStatusIssue(FieldMapping fieldMapping, List<JiraIssue> allIssues) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatus())) {
+			allIssues = allIssues.stream().filter(
+					issue -> !fieldMapping.getJiraOnHoldStatus().contains(issue.getStatus()))
+					.collect(Collectors.toList());
+		}
+		return allIssues;
+	}
+
 }

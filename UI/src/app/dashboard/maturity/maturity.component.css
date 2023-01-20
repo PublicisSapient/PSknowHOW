@@ -190,6 +190,7 @@
 	text-align: center;
 	box-sizing: border-box;
 	padding:8px;
+	pointer-events: none;
 }
 
 ::ng-deep .tooltipForCategory::after {
@@ -204,4 +205,5 @@
 	-webkit-filter:  drop-shadow(0px 2px 1px #b9b9bb);
 	filter:  drop-shadow(0px 2px 1px #b9b9bb);
 	left: 40%;
+	pointer-events: none;
   }

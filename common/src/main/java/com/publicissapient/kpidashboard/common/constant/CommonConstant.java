@@ -96,6 +96,7 @@ public final class CommonConstant {
 	public static final String ENG_MATURITY_MASTER = "ENG_MATURITY_MASTER";
 	
 	public static final String ARROW = "->";
+	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
@@ -130,8 +131,29 @@ public final class CommonConstant {
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
 	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
-	public static final String MODAL_HEAD_ISSUE_STATUS = "Issue Status";
-	public static final String MODAL_HEAD_ISSUE_TYPE = "Issue Type";
+
+	public static final String PSLOGDATA = "PSLogData";
+	public static final String REQUESTID = "requestId";
+	public static final String USER_NAME = "userName";
+	public static final String ENVIRONMENT = "environment";
+	public static final String PROJECTNAME = "projectName";
+	public static final String PROJECT_CONFIG_ID = "projectBasicConfigId";
+	public static final String FETCHING_ISSUE = "fetchingIssue";
+	public static final String SPRINT_REPORTDATA = "collectSprintReport";
+	public static final String SAVED_ISSUES = "savedIssues";
+	public static final String SAVED_EPIC_ISSUES = "saveEpicIssues";
+	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
+	public static final String SPRINT_DATA = "collectSprintData";
+	public static final String RELEASE_DATA = "collectReleaseData";
+	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
+	public static final String EPIC_DATA = "collectEpicData";
+	public static final String METADATA = "collectMetaData";
+	public static final String PROJECT_RUN = "projectRun";
+	public static final String CRON = "cron";
+
+
+
+
 
 
 
