@@ -160,7 +160,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 		if (CollectionUtils.isNotEmpty(sortedClosedSprints)) {
 			closedSprints = sortedClosedSprints.subList(
-					sortedClosedSprints.size() - customApiConfig.getSprintCountForFilters(),
+					Math.max(sortedClosedSprints.size() - customApiConfig.getSprintCountForFilters(), 0),
 					sortedClosedSprints.size());
 		}
 

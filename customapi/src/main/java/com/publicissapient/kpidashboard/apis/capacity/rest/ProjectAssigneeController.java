@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.capacity.rest;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,12 @@ public class ProjectAssigneeController {
 	@Autowired
 	CapacityMasterService capacityMasterService;
 
-	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
+	@Autowired
+	private ContextAwarePolicyEnforcement policy;
+
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@Valid @RequestBody CapacityMaster capacityMaster) {
+		policy.checkPermission(capacityMaster, "SAVE_UPDATE_CAPACITY");
 		ServiceResponse response = new ServiceResponse(false, "Failed to add Capacity Data", null);
 		try {
 			capacityMaster = capacityMasterService.processCapacityData(capacityMaster);
@@ -62,7 +66,6 @@ public class ProjectAssigneeController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@PreAuthorize("hasPermission(null , 'PROJECT_ASSIGNEE')")
 	@GetMapping("/roles")
 	public ResponseEntity<ServiceResponse> assigneeRolesSuggestion() {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "All Roles", Role.getAllRoles()));

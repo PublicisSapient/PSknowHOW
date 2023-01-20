@@ -27,7 +27,7 @@ public class CapacityMaster {
 	private Double capacity;
 	private String startDate; // format yyyy-mm-dd
 	private String endDate; // format yyyy-mm-dd
-	private ObjectId basicProjectConfigId; // not passed from UIL
+	private ObjectId basicProjectConfigId;
 	private List<AssigneeCapacity> assigneeCapacity;
 	private boolean kanban;
 	private boolean assigneeDetails;

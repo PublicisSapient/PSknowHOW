@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -35,6 +37,9 @@ public class ProjectAssigneeControllerTest {
 	@Mock
 	private CapacityMasterService assigneeService;
 
+	@Mock
+	private ContextAwarePolicyEnforcement policy;
+
 	private CapacityMaster capacityMaster;
 
 	@Before
@@ -54,7 +59,6 @@ public class ProjectAssigneeControllerTest {
 		assigneeRoles1.setUserName("testDisplayName2");
 		assigneeRoles1.setRole(Role.BACKEND_DEVELOPER);
 		assigneeRolesList.add(assigneeRoles2);
-
 		capacityMaster.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
 		capacityMaster.setAssigneeCapacity(assigneeRolesList);
 
