@@ -66,9 +66,6 @@ function running_js()
 	echo "###########  create_roles `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_roles.js
 
-	echo "###########  insert_assignee_roles `date` ###########"
-	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_assignee_roles.js
-
 	echo "###########  creating authorization policy rules `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_action_policy_rules.js
 
