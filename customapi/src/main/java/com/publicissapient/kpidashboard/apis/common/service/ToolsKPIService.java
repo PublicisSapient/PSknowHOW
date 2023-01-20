@@ -1,23 +1,5 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -29,6 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -268,22 +269,14 @@ public abstract class ToolsKPIService<R, S> {
 			Map<String, Object> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
 			if (MapUtils.isNotEmpty(hoverValuee)) {
 				hoverValuee.forEach((key, value) -> {
-					if(value instanceof Integer){
-						hoverValue.computeIfPresent(key, (k, v) -> (Integer)v + (Integer) value);
-						hoverValue.putIfAbsent(key, value);
+					if (value instanceof Integer) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
+					} else if (value instanceof Double) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
+					} else if (value instanceof Long) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
 					}
-					else if(value instanceof Double){
-						hoverValue.computeIfPresent(key, (k, v) -> (Double)v + (Double) value);
-						hoverValue.putIfAbsent(key, value);
-					}
-					else if(value instanceof Long){
-						hoverValue.computeIfPresent(key, (k, v) -> (Long)v + (Long) value);
-						hoverValue.putIfAbsent(key, value);
-					}
-					else {
-						hoverValue.putIfAbsent(key, value);
-					}
-
+					hoverValue.putIfAbsent(key, value);
 				});
 			}
 		}
