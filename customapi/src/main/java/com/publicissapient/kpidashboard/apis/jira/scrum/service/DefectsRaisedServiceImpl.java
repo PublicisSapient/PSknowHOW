@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.model.*;
 
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.slf4j.Logger;
@@ -78,7 +79,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		DataCount trendValue = new DataCount();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
@@ -103,7 +104,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+												  KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
@@ -137,7 +138,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+										  KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
@@ -147,111 +148,125 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ADDED_ISSUES);
-		if (CollectionUtils.isNotEmpty(allIssues)) {
-			LOGGER.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
+		assert latestSprint != null;
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
-			Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = allIssues.stream().collect(
-					Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
+		List<String> defectTypes = fieldMapping.getJiradefecttype();
 
-			Set<String> priorities = new HashSet<>();
-			Set<String> statuses = new HashSet<>();
-			List<JiraIssue> tempLinkedDefect = allIssues.stream()
-					.filter(ai -> CollectionUtils.isNotEmpty(ai.getDefectStoryID())).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(ADDED_ISSUES))) {
+			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ADDED_ISSUES)).stream()
+					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 
-			double storyPointsSum = tempLinkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
-					.mapToDouble(JiraIssue::getStoryPoints).sum();
-			double overAllDefectDensity = storyPointsSum == 0 ? 0 : tempLinkedDefect.size() / storyPointsSum;
 
-			List<Double> overAllLinkedDefects = Arrays.asList(0.0);
-			List<Double> overAllUnlinkedDefects = Arrays.asList(0.0);
-			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
-			List<IterationKpiModalValue> overAlllinkedmodalValues = new ArrayList<>();
-			List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(allIssues)) {
+				LOGGER.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
-			priorityAndStatusWiseIssues
-					.forEach((priority, statusWiseIssue) -> statusWiseIssue.forEach((status, issues) -> {
-						priorities.add(priority);
-						statuses.add(status);
+				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = allIssues.stream().collect(
+						Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
 
-						List<IterationKpiModalValue> linkedModalValues = new ArrayList<>();
-						List<IterationKpiModalValue> unLinkedModalValues = new ArrayList<>();
-						List<IterationKpiModalValue> modalValues = new ArrayList<>();
+				Set<String> priorities = new HashSet<>();
+				Set<String> statuses = new HashSet<>();
+				List<JiraIssue> tempLinkedDefect = allIssues.stream()
+						.filter(ai -> CollectionUtils.isNotEmpty(ai.getDefectStoryID())).collect(Collectors.toList());
 
-						List<JiraIssue> linkedDefect = new ArrayList<>();
+				double storyPointsSum = tempLinkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
+						.mapToDouble(JiraIssue::getStoryPoints).sum();
+				double overAllDefectDensity = storyPointsSum == 0 ? 0 : tempLinkedDefect.size() / storyPointsSum;
 
-						List<JiraIssue> unlinkedDefect = new ArrayList<>();
+				List<Double> overAllLinkedDefects = Arrays.asList(0.0);
+				List<Double> overAllUnlinkedDefects = Arrays.asList(0.0);
+				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
+				List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
+				List<IterationKpiModalValue> overAlllinkedmodalValues = new ArrayList<>();
+				List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
 
-						for (JiraIssue jiraIssue : issues) {
 
-							checkDefectType(overAllUnlinkedmodalValues, overAlllinkedmodalValues, linkedModalValues,
-									unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue);
-							populateIterationData(overAllModalValues, modalValues, jiraIssue);
+				priorityAndStatusWiseIssues
+						.forEach((priority, statusWiseIssue) -> statusWiseIssue.forEach((status, issues) -> {
+							priorities.add(priority);
+							statuses.add(status);
 
-						}
-						double storyPoints = linkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
-								.mapToDouble(JiraIssue::getStoryPoints).sum();
-						double defectDensity = storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints;
+							List<IterationKpiModalValue> linkedModalValues = new ArrayList<>();
+							List<IterationKpiModalValue> unLinkedModalValues = new ArrayList<>();
+							List<IterationKpiModalValue> modalValues = new ArrayList<>();
 
-						overAllLinkedDefects.set(0, overAllLinkedDefects.get(0) + linkedDefect.size());
-						overAllUnlinkedDefects.set(0, overAllUnlinkedDefects.get(0) + unlinkedDefect.size());
-						List<IterationKpiData> data = new ArrayList<>();
-						IterationKpiData dd = new IterationKpiData(DEFECT_DENSITY, defectDensity, null, null, "",
-								modalValues);
-						IterationKpiData ud = new IterationKpiData(UNLINKED_DEFECTS, (double) unlinkedDefect.size(),
-								null, null, null, unLinkedModalValues);
+							List<JiraIssue> linkedDefect = new ArrayList<>();
 
-						IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(), null,
-								null, null, linkedModalValues);
-						data.add(dd);
-						data.add(ud);
-						data.add(ld);
+							List<JiraIssue> unlinkedDefect = new ArrayList<>();
 
-						IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, status, data);
-						iterationKpiValues.add(iterationKpiValue);
-					}));
+							for (JiraIssue jiraIssue : issues) {
 
-			List<IterationKpiData> data = new ArrayList<>();
-			IterationKpiData overAllDD = new IterationKpiData(DEFECT_DENSITY, overAllDefectDensity, null, null, "",
-					overAllModalValues);
-			IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS, overAllLinkedDefects.get(0), null, null,
-					null, overAlllinkedmodalValues);
-			IterationKpiData overAllUD = new IterationKpiData(UNLINKED_DEFECTS, overAllUnlinkedDefects.get(0), null,
-					null, null, overAllUnlinkedmodalValues);
-			data.add(overAllDD);
-			data.add(overAllUD);
-			data.add(overAllLD);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-			iterationKpiValues.add(overAllIterationKpiValue);
+								checkDefectType(overAllUnlinkedmodalValues, overAlllinkedmodalValues, linkedModalValues,
+										unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue);
+								populateIterationData(overAllModalValues, modalValues, jiraIssue);
 
-			// Create kpi level filters
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_STATUS, statuses);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+							}
+							double defectDensity = getDefectDensity(linkedDefect);
 
-			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(iterationKpiFilters);
-			if (latestSprint != null) {
+							overAllLinkedDefects.set(0, overAllLinkedDefects.get(0) + linkedDefect.size());
+							overAllUnlinkedDefects.set(0, overAllUnlinkedDefects.get(0) + unlinkedDefect.size());
+							List<IterationKpiData> data = new ArrayList<>();
+							IterationKpiData dd = new IterationKpiData(DEFECT_DENSITY, defectDensity, null, null, "",
+									modalValues);
+							IterationKpiData ud = new IterationKpiData(UNLINKED_DEFECTS, (double) unlinkedDefect.size(),
+									null, null, null, unLinkedModalValues);
+
+							IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(), null,
+									null, null, linkedModalValues);
+							data.add(dd);
+							data.add(ud);
+							data.add(ld);
+
+							IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, status, data);
+							iterationKpiValues.add(iterationKpiValue);
+						}));
+
+				List<IterationKpiData> data = new ArrayList<>();
+				IterationKpiData overAllDD = new IterationKpiData(DEFECT_DENSITY, overAllDefectDensity, null, null, "",
+						overAllModalValues);
+				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS, overAllLinkedDefects.get(0), null, null,
+						null, overAlllinkedmodalValues);
+				IterationKpiData overAllUD = new IterationKpiData(UNLINKED_DEFECTS, overAllUnlinkedDefects.get(0), null,
+						null, null, overAllUnlinkedmodalValues);
+				data.add(overAllDD);
+				data.add(overAllUD);
+				data.add(overAllLD);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValues.add(overAllIterationKpiValue);
+
+				// Create kpi level filters
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
+				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_STATUS, statuses);
+				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+
+				trendValue.setValue(iterationKpiValues);
+				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
+			    kpiElement.setModalHeads(KPIExcelColumn.DEFECT_RAISED.getColumns());
+				kpiElement.setTrendValueList(trendValue);
 			}
-			kpiElement.setModalHeads(KPIExcelColumn.DEFECT_RAISED.getColumns());
-			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 
-	private void checkDefectType(List<IterationKpiModalValue> overAllUnlinkedmodalValues,
-			List<IterationKpiModalValue> overAlllinkedmodalValues, List<IterationKpiModalValue> linkedModalValues,
-			List<IterationKpiModalValue> unLinkedModalValues, List<JiraIssue> linkedDefect,
-			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue) {
-		if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
-			linkedDefect.add(jiraIssue);
-			populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue);
+	private double getDefectDensity(List<JiraIssue> linkedDefect) {
+		double storyPoints = linkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
+				.mapToDouble(JiraIssue::getStoryPoints).sum();
+		return storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints;
+	}
 
-		} else {
-			unlinkedDefect.add(jiraIssue);
-			populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue);
+	private void checkDefectType (List < IterationKpiModalValue > overAllUnlinkedmodalValues,
+				List < IterationKpiModalValue > overAlllinkedmodalValues, List < IterationKpiModalValue > linkedModalValues,
+				List < IterationKpiModalValue > unLinkedModalValues, List < JiraIssue > linkedDefect,
+				List < JiraIssue > unlinkedDefect, JiraIssue jiraIssue){
+			if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
+				linkedDefect.add(jiraIssue);
+				populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue);
 
-		}
+			} else {
+				unlinkedDefect.add(jiraIssue);
+				populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue);
+
+			}
 	}
 }
