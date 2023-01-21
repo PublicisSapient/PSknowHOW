@@ -69,7 +69,7 @@ export class HelperService {
         for (let i = 0; i < masterData?.kpiList?.length; i++) {
             const obj = { ...masterData.kpiList[i] };
             obj['chartType'] = '';
-            let condition = obj.kpiSource === kpiSource && obj.kanban === isKanban && kpiIdsForCurrentBoard?.includes(obj.kpiId);
+            let condition = obj.kpiSource === kpiSource && obj.kanban === isKanban;
 
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
