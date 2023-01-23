@@ -3260,7 +3260,7 @@ db.getCollection('kpi_master').insert(
   },
   {
       "kpiId": "kpi999",
-      "kpiName": "Delay Days",
+      "kpiName": "Iteration Status",
       "maxValue": "",
       "kpiUnit": "Count",
       "isDeleted": "False",

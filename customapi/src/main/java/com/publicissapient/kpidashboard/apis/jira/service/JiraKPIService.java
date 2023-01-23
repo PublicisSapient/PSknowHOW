@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,150 +47,148 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
  * This class is extention of ApplicationKPIService. All Jira KPIs service have to
  * implement this class {@link ApplicationKPIService}
  *
- * @author tauakram
  * @param <R> KPIs calculated value type
  * @param <S> Maturity Value Type not applicable in every case
  * @param <T> Bind DB data with type
- *
+ * @author tauakram
  */
-public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> implements ApplicationKPIService<R, S, T> {
+public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
-	@Autowired
-	private CacheService cacheService;
+    @Autowired
+    private CacheService cacheService;
 
-	/**
-	 * Gets qualifier type
-	 * 
-	 * @return qualifier type
-	 */
-	public abstract String getQualifierType();
+    /**
+     * Gets qualifier type
+     *
+     * @return qualifier type
+     */
+    public abstract String getQualifierType();
 
-	/**
-	 * Gets Kpi data based on kpi request
-	 * 
-	 * @param kpiRequest
-	 * @param kpiElement
-	 * @param treeAggregatorDetail
-	 * @return kpi data
-	 * @throws ApplicationException
-	 */
-	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
+    /**
+     * Gets Kpi data based on kpi request
+     *
+     * @param kpiRequest
+     * @param kpiElement
+     * @param treeAggregatorDetail
+     * @return kpi data
+     * @throws ApplicationException
+     */
+    public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+                                          TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
-	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using it
-	 * for maintaining any sort of cache.
-	 *
-	 * @return Scrum Request Tracker Id
-	 */
-	public String getRequestTrackerId() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
-	}
+    /**
+     * Returns API Request tracker Id to be used for logging/debugging and using it
+     * for maintaining any sort of cache.
+     *
+     * @return Scrum Request Tracker Id
+     */
+    public String getRequestTrackerId() {
+        return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
+    }
 
-	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using it
-	 * for maintaining any sort of cache.
-	 *
-	 * @return Kanban Request Tracker Id
-	 */
-	public String getKanbanRequestTrackerId() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name());
-	}
+    /**
+     * Returns API Request tracker Id to be used for logging/debugging and using it
+     * for maintaining any sort of cache.
+     *
+     * @return Kanban Request Tracker Id
+     */
+    public String getKanbanRequestTrackerId() {
+        return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name());
+    }
 
-	/**
-	 * This method populates KPI Element with Validation data. It will be triggered
-	 * only for request originated to get Excel data.
-	 *
-	 * @param kpiElement           KpiElement
-	 * @param requestTrackerId     request id
-	 * @param validationDataKey    validation data key
-	 * @param validationDataMap    validation data map
-	 * @param storyIdList          story id list
-	 * @param sprintWiseDefectList sprints defect list
-	 * @param storyPointList       the story point list
-	 */
-	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
-			Map<String, ValidationData> validationDataMap, List<String> storyIdList,
-			List<JiraIssue> sprintWiseDefectList, List<String> storyPointList) {
+    /**
+     * This method populates KPI Element with Validation data. It will be triggered
+     * only for request originated to get Excel data.
+     *
+     * @param kpiElement           KpiElement
+     * @param requestTrackerId     request id
+     * @param validationDataKey    validation data key
+     * @param validationDataMap    validation data map
+     * @param storyIdList          story id list
+     * @param sprintWiseDefectList sprints defect list
+     * @param storyPointList       the story point list
+     */
+    public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
+                                             Map<String, ValidationData> validationDataMap, List<String> storyIdList,
+                                             List<JiraIssue> sprintWiseDefectList, List<String> storyPointList) {
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(storyIdList);
-			validationData.setStoryPointList(storyPointList);
-			validationData.setDefectKeyList(
-					sprintWiseDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			validationDataMap.put(validationDataKey, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
+        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+            ValidationData validationData = new ValidationData();
+            validationData.setStoryKeyList(storyIdList);
+            validationData.setStoryPointList(storyPointList);
+            validationData.setDefectKeyList(
+                    sprintWiseDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+            validationDataMap.put(validationDataKey, validationData);
+            kpiElement.setMapOfSprintAndData(validationDataMap);
+        }
+    }
 
-	public Map<String, Double> getLastNMonth(int count) {
-		Map<String, Double> lastNMonth = new LinkedHashMap<>();
-		DateTime currentDate = DateTime.now();
-		String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
-		lastNMonth.put(currentDateStr, 0.0);
-		DateTime lastMonth = DateTime.now();
-		for (int i = 1; i < count; i++) {
-			lastMonth = lastMonth.minusMonths(1);
-			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
-			lastNMonth.put(lastMonthStr, 0.0);
+    public Map<String, Double> getLastNMonth(int count) {
+        Map<String, Double> lastNMonth = new LinkedHashMap<>();
+        DateTime currentDate = DateTime.now();
+        String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
+        lastNMonth.put(currentDateStr, 0.0);
+        DateTime lastMonth = DateTime.now();
+        for (int i = 1; i < count; i++) {
+            lastMonth = lastMonth.minusMonths(1);
+            String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
+            lastNMonth.put(lastMonthStr, 0.0);
 
-		}
-		return lastNMonth;
-	}
-	
-	public  long calcWeekDays(final LocalDate start, final LocalDate end) {
-	    final DayOfWeek startW = start.getDayOfWeek();
-	    final DayOfWeek endW = end.getDayOfWeek();
+        }
+        return lastNMonth;
+    }
 
-	    final long days = ChronoUnit.DAYS.between(start, end);
-	    final long daysWithoutWeekends = days - 2 * ((days + startW.getValue())/7);
+    public long calcWeekDays(final LocalDate start, final LocalDate end) {
+        final DayOfWeek startW = start.getDayOfWeek();
+        final DayOfWeek endW = end.getDayOfWeek();
 
-	    //adjust for starting and ending on a Sunday:
-	    return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
-	}
+        final long days = ChronoUnit.DAYS.between(start, end);
+        final long daysWithoutWeekends = days - 2 * ((days + startW.getValue()) / 7);
 
-	public void populateIssueWiseData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, IterationKpiModalValue iterationKpiModalValue){
-		int originalEstimate = 0;
-		int loggedTime = 0;
-		IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(iterationKpiModalValue.getIssueId());
-		iterationKpiModalValue.setIssueType(iterationKpiModalValue.getIssueType());
-		iterationKpiModalValue.setPriority(iterationKpiModalValue.getPriority());
-		iterationKpiModalValue.setDescription(iterationKpiModalValue.getDescription());
-		iterationKpiModalValue.setIssueStatus(iterationKpiModalValue.getIssueStatus());
-		iterationKpiModalValue.setDueDate(iterationKpiModalValue.getDueDate());
-		if(iterationKpiModalValue.getRemainingEstimateMinutes() != null) {
-			iterationKpiModalValue.setRemainingTime(iterationKpiModalValue.getRemainingEstimateMinutes()/60);
-		}
-		iterationKpiModalValue.setDelay(iterationKpiModalValue.getDelay());
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
-	}
+        //adjust for starting and ending on a Sunday:
+        return daysWithoutWeekends + (startW == DayOfWeek.SUNDAY ? 1 : 0) + (endW == DayOfWeek.SUNDAY ? 1 : 0);
+    }
 
-	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		int originalEstimate = 0;
-		int loggedTime = 0;
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		if(jiraIssue.getRemainingEstimateMinutes() != null) {
-			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
-		}
-		if(null!=jiraIssue.getOriginalEstimateMinutes()){
-			originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
-		}
-		else
-			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
-		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
-		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
-	}
+    public void populateIterationStatusData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, IterationStatus iterationStatus) {
+        IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
+        iterationKpiModalVal.setIssueId(iterationStatus.getIssueId());
+        iterationKpiModalVal.setIssueType(iterationStatus.getIssueStatus());
+        iterationKpiModalVal.setPriority(iterationStatus.getPriority());
+        iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
+        iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
+        iterationKpiModalVal.setDueDate(iterationStatus.getDueDate());
+
+        if (iterationStatus.getRemainingEstimateMinutes() != null) {
+            iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes() / 60);
+        }
+
+        iterationKpiModalVal.setDelay(iterationStatus.getDelay());
+        modalValues.add(iterationKpiModalVal);
+        overAllmodalValues.add(iterationKpiModalVal);
+    }
+
+    public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+        int originalEstimate = 0;
+        int loggedTime = 0;
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+        iterationKpiModalValue.setDescription(jiraIssue.getName());
+        iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+        iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
+        if (jiraIssue.getRemainingEstimateMinutes() != null) {
+            iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes() / 60);
+        }
+        if (null != jiraIssue.getOriginalEstimateMinutes()) {
+            originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+            iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate + " hrs"));
+        } else
+            iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate) + " hrs");
+        loggedTime = jiraIssue.getTimeSpentInMinutes() / 60;
+        iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime + " hrs"));
+        modalValues.add(iterationKpiModalValue);
+        overAllmodalValues.add(iterationKpiModalValue);
+    }
 
 }

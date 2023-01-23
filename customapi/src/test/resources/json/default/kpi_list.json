@@ -3593,5 +3593,22 @@
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
+  },
+  {
+    "kpiId": "kpi999",
+    "kpiName": "Iteration Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 10,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": false
   }
 ]
