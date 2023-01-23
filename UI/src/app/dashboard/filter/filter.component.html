@@ -141,7 +141,7 @@
       <!-- project -->
       <div class="form-check filter-box p-col-lg trend-line-container">
          <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
-            (change)="handleIterationFilters('project')" placeholder="Project" [clearable]="false" class="p-pb-0">
+            (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false" class="p-pb-0">
             <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
             </ng-option>
          </ng-select>
@@ -151,7 +151,7 @@
       <div class="form-check filter-box p-col-lg trend-line-container sprint-filter"
          *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
          <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-            (change)="handleIterationFilters('sprint')" placeholder="Sprint" [clearable]="false" class="p-pb-0">
+            (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false" class="p-pb-0">
             <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
                {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
             </ng-option>

@@ -325,7 +325,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			Map<String, Long> rcaMap = sprintWiseRCAMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
 			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
 			Map<String, Long> finalMap = new HashMap<>();
-			Map<String, Integer> overAllHoverValueMap = new HashMap<>();
+			Map<String, Object> overAllHoverValueMap = new HashMap<>();
 			if (allRCA.size() > 1) {
 				allRCA.forEach(rca -> {
 					finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
@@ -346,7 +346,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				dataCount.setValue(value);
 				dataCount.setKpiGroup(key);
-				Map<String, Integer> hoverValueMap = new HashMap<>();
+				Map<String, Object> hoverValueMap = new HashMap<>();
 				if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
 					dataCount.setHoverValue(overAllHoverValueMap);
 				} else {

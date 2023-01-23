@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -63,8 +65,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DSR and trend analysis of the DSR.
@@ -233,7 +233,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
 		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
 		Map<Pair<String, String>, Double> sprintWiseDsrMap = new HashMap<>();
-		Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>,List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap= new HashMap<>();
 		Map<Pair<String, String>,List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap= new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -344,9 +344,9 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param uat
 	 * @param total
 	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Integer>> sprintWiseHowerMap,
+	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<JiraIssue> uat, List<JiraIssue> total) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(uat)) {
 			howerMap.put(UAT, uat.size());
 		} else {

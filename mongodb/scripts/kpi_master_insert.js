@@ -3314,54 +3314,24 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi79",
-    "kpiName": "Test Cases Without Story Link",
-    "maxValue": "5000",
-    "kpiUnit": "",
+    "kpiId": "kpi129",
+    "kpiName": "Issues Without Story Link",
+    "maxValue": "",
+    "kpiUnit": "Hours",
     "isDeleted": "False",
     "defaultOrder": 1,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Zypher",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "progress-bar",
-    "kpiInfo": {
-      "formula": [
-        {
-          "lhs": "Testcases without story link",
-          "rhs": "# of total non-regression test cases without story link"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi80",
-    "kpiName": "Defects Without Story Link",
-    "maxValue": "500",
-    "kpiUnit": "",
-    "isDeleted": "False",
-    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "progress-bar",
+    "chartType": null,
     "kpiInfo": {
       "formula": [
+        {
+          "lhs": "Testcases without story link",
+          "rhs": "# of total non-regression test cases without story link"
+        },
         {
           "lhs": "Defect Count Without Story Link",
           "rhs": "# of total defects without Story link"
@@ -3370,17 +3340,23 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
+          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
+        },
+        {
+          "type": "paragraph",
           "value": "This Kpi works only on Project level."
         }
       ]
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
-    "isPositiveTrend": false,
+    "isPositiveTrend": true,
     "showTrend": false,
+    "isSquadSupport": false,
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "kpiFilter": "multiSelectDropDown"
+    "kpiFilter": "",
+    "boxType": "3_column",
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi127",

@@ -21,15 +21,16 @@ package com.publicissapient.kpidashboard.common.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.application.Week;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 
 /**
  * @author narsingh9
@@ -143,5 +144,9 @@ public class DateUtil {
 
 	public static boolean isWithinDateRange(LocalDate targetDate, LocalDate startDate, LocalDate endDate){
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
+	public static String convertMillisToDateTime(long milliSeconds) {
+		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
 	}
 }

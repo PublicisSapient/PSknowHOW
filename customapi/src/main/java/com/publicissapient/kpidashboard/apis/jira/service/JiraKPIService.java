@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
+import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -190,5 +191,22 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
         modalValues.add(iterationKpiModalValue);
         overAllmodalValues.add(iterationKpiModalValue);
     }
+
+	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+														 TestCaseDetails testCaseDetails) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
+		iterationKpiModalValue.setDescription(testCaseDetails.getName());
+		overAllModalValues.add(iterationKpiModalValue);
+	}
+
+	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+														   JiraIssue jiraIssue) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		overAllModalValues.add(iterationKpiModalValue);
+	}
 
 }

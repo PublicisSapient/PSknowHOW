@@ -419,7 +419,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Zypher' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Zypher') {
                 groupIdSet.add(obj.groupId);
             }
         });
@@ -444,7 +444,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Jira' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Jira') {
                 groupIdSet.add(obj.groupId);
             }
         });

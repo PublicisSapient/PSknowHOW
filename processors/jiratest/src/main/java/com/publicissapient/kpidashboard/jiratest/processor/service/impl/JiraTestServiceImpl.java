@@ -176,12 +176,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 					total = getTotal(searchResult);
 				}
 
-				// in case of offline method issues size can be greater than
-				// pageSize, increase page size so that same issues not read
-
-				if (issues.size() >= pageSize) {
-					pageSize = issues.size() + 1;
-				}
 				if (CollectionUtils.isNotEmpty(issues)) {
 
 					List<TestCaseDetails> testCaseDetailsList = prepareTestCaseDetails(issues, projectConfig);
@@ -363,6 +357,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 				testCaseDetail.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 
 				testCaseDetail.setOriginalTypeName(issueType.getName());
+				testCaseDetail.setName(issueType.getDescription());
 				testCaseDetail.setTypeName(NormalizedJira.TEST_TYPE.getValue());
 
 				processJiraIssueData(testCaseDetail, issue);
