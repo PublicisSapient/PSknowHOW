@@ -54,6 +54,100 @@ describe('FilterComponent', () => {
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
   const fakeMasterData = require('../../../test/resource/masterData.json');
   const configGlobalData = require('../../../test/resource/fakeGlobalConfigData.json');
+  const hierarchyLevels = [
+    {
+      hierarchyLevelId: 'hierarchyLevelOne',
+      hierarchyLevelName: 'Level One',
+      id: '63b3f4ea6770d3a031b92492',
+      level: 1,
+    },
+    {
+      hierarchyLevelId: 'hierarchyLevelTwo',
+      hierarchyLevelName: 'Level Two',
+      id: '63b3f4ea6770d3a031b92492',
+      level: 2,
+    },
+    {
+      hierarchyLevelId: 'hierarchyLevelThree',
+      hierarchyLevelName: 'Level Three',
+      id: '63b3f4ea6770d3a031b92492',
+      level: 3,
+    },
+  ];
+
+  const additionalFiltersDdn =  {
+    selectedLevel: [{
+      labelName: 'sprint',
+      level: 5,
+      nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+      nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+      parentId: ['HvyVrzlpld_63b81ef5224e7b4d03186dab'],
+      path: [
+        'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+      ],
+      sprintEndDate: '2022-11-23T10:20:00.0000000',
+      sprintStartDate: '2022-11-09T10:20:00.0000000',
+      sprintState: 'CLOSED',
+    }],
+  }
+
+  const selectedFilterArray = [
+    {
+      additionalFilters: {
+        grossMaturity: 'Maturity Score : NA',
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
+        nodeName: 'MA_Sprint 23.01_DOTC',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2023-01-17T22:00:00.0000000',
+        sprintStartDate: '2023-01-04T16:04:03.6900000',
+        sprintState: 'ACTIVE',
+      },
+    },
+  ];
+
+  const additionalFiltersArr = [
+    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint', level: 5 },
+    {
+      hierarchyLevelId: 'afOne',
+      hierarchyLevelName: 'Additional Filter One',
+      level: 6,
+    },
+  ];
+
+  const trendLineValueList = [{
+    labelName: 'hierarchyLevelOne',
+    level: 1,
+    nodeId: 'AutoTest1_hierarchyLevelOne',
+    nodeName: 'AutoTest1',
+    parentId: [undefined],
+    path: [''],
+  }];
+
+  const filterApplyData = {
+    ids: [
+      'bittest_corporate'
+    ],
+    sprintIncluded: [
+      'CLOSED'
+    ],
+    selectedMap: {
+      corporate: [
+        'bittest_corporate'
+      ],
+      business: [],
+      account: [],
+      subaccount: [],
+      project: [],
+      sprint: [],
+      sqd: []
+    },
+    level: 1
+  };
 
   beforeEach(() => {
 
@@ -626,26 +720,26 @@ describe('FilterComponent', () => {
   });
 
   it('should check if Add Filter Disabled', () => {
-    const filterApplyData = {
-      ids: [
-        'bittest_corporate'
-      ],
-      sprintIncluded: [
-        'CLOSED'
-      ],
-      selectedMap: {
-        corporate: [
-          'bittest_corporate'
-        ],
-        business: [],
-        account: [],
-        subaccount: [],
-        project: [],
-        sprint: [],
-        sqd: []
-      },
-      level: 1
-    };
+    // const filterApplyData = {
+    //   ids: [
+    //     'bittest_corporate'
+    //   ],
+    //   sprintIncluded: [
+    //     'CLOSED'
+    //   ],
+    //   selectedMap: {
+    //     corporate: [
+    //       'bittest_corporate'
+    //     ],
+    //     business: [],
+    //     account: [],
+    //     subaccount: [],
+    //     project: [],
+    //     sprint: [],
+    //     sqd: []
+    //   },
+    //   level: 1
+    // };
 
     component.filterForm = new UntypedFormGroup({
       selectedLevel: new UntypedFormControl('project')
@@ -792,4 +886,251 @@ describe('FilterComponent', () => {
     expect(component.toggleDropdown).toBeFalse();
   }));
 
+  it("should get processor trace log details",()=>{
+    const fakeResponce = {
+      message : "Successfully",
+      success : true
+    }
+    spyOn(httpService,"getProcessorsTraceLogsForProject").and.returnValue(of(fakeResponce));
+    spyOn(component,"findTraceLogForTool");
+    component.getProcessorsTraceLogsForProject("63284960fdd20276d60e4df5");
+    expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalled();
+  })
+
+  it("should give messsge if request is failing",()=>{
+    messageService = TestBed.inject(MessageService);
+    const fakeResponce = {
+      message : "Error occured while getting data",
+      success : false
+    }
+    spyOn(messageService,"add");
+    spyOn(component,"findTraceLogForTool");
+    spyOn(component,"showExecutionDate");
+    component.getProcessorsTraceLogsForProject("63284960fdd20276d60e4df5");
+    expect(component.showExecutionDate).not.toHaveBeenCalled();
+  })
+
+  it("should apply filters based on node selection",()=>{
+   
+    component.hierarchyLevels = hierarchyLevels;
+    component.trendLineValueList = trendLineValueList;
+    component.additionalFiltersDdn =  additionalFiltersDdn;
+    component.additionalFiltersArr = additionalFiltersArr;
+    component.selectedFilterArray = selectedFilterArray;
+    component.ngOnInit();
+    spyOn(component,"sortAlphabetically");
+    spyOn(sharedService,"setSelectedLevel");
+    spyOn(sharedService,"setSelectedTrends");
+    component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
+    component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
+    component.applyChanges('sprint',true);
+    expect(sharedService.setSelectedLevel).toHaveBeenCalled();
+    expect(sharedService.setSelectedTrends).toHaveBeenCalled();
+  })
+
+  it("should disabled taggle dropdown",()=>{
+    component.hierarchyLevels = hierarchyLevels;
+    component.trendLineValueList = trendLineValueList;
+    component.additionalFiltersDdn =  additionalFiltersDdn;
+    component.additionalFiltersArr = additionalFiltersArr;
+    component.selectedFilterArray = selectedFilterArray;
+    component.kanban = true;
+    spyOn(component,"sortAlphabetically");
+    spyOn(sharedService,"setSelectedLevel");
+    spyOn(sharedService,"setSelectedTrends");
+    component.ngOnInit();
+    component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
+    component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
+    component.applyChanges("date",true);
+    expect(component.toggleDateDropdown).toBeFalsy();
+  })
+
+  it("should apply filter on addtional filters",()=>{
+    component.filteredAddFilters = {};
+    component.additionalFiltersDdn = additionalFiltersDdn;
+    component.ngOnInit();
+    component.filterForm?.get('selectedLevel')?.setValue("project");
+    component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
+    component.filterAdditionalFilters();
+    expect(component.filteredAddFilters['selectedLevel']).not.toBeNull()
+  })
+
+  it("should exists lable name for sprint filter",()=>{
+    component.selectedFilterArray = [
+      {
+          grossMaturity: 'Maturity Score : NA',
+          labelName: 'sprint',
+          level: 5,
+          nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
+          nodeName: 'MA_Sprint 23.01_DOTC',
+          parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+          path: [
+            'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
+          ],
+          sprintEndDate: '2023-01-17T22:00:00.0000000',
+          sprintStartDate: '2023-01-04T16:04:03.6900000',
+          sprintState: 'ACTIVE',
+      },
+    ];
+     component.filterApplyData = filterApplyData;
+    spyOn(component,"resetFilterApplyObj");
+    component.createFilterApplyData();
+    expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
+  })
+
+  it("should labels come when addtional filter are applied for sprint",()=>{
+
+    component.selectedFilterArray = [
+      {
+        additionalFilters:[ {
+          grossMaturity: 'Maturity Score : NA',
+          labelName: 'sprint',
+          level: 5,
+          nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
+          nodeName: 'MA_Sprint 23.01_DOTC',
+          parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+          path: [
+            'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
+          ],
+          sprintEndDate: '2023-01-17T22:00:00.0000000',
+          sprintStartDate: '2023-01-04T16:04:03.6900000',
+          sprintState: 'ACTIVE',
+        },]
+      },
+    ];
+  
+    component.filterApplyData = {
+      ids: [
+        'bittest_corporate'
+      ],
+      sprintIncluded: [
+        'CLOSED'
+      ],
+      selectedMap: {
+        corporate: [
+          'bittest_corporate'
+        ],
+        business: [],
+        account: [],
+        subaccount: [],
+        project: [],
+        sprint: [],
+        sqd: []
+      },
+      level: 1
+    };
+    spyOn(component,"resetFilterApplyObj");
+    component.createFilterApplyData();
+    expect(component.filterApplyData['level']).not.toBeNull();
+  })
+
+  it("should labels come when selected filter level and filterdata apply level is same for sprint",()=>{
+
+    component.selectedFilterArray = [
+      {
+        additionalFilters:[ {
+          grossMaturity: 'Maturity Score : NA',
+          labelName: 'sprint',
+          level: 5,
+          nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
+          nodeName: 'MA_Sprint 23.01_DOTC',
+          parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+          path: [
+            'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
+          ],
+          sprintEndDate: '2023-01-17T22:00:00.0000000',
+          sprintStartDate: '2023-01-04T16:04:03.6900000',
+          sprintState: 'ACTIVE',
+        },]
+      },
+    ];
+   component.filterApplyData = {
+      ids: [
+        'bittest_corporate'
+      ],
+      sprintIncluded: [
+        'CLOSED'
+      ],
+      selectedMap: {
+        corporate: [
+          'bittest_corporate'
+        ],
+        business: [],
+        account: [],
+        subaccount: [],
+        project: [],
+        sprint: [],
+        sqd: []
+      },
+      level: 5
+    };
+    spyOn(component,"resetFilterApplyObj");
+    component.createFilterApplyData();
+    expect(component.filterApplyData['level']).not.toBeNull();
+  })
+
+  it("should labels come for kanban when date is not null",()=>{
+   component.ngOnInit();
+   component.kanban = true;
+   component.filterForm.get('date').setValue('07/09/2022');
+    spyOn(component,"resetFilterApplyObj");
+    component.createFilterApplyData();
+    expect(component.filterApplyData['ids']).not.toBeNull();
+  })
+
+  it("should success alert come while submitting show/hide kpi data successfully",()=>{
+    component.selectedTab = 'My KnowHOW';
+    component.kpiListData = configGlobalData['data'];
+    component.kanban = false;
+    const fakeResponce = {
+      success : true
+    }
+    spyOn(messageService,'add');
+    spyOn(httpService,'submitShowHideKpiData').and.returnValue(of(fakeResponce))
+     component.setKPIOrder();
+     expect(messageService.add).toHaveBeenCalled();
+   })
+
+   it("should  alert while submitting show/hide kpi data when response is fail",()=>{
+    component.selectedTab = 'My KnowHOW';
+    component.kpiListData = configGlobalData['data'];
+    component.kanban = false;
+    const fakeResponce = {
+      success : false
+    }
+    spyOn(messageService,'add');
+    spyOn(httpService,'submitShowHideKpiData').and.returnValue(of(fakeResponce))
+     component.setKPIOrder();
+     expect(messageService.add).toHaveBeenCalled();
+   })
+
+   it("should enable show chart toggle ",()=>{
+    component.showChartToggle(true);
+    expect(component.showChart).toBe(true)
+   })
+
+   it("should disable export btn once clicked",()=>{
+     component.exportToExcel();
+     expect(component.disableDownloadBtn).toBeTruthy();
+   })
+
+   it("should enable if type is spring",()=>{
+    component.ngOnInit();
+    component.filterForm?.get('sprint')?.setValue("hierarchyLevelOne");
+    const result =component.checkIfBtnDisabled("sprint");
+    expect(result).toBe(true);
+   })
+
+   it("should enable if type is scrum",()=>{
+    component.ngOnInit();
+    component.filterForm?.get('scrum')?.setValue("hierarchyLevelOne");
+    const result =component.checkIfBtnDisabled("scrum");
+    expect(result).toBe(true);
+   })
+
+   it("should enable tooltip",()=>{
+    component.showTooltip(true);
+    expect(component.isTooltip).toBe(true);
+   })
+   
 });
