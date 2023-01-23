@@ -31,6 +31,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
+import { throwError, of } from 'rxjs';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -137,4 +138,43 @@ describe('RegisterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it("should come success response on register",()=>{
+    component.registorForm.controls['username'].setValue('fakeuser');
+    component.registorForm.controls['password'].setValue('Fake@123');
+    component.registorForm.controls['confirmpassword'].setValue('Fake@123');
+    component.registorForm.controls['email'].setValue('fake@gmail.com');
+    const fakeRegister = {
+      success: true
+    }
+    spyOn(httpService,'register').and.returnValue(of(fakeRegister))
+    component.onSubmit();
+    expect(component.success).not.toBeNull();
+  })
+
+  it("should come failure response on register",()=>{
+    component.registorForm.controls['username'].setValue('fakeuser');
+    component.registorForm.controls['password'].setValue('Fake@123');
+    component.registorForm.controls['confirmpassword'].setValue('Fake@123');
+    component.registorForm.controls['email'].setValue('fake@gmail.com');
+    const fakeRegister = {
+      success: false
+    }
+    spyOn(httpService,'register').and.returnValue(of(fakeRegister))
+    component.onSubmit();
+    expect(component.success).not.toBeNull();
+  })
+
+  it("should loading false on register error",()=>{
+    component.registorForm.controls['username'].setValue('fakeuser');
+    component.registorForm.controls['password'].setValue('Fake@123');
+    component.registorForm.controls['confirmpassword'].setValue('Fake@123');
+    component.registorForm.controls['email'].setValue('fake@gmail.com');
+    const fakeRegister = {
+      success: false
+    }
+    spyOn(httpService,'register').and.returnValue(throwError(() => new Error()))
+    component.onSubmit();
+    expect(component.loading).toBeFalsy();
+  })
 });
