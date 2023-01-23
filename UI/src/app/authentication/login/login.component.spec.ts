@@ -35,6 +35,7 @@ import { SharedService } from '../../services/shared.service';
 import { RsaEncryptionService } from '../../services/rsa.encryption.service';
 import { TextEncryptionService } from '../../services/text.encryption.service';
 import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
+import { of } from 'rxjs';
 
 describe('LoginComponent', () => {
 
@@ -59,6 +60,17 @@ describe('LoginComponent', () => {
     ]
   };
   const fakeInvalidLogin = { timestamp: 1567511436517, status: 401, error: 'Unauthorized', message: 'Authentication Failed: Login Failed: The username or password entered is incorrect', path: '/api/login' };
+  const fakeLoginResponse =  {
+    body: {
+      ['X-Authentication-Token']:
+        'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTY3NDUwNzA1MX0.Ad32D8uiQmXLzdFVUqnIVETM8Vtb55yceFVW4AT-Z4MFixLUWbAeVEpZdvFuyrTKMgqRd08L-gWO-nQH-bi5qw',
+      authorities: ['ROLE_SUPERADMIN'],
+      projectsAccess: [],
+      user_email: 'knowledgesharing@publicissapient.com',
+      user_name: 'SUPERADMIN',
+    },
+    status: 200,
+  };
 
   beforeEach(waitForAsync(() => {
 
@@ -147,7 +159,74 @@ describe('LoginComponent', () => {
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error(fakeInvalidLogin, fakeInvalidLogin);
     expect(component.error).toBe(fakeInvalidLogin.message);
-
   }));
+
+  it("should come data if response is success",()=>{
+    const fakeRespose = {
+      success : true,
+      data : []
+
+    }
+    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
+    component.getLoginConfig();
+    expect(component.loginConfig).not.toBeNull();
+  })
+
+  it("should adlogin false if response is fail",()=>{
+    const fakeRespose = {
+      success : false,
+      data : []
+    }
+    const failValues = {
+      standardLogin: true,
+      adLogin: false
+  }
+    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
+    component.getLoginConfig();
+    expect(component.loginConfig).toEqual(failValues)
+  })
+
+  it("should remember for speed user",()=>{
+    component.ngOnInit();
+    localStorage.setItem('SpeedyUser',"abc@gmail.com");
+    component.rememberMe();
+    expect(component.rememberMeCheckbox).toBeTruthy();
+  })
+
+  it("should redirect to profile if user emial is blank",()=>{
+    localStorage.setItem('user_email',"");
+    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    component.redirectToProfile();
+    expect(component.redirectToProfile).toBeTruthy()
+  })
+
+  it("should redirect on profile for superadmin",()=>{
+    localStorage.setItem('user_email',"abc@gmail.com");
+    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
+    const respo = component.redirectToProfile();
+    expect(respo).toBeFalsy();
+  })
+
+  it("should not redirect on profile if not superadmin",()=>{
+    localStorage.setItem('user_email',"abc@gmail.com");
+    localStorage.setItem('projectsAccess',undefined);
+    spyOn(aesEncryption,'convertText').and.returnValue("[\"NOT_SUPERADMIN\"]")
+    component.redirectToProfile();
+    expect(component.redirectToProfile).toBeTruthy()
+  })
+
+  it("should set SpeedyPassword in localstorage",()=>{
+    spyOn(localStorage,"setItem");
+    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
+   expect(localStorage.setItem).toHaveBeenCalled();
+  })
+
+  it("should remove SpeedyUser if remembercheckbox is false ",()=>{
+    component.rememberMeCheckbox = false;
+    spyOn(localStorage,"removeItem");
+    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
+   expect(localStorage.removeItem).toHaveBeenCalled();
+  })
 
 });
