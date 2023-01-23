@@ -101,22 +101,6 @@ public class IterationStatusServiceImplTest {
         setMockFieldMapping();
         sprintDetails = SprintDetailsDataFactory.newInstance("/json/default/iteration/sprint_details.json").getSprintDetails().get(0);
 
-//        List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-//                COMPLETED_ISSUES);
-//
-//        List<String> issuesNotCompletedInCurrentSprint = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-//                NOT_COMPLETED_ISSUES);
-//
-//        List<String> newAraryList = new ArrayList<>();
-//        newAraryList.addAll(completedIssues);
-//        newAraryList.addAll(issuesNotCompletedInCurrentSprint);
-//
-//        storyList = jiraIssueRepository
-//                .findByNumberInAndBasicProjectConfigId(newAraryList, "63b3d14eb7150232b66ca113");
-//
-//        historyList = jiraIssueCustomHistoryRepository
-//                .findByStoryIDInAndBasicProjectConfigIdIn(newAraryList, Arrays.asList("63b3d14eb7150232b66ca113"));
-
         List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
                 .map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
         JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/iteration/jira_issues.json");
