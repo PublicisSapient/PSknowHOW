@@ -300,7 +300,7 @@ public class CapacityMasterServiceImplTest {
 		when(customApiConfig.getNumberOfPastWeeksForKanbanCapacity()).thenReturn(2);
 		when(customApiConfig.getNumberOfFutureWeeksForKanbanCapacity()).thenReturn(2);
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335368249794a18e8a4479f");
-		assertEquals(4,
+		assertEquals(5,
 				capacities.stream()
 						.filter(capacityMaster -> CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity()))
 						.collect(Collectors.toList()).size());

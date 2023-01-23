@@ -221,8 +221,8 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 					.projectName(projectName).build());
 			kanbanCapacityList.addAll(dateWiseKanbanCapacity.getOrDefault(currentDate.toString(), dummyList));
 		}
-		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) { //we have to divide capacity by working days of week
-			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity->kanbanCapacity.getCapacity()/5).sum();
+		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
+			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity->kanbanCapacity.getCapacity()).sum();
 		}
 		return capacity;
 	}

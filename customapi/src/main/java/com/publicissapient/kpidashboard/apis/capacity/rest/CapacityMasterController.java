@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.capacity.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.Role;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
@@ -21,6 +23,8 @@ import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterServ
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+
+import javax.validation.Valid;
 
 /**
  * @author narsingh9
@@ -61,8 +65,6 @@ public class CapacityMasterController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-
-
 	@GetMapping("/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> getCapacities(@PathVariable String basicProjectConfigId) {
 		ServiceResponse response = null;
@@ -74,6 +76,27 @@ public class CapacityMasterController {
 			response = new ServiceResponse(false, "No data", null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+
+	@RequestMapping(value="/assignee", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@Valid @RequestBody CapacityMaster capacityMaster) {
+		policy.checkPermission(capacityMaster, "SAVE_UPDATE_CAPACITY");
+		ServiceResponse response = new ServiceResponse(false, "Failed to add Capacity Data", null);
+		try {
+			capacityMaster = capacityMasterService.processCapacityData(capacityMaster);
+			if (null != capacityMaster) {
+				response = new ServiceResponse(true, "Successfully added Capacity Data", capacityMaster);
+			}
+		} catch (AccessDeniedException ade) {
+			response = new ServiceResponse(false, "Unauthorized", null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@GetMapping("/assignee/roles")
+	public ResponseEntity<ServiceResponse> assigneeRolesSuggestion() {
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "All Roles", Role.getAllRoles()));
 	}
 
 }
