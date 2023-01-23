@@ -127,9 +127,10 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(capacityKpiData.getCapacityPerSprint());
 				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
-					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
+					List<AssigneeCapacity> sortedAssignee = capacityKpiData.getAssigneeCapacity().stream().sorted(Comparator.comparing(AssigneeCapacity::getUserName)).collect(Collectors.toList());
+					capacityMaster.setAssigneeCapacity(sortedAssignee);
 					//if in normal flow assignees found saving it for future
-					assigneeCapacityList= createAssigneeData(capacityKpiData.getAssigneeCapacity());
+					assigneeCapacityList= createAssigneeData(sortedAssignee);
 				}
 			} else {
 				capacityMaster.setId(null);
@@ -208,8 +209,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
 					if(CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
-						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
-						assigneeCapacity= createAssigneeData(kanbanCapacity.getAssigneeCapacity());
+						List<AssigneeCapacity> sortedAssignee = kanbanCapacity.getAssigneeCapacity().stream().sorted(Comparator.comparing(AssigneeCapacity::getUserName)).collect(Collectors.toList());
+						capacityMasterKanban.setAssigneeCapacity(sortedAssignee);
+						assigneeCapacity= createAssigneeData(sortedAssignee);
 					}
 				} else {
 					capacityMasterKanban.setId(null);
