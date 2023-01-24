@@ -407,6 +407,7 @@ public class ProjectAccessManager {
 			if (resultUserInfo != null) {
 				resultUserInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_SUPERADMIN)));
 				resultUserInfo.setProjectsAccess(new ArrayList<>());
+				tokenAuthenticationService.updateExpiryDate(resultUserInfo.getUsername(), LocalDateTime.now().toString());
 			}
 		} else {
 			// create a tree from basic_config with root node
@@ -514,8 +515,16 @@ public class ProjectAccessManager {
 				userInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_GUEST)));
 			} else {
 				userInfo.setAuthorities(roles);
+				updateExpiryDateForToken(userInfo, roles);
 			}
 		}
+
+	}
+
+	public void updateExpiryDateForToken(UserInfo userInfo, List<String> roles) {
+
+		if(userInfo.getAuthorities().containsAll(roles))
+			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
 
 	}
 
