@@ -252,6 +252,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacity.setUserName(assignee.getUserName());
 			capacity.setRole(assignee.getRole());
 			capacity.setPlannedCapacity(assignee.getPlannedCapacity());
+			capacity.setLeaves(0.0d);
 			newAssigneeList.add(capacity);
 		});
 		return newAssigneeList;
