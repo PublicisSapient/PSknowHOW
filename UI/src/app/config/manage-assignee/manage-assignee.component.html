@@ -18,7 +18,7 @@
   
 <div class="p-mb-3">
     <input type="text" pInputText placeholder="Search UserName" [style]="{'width':'100%'}"
-        (input)="dt.filter($event.target.value, 'displayName', 'contains')" />
+        (input)="dt.filter($event?.target?.value, 'displayName', 'contains')" />
 
     <p-table #dt [value]="assigneeList" [globalFilterFields]="['displayName']" class="p-mb-3">
         <ng-template pTemplate="header">
@@ -33,9 +33,9 @@
         <ng-template pTemplate="body" let-user>
             <tr>
                 <td>
-                    <input type="checkbox" [name]="user.displayName" [value]="user.name"
+                    <input type="checkbox" [name]="user?.displayName" [value]="user?.name"
                         (input)="onUserSelectionChange($event,user)" [checked]="user?.checked" class="checkbox" />
-                    <label [for]="user.name" class="p-mb-0 p-ml-3 label-name color-grey">{{user.displayName}}
+                    <label [for]="user?.name" class="p-mb-0 p-ml-3 label-name color-grey">{{user.displayName}}
                         ({{user.name}})</label>
                 </td>
             </tr>
