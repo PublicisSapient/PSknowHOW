@@ -128,6 +128,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
+    private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
+    private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
@@ -692,6 +695,18 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getEmmStats(): Observable<any> {
         return this.http.get<any>(this.getEmmStatsUrl);
+    }
+
+    getJiraProjectAssignee(projectId){
+        return this.http.get<any>(this.getJiraProjectAssigneUrl +'/'+projectId);
+    }
+
+    getAssigneeRoles(){
+        return this.http.get<any>(this.getAssigneeRolesUrl);
+    }
+
+    saveOrUpdateAssignee(postData){
+        return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
