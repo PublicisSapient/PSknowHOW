@@ -940,8 +940,13 @@ export class FilterComponent implements OnInit {
                 this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             }else{
                 if(type == 1){
-                    this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
-                    this.handleIterationFilters('project', 1);
+                    if(this.projectIndex < this.trendLineValueList?.length){
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+                        this.handleIterationFilters('project', 1);
+                    }else{
+                        this.projectIndex = 0;
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+                    }
                 }
             }
 
