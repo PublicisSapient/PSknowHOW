@@ -204,7 +204,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
 		Map<String, Object> hoverValue = new HashMap<>();
-		hoverValue.put("Total Capacity", value.intValue());
+		hoverValue.put("Total Capacity", new Double(String.format("%.1f", value)));
 		dataCount.setHoverValue(hoverValue);
 		return dataCount;
 	}
@@ -212,17 +212,17 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	private Double filterDataBasedOnStartAndEndDate(Map<String, List<KanbanCapacity>> dateWiseKanbanCapacity,
 			CustomDateRange dateRange, String projectName) {
 		List<KanbanCapacity> kanbanCapacityList = new ArrayList<>();
-		List<KanbanCapacity> dummyList = new ArrayList<>();
 
 		Double capacity = 0.0d;
 		for (LocalDate currentDate = dateRange.getStartDate(); currentDate.compareTo(dateRange.getStartDate()) >= 0
 				&& dateRange.getEndDate().compareTo(currentDate) >= 0; currentDate = currentDate.plusDays(1)) {
+			List<KanbanCapacity> dummyList = new ArrayList<>();
 			dummyList.add(KanbanCapacity.builder().capacity(0.0d).startDate(currentDate).endDate(currentDate)
 					.projectName(projectName).build());
 			kanbanCapacityList.addAll(dateWiseKanbanCapacity.getOrDefault(currentDate.toString(), dummyList));
 		}
 		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
-			capacity = kanbanCapacityList.stream().mapToDouble(KanbanCapacity::getCapacity).sum();
+			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity->kanbanCapacity.getCapacity()).sum();
 		}
 		return capacity;
 	}
