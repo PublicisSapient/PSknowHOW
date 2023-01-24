@@ -110,6 +110,25 @@ describe('FilterComponent', () => {
     },
   ];
 
+  const selectedFilterArrayNestedArray =  [
+    {
+      additionalFilters:[ {
+        grossMaturity: 'Maturity Score : NA',
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
+        nodeName: 'MA_Sprint 23.01_DOTC',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2023-01-17T22:00:00.0000000',
+        sprintStartDate: '2023-01-04T16:04:03.6900000',
+        sprintState: 'ACTIVE',
+      },]
+    },
+  ];
+
   const additionalFiltersArr = [
     { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint', level: 5 },
     {
@@ -720,27 +739,7 @@ describe('FilterComponent', () => {
   });
 
   it('should check if Add Filter Disabled', () => {
-    // const filterApplyData = {
-    //   ids: [
-    //     'bittest_corporate'
-    //   ],
-    //   sprintIncluded: [
-    //     'CLOSED'
-    //   ],
-    //   selectedMap: {
-    //     corporate: [
-    //       'bittest_corporate'
-    //     ],
-    //     business: [],
-    //     account: [],
-    //     subaccount: [],
-    //     project: [],
-    //     sprint: [],
-    //     sqd: []
-    //   },
-    //   level: 1
-    // };
-
+  
     component.filterForm = new UntypedFormGroup({
       selectedLevel: new UntypedFormControl('project')
     });
@@ -980,24 +979,7 @@ describe('FilterComponent', () => {
 
   it("should labels come when addtional filter are applied for sprint",()=>{
 
-    component.selectedFilterArray = [
-      {
-        additionalFilters:[ {
-          grossMaturity: 'Maturity Score : NA',
-          labelName: 'sprint',
-          level: 5,
-          nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
-          nodeName: 'MA_Sprint 23.01_DOTC',
-          parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
-          path: [
-            'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
-          ],
-          sprintEndDate: '2023-01-17T22:00:00.0000000',
-          sprintStartDate: '2023-01-04T16:04:03.6900000',
-          sprintState: 'ACTIVE',
-        },]
-      },
-    ];
+    component.selectedFilterArray = selectedFilterArrayNestedArray;
   
     component.filterApplyData = {
       ids: [
@@ -1026,24 +1008,7 @@ describe('FilterComponent', () => {
 
   it("should labels come when selected filter level and filterdata apply level is same for sprint",()=>{
 
-    component.selectedFilterArray = [
-      {
-        additionalFilters:[ {
-          grossMaturity: 'Maturity Score : NA',
-          labelName: 'sprint',
-          level: 5,
-          nodeId: '844_DOTC_63b51633f33fd2360e9e72bd',
-          nodeName: 'MA_Sprint 23.01_DOTC',
-          parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
-          path: [
-            'DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne',
-          ],
-          sprintEndDate: '2023-01-17T22:00:00.0000000',
-          sprintStartDate: '2023-01-04T16:04:03.6900000',
-          sprintState: 'ACTIVE',
-        },]
-      },
-    ];
+  component.selectedFilterArray = selectedFilterArrayNestedArray;
    component.filterApplyData = {
       ids: [
         'bittest_corporate'
