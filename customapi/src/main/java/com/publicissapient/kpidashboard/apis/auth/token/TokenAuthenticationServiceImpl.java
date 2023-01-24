@@ -207,7 +207,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 						.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
 						.optionalEnd().toFormatter();
 				if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
-					updateExpiryDate(userTokenData.getUserName(), null);
 					return Boolean.toString(true);
 				}
 			}

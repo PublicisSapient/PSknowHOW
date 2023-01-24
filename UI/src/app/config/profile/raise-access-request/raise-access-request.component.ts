@@ -93,9 +93,6 @@ export class RaiseAccessRequestComponent implements OnInit {
 
           if (this.raiseRequestResponse['data'] && this.raiseRequestResponse['data'].status.toLowerCase() == 'approved') {
             this.messageService.add({ severity: 'success', summary: 'Request has been auto-approved. Please login again to start using KnowHOW', detail: '' });
-            setTimeout(() => {
-              this.logout();
-            }, 5000);
           } else {
             this.messageService.add({ severity: 'success', summary: 'Request submitted.', detail: '' });
           }
