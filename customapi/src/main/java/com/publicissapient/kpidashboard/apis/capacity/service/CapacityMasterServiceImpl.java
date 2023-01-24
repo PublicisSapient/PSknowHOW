@@ -127,10 +127,10 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(capacityKpiData.getCapacityPerSprint());
 				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
-					List<AssigneeCapacity> sortedAssignee = capacityKpiData.getAssigneeCapacity().stream().sorted(Comparator.comparing(AssigneeCapacity::getUserName)).collect(Collectors.toList());
-					capacityMaster.setAssigneeCapacity(sortedAssignee);
+					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
+					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
 					//if in normal flow assignees found saving it for future
-					assigneeCapacityList= createAssigneeData(sortedAssignee);
+					assigneeCapacityList= createAssigneeData(capacityKpiData.getAssigneeCapacity());
 				}
 			} else {
 				capacityMaster.setId(null);
@@ -209,9 +209,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
 					if(CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
-						List<AssigneeCapacity> sortedAssignee = kanbanCapacity.getAssigneeCapacity().stream().sorted(Comparator.comparing(AssigneeCapacity::getUserName)).collect(Collectors.toList());
-						capacityMasterKanban.setAssigneeCapacity(sortedAssignee);
-						assigneeCapacity= createAssigneeData(sortedAssignee);
+						kanbanCapacity.getAssigneeCapacity().stream().forEach(assignees -> assignees.setLeaves(Optional.ofNullable(assignees.getLeaves()).orElse(0D)));
+						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
+						assigneeCapacity= createAssigneeData(kanbanCapacity.getAssigneeCapacity());
 					}
 				} else {
 					capacityMasterKanban.setId(null);
