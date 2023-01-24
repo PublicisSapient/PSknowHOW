@@ -373,6 +373,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<String, Long> commitmentResult = new LinkedHashMap<>();
 		long issueCount = 0L;
 		long storyCount = 0L;
+		long totalHours = 0L;
 		CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
 		if (CollectionUtils.isNotEmpty(totalJiraIssue)) {
 			reliabilityValidationData.setTotalIssueNumbers(totalJiraIssue);
@@ -392,8 +393,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 							Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
 					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 			storyCount = (long) ((completedSum / totalSum) * 100);
-			commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimate/60);
-			commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimate/60);
+			Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+			Double completedOriginalEstimateInHours = completedOriginalEstimate / 60;
+			totalHours = (long) ((completedOriginalEstimateInHours / totalOriginalEstimateInHours) * 100);
+			commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimateInHours);
+			commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimateInHours);
 			commitmentHowerMap.put(TOTAL_ISSUE_SIZE, sprintSize);
 			commitmentHowerMap.put(COMPLETED_ISSUE_SIZE, completedSize);
 			commitmentHowerMap.put(TOTAL_STORY_POINTS, totalSum);
@@ -406,7 +410,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			commitmentResult.put(STORY_POINT, ObjectUtils.defaultIfNull(storyCount, 0L));
 		} else {
-			commitmentResult.put(CommonConstant.HOURS, ObjectUtils.defaultIfNull(storyCount, 0L));
+			commitmentResult.put(CommonConstant.HOURS, ObjectUtils.defaultIfNull(totalHours, 0L));
 		}
 		return commitmentResult;
 

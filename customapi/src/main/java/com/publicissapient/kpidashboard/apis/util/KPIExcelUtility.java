@@ -133,7 +133,9 @@ public class KPIExcelUtility {
                                 fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                             excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
                         } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-                            excelData.setStoryPoint(jiraIssue.getOriginalEstimateMinutes()/ 60 + " hrs");
+                            Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes() / 60);
+                            excelData.setStoryPoint(originalEstimateInHours/ fieldMapping.getStoryPointToHourMapping()
+                                    +"/"+originalEstimateInHours + " hrs");
                         }
                     }
                 }
@@ -457,7 +459,8 @@ public class KPIExcelUtility {
     }
 
     public static void populateSprintVelocity(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData) {
+                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData,
+                                              FieldMapping fieldMapping) {
         if (CollectionUtils.isEmpty(issueDetailsSet)) {
             if (MapUtils.isNotEmpty(totalStoriesMap)) {
                 totalStoriesMap.forEach((storyId, jiraIssue) -> {
@@ -467,8 +470,15 @@ public class KPIExcelUtility {
                     storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                     excelData.setStoryId(storyDetails);
                     excelData.setIssueDesc(checkEmptyName(jiraIssue));
-                    excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
-
+                    if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                            fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                        excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                    } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                        Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes() / 60);
+                        Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                        excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                                totalOriginalEstimate / 60 + " hrs");
+                    }
                     kpiExcelData.add(excelData);
                 });
             }
@@ -480,8 +490,16 @@ public class KPIExcelUtility {
                 storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
                 excelData.setStoryId(storyDetails);
                 excelData.setIssueDesc(checkEmptyName(issueDetails));
-                excelData.setStoryPoints(
-                        Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(
+                            Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                } else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
+                    Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+                    Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                    excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                            totalOriginalEstimate / 60 + " hrs");
+                }
                 kpiExcelData.add(excelData);
             }
         }
