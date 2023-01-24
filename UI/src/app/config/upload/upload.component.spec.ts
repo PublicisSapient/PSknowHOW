@@ -1036,6 +1036,12 @@ const fakeTestExecutionData = {
     expect(component.isCapacitySaveDisabled).toBeTrue()
   })
 
+  it("should disable save capacity btn",()=>{
+    component.enableDisableCapacitySubmitButton();
+    fixture.detectChanges();
+    expect(component.isCapacitySaveDisabled).toBeTrue()
+  })
+
 
 
 
