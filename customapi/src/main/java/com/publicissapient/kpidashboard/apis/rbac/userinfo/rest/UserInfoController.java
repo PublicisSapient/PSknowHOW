@@ -91,7 +91,7 @@ public class UserInfoController {
 
 		log.info("user info ");
 		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
-		userTokenDeletionService.invalidateSession(username);
+
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	
 	

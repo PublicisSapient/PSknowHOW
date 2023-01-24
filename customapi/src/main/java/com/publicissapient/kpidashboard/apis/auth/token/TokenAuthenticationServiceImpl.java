@@ -19,6 +19,10 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -30,6 +34,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import io.jsonwebtoken.Claims;
@@ -76,6 +83,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Autowired
 	private CookieUtil cookieUtil;
+
+	@Autowired
+	UserInfoService userInfoService;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
@@ -177,6 +187,50 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public void invalidateAuthToken(List<String> users) {
 		userTokenReopository.deleteByUserNameIn(users);
+	}
+
+	@Override
+	public void updateExpiryDate(String username, String expiryDate) {
+		List<UserTokenData> dataList = userTokenReopository.findAllByUserName(username);
+		dataList.stream().forEach(data -> data.setExpiryDate(expiryDate));
+		userTokenReopository.saveAll(dataList);
+	}
+
+	@Override
+	public String setUpdateAuthFlag(HttpServletRequest request) {
+		if (cookieUtil.getAuthCookie(request) != null) {
+			String userToken = cookieUtil.getAuthCookie(request).getValue();
+			UserTokenData userTokenData = userTokenReopository.findByUserToken(userToken);
+			if (userTokenData != null) {
+				String expiryDate = userTokenData.getExpiryDate();
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
+						.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
+						.optionalEnd().toFormatter();
+				if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
+					updateExpiryDate(userTokenData.getUserName(), null);
+					return Boolean.toString(true);
+				}
+			}
+		}
+		return Boolean.toString(false);
+	}
+
+	public UserInfo getOrSaveUserByToken(HttpServletRequest request) {
+		UserInfo userInfo = null;
+		if (cookieUtil.getAuthCookie(request) != null) {
+			UserTokenData userTokenData = userTokenReopository
+					.findByUserToken(cookieUtil.getAuthCookie(request).getValue());
+			if (userTokenData != null) {
+				updateExpiryDate(userTokenData.getUserName(), null);
+				userInfo = userInfoService.getUserInfo(userTokenData.getUserName());
+			} else {
+				userTokenData = new UserTokenData(authenticationService.getLoggedInUser(),
+						cookieUtil.getAuthCookie(request).getValue(), null);
+				userTokenReopository.save(userTokenData);
+				userInfo = userInfoService.getUserInfo(userTokenData.getUserName());
+			}
+		}
+		return userInfo;
 	}
 
 }

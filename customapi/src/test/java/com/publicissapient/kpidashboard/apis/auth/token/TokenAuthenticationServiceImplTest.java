@@ -110,6 +110,7 @@ public class TokenAuthenticationServiceImplTest {
 
 	List<AccessNode> listAccessNode = new ArrayList<>();
 
+
 	AccessNode accessNodes;
 	AccessItem accessItem;
 	List<AccessItem> accessItems = new ArrayList<>();
@@ -225,6 +226,52 @@ public class TokenAuthenticationServiceImplTest {
 
 		service.invalidateAuthToken(users);
 		verify(userTokenReopository, times(1)).deleteByUserNameIn(users);
+	}
+
+	@Test
+	public void setUpdateAuthFlagForExpDateNull() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
+		when(userTokenReopository.findByUserToken(anyString())).thenReturn(userTokenData);
+		assertEquals(service.setUpdateAuthFlag(request), Boolean.toString(false));
+	}
+
+	@Test
+	public void getOrSaveUserByToken() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), "2023-01-19T12:33:14.013");
+		accessItem = new AccessItem();
+		accessItem.setItemId("itemId");
+		accessItem.setItemName("itemName");
+		accessItems.add(accessItem);
+
+		accessNodes = new AccessNode();
+		accessNodes.setAccessLevel("accessLevel");
+		accessNodes.setAccessItems(accessItems);
+		listAccessNode.add(accessNodes);
+		ProjectsAccess pa = new ProjectsAccess();
+		pa.setAccessNodes(listAccessNode);
+		pa.setRole("Role");
+
+		List<ProjectsAccess> paList = new ArrayList<>();
+		paList.add(pa);
+		UserInfo testUser = new UserInfo();
+		testUser.setUsername(USERNAME);
+		testUser.setProjectsAccess(paList);
+		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(userTokenData);
+		when(userInfoService.getUserInfo(USERNAME)).thenReturn(testUser);
+		service.getOrSaveUserByToken(request);
+		assertEquals(service.getOrSaveUserByToken(request), testUser);;
+	}
+
+	@Test
+	public void getOrSaveUserByTokenNull() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+
+		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
+		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
+		service.getOrSaveUserByToken(request);
+		verify(userTokenReopository, times(1)).save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
 	}
 
 }
