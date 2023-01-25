@@ -42,6 +42,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -68,14 +69,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
+/**
+ * This class fetches the daily closure on Iteration dashboard. Trend analysis
+ * for Daily Closure KPI has total closed defect count at y-axis and day at
+ * x-axis. {@link JiraKPIService}
+ *
+ * @author Lakshmi Singh
+ */
 @Component
+@Slf4j
 public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IterationStatusServiceImpl.class);
 
     private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
     private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-    private static final String ISSUES = "issues";
+    private static final String TOTALISSUES = "totalIssues";
     private static final String SPRINT = "sprint";
     private static final String JIRAISSUEMAP = "jiraIssueMap";
     private static final String JIRAOPENISSUEMAP = "jiraOpenIssueMap";
@@ -209,7 +218,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
                             .collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
                 }
 
-                resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+                resultListMap.put(TOTALISSUES, new ArrayList<>(filtersIssuesList));
                 resultListMap.put(COMPLETED_ISSUES, completedIssues);
                 resultListMap.put(NOT_COMPLETED_ISSUES, issuesNotCompletedInCurrentSprint);
                 resultListMap.put(SPRINT, sprintDetails);
@@ -244,7 +253,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
         Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 
-        List<JiraIssue> Issues = ((List<JiraIssue>) resultMap.get(ISSUES));
         List<String> completedIssues = (List<String>) resultMap.get(COMPLETED_ISSUES);
         List<String> openIssues = (List<String>) resultMap.get(NOT_COMPLETED_ISSUES);
         Map<String, JiraIssue> jiraMap = (Map<String, JiraIssue>) resultMap.get(JIRAISSUEMAP);
@@ -256,16 +264,14 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
         String startDate = value.getStartDate();
         String endDate = value.getEndDate();
 
-        if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(ISSUES))) {
-            List<Integer> finalCalculation = new ArrayList<>();
-            List<JiraIssue> overAllJiraIssueList = new ArrayList<>();
-            Map<String, List<IterationStatus>> closedIssuesdelay = findDelayofClosedIssues(completedIssues, jiraMap, jiraHistoryMap, startDate, endDate);
+        if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(TOTALISSUES))) {
+            Map<String, List<IterationStatus>> closedIssuesDelay = findDelayofClosedIssues(completedIssues, jiraMap, jiraHistoryMap, startDate, endDate);
             Map<String, List<IterationStatus>> openIssuesDelay = findDelayOfOpenIssues(openIssues, jiraOpenMap, jiraOpenHistoryMap, startDate, endDate);
 
 
-            Iterator<Map.Entry<String, List<IterationStatus>>> iterator = closedIssuesdelay.entrySet().iterator();
+            Iterator<Map.Entry<String, List<IterationStatus>>> iterator = closedIssuesDelay.entrySet().iterator();
 
-            List<IterationStatus> iterationKpiModalValuesClosedSprint = closedIssuesdelay.get("delayDetails");
+            List<IterationStatus> iterationKpiModalValuesClosedSprint = closedIssuesDelay.get("delayDetails");
             List<IterationStatus> iterationKpiModalValuesOpenSprint = openIssuesDelay.get("openIssuesCausingDelay");
             List<IterationStatus> iterationKpiModalValuesNetDelay = new ArrayList<>();
             iterationKpiModalValuesNetDelay.addAll(iterationKpiModalValuesClosedSprint);
@@ -273,10 +279,10 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
             LOGGER.info(iterationKpiModalValuesNetDelay + "netdelaystories");
 
-            List<IterationStatus> iterationKpiModalValuesIssuesDoneBeforeTime = closedIssuesdelay.get("issuesClosedBeforeDueDate");
+            List<IterationStatus> iterationKpiModalValuesIssuesDoneBeforeTime = closedIssuesDelay.get("issuesClosedBeforeDueDate");
 
             List<IterationStatus> iterationKpiModalValuesIssuesCausingDelay = new ArrayList<>();
-            iterationKpiModalValuesIssuesCausingDelay.addAll(closedIssuesdelay.get("issuesClosedAfterDelayDate"));
+            iterationKpiModalValuesIssuesCausingDelay.addAll(closedIssuesDelay.get("issuesClosedAfterDelayDate"));
             iterationKpiModalValuesIssuesCausingDelay.addAll(openIssuesDelay.get("openIssuesCausingDelay"));
 
 
