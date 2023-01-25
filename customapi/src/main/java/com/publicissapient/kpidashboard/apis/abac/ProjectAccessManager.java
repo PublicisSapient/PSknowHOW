@@ -630,8 +630,7 @@ public class ProjectAccessManager {
 		List<String> authorities = userInfo.getAuthorities();
 		if (!authorities.contains(role)) {
 			authorities.add(role);
-			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
-		}
+			}
 		userInfo.setAuthorities(authorities);
 	}
 
