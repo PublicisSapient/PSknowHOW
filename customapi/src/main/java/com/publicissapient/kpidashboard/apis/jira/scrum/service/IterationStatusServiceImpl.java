@@ -83,7 +83,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
     private static final String ISSUES_CAUSING_DELAY = "Delayed Issues";
     private static final String NET_DELAYED_ISSUES = "Net Delay";
     private static final String ISSUES_DONE_BEFORE_TIME = "Done Before Time";
-    private static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
     private static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
     private static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
     private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
@@ -146,15 +145,15 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
                 List<String> issuesNotCompletedInCurrentSprint = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
                         NOT_COMPLETED_ISSUES);
 
-                List<String> newAraryList = new ArrayList<>();
-                newAraryList.addAll(completedIssues);
-                newAraryList.addAll(issuesNotCompletedInCurrentSprint);
+                List<String> issuesList = new ArrayList<>();
+                issuesList.addAll(completedIssues);
+                issuesList.addAll(issuesNotCompletedInCurrentSprint);
 
                 List<JiraIssue> totalJiraIssues = jiraIssueRepository
-                        .findByNumberInAndBasicProjectConfigId(newAraryList, basicProjectConfigId);
+                        .findByNumberInAndBasicProjectConfigId(issuesList, basicProjectConfigId);
 
                 List<JiraIssueCustomHistory> totalJiraIssuesHistory = jiraIssueCustomHistoryRepository
-                        .findByStoryIDInAndBasicProjectConfigIdIn(newAraryList, Arrays.asList(basicProjectConfigId));
+                        .findByStoryIDInAndBasicProjectConfigIdIn(issuesList, Arrays.asList(basicProjectConfigId));
 
 
                 Set<JiraIssue> filtersOpenIssuesList = new HashSet<>();
@@ -172,11 +171,11 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
                             .stream().filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getNumber()), issuesNotCompletedInCurrentSprint))
                             .collect(Collectors.toList());
 
-                    List<JiraIssueCustomHistory> storiesHistory = totalJiraIssuesHistory
+                    List<JiraIssueCustomHistory> historyList = totalJiraIssuesHistory
                             .stream().filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getStoryID()), issuesNotCompletedInCurrentSprint))
                             .collect(Collectors.toList());
 
-                    jiraOpenIssueCustomHistoryMap = storiesHistory.stream()
+                    jiraOpenIssueCustomHistoryMap = historyList.stream()
                             .collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
 
                     filtersOpenIssuesList = KpiDataHelper
@@ -248,7 +247,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
         List<JiraIssue> Issues = ((List<JiraIssue>) resultMap.get(ISSUES));
         List<String> completedIssues = (List<String>) resultMap.get(COMPLETED_ISSUES);
         List<String> openIssues = (List<String>) resultMap.get(NOT_COMPLETED_ISSUES);
-        List<String> spilledIssues = (List<String>) resultMap.get(COMPLETED_ISSUES_ANOTHER_SPRINT);
         Map<String, JiraIssue> jiraMap = (Map<String, JiraIssue>) resultMap.get(JIRAISSUEMAP);
         Map<String, JiraIssueCustomHistory> jiraHistoryMap = (Map<String, JiraIssueCustomHistory>) resultMap.get(JIRAISSUECUSTOMHISTORYMAP);
         Map<String, JiraIssue> jiraOpenMap = (Map<String, JiraIssue>) resultMap.get(JIRAOPENISSUEMAP);
