@@ -22,12 +22,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -77,6 +81,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
     private static final String ISSUES = "issues";
     private static final String SPRINT = "sprint";
+    private static final String STATUS = "Closed";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final DateTimeFormatter YYYY_MM_DD_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final String UNCHECKED = "unchecked";
@@ -157,13 +162,16 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                     Set<JiraIssue> filtersIssuesList = KpiDataHelper
                             .getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
                                     sprintDetails.getTotalIssues(), issueList);
-                    if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())) {
+
                         List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository.
                                 findByStoryIDInAndBasicProjectConfigIdIn(completedIssues, Arrays.asList(basicProjectConfigId));
-                        Map<String, String> activityMap = getDodDateMap(completedJiraIssuesHistory, fieldMapping.getJiraDod());
-                        filtersIssuesList.forEach(issue -> issue.setUpdateDate(activityMap.getOrDefault(issue.getNumber(),
-                                issue.getUpdateDate())));
-                    }
+                        Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
+                        filtersIssuesList.forEach(
+                                issue -> issue.setUpdateDate(activityMap.getOrDefault(issue.getNumber(),
+                                issue.getUpdateDate()))
+                        );
+
+
                     resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
                     resultListMap.put(SPRINT, sprintDetails);
                 }
@@ -172,25 +180,22 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
         return resultListMap;
     }
 
-    /**
-     * This method get DOD map
-     *
-     * @param completedJiraIssuesHistory completedJiraIssuesHistory
-     * @param dodStatus dodStatus
-     * @return
-     */
-    private Map<String,String> getDodDateMap(List<JiraIssueCustomHistory> completedJiraIssuesHistory, List<String> dodStatus) {
+    private Map<String,String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory, SprintDetails sprintDetails) {
         Map<String,String> dodDateMap = new HashMap<>();
         completedJiraIssuesHistory.stream().forEach(
                 jiraIssueCustomHistory -> {
                     List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
                     if (CollectionUtils.isNotEmpty(storySprintDetail)) {
                         for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
-                            if (null != jiraIssueSprint.getFromStatus() &&
-                                    dodStatus.contains(jiraIssueSprint.getFromStatus())) {
-                                dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
-                                        getFormattedDate(jiraIssueSprint.getActivityDate()));
-                                break;
+                            if (jiraIssueSprint.getFromStatus().equalsIgnoreCase(STATUS)) {
+                                DateTime datValu = DateTime.parse(jiraIssueSprint.getActivityDate().toString());
+                                DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
+                                DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
+                                if (datValu.isAfter(startDateValue) && datValu.isBefore(endDateValue)) {
+                                    dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
+                                            getFormattedDate(jiraIssueSprint.getActivityDate()));
+                                    break;
+                                }
                             }
                         }
                     }
