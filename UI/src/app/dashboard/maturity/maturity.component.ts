@@ -80,7 +80,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     noKpi = false;
     noOfJiraGroups = 0;
     loader= false;
-
+    showNoDataMsg:boolean = false;
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
 
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -117,21 +117,26 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.filterData = $event.filterData;
             this.filterApplyData = $event.filterApplyData;
             this.loaderMaturity = true;
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList'].filter(kpi => kpi.calculateMaturity).map(kpi => kpi.kpiId);
-            // this.drawAreaChart(null, null);
-            // this.chart(null);
-            if (this.selectedtype.toLowerCase() === 'scrum') {
-                this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-                this.groupZypherKpi(kpiIdsForCurrentBoard);
-                this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-                this.groupSonarKpi(kpiIdsForCurrentBoard);
-                this.groupJiraKpi(kpiIdsForCurrentBoard);
-            } else {
-                this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
+            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity).map(kpi => kpi.kpiId);
+            if(kpiIdsForCurrentBoard?.length > 0){
+                // this.drawAreaChart(null, null);
+                // this.chart(null);
+                if (this.selectedtype.toLowerCase() === 'scrum') {
+                    this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+                    this.groupZypherKpi(kpiIdsForCurrentBoard);
+                    this.groupBitBucketKpi(kpiIdsForCurrentBoard);
+                    this.groupSonarKpi(kpiIdsForCurrentBoard);
+                    this.groupJiraKpi(kpiIdsForCurrentBoard);
+                } else {
+                    this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
+                }
+            }else{
+                this.loader = false;
+                this.showNoDataMsg = true;
             }
         }
     }
@@ -148,6 +153,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
         if (this.service.getFilterObject()) {
             this.receiveSharedData(this.service.getFilterObject());
+        }else{
+            this.showNoDataMsg = true;
         }
     }
 
