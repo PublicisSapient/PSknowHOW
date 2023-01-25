@@ -54,6 +54,8 @@ public class JwtAuthenticationFilterTest {
 	@Mock
 	HttpServletRequest request;
 	@Mock
+	HttpServletResponse response;
+	@Mock
 	private FilterChain filterChain;
 
 	@Mock
@@ -69,7 +71,6 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		ServletResponse response = null;
 		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
