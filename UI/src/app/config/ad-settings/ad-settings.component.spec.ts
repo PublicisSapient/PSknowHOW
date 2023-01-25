@@ -9,6 +9,7 @@ import { AdSettingsComponent } from './ad-settings.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { environment } from 'src/environments/environment';
+import { of,throwError } from 'rxjs';
 
 describe('AdSettingsComponent', () => {
   let component: AdSettingsComponent;
@@ -16,6 +17,7 @@ describe('AdSettingsComponent', () => {
   let httpService: HttpService;
   const baseUrl = environment.baseUrl;
   let httpMock;
+  let msgService;
 
   const fakeLoginSettings = {
     message: 'types of authentication config',
@@ -59,6 +61,7 @@ describe('AdSettingsComponent', () => {
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
+    msgService = TestBed.inject(MessageService);
     fixture.detectChanges();
   });
 
@@ -100,4 +103,70 @@ describe('AdSettingsComponent', () => {
     component.submit();
     httpMock.match(baseUrl + '/api/auth-types')[0].flush(fakeSubmitResponse);
   });
+   
+
+  it("should adsetting form valid",()=>{
+    component.initializeFields();
+    component.adSettingsForm.controls['username'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['password'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['host'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['port'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['rootDn'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['domain'].setValue("abc@gmail.com")
+    component.selectedTypes = [
+      {
+        name: 'adLogin',
+        label: 'KnowHOW Local Authentication',
+      }
+    ];
+    component.submit();
+    expect(component.adSettingsForm.invalid).toBeFalsy();
+  })
+
+  it("should adsetting form invalid",()=>{
+    component.initializeFields();
+    component.selectedTypes = [
+      {
+        name: 'adLogin',
+        label: 'KnowHOW Local Authentication',
+      }
+    ];
+    component.submit();
+    expect(component.adSettingsForm.invalid).toBeTruthy();
+  })
+
+  it("should give success response when form submit",()=>{
+    component.initializeFields();
+    component.selectedTypes = [
+      {
+        name: 'standered',
+        label: 'KnowHOW Local Authentication',
+      }
+    ];
+    const spyMessageService  = spyOn(msgService,'add');
+    spyOn(httpService,'setAuthConfig').and.returnValue(of({success : true}));
+    component.submit();
+    expect(spyMessageService).toHaveBeenCalled();
+  })
+
+  it("should give failure response when form submit",()=>{
+    component.initializeFields();
+    component.selectedTypes = [
+      {
+        name: 'standered',
+        label: 'KnowHOW Local Authentication',
+      }
+    ];
+    const spyMessageService  = spyOn(msgService,'add');
+    spyOn(httpService,'setAuthConfig').and.returnValue(of({success : false}));
+    component.submit();
+    expect(spyMessageService).toHaveBeenCalled();
+  })
+
+  it("should visible atleast one login tab",()=>{
+    component.selectedTypes = [];
+    component.checkValues();
+    expect(component.selectedTypes.length).toBeGreaterThan(0)
+  })
+
 });
