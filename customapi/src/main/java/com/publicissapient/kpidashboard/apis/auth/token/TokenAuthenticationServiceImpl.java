@@ -106,7 +106,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Authentication getAuthentication(HttpServletRequest request) {
+	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		if (StringUtils.isBlank(authCookie.getValue())) {
@@ -132,7 +132,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-
+			response.setHeader("auth-details-updated", setUpdateAuthFlag(data));
 			return authentication;
 
 		} catch (ExpiredJwtException e) {
@@ -197,18 +197,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String setUpdateAuthFlag(HttpServletRequest request) {
-		if (cookieUtil.getAuthCookie(request) != null) {
-			String userToken = cookieUtil.getAuthCookie(request).getValue();
-			UserTokenData userTokenData = userTokenReopository.findByUserToken(userToken);
-			if (userTokenData != null) {
-				String expiryDate = userTokenData.getExpiryDate();
-				DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-						.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
-						.optionalEnd().toFormatter();
-				if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
-					return Boolean.toString(true);
-				}
+	public String setUpdateAuthFlag(UserTokenData userTokenData) {
+		if (userTokenData != null) {
+			String expiryDate = userTokenData.getExpiryDate();
+			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
+					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
+					.optionalEnd().toFormatter();
+			if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
+				return Boolean.toString(true);
 			}
 		}
 		return Boolean.toString(false);

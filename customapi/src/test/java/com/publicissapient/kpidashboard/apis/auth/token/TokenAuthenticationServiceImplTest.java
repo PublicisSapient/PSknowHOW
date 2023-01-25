@@ -137,19 +137,19 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void testGetAuthentication_noHeader() {
 
-		assertNull(service.getAuthentication(request));
+		assertNull(service.getAuthentication(request, response));
 	}
 
 	@Test
 	public void testGetAuthentication_expiredToken() {
-		assertNull(service.getAuthentication(request));
+		assertNull(service.getAuthentication(request, response));
 	}
 
 	@Test
 	public void testGetAuthentication() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		when(userTokenReopository.findByUserToken(anyString())).thenReturn(new UserTokenData());
-		Authentication result = service.getAuthentication(request);
+		Authentication result = service.getAuthentication(request, response);
 		assertNotNull(result);
 	}
 
@@ -230,10 +230,8 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Test
 	public void setUpdateAuthFlagForExpDateNull() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
 		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
-		when(userTokenReopository.findByUserToken(anyString())).thenReturn(userTokenData);
-		assertEquals(service.setUpdateAuthFlag(request), Boolean.toString(false));
+		assertEquals(service.setUpdateAuthFlag(userTokenData), Boolean.toString(false));
 	}
 
 	@Test

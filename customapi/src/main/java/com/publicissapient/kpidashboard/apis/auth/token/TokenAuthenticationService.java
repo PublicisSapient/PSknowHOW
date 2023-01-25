@@ -55,7 +55,7 @@ public interface TokenAuthenticationService {
 	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(HttpServletRequest request);
+	Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * This method returns Projects related to user
@@ -83,7 +83,7 @@ public interface TokenAuthenticationService {
 
 	void updateExpiryDate(String username, String expiryDate);
 
-	String setUpdateAuthFlag(HttpServletRequest request);
+	String setUpdateAuthFlag(UserTokenData userTokenData);
 
 	UserInfo getOrSaveUserByToken(HttpServletRequest request);
 }
