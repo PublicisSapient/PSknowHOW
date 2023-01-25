@@ -69,6 +69,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
+	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
+
 
 	@Autowired
 	private AuthProperties tokenAuthProperties;
@@ -132,7 +134,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			response.setHeader("auth-details-updated", setUpdateAuthFlag(data));
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(data));
 			return authentication;
 
 		} catch (ExpiredJwtException e) {

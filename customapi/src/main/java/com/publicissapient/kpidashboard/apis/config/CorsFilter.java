@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -48,9 +47,6 @@ public class CorsFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private CustomApiConfig apiSettings;
-
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -142,6 +138,6 @@ public class CorsFilter extends OncePerRequestFilter {
 		response.addHeader(CORSConstants.HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS,
 				CORSConstants.HEADER_VALUE_EXPOSE_HEADERS);
 		response.setHeader("Access-Control-Allow-Credentials","true");
-//		response.setHeader(CORSConstants.AUTH_DETAILS_UPDATED_FLAG, tokenAuthenticationService.setUpdateAuthFlag(request));
+
 	}
 }

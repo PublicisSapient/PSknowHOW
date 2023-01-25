@@ -514,8 +514,8 @@ public class ProjectAccessManager {
 						.removeIf(projectsAccess -> !projectsAccess.getRole().equals(Constant.ROLE_GUEST));
 				userInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_GUEST)));
 			} else {
-				userInfo.setAuthorities(roles);
 				updateExpiryDateForToken(userInfo, roles);
+				userInfo.setAuthorities(roles);
 			}
 		}
 
@@ -523,7 +523,7 @@ public class ProjectAccessManager {
 
 	public void updateExpiryDateForToken(UserInfo userInfo, List<String> roles) {
 
-		if(userInfo.getAuthorities().containsAll(roles))
+		if (!userInfo.getAuthorities().containsAll(roles) && userInfo.getAuthorities().size() != roles.size())
 			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
 
 	}
