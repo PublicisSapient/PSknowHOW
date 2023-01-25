@@ -268,22 +268,14 @@ public abstract class ToolsKPIService<R, S> {
 			Map<String, Object> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
 			if (MapUtils.isNotEmpty(hoverValuee)) {
 				hoverValuee.forEach((key, value) -> {
-					if(value instanceof Integer){
-						hoverValue.computeIfPresent(key, (k, v) -> (Integer)v + (Integer) value);
-						hoverValue.putIfAbsent(key, value);
+					if (value instanceof Integer) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
+					} else if (value instanceof Double) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
+					} else if (value instanceof Long) {
+						hoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
 					}
-					else if(value instanceof Double){
-						hoverValue.computeIfPresent(key, (k, v) -> (Double)v + (Double) value);
-						hoverValue.putIfAbsent(key, value);
-					}
-					else if(value instanceof Long){
-						hoverValue.computeIfPresent(key, (k, v) -> (Long)v + (Long) value);
-						hoverValue.putIfAbsent(key, value);
-					}
-					else {
-						hoverValue.putIfAbsent(key, value);
-					}
-
+					hoverValue.putIfAbsent(key, value);
 				});
 			}
 		}

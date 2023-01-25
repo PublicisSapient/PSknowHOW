@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +36,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRepository;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 
 /**
@@ -66,8 +66,7 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private ProjectToolConfigRepository projectToolConfigRepository;
-	@Autowired
-	private ProjectAssigneeRepository projectAssigneeRepository;
+
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
@@ -150,13 +149,13 @@ public class JiraToolConfigServiceImpl {
 	}
 
 	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
-		AssigneeResponseDTO projectAssigneeDTO = new AssigneeResponseDTO();
+		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
 		List<AssigneeDetails> assigneeDetailsResponseList = new ArrayList<>();
 		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
 		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
 			List<ProjectToolConfig> projectToolConfigs = projectToolConfigRepository
-					.findByToolNameAndBasicProjectConfigId("Jira", new ObjectId(projectConfigId));
+					.findByToolNameAndBasicProjectConfigId(Constant.TOOL_JIRA, new ObjectId(projectConfigId));
 			projectToolConfigs.stream().forEach(projectToolConfig -> {
 				Optional<Connection> optConnection = connectionRepository.findById(projectToolConfig.getConnectionId());
 				if (optConnection.isPresent()) {
@@ -168,11 +167,11 @@ public class JiraToolConfigServiceImpl {
 				}
 			});
 
-			projectAssigneeDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
-			projectAssigneeDTO.setAssigneeDetailsList(assigneeDetailsResponseList);
-			projectAssigneeDTO.setProjectName(projectBasicConfig.getProjectName());
+			assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
+			assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsResponseList);
+			assigneeResponseDTO.setProjectName(projectBasicConfig.getProjectName());
 		}
-		return projectAssigneeDTO;
+		return assigneeResponseDTO;
 	}
 
 	private void getApiCreationAndCall(List<AssigneeDetails> assigneeDetailsResponseList,

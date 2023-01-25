@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -164,8 +165,12 @@ public class JiraController {
 	@GetMapping(value = "/jira/assignees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ServiceResponse getJiraAssigneesList(@PathVariable("id") String projectConfigId) {
 		ServiceResponse response;
-		AssigneeResponseDTO projectAssigneeDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
-		response = new ServiceResponse(true, "Successfully fetched assignee list", projectAssigneeDTO);
+		AssigneeResponseDTO assigneeResponseDTO = jiraToolConfigService.getProjectAssigneeDetails(projectConfigId);
+		if (assigneeResponseDTO != null) {
+			response = new ServiceResponse(true, "Successfully fetched assignee list", assigneeResponseDTO);
+		} else {
+			response = new ServiceResponse(false, "Error while fetching Assignee List", assigneeResponseDTO);
+		}
 		return response;
 	}
 }

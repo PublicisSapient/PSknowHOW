@@ -34,8 +34,6 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -78,9 +76,8 @@ public class JiraToolConfigServiceImplTest {
 	private ProjectToolConfig projectTool;
 	private BoardRequestDTO boardRequestDTO;
 	private String basicConfigId;
-	private ProjectAssignee projectAssignee;
-	private AssigneeRoles role;
-	private List<AssigneeRoles> roles;
+	private AssigneeDetails role;
+	private List<AssigneeDetails> roles;
 	private ResponseEntity<String> response;
 	private static final String RESOURCE_JIRA_BOARD_ENDPOINT = "https://test.server.com/jira/rest/agile/1.0/board?projectKeyOrId=testProjectKey&startAt=0&type=scrum";
 	private static final String RESOURCE_JIRA_ASSINGEE_ENDPOINT = "https://test.server.com/jira/rest/user/assignable/search?project=ABC";
@@ -110,13 +107,6 @@ public class JiraToolConfigServiceImplTest {
 		projectTool.setConnectionId(new ObjectId(connectionId));
 		projectTool.setProjectKey("ABC");
 		projectToolConfigs.add(projectTool);
-		projectAssignee = new ProjectAssignee();
-		projectAssignee.setBasicProjectConfigId(new ObjectId(basicConfigId));
-		projectAssignee.setProjectName("Test Map");
-		role = new AssigneeRoles("Raghu", "Raghavendra", "Frontend developer");
-		roles = new ArrayList<>();
-		roles.add(role);
-		projectAssignee.setAssigneeRoles(roles);
 		response = new ResponseEntity<>(HttpStatus.OK);
 
 	}
@@ -185,8 +175,8 @@ public class JiraToolConfigServiceImplTest {
 
 	@Test
 	public void fetchAssigneeDetailsRestAPICall() throws IOException {
-		List<AssigneeRoles> assigneeRoles = new ArrayList<>();
-		AssigneeRoles assigneeRoles1 = new AssigneeRoles();
+		List<AssigneeDetails> assigneeRoles = new ArrayList<>();
+		AssigneeDetails assigneeRoles1 = new AssigneeDetails();
 		assigneeRoles1.setName("ankbhard");
 		assigneeRoles1.setDisplayName("Ankita sharma");
 

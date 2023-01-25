@@ -16,33 +16,26 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import java.util.Date;
+import { ManageAssigneeComponent } from './manage-assignee.component';
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+describe('ManageAssigneeComponent', () => {
+  let component: ManageAssigneeComponent;
+  let fixture: ComponentFixture<ManageAssigneeComponent>;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ManageAssigneeComponent ]
+    })
+    .compileComponents();
 
-/**
- * The type Project release.
- */
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "assignee_roles")
-public class ProjectAssigneeRolesData {
+    fixture = TestBed.createComponent(ManageAssigneeComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-	private String roleId;
-	private String roleDisplayName;
-	private Date createdDate;
-
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

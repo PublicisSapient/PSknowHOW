@@ -669,4 +669,70 @@ describe('JiraConfigComponent', () => {
     expect(component.getOptionList(id)).toEqual([]);
   })
 
+  it("should load form fiels Bamboo tool and build value",()=>{
+    const value = "Build";
+    const elementId = "jobType";
+    component.urlParam = "Bamboo";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Bamboo tool and Deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "Bamboo";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels AzurePipeline tool and build value",()=>{
+    const value = "Build";
+    const elementId = "jobType";
+    component.urlParam = "AzurePipeline";
+    component.initializeFields(component.urlParam);
+    component.bambooPlanList = [];
+    spyOn(component,'getAzureBuildPipelines');
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.getAzureBuildPipelines).toHaveBeenCalled();
+  })
+
+  it("should load form fiels AzurePipeline tool and deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "AzurePipeline";
+    component.initializeFields(component.urlParam);
+    component.bambooPlanList = [];
+    spyOn(component,'getAzureReleasePipelines');
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.getAzureReleasePipelines).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Jenkins tool and deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "Jenkins";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'showFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Jenkins tool and build value",()=>{
+    const value = "build";
+    const elementId = "jobType";
+    component.urlParam = "Jenkins";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
 });

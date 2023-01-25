@@ -16,14 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.rbac;
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssigneeRolesData;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+@Component({
+  selector: 'app-manage-assignee',
+  templateUrl: './manage-assignee.component.html',
+  styleUrls: ['./manage-assignee.component.css']
+})
+export class ManageAssigneeComponent implements OnInit {
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+  @Input() assigneeList = [];
+  @Output() onAssigneeSave = new EventEmitter();
+  constructor() { }
 
-public interface ProjectAssigneeRolesRepository extends MongoRepository<ProjectAssigneeRolesData, ObjectId> {
+  ngOnInit(): void {
+  }
+
+  onUserSelectionChange(event, assignee) {
+    assignee['checked'] = event.target.checked;
+    console.log(this.assigneeList);
+  }
 
 }
