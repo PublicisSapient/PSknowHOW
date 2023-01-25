@@ -22,6 +22,7 @@ import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineJob;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
 import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -92,7 +93,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 					azurePipelineServer.getApiVersion(), azurePipelineServer.getJobName());
 
 			if (!minTime.equals("1970-01-01T00:00:00.000Z")) {
-				resultUrl = String.format(String.valueOf(urlBuilder.append(RELEASE_PARAM_MINTIME)), minTime);
+				resultUrl = String.format(String.valueOf(resultUrl.concat(RELEASE_PARAM_MINTIME)), minTime);
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);
@@ -176,7 +177,8 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 
 	@Override
 	public Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs,ProjectBasicConfig proBasicConfig) {
+			long lastStartTimeOfJobs,ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		return new HashMap<>();
 	}
 
@@ -186,7 +188,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			String endDate = String.valueOf(jsonDeploy.get("completedOn"));
 
 			Long startDateTime = Instant.parse(AzurePipelineUtils.getString(jsonDeploy, "startedOn")).toEpochMilli();
-			Long endDateTime = Instant.parse(AzurePipelineUtils.getString(jsonDeploy, "completedOn")).toEpochMilli();
+					Long endDateTime = Instant.parse(AzurePipelineUtils.getString(jsonDeploy, "completedOn")).toEpochMilli();
 
 			if (StringUtils.isNotEmpty(startDate)) {
 

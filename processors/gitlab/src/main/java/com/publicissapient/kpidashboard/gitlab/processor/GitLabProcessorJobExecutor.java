@@ -330,6 +330,19 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 
 							List<CommitDetails> commitDetailList = gitLabClient.fetchAllCommits(gitRepo, firstTimeRun,
 									entry,proBasicConfig);
+							if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
+							{
+								List<CommitDetails> updateAuthor = new ArrayList<>();
+								commitDetailList.stream().forEach(commitDetails -> {
+									CommitDetails dbCommit = commitRepository.findByProcessorItemIdAndRevisionNumber(gitRepo.getId(),
+											commitDetails.getRevisionNumber());
+									if(dbCommit != null) {
+										dbCommit.setAuthor(commitDetails.getAuthor());
+										updateAuthor.add(dbCommit);
+									}
+								});
+								commitRepository.saveAll(updateAuthor);
+							}
 							List<CommitDetails> unsavedCommits = commitDetailList.stream()
 									.filter(commit -> isNewCommit(gitRepo, commit)).collect(Collectors.toList());
 							unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitRepo.getId()));
@@ -343,6 +356,19 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 							}
 							List<MergeRequests> mergeRequestsList = gitLabClient.fetchAllMergeRequest(gitRepo,
 									firstTimeRun, entry, proBasicConfig);
+							if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
+							{
+								List<MergeRequests> updateAuthor = new ArrayList<>();
+								mergeRequestsList.forEach(mergeRequests -> {
+									MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(gitRepo.getId(),
+											mergeRequests.getRevisionNumber());
+									if(dbMerge!=null) {
+										dbMerge.setAuthor(mergeRequests.getAuthor());
+										updateAuthor.add(dbMerge);
+									}
+								});
+								mergReqRepo.saveAll(updateAuthor);
+							}
 							List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 									.filter(mergReq -> isNewMergeReq(gitRepo, mergReq)).collect(Collectors.toList());
 							unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(gitRepo.getId()));
@@ -355,12 +381,14 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 							reposCount++;
 							processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 							processorExecutionTraceLog.setExecutionSuccess(true);
+							processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 							processorExecutionTraceLogService.save(processorExecutionTraceLog);
 						}
 					} catch (FetchingCommitException exception) {
 						executionStatus = false;
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(executionStatus);
+						processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
 						processorExecutionTraceLogService.save(processorExecutionTraceLog);
 						log.error(String.format("Error in processing %s", gitRepo.getRepoUrl()), exception);
 					}

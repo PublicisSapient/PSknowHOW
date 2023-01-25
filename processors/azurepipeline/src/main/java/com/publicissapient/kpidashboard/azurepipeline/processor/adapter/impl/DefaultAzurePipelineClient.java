@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -80,20 +81,22 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Provides Instance Jobs.
 	 *
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 * 		the connection properties for AzurePipeline server
 	 * @param lastStartTimeOfBuilds
-	 *            the last updated time of the processor which is used for delta
-	 *            import
+	 * 		the last updated time of the processor which is used for delta import
+	 * @param processorExecutionTraceLog
 	 * @return the map of azurePipeline jobs and set of builds
 	 */
 	@Override
 	public Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfBuilds, ProjectBasicConfig proBasicConfig) {
+			long lastStartTimeOfBuilds, ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		log.debug("Enter getInstanceJobs");
 		Map<AzurePipelineJob, Set<Build>> result = new LinkedHashMap<>();
-
+		String minTime;
 		try {
-			String minTime = AzurePipelineUtils.getDateFromTimeInMili(lastStartTimeOfBuilds);
+				 minTime = AzurePipelineUtils.getDateFromTimeInMili(lastStartTimeOfBuilds);
+
 			StringBuilder url = new StringBuilder(
 					AzurePipelineUtils.joinURL(azurePipelineServer.getUrl(), azurePipelineConfig.getApiEndPoint()));
 			url = AzurePipelineUtils.addParam(url, "api-version", azurePipelineServer.getApiVersion());

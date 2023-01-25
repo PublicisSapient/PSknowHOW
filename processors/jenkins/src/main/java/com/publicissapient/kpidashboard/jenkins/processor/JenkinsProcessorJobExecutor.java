@@ -213,7 +213,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		if (MapUtils.isNotEmpty(buildsByJob)) {
 			JenkinsJob jobFromConfig = buildsByJob.keySet().iterator().next();
 			JenkinsJob savedJob = addJenkinsJobItem(jobFromConfig, processor, jenkinsServer);
-			int updatedJobs = addNewBuildDetails(savedJob, buildsByJob,jenkinsServer);
+			int updatedJobs = addNewBuildDetails(savedJob, buildsByJob,jenkinsServer,processorExecutionTraceLog,proBasicConfig);
 			count += updatedJobs;
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
@@ -268,13 +268,13 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * Adds new JenkinsJobs to the database as disabled jobs.
-	 * 
+	 *
 	 * @param job
-	 *            the Jenkins jobs name
+	 * 		the Jenkins jobs name
 	 * @param processor
-	 *            the Jenkins processor
+	 * 		the Jenkins processor
 	 * @param jenkinsServer
-	 *            jenkins tool
+	 * 		jenkins tool
 	 */
 	private JenkinsJob addJenkinsJobItem(JenkinsJob job, JenkinsProcessor processor,
 			ProcessorToolConnection jenkinsServer) {
@@ -297,12 +297,15 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * Iterates over the enabled build jobs and adds new builds to the database.
 	 *
 	 * @param savedJob
-	 *            the list of enabled Jenkins job
+	 * 		the list of enabled Jenkins job
 	 * @param buildsByJob
-	 *            the build by job
+	 * 		the build by job
+	 * @param processorExecutionTraceLog
+	 * @param proBasicConfig
 	 * @return build count
 	 */
-	private int addNewBuildDetails(JenkinsJob savedJob, Map<JenkinsJob, Set<Build>> buildsByJob,ProcessorToolConnection jenkinsServer) {
+	private int addNewBuildDetails(JenkinsJob savedJob, Map<JenkinsJob, Set<Build>> buildsByJob,ProcessorToolConnection jenkinsServer,
+			ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
@@ -312,6 +315,13 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 				build.setBuildJob(savedJob.getJobName());
 				build.setJobFolder(jenkinsServer.getJobName());
 				buildsToSave.add(build);
+				count++;
+			} else if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+				Build dbBuild = buildRepository.findByProcessorItemIdAndNumber(savedJob.getId(), build.getNumber());
+				if (dbBuild != null){
+					dbBuild.setStartedBy(build.getStartedBy());
+					buildsToSave.add(dbBuild);
+				}
 				count++;
 			}
 		}

@@ -262,14 +262,13 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			String author = getString(authorObj, AzureRepoConstants.RESP_DISP_NAME);
 			String scmRevisionNumber = getString(repoObj, AzureRepoConstants.RESP_ID_KEY);
 			JSONArray reviewers = (JSONArray) mergReqObj.get(AzureRepoConstants.RESP_REVIEWERS);
-			List<String> reviewersList = new ArrayList<>();
+			List<String> reviewersList = new ArrayList<>(8);
 			if (reviewers != null) {
 				for (Object reviewersObj : reviewers) {
 					reviewersList.add(getString((JSONObject) reviewersObj, AzureRepoConstants.RESP_ID_KEY));
 				}
 			}
 			MergeRequests mergeReq = new MergeRequests();
-			ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 			mergeReq.setTitle(title);
 			mergeReq.setState(state);
 			mergeReq.setOpen(isOpen);

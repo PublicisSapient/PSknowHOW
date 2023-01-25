@@ -355,6 +355,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		int commitsCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
+				ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
@@ -364,6 +365,19 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 						List<CommitDetails> commitDetailList = azureRepoClient.fetchAllCommits(azureRepo, firstTimeRun,
 								entry, projectBasicConfig);
+						if(projectBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
+						{
+							List<CommitDetails> updateAuthor = new ArrayList<>();
+							commitDetailList.stream().forEach(commitDetails -> {
+								CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
+										commitDetails.getRevisionNumber());
+								if(dbCommit != null) {
+									dbCommit.setAuthor(commitDetails.getAuthor());
+									updateAuthor.add(dbCommit);
+								}
+							});
+							commitsRepo.saveAll(updateAuthor);
+						}
 						List<CommitDetails> unsavedCommits = commitDetailList.stream()
 								.filter(commit -> isNewCommit(azureRepo, commit)).collect(Collectors.toList());
 						unsavedCommits.forEach(commit -> commit.setProcessorItemId(azureRepo.getId()));
@@ -397,6 +411,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
+				ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
@@ -406,6 +421,19 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo, firstTimeRun,
 								entry, proBasicConfig);
+						if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
+						{
+							List<MergeRequests> updateAuthor = new ArrayList<>();
+							mergeRequestsList.forEach(mergeRequests -> {
+								MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
+										mergeRequests.getRevisionNumber());
+								if(dbMerge!=null) {
+									dbMerge.setAuthor(mergeRequests.getAuthor());
+									updateAuthor.add(dbMerge);
+								}
+							});
+							mergReqRepo.saveAll(updateAuthor);
+						}
 						List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 								.filter(mergReq ->  isNewMergeReq(azureRepo, mergReq)).collect(Collectors.toList());
 						unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(azureRepo.getId()));

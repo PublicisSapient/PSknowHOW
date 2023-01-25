@@ -280,10 +280,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean dataExist = (jiraIssueRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 			//write get logic to fetch last successful updated date.
-			String queryDate = null;
-
-				queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
-
+			String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
 			Set<SprintDetails> setForCacheClean = new HashSet<>();
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
@@ -457,6 +454,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorExecutionTraceLog = traceLogs.get(0);
 			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState() ){
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
 		}else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
@@ -647,7 +645,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				if(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 					setJiraAssigneeDetails(jiraIssue, assignee);
 				}
 

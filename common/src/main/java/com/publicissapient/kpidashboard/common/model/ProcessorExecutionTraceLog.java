@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -48,4 +49,5 @@ public class ProcessorExecutionTraceLog {
     private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
 
     private boolean lastEnableAssigneeToggleState;
+    private Date lastSuccessfulRunDate;
 }
