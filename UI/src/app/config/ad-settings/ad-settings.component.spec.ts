@@ -153,7 +153,7 @@ describe('AdSettingsComponent', () => {
     component.initializeFields();
     component.selectedTypes = [
       {
-        name: 'standered',
+        name: 'standard',
         label: 'KnowHOW Local Authentication',
       }
     ];
