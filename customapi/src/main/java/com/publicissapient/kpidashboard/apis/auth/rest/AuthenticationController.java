@@ -373,8 +373,8 @@ public class AuthenticationController {
 	}
 
 	@RequestMapping(value = "/authdetails", method = GET)
-	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, HttpServletResponse response) {
-		UserInfo userInfo = tokenAuthenticationService.getOrSaveUserByToken(request);
+	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
+		UserInfo userInfo = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
 		if(userInfo != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", userInfo));
 		}

@@ -403,4 +403,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         cacheService.clearAllCache();
         log.info("cache cleared");
     }
+
+    @Override
+    public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities){
+        UserInfo userInfo = userInfoRepository.findByUsername(userName);
+        if(userInfo == null) {
+            userInfo = new UserInfo();
+            userInfo.setUsername(userName);
+            userInfo.setAuthorities(authorities);
+            userInfo.setAuthType(authType);
+            userInfoRepository.save(userInfo);
+        }
+        return userInfo;
+    }
 }

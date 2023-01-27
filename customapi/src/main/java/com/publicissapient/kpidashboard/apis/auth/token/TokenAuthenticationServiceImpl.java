@@ -212,20 +212,20 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return Boolean.toString(false);
 	}
 
-	public UserInfo getOrSaveUserByToken(HttpServletRequest request) {
-		UserInfo userInfo = null;
+	public UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
+		UserInfo userInfo = new UserInfo();
+		List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 		if (cookieUtil.getAuthCookie(request) != null) {
 			UserTokenData userTokenData = userTokenReopository
 					.findByUserToken(cookieUtil.getAuthCookie(request).getValue());
 			if (userTokenData != null) {
 				updateExpiryDate(userTokenData.getUserName(), null);
-				userInfo = userInfoService.getUserInfo(userTokenData.getUserName());
 			} else {
 				userTokenData = new UserTokenData(authenticationService.getLoggedInUser(),
 						cookieUtil.getAuthCookie(request).getValue(), null);
 				userTokenReopository.save(userTokenData);
-				userInfo = userInfoService.getUserInfo(userTokenData.getUserName());
 			}
+			userInfo = userInfoService.getOrSaveUserInfo(userTokenData.getUserName(), null, authorities);
 		}
 		return userInfo;
 	}

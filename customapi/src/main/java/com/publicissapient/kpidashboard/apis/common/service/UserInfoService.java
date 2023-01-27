@@ -130,4 +130,6 @@ public interface UserInfoService {
 	ServiceResponse deleteUser(String username);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
+
+	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 }

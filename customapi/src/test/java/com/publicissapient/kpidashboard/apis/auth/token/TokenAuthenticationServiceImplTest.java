@@ -257,9 +257,8 @@ public class TokenAuthenticationServiceImplTest {
 		testUser.setUsername(USERNAME);
 		testUser.setProjectsAccess(paList);
 		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(userTokenData);
-		when(userInfoService.getUserInfo(USERNAME)).thenReturn(testUser);
-		service.getOrSaveUserByToken(request);
-		assertEquals(service.getOrSaveUserByToken(request), testUser);;
+		when(userInfoService.getOrSaveUserInfo(USERNAME, null, new ArrayList<>())).thenReturn(testUser);
+		assertEquals(service.getOrSaveUserByToken(request, authentication), testUser);;
 	}
 
 	@Test
@@ -268,7 +267,7 @@ public class TokenAuthenticationServiceImplTest {
 
 		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
 		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
-		service.getOrSaveUserByToken(request);
+		service.getOrSaveUserByToken(request, authentication);
 		verify(userTokenReopository, times(1)).save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
 	}
 
