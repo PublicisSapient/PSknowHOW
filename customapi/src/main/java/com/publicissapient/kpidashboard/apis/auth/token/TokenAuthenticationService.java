@@ -24,7 +24,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import org.springframework.security.core.Authentication;
@@ -85,5 +84,5 @@ public interface TokenAuthenticationService {
 
 	String setUpdateAuthFlag(UserTokenData userTokenData);
 
-	UserInfo getOrSaveUserByToken(HttpServletRequest request);
+	UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 }

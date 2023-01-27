@@ -410,4 +410,12 @@ public class UserInfoServiceImplTest {
 		verify(userInfoRepository, times(1)).findByAuthType("STANDARD");
 	}
 
+	@Test
+	public void getOrSaveUserInfoTest() {
+		when(userInfoRepository.findByUsername(anyString())).thenReturn(null);
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("user");
+		assertEquals(service.getOrSaveUserInfo("user", null, null), userInfo);
+	}
+
 }
