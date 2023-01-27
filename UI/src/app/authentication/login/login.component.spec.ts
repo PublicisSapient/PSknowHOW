@@ -193,7 +193,7 @@ describe('LoginComponent', () => {
     expect(component.rememberMeCheckbox).toBeTruthy();
   })
 
-  it("should redirect to profile if user emial is blank",()=>{
+  it("should redirect to profile if user email is blank",()=>{
     localStorage.setItem('user_email',"");
     localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
     component.redirectToProfile();
