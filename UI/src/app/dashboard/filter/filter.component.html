@@ -5,7 +5,7 @@
 
    <!--Scrum/Kanban Switch starts-->
    <div
-      *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog' && router.url.split('/')[2]?.toLowerCase() !== 'maturity'">
+      *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
       <input id="tab1" class="tab1" type="radio" name="tabs" [checked]='!kanban'>
       <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedType('Scrum')" id="Layout-Scrum">
          <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
@@ -141,7 +141,7 @@
       <!-- project -->
       <div class="form-check filter-box p-col-lg trend-line-container">
          <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
-            (change)="handleIterationFilters('project')" placeholder="Project" [clearable]="false" class="p-pb-0">
+            (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false" class="p-pb-0">
             <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
             </ng-option>
          </ng-select>
@@ -151,7 +151,7 @@
       <div class="form-check filter-box p-col-lg trend-line-container sprint-filter"
          *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
          <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-            (change)="handleIterationFilters('sprint')" placeholder="Sprint" [clearable]="false" class="p-pb-0">
+            (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false" class="p-pb-0">
             <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
                {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
             </ng-option>

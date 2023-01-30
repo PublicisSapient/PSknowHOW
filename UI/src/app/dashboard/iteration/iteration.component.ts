@@ -23,12 +23,13 @@ scrum and kanban code .
 *******************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 declare let require: any;
 
@@ -38,6 +39,7 @@ declare let require: any;
   styleUrls: ['./iteration.component.css']
 })
 export class IterationComponent implements OnInit, OnDestroy {
+  @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
   masterData = <any>{};
   filterData = <any>[];
@@ -387,9 +389,8 @@ export class IterationComponent implements OnInit, OnDestroy {
 
 
   // download excel functionality
-  downloadExcel(kpiId, kpiName, isKanban) {
-    const sprintIncluded = ['ACTIVE', 'CLOSED'];
-    this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded);
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false);
   }
 
   // Return video link if video link present

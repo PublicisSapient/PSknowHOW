@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -364,7 +363,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		Map<String, Integer> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new HashMap<>();
 		howerMap.put(OPENED_TICKET, value.intValue());
 		howerMap.put(CLOSED_TICKET, lineValue.intValue());
 		dataCount.setHoverValue(howerMap);

@@ -43,23 +43,23 @@ ARCHIVE_NAME="$MONGO_DATABASE-$TIMESTAMP.tgz"
 echo "Performing backup of MONGO_DATABASE"
 echo "--------------------------------------------"
 
-mkdir -p $BACKUPS_DIR
+sudo mkdir -p $BACKUPS_DIR
 echo -e " ${GREEN}[\xE2\x9C\x94] Createing Backup Archive...${RESET}"
 echo ""
 
 mongo=`docker ps | grep mongodb | awk '{ print $1}'`
-docker exec -t $mongo mongodump --db kpidashboard --username devadmin --password admin@123 --out /tmp
+sudo docker exec -t $mongo mongodump --db kpidashboard --username devadmin --password admin@123 --out /tmp
 echo " ${GREEN}[\xE2\x9C\x94] Creating Backup .....${RESET}"
 
 
-docker cp $mongo:/tmp/kpidashboard /var/backups
+sudo docker cp $mongo:/tmp/kpidashboard /var/backups
 echo " ${GREEN}[\xE2\x9C\x94] Coping backup to $BACKUPS_DIR .....${RESET}"
 
-tar -czf $BACKUPS_DIR/$MONGO_DATABASE-$TIMESTAMP.tar.gz  $BACKUPS_DIR/kpidashboard
+sudo tar -czf $BACKUPS_DIR/$MONGO_DATABASE-$TIMESTAMP.tar.gz  $BACKUPS_DIR/kpidashboard
 echo "--------------------------------------------"
 echo -e "${GREEN}[\xE2\x9C\x94] The Backup Archive has been Created as $BACKUPS_DIR/$MONGO_DATABASE-$TIMESTAMP.tar.gz ${RESET}"
 
 
-find /var/backups/ -name "*.tar.gz" -type f -mtime +15 -exec rm -f {} \;
+sudo find /var/backups/ -name "*.tar.gz" -type f -mtime +15 -exec rm -f {} \;
 echo "--------------------------------------------"
 echo -e "${GREEN}[\xE2\x9C\x94] Database backup complete!"

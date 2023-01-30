@@ -237,8 +237,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	 *            detail
 	 * @return
 	 */
-	private Map<String, Integer> getHoverValue(TestExecution detail) {
-		Map<String, Integer> aggData = new HashMap<>();
+	private Map<String, Object> getHoverValue(TestExecution detail) {
+		Map<String, Object> aggData = new HashMap<>();
 		aggData.put(TOTAL, detail.getTotalTestCases());
 		aggData.put(EXECUTED, detail.getExecutedTestCase());
 		aggData.put(PASSED, detail.getPassedTestCase());

@@ -48,6 +48,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { environment } from '../../../environments/environment';
 import { of } from 'rxjs/internal/observable/of';
 import { DropdownModule } from 'primeng/dropdown';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
@@ -1848,6 +1849,7 @@ describe('ExecutiveComponent', () => {
         MaturityComponent,
         FilterComponent,
         DashboardComponent,
+        ExportExcelComponent
       ],
       providers: [
         HelperService,
@@ -1928,11 +1930,10 @@ describe('ExecutiveComponent', () => {
                     }
                 }]
         };
-        const spy = spyOn(helperService, 'downloadExcel').and.returnValue(of(excelData));
+        const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
         component.iSAdditionalFilterSelected =false;
         component.downloadExcel('kpi35', 'Defect Seepage Rate', false,false);
-        tick();
-        expect(component.displayModal).toBeTruthy();
+        expect(spy).toHaveBeenCalled();
     }));
 
   xit('Scrum with filter applied', (done) => {

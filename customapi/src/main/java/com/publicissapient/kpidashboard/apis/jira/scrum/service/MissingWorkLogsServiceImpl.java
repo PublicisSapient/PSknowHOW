@@ -106,12 +106,12 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 		kpiElement.setTrendValueList(dataList);
 
 		if (null != trendValueList.get(0)) {
-			Map<String, Integer> howerMap = trendValueList.get(0).getHoverValue();
+			Map<String, Object> howerMap = trendValueList.get(0).getHoverValue();
 			List<DataCount> dataCountList = new ArrayList<>();
 			howerMap.forEach((k, v) -> {
 				DataCount dataCount = new DataCount();
 				dataCount.setData(k);
-				dataCount.setCount(v);
+				dataCount.setCount((Integer) v);
 				dataCountList.add(dataCount);
 
 			});
@@ -231,12 +231,12 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 
 			setSprintData(stories, totalStory, unloggedStory);
 
-			Map<String, Integer> howerMap = new LinkedHashMap<>();
+			Map<String, Object> howerMap = new LinkedHashMap<>();
 			howerMap.put(STORY_LIST, totalStory.size());
 			howerMap.put(UNLOGGED_STORIES, unloggedStory.size());
 			howerMap.put(TOTAL_STORY_LIST, sumTotalStories.intValue());
 
-			Double value = 100 * howerMap.get(UNLOGGED_STORIES) / Double.valueOf(howerMap.get(STORY_LIST));
+			Double value = Double.valueOf(100 * ((Integer)howerMap.get(UNLOGGED_STORIES)) / (Integer) howerMap.get(STORY_LIST));
 
 			if (CollectionUtils.isNotEmpty(totalStory)) {
 				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap,

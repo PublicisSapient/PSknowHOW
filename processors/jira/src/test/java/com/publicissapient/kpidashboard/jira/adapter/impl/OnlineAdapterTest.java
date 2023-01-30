@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.adapter.impl;
 
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,10 @@ public class OnlineAdapterTest {
     private AesEncryptionService aesEncryptionService = Mockito.mock(AesEncryptionService.class);
 
     ProcessorJiraRestClient client = Mockito.mock(ProcessorJiraRestClient.class);
-    OnlineAdapter onlineAdapter = new OnlineAdapter(jiraProcessorConfig, client, aesEncryptionService);
+
+    private ToolCredentialProvider toolCredentialProvider = Mockito.mock(ToolCredentialProvider.class);
+
+    OnlineAdapter onlineAdapter = new OnlineAdapter(jiraProcessorConfig, client, aesEncryptionService, toolCredentialProvider);
 
     ProjectConfFieldMapping projectConfFieldMapping;
 

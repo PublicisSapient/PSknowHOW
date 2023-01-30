@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
@@ -27,6 +27,7 @@ import { ActivatedRoute } from '@angular/router';
 import { mergeMap } from 'rxjs/operators';
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 declare let require: any;
 
 
@@ -37,6 +38,7 @@ declare let require: any;
 })
 
 export class ExecutiveComponent implements OnInit, OnDestroy {
+    @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
     masterData = <any>{};
     filterData = <any>[];
     sonarKpiData = <any>{};
@@ -392,64 +394,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // download excel functionality
     downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
-        const sprintIncluded = ['CLOSED'];
-        if(!(!additionalFilterSupport && this.iSAdditionalFilterSelected)){
-            this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded).subscribe(getData => {
-                if (getData['excelData'] || !getData?.hasOwnProperty('validationData')) {
-                    this.kpiExcelData = this.excelService.generateExcelModalData(getData);
-                    this.modalDetails['tableHeadings'] = this.kpiExcelData.headerNames.map(column => column.header);
-                    this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
-                    this.modalDetails['header'] = kpiName;
-                    this.displayModal = true;
-                }else{
-                    if (getData['kpiId'] === 'kpi83') {
-                        let dynamicKeys = [];
-                        for (const key in getData['validationData']) {
-                            if (dynamicKeys.length === 0) {
-                                dynamicKeys = Object.keys(getData['validationData'][key][kpiName][0]);
-                            }
-                            for (const x in dynamicKeys) {
-                                getData['validationData'][key][dynamicKeys[x]] = [];
-                            }
-
-                            const arr = getData['validationData'][key][kpiName];
-                            // eslint-disable-next-line @typescript-eslint/prefer-for-of
-                            for (let i = 0; i < arr.length; i++) {
-                                for (const item in arr[i]) {
-                                    getData['validationData'][key][item].push(arr[i][item]);
-                                }
-                            }
-                            delete getData['validationData'][key][kpiName];
-
-                        }
-                    }
-
-                    this.excelService.exportExcel(getData, 'individual', kpiName, isKanban);
-                }
-            });
-        }else{
-            this.modalDetails['header'] = kpiName;
-            this.displayModal = true;
-        }
-
+        this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,this.iSAdditionalFilterSelected);
     }
 
-    exportExcel(kpiName){
-    this.excelService.generateExcel(this.kpiExcelData,kpiName);
-    }
 
-    checkIfArray(arr){
-        return Array.isArray(arr);
-    }
-
-    clearModalDataOnClose(){
-        this.displayModal=false;
-        this.modalDetails = {
-            header: '',
-            tableHeadings: [],
-            tableValues: []
-        };
-    }
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
         this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
@@ -471,7 +419,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Zypher' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Zypher') {
                 groupIdSet.add(obj.groupId);
             }
         });
@@ -496,7 +444,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Jira' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Jira') {
                 groupIdSet.add(obj.groupId);
             }
         });
@@ -854,6 +802,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         this.loaderJiraKanbanArray.splice(this.loaderJiraKanbanArray.indexOf(element.kpiId), 1);
                     });
                 }
+                this.kpiLoader =false;
             });
     }
 
@@ -1061,8 +1010,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
-        
-        
     }
 
     ifKpiExist(kpiId) {

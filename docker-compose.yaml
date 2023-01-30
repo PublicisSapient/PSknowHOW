@@ -64,7 +64,7 @@ services:
       - 443:443
     volumes:
       - <Location-of-knowhow>/PSKnowhow/app/apps/logs/ui:/var/log/nginx
-      - <Location-of-knowhow>/PSKnowhow/app/apps/certs/:/etc/ssl/certs/
+      #- <Location-of-knowhow>/PSKnowhow/app/apps/certs/:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
     links:
       - CustomAPI:customapi
     environment:

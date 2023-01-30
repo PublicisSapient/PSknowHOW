@@ -257,7 +257,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectNodeId, String date) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		projectWiseRCAMap.forEach((key, value) -> {
 			hoverValueMap.put(key, value.intValue());
 			DataCount dcObj = getDataCountObject(value, projectName, date, projectNodeId, key, hoverValueMap);
@@ -317,13 +317,13 @@ public class NetOpenTicketCountByRCAServiceImpl
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String projectNodeId, String rca,
-			Map<String, Integer> overAllHoverValueMap) {
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(rca);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (rca.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {
