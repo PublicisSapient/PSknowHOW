@@ -34,12 +34,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
 
@@ -47,7 +52,6 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsJob;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsBuildClient;
 import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
@@ -74,6 +78,7 @@ public class JenkinsBuildClientTests {
 		JENKINS_SAMPLE_SERVER_ONE.setUsername("does");
 		JENKINS_SAMPLE_SERVER_ONE.setApiKey("matter");
 		JENKINS_SAMPLE_SERVER_ONE.setJobName("job1");
+		JENKINS_SAMPLE_SERVER_ONE.setId(new ObjectId("62171d0f26dd266803fa87da"));
 	}
 
 	@Test
@@ -149,7 +154,7 @@ public class JenkinsBuildClientTests {
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<JenkinsJob, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -160,15 +165,12 @@ public class JenkinsBuildClientTests {
 				eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs_2_builds.json"), HttpStatus.OK));
 
-		Map<JenkinsJob, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
 
 		assertThat(jobs.size(), is(1));
 
-		Iterator<JenkinsJob> jobIt = jobs.keySet().iterator();
-
-		// First job
-		JenkinsJob job = jobIt.next();
-		assertJob(job, "job1", "http://server/job/job1/");
+		Iterator<ObjectId> jobIt = jobs.keySet().iterator();
+		ObjectId job = jobIt.next();
 
 		Iterator<Build> buildIt = jobs.get(job).iterator();
 		assertBuild(buildIt.next(), "2", "http://server/job/job1/2/");
@@ -176,6 +178,7 @@ public class JenkinsBuildClientTests {
 		assertThat(buildIt.hasNext(), is(false));
 
 		assertThat(jobIt.hasNext(), is(false));
+
 	}
 
 	@Test
@@ -185,14 +188,13 @@ public class JenkinsBuildClientTests {
 				eq(String.class))).thenReturn(
 						new ResponseEntity<>(getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
 
-		Map<JenkinsJob, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
 
 		assertThat(jobs.size(), is(2));
 
-		Iterator<JenkinsJob> jobIt = jobs.keySet().iterator();
+		Iterator<ObjectId> jobIt = jobs.keySet().iterator();
 
-		JenkinsJob job = jobIt.next();
-		assertJob(job, "job1", "http://server/job/job1/");
+		ObjectId job = jobIt.next();
 
 		Iterator<Build> buildIt = jobs.get(job).iterator();
 		assertBuild(buildIt.next(), "2", "http://server/job/job1/2/");
@@ -212,8 +214,4 @@ public class JenkinsBuildClientTests {
 		return IOUtils.toString(inputStream);
 	}
 
-	private void assertJob(JenkinsJob job, String name, String url) {
-		assertThat(job.getJobName(), is(name));
-		assertThat(job.getJobUrl(), is(url));
-	}
 }

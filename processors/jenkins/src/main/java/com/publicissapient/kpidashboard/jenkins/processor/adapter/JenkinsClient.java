@@ -21,10 +21,11 @@ package com.publicissapient.kpidashboard.jenkins.processor.adapter;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsJob;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 
 /**
@@ -40,7 +41,7 @@ public interface JenkinsClient {
 	 *            the URL for the Jenkins instance
 	 * @return a summary of every build for each job on the instance
 	 */
-	Map<JenkinsJob, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer);
+	Map<ObjectId, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer);
 
 	Map<String, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection jenkinsServer,
 			JenkinsProcessor processor);
