@@ -30,6 +30,8 @@ import { AccessGuard } from '../services/access.guard';
 import { LandingPageComponent } from '../dashboard/landing-page/landing-page.component';
 import { GuestGuard } from '../services/guest.guard';
 import { BacklogComponent } from '../dashboard/backlog/backlog.component';
+import { SSOGuard } from '../services/sso.guard';
+import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -44,7 +46,8 @@ const routes: Routes = [
     path: 'authentication',
     // loadChildren: '../authentication/authentication.module#AuthenticationModule',
     loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
-    resolve: [Logged]
+    resolve: [Logged],
+    canActivate:[SSOGuard]
   },
   {
     path: 'dashboard', component: DashboardComponent,
@@ -65,6 +68,7 @@ const routes: Routes = [
 
     ], canActivate: [AuthGuard]
   },
+  { path: 'authentication-fail', component: SsoAuthFailureComponent },
   { path: '**', redirectTo: 'authentication' }
 ];
 

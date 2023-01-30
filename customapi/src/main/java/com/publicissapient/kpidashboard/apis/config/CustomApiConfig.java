@@ -183,6 +183,13 @@ public class CustomApiConfig {// NOPMD
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
 
+	private boolean ssoLogin;
+
+	private Map<String,String> mailTemplate;
+
+	@Value("${flag.mailWithoutKafka}")
+	private boolean mailWithoutKafka;
+
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
 	}
@@ -878,5 +885,29 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNumberOfFutureDaysForKanbanTestExecution(int numberOfFutureDaysForKanbanTestExecution) {
 		this.numberOfFutureDaysForKanbanTestExecution = numberOfFutureDaysForKanbanTestExecution;
+	}
+
+	public boolean isSsoLogin() {
+		return ssoLogin;
+	}
+
+	public void setSsoLogin(boolean ssoLogin) {
+		this.ssoLogin = ssoLogin;
+	}
+	
+	public Map<String, String> getMailTemplate() {
+		return mailTemplate;
+	}
+
+	public void setMailTemplate(Map<String, String> mailTemplate) {
+		this.mailTemplate = mailTemplate;
+	}
+
+	public boolean isMailWithoutKafka() {
+		return mailWithoutKafka;
+	}
+
+	public void setMailWithoutKafka(boolean mailWithoutKafka) {
+		this.mailWithoutKafka = mailWithoutKafka;
 	}
 }

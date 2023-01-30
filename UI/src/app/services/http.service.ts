@@ -127,6 +127,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
+    private authDetailsUrl = this.baseUrl + '/api/authdetails';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
@@ -686,6 +688,25 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getEmmStats(): Observable<any> {
         return this.http.get<any>(this.getEmmStatsUrl);
+    }
+
+    getSSOUserInfo(){
+        return this.http.get<any>(this.getSSOUserInfoUrl);
+    }
+
+
+    getAuthDetails() {
+        this.http.get<any>(this.authDetailsUrl).subscribe(response => {
+
+            if (response && response?.success && response?.data) {
+                console.log('updating local storge');
+                const authDetails = response?.data;
+                localStorage.setItem('user_name', authDetails['username']);
+                localStorage.setItem('user_email', authDetails['emailAddress']);
+                localStorage.setItem('projectsAccess', JSON.stringify(authDetails['projectsAccess']));
+                localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authDetails['authorities']), 'encrypt'));
+            }
+        });
     }
 
     private handleError<T>(operation = 'operation', result?: T) {

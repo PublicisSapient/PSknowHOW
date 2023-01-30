@@ -56,6 +56,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -305,6 +306,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (resultUserInfo == null) {
             return new ServiceResponse(false, "Unable to update Role.", null);
         }
+        tokenAuthenticationService.updateExpiryDate(resultUserInfo.getUsername(), LocalDateTime.now().toString());
         return new ServiceResponse(true, "Updated the role Successfully", resultUserInfo);
     }
 
@@ -400,5 +402,18 @@ public class UserInfoServiceImpl implements UserInfoService {
     private void cleanAllCache() {
         cacheService.clearAllCache();
         log.info("cache cleared");
+    }
+
+    @Override
+    public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities){
+        UserInfo userInfo = userInfoRepository.findByUsername(userName);
+        if(userInfo == null) {
+            userInfo = new UserInfo();
+            userInfo.setUsername(userName);
+            userInfo.setAuthorities(authorities);
+            userInfo.setAuthType(authType);
+            userInfoRepository.save(userInfo);
+        }
+        return userInfo;
     }
 }

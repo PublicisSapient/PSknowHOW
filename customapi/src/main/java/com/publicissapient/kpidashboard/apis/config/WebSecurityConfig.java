@@ -111,6 +111,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		this.customApiConfig = customApiConfig;
 	}
 
+
 	/**
 	 * Added below fixes for security scan: - commented the headers in the response
 	 * - added CorsFilter in filter chain for endpoints mentioned in the method
@@ -128,6 +129,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/error").permitAll()
 				.antMatchers("/authenticationProviders").permitAll()
 				.antMatchers("/auth-types-status").permitAll()
+				.antMatchers("/sso/stub-auth").permitAll()
 
 				// management metrics
 				.antMatchers("/info").permitAll().antMatchers("/health").permitAll()
@@ -233,5 +235,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
+
 	
 }

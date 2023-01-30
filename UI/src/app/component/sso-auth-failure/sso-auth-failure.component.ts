@@ -15,9 +15,18 @@
  * limitations under the License.
  *
  ******************************************************************************/
+import { Component, OnInit } from '@angular/core';
 
-export const environment = {
-  production: true,
-    baseUrl: '',
-    SSO_LOGIN: false
-};
+@Component({
+  selector: 'app-sso-auth-failure',
+  templateUrl: './sso-auth-failure.component.html',
+  styleUrls: ['./sso-auth-failure.component.css']
+})
+export class SsoAuthFailureComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
