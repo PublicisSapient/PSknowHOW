@@ -203,7 +203,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (userTokenData != null) {
 			String expiryDate = userTokenData.getExpiryDate();
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
+					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
 			if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
 				return Boolean.toString(true);
@@ -214,7 +214,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	public UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
-		List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+		List<String> authorities = authentication.getAuthorities() == null ? null
+				: authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+						.collect(Collectors.toList());
 		if (cookieUtil.getAuthCookie(request) != null) {
 			UserTokenData userTokenData = userTokenReopository
 					.findByUserToken(cookieUtil.getAuthCookie(request).getValue());
