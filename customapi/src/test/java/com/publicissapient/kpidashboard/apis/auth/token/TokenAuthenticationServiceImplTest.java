@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -240,40 +241,34 @@ public class TokenAuthenticationServiceImplTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(),
 				"2023-01-19T12:33:14.013");
-		accessItem = new AccessItem();
-		accessItem.setItemId("itemId");
-		accessItem.setItemName("itemName");
-		accessItems.add(accessItem);
 
-		accessNodes = new AccessNode();
-		accessNodes.setAccessLevel("accessLevel");
-		accessNodes.setAccessItems(accessItems);
-		listAccessNode.add(accessNodes);
-		ProjectsAccess pa = new ProjectsAccess();
-		pa.setAccessNodes(listAccessNode);
-		pa.setRole("Role");
-
-		List<ProjectsAccess> paList = new ArrayList<>();
-		paList.add(pa);
 		UserInfo testUser = new UserInfo();
 		Object auth = "STANDARD";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("username", USERNAME);
+		jsonObject.put("authorities", null);
+		jsonObject.put("emailAddress", null);
+		jsonObject.put("projectsAccess", null);
 		testUser.setUsername(USERNAME);
-		testUser.setProjectsAccess(paList);
+		when(projectAccessManager.getProjectAccessesWithRole(USERNAME)).thenReturn(null);
 		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue()))
 				.thenReturn(userTokenData);
 		when(authentication.getDetails()).thenReturn(auth);
 		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
-		assertEquals(service.getOrSaveUserByToken(request, authentication), testUser);
-		;
+		assertEquals(service.getOrSaveUserByToken(request, authentication), jsonObject);
 	}
 
 	@Test
 	public void getOrSaveUserByTokenNull() {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		Object auth = "STANDARD";
+		UserInfo testUser = new UserInfo();
+		testUser.setUsername(USERNAME);
+		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
 		when(authentication.getDetails()).thenReturn(auth);
 		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
 		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
+		when(projectAccessManager.getProjectAccessesWithRole(USERNAME)).thenReturn(null);
 		service.getOrSaveUserByToken(request, authentication);
 		verify(userTokenReopository, times(1))
 				.save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));

@@ -30,8 +30,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,6 +72,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
 	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
+	private static final String USER_NAME = "username";
+	private static final String USER_EMAIL = "emailAddress";
+	private static final String PROJECTS_ACCESS = "projectsAccess";
+	private static final Object USER_AUTHORITIES = "authorities";
 
 
 	@Autowired
@@ -210,7 +219,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
+	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
 			UserTokenData userTokenData = userTokenReopository
@@ -225,8 +234,20 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
 			AuthType authType = AuthType.valueOf(authentication.getDetails().toString());
 			userInfo = userInfoService.getOrSaveUserInfo(userTokenData.getUserName(), authType, authorities);
+
 		}
-		return userInfo;
+		return createAuthDetailsJson(userInfo);
+	}
+
+	@Override
+	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
+		JSONObject json = new JSONObject();
+		json.put(USER_NAME, userInfo.getUsername());
+		json.put(USER_EMAIL, userInfo.getEmailAddress());
+		json.put(USER_AUTHORITIES, userInfo.getAuthorities());
+		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(userInfo.getUsername());
+		json.put(PROJECTS_ACCESS, projectAccessesWithRole);
+		return json;
 	}
 
 }
