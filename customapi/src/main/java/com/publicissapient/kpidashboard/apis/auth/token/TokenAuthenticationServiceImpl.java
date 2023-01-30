@@ -23,11 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -35,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -212,11 +209,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return Boolean.toString(false);
 	}
 
+	@Override
 	public UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
-		List<String> authorities = authentication.getAuthorities() == null ? null
-				: authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-						.collect(Collectors.toList());
 		if (cookieUtil.getAuthCookie(request) != null) {
 			UserTokenData userTokenData = userTokenReopository
 					.findByUserToken(cookieUtil.getAuthCookie(request).getValue());
@@ -227,7 +222,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 						cookieUtil.getAuthCookie(request).getValue(), null);
 				userTokenReopository.save(userTokenData);
 			}
-			userInfo = userInfoService.getOrSaveUserInfo(userTokenData.getUserName(), null, authorities);
+			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
+			AuthType authType = AuthType.valueOf(authentication.getDetails().toString());
+			userInfo = userInfoService.getOrSaveUserInfo(userTokenData.getUserName(), authType, authorities);
 		}
 		return userInfo;
 	}

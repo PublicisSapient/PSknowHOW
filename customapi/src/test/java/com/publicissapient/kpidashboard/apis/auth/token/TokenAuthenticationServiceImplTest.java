@@ -39,6 +39,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -237,7 +238,8 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void getOrSaveUserByToken() {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), "2023-01-19T12:33:14.013");
+		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(),
+				"2023-01-19T12:33:14.013");
 		accessItem = new AccessItem();
 		accessItem.setItemId("itemId");
 		accessItem.setItemName("itemName");
@@ -254,21 +256,27 @@ public class TokenAuthenticationServiceImplTest {
 		List<ProjectsAccess> paList = new ArrayList<>();
 		paList.add(pa);
 		UserInfo testUser = new UserInfo();
+		Object auth = "STANDARD";
 		testUser.setUsername(USERNAME);
 		testUser.setProjectsAccess(paList);
-		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(userTokenData);
-		when(userInfoService.getOrSaveUserInfo(USERNAME, null, new ArrayList<>())).thenReturn(testUser);
-		assertEquals(service.getOrSaveUserByToken(request, authentication), testUser);;
+		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue()))
+				.thenReturn(userTokenData);
+		when(authentication.getDetails()).thenReturn(auth);
+		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
+		assertEquals(service.getOrSaveUserByToken(request, authentication), testUser);
+		;
 	}
 
 	@Test
 	public void getOrSaveUserByTokenNull() {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-
+		Object auth = "STANDARD";
+		when(authentication.getDetails()).thenReturn(auth);
 		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
 		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
 		service.getOrSaveUserByToken(request, authentication);
-		verify(userTokenReopository, times(1)).save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
+		verify(userTokenReopository, times(1))
+				.save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
 	}
 
 }
