@@ -90,7 +90,7 @@ public class IterationStatusServiceImplTest {
     @Before
     public void setup() {
         KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest("kpi999");
+        kpiRequest = kpiRequestFactory.findKpiRequest("kpi130");
         kpiRequest.setLabel("PROJECT");
 
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
