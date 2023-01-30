@@ -448,7 +448,7 @@ export class FilterComponent implements OnInit {
             for (let i = 0; i < selectedProjects?.length; i++) {
                 for (const key in this.additionalFiltersDdn) {
                     if (key == 'sprint') {
-                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i]))];
+                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
                     } else {
                         this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['path'][0]?.includes(selectedProjects[i]))];
                     }

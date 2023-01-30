@@ -16,7 +16,7 @@
                   [showExport]="false" [isShow]="true" [showChartView]="false">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
+                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0 && !kpiLoader;else noData">
                       <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                         <ng-container *ngFor="let x of item.data; let i = index">
                           <div *ngIf="x?.value > 0" class="p-3 p-text-center"
