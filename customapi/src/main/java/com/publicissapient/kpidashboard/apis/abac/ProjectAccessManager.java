@@ -407,7 +407,6 @@ public class ProjectAccessManager {
 			if (resultUserInfo != null) {
 				resultUserInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_SUPERADMIN)));
 				resultUserInfo.setProjectsAccess(new ArrayList<>());
-				tokenAuthenticationService.updateExpiryDate(resultUserInfo.getUsername(), LocalDateTime.now().toString());
 			}
 		} else {
 			// create a tree from basic_config with root node
@@ -514,19 +513,12 @@ public class ProjectAccessManager {
 						.removeIf(projectsAccess -> !projectsAccess.getRole().equals(Constant.ROLE_GUEST));
 				userInfo.setAuthorities(new ArrayList<>(Arrays.asList(Constant.ROLE_GUEST)));
 			} else {
-				updateExpiryDateForToken(userInfo, roles);
 				userInfo.setAuthorities(roles);
 			}
 		}
 
 	}
 
-	public void updateExpiryDateForToken(UserInfo userInfo, List<String> roles) {
-
-		if (!userInfo.getAuthorities().containsAll(roles) && userInfo.getAuthorities().size() != roles.size())
-			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
-
-	}
 
 	private void removeChildren(Map<String, Set<String>> globalChildrenMap, UserInfo resultUserInfo) {
 
@@ -748,7 +740,7 @@ public class ProjectAccessManager {
 
 	private void listenGrantAccessSuccess(GrantAccessListener listener, UserInfo userInfo) {
 		if (listener != null) {
-
+			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
 			listener.onSuccess(userInfo);
 		}
 	}
@@ -973,7 +965,6 @@ public class ProjectAccessManager {
 			newProjectAccess.setAccessNodes(accessNodes);
 			userInfo.getProjectsAccess().add(newProjectAccess);
 			userInfo.getAuthorities().add(Constant.ROLE_PROJECT_ADMIN);
-			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 		}
 
 		return userInfoRepository.save(userInfo);
