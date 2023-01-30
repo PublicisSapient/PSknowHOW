@@ -186,18 +186,31 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                 jiraIssueCustomHistory -> {
                     List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
                     if (CollectionUtils.isNotEmpty(storySprintDetail)) {
-                        for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
-                            if (jiraIssueSprint.getFromStatus().equalsIgnoreCase(STATUS)) {
-                                DateTime datValu = DateTime.parse(jiraIssueSprint.getActivityDate().toString());
+
+                        for(int i=storySprintDetail.size()-1;i>=0;i--){
+                            if(storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(STATUS)){
+                                DateTime datValu = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
                                 DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
                                 DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
                                 if (datValu.isAfter(startDateValue) && datValu.isBefore(endDateValue)) {
                                     dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
-                                            getFormattedDate(jiraIssueSprint.getActivityDate()));
+                                            getFormattedDate(storySprintDetail.get(i).getActivityDate()));
                                     break;
                                 }
                             }
                         }
+//                        for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
+//                            if (jiraIssueSprint.getFromStatus().equalsIgnoreCase(STATUS)) {
+//                                DateTime datValu = DateTime.parse(jiraIssueSprint.getActivityDate().toString());
+//                                DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
+//                                DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
+//                                if (datValu.isAfter(startDateValue) && datValu.isBefore(endDateValue)) {
+//                                    dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
+//                                            getFormattedDate(jiraIssueSprint.getActivityDate()));
+//                                    break;
+//                                }
+//                            }
+//                        }
                     }
                 }
         );
