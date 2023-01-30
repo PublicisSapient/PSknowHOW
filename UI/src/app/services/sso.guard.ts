@@ -31,7 +31,7 @@ export class SSOGuard implements CanActivate {
           localStorage.setItem('user_name', response['data']?.username);
           localStorage.setItem('projectsAccess', JSON.stringify(response['data']['projectsAccess']));
           localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(response['data']['authorities']), 'encrypt'));
-
+          this.httpService.getAuthDetails();
          //navigate to profile or dashboard screen
           if (this.redirectToProfile()) {
             this.router.navigate(['./dashboard/Config/Profile']);
