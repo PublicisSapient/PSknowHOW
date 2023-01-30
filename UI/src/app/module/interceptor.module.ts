@@ -80,7 +80,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 tap(event => {
                     if (event instanceof HttpResponse){
                         console.log('Httpevent',event);
-                        if(event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true'){
+                        if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
                             this.httpService.getAuthDetails();
                         }
                     }
