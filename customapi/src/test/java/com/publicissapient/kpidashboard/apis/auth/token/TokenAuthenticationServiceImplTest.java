@@ -39,6 +39,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,6 +111,7 @@ public class TokenAuthenticationServiceImplTest {
 
 	List<AccessNode> listAccessNode = new ArrayList<>();
 
+
 	AccessNode accessNodes;
 	AccessItem accessItem;
 	List<AccessItem> accessItems = new ArrayList<>();
@@ -136,19 +138,19 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void testGetAuthentication_noHeader() {
 
-		assertNull(service.getAuthentication(request));
+		assertNull(service.getAuthentication(request, response));
 	}
 
 	@Test
 	public void testGetAuthentication_expiredToken() {
-		assertNull(service.getAuthentication(request));
+		assertNull(service.getAuthentication(request, response));
 	}
 
 	@Test
 	public void testGetAuthentication() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		when(userTokenReopository.findByUserToken(anyString())).thenReturn(new UserTokenData());
-		Authentication result = service.getAuthentication(request);
+		Authentication result = service.getAuthentication(request, response);
 		assertNotNull(result);
 	}
 
@@ -225,6 +227,56 @@ public class TokenAuthenticationServiceImplTest {
 
 		service.invalidateAuthToken(users);
 		verify(userTokenReopository, times(1)).deleteByUserNameIn(users);
+	}
+
+	@Test
+	public void setUpdateAuthFlagForExpDateNull() {
+		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
+		assertEquals(service.setUpdateAuthFlag(userTokenData), Boolean.toString(false));
+	}
+
+	@Test
+	public void getOrSaveUserByToken() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(),
+				"2023-01-19T12:33:14.013");
+		accessItem = new AccessItem();
+		accessItem.setItemId("itemId");
+		accessItem.setItemName("itemName");
+		accessItems.add(accessItem);
+
+		accessNodes = new AccessNode();
+		accessNodes.setAccessLevel("accessLevel");
+		accessNodes.setAccessItems(accessItems);
+		listAccessNode.add(accessNodes);
+		ProjectsAccess pa = new ProjectsAccess();
+		pa.setAccessNodes(listAccessNode);
+		pa.setRole("Role");
+
+		List<ProjectsAccess> paList = new ArrayList<>();
+		paList.add(pa);
+		UserInfo testUser = new UserInfo();
+		Object auth = "STANDARD";
+		testUser.setUsername(USERNAME);
+		testUser.setProjectsAccess(paList);
+		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue()))
+				.thenReturn(userTokenData);
+		when(authentication.getDetails()).thenReturn(auth);
+		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
+		assertEquals(service.getOrSaveUserByToken(request, authentication), testUser);
+		;
+	}
+
+	@Test
+	public void getOrSaveUserByTokenNull() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		Object auth = "STANDARD";
+		when(authentication.getDetails()).thenReturn(auth);
+		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
+		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
+		service.getOrSaveUserByToken(request, authentication);
+		verify(userTokenReopository, times(1))
+				.save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
 	}
 
 }

@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
@@ -52,7 +54,7 @@ public interface TokenAuthenticationService {
 	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(HttpServletRequest request);
+	Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * This method returns Projects related to user
@@ -77,4 +79,10 @@ public interface TokenAuthenticationService {
 	 * @param users list of users (usernames)
 	 */
 	void invalidateAuthToken(List<String> users);
+
+	void updateExpiryDate(String username, String expiryDate);
+
+	String setUpdateAuthFlag(UserTokenData userTokenData);
+
+	UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 }

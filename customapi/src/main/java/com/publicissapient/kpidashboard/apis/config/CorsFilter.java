@@ -138,6 +138,6 @@ public class CorsFilter extends OncePerRequestFilter {
 		response.addHeader(CORSConstants.HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS,
 				CORSConstants.HEADER_VALUE_EXPOSE_HEADERS);
 		response.setHeader("Access-Control-Allow-Credentials","true");
-		
+
 	}
 }

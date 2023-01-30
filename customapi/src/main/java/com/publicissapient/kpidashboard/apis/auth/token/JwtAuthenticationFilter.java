@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 		}
 
-		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request);
+		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);

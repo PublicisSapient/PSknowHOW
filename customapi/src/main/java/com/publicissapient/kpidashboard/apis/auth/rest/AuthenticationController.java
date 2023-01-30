@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -82,6 +83,8 @@ public class AuthenticationController {
 	private final SignupManager signupManager;
 
 	private AuthTypesConfigService authTypesConfigService;
+
+	private TokenAuthenticationService tokenAuthenticationService;
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String STATUS = "Success";
 	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
@@ -99,13 +102,15 @@ public class AuthenticationController {
 	@Autowired
 	public AuthenticationController(AuthenticationService authenticationService,
 			AuthenticationResponseService authenticationResponseService, UserInfoService userInfoService,
-			AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService) {
+			AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService,
+			TokenAuthenticationService tokenAuthenticationService) {
 		this.authenticationService = authenticationService;
 		this.authenticationResponseService = authenticationResponseService;
 		this.authProperties = authProperties;
 		this.userInfoService = userInfoService;
 		this.signupManager = signupManager;
 		this.authTypesConfigService = authTypesConfigService;
+		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
 	/**
@@ -365,6 +370,17 @@ public class AuthenticationController {
 
 	private boolean isPassContainUser(String reqPassword, String username) {
 		return !(StringUtils.containsIgnoreCase(reqPassword, username));
+	}
+
+	@RequestMapping(value = "/authdetails", method = GET)
+	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
+		UserInfo userInfo = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
+		if(userInfo != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", userInfo));
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(false, "Invalid token", null));
+
 	}
 
 }

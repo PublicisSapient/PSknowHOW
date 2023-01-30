@@ -132,12 +132,5 @@ public interface UserInfoService {
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
-	/**
-	 * This method get userinfo if present or save userinfo if not present
-	 * @param username username
-	 * @param authType authType
-	 * @param email email
-	 * @return useInfo dto object
-	 */
-	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 }
