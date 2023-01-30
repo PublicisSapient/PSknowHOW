@@ -15,14 +15,18 @@
  * limitations under the License.
  *
  ******************************************************************************/
+import { Component, OnInit } from '@angular/core';
 
-package com.publicissapient.kpidashboard.common.constant;
+@Component({
+  selector: 'app-sso-auth-failure',
+  templateUrl: './sso-auth-failure.component.html',
+  styleUrls: ['./sso-auth-failure.component.css']
+})
+export class SsoAuthFailureComponent implements OnInit {
 
-/**
- * The Auth Type Enum
- */
-public enum AuthType {
+  constructor() { }
 
-	STANDARD, LDAP, CROWDSSO, APIKEY, SSO;
+  ngOnInit(): void {
+  }
 
 }

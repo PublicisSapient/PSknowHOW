@@ -65,7 +65,7 @@
                   aria-hidden="true"></span>Settings</a></li>
             <li *ngIf="showHelp"><a routerLink="Help" routerLinkActive="active" id="Layout-Settings"><span
                   class="fa fa-info-circle" aria-hidden="true"></span>Help</a></li>
-            <li (click)="logout()">
+            <li (click)="logout()" *ngIf="!ssoLogin">
               <a id="Layout-Logout"> <span class="fas fa-sign-out-alt cursor-pointer"></span>Logout</a>
             </li>
           </ul>
