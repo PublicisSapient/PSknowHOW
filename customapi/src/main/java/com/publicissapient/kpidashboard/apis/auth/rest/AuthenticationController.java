@@ -374,9 +374,9 @@ public class AuthenticationController {
 
 	@RequestMapping(value = "/authdetails", method = GET)
 	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
-		UserInfo userInfo = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
-		if(userInfo != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", userInfo));
+		JSONObject jsonObject = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
+		if(jsonObject != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", jsonObject));
 		}
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(false, "Invalid token", null));

@@ -30,10 +30,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -69,6 +69,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
 	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
+	private static final String USER_NAME = "username";
+	private static final String USER_EMAIL = "emailAddress";
+	private static final String PROJECTS_ACCESS = "projectsAccess";
+	private static final Object USER_AUTHORITIES = "authorities";
 
 
 	@Autowired
@@ -109,64 +113,21 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-		if (customApiConfig.isSsoLogin()){
-//			Collection<GrantedAuthority> authorities = Sets.newHashSet();
-//			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-//			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
-//					authorities);
-//			authenticationSso.setDetails(AuthType.SSO);
-
-			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
-			if (StringUtils.isBlank(authCookieSso.getValue())) {
-				return null;
-			}
-
-			String tokenSso = authCookieSso.getValue();
-			return createAuthenticationForSso(tokenSso);
-		} else {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			if (StringUtils.isBlank(authCookie.getValue())) {
-				return null;
-			}
-
-			String token = authCookie.getValue();
-
-			UserTokenData data = null;
-
-			data = userTokenReopository.findByUserToken(token);
-
-			if (null == data) {
-				return null;
-			}
-
-			return createAuthentication(token);
-		}
-
-
-
-
-	}
-
-
-	private Authentication createAuthentication(String token) {
-		try {
-			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
-					.getBody();
-			String username = claims.getSubject();
-			Collection<? extends GrantedAuthority> authorities = getAuthorities(
-					claims.get(ROLES_CLAIM, Collection.class));
-			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
-					authorities);
-			authentication.setDetails(claims.get(DETAILS_CLAIM));
-
-			return authentication;
-
-		} catch (ExpiredJwtException e) {
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		if (StringUtils.isBlank(authCookie.getValue())) {
 			return null;
 		}
-	}
 
-	private Authentication createAuthenticationForSso(String token){
+		String token = authCookie.getValue();
+
+		UserTokenData data = null;
+
+		data = userTokenReopository.findByUserToken(token);
+
+		if (null == data) {
+			return null;
+		}
+
 		try {
 			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
 					.getBody();
@@ -255,7 +216,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
+	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
 			UserTokenData userTokenData = userTokenReopository
@@ -270,8 +231,20 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
 			AuthType authType = AuthType.valueOf(authentication.getDetails().toString());
 			userInfo = userInfoService.getOrSaveUserInfo(userTokenData.getUserName(), authType, authorities);
+
 		}
-		return userInfo;
+		return createAuthDetailsJson(userInfo);
+	}
+
+	@Override
+	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
+		JSONObject json = new JSONObject();
+		json.put(USER_NAME, userInfo.getUsername());
+		json.put(USER_EMAIL, userInfo.getEmailAddress());
+		json.put(USER_AUTHORITIES, userInfo.getAuthorities());
+		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(userInfo.getUsername());
+		json.put(PROJECTS_ACCESS, projectAccessesWithRole);
+		return json;
 	}
 
 }

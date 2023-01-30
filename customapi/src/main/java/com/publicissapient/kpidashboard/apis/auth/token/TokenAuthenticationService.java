@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
@@ -84,5 +85,7 @@ public interface TokenAuthenticationService {
 
 	String setUpdateAuthFlag(UserTokenData userTokenData);
 
-	UserInfo getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
+	JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
+
+	public JSONObject createAuthDetailsJson(UserInfo userInfo);
 }
