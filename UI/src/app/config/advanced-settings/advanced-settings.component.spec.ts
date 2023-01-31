@@ -370,6 +370,7 @@ describe('AdvancedSettingsComponent', () => {
     ).and.callFake((confirmation: Confirmation) => confirmation.accept());
 
     component.deleteProcessorData({ processorName: 'Jira' });
+    expect(mockConfirm).toHaveBeenCalled();
   });
 
   it('should not delete processor on delete confirmation NO', () => {
@@ -378,6 +379,7 @@ describe('AdvancedSettingsComponent', () => {
       'confirm',
     ).and.callFake((confirmation: Confirmation) => confirmation.reject());
     component.deleteProcessorData({ processorName: 'Jira' });
+    expect(mockReject).toHaveBeenCalled();
   });
 
   it("should return execution date of processor",()=>{
