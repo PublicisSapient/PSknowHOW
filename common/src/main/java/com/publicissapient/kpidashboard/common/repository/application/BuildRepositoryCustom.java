@@ -50,5 +50,5 @@ public interface BuildRepositoryCustom {
      * @param endDate
      * @return the list of Build
      */
-    List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> projectToolConfigIds , String startDate , String endDate);
+    List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> projectBasicConfigIds , String startDate , String endDate);
 }
