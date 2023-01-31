@@ -62,7 +62,6 @@ import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.factory.JenkinsClientFactory;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
-import com.publicissapient.kpidashboard.jenkins.repository.JenkinsJobRepository;
 import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -77,9 +76,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	@Autowired
 	private JenkinsProcessorRepository jenkinsProcessorRepository;
-
-	@Autowired
-	private JenkinsJobRepository jenkinsJobRepository;
 
 	@Autowired
 	private BuildRepository buildRepository;
@@ -163,7 +159,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		String uid = UUID.randomUUID().toString();
 		MDC.put("processorExecutionUid", uid);
 		MDC.put("processorStartTime", String.valueOf(startTime));
-		ObjectId processorId = processor.getId();
+
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
 		MDC.put("TotalSelectedProjectsForProcessing", String.valueOf(projectConfigList.size()));
 		clearSelectedBasicProjectConfigIds();
@@ -222,6 +218,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId());
 			count += updatedJobs;
+			log.info("Job updated for :{}", count);
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
 		}
