@@ -63,7 +63,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -159,8 +158,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		String startDate = localStartDate.format(formatter);
 		String endDate = localEndDate.format(formatter);
 
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		Map<ObjectId, List<Build>> buildGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
 
 		if (MapUtils.isEmpty(buildGroup)) {
@@ -173,38 +170,35 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			String trendLineName = node.getProjectFilter().getName();
 			CodeBuildTimeInfo codeBuildTimeInfo = new CodeBuildTimeInfo();
 			LocalDateTime end = localEndDate;
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
 
-			List<Tool> jenkinsJob = getJenkinsJobTools(toolMap, node);
-
-			if (CollectionUtils.isEmpty(jenkinsJob)) {
+			if (CollectionUtils.isEmpty(buildListProjectWise)) {
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
 
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			List<Build> aggBuildList = new ArrayList<>();
-			jenkinsJob.forEach(job -> {
-
-				if (isValidJob(job)) {
-					List<Build> buildList = buildGroup.get(job.getProcessorItemList().get(0).getId());
+			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
+				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
+						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
+				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
+					String jobName = entry.getKey();
+					List<Build> buildList = entry.getValue();
 					if (CollectionUtils.isEmpty(buildList)) {
 						return;
 					}
 					aggBuildList.addAll(buildList);
-					String jobName;
-					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
-					} else {
-						jobName = job.getProcessorItemList().get(0).getDesc() + CommonConstant.ARROW + trendLineName;
-					}
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
-			});
-			if (CollectionUtils.isEmpty(aggBuildList)) {
+			}
+
+			if (CollectionUtils.isEmpty(buildListProjectWise)) {
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
-			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap,
+			prepareInfoForBuild(codeBuildTimeInfo, end, buildListProjectWise, trendLineName, trendValueMap,
 					Constant.AGGREGATED_VALUE, aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
@@ -215,10 +209,10 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
 	}
 
-	private boolean isValidJob(Tool job) {
-		return !CollectionUtils.isEmpty(job.getProcessorItemList())
-				&& job.getProcessorItemList().get(0).getId() != null;
-	}
+	/*private boolean isValidJob(Tool job) {
+		return !ObjectUtils.isEmpty(job.getProjectToolConfigId())
+				&& job.getProjectToolConfigId() != null;
+	}*/
 
 	/**
 	 * Sets build info to holder object and duration list
@@ -399,35 +393,21 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	@Override
 	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		Set<ObjectId> processorItemIdList = new HashSet<>();
+
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
 		List<String> statusList = new ArrayList<>();
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		leafNodeList.forEach(node -> {
-			ObjectId id = node.getProjectFilter().getBasicProjectConfigId();
-			if (toolMap.get(id) == null) {
-				return;
-			}
-			List<Tool> allProcessorItems = getProcessorItemList(toolMap, id);
-			if (CollectionUtils.isEmpty(allProcessorItems)) {
-				return;
-			}
-
-			allProcessorItems.forEach(job -> {
-				if (isValidJob(job)) {
-					processorItemIdList.addAll(prepareProcessorItemIdsList(job));
-				}
-			});
-
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+			projectBasicConfigIds.add(basicProjectConfigId);
 		});
-		if (CollectionUtils.isEmpty(processorItemIdList)) {
+		if (CollectionUtils.isEmpty(projectBasicConfigIds)) {
 			return new HashMap<>();
 		}
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, processorItemIdList, startDate, endDate);
-		return buildList.stream().collect(Collectors.groupingBy(Build::getProcessorItemId, Collectors.toList()));
+		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
 	}
 
 	/**
@@ -469,14 +449,14 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	/**
 	 * prepare processorIds list
 	 *
-	 * @param job
+	 * @param
 	 * @return processorIds
 	 */
-	private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
+	/*private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
 		List<ObjectId> processorIds = new ArrayList<>();
-		job.getProcessorItemList().forEach(e -> processorIds.add(e.getId()));
+		processorIds.add(job.getProjectToolConfigId());
 		return processorIds;
-	}
+	}*/
 
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {

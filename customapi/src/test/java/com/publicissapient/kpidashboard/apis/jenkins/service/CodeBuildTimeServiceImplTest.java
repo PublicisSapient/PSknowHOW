@@ -217,7 +217,6 @@ public class CodeBuildTimeServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 
 		try {
-			when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
 
 			KpiElement kpiElement = codeBuildTimeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

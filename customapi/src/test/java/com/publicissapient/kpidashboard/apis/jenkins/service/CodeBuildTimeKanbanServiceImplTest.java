@@ -151,11 +151,7 @@ public class CodeBuildTimeKanbanServiceImplTest {
 				new ArrayList<>(), accountHierarchyKanbanDataList, "hierarchyLevelOne", 5);
 
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
 		try {
 			KpiElement kpiElement = codeBuildTimeKanbanServiceImpl.getKpiData(kpiRequest,

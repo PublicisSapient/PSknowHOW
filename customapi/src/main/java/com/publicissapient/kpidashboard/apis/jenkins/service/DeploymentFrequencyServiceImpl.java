@@ -1,36 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +14,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service for managing DeploymentFrequency kpi for scrum.
@@ -176,26 +178,16 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
     public Map<ObjectId, List<Deployment>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
                                                               KpiRequest kpiRequest) {
 
-        // gets the project tool configuration
-        Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap = configHelperService
-                .getProjectToolConfigMap();
         Map<String, List<String>> mapOfFilters = new HashMap<>();
         List<String> statusList = new ArrayList<>();
-        Set<ObjectId> projectToolConfigIds = new HashSet<>();
+        Set<ObjectId> projectBasicConfigIds = new HashSet<>();
         leafNodeList.forEach(node -> {
             ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-
-            if (MapUtils.isNotEmpty(toolProjectMap) && toolProjectMap.get(basicProjectConfigId) == null) {
-                return;
-            }
-            List<ProjectToolConfig> tools = getAllDeploymentTool(toolProjectMap, basicProjectConfigId);
-            List<ObjectId> projectToolConfigIdList = tools.stream().map(ProjectToolConfig::getId)
-                    .collect(Collectors.toList());
-            projectToolConfigIds.addAll(projectToolConfigIdList);
+            projectBasicConfigIds.add(basicProjectConfigId);
         });
         statusList.add(DeploymentStatus.SUCCESS.name());
         mapOfFilters.put("deploymentStatus", statusList);
-        List<Deployment> deploymentList = deploymentRepository.findDeploymentList(mapOfFilters, projectToolConfigIds,
+        List<Deployment> deploymentList = deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds,
                 startDate, endDate);
         return deploymentList.stream()
                 .collect(Collectors.groupingBy(Deployment::getBasicProjectConfigId, Collectors.toList()));
