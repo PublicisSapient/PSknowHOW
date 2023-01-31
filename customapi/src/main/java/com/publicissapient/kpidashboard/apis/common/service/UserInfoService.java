@@ -132,5 +132,7 @@ public interface UserInfoService {
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
+	public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 }
