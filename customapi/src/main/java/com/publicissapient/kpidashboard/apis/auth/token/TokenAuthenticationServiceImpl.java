@@ -30,6 +30,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
@@ -92,6 +94,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	UserInfoService userInfoService;
 
+	@Autowired
+	CustomApiConfig customApiConfig;
+
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
@@ -113,21 +118,43 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		if (StringUtils.isBlank(authCookie.getValue())) {
-			return null;
+		if (customApiConfig.isSsoLogin()){
+//			Collection<GrantedAuthority> authorities = Sets.newHashSet();
+//			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+//			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
+//					authorities);
+//			authenticationSso.setDetails(AuthType.SSO);
+
+			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
+			if (StringUtils.isBlank(authCookieSso.getValue())) {
+				return null;
+			}
+
+			String tokenSso = authCookieSso.getValue();
+			return createAuthenticationForSso(tokenSso);
+		} else {
+			Cookie authCookie = cookieUtil.getAuthCookie(request);
+			if (StringUtils.isBlank(authCookie.getValue())) {
+				return null;
+			}
+
+			String token = authCookie.getValue();
+
+			UserTokenData data = null;
+
+			data = userTokenReopository.findByUserToken(token);
+
+			if (null == data) {
+				return null;
+			}
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(data));
+			return createAuthentication(token);
 		}
 
-		String token = authCookie.getValue();
+	}
 
-		UserTokenData data = null;
 
-		data = userTokenReopository.findByUserToken(token);
-
-		if (null == data) {
-			return null;
-		}
-
+	private Authentication createAuthentication(String token) {
 		try {
 			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
 					.getBody();
@@ -137,7 +164,24 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(data));
+
+			return authentication;
+
+		} catch (ExpiredJwtException e) {
+			return null;
+		}
+	}
+
+	private Authentication createAuthenticationForSso(String token){
+		try {
+			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+					.getBody();
+			String username = claims.getSubject();
+			Collection<? extends GrantedAuthority> authorities = getAuthorities(
+					claims.get(ROLES_CLAIM, Collection.class));
+			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
+					authorities);
+			authentication.setDetails(claims.get(DETAILS_CLAIM));
 			return authentication;
 
 		} catch (ExpiredJwtException e) {
