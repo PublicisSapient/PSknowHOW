@@ -143,8 +143,6 @@ public final class CommonUtils {
 				}
 				theEndDate = theEndDate.minusDays(1);
 			}
-		} else if(d1.compareTo(d2) == 0) {
-			//neutral case
 		}
 		return count;
 	}
@@ -177,8 +175,6 @@ public final class CommonUtils {
 				}
 				theEndDate = theEndDate.minusDays(1);
 			}
-		} else if(d1.compareTo(d2) == 0) {
-			//neutral case
 		}
 		return count;
 	}

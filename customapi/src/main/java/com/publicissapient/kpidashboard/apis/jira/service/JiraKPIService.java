@@ -18,9 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,6 +59,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
  */
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     @Autowired
     private CacheService cacheService;
 
@@ -153,12 +159,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
     public void populateIterationStatusData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, IterationStatus iterationStatus) {
         IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
         iterationKpiModalVal.setIssueId(iterationStatus.getIssueId());
-        iterationKpiModalVal.setIssueType(iterationStatus.getIssueStatus());
+        iterationKpiModalVal.setIssueType(iterationStatus.getTypeName());
         iterationKpiModalVal.setPriority(iterationStatus.getPriority());
         iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
         iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-        iterationKpiModalVal.setDueDate(iterationStatus.getDueDate());
-
+        Date date = DateUtil.dateTimeParser(iterationStatus.getDueDate(), DATE_FORMAT);
+        String dueDate = DateUtil.dateTimeFormatter(date, TIME_FORMAT);
+        iterationKpiModalVal.setDueDate(dueDate);
         if (iterationStatus.getRemainingEstimateMinutes() != null) {
             iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes() / 60);
         }

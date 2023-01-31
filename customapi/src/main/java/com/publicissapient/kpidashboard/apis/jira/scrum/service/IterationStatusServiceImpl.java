@@ -33,9 +33,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +95,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String ISSUES_CAUSING_DELAY = "Delayed Issues";
 	private static final String NET_DELAYED_ISSUES = "Net Delay";
 	private static final String ISSUES_DONE_BEFORE_TIME = "Done Before Time";
-	private static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
+	private static final String NOT_COMPLETED_ISSUES = "notCompletedIssues";
 	private static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
 	private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
 	private static final String OVERALL = "Overall";
@@ -117,7 +120,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				try {
 					projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
 				} catch (ParseException e) {
-					throw new RuntimeException(e);
+					log.error("Exception while parse date..." + e.getMessage());
 				}
 			}
 		});
@@ -147,15 +150,21 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 			if (null != sprintDetails) {
 
-				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						COMPLETED_ISSUES);
 
-				List<String> issuesNotCompletedInCurrentSprint = KpiDataHelper
-						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails, NOT_COMPLETED_ISSUES);
+				Set<SprintIssue> compIssues = sprintDetails.getCompletedIssues();
+
+				Set<SprintIssue> nonCompIssues = sprintDetails.getNotCompletedIssues();
+
+				List<String> completedIssues = compIssues.stream().map(SprintIssue::getNumber)
+						.collect(Collectors.toList());
+
+				List<String> issuesNotCompleted = nonCompIssues.stream().map(SprintIssue::getNumber)
+						.collect(Collectors.toList());
 
 				List<String> issuesList = new ArrayList<>();
 				issuesList.addAll(completedIssues);
-				issuesList.addAll(issuesNotCompletedInCurrentSprint);
+				issuesList.addAll(issuesNotCompleted);
+
 
 				List<JiraIssue> totalJiraIssues = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(issuesList,
 						basicProjectConfigId);
@@ -168,21 +177,23 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				Map<String, JiraIssueCustomHistory> jiraOpenIssueCustomHistoryMap = new HashMap<>();
 				Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = new HashMap<>();
 
-				if (CollectionUtils.isNotEmpty(issuesNotCompletedInCurrentSprint)) {
-					jiraOpenIssueMap = jiraIssuesMapping(issuesNotCompletedInCurrentSprint, totalJiraIssues,
-							sprintDetails, 1);
-					jiraOpenIssueCustomHistoryMap = jiraIssueCustomHistoryMapping(issuesNotCompletedInCurrentSprint,
+				jiraOpenIssueMap = totalJiraIssues.stream()
+						.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
+
+				if (CollectionUtils.isNotEmpty(nonCompIssues)) {
+					jiraOpenIssueMap = jiraIssuesMapping(totalJiraIssues, nonCompIssues, issuesNotCompleted, sprintDetails);
+					jiraOpenIssueCustomHistoryMap = jiraIssueCustomHistoryMapping(issuesNotCompleted,
 							totalJiraIssuesHistory, sprintDetails);
 				}
-				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					jiraIssueMap = jiraIssuesMapping(completedIssues, totalJiraIssues, sprintDetails, 2);
+				if (CollectionUtils.isNotEmpty(compIssues)) {
+					jiraIssueMap = jiraIssuesMapping(totalJiraIssues, compIssues, completedIssues, sprintDetails);
 					jiraIssueCustomHistoryMap = jiraIssueCustomHistoryMapping(completedIssues, totalJiraIssuesHistory,
 							sprintDetails);
 				}
 
 				resultListMap.put(TOTALISSUES, totalJiraIssues);
-				resultListMap.put(COMPLETED_ISSUES, completedIssues);
-				resultListMap.put(NOT_COMPLETED_ISSUES, issuesNotCompletedInCurrentSprint);
+				resultListMap.put(COMPLETED_ISSUES, compIssues);
+				resultListMap.put(NOT_COMPLETED_ISSUES, nonCompIssues);
 				resultListMap.put(SPRINT, sprintDetails);
 				resultListMap.put(JIRAISSUEMAP, jiraIssueMap);
 				resultListMap.put(JIRAISSUECUSTOMHISTORYMAP, jiraIssueCustomHistoryMap);
@@ -204,19 +215,14 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		return jiraOpenIssueCustomHistoryMap;
 	}
 
-	private Map<String, JiraIssue> jiraIssuesMapping(List<String> issues, List<JiraIssue> totalJiraIssues,
-			SprintDetails sprintDetails, Integer typeOfIssues) {
+	private Map<String, JiraIssue> jiraIssuesMapping(List<JiraIssue> totalJiraIssues, Set<SprintIssue> sprintIssues, List<String> issues, SprintDetails sprintDetails) {
 		Set<JiraIssue> filtersOpenIssuesList = new HashSet<>();
 		Map<String, JiraIssue> jiraOpenIssueMap = new HashMap<>();
-		List<JiraIssue> openIssueList = totalJiraIssues.stream()
+		List<JiraIssue> IssuesList = totalJiraIssues.stream()
 				.filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getNumber()), issues))
 				.collect(Collectors.toList());
-		if (typeOfIssues == 1)
 			filtersOpenIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-					sprintDetails.getNotCompletedIssues(), openIssueList);
-		else
-			filtersOpenIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-					sprintDetails.getCompletedIssues(), openIssueList);
+					sprintIssues, IssuesList);
 		jiraOpenIssueMap = filtersOpenIssuesList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 		return jiraOpenIssueMap;
@@ -244,8 +250,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 
-		List<String> completedIssues = (List<String>) resultMap.get(COMPLETED_ISSUES);
-		List<String> openIssues = (List<String>) resultMap.get(NOT_COMPLETED_ISSUES);
+		Set<SprintIssue> completedIssues = (Set<SprintIssue>) resultMap.get(COMPLETED_ISSUES);
+		Set<SprintIssue> openIssues = (Set<SprintIssue>) resultMap.get(NOT_COMPLETED_ISSUES);
 		Map<String, JiraIssue> jiraMap = (Map<String, JiraIssue>) resultMap.get(JIRAISSUEMAP);
 		Map<String, JiraIssueCustomHistory> jiraHistoryMap = (Map<String, JiraIssueCustomHistory>) resultMap
 				.get(JIRAISSUECUSTOMHISTORYMAP);
@@ -257,11 +263,17 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		String startDate = value.getStartDate();
 		String endDate = value.getEndDate();
 
-		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(TOTALISSUES))) {
-			Map<String, List<IterationStatus>> closedIssuesDelay = findDelayOfClosedIssues(completedIssues, jiraMap,
+		Map<String, List<IterationStatus>> closedIssuesDelay = new HashMap<>();
+		Map<String, List<IterationStatus>> openIssuesDelay = new HashMap<>();
+
+		if (CollectionUtils.isNotEmpty((Set<SprintIssue>) resultMap.get(COMPLETED_ISSUES))) {
+			closedIssuesDelay = findDelayOfClosedIssues(completedIssues, jiraMap,
 					jiraHistoryMap, startDate, endDate);
-			Map<String, List<IterationStatus>> openIssuesDelay = findDelayOfOpenIssues(openIssues, jiraOpenMap,
+		}
+		if(CollectionUtils.isNotEmpty((Set<SprintIssue>) resultMap.get(NOT_COMPLETED_ISSUES))){
+			openIssuesDelay = findDelayOfOpenIssues(openIssues, jiraOpenMap,
 					jiraOpenHistoryMap, startDate, endDate);
+		}
 
 			// calculating net delay of closed issues before, after time
 			List<IterationStatus> iterationKpiModalValuesNetDelay = calculateNetDelay(
@@ -300,6 +312,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 			List<IterationKpiData> overAllDataOfNetDelay = new ArrayList<>();
 
+			List<IterationKpiValue> finalIterationKpiValue = new ArrayList<>();
+
+
 			if (CollectionUtils.isNotEmpty(netDelay)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = netDelay.stream()
 						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
@@ -329,12 +344,19 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					});
 				});
 
+				List<IterationKpiData> data = new ArrayList<>();
+
 				IterationKpiData overAllDelay = new IterationKpiData(NET_DELAYED_ISSUES,
 						Double.valueOf(overAllIssuesNetDelay.get(0)), null, null, "", null);
-				overAllDataOfNetDelay.add(overAllDelay);
+				data.add(overAllDelay);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValuesNetDelay.add(overAllIterationKpiValue);
+				finalIterationKpiValue.addAll(iterationKpiValuesNetDelay);
+				//overAllDataOfNetDelay.add(overAllDelay);
 			}
 
-			List<IterationKpiData> overAllDataOfIssuesCausingDelay = new ArrayList<>();
+
+				List<IterationKpiData> overAllDataOfIssuesCausingDelay = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = allIssues.stream()
@@ -377,12 +399,15 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
 						Double.valueOf(overAllIssuesCausingDelay.get(0)), null, null, "",
 						overAllIssuesCausingDelayModalValues);
-
+				data.add(overAllDelay);
 				overAllDataOfIssuesCausingDelay.add(overAllDelay);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValuesIssuesCausingDelay.add(overAllIterationKpiValue);
+				finalIterationKpiValue.addAll(iterationKpiValuesIssuesCausingDelay);
 			}
 
-			List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
-			List<IterationKpiValue> iterationKpiValuesCompletedBeforeTime = new ArrayList<>();
+				List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
+				List<IterationKpiValue> iterationKpiValuesCompletedBeforeTime = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(completedBeforeTimeIssues)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = completedBeforeTimeIssues
@@ -418,41 +443,48 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 						iterationKpiValuesCompletedBeforeTime.add(iterationKpiValue);
 					});
 				});
+				List<IterationKpiData> data = new ArrayList<>();
 
 				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
 						Double.valueOf(overAllIssuesClosedBeforeTime.get(0)), null, null, "",
 						overAllIssuesClosedBeforeTimeModalValues);
 
-				overAllDataOfIssuesCompletedBeforeTime.add(overAllDelay);
+				data.add(overAllDelay);
+				//overAllDataOfIssuesCausingDelay.add(overAllDelay);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
+				finalIterationKpiValue.addAll(iterationKpiValuesCompletedBeforeTime);
 
 			}
 
-			List<IterationKpiData> finalOverAll = new ArrayList<>();
-			finalOverAll.addAll(overAllDataOfNetDelay);
-			finalOverAll.addAll(overAllDataOfIssuesCausingDelay);
-			finalOverAll.addAll(overAllDataOfIssuesCompletedBeforeTime);
+				List<IterationKpiData> finalOverAll = new ArrayList<>();
+				finalOverAll.addAll(overAllDataOfNetDelay);
+				finalOverAll.addAll(overAllDataOfIssuesCausingDelay);
+				finalOverAll.addAll(overAllDataOfIssuesCompletedBeforeTime);
 
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, finalOverAll);
-			iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
-			overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, finalOverAll);
+				//iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
+			//	overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
 
-			trendValue.setValue(overAllData);
-			overAllIssueTypes.addAll(issueTypes);
-			overAllIssueTypes.addAll(issueTypes2);
-			overAllIssueTypes.addAll(issueTypes3);
-			overAllPriorities.addAll(priorities);
-			overAllPriorities.addAll(priorities2);
-			overAllPriorities.addAll(priorities3);
 
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE,
-					overAllIssueTypes);
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, overAllPriorities);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_STATUS.getColumns());
-			kpiElement.setTrendValueList(trendValue);
-		}
+				trendValue.setValue(finalIterationKpiValue);
+				overAllIssueTypes.addAll(issueTypes);
+				overAllIssueTypes.addAll(issueTypes2);
+				overAllIssueTypes.addAll(issueTypes3);
+				overAllPriorities.addAll(priorities);
+				overAllPriorities.addAll(priorities2);
+				overAllPriorities.addAll(priorities3);
+
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE,
+						issueTypes);
+				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
+				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+				kpiElement.setFilters(iterationKpiFilters);
+				kpiElement.setSprint(latestSprint.getName());
+				kpiElement.setModalHeads(KPIExcelColumn.ITERATION_STATUS.getColumns());
+				kpiElement.setTrendValueList(trendValue);
+
+
 	}
 
 	/*
@@ -469,38 +501,37 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	/*
 	 * method to find delay in closed issues
 	 */
-	private Map<String, List<IterationStatus>> findDelayOfClosedIssues(List<String> completedIssues,
+	private Map<String, List<IterationStatus>> findDelayOfClosedIssues(Set<SprintIssue> completedIssues,
 			Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
 			String endDate) {
 		Map<String, List<IterationStatus>> resultList = new HashMap<>();
 		List<IterationStatus> jiraBeforeTimeIssueList = new ArrayList<>();
 		List<IterationStatus> jiraAfterTimeIssueList = new ArrayList<>();
 		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
-		for (String story : completedIssues) {
+		for (SprintIssue story : completedIssues) {
 			IterationStatus iterationKpiModalValue = new IterationStatus();
-			String issueNumber = story;
-			JiraIssueCustomHistory issueHistoryObject = jiraHistoryMap.get(issueNumber);
-			JiraIssue issueObject = jiraMap.get(issueNumber);
+			JiraIssueCustomHistory issueHistoryObject = jiraHistoryMap.get(story.getNumber());
+			JiraIssue issueObject = jiraMap.get(story.getNumber());
 			Integer daysDiff = 0;
 			Integer delay = 0;
 			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
-				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, issueObject.getStatus());
+				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
 				String dueDate = issueObject.getDueDate();
 				if (StringUtils.isNotEmpty(dueDate)) {
 					try {
 						// count the number of days excluding weekends
 						daysDiff = CommonUtils.getDaysBetwDate(DateTime.parse(dueDate), DateTime.parse(closedDate));
 					} catch (ParseException e) {
-						throw new RuntimeException(e);
+						log.error(e.getMessage());
 					}
-					delay = daysDiff + delay;
-					iterationKpiModalValue = prepareStoryDetails(issueObject, delay);
+
+					iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
 					jiraDelayIssueList.add(iterationKpiModalValue);
-					if (dueDate.compareTo(closedDate) > 0) {
-						iterationKpiModalValue = prepareStoryDetails(issueObject, delay);
+					if (daysDiff > 0) {
+						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
 						jiraBeforeTimeIssueList.add(iterationKpiModalValue);
 					} else {
-						iterationKpiModalValue = prepareStoryDetails(issueObject, delay);
+						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
 						jiraAfterTimeIssueList.add(iterationKpiModalValue);
 					}
 				}
@@ -528,18 +559,17 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		return iterationStatus;
 	}
 
-	private Map<String, List<IterationStatus>> findDelayOfOpenIssues(List<String> openIssues,
+	private Map<String, List<IterationStatus>> findDelayOfOpenIssues(Set<SprintIssue> openIssues,
 			Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
 			String startDate, String endDate) throws ParseException {
 
 		Map<String, List<IterationStatus>> resultList = new HashMap<>();
 		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
-		for (String story : openIssues) {
+		for (SprintIssue story : openIssues) {
 			IterationStatus iterationKpiModalValue = new IterationStatus();
 			Integer delayList = 0;
-			String issueNumber = story;
-			JiraIssueCustomHistory issueHistoryObject = jiraOpenHistoryMap.get(issueNumber);
-			JiraIssue issueObject = jiraOpenMap.get(issueNumber);
+			JiraIssueCustomHistory issueHistoryObject = jiraOpenHistoryMap.get(story.getNumber());
+			JiraIssue issueObject = jiraOpenMap.get(story.getNumber());
 			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
 				DateTime currDate = DateTime.now();
 				Date todayDate = new Date();
@@ -553,22 +583,22 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					try {
 						storyDueDate = sdformat.parse(String.valueOf(dueDate));
 					} catch (ParseException e) {
-						throw new RuntimeException(e);
+						log.error("Exception while parse date..." + e.getMessage());
 					}
 					try {
 						sprintEndData = sdformat.parse(String.valueOf(endDate));
 					} catch (ParseException e) {
-						throw new RuntimeException(e);
+						log.error("Exception while parse date..." + e.getMessage());
 					}
 					try {
 						todayDate = sdformat.parse(String.valueOf(currDate));
 					} catch (ParseException e) {
-						throw new RuntimeException(e);
+						log.error("Exception while parse date..." + e.getMessage());
 					}
 					try {
 						sprintStartDate = sdformat.parse(String.valueOf(startDate));
 					} catch (ParseException e) {
-						throw new RuntimeException(e);
+						log.error("Exception while parse date..." + e.getMessage());
 					}
 					/*
 					 * case of stories past the due date and are closed curr date, duedate,
@@ -582,7 +612,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 								delayList = potentialDelayOfStoriesPastDueDateClosedSprint(issueObject, endDate,
 										startDate);
 							} catch (ParseException e) {
-								throw new RuntimeException(e);
+								log.error("Exception while parse date..." + e.getMessage());
 							}
 						} else {// if curr date is < sprint end date .i.e active sprint case, Story spillage
 								// case
@@ -629,7 +659,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				} else
 					delayList += daysDiff;
 			} catch (ParseException e) {
-				throw new RuntimeException(e);
+				log.error("Exception while parse date..." + e.getMessage());
 			}
 		}
 		return delayList;
@@ -651,7 +681,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			}
 
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			log.error("Exception while parse date..." + e.getMessage());
 		}
 		return delayList;
 	}
@@ -665,7 +695,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			delayDaysAlready = CommonUtils.getDaysBetwDate2(currDate, sprintStart);
 			delayList += delayDaysAlready;
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			log.error("Exception while parse date..." + e.getMessage());
 		}
 		return delayList;
 	}
@@ -689,7 +719,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				}
 				delayList = delayList + delayDaysAlready;
 			} catch (ParseException e) {
-				throw new RuntimeException(e);
+				log.error("Exception while parse date..." + e.getMessage());
 			}
 		}
 		return delayList;
@@ -697,19 +727,17 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	public String findClosedDate(JiraIssueCustomHistory issueHistoryObject, String startDate, String endDate,
 			String status) {
-
-		// String date =
-		// issueHistoryObject.getStorySprintDetails().stream().sorted(Comparator.comparing(JiraIssueSprint::getActivityDate).reversed()).findFirst().orElse(null).getActivityDate().toString();
-
-		String date = issueHistoryObject.getStorySprintDetails().stream()
-				.filter(f -> f.getFromStatus().equalsIgnoreCase(status)).findFirst().orElse(null).getActivityDate()
-				.toString();
-
-		DateTime closedDate = DateTime.parse(date);
-		DateTime startDateValue = DateTime.parse(startDate);
-		DateTime endDateValue = DateTime.parse(endDate);
-		if (closedDate.isAfter(startDateValue) && closedDate.isBefore(endDateValue)) {
-			return date;
+		String date;
+		for(int i =0; i<issueHistoryObject.getStorySprintDetails().size(); i++){
+			if(issueHistoryObject.getStorySprintDetails().get(i).getFromStatus().equalsIgnoreCase(status)){
+				date = issueHistoryObject.getStorySprintDetails().get(i).getActivityDate().toString();
+				DateTime closedDate = DateTime.parse(date);
+				DateTime startDateValue = DateTime.parse(startDate);
+				DateTime endDateValue = DateTime.parse(endDate);
+				if (closedDate.isAfter(startDateValue) && closedDate.isBefore(endDateValue)) {
+					return date;
+				}
+			}
 		}
 		return null;
 	}
