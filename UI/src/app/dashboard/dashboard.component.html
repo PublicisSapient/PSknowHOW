@@ -17,12 +17,50 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <div class="main-container">
-    <header [class.sticky]="headerFixed">
-        <app-nav id="top"></app-nav>
-        <app-filter *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
-        </app-filter>
-    </header>
+    <!-- <header [class.sticky]="headerFixed"> -->
+        <!-- <app-nav id="top"></app-nav> -->
+        <!-- <app-filter *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
+        </app-filter> -->
 
-    <router-outlet></router-outlet>
+    
+    <!-- </header> -->
+
+    <!-- <p-sidebar [(visible)]="visibleSidebar1" position="left" [baseZIndex]="10000">
+      <ng-template pTemplate="header">Header Content</ng-template>
+     <ng-template pTemplate="content" p-sidebar-bottom>Body Content</ng-template> 
+     <p-button type="button" (click)="visibleSidebar2 = false" label="Cancel" styleClass="p-button-secondary"></p-button> 
+  </p-sidebar> -->
+<div class="header sticky">
+  <div class="logo">
+    <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between p-m-0">
+      <li class="nav-item img-container"> -->
+        <img *ngIf="logoImage" src={{logoImage}} routerLink="mydashboard" routerLinkActive="active"
+          (click)="selectTab('mydashboard')" alt="Logo"/>
+        <img *ngIf="!logoImage" src="assets/img/sapientLogo2.PNG" routerLink="mydashboard" routerLinkActive="active"
+          (click)="selectTab('mydashboard')" alt="Logo"/>
+      <!-- </li>
+      </ul> -->
+  </div>
+  <div>
+    <app-filter *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
+    </app-filter>
+  </div>
+  <div>
+    <!-- <button type="button" pButton icon="pi pi-bars" label="Show" (click)="menu.toggle($event)"></button> -->
+    <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
+      <span class="profile-name">BM</span>
+    </div>
+    <p-menu #menu [popup]="true" [model]="items"></p-menu>
+  </div>
+</div>
+<div class="">
+  <div><app-nav id="top"></app-nav></div>
+  <div>
+    <div>selected filters</div>
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
 </div>
 <app-footer></app-footer>

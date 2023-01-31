@@ -57,16 +57,19 @@ export class NavComponent implements OnInit {
   mainTab: string;
   boardNameArr: any[] = [];
   boardId = 1;
+  visibleSidebar = false;
+  kanban = false;
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
     private service: SharedService,
-    private router: Router,
+    public router: Router,
     private getAuth: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
+    debugger
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab.split('/')[2];
     this.boardId = isNaN(+selectedTab.split('/')[3]) ? this.boardId : +selectedTab.split('/')[3];
@@ -103,6 +106,7 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
+    debugger
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -184,6 +188,11 @@ export class NavComponent implements OnInit {
     this.helper.isKanban = false;
     this.service.setSelectedTab(this.selectedTab, boardId);
     this.service.selectTab(this.selectedTab);
+    if (selectedTab === 'Kanban') {
+      this.kanban = true;
+  } else {
+      this.kanban = false;
+  }
   }
 
   // logout is clicked  and removing auth token , username
@@ -299,6 +308,7 @@ export class NavComponent implements OnInit {
 
 
   processKPIListData(){
+    debugger
     this.configOthersData = this.kpiListData['others'][0]?.kpis;
     this.service.setDashConfigData(this.kpiListData);
     this.boardNameArr = [];
@@ -377,5 +387,14 @@ export class NavComponent implements OnInit {
 
   closeEditModal() {
     this.displayEditModal = false;
+  }
+
+  selectedTypef(type) {
+    this.service.setSelectedType(type);
+    if (type === 'Kanban') {
+        this.kanban = true;
+    } else {
+        this.kanban = false;
+    }
   }
 }

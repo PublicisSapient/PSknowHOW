@@ -1,10 +1,10 @@
-<button class="gototop" title="Go to top"><a href="#top" class="goTo"><span class="fa fa-chevron-circle-up"
-         aria-hidden="true"></span></a></button>
+<!-- <button class="gototop" title="Go to top"><a href="#top" class="goTo"><span class="fa fa-chevron-circle-up"
+         aria-hidden="true"></span></a></button> -->
 <div id="Filters" #filterDiv
-   class="tabs border-bottom p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
+   class="tabs p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
 
    <!--Scrum/Kanban Switch starts-->
-   <div
+   <!-- <div
       *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
       <input id="tab1" class="tab1" type="radio" name="tabs" [checked]='!kanban'>
       <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedType('Scrum')" id="Layout-Scrum">
@@ -14,7 +14,7 @@
       <label class="label2 rounded filter-btn" for="tab2" (click)="selectedType('Kanban')" id="Layout-Kanban">
          <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
          <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
-   </div>
+   </div> -->
    <!--Scrum/Kanban Switch ends-->
    <div class="filter-nav p-justify-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'"
       >
@@ -218,6 +218,7 @@
       <!-- Download excel Button error message end -->
    </div>
 </div>
+
 <div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
 
    <div class="filter-nav">

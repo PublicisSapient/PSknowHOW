@@ -16,34 +16,23 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="navigation rows ">
-  <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between p-m-0">
-    <li class="nav-item img-container">
-      <img *ngIf="logoImage" src={{logoImage}} routerLink="mydashboard" routerLinkActive="active"
-        (click)="selectTab('mydashboard')" alt="Logo"/>
-      <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG" routerLink="mydashboard" routerLinkActive="active"
-        (click)="selectTab('mydashboard')" alt="Logo"/>
-    </li>
-    <ng-container *ngIf="boardNameArr?.length>0">
-      <ul class="nav-menu p-d-flex p-jc-between p-pl-0">
-        <ng-container *ngFor="let board of boardNameArr">
-          <li class="nav-item p-pl-2 p-pr-2"
-            *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
-            <a class="nav-link "
-              [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
-              [routerLinkActive]="['active']"
-              [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
-              (click)="selectTab(board.boardName,board.boardId)">{{board.boardName}}
-            </a>
-            <!-- edit dashboard name button -->
-            <div class="btn-custom p-p-0 rounded p-mr-0 p-d-flex cursor-pointer" *ngIf="board.boardName ==  mainTab">
-              <img src="../../../assets/img/ico-edit.svg" alt="Edit" class="ico-default" (click)="openEditModal()" />
-            </div>
-          </li>
+<div class="navigation2 rows" *ngIf="!visibleSidebar">
+  <div class="selected-wraper">
+    <div class="selected-board">
+      <div class="rotate">{{kanban ? 'Kanban' : 'Scrum'}}</div>
+    </div>
 
-        </ng-container>
-      </ul>
-    </ng-container>
+    <div class="selected-nav">
+      <div style=" writing-mode: vertical-rl;text-orientation: upright;">{{selectedTab}}</div>
+    </div>
+
+    <div class="open-btn">
+      <!-- <i class="pi pi-arrow-circle-right" style="font-size: 2.3rem;" (click)="visibleSidebar = true" ></i> -->
+      <img src="../../../assets/img/menu-unfold.svg" alt="Edit" style="height: 40px;"  (click)="visibleSidebar = true" />
+    </div>
+  </div>
+  
+  <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between p-m-0">
     <li class="nav-item pad-0 setting-tab">
       <div class="half">
         <label for="profile2" class="profile-dropdown">
@@ -86,8 +75,70 @@
         </div>
       </div>
     </li>
-  </ul>
+  </ul> -->
 </div>
+
+
+
+<p-sidebar [(visible)]="visibleSidebar" position="left" [baseZIndex]="10000" style="height : 500px">
+
+  <!--   <ng-template pTemplate="content"> -->
+    <div class="nav-wraper">
+      <!--Scrum/Kanban Switch starts-->
+      <div id="Filters" #filterDiv class="tabs">
+        <div
+          *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
+          <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
+          <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedTypef('Scrum')" id="Layout-Scrum">
+            <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
+            <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
+          <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
+          <label class="label2 rounded filter-btn" for="tab2" (click)="selectedTypef('Kanban')" id="Layout-Kanban">
+            <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
+            <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
+        </div>
+      </div>
+      <!--Scrum/Kanban Switch Ends-->
+      <div class="navigation rows ">
+        <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
+        <ng-container *ngIf="boardNameArr?.length>0">
+          <ul class="nav-menu p-d-flex">
+            <ng-container *ngFor="let board of boardNameArr">
+              <li class="nav-item"
+                *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
+                <a class="nav-link"
+                  [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
+                  [routerLinkActive]="['active']"
+                  [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
+                  (click)="selectTab(board.boardName,board.boardId)">
+                  {{board.boardName}}
+        
+                  <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+                  <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+                
+                </a>
+                <!-- edit dashboard name button -->
+                <!-- <div class="btn-custom p-p-0 rounded p-mr-0 p-d-flex cursor-pointer" *ngIf="board.boardName ==  mainTab">
+                  <img src="../../../assets/img/ico-edit.svg" alt="Edit" class="ico-default" (click)="openEditModal()" />
+                </div> -->
+              </li>
+
+            </ng-container>
+          </ul>
+        </ng-container>
+        <!-- </ul> -->
+      </div>
+    </div>
+  <!-- </ng-template> -->
+  <ng-template pTemplate="footer">
+    <div class="close-btn">
+      <!-- <i class="pi pi-arrow-circle-left" style="font-size: 2.3rem;" (click)="visibleSidebar = false" ></i> -->
+      <img src="../../../assets/img/menu-fold.svg" alt="Edit" style="height: 40px;"  (click)="visibleSidebar = false" />
+    </div>
+  </ng-template>
+  
+
+</p-sidebar>
 
 <p-dialog header="Rename your dashboard" [(visible)]="displayEditModal" [modal]="true" [draggable]="true"
   [resizable]="true" [style]="{width: '350px'}">

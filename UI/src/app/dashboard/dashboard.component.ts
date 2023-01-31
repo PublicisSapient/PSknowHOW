@@ -21,6 +21,10 @@ import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { first } from 'rxjs/operators';
+import {MenuItem, MessageService, PrimeNGConfig} from 'primeng/api';
+
 
 
 @Component({
@@ -37,16 +41,51 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   authorized = <boolean>true;
   headerFixed = <boolean>false;
   scrollOffset = <number>150;
+  visibleSidebar1 = false;
+  subscription: Subscription;
+  logoImage: any;
+  items: MenuItem[];
   constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
     this.renderer.listen('document', 'click',(e: Event)=>{
       // setting document click event data to identify outside click for show/hide kpi filter
       this.service.setClickedItem(e?.target);
   });
     this.authorized = this.getAuth.checkAuth();
+
+     /*subscribe logo image from service*/
+     this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
+      this.getLogoImage();
+    });
   }
 
   ngOnInit() {
     // this.authorized = this.getAuth.checkAuth();
+    this.items = [
+      {
+        label: 'Settings',
+        icon: 'fa fa-cog',
+        command: () => {
+          alert("settings")
+          // this.update();
+        },
+      },
+      {
+        label: 'Help',
+        icon: 'fa fa-info-circle',
+        command: () => {
+          alert("help")
+          // this.delete();
+        },
+      },
+      {
+        label: 'Logout',
+        icon: 'fas fa-sign-out-alt',
+        command: () => {
+          alert("logount")
+          // logout()
+        },
+      },
+    ];
 
   }
 
@@ -65,6 +104,20 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
+  }
+
+   /*Rendered the logo image */
+   getLogoImage() {
+    this.httpService
+      .getUploadedImage()
+      .pipe(first())
+      .subscribe((data) => {
+        if (data['image']) {
+          this.logoImage = 'data:image/png;base64,' + data['image'];
+        } else {
+          this.logoImage = undefined;
+        }
+      });
   }
 
 }
