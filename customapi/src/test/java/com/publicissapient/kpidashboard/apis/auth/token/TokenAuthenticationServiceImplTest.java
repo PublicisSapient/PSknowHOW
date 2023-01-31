@@ -39,6 +39,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -109,6 +110,9 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Mock
 	private Cookie cookie;
+
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	List<AccessNode> listAccessNode = new ArrayList<>();
 
