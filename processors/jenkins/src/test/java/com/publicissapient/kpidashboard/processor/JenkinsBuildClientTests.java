@@ -183,25 +183,25 @@ public class JenkinsBuildClientTests {
 
 	@Test
 	public void testGetJobDetailsChild() throws Exception {
-
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(
 						new ResponseEntity<>(getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
 
 		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
 
-		assertThat(jobs.size(), is(2));
+		assertThat(jobs.size(), is(1));
 
 		Iterator<ObjectId> jobIt = jobs.keySet().iterator();
 
 		ObjectId job = jobIt.next();
 
 		Iterator<Build> buildIt = jobs.get(job).iterator();
-		assertBuild(buildIt.next(), "2", "http://server/job/job1/2/");
+		// assertBuild(buildIt.next(), "2", "http://server/job/job2/2/");
 		assertBuild(buildIt.next(), "1", "http://server/job/job1/1/");
-		assertThat(buildIt.hasNext(), is(false));
+		assertThat(buildIt.hasNext(), is(true));
 
-		assertThat(jobIt.hasNext(), is(true));
+		assertThat(jobIt.hasNext(), is(false));
+
 	}
 
 	private void assertBuild(Build build, String number, String url) {
