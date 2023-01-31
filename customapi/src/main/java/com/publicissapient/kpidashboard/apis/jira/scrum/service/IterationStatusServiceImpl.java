@@ -344,14 +344,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					});
 				});
 
-				List<IterationKpiData> data = new ArrayList<>();
-
 				IterationKpiData overAllDelay = new IterationKpiData(NET_DELAYED_ISSUES,
 						Double.valueOf(overAllIssuesNetDelay.get(0)), null, null, "", null);
-				data.add(overAllDelay);
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-				iterationKpiValuesNetDelay.add(overAllIterationKpiValue);
-				finalIterationKpiValue.addAll(iterationKpiValuesNetDelay);
+				overAllDataOfNetDelay.add(overAllDelay);
 				//overAllDataOfNetDelay.add(overAllDelay);
 			}
 
@@ -394,16 +389,12 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 						iterationKpiValuesIssuesCausingDelay.add(iterationKpiValue);
 					});
 				});
-				List<IterationKpiData> data = new ArrayList<>();
 
 				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
 						Double.valueOf(overAllIssuesCausingDelay.get(0)), null, null, "",
 						overAllIssuesCausingDelayModalValues);
-				data.add(overAllDelay);
+
 				overAllDataOfIssuesCausingDelay.add(overAllDelay);
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-				iterationKpiValuesIssuesCausingDelay.add(overAllIterationKpiValue);
-				finalIterationKpiValue.addAll(iterationKpiValuesIssuesCausingDelay);
 			}
 
 				List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
@@ -443,17 +434,11 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 						iterationKpiValuesCompletedBeforeTime.add(iterationKpiValue);
 					});
 				});
-				List<IterationKpiData> data = new ArrayList<>();
-
 				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
 						Double.valueOf(overAllIssuesClosedBeforeTime.get(0)), null, null, "",
 						overAllIssuesClosedBeforeTimeModalValues);
 
-				data.add(overAllDelay);
-				//overAllDataOfIssuesCausingDelay.add(overAllDelay);
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-				iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
-				finalIterationKpiValue.addAll(iterationKpiValuesCompletedBeforeTime);
+				overAllDataOfIssuesCompletedBeforeTime.add(overAllDelay);
 
 			}
 
@@ -463,11 +448,11 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				finalOverAll.addAll(overAllDataOfIssuesCompletedBeforeTime);
 
 				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, finalOverAll);
-				//iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
-			//	overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
+				iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
+				overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
 
 
-				trendValue.setValue(finalIterationKpiValue);
+				trendValue.setValue(overAllData);
 				overAllIssueTypes.addAll(issueTypes);
 				overAllIssueTypes.addAll(issueTypes2);
 				overAllIssueTypes.addAll(issueTypes3);
