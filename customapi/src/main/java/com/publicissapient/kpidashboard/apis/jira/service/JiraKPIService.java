@@ -166,10 +166,10 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
         Date date = DateUtil.dateTimeParser(iterationStatus.getDueDate(), DATE_FORMAT);
         String dueDate = DateUtil.dateTimeFormatter(date, TIME_FORMAT);
         iterationKpiModalVal.setDueDate(dueDate);
-        if (iterationStatus.getRemainingEstimateMinutes() != null) {
-            iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes() / 60);
-        }
-
+        if (iterationStatus.getRemainingEstimateMinutes() != null)
+            iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
+        else
+            iterationKpiModalVal.setRemainingTime(0);
         iterationKpiModalVal.setDelay(iterationStatus.getDelay());
         modalValues.add(iterationKpiModalVal);
         overAllmodalValues.add(iterationKpiModalVal);

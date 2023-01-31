@@ -122,7 +122,7 @@ public final class CommonUtils {
 		DateTime theBeginDate = beginDate; //17
 		DateTime theEndDate = endDate; //16
 		String separator = "-";
-		Integer count = 0;
+		Integer count = 1;
 
 		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
 		Date d1 = sdformat.parse(String.valueOf(beginDate)); //17

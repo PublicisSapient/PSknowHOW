@@ -315,7 +315,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			List<IterationKpiValue> finalIterationKpiValue = new ArrayList<>();
 
 
-			if (CollectionUtils.isNotEmpty(netDelay)) {
+			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesNetDelay)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = netDelay.stream()
 						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
 								Collectors.groupingBy(IterationStatus::getPriority)));
@@ -353,7 +353,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 				List<IterationKpiData> overAllDataOfIssuesCausingDelay = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(allIssues)) {
+			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesCausingDelay)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = allIssues.stream()
 						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
 								Collectors.groupingBy(IterationStatus::getPriority)));
@@ -400,7 +400,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
 				List<IterationKpiValue> iterationKpiValuesCompletedBeforeTime = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(completedBeforeTimeIssues)) {
+			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesDoneBeforeTime)) {
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = completedBeforeTimeIssues
 						.stream().collect(Collectors.groupingBy(IterationStatus::getTypeName,
 								Collectors.groupingBy(IterationStatus::getPriority)));
@@ -512,7 +512,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 					iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
 					jiraDelayIssueList.add(iterationKpiModalValue);
-					if (daysDiff > 0) {
+					if (daysDiff >= 0) {
 						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
 						jiraBeforeTimeIssueList.add(iterationKpiModalValue);
 					} else {
