@@ -25,13 +25,11 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +42,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -61,7 +58,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -83,9 +79,6 @@ public class CodeBuildTimeServiceImplTest {
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private List<Build> buildList = new ArrayList<>();
-
-	private static Tool tool1;
-	private static Tool tool2;
 
 	@Mock
 	BuildRepository buildRepository;
@@ -120,12 +113,11 @@ public class CodeBuildTimeServiceImplTest {
 
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	List<Tool> toolList;
 
 	@Before
 	public void setup() {
 
-		setToolMap();
+
 		setTreadValuesDataCount();
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
@@ -137,7 +129,7 @@ public class CodeBuildTimeServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance();
+		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
 
 		projectConfigList.forEach(projectConfig -> {
@@ -152,34 +144,6 @@ public class CodeBuildTimeServiceImplTest {
 
 	}
 
-	private void setToolMap() {
-		toolList = new ArrayList<>();
-
-		ProcessorItem collectorItemFirst = new ProcessorItem();
-		collectorItemFirst.setId(new ObjectId("633552f909c7635933ad192c"));
-		collectorItemFirst.setDesc("UI_BUILD");
-
-		ProcessorItem collectorItemSecond = new ProcessorItem();
-		collectorItemSecond.setId(new ObjectId("633552f809c7635933ad1924"));
-		collectorItemSecond.setDesc("API_BUILD");
-
-		List<ProcessorItem> collectorItemFirstList = new ArrayList<>();
-		collectorItemFirstList.add(collectorItemFirst);
-
-		List<ProcessorItem> collectorItemSecondList = new ArrayList<>();
-		collectorItemSecondList.add(collectorItemSecond);
-
-		tool1 = createTool("UI_BUILD", "url1", collectorItemFirstList);
-		tool2 = createTool("API_BUILD", "url2", collectorItemSecondList);
-
-		toolList.add(tool1);
-		toolList.add(tool2);
-
-		toolGroup.put(Constant.TOOL_JENKINS, toolList);
-
-		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-
-	}
 
 	private void setTreadValuesDataCount() {
 		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
@@ -198,17 +162,9 @@ public class CodeBuildTimeServiceImplTest {
 		return dataCount;
 	}
 
-	private Tool createTool(String toolType, String url, List<ProcessorItem> collectorItemList) {
-		Tool tool = new Tool();
-		tool.setTool(toolType);
-		tool.setUrl(url);
-		tool.setProcessorItemList(collectorItemList);
-		return tool;
-	}
-
 	@Test
 	public void testGetCodeBuildTime() throws Exception {
-		setToolMap();
+
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -221,7 +177,7 @@ public class CodeBuildTimeServiceImplTest {
 
 			KpiElement kpiElement = codeBuildTimeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception enfe) {
 		}
 

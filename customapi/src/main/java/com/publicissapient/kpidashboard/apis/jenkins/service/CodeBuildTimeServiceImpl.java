@@ -84,8 +84,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final long DAYS_IN_WEEKS = 7;
-	private final List<String> processorsList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-			ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -186,19 +185,16 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName = entry.getKey();
 					List<Build> buildList = entry.getValue();
-					if (CollectionUtils.isEmpty(buildList)) {
-						return;
-					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
 			}
 
-			if (CollectionUtils.isEmpty(buildListProjectWise)) {
-				mapTmp.get(node.getId()).setValue(null);
+			if (CollectionUtils.isEmpty(aggBuildList)) {
+					mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
-			prepareInfoForBuild(codeBuildTimeInfo, end, buildListProjectWise, trendLineName, trendValueMap,
+			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap,
 					Constant.AGGREGATED_VALUE, aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
@@ -208,11 +204,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
 	}
-
-	/*private boolean isValidJob(Tool job) {
-		return !ObjectUtils.isEmpty(job.getProjectToolConfigId())
-				&& job.getProjectToolConfigId() != null;
-	}*/
 
 	/**
 	 * Sets build info to holder object and duration list
@@ -316,25 +307,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	}
 
 	/**
-	 * Creates validation data for node.
-	 *
-	 * @param codeBuildTimeInfo
-	 * @return ValidationData object
-	 */
-	private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-		ValidationData validationData = new ValidationData();
-		validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-		validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-		validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-		validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-		validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-		validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-		validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-		validationData.setDuration(codeBuildTimeInfo.getDurationList());
-		return validationData;
-	}
-
-	/**
 	 * Set data to display on trend line.
 	 *
 	 * @param trendLineName
@@ -359,30 +331,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			dataCount.setPriority(minutes + Constant.MIN + seconds + Constant.SEC);
 		}
 		return dataCount;
-	}
-
-	/**
-	 * Get tool config entry for Jenkins.
-	 *
-	 * @param toolMap
-	 * @param node
-	 * @return
-	 */
-	private List<Tool> getJenkinsJobTools(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-
-		ProjectFilter projectFilter = node.getProjectFilter();
-		ObjectId objectId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
-
-		List<Tool> jenkinsJob = new ArrayList<>();
-		if (toolMap.containsKey(objectId)) {
-			jenkinsJob = getProcessorItemList(toolMap, objectId);
-		}
-
-		if (CollectionUtils.isEmpty(jenkinsJob)) {
-			log.error("[JENKINS-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-		}
-
-		return jenkinsJob;
 	}
 
 	@Override
@@ -426,37 +374,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 		}
 	}
-
-	/**
-	 * returns list of all the tools
-	 *
-	 * @param toolMap
-	 * @param id
-	 * @return
-	 */
-	private List<Tool> getProcessorItemList(Map<ObjectId, Map<String, List<Tool>>> toolMap, ObjectId id) {
-		List<Tool> allProcessorItems = new ArrayList<>();
-
-		for (String processor : processorsList) {
-			if (toolMap.get(id).containsKey(processor)) {
-				List<Tool> processorItems = toolMap.get(id).get(processor);
-				allProcessorItems.addAll(processorItems);
-			}
-		}
-		return allProcessorItems;
-	}
-
-	/**
-	 * prepare processorIds list
-	 *
-	 * @param
-	 * @return processorIds
-	 */
-	/*private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
-		List<ObjectId> processorIds = new ArrayList<>();
-		processorIds.add(job.getProjectToolConfigId());
-		return processorIds;
-	}*/
 
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {

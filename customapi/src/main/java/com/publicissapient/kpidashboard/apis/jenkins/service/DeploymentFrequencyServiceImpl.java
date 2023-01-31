@@ -58,8 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
 
     private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
-    private final List<String> toolList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-            ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+
     @Autowired
     private ConfigHelperService configHelperService;
     @Autowired
@@ -191,26 +190,6 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
                 startDate, endDate);
         return deploymentList.stream()
                 .collect(Collectors.groupingBy(Deployment::getBasicProjectConfigId, Collectors.toList()));
-    }
-
-    /**
-     * get All deployment tools config map for given basic config id
-     *
-     * @param toolProjectMap
-     * @param basicProjectConfId
-     */
-    public List<ProjectToolConfig> getAllDeploymentTool(
-            Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap, ObjectId basicProjectConfId) {
-        List<ProjectToolConfig> tools = new ArrayList<>();
-        if (MapUtils.isNotEmpty(toolProjectMap)) {
-            for (String toolName : toolList) {
-                if (toolProjectMap.get(basicProjectConfId).containsKey(toolName)) {
-                    List<ProjectToolConfig> tool = toolProjectMap.get(basicProjectConfId).get(toolName);
-                    tools.addAll(tool);
-                }
-            }
-        }
-        return tools;
     }
 
     /**

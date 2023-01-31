@@ -77,9 +77,6 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
     private CustomApiConfig customApiConfig;
 
 
-    private final List<String> processorsList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-            ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
-
     @Override
     public String getQualifierType() {
         return KPICode.CODE_BUILD_TIME_KANBAN.name();
@@ -235,62 +232,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 
                 }
             }
-        }
-
-
-    private List<Tool> getJenkinsJobTools(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-
-        ProjectFilter projectFilter = node.getProjectFilter();
-        ObjectId objectId = projectFilter == null ? null
-                : projectFilter.getBasicProjectConfigId();
-
-        List<Tool> jenkinsJob = new ArrayList<>();
-        if (toolMap.containsKey(objectId)) {
-            jenkinsJob = getProcessorItemList(toolMap, objectId);
-        }
-
-        if (CollectionUtils.isEmpty(jenkinsJob)) {
-            log.error("[JENKINS-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-        }
-
-        return jenkinsJob;
-    }
-
-    /**
-     * returns list of all the tools
-     *
-     * @param toolMap
-     * @param id
-     * @return
-     */
-    private List<Tool> getProcessorItemList(Map<ObjectId, Map<String, List<Tool>>> toolMap, ObjectId id) {
-        List<Tool> allProcessorItems = new ArrayList<>();
-
-        for (String processor : processorsList) {
-            if (toolMap.get(id).containsKey(processor)) {
-                List<Tool> processorItems = toolMap.get(id).get(processor);
-                allProcessorItems.addAll(processorItems);
-            }
-        }
-        return allProcessorItems;
-    }
-
-    private boolean isValidJob(Tool job) {
-        return !CollectionUtils.isEmpty(job.getProcessorItemList())
-                && job.getProcessorItemList().get(0).getId() != null;
-    }
-
-    /**
-     * prepare processorIds list
-     *
-     * @param job
-     * @return processorIds
-     */
-    private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
-        List<ObjectId> processorIds = new ArrayList<>();
-        job.getProcessorItemList().forEach(e -> processorIds.add(e.getId()));
-        return processorIds;
-    }
+		}
 
     @Override
     public Long calculateKpiValue(List<Long> valueList, String kpiId) {
