@@ -109,14 +109,29 @@ describe('MaturityComponent', () => {
   it('should call kpi grouping methods on receiveing data for Scrum',()=>{
     const event ={
       masterData :[],
-      filterData:[],
+      filterData:[
+        {
+        "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
+        "nodeName": "3.0",
+        "path": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu",
+            "40208_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu"
+        ],
+        "labelName": "sqd",
+        "parentId": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187",
+            "40208_Test Map Query_63d107f21589e175b8fa6187"
+        ],
+        "level": 7
+    }],
       filterApplyData :[],
     };
     const masterData = {
       kpiList :[
         {
           calculateMaturity:true,
-          kpiId:'kpi12'
+          kpiId:'kpi12',
+          kanban:false
         }
       ]
     };
@@ -140,14 +155,28 @@ describe('MaturityComponent', () => {
   it('should call kpi grouping methods on receiveing data for Kanban',()=>{
     const event ={
       masterData :[],
-      filterData:[],
+      filterData:[        {
+        "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
+        "nodeName": "3.0",
+        "path": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu",
+            "40208_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu"
+        ],
+        "labelName": "sqd",
+        "parentId": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187",
+            "40208_Test Map Query_63d107f21589e175b8fa6187"
+        ],
+        "level": 7
+    }],
       filterApplyData :[],
     };
     const masterData = {
       kpiList :[
         {
           calculateMaturity:true,
-          kpiId:'kpi12'
+          kpiId:'kpi12',
+          kanban:true
         }
       ]
     };
