@@ -86,6 +86,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final Logger LOGGER = LoggerFactory.getLogger(IterationStatusServiceImpl.class);
 
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
+
+	private static final String DAYS = "Days";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String TOTALISSUES = "totalIssues";
 	private static final String SPRINT = "sprint";
@@ -308,166 +310,218 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			Set<String> overAllIssueTypes = new HashSet<>();
 			Set<String> overAllPriorities = new HashSet<>();
 
-			List<IterationKpiValue> overAllData = new ArrayList<>();
+			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 
 			List<IterationKpiData> overAllDataOfNetDelay = new ArrayList<>();
 
 			List<IterationKpiValue> finalIterationKpiValue = new ArrayList<>();
 
+			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesNetDelay)) {
-				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = netDelay.stream()
-						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
-								Collectors.groupingBy(IterationStatus::getPriority)));
-				List<Integer> overAllIssuesNetDelay = Arrays.asList(0);
+			List<Integer> netdelayCount = Arrays.asList(0);
+			List<Integer> overAllIssueCount = Arrays.asList(0);
 
-				List<IterationKpiValue> iterationKpiValuesNetDelay = new ArrayList<>();
-
+			if(CollectionUtils.isNotEmpty(iterationKpiModalValuesNetDelay)){
+				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = iterationKpiModalValuesNetDelay.stream().collect(
+						Collectors.groupingBy(IterationStatus::getTypeName, Collectors.groupingBy(IterationStatus::getPriority)));
 				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
 					priorityWiseIssue.forEach((priority, issues) -> {
-						List<IterationKpiModalValue> issuesCausingDelay = new ArrayList<>();
 						issueTypes.add(issueType);
 						priorities.add(priority);
-						int issueCausingNetDelayCount = 0;
-						for (IterationStatus iterationStatus : issues) {
-							if (ObjectUtils.isNotEmpty(iterationStatus)) {
-								issueCausingNetDelayCount++;
-								overAllIssuesNetDelay.set(0, overAllIssuesNetDelay.get(0) + 1);
-							}
-						}
-						List<IterationKpiData> data = new ArrayList<>();
-						IterationKpiData issuesAtCausingDelay = new IterationKpiData(NET_DELAYED_ISSUES,
-								Double.valueOf(issueCausingNetDelayCount), null, null, "", issuesCausingDelay);
-						data.add(issuesAtCausingDelay);
-						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
-						iterationKpiValuesNetDelay.add(iterationKpiValue);
-					});
-				});
-
-				IterationKpiData overAllDelay = new IterationKpiData(NET_DELAYED_ISSUES,
-						Double.valueOf(overAllIssuesNetDelay.get(0)), null, null, "", null);
-				overAllDataOfNetDelay.add(overAllDelay);
-				//overAllDataOfNetDelay.add(overAllDelay);
-			}
-
-
-				List<IterationKpiData> overAllDataOfIssuesCausingDelay = new ArrayList<>();
-
-			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesCausingDelay)) {
-				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = allIssues.stream()
-						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
-								Collectors.groupingBy(IterationStatus::getPriority)));
-
-				List<Integer> overAllIssueCount = Arrays.asList(0);
-				List<Integer> overAllIssuesCausingDelay = Arrays.asList(0);
-
-				List<IterationKpiValue> iterationKpiValuesIssuesCausingDelay = new ArrayList<>();
-
-				List<IterationKpiModalValue> overAllIssuesCausingDelayModalValues = new ArrayList<>();
-
-				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
-					priorityWiseIssue.forEach((priority, issues) -> {
-						List<IterationKpiModalValue> issuesCausingDelay = new ArrayList<>();
-						issueTypes2.add(issueType);
-						priorities2.add(priority);
-						int issueCausingDelayCount = 0;
+						List<IterationKpiModalValue> modalValues = new ArrayList<>();
+						int issueCount = 0;
+						int delayCount = 0;
 						for (IterationStatus iterationStatus : issues) {
 							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-							if (ObjectUtils.isNotEmpty(iterationStatus)) {
-								issueCausingDelayCount++;
-								overAllIssuesCausingDelay.set(0, overAllIssuesCausingDelay.get(0) + 1);
-								// set modal values
-								populateIterationStatusData(issuesCausingDelay, overAllIssuesCausingDelayModalValues,
-										iterationStatus);
-							}
+							delayCount = delayCount + 1;
+							netdelayCount.set(0, netdelayCount.get(0) + 1);
+							populateIterationStatusData(overAllmodalValues, modalValues, iterationStatus);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
-						IterationKpiData issuesAtCausingDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
-								Double.valueOf(issueCausingDelayCount), null, null, "", null);
-						data.add(issuesAtCausingDelay);
+						IterationKpiData issueAtRisk = new IterationKpiData(NET_DELAYED_ISSUES, Double.valueOf(delayCount),
+								Double.valueOf(issueCount), null, "", modalValues);
+						data.add(issueAtRisk);
 						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
-						iterationKpiValuesIssuesCausingDelay.add(iterationKpiValue);
+						iterationKpiValues.add(iterationKpiValue);
 					});
+
 				});
+				List<IterationKpiData> data = new ArrayList<>();
 
-				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
-						Double.valueOf(overAllIssuesCausingDelay.get(0)), null, null, "",
-						overAllIssuesCausingDelayModalValues);
+				IterationKpiData overAllIssuesAtRisk = new IterationKpiData(NET_DELAYED_ISSUES,
+						Double.valueOf(netdelayCount.get(0)), null, null, "",
+						overAllmodalValues);
+				data.add(overAllIssuesAtRisk);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValues.add(overAllIterationKpiValue);
 
-				overAllDataOfIssuesCausingDelay.add(overAllDelay);
-			}
-
-				List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
-				List<IterationKpiValue> iterationKpiValuesCompletedBeforeTime = new ArrayList<>();
-
-			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesDoneBeforeTime)) {
-				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = completedBeforeTimeIssues
-						.stream().collect(Collectors.groupingBy(IterationStatus::getTypeName,
-								Collectors.groupingBy(IterationStatus::getPriority)));
-
-				List<Integer> overAllIssueCount = Arrays.asList(0);
-				List<Integer> overAllIssuesClosedBeforeTime = Arrays.asList(0);
-
-				List<IterationKpiModalValue> overAllIssuesClosedBeforeTimeModalValues = new ArrayList<>();
-
-				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
-					priorityWiseIssue.forEach((priority, issues) -> {
-						List<IterationKpiModalValue> issuesClosedBeforeTime = new ArrayList<>();
-						issueTypes3.add(issueType);
-						priorities3.add(priority);
-						int issueClosedBeforeTimeCount = 0;
-						for (IterationStatus iterationStatus : issues) {
-							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-							if (ObjectUtils.isNotEmpty(iterationStatus)) {
-								issueClosedBeforeTimeCount++;
-								overAllIssuesClosedBeforeTime.set(0, overAllIssuesClosedBeforeTime.get(0) + 1);
-								// set modal values
-								populateIterationStatusData(issuesClosedBeforeTime,
-										overAllIssuesClosedBeforeTimeModalValues, iterationStatus);
-							}
-						}
-						List<IterationKpiData> data = new ArrayList<>();
-						IterationKpiData issuesAtDoneBeforeTime = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
-								Double.valueOf(issueClosedBeforeTimeCount), null, null, "", issuesClosedBeforeTime);
-						data.add(issuesAtDoneBeforeTime);
-						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
-						iterationKpiValuesCompletedBeforeTime.add(iterationKpiValue);
-					});
-				});
-				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
-						Double.valueOf(overAllIssuesClosedBeforeTime.get(0)), null, null, "",
-						overAllIssuesClosedBeforeTimeModalValues);
-
-				overAllDataOfIssuesCompletedBeforeTime.add(overAllDelay);
-
-			}
-
-				List<IterationKpiData> finalOverAll = new ArrayList<>();
-				finalOverAll.addAll(overAllDataOfNetDelay);
-				finalOverAll.addAll(overAllDataOfIssuesCausingDelay);
-				finalOverAll.addAll(overAllDataOfIssuesCompletedBeforeTime);
-
-				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, finalOverAll);
-				iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
-				overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
-
-
-				trendValue.setValue(overAllData);
-				overAllIssueTypes.addAll(issueTypes);
-				overAllIssueTypes.addAll(issueTypes2);
-				overAllIssueTypes.addAll(issueTypes3);
-				overAllPriorities.addAll(priorities);
-				overAllPriorities.addAll(priorities2);
-				overAllPriorities.addAll(priorities3);
-
-				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE,
-						issueTypes);
+				// Create kpi level filters
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+				// Modal Heads Options
+				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.ITERATION_STATUS.getColumns());
 				kpiElement.setTrendValueList(trendValue);
+
+			}
+
+
+
+
+
+
+
+//			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesNetDelay)) {
+//				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = netDelay.stream()
+//						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
+//								Collectors.groupingBy(IterationStatus::getPriority)));
+//				List<Integer> overAllIssuesNetDelay = Arrays.asList(0);
+//
+//				List<IterationKpiValue> iterationKpiValuesNetDelay = new ArrayList<>();
+//
+//				List<IterationKpiModalValue> issuesCausingDelay = new ArrayList<>();
+//				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
+//					priorityWiseIssue.forEach((priority, issues) -> {
+//						issueTypes.add(issueType);
+//						priorities.add(priority);
+//						int issueCausingNetDelayCount = 0;
+//						for (IterationStatus iterationStatus : issues) {
+//							if (ObjectUtils.isNotEmpty(iterationStatus)) {
+//								issueCausingNetDelayCount++;
+//								overAllIssuesNetDelay.set(0, overAllIssuesNetDelay.get(0) + 1);
+//								populateIterationStatusData(issuesCausingDelay, netDelayCount,
+//										iterationStatus);
+//							}
+//						}
+//						List<IterationKpiData> data = new ArrayList<>();
+//						IterationKpiData issuesAtCausingDelay = new IterationKpiData(NET_DELAYED_ISSUES,
+//								Double.valueOf(issueCausingNetDelayCount), null, null, "", netDelayCount);
+//						data.add(issuesAtCausingDelay);
+//						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
+//						iterationKpiValuesNetDelay.add(iterationKpiValue);
+//					});
+//				});
+//
+//				List<IterationKpiData> data = new ArrayList<>();
+//
+//				IterationKpiData overAllDelay = new IterationKpiData(NET_DELAYED_ISSUES,
+//						Double.valueOf(overAllIssuesNetDelay.get(0)), null, null, DAYS, issuesCausingDelay);
+//				data.add(overAllDelay);
+//				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+//				trendValue.setValue(overAllIterationKpiValue);
+//
+//				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE,
+//						issueTypes);
+//				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
+//				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+//				kpiElement.setFilters(iterationKpiFilters);
+//				kpiElement.setSprint(latestSprint.getName());
+//				kpiElement.setModalHeads(KPIExcelColumn.ITERATION_STATUS.getColumns());
+//				kpiElement.setTrendValueList(trendValue);
+//				//overAllDataOfNetDelay.add(overAllDelay);
+//			}
+
+
+//				List<IterationKpiData> overAllDataOfIssuesCausingDelay = new ArrayList<>();
+//
+//			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesCausingDelay)) {
+//				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = allIssues.stream()
+//						.collect(Collectors.groupingBy(IterationStatus::getTypeName,
+//								Collectors.groupingBy(IterationStatus::getPriority)));
+//
+//				List<Integer> overAllIssueCount = Arrays.asList(0);
+//				List<Integer> overAllIssuesCausingDelay = Arrays.asList(0);
+//
+//				List<IterationKpiValue> iterationKpiValuesIssuesCausingDelay = new ArrayList<>();
+//
+//				List<IterationKpiModalValue> overAllIssuesCausingDelayModalValues = new ArrayList<>();
+//
+//				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
+//					priorityWiseIssue.forEach((priority, issues) -> {
+//						List<IterationKpiModalValue> issuesCausingDelay = new ArrayList<>();
+//						issueTypes2.add(issueType);
+//						priorities2.add(priority);
+//						int issueCausingDelayCount = 0;
+//						for (IterationStatus iterationStatus : issues) {
+//							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
+//							if (ObjectUtils.isNotEmpty(iterationStatus)) {
+//								issueCausingDelayCount++;
+//								overAllIssuesCausingDelay.set(0, overAllIssuesCausingDelay.get(0) + 1);
+//								// set modal values
+//							}
+//						}
+//						List<IterationKpiData> data = new ArrayList<>();
+//						IterationKpiData issuesAtCausingDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
+//								Double.valueOf(issueCausingDelayCount), null, null, "", null);
+//						data.add(issuesAtCausingDelay);
+//						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
+//						iterationKpiValuesIssuesCausingDelay.add(iterationKpiValue);
+//					});
+//				});
+//
+//				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_CAUSING_DELAY,
+//						Double.valueOf(overAllIssuesCausingDelay.get(0)), null, null, DAYS,
+//						overAllIssuesCausingDelayModalValues);
+//
+//				overAllDataOfIssuesCausingDelay.add(overAllDelay);
+//			}
+//
+//				List<IterationKpiData> overAllDataOfIssuesCompletedBeforeTime = new ArrayList<>();
+//				List<IterationKpiValue> iterationKpiValuesCompletedBeforeTime = new ArrayList<>();
+//
+//			if (CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesDoneBeforeTime)) {
+//				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = completedBeforeTimeIssues
+//						.stream().collect(Collectors.groupingBy(IterationStatus::getTypeName,
+//								Collectors.groupingBy(IterationStatus::getPriority)));
+//
+//				List<Integer> overAllIssueCount = Arrays.asList(0);
+//				List<Integer> overAllIssuesClosedBeforeTime = Arrays.asList(0);
+//
+//				List<IterationKpiModalValue> overAllIssuesClosedBeforeTimeModalValues = new ArrayList<>();
+//
+//				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
+//					priorityWiseIssue.forEach((priority, issues) -> {
+//						List<IterationKpiModalValue> issuesClosedBeforeTime = new ArrayList<>();
+//						issueTypes3.add(issueType);
+//						priorities3.add(priority);
+//						int issueClosedBeforeTimeCount = 0;
+//						for (IterationStatus iterationStatus : issues) {
+//							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
+//							if (ObjectUtils.isNotEmpty(iterationStatus)) {
+//								issueClosedBeforeTimeCount++;
+//								overAllIssuesClosedBeforeTime.set(0, overAllIssuesClosedBeforeTime.get(0) + 1);
+//							}
+//						}
+//						List<IterationKpiData> data = new ArrayList<>();
+//						IterationKpiData issuesAtDoneBeforeTime = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
+//								Double.valueOf(issueClosedBeforeTimeCount), null, null, "", issuesClosedBeforeTime);
+//						data.add(issuesAtDoneBeforeTime);
+//						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
+//						iterationKpiValuesCompletedBeforeTime.add(iterationKpiValue);
+//					});
+//				});
+//				IterationKpiData overAllDelay = new IterationKpiData(ISSUES_DONE_BEFORE_TIME,
+//						Double.valueOf(overAllIssuesClosedBeforeTime.get(0)), null, null, DAYS,
+//						overAllIssuesClosedBeforeTimeModalValues);
+//
+//				overAllDataOfIssuesCompletedBeforeTime.add(overAllDelay);
+//
+//			}
+
+				List<IterationKpiData> finalOverAll = new ArrayList<>();
+				finalOverAll.addAll(overAllDataOfNetDelay);
+//				finalOverAll.addAll(overAllDataOfIssuesCausingDelay);
+//				finalOverAll.addAll(overAllDataOfIssuesCompletedBeforeTime);
+
+
+//				iterationKpiValuesCompletedBeforeTime.add(overAllIterationKpiValue);
+//				overAllData.addAll(iterationKpiValuesCompletedBeforeTime);
+
+
+
 
 
 	}
@@ -595,7 +649,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 																	 // sprint case
 							try {
 								delayList = potentialDelayOfStoriesPastDueDateClosedSprint(issueObject, endDate,
-										startDate);
+										startDate); //due date passed and closed sprint
 							} catch (ParseException e) {
 								log.error("Exception while parse date..." + e.getMessage());
 							}
@@ -605,7 +659,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 																			   // < sprint start date
 								delayList = spilledIssues(startDate);
 							} else {
-								delayList = issuesPastDueDateInsideSprint(dueDate, startDate, endDate);
+								delayList = issuesPastDueDateInsideSprint(dueDate, startDate, endDate, issueObject); //due date passed but active sprint
 							}
 						}
 					} else { // if current date is less than story due date, stories inside due date but not
@@ -650,7 +704,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		return delayList;
 	}
 
-	private Integer issuesPastDueDateInsideSprint(DateTime dueDate, String startDate, String endDate)
+	private Integer issuesPastDueDateInsideSprint(DateTime dueDate, String startDate, String endDate, JiraIssue issueObject)
 			throws ParseException {
 		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
 		Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
@@ -661,8 +715,14 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		DateTime currDate = DateTime.now();
 		try {
 			if (storyDueDate.compareTo(sprintStartDate) > 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
-				delayDaysAlready = CommonUtils.getDaysBetwDate(currDate, dueDate);
-				delayList += delayDaysAlready;
+				delayDaysAlready = CommonUtils.getDaysBetwDate2(currDate, dueDate);
+				if (issueObject.getRemainingEstimateMinutes() != null) {
+					Integer num = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
+					if (num > 0) {
+						delayDaysAlready = num + delayDaysAlready;
+					}
+				}
+				delayList = (delayList + (delayDaysAlready)) * (-1);
 			}
 
 		} catch (ParseException e) {
@@ -699,10 +759,10 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				if (issueObject.getRemainingEstimateMinutes() != null) {
 					Integer num = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
 					if (num > 0) {
-						delayDaysAlready = (num + (delayDaysAlready)) * (-1);
+						delayDaysAlready = (num + (delayDaysAlready));
 					}
 				}
-				delayList = delayList + delayDaysAlready;
+				delayList = (delayList + delayDaysAlready) * -1;
 			} catch (ParseException e) {
 				log.error("Exception while parse date..." + e.getMessage());
 			}

@@ -1,5 +1,731 @@
 [
   {
+    "_id" : "63d92aaa85ff84680734c520",
+    "sprintID" : "41409_Iteration Status_63d9280d5ce3ee7d77551313",
+    "sprintName" : "KnowHOW | PI_12| ITR_3",
+    "originalSprintId" : "41409",
+    "state" : "ACTIVE",
+    "startDate" : "2023-01-25T15:56:00.000Z",
+    "endDate" : "2023-02-08T15:56:00.000Z",
+    "activatedDate" : "2023-01-25T15:58:15.138Z",
+    "originBoardId" : [ "11856" ],
+    "goal" : "Release v6.1.0",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "processorId" : "6343ed203560a3541daa25de",
+    "completedIssues" : [
+      {
+        "number" : "DTS-21782",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Live",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21525",
+        "originBoardId" : "11856",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21864",
+        "originBoardId" : "11856",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21983",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "remainingEstimate" : "0"
+      }
+    ],
+    "notCompletedIssues" : [
+      {
+        "number" : "DTS-21837",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21835",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "172800"
+      },
+      {
+        "number" : "DTS-21879",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21494",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21171",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5"
+      },
+      {
+        "number" : "DTS-20986",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "136800"
+      },
+      {
+        "number" : "DTS-21613",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21018",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21755",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21898",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-22007",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21894",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21574",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21825",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "230400"
+      },
+      {
+        "number" : "DTS-20813",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "10800"
+      },
+      {
+        "number" : "DTS-21824",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-19822",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Enabler Story"
+      },
+      {
+        "number" : "DTS-21781",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story"
+      },
+      {
+        "number" : "DTS-21823",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-20635",
+        "originBoardId" : "11856",
+        "priority" : "P3 - Major",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "21600"
+      },
+      {
+        "number" : "DTS-21547",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21789",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21546",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8"
+      },
+      {
+        "number" : "DTS-21765",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "7200"
+      },
+      {
+        "number" : "DTS-21787",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21203",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21764",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21786",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-20950",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21521",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "storyPoints" : "8"
+      },
+      {
+        "number" : "DTS-21763",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21785",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21762",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21002",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      }
+    ],
+    "puntedIssues" : [ ],
+    "completedIssuesAnotherSprint" : [
+      {
+        "number" : "DTS-20823",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Dropped",
+        "typeName" : "Story",
+        "storyPoints" : "1"
+      },
+      {
+        "number" : "DTS-20505",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-20753",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21204",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "0"
+      }
+    ],
+    "addedIssues" : [ "DTS-21171", "DTS-22007", "DTS-21983" ],
+    "totalIssues" : [
+      {
+        "number" : "DTS-21837",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21835",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "172800"
+      },
+      {
+        "number" : "DTS-21879",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Defect",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21494",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21171",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5"
+      },
+      {
+        "number" : "DTS-20986",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "136800"
+      },
+      {
+        "number" : "DTS-21613",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21018",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21755",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21898",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-22007",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21894",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21574",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21825",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "230400"
+      },
+      {
+        "number" : "DTS-20813",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "storyPoints" : "5",
+        "remainingEstimate" : "10800"
+      },
+      {
+        "number" : "DTS-21824",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-19822",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Enabler Story"
+      },
+      {
+        "number" : "DTS-21782",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Live",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21781",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story"
+      },
+      {
+        "number" : "DTS-21823",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21525",
+        "originBoardId" : "11856",
+        "priority" : "P3 - Major",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-20635",
+        "originBoardId" : "11856",
+        "priority" : "P3 - Major",
+        "status" : "On Hold",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "21600"
+      },
+      {
+        "number" : "DTS-21547",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Sprint Planning",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21789",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21546",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Development",
+        "typeName" : "Story",
+        "storyPoints" : "8"
+      },
+      {
+        "number" : "DTS-21864",
+        "originBoardId" : "11856",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-21765",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "7200"
+      },
+      {
+        "number" : "DTS-21787",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21203",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "2",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21764",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21786",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21983",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "remainingEstimate" : "0"
+      },
+      {
+        "number" : "DTS-20950",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "storyPoints" : "8",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21521",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Code Review",
+        "typeName" : "Story",
+        "storyPoints" : "8"
+      },
+      {
+        "number" : "DTS-21763",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21785",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "In Analysis",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "57600"
+      },
+      {
+        "number" : "DTS-21762",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Ready for Testing",
+        "typeName" : "Story",
+        "storyPoints" : "1",
+        "remainingEstimate" : "28800"
+      },
+      {
+        "number" : "DTS-21002",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+  },
+  {
     "_id" : "63c4e7f6fd5a0f0b2601f123",
     "sprintID" : "42031_DelayDays_63b3d14eb7150232b66ca113",
     "sprintName" : "KnowHOWContribution|PI_12|ITR2",
