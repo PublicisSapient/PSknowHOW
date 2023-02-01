@@ -174,7 +174,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 
-				filterDataBasedOnJobAndRangeWise(resultMap, kpiRequest, trendValueMap, codeBuildTimeInfo,
+				filterDataBasedOnJobAndRangeWise(kpiRequest, trendValueMap, codeBuildTimeInfo,
 						dataCountAggList, projectNodeId, buildMapJobWise);
 
 				List<DataCount> aggData = calculateAggregatedRangeWise(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(),
@@ -198,36 +198,33 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
         kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME_KANBAN.getColumns());
     }
 
-    private void filterDataBasedOnJobAndRangeWise(Map<ObjectId, List<Build>> resultMap, KpiRequest kpiRequest,
+    private void filterDataBasedOnJobAndRangeWise(KpiRequest kpiRequest,
                                                   Map<String, List<DataCount>> trendValueMap, CodeBuildTimeInfo codeBuildTimeInfo,
                                                   List<DataCount> dataCountAggList, String projectNodeId, Map<String, List<Build>> buildMapJobWise) {
 
         String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 
-        for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
-            String jobName = entry.getKey();
-            List<Build> buildList = entry.getValue();
-            if (CollectionUtils.isEmpty(buildList)) {
-                return;
-            }
-                LocalDate currentDate = LocalDate.now();
-                for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
+		for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
+			String jobName = entry.getKey();
+			List<Build> buildList = entry.getValue();
+			LocalDate currentDate = LocalDate.now();
+			for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-                    CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
-                            kpiRequest.getDuration());
+				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
+						kpiRequest.getDuration());
 
-                    String date = getRange(dateRange, kpiRequest);
+				String date = getRange(dateRange, kpiRequest);
 
-                    Map<String, Long> projectWiseBuildTimeCountMap = filterKanbanDataBasedOnDateAndBuildTimeWise(
-                            buildList, dateRange, date, codeBuildTimeInfo, jobName, projectName);
+				Map<String, Long> projectWiseBuildTimeCountMap = filterKanbanDataBasedOnDateAndBuildTimeWise(buildList,
+						dateRange, date, codeBuildTimeInfo, jobName, projectName);
 
-                    populateProjectFilterWiseDataMap(projectWiseBuildTimeCountMap, trendValueMap, projectName,
-                            projectNodeId, date, dataCountAggList);
+				populateProjectFilterWiseDataMap(projectWiseBuildTimeCountMap, trendValueMap, projectName,
+						projectNodeId, date, dataCountAggList);
 
-                    currentDate = getNextRangeDate(kpiRequest, currentDate);
+				currentDate = getNextRangeDate(kpiRequest, currentDate);
 
-                }
-            }
+			}
+		}
         }
 
     @Override

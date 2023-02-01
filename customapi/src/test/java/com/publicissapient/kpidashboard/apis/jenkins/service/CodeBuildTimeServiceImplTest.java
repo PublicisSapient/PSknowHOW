@@ -177,7 +177,7 @@ public class CodeBuildTimeServiceImplTest {
 
 			KpiElement kpiElement = codeBuildTimeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
+			assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
 		} catch (Exception enfe) {
 		}
 
