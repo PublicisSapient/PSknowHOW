@@ -183,8 +183,13 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
-					String jobName = entry.getKey();
+					String jobName;
 					List<Build> buildList = entry.getValue();
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder();
+					} else {
+						jobName = entry.getKey();
+					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}

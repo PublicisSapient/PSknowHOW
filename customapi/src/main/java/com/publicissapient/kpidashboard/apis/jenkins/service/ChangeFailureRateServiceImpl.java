@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,8 +192,13 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
-					String jobName = entry.getKey();
+					String jobName;
 					List<Build> buildList = entry.getValue();
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder();
+					} else {
+						jobName = entry.getKey();
+					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList);

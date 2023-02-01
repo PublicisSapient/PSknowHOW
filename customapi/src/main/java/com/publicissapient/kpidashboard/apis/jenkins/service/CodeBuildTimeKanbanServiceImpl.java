@@ -205,8 +205,13 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
         String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 
 		for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
-			String jobName = entry.getKey();
+			String jobName;
 			List<Build> buildList = entry.getValue();
+			if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+				jobName = buildList.get(0).getJobFolder();
+			} else {
+				jobName = entry.getKey();
+			}
 			LocalDate currentDate = LocalDate.now();
 			for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
