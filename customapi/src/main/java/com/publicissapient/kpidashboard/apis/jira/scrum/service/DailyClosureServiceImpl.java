@@ -180,30 +180,30 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
         return resultListMap;
     }
 
-    private Map<String,String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory, SprintDetails sprintDetails) {
-        Map<String,String> closedDateMap = new HashMap<>();
-        completedJiraIssuesHistory.stream().forEach(
-                jiraIssueCustomHistory -> {
-                    List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
-                    SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream().filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
-                    if (CollectionUtils.isNotEmpty(storySprintDetail)) {
-                        for(int i=storySprintDetail.size()-1;i>=0;i--){
-                            if(storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())){
-                                DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
-                                DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
-                                DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
-                                if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
-                                    closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
-                                            getFormattedDate(storySprintDetail.get(i).getActivityDate()));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-        );
-        return closedDateMap;
-    }
+	private Map<String, String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory,
+			SprintDetails sprintDetails) {
+		Map<String, String> closedDateMap = new HashMap<>();
+		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
+			List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
+			SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream()
+					.filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
+			if (CollectionUtils.isNotEmpty(storySprintDetail)) {
+				for (int i = storySprintDetail.size() - 1; i >= 0; i--) {
+					if (storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())) {
+						DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
+						DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
+						DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
+						if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
+							closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
+									getFormattedDate(storySprintDetail.get(i).getActivityDate()));
+							break;
+						}
+					}
+				}
+			}
+		});
+		return closedDateMap;
+	}
 
     /**
      *
