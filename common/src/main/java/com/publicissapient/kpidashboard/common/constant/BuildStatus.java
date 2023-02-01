@@ -32,4 +32,13 @@ public enum BuildStatus {
 		}
 		throw new IllegalArgumentException(value + " is not a valid BuildStatus.");
 	}
+
+	public static boolean contains(String value) {
+		for (BuildStatus buildStatus : values()) {
+			if (buildStatus.toString().equalsIgnoreCase(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
