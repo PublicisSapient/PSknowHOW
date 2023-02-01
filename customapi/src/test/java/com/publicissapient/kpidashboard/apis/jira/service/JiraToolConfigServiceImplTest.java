@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +33,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
 /**
@@ -53,18 +59,28 @@ public class JiraToolConfigServiceImplTest {
 
 	@Mock
 	private ConnectionRepository connectionRepository;
-
+	@Mock
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
+	@Mock
+	private ProjectToolConfigRepository projectToolConfigRepository;
 	@InjectMocks
 	private JiraToolConfigServiceImpl jiraToolConfigService;
 
 	private Optional<Connection> testConnectionOpt;
+	private Optional<ProjectBasicConfig> basicConfig;
+	private ProjectBasicConfig projectBasicConfig;
 	private Connection connection1;
 	private String connectionId;
 	private List<BoardDetailsDTO> responseList = new ArrayList<>();
-
+	private List<ProjectToolConfig> projectToolConfigs;
+	private ProjectToolConfig projectTool;
 	private BoardRequestDTO boardRequestDTO;
-
+	private String basicConfigId;
+	private AssigneeDetails role;
+	private List<AssigneeDetails> roles;
+	private ResponseEntity<String> response;
 	private static final String RESOURCE_JIRA_BOARD_ENDPOINT = "https://test.server.com/jira/rest/agile/1.0/board?projectKeyOrId=testProjectKey&startAt=0&type=scrum";
+	private static final String RESOURCE_JIRA_ASSINGEE_ENDPOINT = "https://test.server.com/jira/rest/user/assignable/search?project=ABC";
 
 	@Before
 	public void setup() {
@@ -80,6 +96,19 @@ public class JiraToolConfigServiceImplTest {
 		boardRequestDTO.setBoardType("scrum");
 		boardRequestDTO.setConnectionId("5fc4d61f80b6350f048a93e5");
 		boardRequestDTO.setProjectKey("testProjectKey");
+
+		connection1.setApiEndPoint("rest/api/2/");
+		basicConfigId = "634fdf4ec859a424263dc035";
+		projectBasicConfig = new ProjectBasicConfig();
+		projectToolConfigs = new ArrayList<>();
+		basicConfig = Optional.ofNullable(projectBasicConfig);
+		projectTool = new ProjectToolConfig();
+		projectTool.setBasicProjectConfigId(new ObjectId(basicConfigId));
+		projectTool.setConnectionId(new ObjectId(connectionId));
+		projectTool.setProjectKey("ABC");
+		projectToolConfigs.add(projectTool);
+		response = new ResponseEntity<>(HttpStatus.OK);
+
 	}
 
 	@Test
@@ -87,11 +116,13 @@ public class JiraToolConfigServiceImplTest {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 		assertEquals(optConnection, testConnectionOpt);
+
 		when(restAPIUtils.decryptPassword(connection1.getPassword())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization", "Basic base64str");
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraBoardListResponse.json"), HttpStatus.OK))
 				.when(restTemplate)
 				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
@@ -125,4 +156,50 @@ public class JiraToolConfigServiceImplTest {
 		String filePath = "src/test/resources/json/toolConfig/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
+
+	@Test
+	public void getProjectAssigneeDetailsSuccess() throws IOException, ParseException {
+		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(basicConfig);
+		Optional<ProjectBasicConfig> basicConfigOptional = projectBasicConfigRepository
+				.findById(new ObjectId(basicConfigId));
+		assertEquals(basicConfigOptional, basicConfig);
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
+				.thenReturn(projectToolConfigs);
+		HttpHeaders header = new HttpHeaders();
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);
+	}
+
+	@Test
+	public void fetchAssigneeDetailsRestAPICall() throws IOException {
+		List<AssigneeDetails> assigneeRoles = new ArrayList<>();
+		AssigneeDetails assigneeRoles1 = new AssigneeDetails();
+		assigneeRoles1.setName("ankbhard");
+		assigneeRoles1.setDisplayName("Ankita sharma");
+
+		assigneeRoles.add(assigneeRoles1);
+		HttpHeaders header = new HttpHeaders();
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraAssigneeListResponse.json"), HttpStatus.OK))
+				.when(restTemplate)
+				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		List<AssigneeDetails> testRoles = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
+				RESOURCE_JIRA_BOARD_ENDPOINT);
+		assertEquals(testRoles.size(), assigneeRoles.size());
+	}
+
+	@Test
+	public void fetchAssigneeDetailsRestAPICallFailed() throws IOException {
+		HttpHeaders header = new HttpHeaders();
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate)
+				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		List<AssigneeDetails> assignee = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
+				RESOURCE_JIRA_BOARD_ENDPOINT);
+		assertEquals(0, assignee.size());
+	}
+
 }

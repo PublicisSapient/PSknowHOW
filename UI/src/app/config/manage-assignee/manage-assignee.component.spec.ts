@@ -16,31 +16,26 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import java.util.List;
+import { ManageAssigneeComponent } from './manage-assignee.component';
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+describe('ManageAssigneeComponent', () => {
+  let component: ManageAssigneeComponent;
+  let fixture: ComponentFixture<ManageAssigneeComponent>;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ManageAssigneeComponent ]
+    })
+    .compileComponents();
 
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+    fixture = TestBed.createComponent(ManageAssigneeComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-/**
- * The type Project release.
- */
-@Data
-public class ProjectAssigneeDTO extends BasicModel {
-
-	private String projectName;
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
-
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -43,6 +43,7 @@ interface CapacitySubmissionReq {
     sprintName?: string;
     executionDate?: string;
     kanban: boolean;
+    basicProjectConfigId?: string;
 }
 
 @Component({
@@ -122,6 +123,14 @@ export class UploadComponent implements OnInit {
     selectedSprintName: any;
     tableLoader = true;
     currentDate = new Date();
+    isToggleEnableForSelectedProject =false;
+    displayAssignee = false;
+    projectJiraAssignees ={};
+    manageAssigneeList=[];
+    projectAssigneeRoles=[];
+    projectCapacityEditMode =false;
+    selectedSprint;
+    expandedRows={};
     constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService) {
     }
 
@@ -672,7 +681,8 @@ export class UploadComponent implements OnInit {
         this.reqObj = {
             projectNodeId: data?.projectNodeId,
             projectName: data?.projectName,
-            kanban: this.kanban
+            kanban: this.kanban,
+            basicProjectConfigId: data?.basicProjectConfigId
         };
         if (!this.kanban) {
             if(this.selectedView === 'upload_tep') {
@@ -706,6 +716,13 @@ export class UploadComponent implements OnInit {
         }
         this.enableDisableSubmitButton();
     }
+
+    manageAssignees(selectedSprintData) {
+        this.selectedSprintDetails = selectedSprintData;
+        this.generateManageAssigneeData(selectedSprintData);
+        this.displayAssignee = true;
+    }
+
     submitTestExecution() {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
@@ -850,6 +867,7 @@ export class UploadComponent implements OnInit {
     }
     handleIterationFilters(level) {
         if (this.filterForm?.get('selectedProjectValue')?.value != '') {
+            this.isToggleEnableForSelectedProject =false;
             this.tableLoader = true;
             this.noData = false;
             this.selectedSprintDetails = {};
@@ -890,6 +908,148 @@ export class UploadComponent implements OnInit {
         }
         return uniqueArray;
     }
+
+    getCapacityJiraAssignee(projectId) {
+        if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
+            this.http_service.getJiraProjectAssignee(projectId)
+                .subscribe(response => {
+                    if (response && response?.success && response?.data) {
+                        this.projectJiraAssignees = response['data'];
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error in fetching Project Assignee.' });
+                    }
+                });
+        }
+    }
+
+    generateManageAssigneeData(selectedSprintData) {
+        this.manageAssigneeList = [];
+        const projectAssignees = JSON.parse(JSON.stringify(this.projectJiraAssignees['assigneeDetailsList']));
+        const assigneeCapactiy = selectedSprintData['assigneeCapacity'];
+        assigneeCapactiy?.forEach(assignee => {
+            const selectedAssigneeIndex = projectAssignees.findIndex(jiraAssignee => assignee.userId === jiraAssignee.name);
+            if (selectedAssigneeIndex !== -1) {
+                this.manageAssigneeList.push({ ...projectAssignees[selectedAssigneeIndex], checked: true });
+                projectAssignees.splice(selectedAssigneeIndex, 1);
+            }
+        });
+        this.manageAssigneeList.push(...projectAssignees);
+    }
+
+    addRemoveAssignees() {
+        this.displayAssignee = false;
+        this.manageAssigneeList = this.manageAssigneeList.filter(assignee => assignee?.checked);
+        const assigneeCapacity = [];
+        this.manageAssigneeList?.forEach(assignee => {
+            const assigneePresentForSprint = this.selectedSprintDetails['assigneeCapacity']?.find(selectedAssignee => selectedAssignee.userId === assignee.name);
+            if (assigneePresentForSprint) {
+                assigneeCapacity.push(assigneePresentForSprint);
+            } else {
+                assigneeCapacity.push({
+                    userId: assignee.name,
+                    userName: assignee.displayName
+                });
+            }
+        });
+        const postData = { ...this.selectedSprintDetails };
+        delete postData['sprintState'];
+        postData['assigneeCapacity'] = assigneeCapacity;
+
+        this.http_service.saveOrUpdateAssignee(postData)
+            .subscribe(response => {
+                if (response && response?.success && response?.data) {
+                    this.getCapacityData(this.selectedSprintDetails['basicProjectConfigId']);
+                    const expandedRowsKey = this.kanban ? this.selectedSprintDetails.startDate : this.selectedSprintDetails.sprintNodeId;
+                    this.expandedRows = { [expandedRowsKey]: true };
+                    this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
+                }
+            });
+    }
+
+    getAssigneeRoles() {
+        if (!(this.projectAssigneeRoles.length > 0)) {
+            this.http_service.getAssigneeRoles()
+                .subscribe(response => {
+                    if (response && response?.success && response?.data) {
+                        for (const key in response.data) {
+                            this.projectAssigneeRoles.push({ name: response.data[key], value: key });
+                        }
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Roles.' });
+                    }
+                });
+        }
+    }
+
+
+    checkifAssigneeToggleEnabled(capacityData) {
+        if (capacityData[0]['assigneeDetails']) {
+            this.isToggleEnableForSelectedProject = true;
+            this.getAssigneeRoles();
+            this.getCapacityJiraAssignee(capacityData[0]['basicProjectConfigId']);
+        }
+    }
+
+    calculateAvaliableCapacity(assignee) {
+        if (assignee.plannedCapacity && assignee.leaves) {
+            assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
+        } else if (assignee.plannedCapacity) {
+            assignee.availableCapacity = assignee.plannedCapacity;
+        } else {
+            assignee.availableCapacity = 0;
+        }
+    }
+    calculateTotalCapacityForSprint(selectedSprint) {
+        let totalCapacity = 0;
+        selectedSprint.assigneeCapacity.forEach(assignee => {
+            totalCapacity += assignee.availableCapacity;
+        });
+        return totalCapacity;
+    }
+
+    onSprintCapacityEdit(selectedSprint) {
+        this.projectCapacityEditMode = true;
+        this.selectedSprint = JSON.parse(JSON.stringify(selectedSprint));
+    }
+
+    onSprintCapacitySave(selectedSprint) {
+        selectedSprint.capacity = this.calculateTotalCapacityForSprint(selectedSprint);
+        this.projectCapacityEditMode = false;
+        const postData = { ...selectedSprint };
+        delete postData['id'];
+        delete postData['projectName'];
+        delete postData['sprintState'];
+        this.http_service.saveOrUpdateAssignee(postData).subscribe(response => {
+            if (response && response?.success && response?.data) {
+                this.getCapacityData(selectedSprint['basicProjectConfigId']);
+                this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+            } else {
+                this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
+            }
+        });
+    }
+
+    onSprintCapacityCancel(selectedSprint) {
+        this.projectCapacityEditMode = false;
+        if (!this.kanban) {
+            const selectedSprintRowIndex = this.capacityScrumData.findIndex(sprint => sprint.sprintNodeId === selectedSprint.sprintNodeId);
+            this.capacityScrumData[selectedSprintRowIndex] = this.selectedSprint;
+        } else {
+            const selectedSprintRowIndex = this.capacityKanbanData.findIndex(sprint => (sprint.startDate === selectedSprint.startDate && sprint.endDate === selectedSprint.endDate));
+            this.capacityKanbanData[selectedSprintRowIndex] = this.selectedSprint;
+        }
+
+    }
+
+    onCapacitySprintRowSelection(event) {
+        if (this.projectCapacityEditMode) {
+            this.onSprintCapacityCancel(this.selectedSprint);
+            this.projectCapacityEditMode = false;
+        }
+    }
+
     getCapacityData(projectId){
         this.http_service.getCapacityData(projectId).subscribe((response)=> {
             if(response && response?.success && response?.data) {
@@ -897,6 +1057,7 @@ export class UploadComponent implements OnInit {
                     this.capacityKanbanData = response?.data;
                     if (this.capacityKanbanData?.length > 0) {
                         this.noData = false;
+                        this.checkifAssigneeToggleEnabled(this.capacityKanbanData);
                     } else {
                         this.noData = true;
                     }
@@ -904,6 +1065,7 @@ export class UploadComponent implements OnInit {
                     this.capacityScrumData = response?.data;
                     if (this.capacityScrumData?.length > 0) {
                         this.noData = false;
+                        this.checkifAssigneeToggleEnabled(this.capacityScrumData);
                     } else {
                         this.noData = true;
                     }

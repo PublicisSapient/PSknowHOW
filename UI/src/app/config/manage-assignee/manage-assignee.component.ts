@@ -16,36 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import java.util.List;
+@Component({
+  selector: 'app-manage-assignee',
+  templateUrl: './manage-assignee.component.html',
+  styleUrls: ['./manage-assignee.component.css']
+})
+export class ManageAssigneeComponent implements OnInit {
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+  @Input() assigneeList = [];
+  @Output() onAssigneeSave = new EventEmitter();
+  constructor() { }
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+  ngOnInit(): void {
+  }
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-/**
- * The type Project release.
- */
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "project_assignee")
-public class ProjectAssignee extends BasicModel {
-
-	private String projectName;
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
+  onUserSelectionChange(event, assignee) {
+    assignee['checked'] = event.target.checked;
+    console.log(this.assigneeList);
+  }
 
 }
