@@ -7,6 +7,7 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { SharedService } from '../../../services/shared.service';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 
 describe('ViewNewUserAuthRequestComponent', () => {
@@ -82,4 +83,23 @@ describe('ViewNewUserAuthRequestComponent', () => {
     expect(component.showLoader).toBeFalse();
     expect(component.newUserAccessRequestData).toEqual([]);
   });
+
+  it('should update and return response for update request ', () => {
+    component.newUserAccessRequestData = fakeRequestsData.data;
+    const fakeRequest = {
+      username: 'testuser8',
+      email: 'test8@gmail.com',
+      approved: false
+    };
+    const fakeResponse = {
+      message: 'Unapproved User details',
+      success: true,
+      data: []
+    };
+    spyOn(httpService , "updateNewUserAccessRequest").and.returnValue(of(fakeResponse));
+    component.updateRequestStatus(fakeRequest, true);
+    fixture.detectChanges();
+    expect(component.showLoader).toBeFalse();
+  });
+
 });
