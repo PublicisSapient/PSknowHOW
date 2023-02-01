@@ -82,7 +82,6 @@ import lombok.extern.slf4j.Slf4j;
 public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
     private static final String ISSUES = "issues";
     private static final String SPRINT = "sprint";
-    private static final String STATUS = "Closed";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final DateTimeFormatter YYYY_MM_DD_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final String UNCHECKED = "unchecked";
@@ -182,7 +181,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
     }
 
     private Map<String,String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory, SprintDetails sprintDetails) {
-        Map<String,String> dodDateMap = new HashMap<>();
+        Map<String,String> closedDateMap = new HashMap<>();
         completedJiraIssuesHistory.stream().forEach(
                 jiraIssueCustomHistory -> {
                     List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
@@ -194,7 +193,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                                 DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
                                 DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
                                 if (datValu.isAfter(startDateValue) && datValu.isBefore(endDateValue)) {
-                                    dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
+                                    closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
                                             getFormattedDate(storySprintDetail.get(i).getActivityDate()));
                                     break;
                                 }
@@ -203,7 +202,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                     }
                 }
         );
-        return dodDateMap;
+        return closedDateMap;
     }
 
     /**
