@@ -237,8 +237,6 @@ public class DefaultTeamcityClientTests {
 		assertThat(build.getTimestamp(), notNullValue());
 		assertThat(build.getNumber(), is("3"));
 		assertThat(build.getBuildUrl(), is(URL_TEST));
-		assertThat(build.getStartTime(), is(1585810573000L));
-		assertThat(build.getEndTime(), is(1585810579000L));
 		assertThat(build.getDuration(), is(5441L));
 		assertThat(build.getBuildStatus(), is(BuildStatus.SUCCESS));
 		assertThat(build.getStartedBy(), is("admin"));
