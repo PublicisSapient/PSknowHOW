@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -185,9 +186,10 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
         completedJiraIssuesHistory.stream().forEach(
                 jiraIssueCustomHistory -> {
                     List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
+                    SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream().filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
                     if (CollectionUtils.isNotEmpty(storySprintDetail)) {
                         for(int i=storySprintDetail.size()-1;i>=0;i--){
-                            if(storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(STATUS)){
+                            if(storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())){
                                 DateTime datValu = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
                                 DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
                                 DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
