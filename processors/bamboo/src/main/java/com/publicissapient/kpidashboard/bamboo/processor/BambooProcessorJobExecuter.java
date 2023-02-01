@@ -504,8 +504,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		} else {
 			log.error("[BAMBOO-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-
-		clearToolItemCache(bambooConfig.getCustomApiBaseUrl());
 	}
 
 	private List<ProjectBasicConfig> getSelectedProjects() {

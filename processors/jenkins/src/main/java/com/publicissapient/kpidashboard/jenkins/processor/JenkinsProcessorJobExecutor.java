@@ -358,8 +358,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		} else {
 			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-
-		clearToolItemCache(jenkinsConfig.getCustomApiBaseUrl());
 	}
 
 	/**
