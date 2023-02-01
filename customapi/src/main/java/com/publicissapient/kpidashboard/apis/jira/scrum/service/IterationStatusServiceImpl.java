@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.kafka.common.protocol.types.Field;
@@ -320,12 +321,46 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 			List<Integer> netdelayCount = Arrays.asList(0);
 			List<Integer> overAllIssueCount = Arrays.asList(0);
+			/*grouping map based on type and priority*/
+		Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseCdIssues=new HashMap<>();
+		Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseBtIssues=new HashMap<>();
+		if(CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesCausingDelay)) {
+			typeAndPriorityWiseCdIssues = iterationKpiModalValuesIssuesCausingDelay.stream().collect(
+					Collectors.groupingBy(IterationStatus::getTypeName, Collectors.groupingBy(IterationStatus::getPriority)));
+		}
+		if(CollectionUtils.isNotEmpty(iterationKpiModalValuesIssuesDoneBeforeTime)) {
+			typeAndPriorityWiseBtIssues = iterationKpiModalValuesNetDelay.stream().collect(
+					Collectors.groupingBy(IterationStatus::getTypeName, Collectors.groupingBy(IterationStatus::getPriority)));
+		}
 
 			if(CollectionUtils.isNotEmpty(iterationKpiModalValuesNetDelay)){
 				Map<String, Map<String, List<IterationStatus>>> typeAndPriorityWiseIssues = iterationKpiModalValuesNetDelay.stream().collect(
 						Collectors.groupingBy(IterationStatus::getTypeName, Collectors.groupingBy(IterationStatus::getPriority)));
 				typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
 					priorityWiseIssue.forEach((priority, issues) -> {
+
+						//finding the cd issues passing issuetype and priority
+						Map<String,List<IterationStatus>> priorityWiseCdIssues=typeAndPriorityWiseCdIssues.get(issueType);
+						if(MapUtils.isNotEmpty(priorityWiseCdIssues)){
+							List<IterationStatus> cdIssues=priorityWiseCdIssues.get(priority);
+							//count
+							//overallvalues
+						}else{
+							//count=0
+							//overallvalues=0
+						}
+
+						//finding the bt issues passing issuetype and priority
+						Map<String,List<IterationStatus>> priorityWiseBtIssues=typeAndPriorityWiseBtIssues.get(issueType);
+						if(MapUtils.isNotEmpty(priorityWiseBtIssues)){
+							List<IterationStatus> btIssues=priorityWiseBtIssues.get(priority);
+							//count
+							//overallvalues
+						}else{
+							//count=0
+							//overallvalues=0
+						}
+
 						issueTypes.add(issueType);
 						priorities.add(priority);
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
@@ -340,7 +375,13 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData issueAtRisk = new IterationKpiData(NET_DELAYED_ISSUES, Double.valueOf(delayCount),
 								Double.valueOf(issueCount), null, "", modalValues);
+						IterationKpiData issuecd = new IterationKpiData(Causing_Delay, Double.valueOf(cdCount),
+								Double.valueOf(issueCount), null, "", null);
+						IterationKpiData issuebt = new IterationKpiData(Before_time, Double.valueOf(btCount),
+								Double.valueOf(issueCount), null, "", null);
 						data.add(issueAtRisk);
+						data.add(issuecd);
+						data.add(issuebt);
 						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
 						iterationKpiValues.add(iterationKpiValue);
 					});
@@ -351,7 +392,16 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				IterationKpiData overAllIssuesAtRisk = new IterationKpiData(NET_DELAYED_ISSUES,
 						Double.valueOf(netdelayCount.get(0)), null, null, "",
 						overAllmodalValues);
+				IterationKpiData overAllIssuescd = new IterationKpiData(CAUSING_DELAY,
+						Double.valueOf(netdelayCount.get(0)), null, null, "",
+						null);
+
+				IterationKpiData overAllIssuesbt = new IterationKpiData(BEFORE_TIME,
+						Double.valueOf(netdelayCount.get(0)), null, null, "",
+						null);
 				data.add(overAllIssuesAtRisk);
+				data.add(overAllIssuescd);
+				data.add(overAllIssuesbt);
 				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
