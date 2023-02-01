@@ -763,7 +763,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				}
 				delayList = (delayList + delayDaysAlready) * -1;
 			} catch (ParseException e) {
-				log.error("Exception while parse date.." + e.getMessage());
+				log.error("Exception while parse date..." + e.getMessage());
 			}
 		}
 		return delayList;
