@@ -66,7 +66,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 	}
 
 	@Override
-	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> processorItemIdList ,
+	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId>  projectBasicConfigIds ,
 			String startDate, String endDate) {
 		Criteria criteria = new Criteria();
 
@@ -80,7 +80,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 			criteria = criteria.and("startTime").gte(startDateUTC).and("endTime").lte(endDateUTC);
 		}
 
-		criteria.and("processorItemId").in(processorItemIdList);
+		criteria.and("basicProjectConfigId").in(projectBasicConfigIds);
 
 		Query query = new Query(criteria);
 

@@ -42,13 +42,13 @@ public interface BuildRepositoryCustom {
     List<Build> findBuildListAccToSprint(List<BasicDBObject> dbObjectList);
 
     /**
-     * Find build list using date wise
+     * Find build list using date wise and projectBasicConfigIds
      *
      * @param mapOfFilters
-     * @param processorItemIdList
+     * @param projectBasicConfigIds
      * @param startDate
      * @param endDate
      * @return the list of Build
      */
-    List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> processorItemIdList , String startDate , String endDate);
+    List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> projectBasicConfigIds , String startDate , String endDate);
 }

@@ -288,7 +288,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(jenkinsServer.getBasicProjectConfigId());
 				build.setProjectToolConfigId(jenkinsServer.getId());
-				build.setBuildJob(build.getBuildJob());
+				build.setBuildJob(jenkinsServer.getJobName());
 
 				buildsToSave.add(build);
 				count++;
