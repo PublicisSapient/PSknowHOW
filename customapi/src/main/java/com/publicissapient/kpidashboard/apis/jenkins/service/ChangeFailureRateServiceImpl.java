@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,13 +136,14 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			projectBasicConfigIds.add(basicProjectConfigId);
 
 		});
-		if (CollectionUtils.isEmpty(projectBasicConfigIds)) {
-			return new HashMap<>();
-		}
+
 		statusListForTotalBuildCount.add(BuildStatus.SUCCESS.name());
 		statusListForTotalBuildCount.add(BuildStatus.FAILURE.name());
 		mapOfFilters.put("buildStatus", statusListForTotalBuildCount);
 		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		if (CollectionUtils.isEmpty(buildList)) {
+			return new HashMap<>();
+		}
 		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
 	}
 

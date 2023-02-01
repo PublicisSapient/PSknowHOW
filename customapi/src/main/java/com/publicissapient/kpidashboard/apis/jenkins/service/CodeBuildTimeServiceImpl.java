@@ -354,12 +354,13 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 			projectBasicConfigIds.add(basicProjectConfigId);
 		});
-		if (CollectionUtils.isEmpty(projectBasicConfigIds)) {
-			return new HashMap<>();
-		}
+
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
 		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		if (CollectionUtils.isEmpty(buildList)) {
+			return new HashMap<>();
+		}
 		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
 	}
 
