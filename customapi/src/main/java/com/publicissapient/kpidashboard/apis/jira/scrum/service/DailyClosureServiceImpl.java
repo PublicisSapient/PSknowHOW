@@ -189,10 +189,10 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                     if (CollectionUtils.isNotEmpty(storySprintDetail)) {
                         for(int i=storySprintDetail.size()-1;i>=0;i--){
                             if(storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())){
-                                DateTime datValu = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
+                                DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
                                 DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
                                 DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
-                                if (datValu.isAfter(startDateValue) && datValu.isBefore(endDateValue)) {
+                                if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
                                     closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
                                             getFormattedDate(storySprintDetail.get(i).getActivityDate()));
                                     break;
