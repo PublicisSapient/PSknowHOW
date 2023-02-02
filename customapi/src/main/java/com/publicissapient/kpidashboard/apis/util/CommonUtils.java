@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import io.swagger.models.auth.In;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -113,6 +115,68 @@ public final class CommonUtils {
 			theBeginDate = theBeginDate.plusDays(1);
 		}
 		return mapDays;
+	}
+
+	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) throws ParseException {
+		Map<String, Integer> mapDays = new HashMap<>();
+		DateTime theBeginDate = beginDate; //17
+		DateTime theEndDate = endDate; //16
+		String separator = "-";
+		Integer count = 0;
+
+		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
+		Date d1 = sdformat.parse(String.valueOf(beginDate)); //17
+		Date d2 = sdformat.parse(String.valueOf(endDate)); //16
+		if(d1.compareTo(d2) > 0) {
+			//positive case
+			while (!theEndDate.isAfter(theBeginDate)) {
+				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count=count+1;
+				}
+				theEndDate = theEndDate.plusDays(1);
+			}
+		} else if(d1.compareTo(d2) < 0) {
+			//negative case
+			while (!theEndDate.isBefore(beginDate)) {
+				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count = count-1;
+				}
+				theEndDate = theEndDate.minusDays(1);
+			}
+		}
+		return count;
+	}
+
+	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate) throws ParseException {
+		Map<String, Integer> mapDays = new HashMap<>();
+		DateTime theBeginDate = beginDate;
+		DateTime theEndDate = endDate;
+		String separator = "-";
+		Integer count = 1;
+		Integer count1 = 0;
+
+		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
+		Date d1 = sdformat.parse(String.valueOf(beginDate));
+		Date d2 = sdformat.parse(String.valueOf(endDate));
+		if(d1.compareTo(d2) > 0) {
+			//positive case
+			while (!theEndDate.isAfter(theBeginDate)) {
+				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count1=count1+1;
+				}
+				theEndDate = theEndDate.plusDays(1);
+			}
+			count = count1;
+		} else if(d1.compareTo(d2) < 0) {
+			//negative case
+			while (!theEndDate.isBefore(beginDate)) {
+				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count = count-1;
+				}
+				theEndDate = theEndDate.minusDays(1);
+			}
+		}
+		return count;
 	}
 
 	/**
