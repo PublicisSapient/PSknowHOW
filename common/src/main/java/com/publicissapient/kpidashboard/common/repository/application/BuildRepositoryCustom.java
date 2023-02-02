@@ -32,15 +32,6 @@ import java.util.Set;
  * @author anisingh4
  */
 public interface BuildRepositoryCustom {
-
-    /**
-     * Find build list account to sprint list.
-     *
-     * @param dbObjectList the db object list
-     * @return the list of Build
-     */
-    List<Build> findBuildListAccToSprint(List<BasicDBObject> dbObjectList);
-
     /**
      * Find build list using date wise and projectBasicConfigIds
      *
