@@ -50,15 +50,17 @@ public interface BuildRepository
 	/**
 	 * Finds the list of {@link Build} for a specific {@link ProcessorItem}.
 	 * 
-	 * @param processorItemId
-	 *            processor item id
+	 * @param projectToolConfigId
+	 *            processor tool config id
 	 * @return a list {@link Build}
 	 */
-	List<Build> findByProcessorItemIdAndBuildJob(ObjectId processorItemId, String buildJob);
+	List<Build> findByProjectToolConfigIdAndBuildJob(ObjectId projectToolConfigId, String buildJob);
 
 	/**
 	 * delete all documents with matching ids
-	 * @param processorItemIds processor item id
+	 * 
+	 * @param processorItemIds
+	 *            processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 
