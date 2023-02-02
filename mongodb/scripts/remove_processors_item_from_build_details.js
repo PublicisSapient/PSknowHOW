@@ -3,7 +3,7 @@ db.project_tool_configs.find({"jobType": "Build"}).forEach(function(toolConfig) 
     var dbToolName = toolConfig.toolName;
 	var dbBasicProjectConfigId = toolConfig.basicProjectConfigId;
 	var dbJobName = toolConfig.jobName;
-	print("processes started for toolConfigId ->", dbToolConfigId , ", ToolName ->" , dbToolName ", JobName ->" , dbJobName);
+	print("processes started for toolConfigId ->", dbToolConfigId , ", ToolName ->" , dbToolName , "JobName ->" , dbJobName);
 	print("basicProjectConfigId :", dbBasicProjectConfigId)
 	db.processor_items.find({"toolConfigId": dbToolConfigId}).forEach(function(processorsItem) {
 		var dbProcessorsItemId = processorsItem._id;
