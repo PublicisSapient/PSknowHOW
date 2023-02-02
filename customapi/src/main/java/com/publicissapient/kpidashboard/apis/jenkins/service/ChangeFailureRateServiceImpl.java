@@ -66,8 +66,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 	private static final long DAYS_IN_WEEKS = 7;
 	private static final String TOTAL_CHANGES = "Total number of Changes";
 	private static final String FAILED_CHANGES = "Failed Changes";
-	private final List<String> processorsList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-			ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -129,36 +128,23 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 	@Override
 	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		Set<ObjectId> processorItemIdList = new HashSet<>();
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
 		List<String> statusListForTotalBuildCount = new ArrayList<>();
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		leafNodeList.forEach(node -> {
-			ObjectId id = node.getProjectFilter().getBasicProjectConfigId();
-			if (toolMap.get(id) == null) {
-				return;
-			}
-			List<Tool> allProcessorItems = getProcessorItemList(toolMap, id);
-			if (CollectionUtils.isEmpty(allProcessorItems)) {
-				return;
-			}
-
-			allProcessorItems.forEach(job -> {
-				if (isValidJob(job)) {
-					processorItemIdList.addAll(prepareProcessorItemIdsList(job));
-				}
-			});
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+			projectBasicConfigIds.add(basicProjectConfigId);
 
 		});
-		if (CollectionUtils.isEmpty(processorItemIdList)) {
-			return new HashMap<>();
-		}
+
 		statusListForTotalBuildCount.add(BuildStatus.SUCCESS.name());
 		statusListForTotalBuildCount.add(BuildStatus.FAILURE.name());
 		mapOfFilters.put("buildStatus", statusListForTotalBuildCount);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, processorItemIdList, startDate, endDate);
-		return buildList.stream().collect(Collectors.groupingBy(Build::getProcessorItemId, Collectors.toList()));
+		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		if (CollectionUtils.isEmpty(buildList)) {
+			return new HashMap<>();
+		}
+		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
 	}
 
 	/**
@@ -180,8 +166,6 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		String startDate = localStartDate.format(formatter);
 		String endDate = localEndDate.format(formatter);
 
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		Map<ObjectId, List<Build>> buildGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
 
 		if (MapUtils.isEmpty(buildGroup)) {
@@ -194,33 +178,33 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			String trendLineName = node.getProjectFilter().getName();
 			ChangeFailureRateInfo changeFailureRateInfo = new ChangeFailureRateInfo();
 			LocalDateTime end = localEndDate;
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 
-			List<Tool> jenkinsJob = getJenkinsJobTools(toolMap, node);
+			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
 
-			if (CollectionUtils.isEmpty(jenkinsJob)) {
+			if (CollectionUtils.isEmpty(buildListProjectWise)) {
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
 			List<DataCount> dataCountAggList = new ArrayList<>();
 			List<Build> aggBuildList = new ArrayList<>();
-			jenkinsJob.forEach(job -> {
+			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
 
-				if (isValidJob(job)) {
-					List<Build> buildList = buildGroup.get(job.getProcessorItemList().get(0).getId());
-					if (CollectionUtils.isEmpty(buildList)) {
-						return;
-					}
-					aggBuildList.addAll(buildList);
+				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
+						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
+				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
+					List<Build> buildList = entry.getValue();
 					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 						jobName = buildList.get(0).getJobFolder();
 					} else {
-						jobName = job.getProcessorItemList().get(0).getDesc();
+						jobName = entry.getKey();
 					}
+					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList);
 				}
-			});
+			}
 			if (CollectionUtils.isEmpty(aggBuildList)) {
 				mapTmp.get(node.getId()).setValue(null);
 				return;
@@ -243,66 +227,6 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateChangeFailureRateExcelData(trendLineName, changeFailureRateInfo, excelData);
 		}
-	}
-
-	/**
-	 * Get tool config entry for Jenkins , bamboo , azure pipeline
-	 *
-	 * @param toolMap
-	 * @param node
-	 * @return
-	 */
-	private List<Tool> getJenkinsJobTools(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-
-		ProjectFilter projectFilter = node.getProjectFilter();
-		ObjectId objectId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
-
-		List<Tool> jenkinsJob = new ArrayList<>();
-		if (toolMap.containsKey(objectId)) {
-			jenkinsJob = getProcessorItemList(toolMap, objectId);
-		}
-
-		if (CollectionUtils.isEmpty(jenkinsJob)) {
-			log.error("[JENKINS-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getAccountHierarchy());
-		}
-
-		return jenkinsJob;
-	}
-
-	/**
-	 * returns list of all the tools
-	 *
-	 * @param toolMap
-	 * @param id
-	 * @return
-	 */
-	private List<Tool> getProcessorItemList(Map<ObjectId, Map<String, List<Tool>>> toolMap, ObjectId id) {
-		List<Tool> allProcessorItems = new ArrayList<>();
-
-		for (String processor : processorsList) {
-			if (toolMap.get(id).containsKey(processor)) {
-				List<Tool> processorItems = toolMap.get(id).get(processor);
-				allProcessorItems.addAll(processorItems);
-			}
-		}
-		return allProcessorItems;
-	}
-
-	private boolean isValidJob(Tool job) {
-		return !CollectionUtils.isEmpty(job.getProcessorItemList())
-				&& job.getProcessorItemList().get(0).getId() != null;
-	}
-
-	/**
-	 * prepare processorIds list
-	 *
-	 * @param job
-	 * @return processorIds
-	 */
-	private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
-		List<ObjectId> processorIds = new ArrayList<>();
-		job.getProcessorItemList().forEach(e -> processorIds.add(e.getId()));
-		return processorIds;
 	}
 
 	/**

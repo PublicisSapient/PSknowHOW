@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
 
-import com.publicissapient.kpidashboard.bamboo.model.BambooProcessorItem;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
@@ -45,7 +44,7 @@ public interface BambooClient {
 	 * @throws ParseException        if the response from the bamboo service is not interpretable
 	 * @throws MalformedURLException if the bamboo service url is not formed correctly
 	 */
-	Map<BambooProcessorItem, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer) throws ParseException, MalformedURLException;
+	Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer) throws ParseException, MalformedURLException;
 
 	/**
 	 * Gets the complete information of a build from Bamboo server.

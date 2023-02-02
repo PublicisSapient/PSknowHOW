@@ -88,6 +88,7 @@ public class BuildDataCleanUpServiceTest {
 		processorItem.setId(new ObjectId("5fc6a0c0e4b00ecfb5941e29"));
 		when(processorItemRepository.findByToolConfigId(Mockito.any(ObjectId.class))).thenReturn(Arrays.asList(processorItem));
 		doNothing().when(buildRepository).deleteByProcessorItemIdIn(Mockito.anyList());
+		doNothing().when(buildRepository).deleteByProjectToolConfigId(projectToolConfig.getId());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),Mockito.anyString());
 		doNothing().when(cacheService).clearCache(Mockito.anyString());
