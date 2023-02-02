@@ -159,6 +159,7 @@ public class IterationStatusServiceImplTest {
         sprintDetails.setState("ACTIVE");
         when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+        when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any())).thenReturn(historyList);
 
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))

@@ -25,5 +25,5 @@ public class IterationStatus {
     private String issueStatus;
     private String dueDate;
     private Integer remainingEstimateMinutes;
-    private Integer delay;
+    private String delay;
 }
