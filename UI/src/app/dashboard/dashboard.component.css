@@ -39,6 +39,24 @@
     animation: smoothScroll 0.5s forwards;
 }
 
+.main-body-wrapper{
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+.main-body{
+  width: 100%;
+}
+
+.aside{
+  /* position: fixed; */
+  /* width: 5rem; */
+  max-width: fit-content;
+  /* overflow-y: auto; */
+  transition: all 0.5s;
+  background-color: yellow;
+}
+
 @keyframes smoothScroll {
 	0% {
 		transform: translateY(-40px);
@@ -71,4 +89,49 @@
 .logo img{
   width: 61px;
     height: 52px;
+}
+
+#wrapper {
+  padding-left: 0;
+  /* -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; */
+}
+
+/* #wrapper.toggled {
+  padding-left: 400px;
+} */
+
+#sidebar-wrapper {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  width: 5rem;
+  height: 52.2rem;
+  margin-left: -250px;
+  overflow-y: auto;
+  /* background: red; */
+  /* -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; */
+  overflow: hidden;
+  box-shadow: 2px 0px #dfc4c4;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 16rem;
+}
+
+#page-content-wrapper {
+  /* width: 100%; */
+  position: absolute;
+  padding-left: 5rem;
+}
+
+#wrapper.toggled #page-content-wrapper {
+  position: absolute;
+  /* margin-right: -250px; */
+  margin-left: 11rem;
 }

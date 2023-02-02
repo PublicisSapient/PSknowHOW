@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Output,EventEmitter } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -59,6 +59,7 @@ export class NavComponent implements OnInit {
   boardId = 1;
   visibleSidebar = false;
   kanban = false;
+  @Output() messageEvent = new EventEmitter<boolean>();
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,

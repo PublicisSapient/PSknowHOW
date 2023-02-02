@@ -23,7 +23,7 @@ import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import {MenuItem, MessageService, PrimeNGConfig} from 'primeng/api';
+import {MenuItem} from 'primeng/api';
 
 
 
@@ -45,6 +45,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   subscription: Subscription;
   logoImage: any;
   items: MenuItem[];
+  isApply = false;
   constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
     this.renderer.listen('document', 'click',(e: Event)=>{
       // setting document click event data to identify outside click for show/hide kpi filter
@@ -118,6 +119,12 @@ export class DashboardComponent implements OnInit, AfterContentInit {
           this.logoImage = undefined;
         }
       });
+  }
+
+
+  changeIsApply(value){
+    console.log("Came from child",value)
+    this.isApply = value
   }
 
 }
