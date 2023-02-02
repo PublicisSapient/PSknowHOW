@@ -237,7 +237,7 @@ public class JenkinsProcessorTaskTests {
 		when(client2.getBuildJobsFromServer(JENKINSSAMPLESERVER))
 				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 
-		when(buildRepository.findByProcessorItemIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
+		when(buildRepository.findByProjectToolConfigIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
 				.thenReturn(build);
 		task.execute(processor);
 
@@ -251,7 +251,7 @@ public class JenkinsProcessorTaskTests {
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
 		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
-		when(buildRepository.findByProcessorItemIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
+		when(buildRepository.findByProjectToolConfigIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
 				.thenReturn(null);
 		assertTrue(task.execute(processor));
 	}
