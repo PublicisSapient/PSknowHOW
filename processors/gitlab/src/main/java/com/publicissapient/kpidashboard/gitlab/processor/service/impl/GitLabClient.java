@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -103,7 +104,7 @@ public class GitLabClient {
 	 * 
 	 * @throws FetchingCommitException the exception
 	 */
-	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, boolean firstRun, ProcessorToolConnection gitLabInfo)
+	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, boolean firstRun, ProcessorToolConnection gitLabInfo,ProjectBasicConfig proBasicConfig)
 			throws FetchingCommitException {
 
 		String restUri = null;
@@ -124,7 +125,7 @@ public class GitLabClient {
 					hasMorePage = false; // NOSONAR
 					break;
 				}
-				initializeCommitDetails(gitLabInfo, commits, responseJson);
+				initializeCommitDetails(gitLabInfo, commits, responseJson, proBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -144,7 +145,7 @@ public class GitLabClient {
 	}
 
 	private void initializeCommitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			JSONArray jsonArray) {
+			JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			JSONObject commitObject = (JSONObject) jsonObj;
 			String scmRevisionNumber = getString(commitObject, GitLabConstants.RESP_ID_KEY);
@@ -161,13 +162,13 @@ public class GitLabClient {
 					parentList.add(parents.get(index).toString());
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList);
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
 
 		}
 	}
 
 	public List<MergeRequests> fetchAllMergeRequest(GitLabRepo repo, boolean firstRun,
-			ProcessorToolConnection gitLabInfo) throws FetchingCommitException {
+			ProcessorToolConnection gitLabInfo,ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
@@ -187,7 +188,7 @@ public class GitLabClient {
 					hasMorePage = false; // NOSONAR
 					break;
 				}
-				initializeMergeRequestDetails(gitLabInfo, mergeRequests, responseJson);
+				initializeMergeRequestDetails(gitLabInfo, mergeRequests, responseJson, projectBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -207,7 +208,7 @@ public class GitLabClient {
 	}
 
 	private void initializeMergeRequestDetails(ProcessorToolConnection gitLabInfo,
-			List<MergeRequests> mergeRequestList, JSONArray jsonArray) {
+			List<MergeRequests> mergeRequestList, JSONArray jsonArray,ProjectBasicConfig projectBasicConfig) {
 		long closedDate = 0;
 		for (Object jsonObj : jsonArray) {
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -248,7 +249,9 @@ public class GitLabClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			mergeReq.setAuthor(author);
+			if(projectBasicConfig.isSaveAssigneeDetails()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
 			mergeRequestList.add(mergeReq);
@@ -270,13 +273,16 @@ public class GitLabClient {
 		return timestamp;
 	}
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList) {
+			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
+
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		gitLabCommit.setAuthor(author);
+		if(proBasicConfig.isSaveAssigneeDetails()) {
+			gitLabCommit.setAuthor(author);
+		}
 		gitLabCommit.setCommitLog(message);
 		gitLabCommit.setParentRevisionNumbers(parentList);
 		gitLabCommit.setCommitTimestamp(timestamp);

@@ -208,7 +208,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 						teamcityJobRepository.saveAll(toBeEnabledJob);
 					}
 
-					int updatedJobs = addNewBuilds(findActiveJobs(processor, instanceUrl), buildsByJob, teamcityServer);
+					int updatedJobs = addNewBuilds(findActiveJobs(processor, instanceUrl), buildsByJob, teamcityServer, proBasicConfig);
 					count += updatedJobs;
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
@@ -305,7 +305,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	 * @return adds new build
 	 */
 	private int addNewBuilds(List<TeamcityJob> enabledJobs, Map<TeamcityJob, Set<Build>> buildsByJob,
-			ProcessorToolConnection teamcityServer) {
+			ProcessorToolConnection teamcityServer,ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		for (TeamcityJob job : enabledJobs) {
@@ -316,7 +316,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 			for (Build buildSummary : builds) {
 				if (isNewBuild(job, buildSummary)) {
 					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), job.getInstanceUrl(),
-							teamcityServer);
+							teamcityServer, proBasicConfig);
 					if (build != null) {
 						build.setProcessorItemId(job.getId());
 						build.setBuildJob(job.getJobName());

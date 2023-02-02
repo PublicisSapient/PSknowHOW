@@ -18,7 +18,11 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.processor;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.azurepipeline.factory.AzurePipelineFactory;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -204,16 +209,21 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					azurePipelineClient = azurePipelineFactory.getAzurePipelineClient(azurePipelineServer.getJobType());
 					long lastStartTimeOfJobs = getLastStartTimeOfJobs(processor, azurePipelineServer, existingJobs,
 							deploymentJobs);
+					assigneeToggleDate(proBasicConfig);
 					if (azurePipelineServer.getJobType().equalsIgnoreCase(BUILD)) {
 						count = buildJobs(processor, startTime, existingJobs, activeBuildJobs, count,
-								azurePipelineServer, lastStartTimeOfJobs);
+								azurePipelineServer, lastStartTimeOfJobs,proBasicConfig,processorExecutionTraceLog);
 					} else {
 						count = deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
-								lastStartTimeOfJobs);
+								lastStartTimeOfJobs,proBasicConfig);
 					}
 					log.info("Finished : {}", startTime);
+
+					Date CurrentDate = Calendar.getInstance().getTime();
+					DateFormat date_format = new SimpleDateFormat("yyyy-mm-dd");
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastSuccessfulRun(date_format.format(CurrentDate));
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 				} catch (RestClientException exception) {
@@ -249,10 +259,11 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	}
 
 	private int deployJobs(AzurePipelineProcessor processor, long startTime, List<Deployment> deploymentJobs,
-			List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs) {
+			List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs,
+			ProjectBasicConfig proBasicConfig) {
 
 		Map<Deployment, Set<Deployment>> deploymentsByJob = azurePipelineClient.getDeploymentJobs(azurePipelineServer,
-				lastStartTimeOfJobs);
+				lastStartTimeOfJobs, proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 		activeDeployJobs.addAll(deploymentsByJob.keySet());
 		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
@@ -261,9 +272,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	private int buildJobs(AzurePipelineProcessor processor, long startTime, List<AzurePipelineJob> existingJobs,
 			List<AzurePipelineJob> activeBuildJobs, int count, ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+			long lastStartTimeOfJobs,ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		Map<AzurePipelineJob, Set<Build>> buildsByJob = azurePipelineClient.getInstanceJobs(azurePipelineServer,
-				lastStartTimeOfJobs);
+				lastStartTimeOfJobs,proBasicConfig,processorExecutionTraceLog);
 		log.info("Fetched jobs : {}", startTime);
 		activeBuildJobs.addAll(buildsByJob.keySet());
 		addNewJobs(buildsByJob.keySet(), existingJobs, processor);
@@ -330,10 +342,18 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				List<Deployment> releases = deploymentRepository.findByProjectToolConfigIdAndJobName(
 						releaseJob.getProjectToolConfigId(), releaseJob.getJobName());
 				if (!releases.isEmpty()) {
-					releases.sort((Deployment deployment1, Deployment deployment2) -> Long
-							.valueOf(deployment1.getStartTime()).compareTo(Long.valueOf(deployment2.getStartTime())));
-					lastStartTimeOfReleases = Math.max(lastStartTimeOfReleases,
-							Long.parseLong(releases.get(releases.size() - 1).getStartTime()));
+					try {
+					/*releases.sort((Deployment deployment1, Deployment deployment2) -> Long
+							.valueOf(deployment1.getStartTime()).compareTo(Long.valueOf(deployment2.getStartTime())));*/
+
+						List<Deployment> sortedOnStartDate = releases.stream()
+								.sorted((c1, c2) -> DateUtil.stringToLocalDateTime(c2.getStartTime(), DateUtil.TIME_FORMAT).compareTo(
+										DateUtil.stringToLocalDateTime(c1.getStartTime(), DateUtil.TIME_FORMAT))).collect(Collectors.toList());
+                       lastStartTimeOfReleases = Math.max(lastStartTimeOfReleases, DateUtil.convertStringToLong(sortedOnStartDate.get(releases.size() - 1).getStartTime()));
+					}catch (Exception e)
+					{
+						log.error(" Laststartbndsjjfhesjfe" +e);
+					}
 				}
 			}
 		}
@@ -347,6 +367,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 			if (job.getProcessorId().equals(processor.getId())
 					&& job.getJobName().equals(azurePipelineServer.getJobName())) {
 				List<Build> builds = buildRepository.findByProcessorItemIdAndBuildJob(job.getId(), job.getJobName());
+
 				if (!builds.isEmpty()) {
 					builds.sort((Build b1, Build b2) -> Long.valueOf(b1.getStartTime())
 							.compareTo(Long.valueOf(b2.getStartTime())));
@@ -615,5 +636,16 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
+	}
+
+	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig){
+		if(projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
+
+			// used to fetch current date and time
+			Date date = Calendar.getInstance().getTime();
+			DateFormat date_format = new SimpleDateFormat("yyyy-mm-dd");
+			projectBasicConfig.setSaveAssigneeDate(date_format.format(date));
+
+		}
 	}
 }

@@ -47,7 +47,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -175,7 +174,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig.getBasicProjectConfigId().toHexString());
+				projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 			boolean dataExist = (jiraIssueRepository
@@ -274,7 +273,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig.getBasicProjectConfigId().toHexString());
+				projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 			sprintClient.createSprintDetailBasedOnBoard(projectConfig, jiraAdapter);
@@ -446,22 +445,24 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return 0;
 	}
 
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
 		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-				.getTraceLogs(ProcessorConstants.JIRA, basicProjectConfigId);
+				.getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
 		ProcessorExecutionTraceLog processorExecutionTraceLog = null;
 
 		if (CollectionUtils.isNotEmpty(traceLogs)) {
 			processorExecutionTraceLog = traceLogs.get(0);
-			if(null == processorExecutionTraceLog.getLastSuccessfulRun()){
+			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState() ){
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
 		}else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-			processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 		}
 		return processorExecutionTraceLog;
 	}
@@ -489,6 +490,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
 		traceLog.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
 		traceLog.setProjectExecutionStatus(String.valueOf(processorExecutionTraceLog.isExecutionSuccess()));
+		traceLog.setLastEnableAssigneeToggleState(String.valueOf(processorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		List<String> logJiraIssueChange = new ArrayList<>();
 		if (MapUtils.isNotEmpty(processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())) {
 			processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType()
@@ -643,7 +645,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				setJiraAssigneeDetails(jiraIssue, assignee);
+				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					setJiraAssigneeDetails(jiraIssue, assignee);
+				}
 
 				setEstimates(jiraIssue, issue);
 
@@ -1619,9 +1623,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * * Set Details related to issues with Epic Issue type
 	 *
 	 * @param fieldMapping
-	 * 
+	 *
 	 * @param jiraIssue
-	 * 
+	 *
 	 * @param fields
 	 */
 	private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {

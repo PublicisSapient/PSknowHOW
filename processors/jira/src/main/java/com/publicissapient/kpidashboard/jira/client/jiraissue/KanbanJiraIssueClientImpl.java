@@ -155,7 +155,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig.getBasicProjectConfigId().toHexString());
+				projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 			boolean dataExist = (kanbanJiraRepo
@@ -240,7 +240,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig.getBasicProjectConfigId().toHexString());
+				projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 
@@ -395,22 +395,24 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				kv(CommonConstant.PSLOGDATA, traceLog));
 	}
 
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
 		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-				.getTraceLogs(ProcessorConstants.JIRA, basicProjectConfigId);
+				.getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
 		ProcessorExecutionTraceLog processorExecutionTraceLog = null;
 
 		if (CollectionUtils.isNotEmpty(traceLogs)) {
 			processorExecutionTraceLog = traceLogs.get(0);
-			if(null == processorExecutionTraceLog.getLastSuccessfulRun()){
+			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()){
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
 		}else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-			processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 		}
 		return processorExecutionTraceLog;
 	}
@@ -570,8 +572,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				jiraIssue.setAffectedVersions(JiraIssueClientUtil.getAffectedVersions(issue));
 
 				setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
-
-				setJiraAssigneeDetails(jiraIssue, assignee);
+				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					setJiraAssigneeDetails(jiraIssue, assignee);
+				}
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);

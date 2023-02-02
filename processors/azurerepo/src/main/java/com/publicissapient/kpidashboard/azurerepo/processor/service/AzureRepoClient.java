@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.azurerepo.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.azurerepo.model.AzureRepoModel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -42,9 +43,9 @@ public interface AzureRepoClient {
 	 * @throws FetchingCommitException
 	 */
 	List<CommitDetails> fetchAllCommits(AzureRepoModel azurerepoRepo, boolean firstTimeRun,
-			ProcessorToolConnection azureRepoProcessorInfo) throws FetchingCommitException;
+			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig) throws FetchingCommitException;
 	
 	List<MergeRequests> fetchAllMergeRequest(AzureRepoModel azurerepoRepo, boolean firstTimeRun,
-			ProcessorToolConnection azureRepoProcessorInfo) throws FetchingCommitException;
+			ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

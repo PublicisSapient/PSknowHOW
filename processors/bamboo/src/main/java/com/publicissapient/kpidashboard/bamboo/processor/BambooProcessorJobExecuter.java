@@ -279,7 +279,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				if (!CollectionUtils.isEmpty(bambooJobList)) {
 					totalCount = bambooJobList.size();
 					processEachBambooJobOnJobType(bambooJobList, existingDeployJobs, activeBuildJobs,
-							activeDeployJobs,processorId);
+							activeDeployJobs,processorId,proBasicConfig);
 				}
 			}
 			// Delete jobs that will be no longer collected because servers have
@@ -300,7 +300,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
 											   Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<BambooProcessorItem> activeBuildJobs,
-											   List<Deployment> activeDeployJobs, ObjectId processorId) {
+											   List<Deployment> activeDeployJobs, ObjectId processorId,
+			ProjectBasicConfig projectBasicConfig) {
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
 			String jobType = bambooJobConfig.getJobType();
 			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLogBamboo(
@@ -319,7 +320,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 							processorExecutionTraceLog, activeBuildJobs, newBuildCount,processorId);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
-							activeDeployJobs,processorId);
+							activeDeployJobs,processorId,projectBasicConfig);
 				}
 
 			} catch (MalformedURLException | ParseException rcp) {
@@ -356,10 +357,11 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private void processDeployJob(BambooClient bambooClient,
 								  Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProcessorToolConnection bambooJobConfig,
-								  ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId)
+								  ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId,
+			ProjectBasicConfig projectBasicConfig)
 			throws MalformedURLException, ParseException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
-				.getDeployJobsFromServer(bambooJobConfig);
+				.getDeployJobsFromServer(bambooJobConfig, projectBasicConfig);
 		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs);
 		Set<Deployment> saveDeployments = new HashSet<>();
 		deployments.stream().forEach(deployment -> {
