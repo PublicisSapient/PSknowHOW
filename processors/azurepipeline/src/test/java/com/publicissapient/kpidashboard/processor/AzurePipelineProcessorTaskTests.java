@@ -213,7 +213,6 @@ public class AzurePipelineProcessorTaskTests {
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 
-		when(buildRepository.findByProcessorItemIdAndNumber(Mockito.any(), Mockito.anyString())).thenReturn(null);
 		when(buildRepository.findByProjectToolConfigIdAndBuildJob(Mockito.any(), Mockito.anyString()))
 				.thenReturn(listOfBuilds());
 
@@ -402,8 +401,6 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(buildRepository.findByProcessorItemIdAndNumber(AZUREPIPELINE_SAMPLE_SERVER.getId(), build.getNumber()))
-				.thenReturn(null);
 
 		boolean actualStatus = task.execute(processor);
 		boolean expectedStatus = true;
