@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.azurepipeline.config.AzurePipelineConfig
 import com.publicissapient.kpidashboard.azurepipeline.factory.AzurePipelineFactory;
 import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineProcessor;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
-import com.publicissapient.kpidashboard.azurepipeline.repository.AzurePipelineJobRepository;
 import com.publicissapient.kpidashboard.azurepipeline.repository.AzurePipelineProcessorRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -84,9 +83,6 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	@Autowired
 	private AzurePipelineProcessorRepository azurePipelineProcessorRepository;
-
-	@Autowired
-	private AzurePipelineJobRepository azurePipelineJobRepository;
 
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
@@ -318,9 +314,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	}
 
 	/**
-	 * Iterates over the enabled build jobs and adds new builds to the database.
+	 * Iterates over the build jobs and adds new builds to the database.
 	 * 
 	 * @param processorId
+	 * @param azurePipelineServer
 	 * @param buildsByJob
 	 *            the build by job
 	 * @return adds new build

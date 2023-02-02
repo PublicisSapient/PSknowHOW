@@ -86,8 +86,6 @@ public class AzurePipelineProcessorTaskTests {
 	private TaskScheduler taskScheduler;
 	@Mock
 	private AzurePipelineProcessorRepository azurePipelineProcessorRepository;
-	// @Mock
-	// private AzurePipelineJobRepository azurePipelineJobRepository;
 	@Mock
 	private BuildRepository buildRepository;
 	@Mock
@@ -295,10 +293,6 @@ public class AzurePipelineProcessorTaskTests {
 
 	@Test
 	public void collectTwoJobsJobsAddedRandomOrder() {
-		// List<Connection> dataConnection1 = new ArrayList<>();
-		// Connection
-		// azurePipelineJob1=azurePipelineJob1("5f9014743cb73ce896167658","https://dev.azure.com/sundeepm/AzureSpeedy","");
-		// dataConnection1.add(dataConnection);
 		AzurePipelineProcessor processor = processorWithOneServer();
 		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
 				.thenReturn(twoJobsWithTwoBuildsRandom(AZUREPIPELINE_SAMPLE_SERVER.getId()));

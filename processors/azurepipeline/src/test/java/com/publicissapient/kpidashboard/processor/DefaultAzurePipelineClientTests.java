@@ -48,7 +48,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.azurepipeline.config.AzurePipelineConfig;
-import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineJob;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.impl.DefaultAzurePipelineClient;
 import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
@@ -59,6 +58,10 @@ import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 @ExtendWith(SpringExtension.class)
 public class DefaultAzurePipelineClientTests {
 
+	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
+	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private static final long LASTUPDATEDTIME = 0;
+	private static final long LASTUPDATEDTIME1 = 500000;
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Mock
@@ -69,12 +72,6 @@ public class DefaultAzurePipelineClientTests {
 	private AzurePipelineClient azurePipelineClient;
 	@InjectMocks
 	private DefaultAzurePipelineClient defaultAzurePipelineClient;
-
-	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
-	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
-
-	private static final long LASTUPDATEDTIME = 0;
-	private static final long LASTUPDATEDTIME1 = 500000;
 
 	@BeforeEach
 	public void init() {
@@ -164,103 +161,6 @@ public class DefaultAzurePipelineClientTests {
 		assertThat(jobs.size(), is(0));
 	}
 
-	/*
-	 * @Test public void instanceJobsOneJobOneBuild() throws Exception {
-	 * when(rest.exchange(Mockito.eq(URI.create(
-	 * "https://dev.azure.com/sundeepm/AzureSpeedy?api-version=5.1&definitions=2")),
-	 * Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
-	 * Mockito.eq(String.class))) .thenReturn(new
-	 * ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"),
-	 * HttpStatus.OK));
-	 * 
-	 * Map<AzurePipelineJob, Set<Build>> jobs =
-	 * azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_TWO,
-	 * LASTUPDATEDTIME);
-	 * 
-	 * assertThat(jobs.size(), is(1));
-	 * 
-	 * Iterator<AzurePipelineJob> jobIt = jobs.keySet().iterator();
-	 * 
-	 * // First job AzurePipelineJob job = jobIt.next(); assertJob(job, "2",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2"
-	 * );
-	 * 
-	 * Set<Build> builds = jobs.get(job);
-	 * 
-	 * List<Build> buildsList = new ArrayList<Build>(builds) ;
-	 * 
-	 * buildsList.sort((Build b1,Build b2)->
-	 * Integer.valueOf(b1.getNumber())-Integer.valueOf(b2.getNumber()));
-	 * 
-	 * Iterator<Build> buildIt = buildsList.iterator();
-	 * 
-	 * 
-	 * assertBuild(buildIt.next(), "5",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/5"
-	 * ); assertBuild(buildIt.next(), "6",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/6"
-	 * ); assertBuild(buildIt.next(), "7",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/7"
-	 * ); assertBuild(buildIt.next(), "8",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/8"
-	 * ); assertBuild(buildIt.next(), "9",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/9"
-	 * );
-	 * 
-	 * assertThat(buildIt.hasNext(), is(false));
-	 * 
-	 * assertThat(jobIt.hasNext(), is(false));
-	 * 
-	 * assertThat(buildIt.hasNext(), is(false));
-	 * 
-	 * assertThat(jobIt.hasNext(), is(false)); }
-	 * 
-	 * @Test public void instanceJobsOneJobOneBuildMTime() throws Exception {
-	 * when(rest.exchange(Mockito.eq(URI.create(
-	 * "https://dev.azure.com/sundeepm/AzureSpeedy?api-version=5.1&definitions=2&minTime=1970-01-01T00:08:20.000Z"
-	 * )), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
-	 * Mockito.eq(String.class))) .thenReturn(new
-	 * ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"),
-	 * HttpStatus.OK));
-	 * 
-	 * Map<AzurePipelineJob, Set<Build>> jobs =
-	 * azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_TWO,
-	 * LASTUPDATEDTIME1);
-	 * 
-	 * assertThat(jobs.size(), is(1));
-	 * 
-	 * Iterator<AzurePipelineJob> jobIt = jobs.keySet().iterator();
-	 * 
-	 * // First job AzurePipelineJob job = jobIt.next(); assertJob(job, "2",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2"
-	 * );
-	 * 
-	 * Set<Build> builds = jobs.get(job);
-	 * 
-	 * List<Build> buildsList = new ArrayList<Build>(builds) ;
-	 * 
-	 * buildsList.sort((Build b1,Build b2)->
-	 * Integer.valueOf(b1.getNumber())-Integer.valueOf(b2.getNumber()));
-	 * 
-	 * Iterator<Build> buildIt = buildsList.iterator();
-	 * 
-	 * 
-	 * assertBuild(buildIt.next(), "5",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/5"
-	 * ); assertBuild(buildIt.next(), "6",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/6"
-	 * ); assertBuild(buildIt.next(), "7",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/7"
-	 * ); assertBuild(buildIt.next(), "8",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/8"
-	 * ); assertBuild(buildIt.next(), "9",
-	 * "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/9"
-	 * );
-	 * 
-	 * assertThat(buildIt.hasNext(), is(false));
-	 * 
-	 * assertThat(jobIt.hasNext(), is(false)); }
-	 */
 	@Test
 	public void testGetInstanceJobs() throws Exception {
 		long lastStartTimeOfBuilds = 0;
@@ -292,8 +192,4 @@ public class DefaultAzurePipelineClientTests {
 		return IOUtils.toString(inputStream);
 	}
 
-	private void assertJob(AzurePipelineJob job, String name, String url) {
-		assertThat(job.getJobName(), is(name));
-		assertThat(job.getJobUrl(), is(url));
-	}
 }
