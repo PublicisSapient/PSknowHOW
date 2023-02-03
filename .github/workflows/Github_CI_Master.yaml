@@ -133,17 +133,17 @@ jobs:
               - 'processors/**'
       - name: Building and Testing CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
-        id: testcustomapi
+        id: unittestcustomapi
         run: |
                mvn clean install -Pcustomapi
       - name: Running sonarqube CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
-        id: testcustomapi
+        id: sonartestcustomapi
         run: |
                mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=origin/master -f customapi/pom.xml
       - name: Running sonarqube quality gates CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
-        id: testcustomapi
+        id: qgtestcustomapi
         run: |
               chmod +x SonarDelay.sh
               ./SonarDelay.sh ./customapi/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
