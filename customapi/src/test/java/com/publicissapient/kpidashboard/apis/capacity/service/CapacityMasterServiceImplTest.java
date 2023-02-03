@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -293,6 +295,7 @@ public class CapacityMasterServiceImplTest {
 
 	@Test
 	public void getCapacitiesAssignees_Kanban() {
+		updateKanbancapacity();
 		ProjectBasicConfig project = createKanbanProject(true);
 		when(projectBasicConfigService.getProjectBasicConfigs(anyString())).thenReturn(project);
 		when(kanbanCapacityRepository.findByBasicProjectConfigId(Mockito.any(ObjectId.class)))
@@ -300,10 +303,34 @@ public class CapacityMasterServiceImplTest {
 		when(customApiConfig.getNumberOfPastWeeksForKanbanCapacity()).thenReturn(2);
 		when(customApiConfig.getNumberOfFutureWeeksForKanbanCapacity()).thenReturn(2);
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335368249794a18e8a4479f");
-		assertEquals(5,
+		assertEquals(3,
 				capacities.stream()
 						.filter(capacityMaster -> CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity()))
 						.collect(Collectors.toList()).size());
+	}
+
+	private void updateKanbancapacity() {
+		LocalDate monday = LocalDate.now();
+		while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+			monday = monday.minusDays(1);
+		}
+		LocalDate sunday = LocalDate.now();
+		while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+			sunday = sunday.plusDays(1);
+		}
+
+		LocalDate finalMonday = monday;
+		LocalDate finalSunday = sunday;
+		kanbanCapacityAsigneeList.stream().filter(kanbanCapacity1 -> {
+			if (CollectionUtils.isNotEmpty(kanbanCapacity1.getAssigneeCapacity())
+					&& kanbanCapacity1.getAssigneeCapacity().size() > 0) {
+				return true;
+			}
+			return false;
+		}).forEach(kanbanCapacity1 -> {
+			kanbanCapacity1.setStartDate(finalMonday);
+			kanbanCapacity1.setEndDate(finalSunday);
+		});
 	}
 
 	@Test
