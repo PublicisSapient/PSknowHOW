@@ -100,6 +100,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
+import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 
 /******************************************************/
 
@@ -157,7 +158,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         GroupedColumnPlusLineChartComponent,
         BacklogComponent,
         TableComponent,
-        SsoAuthFailureComponent
+        SsoAuthFailureComponent,
+        UnauthorisedAccessComponent
     ],
     imports: [
         DropdownModule,

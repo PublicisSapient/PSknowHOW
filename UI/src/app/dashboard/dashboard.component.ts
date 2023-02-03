@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   authorized = <boolean>true;
   headerFixed = <boolean>false;
   scrollOffset = <number>150;
+  displayModal = false;
   constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
     this.renderer.listen('document', 'click',(e: Event)=>{
       // setting document click event data to identify outside click for show/hide kpi filter
@@ -47,6 +48,9 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
     // this.authorized = this.getAuth.checkAuth();
+    this.httpService.loadApp.subscribe(data=>{
+      this.displayModal =data;
+    });
 
   }
 
@@ -61,6 +65,14 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     } else {
       this.headerFixed = false;
     }
+  }
+
+  reloadApp(){
+    this.displayModal=false;
+    this.router.navigate(['./dashboard/mydashboard']).then(success =>{
+    window.location.reload();
+    });
+
   }
 
   ngAfterContentInit() {

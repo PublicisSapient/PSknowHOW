@@ -41,3 +41,7 @@ header{
 		transform: translateY(0px);
 	}
 }
+
+.p-align-self-end{
+  align-self: flex-end;
+}
