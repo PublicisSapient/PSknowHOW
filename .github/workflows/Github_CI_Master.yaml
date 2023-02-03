@@ -96,7 +96,7 @@ jobs:
           cd UI
           sudo npm install --save-dev @angular-devkit/build-angular
           sudo ng test --code-coverage
-          sudo sed -i 's|SF:/var/jenkins_home/jobs/UI_Build/workspace/UI/|SF:|g' coverage/lcov.info 
+          sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info 
       - name: Scanning UI with Sonar Qube
         if: steps.changes.outputs.UI == 'true'
         id: SonarUI
@@ -104,7 +104,10 @@ jobs:
           cd UI
           sudo npm install -D sonarqube-scanner
           sudo npm run sonar
-          cd ..
+      - name: Scanning UI QG with Sonar Qube
+        if: steps.changes.outputs.UI == 'true'
+        id: SonarUI
+        run: |
           chmod +x SonarDelay.sh
           ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
 
