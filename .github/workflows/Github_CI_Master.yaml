@@ -96,7 +96,7 @@ jobs:
           cd UI
           sudo npm install --save-dev @angular-devkit/build-angular
           sudo ng test --code-coverage
-          sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info 
+          #sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info 
       - name: Scanning UI with Sonar Qube
         if: steps.changes.outputs.UI == 'true'
         id: SonarUI
