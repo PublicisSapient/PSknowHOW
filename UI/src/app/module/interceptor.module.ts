@@ -79,7 +79,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        console.log('Httpevent',event);
                         if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
                             this.httpService.getAuthDetails();
                         }
@@ -95,6 +94,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }
+                    } else if(err.status === 403){
+                        this.httpService.unauthorisedAccess =true;
+                        this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
                         if (httpErrorHandler !== 'local') {
                             if (requestArea === 'internal') {

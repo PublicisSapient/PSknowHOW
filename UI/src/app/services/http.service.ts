@@ -18,7 +18,7 @@
 
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
 import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
@@ -37,6 +37,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 ) export class HttpService {
 
     public currentVersion = '';
+    public loadApp = new BehaviorSubject(false);
+    public unauthorisedAccess = false;
     /*use to change the base url according to the environment variable */
     private baseUrl = environment.baseUrl;  // Servers Env
     private filterDataUrl = this.baseUrl + '/api/filterdata';
@@ -705,6 +707,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
                 localStorage.setItem('user_email', authDetails['emailAddress']);
                 localStorage.setItem('projectsAccess', JSON.stringify(authDetails['projectsAccess']));
                 localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authDetails['authorities']), 'encrypt'));
+                if(!this.unauthorisedAccess){
+                    this.loadApp.next(true);
+                    this.unauthorisedAccess = false;
+                }
             }
         });
     }

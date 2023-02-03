@@ -26,3 +26,9 @@
     <router-outlet></router-outlet>
 </div>
 <app-footer></app-footer>
+<p-dialog header="User Request Approved"  [(visible)]="displayModal" [style]="{width: '50vw'}" [responsive]="true" showEffect="fade" [modal]="true">
+  <div class="p-d-flex p-flex-column p-mb-2">
+    <p>Click on "Continue" to reflect the changes happened from requested Role change.</p>
+    <button type="button" pButton autofocus (click)="reloadApp()" class="p-align-self-end">Continue</button>
+  </div>
+</p-dialog>
