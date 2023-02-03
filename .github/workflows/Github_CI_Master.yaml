@@ -89,24 +89,24 @@ jobs:
           sudo tar -czvf ui2.tar *
           sudo mv ui2.tar ../files
           sudo rm -rf build
-      # - name: Unit Testing UI
-      #   if: steps.changes.outputs.UI == 'true'
-      #   id: TestUI
-      #   run: |
-      #     cd UI
-      #     sudo npm install --save-dev @angular-devkit/build-angular
-      #     sudo ng test --code-coverage
-      #     sudo sed -i 's|SF:/var/jenkins_home/jobs/UI_Build/workspace/UI/|SF:|g' coverage/lcov.info 
-      # - name: Scanning UI with Sonar Qube
-      #   if: steps.changes.outputs.UI == 'true'
-      #   id: SonarUI
-      #   run: | 
-      #     cd UI
-      #     sudo npm install -D sonarqube-scanner
-      #     sudo npm run sonar
-      #     cd ..
-      #     chmod +x SonarDelay.sh
-      #     ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
+      - name: Unit Testing UI
+        if: steps.changes.outputs.UI == 'true'
+        id: TestUI
+        run: |
+          cd UI
+          sudo npm install --save-dev @angular-devkit/build-angular
+          sudo ng test --code-coverage
+          sudo sed -i 's|SF:/var/jenkins_home/jobs/UI_Build/workspace/UI/|SF:|g' coverage/lcov.info 
+      - name: Scanning UI with Sonar Qube
+        if: steps.changes.outputs.UI == 'true'
+        id: SonarUI
+        run: | 
+          cd UI
+          sudo npm install -D sonarqube-scanner
+          sudo npm run sonar
+          cd ..
+          chmod +x SonarDelay.sh
+          ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
 
       - uses: actions/setup-java@v2
         with:
