@@ -146,7 +146,7 @@ jobs:
         id: testcustomapi
         run: |
               chmod +x SonarDelay.sh
-			        ./SonarDelay.sh ./customapi/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
+              ./SonarDelay.sh ./customapi/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
       - name: Building and Testing jira processor
         if: steps.processors.outputs.processors == 'true'
         id: testjira
