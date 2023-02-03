@@ -106,7 +106,7 @@ jobs:
           sudo npm run sonar
       - name: Scanning UI QG with Sonar Qube
         if: steps.changes.outputs.UI == 'true'
-        id: SonarUI
+        id: SonarUIqg
         run: |
           chmod +x SonarDelay.sh
           ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
