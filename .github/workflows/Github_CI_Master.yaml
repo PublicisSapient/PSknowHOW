@@ -178,6 +178,10 @@ jobs:
                   -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} \
                   -Dsonar.branch.name=origin/master \
                   -Dsonar.login= -f processors/pom.xml
+      - name: Checking code Quality using SonarQube qg for processor
+        id: Sonarqgprocessor
+        if: steps.processors.outputs.processors == 'true'
+        run: |
                chmod +x SonarDelay.sh
                ./SonarDelay.sh ./processors/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
         env:
