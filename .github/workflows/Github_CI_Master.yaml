@@ -136,7 +136,17 @@ jobs:
         id: testcustomapi
         run: |
                mvn clean install -Pcustomapi
-      
+      - name: Running sonarqube CustomApi processor
+        if: steps.customapi.outputs.customapi == 'true'
+        id: testcustomapi
+        run: |
+               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=origin/master -f customapi/pom.xml
+      - name: Running sonarqube CustomApi processor
+        if: steps.customapi.outputs.customapi == 'true'
+        id: testcustomapi
+        run: |
+              chmod +x SonarDelay.sh
+			        ./SonarDelay.sh ./customapi/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
       - name: Building and Testing jira processor
         if: steps.processors.outputs.processors == 'true'
         id: testjira
