@@ -20,4 +20,5 @@ COPY files/certs/* ${CERT_LOC}/
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC}${ERRORPAGE_ASSETS_ARCHIVE} -C ${UI2_LOC}
 RUN chmod +x ${START_SCRIPT_LOC}/start_nginx.sh && rm -f ${HTML_LOC}${ASSETS_ARCHIVE}
 EXPOSE 80 443
+
 ENTRYPOINT ["/etc/init.d/start_nginx.sh"]
