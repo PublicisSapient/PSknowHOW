@@ -36,8 +36,10 @@ public class BuildServiceImpl extends BuildValidation {
 				Map<String, String> errorMap = createErrorMap(pushBuild);
 				if (MapUtils.isNotEmpty(errorMap)) {
 					failedRecords.getAndIncrement();
+					log.error("Errors in build for jobNumber "+pushBuild.getNumber()+ " jobName "+pushBuild.getJobName() +" are ",errorMap);
 					buildDeployErrorData.setErrors(errorMap);
 				} else {
+					//if no errors are present in the input job then it will create Build List
 					ObjectId basicProjectObjectConfigId = new ObjectId(basicProjectConfigId);
 					buildList.add(createBuild(basicProjectObjectConfigId, pushBuild,
 							checkExisitingJob(pushBuild, basicProjectObjectConfigId)));
@@ -49,6 +51,11 @@ public class BuildServiceImpl extends BuildValidation {
 
 	}
 
+	/**
+	 * validation data and creating error map for each validation
+	 * @param pushBuild
+	 * @return
+	 */
 	private Map<String, String> createErrorMap(PushBuild pushBuild) {
 		Map<String, String> errors = new HashMap<>();
 		checkJobName(pushBuild.getJobName(), errors);
@@ -58,6 +65,12 @@ public class BuildServiceImpl extends BuildValidation {
 		return errors;
 	}
 
+	/**
+	 * check existing job on the basis of jobName/jobNumber/basicprojectConfigId
+	 * @param pushBuild
+	 * @param basicProjectConfigId
+	 * @return
+	 */
 	private Build checkExisitingJob(PushBuild pushBuild, ObjectId basicProjectConfigId) {
 		return buildRepository.findByNumberAndBuildJobAndBasicProjectConfigId(pushBuild.getNumber(),
 				pushBuild.getJobName(), basicProjectConfigId);
@@ -71,6 +84,7 @@ public class BuildServiceImpl extends BuildValidation {
 		Build build = (existingBuild != null) ? existingBuild : new Build();
 		build.setBasicProjectConfigId(basicProjectConfigId);
 		build.setBuildJob(pushBuild.getJobName());
+		build.setJobFolder(pushBuild.getJobName());
 		build.setNumber(pushBuild.getNumber());
 		build.setBuildUrl(pushBuild.getBuildUrl());
 		build.setStartTime(pushBuild.getStartTime());
@@ -82,6 +96,11 @@ public class BuildServiceImpl extends BuildValidation {
 		return build;
 	}
 
+	/**
+	 * checking valid Status
+	 * @param buildStatus
+	 * @param errors
+	 */
 	@Override
 	public void checkStatus(String buildStatus, Map<String, String> errors) {
 		if (!BuildStatus.contains(buildStatus)) {

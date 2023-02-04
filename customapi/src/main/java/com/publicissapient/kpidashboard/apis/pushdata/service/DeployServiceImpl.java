@@ -42,8 +42,10 @@ public class DeployServiceImpl extends BuildValidation {
 				Map<String, String> errorMap = createErrorMap(pushDeploy);
 				if (MapUtils.isNotEmpty(errorMap)) {
 					failedRecords.getAndIncrement();
+					log.error("Errors in deploy for jobNumber "+pushDeploy.getNumber()+ " jobName "+pushDeploy.getJobName() +" are ",errorMap);
 					buildDeployErrorData.setErrors(errorMap);
 				} else {
+					//if no errors are present in the input job then it will create Deployment List
 					ObjectId basicProjectObjectConfigId = new ObjectId(basicProjectConfigId);
 					deploymentList.add(createDeployment(basicProjectObjectConfigId, pushDeploy,
 							checkExisitingJob(pushDeploy, basicProjectObjectConfigId)));
@@ -76,6 +78,12 @@ public class DeployServiceImpl extends BuildValidation {
 		return deployment;
 	}
 
+	/**
+	 * check existing job on the basis of jobName/jobNumber/basicprojectConfigId
+	 * @param pushDeploy
+	 * @param basicProjectObjectConfigId
+	 * @return
+	 */
 	private Deployment checkExisitingJob(PushDeploy pushDeploy, ObjectId basicProjectObjectConfigId) {
 		return deploymentRepository.findByNumberAndJobNameAndBasicProjectConfigId(pushDeploy.getNumber(),
 				pushDeploy.getJobName(), basicProjectObjectConfigId);
@@ -85,6 +93,11 @@ public class DeployServiceImpl extends BuildValidation {
 		deploymentRepository.saveAll(deploymentList);
 	}
 
+	/**
+	 *  validation data and creating error map for each validation
+	 * @param pushDeploy
+	 * @return
+	 */
 	private Map<String, String> createErrorMap(PushDeploy pushDeploy) {
 		Map<String, String> errors = new HashMap<>();
 		checkJobName(pushDeploy.getJobName(), errors);

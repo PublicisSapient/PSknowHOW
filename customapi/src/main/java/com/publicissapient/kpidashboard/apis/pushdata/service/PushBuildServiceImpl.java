@@ -33,6 +33,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 	public PushBuildDeployResponse processPushDataInput(PushBuildDeploy buildDeploy, String projectConfigId) {
 		PushBuildDeployResponse pushBuildDeployResponse = new PushBuildDeployResponse();
 		pushBuildDeployResponse.setTotalRecords(getTotalRecords(buildDeploy));
+		log.info("Total Records are " +pushBuildDeployResponse.getTotalRecords());
 		List<Build> buildList = new ArrayList<>();
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<BuildDeployErrorData> buildErrorList = new ArrayList<>();
@@ -45,11 +46,18 @@ public class PushBuildServiceImpl implements PushBaseService {
 		pushBuildDeployResponse.setDeploy(deployErrorList);
 		pushBuildDeployResponse.setTotalFailedRecords(buildFailedRecords + deployFailedRecords);
 		pushBuildDeployResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
+		log.info("Total Records to be Saved are " +pushBuildDeployResponse.getTotalSavedRecords());
 		totalSaveRecords(pushBuildDeployResponse, buildList, deploymentList);
 		return pushBuildDeployResponse;
 
 	}
 
+	/**
+	 * partial correct data will not be saved to respective dba
+	 * @param pushBuildDeployResponse
+	 * @param buildList
+	 * @param deploymentList
+	 */
 	private void totalSaveRecords(PushBuildDeployResponse pushBuildDeployResponse, List<Build> buildList,
 			List<Deployment> deploymentList) {
 		if (pushBuildDeployResponse.getTotalRecords() != pushBuildDeployResponse.getTotalSavedRecords()) {
@@ -60,6 +68,11 @@ public class PushBuildServiceImpl implements PushBaseService {
 		deployService.saveDeployments(deploymentList);
 	}
 
+	/**
+	 * if input record is more than set value, then throw exception
+	 * @param buildDeploy
+	 * @return
+	 */
 	@Override
 	public int getTotalRecords(PushBuildDeploy buildDeploy) {
 		if ((CollectionUtils.isNotEmpty(buildDeploy.getDeployments())
