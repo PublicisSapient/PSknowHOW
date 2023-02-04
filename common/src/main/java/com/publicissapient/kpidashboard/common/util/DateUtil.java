@@ -31,6 +31,7 @@ import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.application.Week;
+import org.joda.time.DateTime;
 
 /**
  * @author narsingh9
@@ -147,6 +148,10 @@ public class DateUtil {
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
-		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+		return convertMillisToLocalDateTime(milliSeconds).toString();
+	}
+
+	public static LocalDateTime convertMillisToLocalDateTime(long milliSeconds) {
+		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 }

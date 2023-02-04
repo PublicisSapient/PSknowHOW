@@ -18,10 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.common.service.PushDataValidationService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,16 +51,18 @@ public class PushDataController {
 	@Autowired
 	PushBuildServiceImpl pushBuildService;
 
+	@Autowired
+	PushDataValidationService pushDataValidationService;
+
 	@RequestMapping(value = "/build/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@PathVariable("id") String id,
+	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@PathVariable("id") String projectConfigId,
+																HttpServletResponse response,
 			 @RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
+		//String projectConfigId = pushDataValidationService.validateToken(response);
 		final ModelMapper modelMapper = new ModelMapper();
 		PushBuildDeploy buildDeploy = modelMapper.map(pushBuildDeployDTO, PushBuildDeploy.class);
-		pushBuildService.processPushDataInput(buildDeploy);
-		log.info("tryyy");
-
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(null);
+				.body(new ServiceResponse(true,"Saved Records successfully",pushBuildService.processPushDataInput(buildDeploy,projectConfigId)));
 	}
 
 }

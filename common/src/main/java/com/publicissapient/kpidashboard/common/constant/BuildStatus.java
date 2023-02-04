@@ -41,4 +41,12 @@ public enum BuildStatus {
 		}
 		return false;
 	}
+
+	public static String getAllValues(){
+		StringBuilder allStatus = new StringBuilder();
+		for (BuildStatus buildStatus : values()) {
+			allStatus.append(buildStatus+"/");
+		}
+		return allStatus.substring(0, allStatus.length()-1);
+	}
 }

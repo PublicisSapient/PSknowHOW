@@ -42,7 +42,7 @@ public class Build extends BasicModel {
 	private ObjectId processorId;
 	private ObjectId basicProjectConfigId;
 	private ObjectId projectToolConfigId;
-	private long timestamp;
+	private long timestamp;//insertTime
 	private String buildJob;
 	private String jobFolder;
 	private String number;
@@ -53,5 +53,6 @@ public class Build extends BasicModel {
 	private BuildStatus buildStatus;
 	private String startedBy;
 	private String log;
+	private long updateTimestamp;
 
 }

@@ -183,6 +183,16 @@ public class CustomApiConfig {// NOPMD
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
 
+	public int getPushDataLimit() {
+		return pushDataLimit;
+	}
+
+	public void setPushDataLimit(int pushDataLimit) {
+		this.pushDataLimit = pushDataLimit;
+	}
+
+	private int pushDataLimit;//limit of data allowed to push through api
+
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
 	}

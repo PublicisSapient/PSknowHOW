@@ -1,0 +1,129 @@
+package com.publicissapient.kpidashboard.apis.pushdata.service;
+
+import static org.mockito.Mockito.doReturn;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.apache.commons.collections.MapUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
+
+import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
+import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
+import com.publicissapient.kpidashboard.apis.pushdata.model.BuildDeployErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BuildServiceImplTest {
+
+	@InjectMocks
+	private BuildServiceImpl buildService;
+
+	@Mock
+	BuildRepository buildRepository;
+
+	private String projectBasicConfigId;
+
+	private Validator validator;
+	List<Build> buildList;
+
+	@Before
+	public void setUp() {
+		projectBasicConfigId = "632824e949794a18e8a44787";
+		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/pushdata/build_details.json");
+		buildList = buildDataFactory.getbuildDataList();
+
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		validator = factory.getValidator();
+
+	}
+
+	@Test
+	public void sucessfullInsert() {
+		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
+		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
+				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(0));
+		if (validate.isEmpty()) {
+			pushBuildDeployCorrectData = new ModelMapper()
+					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(0), PushBuildDeploy.class);
+		}
+		doReturn(buildList.get(0)).when(buildRepository).findByNumberAndBuildJobAndBasicProjectConfigId(
+				Mockito.anyString(), Mockito.anyString(), Mockito.any());
+		List<Build> buildList = new ArrayList<>();
+		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
+		Assert.assertEquals(0, errors);
+		Assert.assertEquals(3, buildList.size());
+	}
+
+	@Test
+	public void errorData() {
+		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
+		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
+				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(1));
+		if (validate.isEmpty()) {
+			pushBuildDeployCorrectData = new ModelMapper()
+					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
+		}
+		List<Build> buildList = new ArrayList<>();
+		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
+		Assert.assertEquals(3, errors);
+		Assert.assertEquals(0, buildList.size());
+		Assert.assertEquals(3,
+				errorDataList.stream()
+						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
+						.collect(Collectors.toList()).size());
+
+	}
+
+	@Test
+	public void wrongJsonVaildation() {
+		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
+				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(2));
+		Assert.assertNotNull(validate);
+	}
+
+	@Test
+	public void buildAllValidation() {
+		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
+		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
+				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(3));
+		if (validate.isEmpty()) {
+			pushBuildDeployCorrectData = new ModelMapper()
+					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(3), PushBuildDeploy.class);
+		}
+		List<Build> buildList = new ArrayList<>();
+		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
+		Assert.assertEquals(3, errors);
+		Assert.assertEquals(0, buildList.size());
+		Assert.assertEquals(3,
+				errorDataList.stream()
+						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
+						.collect(Collectors.toList()).size());
+
+	}
+
+}

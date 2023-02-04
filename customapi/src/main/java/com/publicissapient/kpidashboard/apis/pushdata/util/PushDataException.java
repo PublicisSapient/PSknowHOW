@@ -19,14 +19,26 @@
 package com.publicissapient.kpidashboard.apis.pushdata.util;
 
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeployResponse;
+import org.springframework.http.HttpStatus;
 
 public class PushDataException extends RuntimeException {
 	private static final long serialVersionUID = -664077740219817001L;
 	
 	private PushBuildDeployResponse pushBuildDeployResponse;
 
+	public HttpStatus getCode() {
+		return code;
+	}
+
+	private HttpStatus code;
+
 	public PushDataException() {
 		super();
+	}
+
+	public PushDataException(String unauthorizedAccessException, HttpStatus code) {
+		super(unauthorizedAccessException);
+		this.code=code;
 	}
 
 

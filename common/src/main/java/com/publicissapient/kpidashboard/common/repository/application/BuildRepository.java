@@ -62,4 +62,6 @@ public interface BuildRepository
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 
+	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number,String buildJob,ObjectId basicProjectConfigId);
+
 }

@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.common.repository.application;
 
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,7 @@ public interface DeploymentRepository extends MongoRepository<Deployment, Object
 	List<Deployment> findByProcessorIdIn(Collection<ObjectId> ids);
 
 	List<Deployment> findByProjectToolConfigIdAndJobName(ObjectId projectToolConfigId, String jobName );
+
+	Deployment findByNumberAndJobNameAndBasicProjectConfigId(String number, String jobName, ObjectId basicProjectConfigId);
 
 }
