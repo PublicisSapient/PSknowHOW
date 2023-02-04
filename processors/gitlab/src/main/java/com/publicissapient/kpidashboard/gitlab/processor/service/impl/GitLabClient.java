@@ -249,7 +249,7 @@ public class GitLabClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(projectBasicConfig.isSaveAssigneeDetails()) {
+			if (projectBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);

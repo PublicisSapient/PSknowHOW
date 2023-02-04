@@ -324,19 +324,23 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 						if (gitRepo.getToolConfigId().equals(entry.getId())) {
 							boolean firstTimeRun = gitRepo.getLastUpdatedCommit() == null;
+							if (proBasicConfig.isSaveAssigneeDetails()
+									&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+								gitRepo.setLastCommitTimestamp(null);
+							}
 							MDC.put("GitLabReposDataCollectionStarted",
 									"GitLab Processor started collecting data for Url: " + entry.getUrl()
 											+ " and branch : " + entry.getBranch());
 
 							List<CommitDetails> commitDetailList = gitLabClient.fetchAllCommits(gitRepo, firstTimeRun,
 									entry,proBasicConfig);
-							if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-							{
+							if (proBasicConfig.isSaveAssigneeDetails()
+									&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 								List<CommitDetails> updateAuthor = new ArrayList<>();
 								commitDetailList.stream().forEach(commitDetails -> {
-									CommitDetails dbCommit = commitRepository.findByProcessorItemIdAndRevisionNumber(gitRepo.getId(),
-											commitDetails.getRevisionNumber());
-									if(dbCommit != null) {
+									CommitDetails dbCommit = commitRepository.findByProcessorItemIdAndRevisionNumber(
+											gitRepo.getId(), commitDetails.getRevisionNumber());
+									if (dbCommit != null) {
 										dbCommit.setAuthor(commitDetails.getAuthor());
 										updateAuthor.add(dbCommit);
 									}
@@ -356,13 +360,13 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 							}
 							List<MergeRequests> mergeRequestsList = gitLabClient.fetchAllMergeRequest(gitRepo,
 									firstTimeRun, entry, proBasicConfig);
-							if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-							{
+							if (proBasicConfig.isSaveAssigneeDetails()
+									&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 								List<MergeRequests> updateAuthor = new ArrayList<>();
 								mergeRequestsList.forEach(mergeRequests -> {
-									MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(gitRepo.getId(),
-											mergeRequests.getRevisionNumber());
-									if(dbMerge!=null) {
+									MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
+											gitRepo.getId(), mergeRequests.getRevisionNumber());
+									if (dbMerge != null) {
 										dbMerge.setAuthor(mergeRequests.getAuthor());
 										updateAuthor.add(dbMerge);
 									}

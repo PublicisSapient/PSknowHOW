@@ -359,7 +359,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeReq.setFromBranch(fromBranch);
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
-			if(proBasicConfig.isSaveAssigneeDetails()) {
+			if (proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);

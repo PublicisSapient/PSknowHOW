@@ -309,12 +309,14 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 					MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				}
 			} catch (Exception exception) {
 				executionStatus = false;
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(executionStatus);
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
 				processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				log.error("Error while processing", exception);
 			}
@@ -359,19 +361,23 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
+						if (projectBasicConfig.isSaveAssigneeDetails()
+								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+							azureRepo.setLastUpdatedTime(null);
+						}
 						MDC.put("AzurerepoReposDataCollectionStarted",
 								"Azurerepo Processor started collecting data for Url: " + entry.getUrl()
 										+ " and branch : " + entry.getBranch());
 
 						List<CommitDetails> commitDetailList = azureRepoClient.fetchAllCommits(azureRepo, firstTimeRun,
 								entry, projectBasicConfig);
-						if(projectBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-						{
+						if (projectBasicConfig.isSaveAssigneeDetails()
+								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							List<CommitDetails> updateAuthor = new ArrayList<>();
 							commitDetailList.stream().forEach(commitDetails -> {
-								CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
-										commitDetails.getRevisionNumber());
-								if(dbCommit != null) {
+								CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(
+										azureRepo.getId(), commitDetails.getRevisionNumber());
+								if (dbCommit != null) {
 									dbCommit.setAuthor(commitDetails.getAuthor());
 									updateAuthor.add(dbCommit);
 								}
@@ -415,19 +421,23 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
+						if (proBasicConfig.isSaveAssigneeDetails()
+								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+							azureRepo.setLastUpdatedTime(null);
+						}
 						MDC.put("AzurerepoReposDataCollectionStarted",
 								"Azurerepo Processor started collecting data for Url: " + entry.getUrl()
 										+ " and branch : " + entry.getBranch());
 
 						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo, firstTimeRun,
 								entry, proBasicConfig);
-						if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-						{
+						if (proBasicConfig.isSaveAssigneeDetails()
+								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							List<MergeRequests> updateAuthor = new ArrayList<>();
 							mergeRequestsList.forEach(mergeRequests -> {
-								MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
-										mergeRequests.getRevisionNumber());
-								if(dbMerge!=null) {
+								MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
+										azureRepo.getId(), mergeRequests.getRevisionNumber());
+								if (dbMerge != null) {
 									dbMerge.setAuthor(mergeRequests.getAuthor());
 									updateAuthor.add(dbMerge);
 								}

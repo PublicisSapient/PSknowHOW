@@ -402,17 +402,20 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 		if (CollectionUtils.isNotEmpty(traceLogs)) {
 			processorExecutionTraceLog = traceLogs.get(0);
-			if(null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig().isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()){
+			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
+					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
-		}else {
+		} else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-			processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
+			processorExecutionTraceLog
+					.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 		}
 		return processorExecutionTraceLog;
 	}

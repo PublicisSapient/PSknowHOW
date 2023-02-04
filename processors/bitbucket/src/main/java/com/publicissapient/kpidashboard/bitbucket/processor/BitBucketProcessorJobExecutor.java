@@ -190,19 +190,23 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				try {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						bitRepo.setLastUpdatedCommit(null);
+					}
 					boolean firstTimeRun = (bitRepo.getLastUpdatedCommit() == null);
 					MDC.put("BitbucketReposDataCollectionStarted",
 							"Bitbucket Processor started collecting data for Url: " + tool.getUrl() + ", branch : "
 									+ tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					BitBucketClient bitBucketClient = bitBucketClientFactory.getBitbucketClient(tool.isCloudEnv());
 					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool,proBasicConfig);
-					if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-					{
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 						List<CommitDetails> updateAuthor = new ArrayList<>();
 						commitDetailList.stream().forEach(commitDetails -> {
 							CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
 									commitDetails.getRevisionNumber());
-							if(dbCommit != null) {
+							if (dbCommit != null) {
 								dbCommit.setAuthor(commitDetails.getAuthor());
 								updateAuthor.add(dbCommit);
 							}
@@ -220,13 +224,13 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 					List<MergeRequests> mergeRequestsList = bitBucketClient.fetchMergeRequests(bitRepo, firstTimeRun,
 							tool, proBasicConfig);
-					if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState())
-					{
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 						List<MergeRequests> updateAuthor = new ArrayList<>();
 						mergeRequestsList.forEach(mergeRequests -> {
 							MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
 									mergeRequests.getRevisionNumber());
-							if(dbMerge!=null) {
+							if (dbMerge != null) {
 								dbMerge.setAuthor(mergeRequests.getAuthor());
 								updateAuthor.add(dbMerge);
 							}

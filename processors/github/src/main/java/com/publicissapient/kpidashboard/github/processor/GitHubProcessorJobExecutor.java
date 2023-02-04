@@ -218,15 +218,15 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 
 					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
 							firstTimeRun, tool, proBasicConfig);
-					if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 						List<CommitDetails> updateAuthor = new ArrayList<>();
-						commitDetailList.stream()
-								.forEach(commit -> {
-									CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-											commit.getRevisionNumber());
-									commitDetailsData.setAuthor(commit.getAuthor());
-									updateAuthor.add(commitDetailsData);
-								});
+						commitDetailList.stream().forEach(commit -> {
+							CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
+									gitHubProcessorItem.getId(), commit.getRevisionNumber());
+							commitDetailsData.setAuthor(commit.getAuthor());
+							updateAuthor.add(commitDetailsData);
+						});
 						commitsRepo.saveAll(updateAuthor);
 
 					}
@@ -242,15 +242,15 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
 							firstTimeRun, tool,proBasicConfig);
 
-					if(proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 						List<MergeRequests> updateAuthor = new ArrayList<>();
-						mergeRequestsList.stream()
-								.forEach(mergeRequests -> {
-									MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-											mergeRequests.getRevisionNumber());
-									mergeRequestData.setAuthor(mergeRequests.getAuthor());
-									updateAuthor.add(mergeRequestData);
-								});
+						mergeRequestsList.stream().forEach(mergeRequests -> {
+							MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
+									gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
+							mergeRequestData.setAuthor(mergeRequests.getAuthor());
+							updateAuthor.add(mergeRequestData);
+						});
 						mergReqRepo.saveAll(updateAuthor);
 					}
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()

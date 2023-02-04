@@ -264,7 +264,7 @@ public class GitHubClientImpl implements GitHubClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			if(proBasicConfig.isSaveAssigneeDetails()) {
+			if (proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
