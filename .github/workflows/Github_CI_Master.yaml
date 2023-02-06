@@ -76,9 +76,7 @@ jobs:
         id: BuildUI
         run: |
           cd UI
-          whoami
-          hostname
-          ifconfig
+          echo $GITHUB_HEAD_REF
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
@@ -88,7 +86,6 @@ jobs:
           sudo cp -r dist/dashboard/* build/
           sudo chmod -R 775 build
           cd build
-          ls -lrt
           sudo tar -czvf ui2.tar *
           sudo mv ui2.tar ../files
           sudo rm -rf build
@@ -100,16 +97,21 @@ jobs:
           sudo npm install --save-dev @angular-devkit/build-angular
           sudo ng test --code-coverage
           #sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info 
-      - name: Scanning UI with Sonar Qube
-        if: steps.changes.outputs.UI == 'true'
-        id: SonarUI
-        run: | 
-          cd UI
           echo 'sonar.branch.name=${GITHUB_HEAD_REF}'>> sonar-project.properties
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           npm install -D sonarqube-scanner
           npm run sonar
+      # - name: Scanning UI with Sonar Qube
+      #   if: steps.changes.outputs.UI == 'true'
+      #   id: SonarUI
+      #   run: | 
+      #     cd UI
+      #     echo 'sonar.branch.name=${GITHUB_HEAD_REF}'>> sonar-project.properties
+      #     echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
+      #     echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
+      #     npm install -D sonarqube-scanner
+      #     npm run sonar
       - name: Scanning UI QG with Sonar Qube
         if: steps.changes.outputs.UI == 'true'
         id: SonarUIqg
