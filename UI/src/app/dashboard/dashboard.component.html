@@ -16,105 +16,31 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main-container">
-    <!-- <header [class.sticky]="headerFixed"> -->
-        <!-- <app-nav id="top"></app-nav> -->
-        <!-- <app-filter *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
-        </app-filter> -->
 
-    
-    <!-- </header> -->
-
-    <!-- <p-sidebar [(visible)]="visibleSidebar1" position="left" [baseZIndex]="10000">
-      <ng-template pTemplate="header">Header Content</ng-template>
-     <ng-template pTemplate="content" p-sidebar-bottom>Body Content</ng-template> 
-     <p-button type="button" (click)="visibleSidebar2 = false" label="Cancel" styleClass="p-button-secondary"></p-button> 
-  </p-sidebar> -->
-<div class="header sticky">
-  <div class="logo">
-    <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between p-m-0">
-      <li class="nav-item img-container"> -->
-        <img *ngIf="logoImage" src={{logoImage}} routerLink="mydashboard" routerLinkActive="active"
-          (click)="selectTab('mydashboard')" alt="Logo"/>
-        <img *ngIf="!logoImage" src="assets/img/sapientLogo2.PNG" routerLink="mydashboard" routerLinkActive="active"
-          (click)="selectTab('mydashboard')" alt="Logo"/>
-      <!-- </li>
-      </ul> -->
-  </div>
-  <div>
-    <app-filter *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
-    </app-filter>
-  </div>
-  <div>
-    <!-- <button type="button" pButton icon="pi pi-bars" label="Show" (click)="menu.toggle($event)"></button> -->
-    <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
-      <span class="profile-name">BM</span>
-    </div>
-    <p-menu #menu [popup]="true" [model]="items"></p-menu>
-  </div>
-</div>
-<!-- <div class="main-body-wrapper">
-  <div class="aside">
-    <app-nav id="top"></app-nav>
-  </div>
-  <div class="main-body">
-    <div>selected filters</div>
+  <div class="header" [class.sticky]="headerFixed">
+    <!-- <div> -->
     <div>
-      <router-outlet></router-outlet>
+      <app-filter></app-filter>
     </div>
   </div>
-</div> -->
+ 
+  <div id="wrapper" [ngClass]="{'toggled':isApply}">
+    <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config')">
+      <app-nav id="top"></app-nav>
+    </div>
+    <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') ? '0rem' : ''}">
+      <!-- <div>
+      <app-filter-list></app-filter-list>
+     </div> -->
 
-<div id="wrapper" [ngClass]="{'toggled':isApply}">
-
-  <!-- Sidebar -->
-  <div id="sidebar-wrapper">
-    <app-nav id="top" (messageEvent)="changeIsApply($event)"></app-nav>
-      <!-- <ul class="sidebar-nav">
-          <li class="sidebar-brand">
-              <a href="#">
-                  Start Bootstrap
-              </a>
-          </li>
-          <li>
-              <a href="#">Dashboard</a>
-          </li>
-          <li>
-              <a href="#">Shortcuts</a>
-          </li>
-          <li>
-              <a href="#">Overview</a>
-          </li>
-          <li>
-              <a href="#">Events</a>
-          </li>
-          <li>
-              <a href="#">About</a>
-          </li>
-          <li>
-              <a href="#">Services</a>
-          </li>
-          <li>
-              <a href="#">Contact</a>
-          </li>
-      </ul> -->
-  </div>
-  <!-- /#sidebar-wrapper -->
-
-  <!-- Page Content -->
-  <div id="page-content-wrapper">
-      <div class="container-fluid">
-          <div class="row">
-              <div class="col-lg-12">
-                  <!-- <a href="#menu-toggle" class="btn btn-default" id="menu-toggle" (click)="change()">Toggle Menu</a> -->
-                  <router-outlet></router-outlet>
-                  
-              </div>
-          </div>
+      <div>
+        <router-outlet></router-outlet>
       </div>
-  </div>
-  <!-- /#page-content-wrapper -->
 
+    </div>
+  </div>
+  <app-footer></app-footer>
 </div>
-</div>
-<app-footer></app-footer>

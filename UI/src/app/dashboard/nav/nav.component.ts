@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit,Output,EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -27,7 +27,11 @@ import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TextEncryptionService } from '../../services/text.encryption.service';
-import { NotificationDTO, NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
+import {
+  NotificationDTO,
+  NotificationResponseDTO,
+} from 'src/app/model/NotificationDTO.model';
+import { debug } from 'console';
 
 @Component({
   selector: 'app-nav',
@@ -59,23 +63,24 @@ export class NavComponent implements OnInit {
   boardId = 1;
   visibleSidebar = false;
   kanban = false;
-  @Output() messageEvent = new EventEmitter<boolean>();
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
-    private service: SharedService,
+    public service: SharedService,
     public router: Router,
     private getAuth: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    debugger
+    debugger;
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab.split('/')[2];
-    this.boardId = isNaN(+selectedTab.split('/')[3]) ? this.boardId : +selectedTab.split('/')[3];
+    this.boardId = isNaN(+selectedTab.split('/')[3])
+      ? this.boardId
+      : +selectedTab.split('/')[3];
     this.service.setSelectedTab(this.selectedTab, this.boardId);
-    this.service.onTypeRefresh.subscribe(type => {
+    this.service.onTypeRefresh.subscribe((type) => {
       this.selectedTab = this.service.getSelectedTab();
     });
 
@@ -93,21 +98,25 @@ export class NavComponent implements OnInit {
     });
 
     this.renderMessage();
-
   }
 
   processKpiConfigData() {
     for (let i = 0; i < this.configOthersData?.length; i++) {
-      if (this.configOthersData[i]?.shown === false && this.configOthersData[i]?.isEnabled === true) {
-        this.kpiConfigData[this.configOthersData[i]?.kpiId] = this.configOthersData[i]?.shown;
+      if (
+        this.configOthersData[i]?.shown === false &&
+        this.configOthersData[i]?.isEnabled === true
+      ) {
+        this.kpiConfigData[this.configOthersData[i]?.kpiId] =
+          this.configOthersData[i]?.shown;
       } else {
-        this.kpiConfigData[this.configOthersData[i]?.kpiId] = this.configOthersData[i]?.isEnabled;
+        this.kpiConfigData[this.configOthersData[i]?.kpiId] =
+          this.configOthersData[i]?.isEnabled;
       }
     }
   }
 
   ngOnInit() {
-    debugger
+    debugger;
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -141,7 +150,7 @@ export class NavComponent implements OnInit {
 
     document.addEventListener(
       'click',
-      function(e) {
+      function (e) {
         const profileChkBox = document.getElementById(
           'profile2',
         ) as HTMLInputElement;
@@ -163,7 +172,7 @@ export class NavComponent implements OnInit {
     });
 
     this.startWorker();
-    this.service.selectedTypeObs.subscribe(selectedType => {
+    this.service.selectedTypeObs.subscribe((selectedType) => {
       this.selectedType = selectedType;
       this.getKpiOrderedList();
     });
@@ -185,15 +194,17 @@ export class NavComponent implements OnInit {
 
   // call when user is seleting tab
   selectTab(selectedTab, boardId = this.boardId) {
-    this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
+    debugger;
+    this.selectedTab =
+      selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
     this.helper.isKanban = false;
     this.service.setSelectedTab(this.selectedTab, boardId);
     this.service.selectTab(this.selectedTab);
     if (selectedTab === 'Kanban') {
       this.kanban = true;
-  } else {
+    } else {
       this.kanban = false;
-  }
+    }
   }
 
   // logout is clicked  and removing auth token , username
@@ -227,19 +238,23 @@ export class NavComponent implements OnInit {
   }
 
   renderMessage() {
-    this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
-      if (response && response.success) {
-        if (response.data?.length) {
-          this.notificationPlaceHolder = [...response.data];
-          this.showNotificationPanel = (this.notificationPlaceHolder.length && this.notificationPlaceHolder.some(data => data.count > 0));
+    this.httpService
+      .getAccessRequestsNotifications()
+      .subscribe((response: NotificationResponseDTO) => {
+        if (response && response.success) {
+          if (response.data?.length) {
+            this.notificationPlaceHolder = [...response.data];
+            this.showNotificationPanel =
+              this.notificationPlaceHolder.length &&
+              this.notificationPlaceHolder.some((data) => data.count > 0);
+          }
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in fetching requests. Please try after some time.',
+          });
         }
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error in fetching requests. Please try after some time.',
-        });
-      }
-    });
+      });
   }
 
   messageLink(type: string) {
@@ -249,7 +264,9 @@ export class NavComponent implements OnInit {
           this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
           break;
         case 'User Access Request':
-          this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+          this.router.navigate([
+            '/dashboard/Config/Profile/GrantNewUserAuthRequests',
+          ]);
           break;
         default:
           console.log('default case');
@@ -291,7 +308,7 @@ export class NavComponent implements OnInit {
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
-           this.processKPIListData();
+            this.processKPIListData();
           }
         },
         (error) => {
@@ -301,35 +318,43 @@ export class NavComponent implements OnInit {
           });
         },
       );
-    }else{
+    } else {
       this.processKPIListData();
     }
-
   }
 
-
-  processKPIListData(){
-    debugger
+  processKPIListData() {
+    debugger;
     this.configOthersData = this.kpiListData['others'][0]?.kpis;
     this.service.setDashConfigData(this.kpiListData);
     this.boardNameArr = [];
-    if (this.kpiListData[this.selectedType] && Array.isArray(this.kpiListData[this.selectedType])) {
+    if (
+      this.kpiListData[this.selectedType] &&
+      Array.isArray(this.kpiListData[this.selectedType])
+    ) {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push(
-          {
-            boardName: this.kpiListData[this.selectedType][i].boardName,
-            link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-') + '/' + this.kpiListData[this.selectedType][i].boardId,
-            boardId: this.kpiListData[this.selectedType][i].boardId
-          });
+        this.boardNameArr.push({
+          boardName: this.kpiListData[this.selectedType][i].boardName,
+          link:
+            this.kpiListData[this.selectedType][i].boardName
+              .toLowerCase()
+              .split(' ')
+              .join('-') +
+            '/' +
+            this.kpiListData[this.selectedType][i].boardId,
+          boardId: this.kpiListData[this.selectedType][i].boardId,
+        });
       }
     }
 
     for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      this.boardNameArr.push(
-        {
-          boardName: this.kpiListData['others'][i].boardName,
-          link: this.kpiListData['others'][i].boardName.toLowerCase() + '/' + this.kpiListData[this.selectedType][i].boardId
-        });
+      this.boardNameArr.push({
+        boardName: this.kpiListData['others'][i].boardName,
+        link:
+          this.kpiListData['others'][i].boardName.toLowerCase() +
+          '/' +
+          this.kpiListData[this.selectedType][i].boardId,
+      });
     }
     this.service.changedMainDashboardValueSub.next(
       this.kpiListData?.scrum[0]?.boardName,
@@ -393,9 +418,9 @@ export class NavComponent implements OnInit {
   selectedTypef(type) {
     this.service.setSelectedType(type);
     if (type === 'Kanban') {
-        this.kanban = true;
+      this.kanban = true;
     } else {
-        this.kanban = false;
+      this.kanban = false;
     }
   }
 }

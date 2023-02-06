@@ -16,88 +16,70 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ChangeDetectorRef, AfterContentInit, HostListener, Output, Renderer2 } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  AfterContentInit,
+  HostListener,
+  Output,
+  Renderer2,
+} from '@angular/core';
 import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
-import {MenuItem} from 'primeng/api';
-
-
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 
 /**
  Route the path from app-route and redirect to dashboard
  */
 export class DashboardComponent implements OnInit, AfterContentInit {
-
   authorized = <boolean>true;
   headerFixed = <boolean>false;
   scrollOffset = <number>150;
-  visibleSidebar1 = false;
-  subscription: Subscription;
-  logoImage: any;
-  items: MenuItem[];
   isApply = false;
-  constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
-    this.renderer.listen('document', 'click',(e: Event)=>{
+  
+  constructor(
+    public cdRef: ChangeDetectorRef,
+    public router: Router,
+    private service: SharedService,
+    private getAuth: GetAuthService,
+    private httpService: HttpService,
+    private renderer: Renderer2,
+  ) {
+    this.renderer.listen('document', 'click', (e: Event) => {
       // setting document click event data to identify outside click for show/hide kpi filter
       this.service.setClickedItem(e?.target);
-  });
-    this.authorized = this.getAuth.checkAuth();
-
-     /*subscribe logo image from service*/
-     this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
-      this.getLogoImage();
     });
+    this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
     // this.authorized = this.getAuth.checkAuth();
-    this.items = [
-      {
-        label: 'Settings',
-        icon: 'fa fa-cog',
-        command: () => {
-          alert("settings")
-          // this.update();
-        },
-      },
-      {
-        label: 'Help',
-        icon: 'fa fa-info-circle',
-        command: () => {
-          alert("help")
-          // this.delete();
-        },
-      },
-      {
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          alert("logount")
-          // logout()
-        },
-      },
-    ];
-
+    this.service.isSideNav.subscribe((flag) => {
+      this.isApply = flag;
+    });
   }
 
   // for making the header sticky on scroll
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    if (this.router.url.indexOf('/Config/') === -1 && this.router.url !== '/dashboard/Maturity' && this.router.url !== '/dashboard/EngineeringMaturity') {
-      this.headerFixed = (window.pageYOffset
-        || document.documentElement.scrollTop
-        || document.body.scrollTop || 0
-      ) > this.scrollOffset;
+    if (
+      this.router.url.indexOf('/Config/') === -1 &&
+      this.router.url !== '/dashboard/Maturity' &&
+      this.router.url !== '/dashboard/EngineeringMaturity'
+    ) {
+      this.headerFixed =
+        (window.pageYOffset ||
+          document.documentElement.scrollTop ||
+          document.body.scrollTop ||
+          0) > this.scrollOffset;
     } else {
       this.headerFixed = false;
     }
@@ -105,26 +87,6 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
-  }
-
-   /*Rendered the logo image */
-   getLogoImage() {
-    this.httpService
-      .getUploadedImage()
-      .pipe(first())
-      .subscribe((data) => {
-        if (data['image']) {
-          this.logoImage = 'data:image/png;base64,' + data['image'];
-        } else {
-          this.logoImage = undefined;
-        }
-      });
-  }
-
-
-  changeIsApply(value){
-    console.log("Came from child",value)
-    this.isApply = value
   }
 
 }

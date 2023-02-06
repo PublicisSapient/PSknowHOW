@@ -16,186 +16,75 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="navigation2 rows" *ngIf="false">
-  <div class="selected-wraper">
-    <div class="selected-board">
-      <div class="rotate">{{kanban ? 'Kanban' : 'Scrum'}}</div>
-    </div>
-
-    <div class="selected-nav">
-      <div style=" writing-mode: vertical-rl;text-orientation: upright;">{{selectedTab}}</div>
-    </div>
-
-    <div class="open-btn">
-      <!-- <i class="pi pi-arrow-circle-right" style="font-size: 2.3rem;" (click)="visibleSidebar = true" ></i> -->
-      <img src="../../../assets/img/menu-unfold.svg" alt="Edit" style="height: 40px;"  (click)="messageEvent.emit(true);visibleSidebar = true" />
-    </div>
-  </div>
-  
-  <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between p-m-0">
-    <li class="nav-item pad-0 setting-tab">
-      <div class="half">
-        <label for="profile2" class="profile-dropdown">
-          <input type="checkbox" id="profile2">
-          <span>
-            <div class="float-left w-100">{{username}}</div>
-            <div class="float-left w-100">
-              <span class="version-header">
-                Version : {{currentversion}}
-              </span>
-            </div>
-          </span>
-          <label for="profile2" id="Layout-Menu">
-            <span class="fa fa-bars profileIcon cursor-pointer" aria-hidden="true"></span>
-          </label>
-          <ul class="settings-nav">
-            <li *ngIf="!isGuest"><a routerLink="/dashboard/Config/" routerLinkActive="active"
-                (click)="selectTab('Config')" id="Layout-Settings"><span class="fa fa-cog"
-                  aria-hidden="true"></span>Settings</a></li>
-            <li *ngIf="showHelp"><a routerLink="Help" routerLinkActive="active" id="Layout-Settings"><span
-                  class="fa fa-info-circle" aria-hidden="true"></span>Help</a></li>
-            <li (click)="logout()">
-              <a id="Layout-Logout"> <span class="fas fa-sign-out-alt cursor-pointer"></span>Logout</a>
-            </li>
-          </ul>
-        </label>
-        <div *ngIf="showNotificationPanel && showNotifications" class="notfication-bar cursor-pointer p-d-flex
-         p-jc-between">
-          <em class="pi pi-times-circle position-absolute" (click)="hideNotifications()"></em>
-          <div class="w-100">
-            <div *ngFor="let notificationData of notificationPlaceHolder" (click)="messageLink(notificationData.type)"
-              [ngClass]="notificationData.type === 'Project Access Request' ? 'notifications-bar-project-access' : 'notifications-bar-user-approval'"
-              class="cursor-pointer">
-              <ng-container *ngIf="notificationData.count">
-                <span> {{ notificationData.type }} </span>
-                <p-badge [value]="notificationData.count"></p-badge>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-      </div>
-    </li>
-  </ul> -->
-</div>
-
-
-
 <div>
   <div class="navigation2 rows" *ngIf="!visibleSidebar">
     <div class="selected-wraper">
       <div class="selected-board">
         <div class="rotate">{{kanban ? 'Kanban' : 'Scrum'}}</div>
       </div>
-  
+
       <div class="selected-nav">
         <div style=" writing-mode: vertical-rl;text-orientation: upright;">{{selectedTab}}</div>
       </div>
-  
+
       <div class="open-btn">
         <!-- <i class="pi pi-arrow-circle-right" style="font-size: 2.3rem;" (click)="visibleSidebar = true" ></i> -->
-        <img src="../../../assets/img/menu-unfold.svg" alt="Edit" style="height: 40px;"  (click)="messageEvent.emit(true);visibleSidebar = true" />
+        <img src="../../../assets/img/menu-unfold.svg" alt="Edit" style="height: 40px;"
+          (click)="visibleSidebar = true;service.setSideNav(true)" />
       </div>
     </div>
   </div>
 
-    <div class="nav-wraper" *ngIf="visibleSidebar" >
-      <!--Scrum/Kanban Switch starts-->
-      <div id="Filters" #filterDiv class="tabs">
-        <div
-          *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
-          <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
-          <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedTypef('Scrum')" id="Layout-Scrum">
-            <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
-            <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
-          <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
-          <label class="label2 rounded filter-btn" for="tab2" (click)="selectedTypef('Kanban')" id="Layout-Kanban">
-            <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
-            <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
-        </div>
-      </div>
-      <!--Scrum/Kanban Switch Ends-->
-      <div class="navigation rows ">
-        <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
-        <ng-container *ngIf="boardNameArr?.length>0">
-          <ul class="nav-menu p-d-flex">
-            <ng-container *ngFor="let board of boardNameArr">
-              <li class="nav-item"
-                *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
-                <a class="nav-link"
-                  [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
-                  [routerLinkActive]="['active']"
-                  [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
-                  (click)="selectTab(board.boardName,board.boardId)">
-                  {{board.boardName}}
-        
-                  <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
-                  <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
-                
-                </a>
-              </li>
-
-            </ng-container>
-          </ul>
-        </ng-container>
-        <!-- </ul> -->
-      </div>
-      <div class="close-btn"  (click)="messageEvent.emit(false);visibleSidebar = false">
-       <img src="../../../assets/img/menu-fold.svg" alt="Edit" style="height: 40px;" />
+  <div class="nav-wraper" *ngIf="visibleSidebar">
+    <!--Scrum/Kanban Switch starts-->
+    <div id="Filters" #filterDiv class="tabs">
+      <div
+        *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
+        <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
+        <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedTypef('Scrum')" id="Layout-Scrum">
+          <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
+          <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
+        <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
+        <label class="label2 rounded filter-btn" for="tab2" (click)="selectedTypef('Kanban')" id="Layout-Kanban">
+          <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
+          <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
       </div>
     </div>
+    <!--Scrum/Kanban Switch Ends-->
+    <div class="navigation rows ">
+      <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
+      <ng-container *ngIf="boardNameArr?.length>0">
+        <ul class="nav-menu p-d-flex">
+          <ng-container *ngFor="let board of boardNameArr">
+            <li class="nav-item"
+              *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
+              <a class="nav-link"
+                [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
+                [routerLinkActive]="['active']"
+                [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
+                (click)="selectTab(board.boardName,board.boardId)">
+                {{board.boardName}}
+
+                <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" style="height: 13px;"
+                  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+                <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" style="height: 13px;"
+                  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+
+              </a>
+            </li>
+
+          </ng-container>
+        </ul>
+      </ng-container>
+      <!-- </ul> -->
+    </div>
+    <div class="close-btn" (click)="visibleSidebar = false;service.setSideNav(false)">
+      <img src="../../../assets/img/menu-fold.svg" alt="Edit" style="height: 40px;" />
+    </div>
+  </div>
 
 </div>
 
-    <div class="nav-wraper" *ngIf="false" >
-      <!--Scrum/Kanban Switch starts-->
-      <div id="Filters" #filterDiv class="tabs">
-        <div
-          *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
-          <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
-          <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedTypef('Scrum')" id="Layout-Scrum">
-            <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
-            <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
-          <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
-          <label class="label2 rounded filter-btn" for="tab2" (click)="selectedTypef('Kanban')" id="Layout-Kanban">
-            <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
-            <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
-        </div>
-      </div>
-      <!--Scrum/Kanban Switch Ends-->
-      <div class="navigation rows ">
-        <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
-        <ng-container *ngIf="boardNameArr?.length>0">
-          <ul class="nav-menu p-d-flex">
-            <ng-container *ngFor="let board of boardNameArr">
-              <li class="nav-item"
-                *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
-                <a class="nav-link"
-                  [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
-                  [routerLinkActive]="['active']"
-                  [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
-                  (click)="selectTab(board.boardName,board.boardId)">
-                  {{board.boardName}}
-        
-                  <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
-                  <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" style="height: 13px;"  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
-                
-                </a>
-              </li>
-
-            </ng-container>
-          </ul>
-        </ng-container>
-        <!-- </ul> -->
-      </div>
-      <div class="close-btn"  (click)="messageEvent.emit(false);visibleSidebar = true">
-       <img src="../../../assets/img/menu-fold.svg" alt="Edit" style="height: 40px;" />
-      </div>
-    </div>
- 
- 
-  
-
-<!-- </p-sidebar> -->
 
 <p-dialog header="Rename your dashboard" [(visible)]="displayEditModal" [modal]="true" [draggable]="true"
   [resizable]="true" [style]="{width: '350px'}">

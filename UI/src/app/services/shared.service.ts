@@ -83,6 +83,9 @@ export class SharedService implements OnInit {
   public xLabelValue: any;
   selectedLevel:object={};
   selectedTrends:Array<object> = [];
+  selectedFilterList = new BehaviorSubject<any>([]);
+  selectedFilterListObs = this.selectedFilterList.asObservable();
+  public isSideNav;
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.onTabRefresh = new EventEmitter();
@@ -93,6 +96,7 @@ export class SharedService implements OnInit {
     this.passEventToNav = new EventEmitter();
     this.activateKanban = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
+    this.isSideNav = new EventEmitter();
   }
 
 
@@ -301,6 +305,17 @@ export class SharedService implements OnInit {
   }
   getSelectedTrends(){
     return this.selectedTrends;
+  }
+
+  setSelectedFilterList(list){
+    // console.log("FilterList Came on shared service",list)
+    this.selectedFilterList.next([...list])
+  }
+
+  // calls when sidenav refresh
+  setSideNav(flag) {
+    console.log("on shared service",flag)
+    this.isSideNav.emit(flag);
   }
 }
 
