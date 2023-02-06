@@ -21,9 +21,20 @@ package com.publicissapient.kpidashboard.processor;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,13 +63,11 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.factory.JenkinsClientFactory;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsJob;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.JenkinsProcessorJobExecutor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsBuildClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsDeployClient;
-import com.publicissapient.kpidashboard.jenkins.repository.JenkinsJobRepository;
 import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepository;
 
 @ExtendWith(SpringExtension.class)
@@ -72,8 +81,7 @@ public class JenkinsProcessorTaskTests {
 	private JenkinsProcessorRepository jenkinsProcessorRepository;
 	@Mock
 	private JenkinsClientFactory jenkinsClientFactory;
-	@Mock
-	private JenkinsJobRepository jenkinsJobRepository;
+
 	@Mock
 	private BuildRepository buildRepository;
 	@Mock
@@ -96,21 +104,24 @@ public class JenkinsProcessorTaskTests {
 	private static final String SERVER1 = "server1";
 	private static final String NICENAME1 = "niceName1";
 	private List<ProcessorToolConnection> connList = new ArrayList<>();
+	private List<ProcessorToolConnection> connList2 = new ArrayList<>();
 	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
 
 	private static final ProcessorToolConnection JENKINSSAMPLESERVER = new ProcessorToolConnection();
+	private static final ProcessorToolConnection JENKINSSAMPLESERVER2 = new ProcessorToolConnection();
 
 	@BeforeEach
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 		JenkinsProcessor processor = new JenkinsProcessor();
+		processor.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		JENKINSSAMPLESERVER.setUrl("http://does:matter@jenkins.com");
 		JENKINSSAMPLESERVER.setUsername("does");
 		JENKINSSAMPLESERVER.setApiKey("matter");
 		JENKINSSAMPLESERVER.setJobName("JOB1");
 		JENKINSSAMPLESERVER.setJobType("build");
 		JENKINSSAMPLESERVER.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
-
+		JENKINSSAMPLESERVER.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		connList.add(JENKINSSAMPLESERVER);
 
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -128,7 +139,7 @@ public class JenkinsProcessorTaskTests {
 
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<JenkinsJob, Set<Build>>());
+		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 
 		JenkinsProcessor jenkinsProcessor = new JenkinsProcessor();
 		task.execute(jenkinsProcessor);
@@ -140,110 +151,94 @@ public class JenkinsProcessorTaskTests {
 
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<JenkinsJob, Set<Build>>());
+		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 		task.execute(processorWithOneServer());
 		verifyNoMoreInteractions(jenkinsClient, buildRepository);
 	}
 
 	@Test
+	public void testExecute() {
+		JenkinsClient client2 = mock(JenkinsClient.class);
+		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
+		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
+		task.execute(processorWithOneServer());
+		assertTrue(task.execute(processorWithOneServer()));
+	}
+
+	@Test
+	public void testExecuteNullJobs() {
+		JenkinsClient client2 = mock(JenkinsClient.class);
+		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
+		when(client2.getBuildJobsFromServer(any())).thenReturn(null);
+		task.execute(processorWithOneServer());
+		assertTrue(task.execute(processorWithOneServer()));
+	}
+
+	@Test
 	public void collect_twoJobs_jobsAdded() {
 
-		List<JenkinsJob> jenkinsJob = new ArrayList<>();
-		JenkinsJob jenJob = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, true);
-		jenJob.setProcessorId(ObjectId.get());
-		jenkinsJob.add(jenJob);
 		ProcessorExecutionTraceLog p1 = new ProcessorExecutionTraceLog();
 		p1.setBasicProjectConfigId("62171d0f26dd266803fa87da");
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		pl.add(p1);
-
 		projectConfig.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
-		when(jenkinsJobRepository.findJob(any(), any(), any(), any())).thenReturn(jenJob);
+		when(client2.getBuildJobsFromServer(any())).thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
 		when(processorExecutionTraceLogService.getTraceLogs("Jenkins", "62171d0f26dd266803fa87da")).thenReturn(pl);
 		task.execute(processorWithOneServer());
-		verify(jenkinsJobRepository, times(0)).saveAll(Mockito.anyList());
+		assertTrue(task.execute(processorWithOneServer()));
 	}
 
 	@Test
 	public void collect_twoJobs_jobsAdded_random_order() {
 
-		List<JenkinsJob> jenkinsJobs = new ArrayList<>();
-		JenkinsJob jenkinsJob = jenkinsJob("2", SERVER1, "JOB2_URL", NICENAME1, true);
-		jenkinsJob.setProcessorId(ObjectId.get());
-		jenkinsJobs.add(jenkinsJob);
 		JenkinsClient client2 = mock(JenkinsClient.class);
-
-		when(jenkinsJobRepository.save(any(JenkinsJob.class))).thenReturn(jenkinsJob);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(twoJobsWithTwoBuildsRandom(SERVER1, NICENAME1));
-
+		when(client2.getBuildJobsFromServer(Mockito.any()))
+				.thenReturn(twoJobsWithTwoBuildsRandom(JENKINSSAMPLESERVER.getId()));
 		task.execute(processorWithOneServer());
-		verify(jenkinsJobRepository, times(0)).saveAll(Mockito.anyList());
+		assertTrue(task.execute(processorWithOneServer()));
 	}
 
 	@Test
 	public void collect_oneJob_exists_notAdded() {
 		JenkinsProcessor processor = processorWithOneServer();
-		JenkinsJob job = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, false);
+		Build build = new Build();
+		build.setNumber("1");
+		build.setBuildUrl("JOB1_1_URL");
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(job));
-		when(jenkinsJobRepository.findJob(processor.getId(), SERVER1, job.getJobName(), connList.get(0).getId()))
-				.thenReturn(job);
+		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 
 		task.execute(processor);
-
-		verify(jenkinsJobRepository, never()).save(job);
+		assertTrue(task.execute(processor));
 	}
 
 	@Test
-	public void delete_job() {
-		JenkinsProcessor processor = processorWithOneServer();
-		processor.setId(ObjectId.get());
-		JenkinsJob job1 = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, true);
-		job1.setProcessorId(processor.getId());
-		JenkinsJob job2 = jenkinsJob("2", SERVER1, "JOB2_URL", NICENAME1, false);
-		job2.setProcessorId(processor.getId());
-		List<JenkinsJob> jobs = new ArrayList<>();
-		jobs.add(job1);
-		jobs.add(job2);
-		Set<ObjectId> udId = new HashSet<>();
-		udId.add(processor.getId());
-		JenkinsClient client2 = mock(JenkinsClient.class);
-		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(job1));
-		task.execute(processor);
-		List<JenkinsJob> delete = new ArrayList<>();
-		delete.add(job2);
-		verify(jenkinsJobRepository, times(0)).deleteAll(delete);
-	}
-
-	// @Test
 	public void collect_jobNotEnabled_buildNotAdded() {
 		JenkinsProcessor processor = processorWithOneServer();
-		JenkinsJob job = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, false);
 		Build build = build("1", "JOB1_1_URL");
-
-		when(jenkinsClient.getBuildJobsFromServer(JENKINSSAMPLESERVER)).thenReturn(oneJobWithBuilds(job, build));
+		JenkinsClient client2 = mock(JenkinsClient.class);
+		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
+		when(jenkinsClient.getBuildJobsFromServer(JENKINSSAMPLESERVER))
+				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 		task.execute(processor);
-
 		verify(buildRepository, never()).save(build);
 	}
 
 	@Test
 	public void collect_jobEnabled_buildExists_buildNotAdded() {
 		JenkinsProcessor processor = processorWithOneServer();
-		JenkinsJob job = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, false);
+
 		Build build = build("1", "JOB1_1_URL");
 		JenkinsClient client2 = mock(JenkinsClient.class);
-
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(JENKINSSAMPLESERVER)).thenReturn(oneJobWithBuilds(job, build));
-		when(jenkinsJobRepository.findJob(any(), any(), any(), any())).thenReturn(job);
-		when(buildRepository.findByProcessorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(build);
+		when(client2.getBuildJobsFromServer(JENKINSSAMPLESERVER))
+				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+
+		when(buildRepository.findByProjectToolConfigIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
+				.thenReturn(build);
 		task.execute(processor);
 
 		verify(buildRepository, never()).save(build);
@@ -252,31 +247,27 @@ public class JenkinsProcessorTaskTests {
 	@Test
 	public void collect_jobEnabled_newBuild_buildAdded() {
 		JenkinsProcessor processor = processorWithOneServer();
-		JenkinsJob job = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, true);
 		Build build = build("1", "JOB1_1_URL");
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(jenkinsJobRepository.findJob(any(), any(), any(), any())).thenReturn(job);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(job, build));
-		when(buildRepository.findByProcessorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(null);
-
+		when(client2.getBuildJobsFromServer(any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+		when(buildRepository.findByProjectToolConfigIdAndNumber(JENKINSSAMPLESERVER.getId(), build.getNumber()))
+				.thenReturn(null);
 		assertTrue(task.execute(processor));
 	}
 
 	@Test
 	public void collect_clean() {
 		JenkinsProcessor processor = processorWithOneServer();
-		List<JenkinsJob> jenkinsJobs = new ArrayList<>();
-		JenkinsJob jenkinsJob = jenkinsJob("1", SERVER1, "JOB1_URL", NICENAME1, true);
+
 		ObjectId id = ObjectId.get();
 		processor.setId(id);
-		jenkinsJob.setProcessorId(id);
-		jenkinsJobs.add(jenkinsJob);
+
 		Map<ProcessorType, List<ProcessorItem>> processorItem = new HashMap<ProcessorType, List<ProcessorItem>>();
 		processorItem.put(ProcessorType.BUILD, Arrays.asList(getProcessorItems(id)));
 		JenkinsClient client2 = mock(JenkinsClient.class);
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<JenkinsJob, Set<Build>>());
+		when(client2.getBuildJobsFromServer(any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 
 		assertTrue(task.execute(processor));
 
@@ -285,21 +276,17 @@ public class JenkinsProcessorTaskTests {
 	@Test
 	public void collect_enable_Job() {
 
-		List<JenkinsJob> jenkinsJobs = new ArrayList<>();
-		JenkinsJob jenkinsJob = jenkinsJob("1", "http://does:matter@jenkins.com", "JOB1_URL", NICENAME1, true);
-		jenkinsJob.setProcessorId(ObjectId.get());
 		ProjectBasicConfig p1;
-		jenkinsJobs.add(jenkinsJob);
-		jenkinsJob.setToolConfigId(new ObjectId("62171d0f26dd266803fa87da"));
+
 		JenkinsClient client2 = mock(JenkinsClient.class);
 
 		when(jenkinsClientFactory.getJenkinsClient("build")).thenReturn(client2);
-		when(client2.getBuildJobsFromServer(any())).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
-		when(jenkinsJobRepository.findJob(any(), any(), any(), any())).thenReturn(jenkinsJob);
+		when(client2.getBuildJobsFromServer(any())).thenReturn(twoJobsWithTwoBuilds(JENKINSSAMPLESERVER.getId()));
+
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId("Jenkins",
 				new ObjectId("62171d0f26dd266803fa87da"))).thenReturn(connList);
 		task.execute(processorWithOneServer());
-		verify(jenkinsJobRepository, times(0)).saveAll(Mockito.anyList());
+		assertTrue(task.execute(processorWithOneServer()));
 	}
 
 	@Test
@@ -322,39 +309,24 @@ public class JenkinsProcessorTaskTests {
 		return item;
 	}
 
-	private Map<JenkinsJob, Set<Build>> oneJobWithBuilds(JenkinsJob job, Build... builds) {
-		Map<JenkinsJob, Set<Build>> jobs = new HashMap<>();
+	private Map<ObjectId, Set<Build>> oneJobWithBuilds(ObjectId job, Build... builds) {
+		Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 		jobs.put(job, Sets.newHashSet(builds));
 		return jobs;
 	}
 
-	private Map<JenkinsJob, Set<Build>> twoJobsWithTwoBuilds(String server, String niceName) {
-		Map<JenkinsJob, Set<Build>> jobs = new HashMap<>();
-		jobs.put(jenkinsJob("1", server, "JOB1_URL", niceName, true),
-				Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
-		jobs.put(jenkinsJob("2", server, "JOB2_URL", niceName, true),
-				Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+	private Map<ObjectId, Set<Build>> twoJobsWithTwoBuilds(ObjectId server) {
+		Map<ObjectId, Set<Build>> jobs = new HashMap<>();
+		jobs.put(server, Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
+		jobs.put(server, Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
 		return jobs;
 	}
 
-	private Map<JenkinsJob, Set<Build>> twoJobsWithTwoBuildsRandom(String server, String niceName) {
-		Map<JenkinsJob, Set<Build>> jobs = new HashMap<>();
-		jobs.put(jenkinsJob("2", server, "JOB2_URL", niceName, true),
-				Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
-		jobs.put(jenkinsJob("1", server, "JOB1_URL", niceName, true),
-				Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
+	private Map<ObjectId, Set<Build>> twoJobsWithTwoBuildsRandom(ObjectId server) {
+		Map<ObjectId, Set<Build>> jobs = new HashMap<>();
+		jobs.put(server, Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+		jobs.put(server, Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
 		return jobs;
-	}
-
-	private JenkinsJob jenkinsJob(String jobName, String instanceUrl, String jobUrl, String niceName,
-			boolean isEnabled) {
-		JenkinsJob job = new JenkinsJob();
-		job.setJobName(jobName);
-		job.setInstanceUrl(instanceUrl);
-		job.setJobUrl(jobUrl);
-		job.setActive(isEnabled);
-		job.setProcessorId(ObjectId.get());
-		return job;
 	}
 
 	private Build build(String number, String url) {
