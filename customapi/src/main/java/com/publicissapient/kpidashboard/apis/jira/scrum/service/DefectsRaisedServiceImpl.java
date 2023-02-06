@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.model.*;
 
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -60,7 +63,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	private static final String UNLINKED_DEFECTS = "Unlinked defects";
 	private static final String DEFECT_DENSITY = "Defect density";
 	private static final String SEARCH_BY_STATUS = "Filter by Status";
-	private static final String ADDED_ISSUES = "Added issue";
+	private static final String STORY_LIST = "Storylist";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -79,7 +82,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		DataCount trendValue = new DataCount();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
@@ -104,27 +107,36 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-												  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
+
+		List<String> sprintList = new ArrayList<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
+
 			LOGGER.info("Defect raised -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-			if (null != sprintDetails && null != sprintDetails.getAddedIssues()) {
-				List<String> addedIssues = new ArrayList<>(sprintDetails.getAddedIssues());
-				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(new ArrayList<>(addedIssues), basicProjectConfigId);
+			sprintList.add(sprintId);
+
+			if (null != sprintDetails) {
+				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.TOTAL_ISSUES);
+				if (CollectionUtils.isNotEmpty(totalIssue)) {
+					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssue,
+							basicProjectConfigId);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
-									issueList);
-					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getTotalIssues(), issueList);
+
+					resultListMap.put(STORY_LIST, new ArrayList<>(filtersIssuesList));
 				}
 			}
+
 		}
 		return resultListMap;
+
 	}
 
 	/**
@@ -138,41 +150,58 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-										  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
+		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
+
+		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, startDate, endDate, kpiRequest);
+
 		assert latestSprint != null;
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
 		List<String> defectTypes = fieldMapping.getJiradefecttype();
 
-		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(ADDED_ISSUES))) {
-			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ADDED_ISSUES)).stream()
+		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
+			List<JiraIssue> alldefects = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
+			List<JiraIssue> allStory = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
+					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
+			List<JiraIssue> tempDefects = alldefects.stream()
+					.filter(jiraIssue -> !jiraIssue.getDefectStoryID().isEmpty()).collect(Collectors.toList());
 
+			if (CollectionUtils.isNotEmpty(alldefects)) {
+				LOGGER.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId,
+						alldefects.size());
 
-			if (CollectionUtils.isNotEmpty(allIssues)) {
-				LOGGER.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
-
-				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = allIssues.stream().collect(
+				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = alldefects.stream().collect(
 						Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
-
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 				Set<String> priorities = new HashSet<>();
 				Set<String> statuses = new HashSet<>();
-				List<JiraIssue> tempLinkedDefect = allIssues.stream()
-						.filter(ai -> CollectionUtils.isNotEmpty(ai.getDefectStoryID())).collect(Collectors.toList());
+				List<JiraIssue> tempLinkedDefect = tempDefects.stream().filter(jiraIssue -> {
+					try {
+						return (dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(endDate))
+								|| dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(startDate)))
+								|| (dateFormat.parse(jiraIssue.getCreatedDate()).before(dateFormat.parse(endDate))
+										&& dateFormat.parse(jiraIssue.getCreatedDate())
+												.after(dateFormat.parse(startDate)));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					return false;
+				}).collect(Collectors.toList());
 
-				double storyPointsSum = tempLinkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
-						.mapToDouble(JiraIssue::getStoryPoints).sum();
-				double overAllDefectDensity = storyPointsSum == 0 ? 0 : tempLinkedDefect.size() / storyPointsSum;
+				double overAllDefectDensity = getDefectDensity(allStory, tempLinkedDefect);
 
 				List<Double> overAllLinkedDefects = Arrays.asList(0.0);
 				List<Double> overAllUnlinkedDefects = Arrays.asList(0.0);
@@ -180,7 +209,6 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 				List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
 				List<IterationKpiModalValue> overAlllinkedmodalValues = new ArrayList<>();
 				List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
-
 
 				priorityAndStatusWiseIssues
 						.forEach((priority, statusWiseIssue) -> statusWiseIssue.forEach((status, issues) -> {
@@ -198,11 +226,12 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 							for (JiraIssue jiraIssue : issues) {
 
 								checkDefectType(overAllUnlinkedmodalValues, overAlllinkedmodalValues, linkedModalValues,
-										unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue);
+										unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue, endDate,
+										startDate);
 								populateIterationData(overAllModalValues, modalValues, jiraIssue);
 
 							}
-							double defectDensity = getDefectDensity(linkedDefect);
+							double defectDensity = getDefectDensity(allStory, linkedDefect);
 
 							overAllLinkedDefects.set(0, overAllLinkedDefects.get(0) + linkedDefect.size());
 							overAllUnlinkedDefects.set(0, overAllUnlinkedDefects.get(0) + unlinkedDefect.size());
@@ -212,8 +241,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 							IterationKpiData ud = new IterationKpiData(UNLINKED_DEFECTS, (double) unlinkedDefect.size(),
 									null, null, null, unLinkedModalValues);
 
-							IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(), null,
-									null, null, linkedModalValues);
+							IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(),
+									null, null, null, linkedModalValues);
 							data.add(dd);
 							data.add(ud);
 							data.add(ld);
@@ -225,8 +254,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData overAllDD = new IterationKpiData(DEFECT_DENSITY, overAllDefectDensity, null, null, "",
 						overAllModalValues);
-				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS, overAllLinkedDefects.get(0), null, null,
-						null, overAlllinkedmodalValues);
+				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS, overAllLinkedDefects.get(0), null,
+						null, null, overAlllinkedmodalValues);
 				IterationKpiData overAllUD = new IterationKpiData(UNLINKED_DEFECTS, overAllUnlinkedDefects.get(0), null,
 						null, null, overAllUnlinkedmodalValues);
 				data.add(overAllDD);
@@ -243,30 +272,52 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
-			    kpiElement.setModalHeads(KPIExcelColumn.DEFECT_RAISED.getColumns());
+				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_RAISED.getColumns());
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
 	}
 
-	private double getDefectDensity(List<JiraIssue> linkedDefect) {
-		double storyPoints = linkedDefect.stream().filter(tld -> tld.getStoryPoints() != null)
-				.mapToDouble(JiraIssue::getStoryPoints).sum();
+	private double getDefectDensity(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
+
+		if (allStory == null || linkedDefect == null) {
+			return 0;
+		}
+		Set<String> listOfStory = linkedDefect.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+				.collect(Collectors.toSet());
+
+		double storyPoints = allStory.stream().filter(jiraIssue -> listOfStory.contains(jiraIssue.getNumber()))
+				.mapToDouble(jiraIssue -> {
+					if (jiraIssue.getStoryPoints() == null) {
+						return 0;
+					}
+					return jiraIssue.getStoryPoints();
+				}).sum();
+
 		return storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints;
 	}
 
-	private void checkDefectType (List < IterationKpiModalValue > overAllUnlinkedmodalValues,
-				List < IterationKpiModalValue > overAlllinkedmodalValues, List < IterationKpiModalValue > linkedModalValues,
-				List < IterationKpiModalValue > unLinkedModalValues, List < JiraIssue > linkedDefect,
-				List < JiraIssue > unlinkedDefect, JiraIssue jiraIssue){
-			if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
-				linkedDefect.add(jiraIssue);
-				populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue);
+	private void checkDefectType(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
+			List<IterationKpiModalValue> overAlllinkedmodalValues, List<IterationKpiModalValue> linkedModalValues,
+			List<IterationKpiModalValue> unLinkedModalValues, List<JiraIssue> linkedDefect,
+			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, String endDate, String startDate) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
-			} else {
-				unlinkedDefect.add(jiraIssue);
-				populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue);
-
+		try {
+			if ((dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(endDate))
+					|| dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(startDate)))
+					|| (dateFormat.parse(jiraIssue.getCreatedDate()).before(dateFormat.parse(endDate))
+							&& dateFormat.parse(jiraIssue.getCreatedDate()).after(dateFormat.parse(startDate)))) {
+				if (!jiraIssue.getDefectStoryID().isEmpty()) {
+					linkedDefect.add(jiraIssue);
+					populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue);
+				} else {
+					unlinkedDefect.add(jiraIssue);
+					populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue);
+				}
 			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 }
