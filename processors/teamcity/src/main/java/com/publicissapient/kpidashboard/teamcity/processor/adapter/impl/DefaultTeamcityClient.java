@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -49,7 +50,6 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.teamcity.config.Constants;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
-import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
 
@@ -95,9 +95,9 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * @return the map of teamcity jobs and build
 	 */
 	@Override
-	public Map<TeamcityJob, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer) {
+	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer) {
 		log.debug("Enter getInstanceJobs");
-		Map<TeamcityJob, Set<Build>> result = new LinkedHashMap<>();
+		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
 		JSONObject jobs = getJobs(teamcityServer);	
 
@@ -126,7 +126,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return result;
 	}
 
-	private boolean processResponse(ProcessorToolConnection teamcityServer, Map<TeamcityJob, Set<Build>> result,
+	private boolean processResponse(ProcessorToolConnection teamcityServer, Map<ObjectId, Set<Build>> result,
 			String returnJSON) {
 		try {
 			JSONParser parser = new JSONParser();
@@ -209,7 +209,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 *            the list of build
 	 */
 	private void recursiveGetJobDetails(String jobName, String jobURL, String instanceUrl,
-			Map<TeamcityJob, Set<Build>> result, ProcessorToolConnection teamcityServer) {
+			Map<ObjectId, Set<Build>> result, ProcessorToolConnection teamcityServer) {
 		log.debug("recursiveGetJobDetails: jobName {} jobURL: {}", jobName, jobURL);
 
 		String url = ProcessorUtils.joinURL(teamcityServer.getUrl(), jobURL);
@@ -232,10 +232,6 @@ public class DefaultTeamcityClient implements TeamcityClient {
 
 		JSONArray jsonBuilds = ProcessorUtils.getJsonArray(jsonBuildRoot, "buildType");
 		if (!jsonBuilds.isEmpty()) {
-			TeamcityJob teamcityJob = new TeamcityJob();
-			teamcityJob.setInstanceUrl(instanceUrl);
-			teamcityJob.setJobName(jobName);
-			teamcityJob.setJobUrl(jobURL);
 
 			Set<Build> builds = new LinkedHashSet<>();
 			for (Object build : jsonBuilds) {
@@ -253,7 +249,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				}
 			}
 			// add the builds to the job
-			result.put(teamcityJob, builds);
+			result.put(teamcityServer.getId(), builds);
 		}
 
 		JSONObject childJobs = (JSONObject) projectObject.get("projects");
