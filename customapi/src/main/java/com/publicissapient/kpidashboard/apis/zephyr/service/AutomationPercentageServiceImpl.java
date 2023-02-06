@@ -140,7 +140,6 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
         List<String> basicProjectConfigIds = new ArrayList<>();
         Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
         Map<String, Map<String, Object>> uniqueProjectMapForTestCase = new HashMap<>();
-        Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
         Map<String, String> sprintProjectIdMap = new HashMap<>();
         Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
                 .cacheProjectToolConfigMapData();
