@@ -384,7 +384,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Daily Closures',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraDod']}
+        fieldNames : { }
       },
 	  {
         kpiId: 'kpi128',
