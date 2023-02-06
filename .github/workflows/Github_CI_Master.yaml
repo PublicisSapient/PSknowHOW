@@ -76,6 +76,8 @@ jobs:
         id: BuildUI
         run: |
           cd UI
+          whoami
+          hostname
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
