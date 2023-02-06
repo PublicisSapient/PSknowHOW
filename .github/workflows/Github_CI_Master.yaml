@@ -105,13 +105,11 @@ jobs:
         id: SonarUI
         run: | 
           cd UI
-          whoami
-          hostname
           echo 'sonar.branch.name=${{env.GITHUB_HEAD_REF}}'>> sonar-project.properties
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
-          sudo npm install -D sonarqube-scanner
-          sudo npm run sonar
+          npm install -D sonarqube-scanner
+          npm run sonar
       - name: Scanning UI QG with Sonar Qube
         if: steps.changes.outputs.UI == 'true'
         id: SonarUIqg
