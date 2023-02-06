@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -56,15 +58,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.bamboo.config.BambooConfig;
-import com.publicissapient.kpidashboard.bamboo.model.BambooProcessorItem;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * This class is the implementation of {@link BambooClient} which could be used
@@ -95,22 +94,30 @@ public class BambooClientBuildImpl implements BambooClient {
 	@Autowired
 	private BambooConfig settings;
 
-
+	/**
+	 * fetch jobs based on job key and branch key
+	 *
+	 * @param bambooServer
+	 *        {@link ProcessorToolConnection}
+	 * @param proBasicConfig
+	 * @return
+	 * @throws ParseException
+	 */
 	@Override
-	public Map<BambooProcessorItem, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException {
-		Map<BambooProcessorItem, Set<Build>> bambooJobs = new LinkedHashMap<>();
+		Map<ObjectId, Set<Build>> bambooJobs = new LinkedHashMap<>();
 		try {
 			final String planKey = bambooServer.getJobName();
 			final String planURL = BambooClient.appendToURL(bambooServer.getUrl(), PLAN_URL_SUFFIX, planKey);
 			final String branchKey = bambooServer.getBranch();
 			JSONParser parser = new JSONParser();
-			BambooProcessorItem bambooProcessorItem = new BambooProcessorItem();
 			if (branchKey == null) {
-				setPlanBuilds(bambooServer, bambooJobs, parser, planKey, planURL, bambooProcessorItem);
+				setPlanBuilds(bambooServer, bambooJobs, parser, planKey);
 			} else {
 				// There might be many branches and sub-plans
-				setBranchBuilds(bambooServer, bambooJobs, parser, branchKey, planURL, bambooProcessorItem);
+				setBranchBuilds(bambooServer, bambooJobs, parser, branchKey, planURL);
 			}
 		} catch (ParseException | RestClientException e) {
 			log.error("Error Fetching the jobs on instance: {}, {}", bambooServer.getUrl(), e);
@@ -119,8 +126,8 @@ public class BambooClientBuildImpl implements BambooClient {
 		return bambooJobs;
 	}
 
-	private void setBranchBuilds(ProcessorToolConnection bambooServer, Map<BambooProcessorItem, Set<Build>> bambooJobs,
-			JSONParser parser, String branchKey, String planURL, BambooProcessorItem bambooProcessorItem)
+	private void setBranchBuilds(ProcessorToolConnection bambooServer, Map<ObjectId, Set<Build>> bambooJobs,
+			JSONParser parser, String branchKey, String planURL)
 			throws ParseException {
 		String returnJSON;
 		String resultUrl;
@@ -139,13 +146,8 @@ public class BambooClientBuildImpl implements BambooClient {
 					resultUrl = BambooClient.appendToURL(bambooServer.getUrl(), JOBS_RESULT_SUFFIX, subPlan);
 					log.info("Found sub Plan:{}; URL: {} ", subPlan, resultUrl);
 					returnJSON = makeBambooServerCall(resultUrl, bambooServer);
-					Set<Build> builds = getBuilds((JSONObject) parser.parse(returnJSON), resultUrl);
-					// add the builds to the job
-					bambooProcessorItem.setJobName(branchKey);
-					String branchUrl = BambooClient.appendToURL(bambooServer.getUrl(), PLAN_URL_SUFFIX, branchKey);
-					bambooProcessorItem.setJobUrl(branchUrl);
-					bambooProcessorItem.setInstanceUrl(bambooServer.getUrl());
-					bambooJobs.put(bambooProcessorItem, builds);
+					Set<Build> builds = getBuilds((JSONObject) parser.parse(returnJSON), resultUrl , branchKey);
+					bambooJobs.put(bambooServer.getId(), builds);
 					// Ended with nested branches
 				}
 			}
@@ -153,17 +155,14 @@ public class BambooClientBuildImpl implements BambooClient {
 	}
 
 	@NotNull
-	private void setPlanBuilds(ProcessorToolConnection bambooServer, Map<BambooProcessorItem, Set<Build>> bambooJobs,
-			JSONParser parser, String planName, String planURL, BambooProcessorItem bambooProcessorItem)
+	private void setPlanBuilds(ProcessorToolConnection bambooServer, Map<ObjectId, Set<Build>> bambooJobs,
+			JSONParser parser, String planName)
 			throws ParseException {
-		bambooProcessorItem.setInstanceUrl(bambooServer.getUrl());
-		bambooProcessorItem.setJobName(planName);
-		bambooProcessorItem.setJobUrl(planURL);
 		String resultUrl = BambooClient.appendToURL(bambooServer.getUrl(), JOBS_RESULT_SUFFIX, planName);
 		// Finding out the results of the top-level plan
 		String returnJSON = makeBambooServerCall(resultUrl, bambooServer);
-		Set<Build> builds = getBuilds((JSONObject) parser.parse(returnJSON), resultUrl);
-		bambooJobs.put(bambooProcessorItem, builds);
+		Set<Build> builds = getBuilds((JSONObject) parser.parse(returnJSON), resultUrl , planName);
+		bambooJobs.put(bambooServer.getId(), builds);
 	}
 
 	/**
@@ -173,7 +172,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * @param resultUrl
 	 * @return
 	 */
-	private Set<Build> getBuilds(JSONObject jsonJob, String resultUrl) {
+	private Set<Build> getBuilds(JSONObject jsonJob, String resultUrl , String jobName) {
 		Set<Build> buildSet = new HashSet<>();
 		getJsonArray((JSONObject) jsonJob.get("results"), "result").forEach(buildDetail -> {
 			JSONObject buildObj = (JSONObject) buildDetail;
@@ -182,6 +181,7 @@ public class BambooClientBuildImpl implements BambooClient {
 				String buildNumber = buildObj.get(BUILD_NUMBER).toString();
 				if (!ZERO.equals(buildNumber)) {
 					Build build = new Build();
+					build.setBuildJob(jobName);
 					build.setNumber(buildNumber);
 					String bUrl = BambooClient.appendToURL(resultUrl, buildNumber);
 					// Modify local host if Docker Natting is being done
@@ -238,7 +238,7 @@ public class BambooClientBuildImpl implements BambooClient {
 
 	@Override
 	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig projectBasicConfig)
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}

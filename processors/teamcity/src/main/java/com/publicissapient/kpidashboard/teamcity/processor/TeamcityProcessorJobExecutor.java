@@ -18,10 +18,13 @@
 
 package com.publicissapient.kpidashboard.teamcity.processor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,6 +32,8 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +54,8 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.factory.TeamcityClientFactory;
-import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
-import com.publicissapient.kpidashboard.teamcity.repository.TeamcityJobRepository;
 import com.publicissapient.kpidashboard.teamcity.repository.TeamcityProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,8 +68,6 @@ import org.apache.commons.collections4.CollectionUtils;
 @Component
 @Slf4j
 public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityProcessor> {
-
-	private static final String JOBNAME = "jobName";
 	private static final String PROCESSOR_EXECUTION_UID = "processorExecutionUid";
 	private static final String PROCESSOR_START_TIME = "processorStartTime";
 	private static final String INSTANCE_URL = "instanceUrl";
@@ -75,13 +76,11 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private static final String EXECUTION_TIME = "executionTime";
 	private static final String EXECUTION_STATUS = "executionStatus";
 	private static final String TEAMCITY_CLIENT = "teamcityClient";
+	private LocalDate today = LocalDate.now();
+	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	@Autowired
 	private TeamcityProcessorRepository teamcityProcessorRepository;
-
-	@Autowired
-
-	private TeamcityJobRepository teamcityJobRepository;
 	@Autowired
 	private BuildRepository buildRepository;
 
@@ -96,6 +95,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	private TeamcityClient teamcityClient;
 
@@ -170,9 +171,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 		Set<ObjectId> udId = new HashSet<>();
 		udId.add(processor.getId());
-		List<TeamcityJob> existingJobs = teamcityJobRepository.findByProcessorIdIn(udId);
-		List<TeamcityJob> activeJobs = new ArrayList<>();
-
+		List<Build> savedTotalBuilds = new ArrayList<>();
 		Set<String> jobNameSet = new HashSet<>();
 		int count = 0;
 
@@ -184,35 +183,48 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 			for (ProcessorToolConnection teamcityServer : teamcityJobList) {
 
-				// String instanceUrl : collector.getBuildServers()
 				teamcityServer.setPassword(decryptPassword(teamcityServer.getPassword()));
 				String instanceUrl = teamcityServer.getUrl();
 				MDC.put(INSTANCE_URL, instanceUrl);
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					assigneeToggleDate(proBasicConfig);
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					teamcityClient = teamcityClientFactory.getTeamcityClient(TEAMCITY_CLIENT);
 
-					Map<TeamcityJob, Set<Build>> buildsByJob = teamcityClient.getInstanceJobs(teamcityServer);
+					Map<ObjectId, Set<Build>> buildsByJob = teamcityClient.getInstanceJobs(teamcityServer);
 					log.info("Fetched jobs at : {}", startTime);
-					activeJobs.addAll(buildsByJob.keySet());
-					addNewJobs(buildsByJob.keySet(), existingJobs, processor, jobNameSet);
 
-					List<TeamcityJob> processorItems = teamcityJobRepository.findByProcessorId(processor.getId());
-					List<TeamcityJob> toBeEnabledJob = new ArrayList<>();
-
-					addTeamcityJob(teamcityServer, processorItems, toBeEnabledJob);
-
-					if (!CollectionUtils.isEmpty(toBeEnabledJob)) {
-						teamcityJobRepository.saveAll(toBeEnabledJob);
-					}
-
-					int updatedJobs = addNewBuilds(findActiveJobs(processor, instanceUrl), buildsByJob, teamcityServer, proBasicConfig);
+					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId(),proBasicConfig);
 					count += updatedJobs;
+					if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+						if (proBasicConfig.isSaveAssigneeDetails()
+								&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+										.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
+										|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+												.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf)))) {
+							List<Build> updateStartedBy = new ArrayList<>();
+
+							for (Build build : buildsByJob.values().iterator().next()) {
+
+								Build buildData = buildRepository
+										.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), build.getNumber());
+								if (buildData != null) {
+									buildData.setStartedBy(build.getStartedBy());
+									updateStartedBy.add(buildData);
+								}
+
+							}
+							buildRepository.saveAll(updateStartedBy);
+
+						}
+					}
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 				} catch (RestClientException exception) {
@@ -227,8 +239,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
 
-		removeDiscardedJobs(activeJobs, existingJobs, processor.getId());
-
 		long endTime = System.currentTimeMillis();
 
 		MDC.put(PROCESSOR_END_TIME, String.valueOf(endTime));
@@ -239,92 +249,58 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		return executionStatus;
 	}
 
-	private void addTeamcityJob(ProcessorToolConnection teamcityServer, List<TeamcityJob> processorItems,
-			List<TeamcityJob> toBeEnabledJob) {
-		for (TeamcityJob jenJob : processorItems) {
-			if (teamcityServer.getUrl().equals(jenJob.getToolDetailsMap().get(INSTANCE_URL))
-					&& teamcityServer.getJobName().equals(jenJob.getToolDetailsMap().get(JOBNAME))) {
-				TeamcityJob tmpTeamcityJob = jenJob;
-				tmpTeamcityJob.setActive(true);
-				tmpTeamcityJob.setVersion((short) 2);
-				tmpTeamcityJob.setToolConfigId(teamcityServer.getId());
-				toBeEnabledJob.add(tmpTeamcityJob);
-			}
-		}
-	}
-
-	/**
-	 * Delete orphaned job processor items.
-	 *
-	 * @param activeJobs
-	 *            the active Teamcity jobs
-	 * @param existingJobs
-	 *            the existing Teamcity jobs
-	 * 
-	 * @param processorId
-	 *            the Teamcity processor id
-	 */
-	private void removeDiscardedJobs(List<TeamcityJob> activeJobs, List<TeamcityJob> existingJobs,
-			ObjectId processorId) {
-
-		List<TeamcityJob> deleteJobList = new ArrayList<>();
-		for (TeamcityJob job : existingJobs) {
-			if (job.getVersion() != null && job.getVersion() == 2) {
-				continue;
-			}
-
-			if (!job.getProcessorId().equals(processorId)) {
-				deleteJobList.add(job);
-			}
-
-			if (!activeJobs.contains(job)) {
-				deleteJobList.add(job);
-			}
-		}
-		if (!CollectionUtils.isEmpty(deleteJobList)) {
-			teamcityJobRepository.deleteAll(deleteJobList);
-		}
-	}
-
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.TEAMCITY);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+		});
 		return processorExecutionTraceLog;
 	}
 
 	/**
-	 * Iterates over the enabled build jobs and adds new builds to the database.
+	 * Iterates over fetched build jobs and adds new builds to the database.
 	 *
-	 * @param enabledJobs
-	 *            the list of enabled Teamcity job
+	 * @param savedTotalBuilds
+	 * 		the list of builds total for each projects
 	 * @param buildsByJob
-	 *            the build by job
+	 * 		the build by job
 	 * @param teamcityServer
-	 *            the teamcity server
+	 * 		the teamcity server
+	 * @param proBasicConfig
 	 * @return adds new build
 	 */
-	private int addNewBuilds(List<TeamcityJob> enabledJobs, Map<TeamcityJob, Set<Build>> buildsByJob,
-			ProcessorToolConnection teamcityServer,ProjectBasicConfig proBasicConfig) {
+	private int addNewBuilds(List<Build> savedTotalBuilds, Map<ObjectId, Set<Build>> buildsByJob,
+			ProcessorToolConnection teamcityServer , ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
-		for (TeamcityJob job : enabledJobs) {
+		List<Build> buildsToSave = new ArrayList<>();
 			// process new builds in the order of their build numbers - this has
 			// implication to handling of commits in BuildEventListener
-			ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(job)));
+			ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(teamcityServer.getId())));
 			builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
 			for (Build buildSummary : builds) {
-				if (isNewBuild(job, buildSummary)) {
-					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), job.getInstanceUrl(),
-							teamcityServer, proBasicConfig);
+				if (isNewBuild(teamcityServer.getId(), buildSummary)) {
+					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
+							teamcityServer,proBasicConfig);
 					if (build != null) {
-						build.setProcessorItemId(job.getId());
-						build.setBuildJob(job.getJobName());
-						buildRepository.save(build);
+						build.setBuildJob(teamcityServer.getJobName());
+						build.setProcessorId(processorId);
+						build.setBasicProjectConfigId(teamcityServer.getBasicProjectConfigId());
+						build.setProjectToolConfigId(teamcityServer.getId());
 						count++;
 					}
 				}
 			}
+
+		if (CollectionUtils.isNotEmpty(buildsToSave)) {
+			savedTotalBuilds.addAll(buildsToSave);
+			buildRepository.saveAll(buildsToSave);
 		}
 		log.info("New builds", start, count);
 		return count;
@@ -342,99 +318,16 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	}
 
 	/**
-	 * Adds new TeamcityJobs to the database as disabled jobs.
-	 * 
-	 * @param jobs
-	 *            the Teamcity jobs name
-	 * @param existingJobs
-	 *            the existing Teamcity jobs
-	 * @param processor
-	 *            the Teamcity processor
-	 * @param jobNameSet
-	 *            the list of job name
-	 */
-	private void addNewJobs(Set<TeamcityJob> jobs, List<TeamcityJob> existingJobs, TeamcityProcessor processor,
-			Set<String> jobNameSet) {
-		long start = System.currentTimeMillis();
-		int count = 0;
-
-		List<TeamcityJob> newJobs = new ArrayList<>();
-		for (TeamcityJob job : jobs) {
-
-			TeamcityJob existing = null;
-			if (!CollectionUtils.isEmpty(existingJobs) && existingJobs.contains(job)) {
-				existing = existingJobs.get(existingJobs.indexOf(job));
-			}
-
-			if (existing == null) {
-				job.setProcessorId(processor.getId());
-				job.setActive(true);
-				job.setDesc(job.getJobName());
-				newJobs.add(job);
-				count++;
-			} else if (shouldActivateJob(jobNameSet, job)) {
-				existing.setActive(true);
-				teamcityJobRepository.save(existing);
-			}
-		}
-		// save all in one shot
-		if (!CollectionUtils.isEmpty(newJobs)) {
-			teamcityJobRepository.saveAll(newJobs);
-		}
-		log.info("New jobs", start, count);
-	}
-
-	/**
-	 * Enables Teamcity Job.
-	 * 
-	 * @param jobNameSet
-	 *            the list of Teamcity jobs
-	 * @param job
-	 *            the Teamcity job
-	 * @return boolean
-	 */
-	private boolean shouldActivateJob(Set<String> jobNameSet, TeamcityJob job) {
-		return jobNameSet.contains(job.getJobName());
-	}
-
-	/**
-	 * Finds enabled Jobs.
-	 * 
-	 * @param processor
-	 *            teamcity processor
-	 * @param instanceUrl
-	 *            teamcity build server url
-	 * @return List<TeamcityJob>
-	 */
-	private List<TeamcityJob> findActiveJobs(TeamcityProcessor processor, String instanceUrl) {
-		return teamcityJobRepository.findEnabledJobs(processor.getId(), instanceUrl);
-	}
-
-	/**
-	 * Provides Existing Jobs.
-	 * 
-	 * @param processor
-	 *            the Teamcity processor
-	 * @param job
-	 *            the Teamcity job
-	 * @return the TeamcityJob
-	 */
-	@SuppressWarnings("unused")
-	private TeamcityJob getExistingJob(TeamcityProcessor processor, TeamcityJob job) {
-		return teamcityJobRepository.findJob(processor.getId(), job.getInstanceUrl(), job.getJobName());
-	}
-
-	/**
 	 * Checks whether the build is new.
 	 * 
-	 * @param job
-	 *            the Teamcity jobs
+	 * @param projectToolConfigId
+	 *            the Teamcity tool id
 	 * @param build
 	 *            the Teamcity build
 	 * @return boolean
 	 */
-	private boolean isNewBuild(TeamcityJob job, Build build) {
-		return buildRepository.findByProcessorItemIdAndNumber(job.getId(), build.getNumber()) == null;
+	private boolean isNewBuild(ObjectId projectToolConfigId, Build build) {
+		return buildRepository.findByProjectToolConfigIdAndNumber(projectToolConfigId, build.getNumber()) == null;
 	}
 
 	private String decryptPassword(String encryptedValue) {
@@ -456,5 +349,19 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
+	}
+	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
+		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
+			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
+			projectConfigRepository.save(projectBasicConfig);
+		}
+	}
+	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
+			ProjectBasicConfig proBasicConfig) {
+		if (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun())) {
+			return true;
+		}
+		return false;
 	}
 }

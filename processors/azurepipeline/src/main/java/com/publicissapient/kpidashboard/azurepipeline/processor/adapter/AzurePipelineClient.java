@@ -21,11 +21,11 @@ package com.publicissapient.kpidashboard.azurepipeline.processor.adapter;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineJob;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
 /**
@@ -41,12 +41,11 @@ public interface AzurePipelineClient {
 	 * 		the URL for the AzurePipeline instance
 	 * @param lastStartTimeOfJobs
 	 * 		lastStartTimeOfBuilds
-	 * @param processorExecutionTraceLog
+	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 */
-	Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog);
+	Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs,
+			ProjectBasicConfig proBasicConfig);
 
 	/**
 	 * Finds all of the configured jobs for a given instance and returns the set of deployments for each job. At a

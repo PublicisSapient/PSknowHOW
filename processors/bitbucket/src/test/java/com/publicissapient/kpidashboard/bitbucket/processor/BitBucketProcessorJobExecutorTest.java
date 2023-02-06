@@ -162,6 +162,7 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketProcessor.setId(PROCESSORID);
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		bitbucketRepos.add(bitbucketRepo);
@@ -180,7 +181,7 @@ class BitBucketProcessorJobExecutorTest {
 		commitDetailList.add(commitDetails);
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail))
+		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail,proBasicConfig))
 				.thenReturn(commitDetailList);
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
@@ -196,6 +197,7 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketProcessor.setId(PROCESSORID);
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig= new ProjectBasicConfig();
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
@@ -214,7 +216,7 @@ class BitBucketProcessorJobExecutorTest {
 
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail))
+		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail,proBasicConfig))
 				.thenReturn(commitDetailList);
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketRepository.save(any(BitbucketRepo.class))).thenReturn(bitbucketRepo);

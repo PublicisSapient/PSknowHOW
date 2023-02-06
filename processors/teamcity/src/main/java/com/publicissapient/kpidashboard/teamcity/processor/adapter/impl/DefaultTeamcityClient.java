@@ -32,6 +32,7 @@ import java.util.Set;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,7 +51,6 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.teamcity.config.Constants;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
-import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
 
@@ -96,9 +96,9 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * @return the map of teamcity jobs and build
 	 */
 	@Override
-	public Map<TeamcityJob, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer) {
+	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer) {
 		log.debug("Enter getInstanceJobs");
-		Map<TeamcityJob, Set<Build>> result = new LinkedHashMap<>();
+		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
 		JSONObject jobs = getJobs(teamcityServer);	
 
@@ -127,7 +127,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return result;
 	}
 
-	private boolean processResponse(ProcessorToolConnection teamcityServer, Map<TeamcityJob, Set<Build>> result,
+	private boolean processResponse(ProcessorToolConnection teamcityServer, Map<ObjectId, Set<Build>> result,
 			String returnJSON) {
 		try {
 			JSONParser parser = new JSONParser();
@@ -210,7 +210,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 *            the list of build
 	 */
 	private void recursiveGetJobDetails(String jobName, String jobURL, String instanceUrl,
-			Map<TeamcityJob, Set<Build>> result, ProcessorToolConnection teamcityServer) {
+			Map<ObjectId, Set<Build>> result, ProcessorToolConnection teamcityServer) {
 		log.debug("recursiveGetJobDetails: jobName {} jobURL: {}", jobName, jobURL);
 
 		String url = ProcessorUtils.joinURL(teamcityServer.getUrl(), jobURL);
@@ -233,10 +233,6 @@ public class DefaultTeamcityClient implements TeamcityClient {
 
 		JSONArray jsonBuilds = ProcessorUtils.getJsonArray(jsonBuildRoot, "buildType");
 		if (!jsonBuilds.isEmpty()) {
-			TeamcityJob teamcityJob = new TeamcityJob();
-			teamcityJob.setInstanceUrl(instanceUrl);
-			teamcityJob.setJobName(jobName);
-			teamcityJob.setJobUrl(jobURL);
 
 			Set<Build> builds = new LinkedHashSet<>();
 			for (Object build : jsonBuilds) {
@@ -254,7 +250,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				}
 			}
 			// add the builds to the job
-			result.put(teamcityJob, builds);
+			result.put(teamcityServer.getId(), builds);
 		}
 
 		JSONObject childJobs = (JSONObject) projectObject.get("projects");
@@ -326,16 +322,18 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * Provides Build Details.
 	 *
 	 * @param buildUrl
-	 *            the build URL
+	 * 		the build URL
 	 * @param instanceUrl
-	 *            the Teamcity instance URL
+	 * 		the Teamcity instance URL
 	 * @param teamcityServer
-	 *            the connection properties for Teamcity server
+	 * 		the connection properties for Teamcity server
+	 * @param proBasicConfig
 	 * @return the Build details
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
-	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,ProjectBasicConfig proBasicConfig) {
+	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 		try {
 			String url = rebuildJobUrl(buildUrl, instanceUrl);
 			ResponseEntity<String> result = doRestCall(url, teamcityServer);
@@ -345,7 +343,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				return null;
 			}
 
-			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer, proBasicConfig);
+			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer,proBasicConfig);
 		} catch (UnsupportedEncodingException e) {
 			log.error(String.format("Unsupported Encoding Exception in getting build details. URL=%s", buildUrl), e);
 		} catch (URISyntaxException e) {
@@ -358,12 +356,12 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return null;
 	}
 
-	private Build createBuild(String buildUrl, ProcessorToolConnection teamcityServer, JSONObject buildJson,ProjectBasicConfig proBasicConfig) {
+	private Build createBuild(String buildUrl, ProcessorToolConnection teamcityServer, JSONObject buildJson,
+			ProjectBasicConfig proBasicConfig) {
 		Build build = new Build();
-		if (proBasicConfig.isSaveAssigneeDetails())
-		{
+		if (proBasicConfig.isSaveAssigneeDetails()) {
 			build.setStartedBy(ProcessorUtils.firstCulprit(buildJson));
-	}
+		}
 		build.setBuildUrl(buildUrl);
 		build.setNumber(buildJson.get(NUMBER).toString());
 		build.setStartTime(ProcessorUtils.getCommitTimestamp(buildJson.get("startDate").toString()));
@@ -413,7 +411,8 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return StringUtils.EMPTY;
 	}
 
-	private Build parseBuildDetailsResponse(String resultJSON, String buildUrl, ProcessorToolConnection teamcityServer,ProjectBasicConfig proBasicConfig) {
+	private Build parseBuildDetailsResponse(String resultJSON, String buildUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject buildJson = (JSONObject) parser.parse(resultJSON);
