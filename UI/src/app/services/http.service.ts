@@ -39,6 +39,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     public currentVersion = '';
     public loadApp = new BehaviorSubject(false);
     public unauthorisedAccess = false;
+    public createdProjectName = '';
     /*use to change the base url according to the environment variable */
     private baseUrl = environment.baseUrl;  // Servers Env
     private filterDataUrl = this.baseUrl + '/api/filterdata';
@@ -576,6 +577,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** add basic config */
     addBasicConfig(basicConfig): Observable<any> {
+        this.createdProjectName = basicConfig?.projectName;
         return this.http.post<any>(this.basicConfigUrl, basicConfig);
     }
 
