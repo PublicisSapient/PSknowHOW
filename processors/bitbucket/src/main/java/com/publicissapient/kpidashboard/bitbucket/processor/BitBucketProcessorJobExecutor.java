@@ -21,9 +21,11 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -106,6 +108,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * Gets the cron.
@@ -300,6 +304,12 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.BITBUCKET);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+		});
 		return processorExecutionTraceLog;
 	}
 

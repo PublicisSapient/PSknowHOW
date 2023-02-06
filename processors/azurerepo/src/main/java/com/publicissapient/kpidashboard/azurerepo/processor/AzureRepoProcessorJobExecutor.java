@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -109,6 +110,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	boolean executionStatus = true;
 	
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 	
 
 	@Autowired
@@ -480,6 +483,12 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZUREREPO);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+		});
 		return processorExecutionTraceLog;
 	}
 	/**
