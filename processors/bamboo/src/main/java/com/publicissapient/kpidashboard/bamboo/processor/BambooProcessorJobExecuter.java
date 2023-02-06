@@ -41,8 +41,6 @@ import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.bamboo.config.BambooConfig;
 import com.publicissapient.kpidashboard.bamboo.factory.BambooClientFactory;
 import com.publicissapient.kpidashboard.bamboo.model.BambooProcessor;
-import com.publicissapient.kpidashboard.bamboo.model.BambooProcessorItem;
-import com.publicissapient.kpidashboard.bamboo.repository.BambooJobRepository;
 import com.publicissapient.kpidashboard.bamboo.repository.BambooProcessorRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
@@ -79,9 +77,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	@Autowired
 	private BambooProcessorRepository bambooProcessorRepository;
-
-	@Autowired
-	private BambooJobRepository bambooJobRepository;
 
 	@Autowired
 	private BuildRepository buildRepository;
@@ -145,41 +140,36 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	/**
-	 * Iterates over the enabled build jobs and adds new builds to the database.
+	 * Iterates over the fetched build jobs and check it this build is already exist or not.
+	 * adds only new builds to the build collections.
 	 *
-	 * @param bambooJobsFromDb
-	 *            list of enabled {@link BambooProcessorItem}s
 	 * @param buildsByJobMap
-	 *            maps a {@link BambooProcessorItem} to a set of {@link Build}s.
+	 *            maps a {@link ObjectId} to a set of {@link Build}s.
 	 * @return count of new build info added in db
 	 */
-	private int addNewBuildsInfoToDb(BambooClient bambooClient, List<BambooProcessorItem> bambooJobsFromDb,
-									 Map<BambooProcessorItem, Set<Build>> buildsByJobMap, ProcessorToolConnection bambooserver) {
+	private int addNewBuildsInfoToDb(BambooClient bambooClient, List<Build> activeBuildJobs,
+			Map<ObjectId, Set<Build>> buildsByJobMap, ProcessorToolConnection bambooserver, ObjectId processorId) {
 		int count = 0;
-		for (BambooProcessorItem job : bambooJobsFromDb) {
-			// process new builds in the order of their build numbers - this has
-			// implication to handling of commits in BuildEventListener
-			ArrayList<Build> buildsForSpecificJob = new ArrayList<>(nullSafe(buildsByJobMap.get(job)));
-			buildsForSpecificJob
-					.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
-			List<Build> buildsToSave = new ArrayList<>();
-			for (Build buildInfo : buildsForSpecificJob) {
-				if (isNewBuild(job.getId(), buildInfo.getNumber())) {
-					Build build = bambooClient.getBuildDetailsFromServer(buildInfo.getBuildUrl(), job.getInstanceUrl(),
-							bambooserver);
-					if (null != build) {
-						build.setProcessorItemId(job.getId());
-						build.setBuildJob(job.getJobName());
-						buildsToSave.add(build);
-						count++;
-						log.info("Saving build info for jobName {}, jobId: {}, buildNumber() : {} in DB.",
-								job.getJobName(), job.getId(), buildInfo.getNumber());
-					}
+		List<Build> buildsToSave = new ArrayList<>();
+		for (Build buildInfo : nullSafe(buildsByJobMap.get(bambooserver.getId()))) {
+			if (isNewBuild(bambooserver.getId(), buildInfo.getNumber())) {
+				Build build = bambooClient.getBuildDetailsFromServer(buildInfo.getBuildUrl(), bambooserver.getUrl(),
+						bambooserver);
+				if (null != build) {
+					build.setProcessorId(processorId);
+					build.setBasicProjectConfigId(bambooserver.getBasicProjectConfigId());
+					build.setProjectToolConfigId(bambooserver.getId());
+					build.setBuildJob(buildInfo.getBuildJob());
+					buildsToSave.add(build);
+					count++;
+					log.info("Saving build info for jobName {}, jobId: {}, buildNumber() : {} in DB.",
+							bambooserver.getJobName(), bambooserver.getId(), buildInfo.getNumber());
 				}
 			}
-			if (CollectionUtils.isNotEmpty(buildsToSave)) {
-				buildRepository.saveAll(buildsToSave);
-			}
+		}
+		if (CollectionUtils.isNotEmpty(buildsToSave)) {
+			activeBuildJobs.addAll(buildsToSave);
+			buildRepository.saveAll(buildsToSave);
 		}
 		log.info("Added {} new builds in the DB.", count);
 		return count;
@@ -197,42 +187,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	/**
-	 * Adds new {@link BambooProcessorItem}s to the database.
-	 *
-	 * @param allJobsFromBamboo
-	 *            set of all Jobs From Bamboo server {@link BambooProcessorItem}s
-	 * @param existingJobsInDb
-	 *            list of existing Jobs In Db {@link BambooProcessorItem}s
-	 * @param processorId
-	 *            uniqueId for Bamboo processor from the DB
-	 */
-	private void addNewBambooBuildJobsToDb(Set<BambooProcessorItem> allJobsFromBamboo,
-										   List<BambooProcessorItem> existingJobsInDb, ObjectId processorId) {
-		int count = 0;
-		List<BambooProcessorItem> newJobs = new ArrayList<>();
-		for (BambooProcessorItem job : allJobsFromBamboo) {
-			BambooProcessorItem existing = null;
-			if (!CollectionUtils.isEmpty(existingJobsInDb) && (existingJobsInDb.contains(job))) {
-				existing = existingJobsInDb.get(existingJobsInDb.indexOf(job));
-			}
-
-			if (existing == null) {
-				job.setProcessorId(processorId);
-				job.setActive(true);
-				job.setDesc(job.getJobName());
-				newJobs.add(job);
-				count++;
-			}
-		}
-		// save all in one shot
-		if (!CollectionUtils.isEmpty(newJobs)) {
-			bambooJobRepository.saveAll(newJobs);
-		}
-		log.info("{} new bamboo jobs added to repo.", count);
-	}
-
-	/**
-	 * Checks if its a new build not present in repo
+	 * Checks if its a new build not present in repo projectToolConfigId and BuildNumber.
+	 * projectToolConfigId refer only one job for tool.
 	 *
 	 * @param jobId
 	 *            Bamboo jobId
@@ -241,7 +197,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * @return true if build not already present in repo
 	 */
 	private boolean isNewBuild(ObjectId jobId, String buildNumber) {
-		return buildRepository.findByProcessorItemIdAndNumber(jobId, buildNumber) == null;
+		return buildRepository.findByProjectToolConfigIdAndNumber(jobId, buildNumber) == null;
 	}
 
 	/**
@@ -263,9 +219,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
 			clearSelectedBasicProjectConfigIds();
 
-			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs = getAllInformationfromDeployment(processorId);
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs = getAllInformationfromDeployment(
+					processorId);
 
-			List<BambooProcessorItem> activeBuildJobs = new ArrayList<>();
+			List<Build> activeBuildJobs = new ArrayList<>();
 			List<Deployment> activeDeployJobs = new ArrayList<>();
 			Set<ObjectId> nonExistentToolConfig = new HashSet<>();
 
@@ -278,8 +235,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 				if (!CollectionUtils.isEmpty(bambooJobList)) {
 					totalCount = bambooJobList.size();
-					processEachBambooJobOnJobType(bambooJobList, existingDeployJobs, activeBuildJobs,
-							activeDeployJobs,processorId);
+					processEachBambooJobOnJobType(bambooJobList, existingDeployJobs, activeBuildJobs, activeDeployJobs,
+							processorId);
 				}
 			}
 			// Delete jobs that will be no longer collected because servers have
@@ -299,8 +256,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
-											   Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<BambooProcessorItem> activeBuildJobs,
-											   List<Deployment> activeDeployJobs, ObjectId processorId) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
+			List<Deployment> activeDeployJobs, ObjectId processorId) {
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
 			String jobType = bambooJobConfig.getJobType();
 			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLogBamboo(
@@ -310,16 +267,14 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			MDC.put("JobName", BUILD.equalsIgnoreCase(jobType) ? bambooJobConfig.getJobName()
 					: bambooJobConfig.getDeploymentProjectId());
 			bambooJobConfig.setPassword(decryptPassword(bambooJobConfig.getPassword()));
-			List<BambooProcessorItem> existingBuildJobs = bambooJobRepository
-					.findByProcessorIdAndToolConfigId(processorId, bambooJobConfig.getId());
 			try {
 				BambooClient bambooClient = bambooClientFactory.getBambooClient(jobType);
 				if (BUILD.equalsIgnoreCase(jobType)) {
-					newBuildCount = processBuildJob(bambooClient, existingBuildJobs, bambooJobConfig,
-							processorExecutionTraceLog, activeBuildJobs, newBuildCount,processorId);
+					newBuildCount = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog,
+							activeBuildJobs, newBuildCount, processorId);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
-							activeDeployJobs,processorId);
+							activeDeployJobs, processorId);
 				}
 
 			} catch (MalformedURLException | ParseException rcp) {
@@ -337,7 +292,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private void checkNonExistingTool(List<ProcessorToolConnection> bambooJobList,
-									  Map<Pair<ObjectId, String>, List<Deployment>> existingDeployedJobs, Set<ObjectId> nonExistentToolConfig) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployedJobs, Set<ObjectId> nonExistentToolConfig) {
 		Map<ObjectId, List<ProcessorToolConnection>> collect = bambooJobList.stream()
 				.collect(Collectors.groupingBy(ProcessorToolConnection::getId));
 		existingDeployedJobs.keySet().forEach(key -> {
@@ -355,8 +310,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private void processDeployJob(BambooClient bambooClient,
-								  Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProcessorToolConnection bambooJobConfig,
-								  ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId)
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProcessorToolConnection bambooJobConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId)
 			throws MalformedURLException, ParseException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
 				.getDeployJobsFromServer(bambooJobConfig);
@@ -367,7 +322,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				saveDeployments.add(deployment);
 			}
 		});
-		saveDeployJob(saveDeployments,processorId);
+		saveDeployJob(saveDeployments, processorId);
 		activeJobs.addAll(saveDeployments);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
@@ -416,7 +371,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private Set<Deployment> checkForExistingEnvironmentRelease(Pair<ObjectId, String> key, Set<Deployment> value,
-															   Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs) {
 		Set<Deployment> deploy = new HashSet<>();
 		value.forEach(deployment -> {
 			List<Deployment> existingdeployments = existingDeployJobs.get(key);
@@ -475,35 +430,31 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	}
 
-	private int processBuildJob(BambooClient bambooClient, List<BambooProcessorItem> existingJobs,
-								ProcessorToolConnection bambooJobConfig, ProcessorExecutionTraceLog processorExecutionTraceLog,
-								List<BambooProcessorItem> activeJobs, int newBuildCount, ObjectId processorId) throws MalformedURLException, ParseException {
-		Map<BambooProcessorItem, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig);
+	/**
+	 * fetched builds from server and saved in db only it is not present in db.
+	 *
+	 * @param bambooClient
+	 * @param bambooJobConfig
+	 * @param processorExecutionTraceLog
+	 * @param activeBuildJobs
+	 * @param newBuildCount
+	 * @param processorId
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws ParseException
+	 */
+	private int processBuildJob(BambooClient bambooClient, ProcessorToolConnection bambooJobConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Build> activeBuildJobs, int newBuildCount,
+			ObjectId processorId) throws MalformedURLException, ParseException {
+		Map<ObjectId, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig);
 		log.info("Fetched builds By Job map of size: {}", buildsByJobMap.size());
-		addNewBambooBuildJobsToDb(buildsByJobMap.keySet(), existingJobs, processorId);
-		int updatedJobCount = addNewBuildsInfoToDb(bambooClient,
-				bambooJobRepository.findEnabledJobs(processorId, bambooJobConfig.getUrl()), buildsByJobMap,
-				bambooJobConfig);
-		saveBambooJob(bambooJobConfig,processorId);
-		activeJobs.addAll(buildsByJobMap.keySet());
+		int updatedJobCount = addNewBuildsInfoToDb(bambooClient, activeBuildJobs, buildsByJobMap, bambooJobConfig,
+				processorId);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-		log.info("Finished with activeJobs count: {}", activeJobs.size());
+		log.info("Finished with activeJobs count: {}", activeBuildJobs.size());
 		return newBuildCount + updatedJobCount;
-	}
-
-	private void saveBambooJob(ProcessorToolConnection bambooJobConfig, ObjectId processorId) {
-		List<BambooProcessorItem> processorItems = bambooJobRepository.findByProcessorId(processorId);
-		processorItems.stream().filter(pi -> bambooJobConfig.getUrl().equals(pi.getToolDetailsMap().get("instanceUrl")))
-				.forEach(item -> {
-					item.setActive(true);
-					item.setVersion((short) 2);
-					if (item.getToolConfigId() == null) {
-						item.setToolConfigId(bambooJobConfig.getId());
-					}
-					bambooJobRepository.save(item);
-				});
 	}
 
 	private String decryptPassword(String encryptedPassword) {
@@ -553,8 +504,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		} else {
 			log.error("[BAMBOO-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-
-		clearToolItemCache(bambooConfig.getCustomApiBaseUrl());
 	}
 
 	private List<ProjectBasicConfig> getSelectedProjects() {
@@ -566,7 +515,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			return allProjects;
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-						projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
 

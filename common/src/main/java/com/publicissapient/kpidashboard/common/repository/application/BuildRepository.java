@@ -36,31 +36,25 @@ public interface BuildRepository
 		extends CrudRepository<Build, ObjectId>, QuerydslPredicateExecutor<Build>, BuildRepositoryCustom {
 
 	/**
-	 * Finds the {@link Build} with the given number for a specific
-	 * {@link ProcessorItem}.
-	 *
-	 * @param processorItemId
-	 *            processor item id
-	 * @param number
-	 *            build number
-	 * @return a {@link Build}
-	 */
-	Build findByProcessorItemIdAndNumber(ObjectId processorItemId, String number);
-
-	/**
-	 * Finds the list of {@link Build} for a specific {@link ProcessorItem}.
+	 * Finds the list of {@link Build}
 	 * 
-	 * @param processorItemId
-	 *            processor item id
+	 * @param projectToolConfigId
+	 *            processor tool config id
 	 * @return a list {@link Build}
 	 */
-	List<Build> findByProcessorItemIdAndBuildJob(ObjectId processorItemId, String buildJob);
+	List<Build> findByProjectToolConfigIdAndBuildJob(ObjectId projectToolConfigId, String buildJob);
 
 	/**
 	 * delete all documents with matching ids
-	 * @param processorItemIds processor item id
+	 *
+	 * @param processorItemIds
+	 *            processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
+
+	void deleteByProjectToolConfigId(ObjectId projectToolConfigId);
+
+	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
 
 	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number,String buildJob,ObjectId basicProjectConfigId);
 

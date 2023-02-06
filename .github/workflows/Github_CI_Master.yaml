@@ -76,6 +76,9 @@ jobs:
         id: BuildUI
         run: |
           cd UI
+          whoami
+          hostname
+          ifconfig
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
@@ -102,6 +105,11 @@ jobs:
         id: SonarUI
         run: | 
           cd UI
+          whoami
+          hostname
+          echo 'sonar.branch.name=${{env.GITHUB_HEAD_REF}}'>> sonar-project.properties
+          echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
+          echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           sudo npm install -D sonarqube-scanner
           sudo npm run sonar
       - name: Scanning UI QG with Sonar Qube
@@ -143,7 +151,7 @@ jobs:
         if: steps.customapi.outputs.customapi == 'true'
         id: sonartestcustomapi
         run: |
-               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=origin/master -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml
+               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=${{env.GITHUB_HEAD_REF}} -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml
       - name: Running sonarqube quality gates CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
         id: qgtestcustomapi
@@ -179,7 +187,7 @@ jobs:
                   -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.PROCESSORS \
                   -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
                   -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} \
-                  -Dsonar.branch.name=origin/master \
+                  -Dsonar.branch.name=${{env.GITHUB_HEAD_REF}} \
                   -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml
       - name: Checking code Quality using SonarQube qg for processor
         id: Sonarqgprocessor
