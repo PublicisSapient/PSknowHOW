@@ -20,16 +20,16 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import org.bson.types.ObjectId;
+
+import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
  * Represents non jira tool.
@@ -45,11 +45,11 @@ public class Tool {
 
 	private ObjectId projectIds;
 
-	private String tool; //NOSONAR
+	private String tool; // NOSONAR
 	private String url;
 	private String branch;
 	private String repoSlug;
 	private String repositoryName;
-	private List<ProcessorItem> processorItemList;	
+	private List<ProcessorItem> processorItemList;
 
 }
