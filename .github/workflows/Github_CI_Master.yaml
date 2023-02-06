@@ -76,7 +76,6 @@ jobs:
         id: BuildUI
         run: |
           cd UI
-          echo $GITHUB_HEAD_REF
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
@@ -100,6 +99,7 @@ jobs:
           echo 'sonar.branch.name=$GITHUB_HEAD_REF'>> sonar-project.properties
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
+          pwd
           npm install -D sonarqube-scanner
           npm run sonar
       # - name: Scanning UI with Sonar Qube
