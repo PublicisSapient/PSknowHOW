@@ -38,7 +38,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection = "build_details")
 public class Build extends BasicModel {
-	private ObjectId processorItemId;
 	private ObjectId processorId;
 	private ObjectId basicProjectConfigId;
 	private ObjectId projectToolConfigId;
