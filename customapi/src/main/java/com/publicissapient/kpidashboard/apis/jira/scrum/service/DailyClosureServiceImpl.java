@@ -22,12 +22,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -37,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -157,13 +162,16 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
                     Set<JiraIssue> filtersIssuesList = KpiDataHelper
                             .getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
                                     sprintDetails.getTotalIssues(), issueList);
-                    if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())) {
+
                         List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository.
                                 findByStoryIDInAndBasicProjectConfigIdIn(completedIssues, Arrays.asList(basicProjectConfigId));
-                        Map<String, String> activityMap = getDodDateMap(completedJiraIssuesHistory, fieldMapping.getJiraDod());
-                        filtersIssuesList.forEach(issue -> issue.setUpdateDate(activityMap.getOrDefault(issue.getNumber(),
-                                issue.getUpdateDate())));
-                    }
+                        Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
+                        filtersIssuesList.forEach(
+                                issue -> issue.setUpdateDate(activityMap.getOrDefault(issue.getNumber(),
+                                issue.getUpdateDate()))
+                        );
+
+
                     resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
                     resultListMap.put(SPRINT, sprintDetails);
                 }
@@ -172,32 +180,30 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
         return resultListMap;
     }
 
-    /**
-     * This method get DOD map
-     *
-     * @param completedJiraIssuesHistory completedJiraIssuesHistory
-     * @param dodStatus dodStatus
-     * @return
-     */
-    private Map<String,String> getDodDateMap(List<JiraIssueCustomHistory> completedJiraIssuesHistory, List<String> dodStatus) {
-        Map<String,String> dodDateMap = new HashMap<>();
-        completedJiraIssuesHistory.stream().forEach(
-                jiraIssueCustomHistory -> {
-                    List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
-                    if (CollectionUtils.isNotEmpty(storySprintDetail)) {
-                        for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
-                            if (null != jiraIssueSprint.getFromStatus() &&
-                                    dodStatus.contains(jiraIssueSprint.getFromStatus())) {
-                                dodDateMap.put(jiraIssueCustomHistory.getStoryID(),
-                                        getFormattedDate(jiraIssueSprint.getActivityDate()));
-                                break;
-                            }
-                        }
-                    }
-                }
-        );
-        return dodDateMap;
-    }
+	private Map<String, String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory,
+			SprintDetails sprintDetails) {
+		Map<String, String> closedDateMap = new HashMap<>();
+		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
+			List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
+			SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream()
+					.filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
+			if (CollectionUtils.isNotEmpty(storySprintDetail)) {
+				for (int i = storySprintDetail.size() - 1; i >= 0; i--) {
+					if (storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())) {
+						DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
+						DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
+						DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
+						if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
+							closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
+									getFormattedDate(storySprintDetail.get(i).getActivityDate()));
+							break;
+						}
+					}
+				}
+			}
+		});
+		return closedDateMap;
+	}
 
     /**
      *

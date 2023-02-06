@@ -22,10 +22,10 @@
          [ngClass]="{'p-button-outlined' : selectedTabIndex !== i}" (click)="handleTabChange(i)"></button>
       <div class="chart123"></div>
    </ng-container>
-   <div *ngIf="showNoDataMsg">
+   <div *ngIf="showNoDataMsg && !loader && noDataForFilter">
       <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
          <h2 class="msg">The selected organization level need to have atleast one value available for the KPI's to show up</h2>
        </div>
    </div>
 </div>
-<app-page-loader *ngIf="loader"></app-page-loader>
+<app-page-loader *ngIf="loader && (loaderJira || loaderSonar || loaderZypher || loaderBitBucket || loaderJenkins)"></app-page-loader>

@@ -23,14 +23,14 @@ public class DeploymentRepositoryImpl implements DeploymentRepositoryCustom {
 	 * start and end date wise
 	 *
 	 * @param mapOfFilters
-	 * @param projectToolConfigIds
+	 * @param projectBasicConfigIds
 	 * @param startDateLD
 	 * @param endDateLD
 	 * @return
 	 */
 	@Override
 	public List<Deployment> findDeploymentList(Map<String, List<String>> mapOfFilters,
-			Set<ObjectId> projectToolConfigIds, String startDateLD, String endDateLD) {
+			Set<ObjectId> projectBasicConfigIds, String startDateLD, String endDateLD) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters hierarchy and Sprint
@@ -39,7 +39,7 @@ public class DeploymentRepositoryImpl implements DeploymentRepositoryCustom {
 		// date level filters
 		criteria = criteria.and("startTime").gte(startDateLD).and("endTime").lte(endDateLD);
 
-		criteria = criteria.and("projectToolConfigId").in(projectToolConfigIds);
+		criteria = criteria.and("basicProjectConfigId").in(projectBasicConfigIds);
 
 		Query query = new Query(criteria);
 
