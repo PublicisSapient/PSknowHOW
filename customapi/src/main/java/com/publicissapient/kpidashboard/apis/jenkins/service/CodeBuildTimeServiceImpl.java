@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -186,9 +187,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 					String jobName;
 					List<Build> buildList = entry.getValue();
 					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder();
+						jobName = buildList.get(0).getJobFolder()+ CommonConstant.ARROW + trendLineName;
 					} else {
-						jobName = entry.getKey();
+						jobName = entry.getKey()+ CommonConstant.ARROW + trendLineName;
 					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
