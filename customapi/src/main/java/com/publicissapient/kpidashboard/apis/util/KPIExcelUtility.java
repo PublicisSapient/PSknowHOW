@@ -685,7 +685,7 @@ public class KPIExcelUtility {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
-                excelData.setDate(e.getChangeDate());
+                excelData.setDate(e.getUpdateDate());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());

@@ -8,7 +8,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,13 +23,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
-import com.publicissapient.kpidashboard.bamboo.model.BambooProcessorItem;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -190,7 +199,7 @@ public class BambooClientDeployImpl implements BambooClient {
 	}
 
 	@Override
-	public Map<BambooProcessorItem, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
 			throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}

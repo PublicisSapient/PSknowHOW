@@ -20,7 +20,6 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +55,7 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
 
     private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
-    private final List<String> toolList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-            ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+
     @Autowired
     private ConfigHelperService configHelperService;
     @Autowired
@@ -176,49 +174,19 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
     public Map<ObjectId, List<Deployment>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
                                                               KpiRequest kpiRequest) {
 
-        // gets the project tool configuration
-        Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap = configHelperService
-                .getProjectToolConfigMap();
         Map<String, List<String>> mapOfFilters = new HashMap<>();
         List<String> statusList = new ArrayList<>();
-        Set<ObjectId> projectToolConfigIds = new HashSet<>();
+        Set<ObjectId> projectBasicConfigIds = new HashSet<>();
         leafNodeList.forEach(node -> {
             ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-
-            if (MapUtils.isNotEmpty(toolProjectMap) && toolProjectMap.get(basicProjectConfigId) == null) {
-                return;
-            }
-            List<ProjectToolConfig> tools = getAllDeploymentTool(toolProjectMap, basicProjectConfigId);
-            List<ObjectId> projectToolConfigIdList = tools.stream().map(ProjectToolConfig::getId)
-                    .collect(Collectors.toList());
-            projectToolConfigIds.addAll(projectToolConfigIdList);
+            projectBasicConfigIds.add(basicProjectConfigId);
         });
         statusList.add(DeploymentStatus.SUCCESS.name());
         mapOfFilters.put("deploymentStatus", statusList);
-        List<Deployment> deploymentList = deploymentRepository.findDeploymentList(mapOfFilters, projectToolConfigIds,
+        List<Deployment> deploymentList = deploymentRepository.findDeploymentList(mapOfFilters, projectBasicConfigIds,
                 startDate, endDate);
         return deploymentList.stream()
                 .collect(Collectors.groupingBy(Deployment::getBasicProjectConfigId, Collectors.toList()));
-    }
-
-    /**
-     * get All deployment tools config map for given basic config id
-     *
-     * @param toolProjectMap
-     * @param basicProjectConfId
-     */
-    public List<ProjectToolConfig> getAllDeploymentTool(
-            Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap, ObjectId basicProjectConfId) {
-        List<ProjectToolConfig> tools = new ArrayList<>();
-        if (MapUtils.isNotEmpty(toolProjectMap)) {
-            for (String toolName : toolList) {
-                if (toolProjectMap.get(basicProjectConfId).containsKey(toolName)) {
-                    List<ProjectToolConfig> tool = toolProjectMap.get(basicProjectConfId).get(toolName);
-                    tools.addAll(tool);
-                }
-            }
-        }
-        return tools;
     }
 
     /**

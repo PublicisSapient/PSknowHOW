@@ -193,10 +193,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
    // post request of Jira(scrum) hygiene
    postJiraKpi(postData, source): void {
+     this.kpiLoader = true;
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
-
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
