@@ -698,16 +698,23 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
 
     getAuthDetails() {
+        const existingRoles = JSON.parse(localStorage?.getItem('projectsAccess')).map(projectRolesDetails => projectRolesDetails?.role);
         this.http.get<any>(this.authDetailsUrl).subscribe(response => {
 
             if (response && response?.success && response?.data) {
-                console.log('updating local storge');
                 const authDetails = response?.data;
+                const newRoles = authDetails['projectsAccess'].map(projectRolesDetails => projectRolesDetails?.role);
+                let roleAlreadyExist = true;
+                newRoles.forEach(role => {
+                  if(!existingRoles.includes(role)) {
+                    roleAlreadyExist = false;
+                  }
+                });
                 localStorage.setItem('user_name', authDetails['username']);
                 localStorage.setItem('user_email', authDetails['emailAddress']);
                 localStorage.setItem('projectsAccess', JSON.stringify(authDetails['projectsAccess']));
                 localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authDetails['authorities']), 'encrypt'));
-                if(!this.unauthorisedAccess){
+                if(!this.unauthorisedAccess && !roleAlreadyExist){
                     this.loadApp.next(true);
                     this.unauthorisedAccess = false;
                 }
