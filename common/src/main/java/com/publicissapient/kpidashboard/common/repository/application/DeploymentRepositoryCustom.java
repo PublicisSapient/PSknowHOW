@@ -15,7 +15,7 @@ import com.publicissapient.kpidashboard.common.model.application.Deployment;
  */
 public interface DeploymentRepositoryCustom {
 
-	List<Deployment> findDeploymentList(Map<String, List<String>> mapOfFilters, Set<ObjectId> projectToolConfigIds,
+	List<Deployment> findDeploymentList(Map<String, List<String>> mapOfFilters, Set<ObjectId> projectBasicConfigIds,
 			String startDateUTC, String endDateUTC);
 
 }

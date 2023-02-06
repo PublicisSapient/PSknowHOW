@@ -16,7 +16,7 @@
                   [showExport]="false" [isShow]="true" [showChartView]="false">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
+                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0 && !kpiLoader;else noData">
                       <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                         <ng-container *ngFor="let x of item.data; let i = index">
                           <div *ngIf="x?.value > 0" class="p-3 p-text-center"
@@ -87,27 +87,27 @@
                           </ng-container>
                         </div>
                       </ng-container>
-                      <ng-template #noData>
-                        <div class="overlay"
-                          *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
-                          <div class="loading-img"></div>
-                        </div>
-                        <div class="min-ht"
-                          *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
-                          <div class="err">No Data Available</div>
-                        </div>
-
-                      </ng-template>
-                      <ng-template #loader>
-                        <div class="overlay">
-                          <div class="loading-img"></div>
-                        </div>
-                      </ng-template>
+                      
                     </ng-container>
                   </app-kpi-card>
                 </div>
               </ng-template>
+              <ng-template #noData>
+                <div class="overlay"
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
+                  <div class="err">No Data Available</div>
+                </div>
 
+              </ng-template>
+              <ng-template #loader>
+                <div class="overlay">
+                  <div class="loading-img"></div>
+                </div>
+              </ng-template>
             </ng-container>
             <ng-template #noDataAccess>
               <div class="min-ht">

@@ -85,6 +85,7 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 
 			// delete corresponding documents from build_details
 			buildRepository.deleteByProcessorItemIdIn(itemsIds);
+			buildRepository.deleteByProjectToolConfigId(tool.getId());
 
 			// delete corresponding documents from processor_items
 			processorItemRepository.deleteByToolConfigId(tool.getId());

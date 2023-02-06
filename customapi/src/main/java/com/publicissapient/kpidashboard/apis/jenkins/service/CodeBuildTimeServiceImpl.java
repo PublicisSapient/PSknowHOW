@@ -38,8 +38,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +64,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -74,6 +72,8 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service for managing code build time for scrum.
@@ -85,8 +85,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final long DAYS_IN_WEEKS = 7;
-	private final List<String> processorsList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-			ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
+
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -159,8 +158,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		String startDate = localStartDate.format(formatter);
 		String endDate = localEndDate.format(formatter);
 
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		Map<ObjectId, List<Build>> buildGroup = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
 
 		if (MapUtils.isEmpty(buildGroup)) {
@@ -173,35 +170,34 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			String trendLineName = node.getProjectFilter().getName();
 			CodeBuildTimeInfo codeBuildTimeInfo = new CodeBuildTimeInfo();
 			LocalDateTime end = localEndDate;
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
 
-			List<Tool> jenkinsJob = getJenkinsJobTools(toolMap, node);
-
-			if (CollectionUtils.isEmpty(jenkinsJob)) {
+			if (CollectionUtils.isEmpty(buildListProjectWise)) {
 				mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
 
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			List<Build> aggBuildList = new ArrayList<>();
-			jenkinsJob.forEach(job -> {
-
-				if (isValidJob(job)) {
-					List<Build> buildList = buildGroup.get(job.getProcessorItemList().get(0).getId());
-					if (CollectionUtils.isEmpty(buildList)) {
-						return;
+			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
+				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
+						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
+				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
+					String jobName;
+					List<Build> buildList = entry.getValue();
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder()+ CommonConstant.ARROW + trendLineName;
+					} else {
+						jobName = entry.getKey()+ CommonConstant.ARROW + trendLineName;
 					}
 					aggBuildList.addAll(buildList);
-					String jobName;
-					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
-					} else {
-						jobName = job.getProcessorItemList().get(0).getDesc() + CommonConstant.ARROW + trendLineName;
-					}
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
-			});
+			}
+
 			if (CollectionUtils.isEmpty(aggBuildList)) {
-				mapTmp.get(node.getId()).setValue(null);
+					mapTmp.get(node.getId()).setValue(null);
 				return;
 			}
 			prepareInfoForBuild(codeBuildTimeInfo, end, aggBuildList, trendLineName, trendValueMap,
@@ -213,11 +209,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
-	}
-
-	private boolean isValidJob(Tool job) {
-		return !CollectionUtils.isEmpty(job.getProcessorItemList())
-				&& job.getProcessorItemList().get(0).getId() != null;
 	}
 
 	/**
@@ -322,25 +313,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	}
 
 	/**
-	 * Creates validation data for node.
-	 *
-	 * @param codeBuildTimeInfo
-	 * @return ValidationData object
-	 */
-	private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-		ValidationData validationData = new ValidationData();
-		validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-		validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-		validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-		validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-		validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-		validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-		validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-		validationData.setDuration(codeBuildTimeInfo.getDurationList());
-		return validationData;
-	}
-
-	/**
 	 * Set data to display on trend line.
 	 *
 	 * @param trendLineName
@@ -367,30 +339,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		return dataCount;
 	}
 
-	/**
-	 * Get tool config entry for Jenkins.
-	 *
-	 * @param toolMap
-	 * @param node
-	 * @return
-	 */
-	private List<Tool> getJenkinsJobTools(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-
-		ProjectFilter projectFilter = node.getProjectFilter();
-		ObjectId objectId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
-
-		List<Tool> jenkinsJob = new ArrayList<>();
-		if (toolMap.containsKey(objectId)) {
-			jenkinsJob = getProcessorItemList(toolMap, objectId);
-		}
-
-		if (CollectionUtils.isEmpty(jenkinsJob)) {
-			log.error("[JENKINS-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-		}
-
-		return jenkinsJob;
-	}
-
 	@Override
 	public Long calculateKPIMetrics(Map<ObjectId, List<Build>> builds) {
 		return null;
@@ -399,35 +347,22 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	@Override
 	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		// gets the tool configuration
-		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		Set<ObjectId> processorItemIdList = new HashSet<>();
+
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
 		List<String> statusList = new ArrayList<>();
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		leafNodeList.forEach(node -> {
-			ObjectId id = node.getProjectFilter().getBasicProjectConfigId();
-			if (toolMap.get(id) == null) {
-				return;
-			}
-			List<Tool> allProcessorItems = getProcessorItemList(toolMap, id);
-			if (CollectionUtils.isEmpty(allProcessorItems)) {
-				return;
-			}
-
-			allProcessorItems.forEach(job -> {
-				if (isValidJob(job)) {
-					processorItemIdList.addAll(prepareProcessorItemIdsList(job));
-				}
-			});
-
+			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+			projectBasicConfigIds.add(basicProjectConfigId);
 		});
-		if (CollectionUtils.isEmpty(processorItemIdList)) {
-			return new HashMap<>();
-		}
+
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, processorItemIdList, startDate, endDate);
-		return buildList.stream().collect(Collectors.groupingBy(Build::getProcessorItemId, Collectors.toList()));
+		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		if (CollectionUtils.isEmpty(buildList)) {
+			return new HashMap<>();
+		}
+		return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
 	}
 
 	/**
@@ -445,37 +380,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			KPIExcelUtility.populateCodeBuildTime(excelData, projectName, codeBuildTimeInfo);
 
 		}
-	}
-
-	/**
-	 * returns list of all the tools
-	 *
-	 * @param toolMap
-	 * @param id
-	 * @return
-	 */
-	private List<Tool> getProcessorItemList(Map<ObjectId, Map<String, List<Tool>>> toolMap, ObjectId id) {
-		List<Tool> allProcessorItems = new ArrayList<>();
-
-		for (String processor : processorsList) {
-			if (toolMap.get(id).containsKey(processor)) {
-				List<Tool> processorItems = toolMap.get(id).get(processor);
-				allProcessorItems.addAll(processorItems);
-			}
-		}
-		return allProcessorItems;
-	}
-
-	/**
-	 * prepare processorIds list
-	 *
-	 * @param job
-	 * @return processorIds
-	 */
-	private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
-		List<ObjectId> processorIds = new ArrayList<>();
-		job.getProcessorItemList().forEach(e -> processorIds.add(e.getId()));
-		return processorIds;
 	}
 
 	@Override

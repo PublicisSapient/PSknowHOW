@@ -448,7 +448,7 @@ export class FilterComponent implements OnInit {
             for (let i = 0; i < selectedProjects?.length; i++) {
                 for (const key in this.additionalFiltersDdn) {
                     if (key == 'sprint') {
-                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i]))];
+                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
                     } else {
                         this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['path'][0]?.includes(selectedProjects[i]))];
                     }
@@ -940,8 +940,13 @@ export class FilterComponent implements OnInit {
                 this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             }else{
                 if(type == 1){
-                    this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
-                    this.handleIterationFilters('project', 1);
+                    if(this.projectIndex < this.trendLineValueList?.length){
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+                        this.handleIterationFilters('project', 1);
+                    }else{
+                        this.projectIndex = 0;
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+                    }
                 }
             }
 
