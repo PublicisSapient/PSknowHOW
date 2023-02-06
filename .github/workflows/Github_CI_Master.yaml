@@ -107,6 +107,7 @@ jobs:
           cd UI
           whoami
           hostname
+          sudo chown $USER /root/.sonar/
           sudo echo 'sonar.branch.name=${{vars.GITHUB_HEAD_REF}}'>> sonar-project.properties
           sudo echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           sudo echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
