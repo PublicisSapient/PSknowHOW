@@ -102,6 +102,9 @@ jobs:
         id: SonarUI
         run: | 
           cd UI
+          echo 'sonar.branch.name=origin/master'>> sonar-project.properties
+          echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
+          echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           sudo npm install -D sonarqube-scanner
           sudo npm run sonar
       - name: Scanning UI QG with Sonar Qube
