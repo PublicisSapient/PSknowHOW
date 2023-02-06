@@ -111,6 +111,7 @@ jobs:
           sudo echo 'sonar.branch.name=${{vars.GITHUB_HEAD_REF}}'>> sonar-project.properties
           sudo echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           sudo echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
+          sudo chown $USER /root/.sonar/
           sudo npm install -D sonarqube-scanner
           sudo npm run sonar
       - name: Scanning UI QG with Sonar Qube
