@@ -153,7 +153,8 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 							overallRCACountMap.put(rcaName, overallRCACountMap.get(rcaName) + issues.size());
 						} else {
 							overallRCACountMap.put(rcaName, issues.size());
-						}				}
+						}
+					}
 
 					DataCount priorityRCAData = new DataCount();
 					priorityRCAData.setData(String.valueOf(priorityRCACount));
@@ -205,6 +206,8 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				// trendValueListOverAll will consist of data only pertaining to "Overall" Priority Filter
 				List<DataCount> trendValueListOverAll = new ArrayList<>();
 				DataCount overallData = new DataCount();
+				int sumOfDefectsCount = overallRCACountMapAggregate.values().stream().mapToInt(Integer::intValue).sum();
+				overallData.setData(String.valueOf(sumOfDefectsCount));
 				overallData.setValue(overallRCACountMapAggregate);
 				overallData.setSSprintID(latestSprint.getSprintFilter().getId());
 				overallData.setSSprintName(latestSprint.getSprintFilter().getName());
