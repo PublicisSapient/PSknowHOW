@@ -44,14 +44,6 @@ public interface BuildRepository
 	 */
 	List<Build> findByProjectToolConfigIdAndBuildJob(ObjectId projectToolConfigId, String buildJob);
 
-	/**
-	 * delete all documents with matching ids
-	 * 
-	 * @param processorItemIds
-	 *            processor item id
-	 */
-	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
-
 	void deleteByProjectToolConfigId(ObjectId projectToolConfigId);
 
 	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
