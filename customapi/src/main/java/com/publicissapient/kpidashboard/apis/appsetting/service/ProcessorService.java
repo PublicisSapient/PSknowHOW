@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
-import java.util.List;
-
 /**
  *
  * @author pansharm5

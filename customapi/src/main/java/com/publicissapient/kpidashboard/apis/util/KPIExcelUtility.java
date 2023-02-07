@@ -649,7 +649,7 @@ public class KPIExcelUtility {
     public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
-            issuesExcel.forEach((e) -> {
+            issuesExcel.forEach(e -> {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
