@@ -19,8 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -142,6 +141,7 @@ public class DefectRaisedServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(defectRaisedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
 			KpiElement kpiElement = defectRaisedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
