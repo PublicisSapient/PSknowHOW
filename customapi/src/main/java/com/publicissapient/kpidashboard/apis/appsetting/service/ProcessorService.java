@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
-import java.util.List;
-
 /**
  *
  * @author pansharm5
@@ -36,11 +34,12 @@ public interface ProcessorService {
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse getAllProcessorDetails();
-	
+
 	/**
 	 * Triggers the processor to fetch the latest data based on the processor name
 	 * 
-	 * @param processorName name of the processor same as in the processor collection
+	 * @param processorName
+	 *            name of the processor same as in the processor collection
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);
