@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -79,7 +80,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	@Override
 
 	public List<CommitDetails> fetchAllCommits(AzureRepoModel repo, boolean firstRun,
-			ProcessorToolConnection azureRepoProcessorInfo) throws FetchingCommitException {// NOSONAR
+			ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {// NOSONAR
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -94,7 +95,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 					JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 					JSONArray jsonArray = (JSONArray) responseJson.get(AzureRepoConstants.RESP_VALUES_KEY);
 					String nextPageIndex = setNextPageIndex(restUri);
-					initializeCommitDetails(commits, jsonArray, azureRepoProcessorInfo);
+					initializeCommitDetails(commits, jsonArray, azureRepoProcessorInfo, projectBasicConfig);
 					isLast = parseResponse(jsonArray, firstRun, nextPageIndex, responseJson);
 					log.info(String.format("Retrieving page : {%s}", nextPageIndex));
 					if (Integer.parseInt(nextPageIndex) > 0) {
@@ -127,7 +128,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 
 	@Override
 	public List<MergeRequests> fetchAllMergeRequest(AzureRepoModel repo, boolean firstRun,
-			ProcessorToolConnection azureRepoProcessorInfo) throws FetchingCommitException {
+			ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		// NOSONAR
 
 		String restUri = null;
@@ -143,7 +144,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 					JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 					JSONArray jsonArray = (JSONArray) responseJson.get(AzureRepoConstants.RESP_VALUES_KEY);
 					String nextPageIndex = setNextPageIndex(restUri);
-					initializeMergeRequestDetails(mergeRequests, azureRepoProcessorInfo, jsonArray);
+					initializeMergeRequestDetails(mergeRequests, azureRepoProcessorInfo, jsonArray, proBasicConfig);
 					isLast = parseResponse(jsonArray, firstRun, nextPageIndex, responseJson);
 					log.info(String.format("Retrieving page : {%s}", nextPageIndex));
 					if (Integer.parseInt(nextPageIndex) > 0) {
@@ -198,7 +199,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	}
 
 	private void initializeCommitDetails(List<CommitDetails> commits, JSONArray jsonArray,
-			ProcessorToolConnection azureRepoProcessorInfo) {
+			ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig projectBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 
 			JSONObject commitObject = (JSONObject) jsonObj;
@@ -225,13 +226,13 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 				log.error("error while parsing date", e);
 			}
 
-			commitDetails(commits, commitId, comment, author, timestamp, azureRepoProcessorInfo);
+			commitDetails(commits, commitId, comment, author, timestamp, azureRepoProcessorInfo, projectBasicConfig);
 
 		}
 	}
 
 	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList,
-			ProcessorToolConnection azzureInfo, JSONArray jsonArray) {
+			ProcessorToolConnection azzureInfo, JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
 		long closedDate = 0;
 		long updatedDate = 0;
 		long createdDate=0;
@@ -261,7 +262,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			String author = getString(authorObj, AzureRepoConstants.RESP_DISP_NAME);
 			String scmRevisionNumber = getString(repoObj, AzureRepoConstants.RESP_ID_KEY);
 			JSONArray reviewers = (JSONArray) mergReqObj.get(AzureRepoConstants.RESP_REVIEWERS);
-			List<String> reviewersList = new ArrayList<>();
+			List<String> reviewersList = new ArrayList<>(8);
 			if (reviewers != null) {
 				for (Object reviewersObj : reviewers) {
 					reviewersList.add(getString((JSONObject) reviewersObj, AzureRepoConstants.RESP_ID_KEY));
@@ -279,7 +280,9 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			mergeReq.setAuthor(author);
+			if(proBasicConfig.isSaveAssigneeDetails()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
 			mergeRequestList.add(mergeReq);
@@ -302,14 +305,15 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	}
 
 	private void commitDetails(List<CommitDetails> commits, String commitId, String comment, String author,
-			long timestamp, ProcessorToolConnection azureRepoProcessorInfo) {
+			long timestamp, ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig projectBasicConfig) {
 		CommitDetails azureRepoCommit = new CommitDetails();
-
 		azureRepoCommit.setBranch(azureRepoProcessorInfo.getBranch());
 		azureRepoCommit.setUrl(azureRepoProcessorInfo.getUrl());
 		azureRepoCommit.setTimestamp(System.currentTimeMillis());
 		azureRepoCommit.setRevisionNumber(commitId);
-		azureRepoCommit.setAuthor(author);
+		if(projectBasicConfig.isSaveAssigneeDetails()) {
+			azureRepoCommit.setAuthor(author);
+		}
 		azureRepoCommit.setCommitLog(comment);
 
 		azureRepoCommit.setCommitTimestamp(timestamp); // committer date

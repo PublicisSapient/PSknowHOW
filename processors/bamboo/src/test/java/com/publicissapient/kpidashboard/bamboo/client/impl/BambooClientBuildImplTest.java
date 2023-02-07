@@ -26,6 +26,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -78,6 +80,7 @@ public class BambooClientBuildImplTest {
 	private static final String HTTP_EMAIL = "http://does:matter@bamboo.com";
 	private static final ProcessorToolConnection BAMBOO_SAMPLE_SERVER_PLAN = new ProcessorToolConnection();
 	private static final ProcessorToolConnection BAMBOO_SAMPLE_BRANCH = new ProcessorToolConnection();
+	private ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
 	@Mock
 	private RestTemplate restClient;
 	@Mock
@@ -234,7 +237,7 @@ public class BambooClientBuildImplTest {
 	public void instanceJobsEmptyResponseReturnsEmptyMap() throws MalformedURLException, ParseException {
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH);
+		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH,proBasicConfig);
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 	}
 
@@ -246,7 +249,7 @@ public class BambooClientBuildImplTest {
 				eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
 		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH);
+		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH,proBasicConfig);
 		assertThat("instanceJobsTestReturnsMap", jobs.size(), is(0));
 	}
 

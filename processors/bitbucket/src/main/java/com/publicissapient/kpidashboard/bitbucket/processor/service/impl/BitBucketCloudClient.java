@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -90,7 +91,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean initialRunOccurrence,
-			ProcessorToolConnection bitBucketServerInfo) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		List<CommitDetails> commits = new ArrayList<>();
 		try {
 			String restUrl = new BitBucketCloudURIBuilder(bitbucketRepo, config, bitBucketServerInfo).build();
@@ -107,7 +108,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 
 				if (CollectionUtils.isNotEmpty(jsonArray)) {
 					Object jsonNextObject = jsonParentObject.get(BitBucketConstants.NEXT);
-					initializeCommitDetails(commits, jsonArray, bitBucketServerInfo);
+					initializeCommitDetails(commits, jsonArray, bitBucketServerInfo, proBasicConfig);
 					long commitTimePageWise = commits.get(commits.size() - 1).getCommitTimestamp();
 					last = isLastPage(jsonNextObject, commitTimePageWise, sinceTime);
 					log.info("commit data collected for page : ", page);
@@ -126,7 +127,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	}
 
 	private void initializeCommitDetails(List<CommitDetails> commits, JSONArray jsonArray,
-			ProcessorToolConnection bitBucketServerInfo) {
+			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		for (Object jsonItem : jsonArray) {
 			JSONObject commitObj = (JSONObject) jsonItem;
 			String hash = getString(commitObj, BitBucketConstants.RESP_HASH_KEY);
@@ -139,18 +140,20 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			for (Object parentObj : parents) {
 				parentList.add(getString((JSONObject) parentObj, BitBucketConstants.RESP_ID_KEY));
 			}
-			commitDetails(commits, hash, message, author, timestamp, parentList, bitBucketServerInfo);
+			commitDetails(commits, hash, message, author, timestamp, parentList, bitBucketServerInfo, proBasicConfig);
 		}
 	}
 
 	private void commitDetails(List<CommitDetails> commits, String hash, String message, String author, long timestamp,
-			List<String> parentList, ProcessorToolConnection bitBucketServerInfo) {
+			List<String> parentList, ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitbucketCommit = new CommitDetails();
 		bitbucketCommit.setBranch(bitBucketServerInfo.getBranch());
 		bitbucketCommit.setUrl(bitBucketServerInfo.getUrl());
 		bitbucketCommit.setTimestamp(System.currentTimeMillis());
 		bitbucketCommit.setCommitLog(message);
-		bitbucketCommit.setAuthor(author);
+		if(proBasicConfig.isSaveAssigneeDetails()) {
+			bitbucketCommit.setAuthor(author);
+		}
 		bitbucketCommit.setRevisionNumber(hash);
 		bitbucketCommit.setParentRevisionNumbers(parentList);
 		bitbucketCommit.setCommitTimestamp(timestamp);
@@ -162,7 +165,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	/**
 	 * Checks if is last page.
 	 *
-	 * @param respPayload the resp payload
+	 *
 	 * @return true, if is last page
 	 */
 	private boolean isLastPage(Object next, long commitTimePageWise, long sinceTime) {
@@ -272,7 +275,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -289,7 +292,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 				JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 				Object jsonNextObject = responseJson.get(BitBucketConstants.NEXT);
 				JSONArray jsonArray = (JSONArray) responseJson.get(BitBucketConstants.RESP_VALUES_KEY);
-				initializeMergeRequests(mergeRequests, jsonArray);
+				initializeMergeRequests(mergeRequests, jsonArray, proBasicConfig);
 				long mergedTimePageWise = mergeRequests.get(mergeRequests.size() - 1).getUpdatedDate();
 				isLast = isLastPage(jsonNextObject, mergedTimePageWise, sinceTime);
 				log.info("Merged data collected for page : ", page);
@@ -311,7 +314,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 * @param mergeRequests
 	 * @param jsonArray
 	 */
-	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray) {
+	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -356,7 +359,9 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeReq.setFromBranch(fromBranch);
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
-			mergeReq.setAuthor(author);
+			if (proBasicConfig.isSaveAssigneeDetails()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeRequests.add(mergeReq);
 		}

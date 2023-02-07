@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -78,7 +79,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfDeployment) {
+			long lastStartTimeOfDeployment, ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getInstanceJobs");
 		Map<Deployment, Set<Deployment>> result = new LinkedHashMap<>();
 
@@ -97,7 +98,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody());
+			processResponse(azurePipelineServer, result, responseEntity.getBody(),proBasicConfig);
 
 		} catch (RestClientException exception) {
 			log.error("client exception loading jobs details", exception);
@@ -107,7 +108,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<Deployment, Set<Deployment>> result,
-			String body) {
+			String body, ProjectBasicConfig proBasicConfig) {
 
 		try {
 			JSONParser parser = new JSONParser();
@@ -174,7 +175,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 
 	@Override
 	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 

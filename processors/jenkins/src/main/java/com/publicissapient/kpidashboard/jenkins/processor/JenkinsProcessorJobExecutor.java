@@ -18,16 +18,22 @@
 
 package com.publicissapient.kpidashboard.jenkins.processor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,10 +106,12 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	@Autowired
 	private DeploymentRepository deploymentRepository;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * Provides Jenkins TaskScheduler.
-	 * 
+	 *
 	 * @param taskScheduler
 	 *            the task scheduler
 	 */
@@ -114,10 +122,12 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	private static final String BUILD = "build";
+	private LocalDate today = LocalDate.now();
+	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	/**
 	 * Provides Processor.
-	 * 
+	 *
 	 * @return the JenkinsProcessor
 	 */
 	@Override
@@ -127,7 +137,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * Provides Processor Repository.
-	 * 
+	 *
 	 * @return the ProcessorRepository
 	 *
 	 */
@@ -138,7 +148,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * Provides cron expression.
-	 * 
+	 *
 	 * @return the cron expression
 	 */
 	@Override
@@ -148,7 +158,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * Processes Jenkins build data.
-	 * 
+	 *
 	 * @param processor
 	 *            the jenkins processor instance
 	 */
@@ -183,8 +193,9 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
+					assigneeToggleDate(proBasicConfig);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count);
+						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count,proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
 						processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
@@ -212,19 +223,43 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	private void processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
-			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count) {
-		Map<ObjectId, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer);
+			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count,
+			ProjectBasicConfig proBasicConfig) {
+		Map<ObjectId, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer,proBasicConfig);
 		if (MapUtils.isNotEmpty(buildsByJob)) {
 
 			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId());
 			count += updatedJobs;
 			log.info("Job updated for :{}", count);
+			if(!checkLastRun(processorExecutionTraceLog,proBasicConfig))
+			{
+				if (proBasicConfig.isSaveAssigneeDetails()
+						&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+						.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
+						|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+						.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf)))) {
+					List<Build> updateStartedBy = new ArrayList<>();
+
+					for (Build build : buildsByJob.values().iterator().next()) {
+
+						Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
+								build.getNumber());
+						buildData.setStartedBy(build.getStartedBy());
+						updateStartedBy.add(buildData);
+
+					}
+					buildRepository.saveAll(updateStartedBy);
+
+				}
+			}
+
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
 		}
 		MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
+		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
 
@@ -309,12 +344,18 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
+		});
+
 		return processorExecutionTraceLog;
 	}
 
 	/**
 	 * Checks whether the build is new.
-	 * 
+	 *
 	 * @param jobId
 	 *            the Jenkins jobs
 	 * @param buildNumber
@@ -327,7 +368,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
 	 *            the cache endpoint
 	 * @param cacheName
@@ -363,7 +404,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of projects
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
@@ -381,5 +422,21 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
+	}
+
+	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
+		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
+			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
+			projectConfigRepository.save(projectBasicConfig);
+		}
+	}
+
+	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
+			ProjectBasicConfig proBasicConfig) {
+		if (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun())) {
+			return true;
+		}
+		return false;
 	}
 }

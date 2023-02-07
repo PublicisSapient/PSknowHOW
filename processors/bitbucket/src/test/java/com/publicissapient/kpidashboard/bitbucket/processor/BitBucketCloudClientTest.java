@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,6 +84,7 @@ class BitBucketCloudClientTest {
 		String serverResponse = getServerResponse("/bitbucket-server/stashresponse.json");
 		ResponseEntity<String> responseEntity = new ResponseEntity<String>(serverResponse, HttpStatus.ACCEPTED);
 		BitbucketRepo repo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
 		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
@@ -102,7 +104,7 @@ class BitBucketCloudClientTest {
 				ArgumentMatchers.<Class<String>> any()
 				)
 		).thenReturn(responseEntity);
-		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail);
+		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail,proBasicConfig);
 		Assert.assertEquals(2, commits.size());
 	}
 

@@ -18,11 +18,14 @@
 
 package com.publicissapient.kpidashboard.bitbucket.processor;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -105,6 +108,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * Gets the cron.
@@ -189,12 +194,29 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				try {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						bitRepo.setLastUpdatedCommit(null);
+					}
 					boolean firstTimeRun = (bitRepo.getLastUpdatedCommit() == null);
 					MDC.put("BitbucketReposDataCollectionStarted",
 							"Bitbucket Processor started collecting data for Url: " + tool.getUrl() + ", branch : "
 									+ tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					BitBucketClient bitBucketClient = bitBucketClientFactory.getBitbucketClient(tool.isCloudEnv());
-					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool);
+					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool,proBasicConfig);
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						List<CommitDetails> updateAuthor = new ArrayList<>();
+						commitDetailList.stream().forEach(commitDetails -> {
+							CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
+									commitDetails.getRevisionNumber());
+							if (dbCommit != null) {
+								dbCommit.setAuthor(commitDetails.getAuthor());
+								updateAuthor.add(dbCommit);
+							}
+						});
+						commitsRepo.saveAll(updateAuthor);
+					}
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(bitRepo, commit)).collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(bitRepo.getId()));
@@ -205,7 +227,20 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 					}
 
 					List<MergeRequests> mergeRequestsList = bitBucketClient.fetchMergeRequests(bitRepo, firstTimeRun,
-							tool);
+							tool, proBasicConfig);
+					if (proBasicConfig.isSaveAssigneeDetails()
+							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+						List<MergeRequests> updateAuthor = new ArrayList<>();
+						mergeRequestsList.forEach(mergeRequests -> {
+							MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
+									mergeRequests.getRevisionNumber());
+							if (dbMerge != null) {
+								dbMerge.setAuthor(mergeRequests.getAuthor());
+								updateAuthor.add(dbMerge);
+							}
+						});
+						mergReqRepo.saveAll(updateAuthor);
+					}
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(bitRepo, mergReq)).collect(Collectors.toList());
 					unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(bitRepo.getId()));
@@ -219,11 +254,13 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 					reposCount++;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (FetchingCommitException exception) {
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(String.format("Error in processing %s", tool.getUrl()), exception);
 				}
@@ -267,6 +304,12 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.BITBUCKET);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+		});
 		return processorExecutionTraceLog;
 	}
 

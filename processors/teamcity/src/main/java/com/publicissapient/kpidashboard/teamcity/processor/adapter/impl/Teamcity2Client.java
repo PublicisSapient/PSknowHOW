@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -176,8 +177,7 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides the number of jobs first so that we don't get 500 internal server
 	 * logError when paging with index out of bounds.
 	 * 
-	 * @param instanceUrl
-	 *            the teamcity instance URL
+	 *
 	 * @return the number of jobs
 	 */
 	private int getJobsCount(JSONObject jobs) {
@@ -351,7 +351,8 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides Build Details.
 	 */
 	@Override
-	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer) {
+	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 
 		return null;
 	}

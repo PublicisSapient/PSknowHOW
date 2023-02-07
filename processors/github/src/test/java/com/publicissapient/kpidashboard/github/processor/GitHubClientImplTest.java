@@ -4,6 +4,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import com.publicissapient.kpidashboard.github.processor.service.impl.GitHubClie
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-class GitHubClientImplTest {
+public class GitHubClientImplTest {
 	@Mock
 	private GitHubConfig gitLabConfig;
 	
@@ -45,24 +46,24 @@ class GitHubClientImplTest {
 	GitHubClientImpl gitHubClient;
 	
 	@Test
-	void testFetchCommits() throws Exception{
+	public void testFetchCommits() throws Exception{
 		String restURI = "https://api.github.com/repos/username/repositiryname/commits?per_page=100&sha=develop";
 		String serverResponse = getServerResponse("/github-server/commitResponse.json");		
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(ArgumentMatchers.eq(restURI),ArgumentMatchers.eq(HttpMethod.GET),ArgumentMatchers.any(HttpEntity.class),ArgumentMatchers.eq(String.class));
-		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true,getToolConnection());
+		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true,getToolConnection(),new ProjectBasicConfig());
 		Assert.assertEquals(11, commits.size());
 	}
 	
 	@Test
-	void testMergeRequests() throws Exception{
+	public void testMergeRequests() throws Exception{
 		String restURI = "https://api.github.com/repos/username/repositiryname/pulls?per_page=100&state=all&base=develop";
 		String serverResponse = getServerResponse("/github-server/mergeRequestResponse.json");		
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(ArgumentMatchers.eq(restURI),ArgumentMatchers.eq(HttpMethod.GET),ArgumentMatchers.any(HttpEntity.class),ArgumentMatchers.eq(String.class));
-		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,getToolConnection());
+		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,getToolConnection(),new ProjectBasicConfig());
 		Assert.assertEquals(1, mergeRequests.size());
 	}
 	

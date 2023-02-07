@@ -93,7 +93,7 @@ public class GitHubProcessorJobExecutorTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		MockitoAnnotations.openMocks(this);
+
 	}
 
 	private List<ProjectBasicConfig> getProjectConfigList(){
@@ -116,9 +116,9 @@ public class GitHubProcessorJobExecutorTest {
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
 		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService).findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any());
+		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(),ArgumentMatchers.any());
 
-		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any());
+		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(),ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);

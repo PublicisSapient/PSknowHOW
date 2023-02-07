@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -96,12 +97,15 @@ public class BambooClientBuildImpl implements BambooClient {
 	/**
 	 * fetch jobs based on job key and branch key
 	 *
-	 * @param bambooServer {@link ProcessorToolConnection}
+	 * @param bambooServer
+	 *        {@link ProcessorToolConnection}
+	 * @param proBasicConfig
 	 * @return
 	 * @throws ParseException
 	 */
 	@Override
-	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException {
 		Map<ObjectId, Set<Build>> bambooJobs = new LinkedHashMap<>();
 		try {
@@ -233,7 +237,8 @@ public class BambooClientBuildImpl implements BambooClient {
 	}
 
 	@Override
-	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}

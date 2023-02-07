@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -79,15 +80,15 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Provides Instance Jobs.
 	 *
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 * 		the connection properties for AzurePipeline server
 	 * @param lastStartTimeOfBuilds
-	 *            the last updated time of the processor which is used for delta
-	 *            import
+	 * 		the last updated time of the processor which is used for delta import
+	 * @param proBasicConfig
 	 * @return the map of azurePipeline jobs and set of builds
 	 */
 	@Override
 	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfBuilds) {
+			long lastStartTimeOfBuilds, ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getInstanceJobs");
 		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
@@ -101,7 +102,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 				url = AzurePipelineUtils.addParam(url, "minTime", minTime);
 			}
 			ResponseEntity<String> responseEntity = doRestCall(url.toString(), azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody());
+			processResponse(azurePipelineServer, result, responseEntity.getBody(),proBasicConfig);
 		} catch (RestClientException rce) {
 			log.error("client exception loading jobs details", rce);
 			throw rce;
@@ -111,29 +112,28 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 
 	/**
-	 * Processes response of the api call. In response we get array of builds. We
-	 * iterate over each build object and create a azurepipeline job and check
-	 * whether the job is present in the result map. If the job is present we add
-	 * the build to the build set of that job else we create a new job and then add
-	 * the build to its build set. Current implementation covers the case of having
-	 * more than one azurepipeline job but ideally we would have 1 job only. This
-	 * was done if in future we change the implementation to include more than 1 job
-	 * only the rest api call would change.
-	 * 
+	 * Processes response of the api call. In response we get array of builds. We iterate over each build object and
+	 * create a azurepipeline job and check whether the job is present in the result map. If the job is present we add
+	 * the build to the build set of that job else we create a new job and then add the build to its build set. Current
+	 * implementation covers the case of having more than one azurepipeline job but ideally we would have 1 job only.
+	 * This was done if in future we change the implementation to include more than 1 job only the rest api call would
+	 * change.
+	 *
 	 * @param azurePipelineServer
-	 *            the connection properties for AzurePipeline server
+	 * 		the connection properties for AzurePipeline server
 	 * @param result
-	 *            the map of azurePipeline jobs and set of builds
+	 * 		the map of azurePipeline jobs and set of builds
 	 * @param resJSON
-	 *            response body of rest api call
+	 * 		response body of rest api call
+	 * @param proBasicConfig
 	 */
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<ObjectId, Set<Build>> result,
-			String resJSON) {
+			String resJSON, ProjectBasicConfig proBasicConfig) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject resObject = (JSONObject) parser.parse(resJSON);
@@ -142,7 +142,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			for (Object buildObject : builds) {
 				JSONObject jsonBuild = (JSONObject) buildObject;
 
-				Build build = createBuild(jsonBuild);
+				Build build = createBuild(jsonBuild,proBasicConfig);
 				buildSet.add(build);
 				result.put(azurePipelineServer.getId(), buildSet);
 			}
@@ -154,15 +154,18 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
 	/**
 	 * Creates Build Object
-	 * 
+	 *
 	 * @param buildJson
-	 *            the build as JSON object
+	 * 		the build as JSON object
+	 * @param proBasicConfig
 	 * @return the build object
 	 */
-	private Build createBuild(JSONObject buildJson) {
+	private Build createBuild(JSONObject buildJson, ProjectBasicConfig proBasicConfig) {
 		JSONObject jsonRequestedFor = AzurePipelineUtils.getJsonObject(buildJson, "requestedFor");
 		Build build = new Build();
-		build.setStartedBy(AzurePipelineUtils.getString(jsonRequestedFor, "displayName"));
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			build.setStartedBy(AzurePipelineUtils.getString(jsonRequestedFor, "displayName"));
+		}
 		build.setBuildUrl(AzurePipelineUtils.getString(buildJson, "url"));
 		build.setNumber(String.valueOf(buildJson.get("id")));
 		build.setStartTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "startTime")).toEpochMilli());
