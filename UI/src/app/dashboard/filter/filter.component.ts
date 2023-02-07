@@ -130,8 +130,7 @@ export class FilterComponent implements OnInit {
     private helperService: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    debugger;
-    this.service.setSelectedType('Scrum');
+    // this.service.setSelectedType('Scrum');
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
 
     this.subscriptions.push(
@@ -139,7 +138,7 @@ export class FilterComponent implements OnInit {
         this.selectedTab = selectedTab;
         if (this.selectedTab?.toLowerCase() == 'iteration') {
           this.service.setEmptyFilter();
-          this.service.setSelectedType('Scrum');
+          // this.service.setSelectedType('Scrum'); // Going in infinite loop
         }
         this.projectIndex = 0;
         const type = this.service.getSelectedType();
@@ -152,6 +151,16 @@ export class FilterComponent implements OnInit {
       }),
     );
 
+     // added as scrum/kanban moved into nav component
+    this.service.onTypeRefresh.subscribe(type=>{
+      if (type === 'Scrum') {
+        this.kanban = false;
+      } else {
+        this.kanban = true;
+      }
+      this.selectedType(type);
+    })
+    
     this.subscriptions.push(
       this.service.mapColorToProjectObs.subscribe((x) => {
         if (Object.keys(x).length > 0) {
@@ -305,7 +314,6 @@ export class FilterComponent implements OnInit {
    // for making the header sticky on scroll
    @HostListener('window:scroll', [])
    onWindowScroll() {
-    debugger;
      if (
        this.router.url.indexOf('/Config/') === -1 &&
        this.router.url !== '/dashboard/Maturity' &&
@@ -372,7 +380,7 @@ export class FilterComponent implements OnInit {
     this.setLevels();
     this.getFilterDataOnLoad();
     this.previousType = this.kanban;
-    this.service.setSelectedType(type);
+    // this.service.setSelectedType(type); // Going in infinite loop
 
     const data = {
       url:
@@ -898,7 +906,7 @@ export class FilterComponent implements OnInit {
         boardDetails?.boardName,
         boardDetails?.boardId,
       );
-      this.service.selectTab(this.selectedTab); // On first time dashboard name was not comming
+      // this.service.selectTab(this.selectedTab); // On first time dashboard name was not comming
       this.router.navigateByUrl(
         `/dashboard/${boardDetails?.boardName
           .split(' ')

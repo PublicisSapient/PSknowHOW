@@ -87,7 +87,7 @@
   position: fixed;
   left: 250px;
   width: 5rem;
-  height: 52.2rem;
+  height: 52.1rem;
   margin-left: -250px;
   overflow-y: auto;
   /* background: red; */
@@ -118,6 +118,8 @@
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
 }
+
+
 
 #wrapper.toggled #page-content-wrapper {
   position: absolute;

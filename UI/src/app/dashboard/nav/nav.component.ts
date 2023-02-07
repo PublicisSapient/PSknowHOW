@@ -73,22 +73,22 @@ export class NavComponent implements OnInit {
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    debugger;
+    this.service.setSelectedType('Scrum'); //sednig selected tab to service layer
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab.split('/')[2];
     this.boardId = isNaN(+selectedTab.split('/')[3])
       ? this.boardId
       : +selectedTab.split('/')[3];
     this.service.setSelectedTab(this.selectedTab, this.boardId);
-    this.service.onTypeRefresh.subscribe((type) => {
-      this.selectedTab = this.service.getSelectedTab();
-    });
+    // this.service.onTypeRefresh.subscribe((type) => {
+    //   this.selectedTab = this.service.getSelectedTab();
+    // });
 
-    this.username = localStorage.getItem('user_name');
+    // this.username = localStorage.getItem('user_name');
     /*subscribe logo image from service*/
-    this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
-      this.getLogoImage();
-    });
+    // this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
+    //   this.getLogoImage();
+    // });
 
     this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig['others'] && globalConfig['others'].length > 1) {
@@ -97,7 +97,9 @@ export class NavComponent implements OnInit {
       }
     });
 
-    this.renderMessage();
+    
+
+    // this.renderMessage();
   }
 
   processKpiConfigData() {
@@ -116,7 +118,7 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
-    debugger;
+    //debugger;
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -145,7 +147,7 @@ export class NavComponent implements OnInit {
         projectsAccess.length !== 0;
     }
 
-    this.getLogoImage();
+    // this.getLogoImage();as movied in to filter compo
     this.getMatchVersions();
 
     document.addEventListener(
@@ -167,9 +169,9 @@ export class NavComponent implements OnInit {
       false,
     );
 
-    this.subscription = this.service.passEventToNav.subscribe(() => {
-      this.renderMessage();
-    });
+    // this.subscription = this.service.passEventToNav.subscribe(() => {as movied in to filter compo
+    //   this.renderMessage();
+    // });
 
     this.startWorker();
     this.service.selectedTypeObs.subscribe((selectedType) => {
@@ -178,29 +180,29 @@ export class NavComponent implements OnInit {
     });
   }
 
-  /*Rendered the logo image */
-  getLogoImage() {
-    this.httpService
-      .getUploadedImage()
-      .pipe(first())
-      .subscribe((data) => {
-        if (data['image']) {
-          this.logoImage = 'data:image/png;base64,' + data['image'];
-        } else {
-          this.logoImage = undefined;
-        }
-      });
-  }
+  /*Rendered the logo image */ // as movied in to filter compo
+  // getLogoImage() {
+  //   this.httpService
+  //     .getUploadedImage()
+  //     .pipe(first())
+  //     .subscribe((data) => {
+  //       if (data['image']) {
+  //         this.logoImage = 'data:image/png;base64,' + data['image'];
+  //       } else {
+  //         this.logoImage = undefined;
+  //       }
+  //     });
+  // }
 
   // call when user is seleting tab
   selectTab(selectedTab, boardId = this.boardId) {
-    debugger;
+   // debugger;
     this.selectedTab =
       selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
     this.helper.isKanban = false;
     this.service.setSelectedTab(this.selectedTab, boardId);
     this.service.selectTab(this.selectedTab);
-    if (selectedTab === 'Kanban') {
+    if (this.service.getSelectedType() === 'Kanban') {
       this.kanban = true;
     } else {
       this.kanban = false;
@@ -324,7 +326,7 @@ export class NavComponent implements OnInit {
   }
 
   processKPIListData() {
-    debugger;
+    // debugger;
     this.configOthersData = this.kpiListData['others'][0]?.kpis;
     this.service.setDashConfigData(this.kpiListData);
     this.boardNameArr = [];

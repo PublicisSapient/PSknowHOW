@@ -147,7 +147,6 @@
                   <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                   </ng-option>
                </ng-select>
-               <h1>This is project</h1>
             </div>
             <!-- sprint -->
 
@@ -170,10 +169,49 @@
                   selectedProjectLastSyncDate?.executionEndedAt | date :'dd/MM/yyyy h:mm:ss a'}}
                </p>
             </div>
+
+            <!-- SHow/Hide start for iteration and backlog -->
+
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration')"
+               [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
+               <div
+                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
+                  #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
+                  Show/Hide
+               </div>
+               <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
+                  class="position-absolute kpi-dropdown" #drpmenu>
+                  <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
+
+                     <div class="p-d-flex p-align-center p-p-3 border-bottom">
+                        <p-inputSwitch formControlName="enableAllKpis" (onChange)="handleAllKpiChange($event)">All KPI's
+                        </p-inputSwitch>
+                        <span class="p-ml-2">All KPI's</span>
+                     </div>
+                     <ul formGroupName="kpis" class="kpiList p-pl-3 p-pr-3 p-mb-0 p-pb-3">
+                        <li *ngFor="let kpi of this.showKpisList"
+                           class="p-d-flex p-align-center p-p-2 border rounded p-mt-3">
+                           <p-inputSwitch [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event)">
+                           </p-inputSwitch>
+                           <span class="p-ml-2">{{kpi.kpiName}}</span>
+                        </li>
+                     </ul>
+                     <div class="p-p-3 border-top p-text-right">
+                        <button pButton pRipple label="Cancel" icon="pi pi-times"
+                           class="p-button-secondary p-button-text p-mr-2 p-button-sm"
+                           (click)="toggleDropdown = false"></button>
+
+                        <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
+                           icon="pi pi-check" iconPos="left" label="Save"></button>
+                     </div>
+
+                  </form>
+               </div>
+            </div>
+
             <!-- /show/hide kpi's ends -->
             <!-- Notification button start -->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" style="margin: 0rem 0.4rem;position: relative"
-               *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
                (click)="notification.toggle($event)" role="button">
                <img src="../../../assets/img/icon-bell.svg" alt="Bell" />
                <span *ngIf="notificationList.length" class="noti-count">{{notificationList.length}}</span>
@@ -187,7 +225,7 @@
    </div>
   
    <div style="display: flex;">
-      <div *ngIf="router.url.split('/').includes('Config')" class="btn-custom p-p-2 rounded p-mr-3 filter-btn cursor-pointer" style="margin-top: 14px;padding-right: 8px;"  >
+      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="btn-custom p-p-2 rounded p-mr-3 filter-btn cursor-pointer" style="margin-top: 14px;padding-right: 8px;"  >
          <a routerLink="mydashboard" routerLinkActive="active" (click)="navigateToSelectedTab()">BACK TO DASHBOARD</a>
       </div>
       <div style="padding-top: 14px;padding-right: 8px;" role="button">

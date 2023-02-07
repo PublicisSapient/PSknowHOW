@@ -28,10 +28,10 @@
   </div>
  
   <div id="wrapper" [ngClass]="{'toggled':isApply}">
-    <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config')">
+    <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help')" [ngStyle]="{'height':router.url.split('/').includes('backlog') || router.url.split('/').includes('Help') ?'56.2rem':''}" [ngStyle]="{'height':router.url.split('/').includes('Maturity')?'53.2rem':''}">
       <app-nav id="top"></app-nav>
     </div>
-    <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') ? '0rem' : ''}">
+    <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') || router.url.split('/').includes('Help') ? '0rem' : ''}">
       <!-- <div>
       <app-filter-list></app-filter-list>
      </div> -->
