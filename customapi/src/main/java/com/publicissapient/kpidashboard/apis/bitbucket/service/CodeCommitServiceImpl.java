@@ -88,7 +88,6 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	private static final String GITLAB = "GitLab";
 	private static final String GITHUB = "GitHub";
 	private static final String YYYYMMDD = "yyyy-MM-dd";
-	private static final String DATE = "Date ";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
 

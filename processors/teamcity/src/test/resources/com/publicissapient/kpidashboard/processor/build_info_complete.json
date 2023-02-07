@@ -22,7 +22,7 @@
       "type": "user",
       "date": "20200402T122613+0530",
       "user": {
-          "username": "admin",
+          "name": "admin",
           "id": 1,
           "href": "/app/rest/users/id:1"
       }
