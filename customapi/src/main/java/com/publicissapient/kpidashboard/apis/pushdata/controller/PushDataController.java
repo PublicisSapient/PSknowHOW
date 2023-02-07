@@ -55,7 +55,7 @@ public class PushDataController {
 	PushDataValidationService pushDataValidationService;
 
 	@RequestMapping(value = "/build/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@PathVariable("id") String projectConfigId,
+	public ResponseEntity<ServiceResponse> savePushDataBuilds(@PathVariable("id") String projectConfigId,
 																HttpServletResponse response,
 			 @RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
 		//String projectConfigId = pushDataValidationService.validateToken(response);

@@ -33,7 +33,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 	public PushBuildDeployResponse processPushDataInput(PushBuildDeploy buildDeploy, String projectConfigId) {
 		PushBuildDeployResponse pushBuildDeployResponse = new PushBuildDeployResponse();
 		pushBuildDeployResponse.setTotalRecords(getTotalRecords(buildDeploy));
-		log.info("Total Records are " +pushBuildDeployResponse.getTotalRecords());
+		log.info("Total Records input for "+ projectConfigId+" are " +pushBuildDeployResponse.getTotalRecords());
 		List<Build> buildList = new ArrayList<>();
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<BuildDeployErrorData> buildErrorList = new ArrayList<>();
@@ -46,7 +46,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 		pushBuildDeployResponse.setDeploy(deployErrorList);
 		pushBuildDeployResponse.setTotalFailedRecords(buildFailedRecords + deployFailedRecords);
 		pushBuildDeployResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
-		log.info("Total Records to be Saved are " +pushBuildDeployResponse.getTotalSavedRecords());
+		log.info("Total Records for "+ projectConfigId+ " to be Saved are " +pushBuildDeployResponse.getTotalSavedRecords());
 		totalSaveRecords(pushBuildDeployResponse, buildList, deploymentList);
 		return pushBuildDeployResponse;
 
