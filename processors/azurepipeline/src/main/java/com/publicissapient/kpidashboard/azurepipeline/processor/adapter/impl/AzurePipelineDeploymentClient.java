@@ -18,28 +18,7 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.processor.adapter.impl;
 
-import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineJob;
-import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
-import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestOperations;
+import static com.publicissapient.kpidashboard.common.util.DateUtil.TIME_FORMAT;
 
 import java.net.URI;
 import java.time.Instant;
@@ -52,7 +31,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.publicissapient.kpidashboard.common.util.DateUtil.TIME_FORMAT;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestOperations;
+
+import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
+import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -73,7 +75,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	 */
 	@Autowired
 	RestOperationsFactory<RestOperations> restOperationsFactory;
-	
+
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
 			long lastStartTimeOfDeployment) {
@@ -111,7 +113,6 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			JSONParser parser = new JSONParser();
 			JSONObject resObject = (JSONObject) parser.parse(body);
 			JSONArray deployments = AzurePipelineUtils.getJsonArray(resObject, "value");
-
 
 			for (Object deployObject : deployments) {
 				Deployment deploymentJob = new Deployment();
@@ -172,7 +173,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	@Override
-	public Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
+	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
 			long lastStartTimeOfJobs) {
 		return new HashMap<>();
 	}

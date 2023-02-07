@@ -18,7 +18,12 @@
 
 package com.publicissapient.kpidashboard.jenkins.processor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
@@ -26,7 +31,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -51,10 +60,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.factory.JenkinsClientFactory;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsJob;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
-import com.publicissapient.kpidashboard.jenkins.repository.JenkinsJobRepository;
 import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -69,9 +76,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	@Autowired
 	private JenkinsProcessorRepository jenkinsProcessorRepository;
-
-	@Autowired
-	private JenkinsJobRepository jenkinsJobRepository;
 
 	@Autowired
 	private BuildRepository buildRepository;
@@ -209,12 +213,12 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	private void processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
 			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count) {
-		Map<JenkinsJob, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer);
+		Map<ObjectId, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer);
 		if (MapUtils.isNotEmpty(buildsByJob)) {
-			JenkinsJob jobFromConfig = buildsByJob.keySet().iterator().next();
-			JenkinsJob savedJob = addJenkinsJobItem(jobFromConfig, processor, jenkinsServer);
-			int updatedJobs = addNewBuildDetails(savedJob, buildsByJob,jenkinsServer);
+
+			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId());
 			count += updatedJobs;
+			log.info("Job updated for :{}", count);
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
 		}
@@ -267,50 +271,25 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	/**
-	 * Adds new JenkinsJobs to the database as disabled jobs.
-	 * 
-	 * @param job
-	 *            the Jenkins jobs name
-	 * @param processor
-	 *            the Jenkins processor
-	 * @param jenkinsServer
-	 *            jenkins tool
-	 */
-	private JenkinsJob addJenkinsJobItem(JenkinsJob job, JenkinsProcessor processor,
-			ProcessorToolConnection jenkinsServer) {
-		JenkinsJob existingJob = getExistingJob(processor, job, jenkinsServer.getId());
-		if (existingJob == null) {
-			job.setProcessorId(processor.getId());
-			job.setActive(true);
-			job.setDesc(job.getJobName());
-			job.setVersion((short) 2);
-			job.setToolConfigId(jenkinsServer.getId());
-			existingJob = jenkinsJobRepository.save(job);
-			log.info("New job added {} ", jenkinsServer.getJobName());
-		} else {
-			log.info("Job details already present for: {} ", jenkinsServer.getJobName());
-		}
-		return existingJob;
-	}
-
-	/**
 	 * Iterates over the enabled build jobs and adds new builds to the database.
 	 *
-	 * @param savedJob
-	 *            the list of enabled Jenkins job
 	 * @param buildsByJob
 	 *            the build by job
 	 * @return build count
 	 */
-	private int addNewBuildDetails(JenkinsJob savedJob, Map<JenkinsJob, Set<Build>> buildsByJob,ProcessorToolConnection jenkinsServer) {
+	private int addNewBuildDetails(Map<ObjectId, Set<Build>> buildsByJob, ProcessorToolConnection jenkinsServer,
+			ObjectId processorId) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
 		for (Build build : buildsByJob.values().iterator().next()) {
-			if (isNewBuild(savedJob, build)) {
-				build.setProcessorItemId(savedJob.getId());
-				build.setBuildJob(savedJob.getJobName());
+			if (isNewBuild(jenkinsServer.getId(), build.getNumber())) {
 				build.setJobFolder(jenkinsServer.getJobName());
+				build.setProcessorId(processorId);
+				build.setBasicProjectConfigId(jenkinsServer.getBasicProjectConfigId());
+				build.setProjectToolConfigId(jenkinsServer.getId());
+				build.setBuildJob(jenkinsServer.getJobName());
+
 				buildsToSave.add(build);
 				count++;
 			}
@@ -326,19 +305,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		return aesEncryptionService.decrypt(encryptedKey, jenkinsConfig.getAesEncryptionKey());
 	}
 
-	/**
-	 * Provides Existing Jobs.
-	 * 
-	 * @param processor
-	 *            the Jenkins processor
-	 * @param job
-	 *            the Jenkins job
-	 * @return the JenkinsJob
-	 */
-	private JenkinsJob getExistingJob(JenkinsProcessor processor, JenkinsJob job, ObjectId toolConfigId) {
-		return jenkinsJobRepository.findJob(processor.getId(), job.getInstanceUrl(), job.getJobName(), toolConfigId);
-	}
-
 	private ProcessorExecutionTraceLog createTraceLogJenkins(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
@@ -349,14 +315,14 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	/**
 	 * Checks whether the build is new.
 	 * 
-	 * @param job
+	 * @param jobId
 	 *            the Jenkins jobs
-	 * @param build
+	 * @param buildNumber
 	 *            the Jenkins build
 	 * @return boolean
 	 */
-	private boolean isNewBuild(JenkinsJob job, Build build) {
-		return buildRepository.findByProcessorItemIdAndNumber(job.getId(), build.getNumber()) == null;
+	private boolean isNewBuild(ObjectId jobId, String buildNumber) {
+		return buildRepository.findByProjectToolConfigIdAndNumber(jobId, buildNumber) == null;
 	}
 
 	/**
@@ -392,8 +358,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		} else {
 			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-
-		clearToolItemCache(jenkinsConfig.getCustomApiBaseUrl());
 	}
 
 	/**

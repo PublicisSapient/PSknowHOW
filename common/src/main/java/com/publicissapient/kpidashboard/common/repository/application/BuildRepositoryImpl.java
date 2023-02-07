@@ -50,23 +50,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 	private MongoOperations operations;
 
 	@Override
-	public List<Build> findBuildListAccToSprint(List<BasicDBObject> dbObjectList) {
-
-		List<BasicDBObject> pipeline = Lists
-				.newArrayList(new BasicDBObject("$match", new BasicDBObject("$or", dbObjectList)));
-		AggregateIterable<Document> cursor = operations.getCollection("build_details").aggregate(pipeline);
-		MongoCursor<Document> itr = cursor.iterator();
-		List<Build> returnList = new ArrayList<>();
-		while (itr.hasNext()) {
-			Document obj = itr.next();
-			Build buildList = operations.getConverter().read(Build.class, obj);
-			returnList.add(buildList);
-		}
-		return returnList;
-	}
-
-	@Override
-	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> processorItemIdList ,
+	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId>  projectBasicConfigIds ,
 			String startDate, String endDate) {
 		Criteria criteria = new Criteria();
 
@@ -80,7 +64,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 			criteria = criteria.and("startTime").gte(startDateUTC).and("endTime").lte(endDateUTC);
 		}
 
-		criteria.and("processorItemId").in(processorItemIdList);
+		criteria.and("basicProjectConfigId").in(projectBasicConfigIds);
 
 		Query query = new Query(criteria);
 

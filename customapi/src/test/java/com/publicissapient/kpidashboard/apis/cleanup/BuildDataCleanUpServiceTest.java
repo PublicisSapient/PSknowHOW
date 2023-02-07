@@ -84,16 +84,11 @@ public class BuildDataCleanUpServiceTest {
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5e9db8f1e4b0caefbfa8e0c7"));
 		projectToolConfig.setToolName(ProcessorConstants.JENKINS);
 		when(projectToolConfigRepository.findById(Mockito.anyString())).thenReturn(projectToolConfig);
-		ProcessorItem processorItem = new ProcessorItem();
-		processorItem.setId(new ObjectId("5fc6a0c0e4b00ecfb5941e29"));
-		when(processorItemRepository.findByToolConfigId(Mockito.any(ObjectId.class))).thenReturn(Arrays.asList(processorItem));
-		doNothing().when(buildRepository).deleteByProcessorItemIdIn(Mockito.anyList());
+		doNothing().when(buildRepository).deleteByProjectToolConfigId(projectToolConfig.getId());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(processorExecutionTraceLogRepository).deleteByBasicProjectConfigIdAndProcessorName(Mockito.any(),Mockito.anyString());
 		doNothing().when(cacheService).clearCache(Mockito.anyString());
 		buildDataCleanupService.clean("5e9e4593e4b0c8ece56710c3");
-		verify(buildRepository, times(1))
-				.deleteByProcessorItemIdIn(Arrays.asList(new ObjectId("5fc6a0c0e4b00ecfb5941e29")));
 		verify(processorItemRepository, times(1)).deleteByToolConfigId(new ObjectId("5e9e4593e4b0c8ece56710c3"));
 		verify(processorExecutionTraceLogRepository, times(1)).deleteByBasicProjectConfigIdAndProcessorName("5e9db8f1e4b0caefbfa8e0c7" , ProcessorConstants.JENKINS);
 
