@@ -242,7 +242,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<IterationKpiValue> iterationKpiValues, List<Integer> overAllIssueCount, List<Double> overAllIssueSp,
 			List<IterationKpiModalValue> overAllmodalValues, String label,
 								FieldMapping fieldMapping, List<Double> overAllOriginalEstimate) {
-		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) -> {
+		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 			statusWiseIssue.forEach((status, issues) -> {
 				issueTypes.add(issueType);
 				statuses.add(status);
@@ -284,9 +284,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				} else {
 					matchingObject.getData().addAll(data);
 				}
-			});
-
-		});
+			}));
 	}
 
 }

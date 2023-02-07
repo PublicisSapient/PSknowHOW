@@ -185,7 +185,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 				timeRemainingInSprintMin.set(0, weekDaysSprint * fieldMapping.getWorkingHoursDayCPT() * 60);
 			}
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
-			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
+			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) ->
 				priorityWiseIssue.forEach((priority, issues) -> {
 					issueTypes.add(issueType);
 					priorities.add(priority);
@@ -242,9 +242,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 					data.add(issueAtRiskSp);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
 					iterationKpiValues.add(iterationKpiValue);
-				});
-
-			});
+				}));
 			List<IterationKpiData> data = new ArrayList<>();
 
 			IterationKpiData overAllIssuesAtRisk = new IterationKpiData(ISSUES_AT_RISK,

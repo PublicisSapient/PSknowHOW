@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -288,13 +287,13 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 						fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					sprintVelocityForCurrentLeaf = issueDetailsSet.stream().filter(IssueDetails ->
-									Objects.nonNull(IssueDetails.getSprintIssue().getStoryPoints()))
-							.mapToDouble(IssueDetails -> IssueDetails.getSprintIssue().getStoryPoints()).sum();
+					sprintVelocityForCurrentLeaf = issueDetailsSet.stream().filter(issueDetails ->
+									Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
 				} else {
-					double totalOriginalEstimate = issueDetailsSet.stream().filter(IssueDetails ->
-									Objects.nonNull(IssueDetails.getSprintIssue().getOriginalEstimate()))
-							.mapToDouble(IssueDetails -> IssueDetails.getSprintIssue().getOriginalEstimate()).sum();
+					double totalOriginalEstimate = issueDetailsSet.stream().filter(issueDetails ->
+									Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
 					double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
 					sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
 				}

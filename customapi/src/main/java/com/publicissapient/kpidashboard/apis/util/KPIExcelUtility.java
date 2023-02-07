@@ -133,7 +133,7 @@ public class KPIExcelUtility {
                                 fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                             excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
                         } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-                            Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes() / 60);
+                            Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
                             excelData.setStoryPoint(originalEstimateInHours/ fieldMapping.getStoryPointToHourMapping()
                                     +"/"+originalEstimateInHours + " hrs");
                         }
@@ -474,7 +474,7 @@ public class KPIExcelUtility {
                             fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                         excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
                     } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-                        Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes() / 60);
+                        Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
                         Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
                         excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
                                 totalOriginalEstimate / 60 + " hrs");

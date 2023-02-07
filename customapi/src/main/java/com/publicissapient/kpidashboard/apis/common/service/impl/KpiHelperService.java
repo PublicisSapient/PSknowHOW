@@ -1264,9 +1264,8 @@ public class KpiHelperService { // NOPMD
 											 List<JiraIssue> defectListWoDrop) {
 		if (CollectionUtils.isNotEmpty(defectDataList)) {
 			Set<JiraIssue> defectListWoDropSet = new HashSet<>();
-			defectDataList.forEach(jiraIssue -> {
-				getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue);
-			});
+			defectDataList.forEach(jiraIssue ->
+					getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue));
 			defectListWoDrop.addAll(defectListWoDropSet);
 		}
 	}
