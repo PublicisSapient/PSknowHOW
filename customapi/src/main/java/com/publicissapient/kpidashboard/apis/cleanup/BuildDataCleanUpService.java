@@ -63,11 +63,6 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-	private List<ObjectId> getProcessorItemsIds(ProjectToolConfig tool) {
-		List<ProcessorItem> items = processorItemRepository.findByToolConfigId(tool.getId());
-
-		return CollectionUtils.emptyIfNull(items).stream().map(ProcessorItem::getId).collect(Collectors.toList());
-	}
 
 	@Override
 	public String getToolCategory() {
@@ -78,13 +73,10 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 	public void clean(String projectToolConfigId) {
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
 		if (tool != null) {
-			List<ObjectId> itemsIds = getProcessorItemsIds(tool);
-
 			// delete corresponding deployment details from deployments
 			deploymentRepository.deleteDeploymentByProjectToolConfigId(tool.getId());
 
 			// delete corresponding documents from build_details
-			buildRepository.deleteByProcessorItemIdIn(itemsIds);
 			buildRepository.deleteByProjectToolConfigId(tool.getId());
 
 			// delete corresponding documents from processor_items
