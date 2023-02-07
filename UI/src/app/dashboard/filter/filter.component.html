@@ -237,7 +237,7 @@
    </div>
 </div>
 
-<div class="clearfix" [class.sticky]="headerFixed" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" >
+<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" >
    <div class="filter-nav">
 
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration'">

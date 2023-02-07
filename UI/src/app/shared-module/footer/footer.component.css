@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 .footer {
-    position: fixed;
+    /* position: fixed; */
     border-top: 2px solid #a3a3a3;
     background-color: var(--color-white);
     width: 100%;

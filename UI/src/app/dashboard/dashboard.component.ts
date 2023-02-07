@@ -88,5 +88,4 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   ngAfterContentInit() {
     this.cdRef.detectChanges();
   }
-
 }

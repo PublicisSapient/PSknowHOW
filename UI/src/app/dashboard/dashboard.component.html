@@ -20,7 +20,7 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main-container">
 
-  <div class="header" [class.sticky]="headerFixed">
+  <div class="header" #header [class.sticky]="headerFixed">
     <!-- <div> -->
     <div>
       <app-filter></app-filter>
@@ -28,19 +28,16 @@
   </div>
  
   <div id="wrapper" [ngClass]="{'toggled':isApply}">
-    <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help')" [ngStyle]="{'height':router.url.split('/').includes('backlog') || router.url.split('/').includes('Help') ?'56.2rem':''}" [ngStyle]="{'height':router.url.split('/').includes('Maturity')?'53.2rem':''}">
+   <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help')"
+      [ngStyle]="{'height': 'calc(100vh - '+header.offsetHeight+'px)'}"
+      [style.top]="'calc('+header.offsetHeight+'px'+' - '+'0px)'">
       <app-nav id="top"></app-nav>
     </div>
     <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') || router.url.split('/').includes('Help') ? '0rem' : ''}">
-      <!-- <div>
-      <app-filter-list></app-filter-list>
-     </div> -->
-
       <div>
         <router-outlet></router-outlet>
       </div>
-
     </div>
   </div>
-  <app-footer></app-footer>
 </div>
+<app-footer></app-footer>

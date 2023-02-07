@@ -975,6 +975,11 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   width: 14.5rem;
 }
 
+/* this notification and user menu always on top */
+::ng-deep .p-menu-overlay{
+  top: 55px !important;
+}
+
 .header {
   -webkit-transition: all 0.5s ease;
   -moz-transition: position 10s;
@@ -1011,7 +1016,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   /* z-index: 1; */
   animation: smoothScroll 0.5s forwards;
   position: -webkit-sticky;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .logo {

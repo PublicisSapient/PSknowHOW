@@ -289,6 +289,7 @@ export class FilterComponent implements OnInit {
         label: 'Help',
         icon: 'fa fa-info-circle',
         command: () => {
+          this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Help']);
         },
       },
@@ -305,6 +306,7 @@ export class FilterComponent implements OnInit {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
+          this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });

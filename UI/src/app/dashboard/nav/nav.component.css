@@ -29,15 +29,9 @@
 }
 
 .navigation2 {
-  /* min-height: 75px;
-  font-size: 16px;*/
-  /* position: relative; */
-  /* z-index: 10;  */
-  /* position: fixed; */
-  top: 5rem !important;
-  left: 0;
+ 
+  height: 100%;
   width: 5rem;
-  height: 55rem;
   background-color: rgba(67, 116, 149, 1);
   /* z-index: 3; */
 }
