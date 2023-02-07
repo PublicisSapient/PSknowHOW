@@ -192,11 +192,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 					}
 					aggBuildList.addAll(buildList);
 					String jobName;
-					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
-					} else {
-						jobName = job.getProcessorItemList().get(0).getDesc() + CommonConstant.ARROW + trendLineName;
-					}
+					jobName = getJobName(trendLineName, job, buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
 			});
@@ -213,6 +209,16 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
+	}
+
+	private String getJobName(String trendLineName, Tool job, List<Build> buildList) {
+		String jobName;
+		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+			jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+		} else {
+			jobName = job.getProcessorItemList().get(0).getDesc() + CommonConstant.ARROW + trendLineName;
+		}
+		return jobName;
 	}
 
 	private boolean isValidJob(Tool job) {
@@ -319,25 +325,6 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 */
 	private String createDurationString(long minutes, long seconds) {
 		return minutes == 0L ? seconds + Constant.SEC : minutes + Constant.MIN + seconds + Constant.SEC;
-	}
-
-	/**
-	 * Creates validation data for node.
-	 *
-	 * @param codeBuildTimeInfo
-	 * @return ValidationData object
-	 */
-	private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-		ValidationData validationData = new ValidationData();
-		validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-		validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-		validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-		validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-		validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-		validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-		validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-		validationData.setDuration(codeBuildTimeInfo.getDurationList());
-		return validationData;
 	}
 
 	/**
