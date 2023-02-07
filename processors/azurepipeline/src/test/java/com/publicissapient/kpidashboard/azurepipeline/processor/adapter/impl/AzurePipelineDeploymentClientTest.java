@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class AzurePipelineDeploymentClientTest {
 	private AzurePipelineDeploymentClient azurePipelineDeploymentClient;
 
 	private static final ProcessorToolConnection azurePipelineServer = new ProcessorToolConnection();
-
+	private static final ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
 	@BeforeEach
 	public void init() {
 		azurePipelineServer.setUrl("https://dev.azure.com/KnowHOW-demo/KnowHow");
@@ -84,7 +85,7 @@ class AzurePipelineDeploymentClientTest {
             when(restOperationsFactory.getTypeInstance().exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
                     eq(String.class))).thenReturn(new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
 			Map<Deployment, Set<Deployment>> response = azurePipelineDeploymentClient
-					.getDeploymentJobs(azurePipelineServer, 0);
+					.getDeploymentJobs(azurePipelineServer, 0, proBasicConfig);
 			assertEquals(1, response.size());
 			Deployment deployment = response.values().stream().iterator().next().stream().iterator().next();
 			assertEquals("knowhow-release", deployment.getJobName());

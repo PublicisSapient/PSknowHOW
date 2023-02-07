@@ -344,7 +344,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional=processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId( ProcessorConstants.JENKINS,basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
 		});

@@ -568,11 +568,12 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
-			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
-		});
+		if(existingTraceLogOptional != null) {
+			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
+				processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
+			});
+		}
 		return processorExecutionTraceLog;
 	}
 	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
