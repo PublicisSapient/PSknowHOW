@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -159,6 +157,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
     public void populateIterationStatusData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue> modalValues, IterationStatus iterationStatus) {
         IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
         iterationKpiModalVal.setIssueId(iterationStatus.getIssueId());
+        iterationKpiModalVal.setIssueURL(iterationStatus.getUrl());
         iterationKpiModalVal.setIssueType(iterationStatus.getTypeName());
         iterationKpiModalVal.setPriority(iterationStatus.getPriority());
         iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
