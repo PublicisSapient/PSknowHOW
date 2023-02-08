@@ -30,6 +30,7 @@ import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { TextEncryptionService } from 'src/app/services/text.encryption.service';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-filter',
@@ -118,6 +119,7 @@ export class FilterComponent implements OnInit {
   items: MenuItem[];
   username: string;
   isGuest = false;
+  logoImage: any;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -178,6 +180,11 @@ export class FilterComponent implements OnInit {
       }
     });
     this.getNotification();
+     /*subscribe logo image from service*/
+     this.service.getLogoImage().subscribe((logoImage) => {
+      this.getLogoImage();
+    });
+
   }
 
   ngOnInit() {
@@ -246,7 +253,6 @@ export class FilterComponent implements OnInit {
               ? parseFloat(maturityObj[element?.nodeName] + '').toFixed(2)
               : 'NA');
         });
-        this.service.setSelectedFilterList(this.selectedFilterArray);
       } else if (self.trendLineValueList.length) {
         // setTimeout(() => {
         self.trendLineValueList[0]['grossMaturity'] =
@@ -367,7 +373,6 @@ export class FilterComponent implements OnInit {
   selectedType(type) {
     this.resetFilterApplyObj();
     this.selectedFilterArray = [];
-    this.service.setSelectedFilterList(this.selectedFilterArray);
     this.tempParentArray = [];
     if (type === 'Kanban') {
       this.kanban = true;
@@ -795,8 +800,7 @@ export class FilterComponent implements OnInit {
 
       this.limitSelectedTrendValueListChars();
     }
-    // console.log("before serting on filter list",this.selectedFilterArray);
-    this.service.setSelectedFilterList(this.selectedFilterArray);
+
   }
 
   limitSelectedTrendValueListChars() {
@@ -908,7 +912,6 @@ export class FilterComponent implements OnInit {
         boardDetails?.boardName,
         boardDetails?.boardId,
       );
-      // this.service.selectTab(this.selectedTab); // On first time dashboard name was not comming
       this.router.navigateByUrl(
         `/dashboard/${boardDetails?.boardName
           .split(' ')
@@ -1401,7 +1404,6 @@ export class FilterComponent implements OnInit {
         }
       }
     }
-    this.service.setSelectedFilterList(this.selectedFilterArray);
   }
 
   getDate(type) {
@@ -1458,7 +1460,6 @@ export class FilterComponent implements OnInit {
     const selectedNode = this.selectedFilterArray.map((node) => node.nodeId);
     this.filterForm.get('selectedTrendValue').setValue(selectedNode);
     this.applyChanges(null, false);
-    this.service.setSelectedFilterList(this.selectedFilterArray);
   }
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
@@ -1588,4 +1589,18 @@ export class FilterComponent implements OnInit {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
     }
   }
+
+    /*Rendered the logo image */
+    getLogoImage() {
+      this.httpService
+        .getUploadedImage()
+        .pipe(first())
+        .subscribe((data) => {
+          if (data['image']) {
+            this.logoImage = 'data:image/png;base64,' + data['image'];
+          } else {
+            this.logoImage = undefined;
+          }
+        });
+    }
 }

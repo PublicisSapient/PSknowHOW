@@ -990,7 +990,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   display: grid;
   grid-template-columns: 1fr 7fr 0.3fr;
   border: 1px solid #a3a3a3;
-  /* border-bottom: 1px solid #a3a3a3; */
   background-color: var(--color-white);
   width: 100%;
 }
@@ -1004,7 +1003,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   display: flex;
   justify-content: space-between;
   border: 1px solid #a3a3a3;
-  /* border-bottom: 1px solid #a3a3a3; */
   background-color: var(--color-white);
   width: 100%;
 }

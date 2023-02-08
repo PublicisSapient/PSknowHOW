@@ -23,15 +23,9 @@ import { GoogleAnalyticsService } from '../../services/google-analytics.service'
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TextEncryptionService } from '../../services/text.encryption.service';
-import {
-  NotificationDTO,
-  NotificationResponseDTO,
-} from 'src/app/model/NotificationDTO.model';
-import { debug } from 'console';
 
 @Component({
   selector: 'app-nav',
@@ -46,8 +40,6 @@ export class NavComponent implements OnInit {
   subscription: Subscription;
   configOthersData;
   selectedProject: any;
-  notificationPlaceHolder: NotificationDTO[] = [];
-  showNotifications = <boolean>true;
   worker: any;
   showHelp = false;
   isGuest = false;
@@ -57,7 +49,6 @@ export class NavComponent implements OnInit {
   changedBoardName: any;
   displayEditModal: boolean;
   selectedType: string;
-
   mainTab: string;
   boardNameArr: any[] = [];
   boardId = 1;
@@ -84,11 +75,6 @@ export class NavComponent implements OnInit {
     //   this.selectedTab = this.service.getSelectedTab();
     // });
 
-    // this.username = localStorage.getItem('user_name');
-    /*subscribe logo image from service*/
-    // this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
-    //   this.getLogoImage();
-    // });
 
     this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig['others'] && globalConfig['others'].length > 1) {
@@ -97,9 +83,6 @@ export class NavComponent implements OnInit {
       }
     });
 
-    
-
-    // this.renderMessage();
   }
 
   processKpiConfigData() {
@@ -118,7 +101,6 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
-    //debugger;
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -147,9 +129,6 @@ export class NavComponent implements OnInit {
         projectsAccess.length !== 0;
     }
 
-    // this.getLogoImage();as movied in to filter compo
-    this.getMatchVersions();
-
     document.addEventListener(
       'click',
       function (e) {
@@ -169,10 +148,6 @@ export class NavComponent implements OnInit {
       false,
     );
 
-    // this.subscription = this.service.passEventToNav.subscribe(() => {as movied in to filter compo
-    //   this.renderMessage();
-    // });
-
     this.startWorker();
     this.service.selectedTypeObs.subscribe((selectedType) => {
       this.selectedType = selectedType;
@@ -180,23 +155,8 @@ export class NavComponent implements OnInit {
     });
   }
 
-  /*Rendered the logo image */ // as movied in to filter compo
-  // getLogoImage() {
-  //   this.httpService
-  //     .getUploadedImage()
-  //     .pipe(first())
-  //     .subscribe((data) => {
-  //       if (data['image']) {
-  //         this.logoImage = 'data:image/png;base64,' + data['image'];
-  //       } else {
-  //         this.logoImage = undefined;
-  //       }
-  //     });
-  // }
-
   // call when user is seleting tab
   selectTab(selectedTab, boardId = this.boardId) {
-   // debugger;
     this.selectedTab =
       selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
     this.helper.isKanban = false;
@@ -209,78 +169,7 @@ export class NavComponent implements OnInit {
     }
   }
 
-  // logout is clicked  and removing auth token , username
-  logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
-        this.helper.isKanban = false;
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_name');
-        localStorage.removeItem('authorities');
-        localStorage.removeItem('projectsAccess');
-        if (localStorage.getItem('loginType') === 'AD') {
-          localStorage.removeItem('SpeedyPassword');
-        }
-        // Set blank selectedProject after logged out state
-        this.selectedProject = null;
-        this.service.setSelectedProject(this.selectedProject);
 
-        this.router.navigate(['./authentication/login']);
-      }
-    });
-  }
-
-  // getting the version details from server
-  getMatchVersions() {
-    this.httpService.getMatchVersions().subscribe((filterData) => {
-      if (filterData && filterData.versionDetailsMap) {
-        this.currentversion = filterData.versionDetailsMap.currentVersion;
-      }
-    });
-  }
-
-  renderMessage() {
-    this.httpService
-      .getAccessRequestsNotifications()
-      .subscribe((response: NotificationResponseDTO) => {
-        if (response && response.success) {
-          if (response.data?.length) {
-            this.notificationPlaceHolder = [...response.data];
-            this.showNotificationPanel =
-              this.notificationPlaceHolder.length &&
-              this.notificationPlaceHolder.some((data) => data.count > 0);
-          }
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error in fetching requests. Please try after some time.',
-          });
-        }
-      });
-  }
-
-  messageLink(type: string) {
-    if (this.getAuth.checkIfSuperUser() || this.getAuth.checkIfProjectAdmin()) {
-      switch (type) {
-        case 'Project Access Request':
-          this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
-          break;
-        case 'User Access Request':
-          this.router.navigate([
-            '/dashboard/Config/Profile/GrantNewUserAuthRequests',
-          ]);
-          break;
-        default:
-          console.log('default case');
-      }
-    } else {
-      this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
-    }
-  }
-
-  hideNotifications() {
-    this.showNotifications = false;
-  }
 
   startWorker() {
     if (typeof Worker !== 'undefined') {
@@ -326,7 +215,6 @@ export class NavComponent implements OnInit {
   }
 
   processKPIListData() {
-    // debugger;
     this.configOthersData = this.kpiListData['others'][0]?.kpis;
     this.service.setDashConfigData(this.kpiListData);
     this.boardNameArr = [];
