@@ -77,7 +77,8 @@ jobs:
         run: |
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
-          echo $GITHUB_HEAD_NAME
+          echo first $GITHUB_HEAD_NAME
+          echo second : ${{github.head.ref}}
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
           #npm install --save-dev @angular-devkit/build-angular
