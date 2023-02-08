@@ -20,7 +20,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
-import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -59,7 +58,6 @@ export class NavComponent implements OnInit {
     private messageService: MessageService,
     public service: SharedService,
     public router: Router,
-    private getAuth: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
