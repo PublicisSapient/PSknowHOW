@@ -326,31 +326,20 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
 				.getDeployJobsFromServer(bambooJobConfig,proBasicConfig);
 
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-			if (proBasicConfig.isSaveAssigneeDetails()
-					&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-							.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
-							|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-									.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf)))) {
-				List<Deployment> updateDeployedBy = new ArrayList<>();
-
-				deployJobsFromBamboo.forEach((basicConfigID, deploymentList) -> {
+		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+			List<Deployment> updateDeployedBy = new ArrayList<>();
+			deployJobsFromBamboo.forEach((basicConfigID, deploymentList) ->
 					deploymentList.forEach(deployment -> {
-						Deployment deploymentData = deploymentRepository.findByProjectToolConfigIdAndNumber(
-								bambooJobConfig.getBasicProjectConfigId(), deployment.getNumber());
+						Deployment deploymentData = deploymentRepository.findByProjectToolConfigIdAndNumber(deployment.getProjectToolConfigId(), deployment.getNumber());
 						if (deploymentData != null) {
 							deploymentData.setDeployedBy(deployment.getDeployedBy());
 							updateDeployedBy.add(deploymentData);
 						}
-
-					});
-
-				});
-				deploymentRepository.saveAll(updateDeployedBy);
-
-			}
+					})
+			);
+			deploymentRepository.saveAll(updateDeployedBy);
 		}
-		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs,processorExecutionTraceLog,proBasicConfig);
+		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs);
 		Set<Deployment> saveDeployments = new HashSet<>();
 		deployments.stream().forEach(deployment -> {
 			if (checkDeploymentConditionsNotNull(deployment)) {
@@ -391,8 +380,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private Set<Deployment> addNewBambooDeploysJobsToDb(
 			Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo,
-			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs,
-			ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs) {
 		Set<Deployment> finalDataToSave = new HashSet<>();
 		deployJobsFromBamboo.forEach((key, value) -> {
 
@@ -568,13 +556,33 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-		if(existingTraceLogOptional != null) {
+		if (existingTraceLogOptional.isPresent()) {
 			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 				processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
 				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
 			});
 		}
 		return processorExecutionTraceLog;
+	}
+	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
+		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
+			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
+			projectConfigRepository.save(projectBasicConfig);
+		}
+	}
+	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
+								 ProjectBasicConfig proBasicConfig) {
+		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+	}
+
+	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
+													 ProjectBasicConfig proBasicConfig) {
+		return (proBasicConfig.isSaveAssigneeDetails()
+				&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+				.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
+				|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+				.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))));
 	}
 
 }
