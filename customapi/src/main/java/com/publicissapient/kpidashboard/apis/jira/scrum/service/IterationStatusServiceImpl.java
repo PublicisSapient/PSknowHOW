@@ -86,6 +86,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
 	private static final String OPEN_ISSUES = "openIssuesCausingDelay";
+	private static final String DELAY_DETAILS = "delayDetails";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String PARSE_EXCEPTION = "Exception while parse date...";
 	private static final String TOTALISSUES = "totalIssues";
@@ -100,6 +101,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String ISSUES_DONE_BEFORE_TIME = "Done Before Time";
 	private static final String NOT_COMPLETED_ISSUES = "notCompletedIssues";
 	private static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
+	public static final Map<String, List<IterationStatus>> resultList = new HashMap<>();
 	private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
 	private static final String OVERALL = "Overall";
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -454,7 +456,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private Map<String, List<IterationStatus>> findDelayOfClosedIssues(Set<SprintIssue> completedIssues,
 			Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
 			String endDate) throws ParseException {
-		Map<String, List<IterationStatus>> resultList = new HashMap<>();
+
 		List<IterationStatus> jiraBeforeTimeIssueList = new ArrayList<>();
 		List<IterationStatus> jiraAfterTimeIssueList = new ArrayList<>();
 		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
@@ -483,7 +485,10 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		}
 		jiraDelayIssueList.addAll(jiraBeforeTimeIssueList);
 		jiraDelayIssueList.addAll(jiraAfterTimeIssueList);
-		resultList.put("delayDetails", jiraDelayIssueList);
+		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+			v.addAll(jiraDelayIssueList);
+			return v;
+		});
 		resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
 		resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
 		return resultList;
@@ -509,8 +514,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
 			String startDate, String endDate) throws ParseException {
 
-		Map<String, List<IterationStatus>> resultList = new HashMap<>();
+		Map<String, List<IterationStatus>> resultListOpenIssues = new HashMap<>();
 		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
+		List<IterationStatus> jiraNegativeDelayIssueList = new ArrayList<>();
 		for (SprintIssue story : openIssues) {
 			IterationStatus iterationKpiModalValue;
 			JiraIssueCustomHistory issueHistoryObject = jiraOpenHistoryMap.get(story.getNumber());
@@ -519,12 +525,20 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					&& StringUtils.isNotEmpty(issueObject.getDueDate())) {
 				iterationKpiModalValue = createIterationKpiModal(startDate, endDate, issueObject);
 				if ((iterationKpiModalValue.getIssueId() != null)) {
-					jiraDelayIssueList.add(iterationKpiModalValue);
+					if (Integer.parseInt(iterationKpiModalValue.getDelay())>=0){
+						jiraNegativeDelayIssueList.add(iterationKpiModalValue);
+					}else{
+						jiraDelayIssueList.add(iterationKpiModalValue);
+					}
 				}
 			}
 		}
-		resultList.put(OPEN_ISSUES, jiraDelayIssueList);
-		return resultList;
+		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+			v.addAll(jiraNegativeDelayIssueList);
+			return v;
+		});
+		resultListOpenIssues.put(OPEN_ISSUES, jiraDelayIssueList);
+		return resultListOpenIssues;
 	}
 
 	private IterationStatus createIterationKpiModal(String startDate, String endDate, JiraIssue issueObject)
