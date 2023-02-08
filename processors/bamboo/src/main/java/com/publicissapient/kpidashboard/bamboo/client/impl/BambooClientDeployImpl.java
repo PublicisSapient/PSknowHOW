@@ -64,7 +64,7 @@ public class BambooClientDeployImpl implements BambooClient {
 		String environemntUrl = BambooClient.appendToURL(bambooServer.getUrl() + ENVIRONMENT_SUFFIX);
 		HttpEntity<String> httpAuth = generateAuthentication(bambooServer);
 		String deployInformation = connectBamboo(url, bambooServer, httpAuth);
-		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer,proBasicConfig);
+		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer, proBasicConfig);
 		deploySetMap.put(Pair.of(bambooServer.getId(), bambooServer.getDeploymentProjectId()), environments);
 		return deploySetMap;
 	}
@@ -76,7 +76,7 @@ public class BambooClientDeployImpl implements BambooClient {
 		for (Map.Entry<String, String> env : environments.entrySet()) {
 			String environemntInformation = connectBamboo(
 					String.format(new StringBuilder(environemntUrl).toString(), env.getKey()), bambooServer, httpAuth);
-			Set<Deployment> deploymentSet = getEnvironmentInformation(environemntInformation,proBasicConfig);
+			Set<Deployment> deploymentSet = getEnvironmentInformation(environemntInformation, proBasicConfig);
 			deploymentSet.forEach(deployment -> {
 				deployment.setBasicProjectConfigId(bambooServer.getBasicProjectConfigId());
 				deployment.setProjectToolConfigId(bambooServer.getId());

@@ -67,6 +67,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BitBucketCloudClient extends BasicBitBucketClient implements BitBucketClient {
 
+	private String utf ="UTF-8";
+
 	/**
 	 * Instantiates a new bit bucket cloud client.
 	 *
@@ -97,7 +99,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			String restUrl = new BitBucketCloudURIBuilder(bitbucketRepo, config, bitBucketServerInfo).build();
 			boolean last = false;
 			int page = 1;
-			String cloneUrl = URLDecoder.decode(restUrl, "UTF-8");
+			String cloneUrl = URLDecoder.decode(restUrl, utf);
 			long sinceTime = new DateTime().minusDays(config.getSinceDaysCloud()).getMillis();
 			while (!last) {
 				String plainTxtPassword = decryptPassword(bitBucketServerInfo.getPassword());
@@ -112,7 +114,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 					long commitTimePageWise = commits.get(commits.size() - 1).getCommitTimestamp();
 					last = isLastPage(jsonNextObject, commitTimePageWise, sinceTime);
 					log.info("commit data collected for page : ", page);
-					cloneUrl = URLDecoder.decode(restUrl.concat("&page=" + (++page)), "UTF-8");
+					cloneUrl = URLDecoder.decode(restUrl.concat("&page=" + (++page)), utf);
 					
 				} else {
 					last = true;
@@ -143,7 +145,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			commitDetails(commits, hash, message, author, timestamp, parentList, bitBucketServerInfo, proBasicConfig);
 		}
 	}
-
+@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String hash, String message, String author, long timestamp,
 			List<String> parentList, ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitbucketCommit = new CommitDetails();
@@ -176,103 +178,6 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		return isLast;
 	}
 
-	/**
-	 * Gets the past date.
-	 *
-	 * @param repo     the repo
-	 * @param firstRun the first run
-	 * @param histDays the hist days
-	 * @return the past date
-	 */
-	private String getPastDate(BitbucketRepo repo, boolean firstRun, int histDays) {
-		Date pastDate;
-		int theHistDays = histDays;
-		if (firstRun) {
-			theHistDays = (theHistDays > 0) ? theHistDays : BitBucketConstants.FIRST_RUN_HISTORY_DEFAULT;
-			pastDate = getDate(new Date(), -theHistDays, 0);
-		} else {
-			pastDate = getDate(repo.getLastUpdatedTime(), 0, -10);
-		}
-		Calendar calendar = Calendar.getInstance(new GregorianCalendar().getTimeZone());
-		calendar.setTime(pastDate);
-		return String.format("%tFT%<tRZ", calendar);
-	}
-
-	/**
-	 * Builds the api url.
-	 *
-	 * @param theRepoUrl  the the repo url
-	 * @param defaultHost the default host
-	 * @param defaultApi  the default api
-	 * @return the string
-	 */
-	private String buildEndPointUrl(String theRepoUrl, String defaultHost, String defaultApi) {
-		String repoUrl = StringUtils.removeEnd(theRepoUrl, ".git");
-		String hostName = "";
-		String protocol = "";
-		String apiUrl = "";
-		String repoName = "";
-
-		int port = -1;
-
-		URL url = null;
-		try {
-			url = new URL(repoUrl);
-			protocol = url.getProtocol();
-			hostName = url.getHost();
-			port = url.getPort();
-			repoName = url.getFile();
-		} catch (MalformedURLException ex) {
-			MDC.put("MalformedURLException", ex.getMessage());
-		}
-
-		if (port >= 0) {
-			hostName = hostName.concat(":").concat(String.valueOf(port));
-		}
-
-		if (hostName.startsWith(defaultHost)) {
-			apiUrl = concatenate(protocol, "://", defaultHost, repoName);
-		} else {
-			apiUrl = concatenate(protocol, "://", hostName, defaultApi, repoName);
-			MDC.put("APIURL", apiUrl);
-		}
-		return apiUrl;
-	}
-
-	/**
-	 * Concatenate.
-	 *
-	 * @param tokens the tokens
-	 * @return the string
-	 */
-	private static String concatenate(String... tokens) {
-		StringBuilder sb = new StringBuilder();
-
-		if (tokens != null) {
-			for (String token : tokens) {
-				sb.append(token);
-			}
-		}
-
-		return sb.toString();
-	}
-
-	/**
-	 * Gets the date.
-	 *
-	 * @param date         the date
-	 * @param daysOffset   the days offset
-	 * @param minuteOffset the minute offset
-	 * @return the date
-	 */
-	private Date getDate(Date date, int daysOffset, int minuteOffset) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.add(Calendar.DATE, daysOffset);
-		calendar.add(Calendar.MINUTE, minuteOffset);
-		return calendar.getTime();
-	}
-
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
 			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
@@ -288,7 +193,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			long sinceTime = new DateTime().minusDays(config.getSinceDaysMergedCloud()).getMillis();
 			while (!isLast) {
 				ResponseEntity<String> respPayload = getResponse(bitBucketServerInfo.getUsername(), decryptedPassword,
-						URLDecoder.decode(addPaginationInfo(restUrl, page), "UTF-8"));
+						URLDecoder.decode(addPaginationInfo(restUrl, page), utf));
 				JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 				Object jsonNextObject = responseJson.get(BitBucketConstants.NEXT);
 				JSONArray jsonArray = (JSONArray) responseJson.get(BitBucketConstants.RESP_VALUES_KEY);
@@ -359,28 +264,16 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeReq.setFromBranch(fromBranch);
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
-			if (proBasicConfig.isSaveAssigneeDetails()) {
-				mergeReq.setAuthor(author);
-			}
+			setAuthor(proBasicConfig, author, mergeReq);
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeRequests.add(mergeReq);
 		}
 	}
-	
-	private boolean parseResp(JSONArray jsonArray, boolean firstRun, String nextPageIndex, JSONObject responseJson) {
-		boolean isLast;
-		if (CollectionUtils.isEmpty(jsonArray) || (firstRun
-				&& config.getInitialPageSize() <= Integer.parseInt(nextPageIndex == null ? "0" : nextPageIndex))) {
-			isLast = true;
-		} else {
-			String lastPageValue = getString(responseJson, BitBucketConstants.RESP_IS_LASTPAGE);
-			isLast = Boolean.TRUE;
-			if (lastPageValue != null) {
-				isLast = Boolean.valueOf(lastPageValue);
-			}
 
+	private static void setAuthor(ProjectBasicConfig proBasicConfig, String author, MergeRequests mergeReq) {
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			mergeReq.setAuthor(author);
 		}
-		return isLast;
 	}
 
 

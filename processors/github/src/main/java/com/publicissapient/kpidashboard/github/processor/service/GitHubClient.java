@@ -60,6 +60,6 @@ public interface GitHubClient {
 	 *             the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstTimeRun,
-			ProcessorToolConnection processorToolConnection,ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

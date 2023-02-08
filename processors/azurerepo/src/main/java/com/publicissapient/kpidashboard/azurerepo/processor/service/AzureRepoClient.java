@@ -44,8 +44,8 @@ public interface AzureRepoClient {
 	 */
 	List<CommitDetails> fetchAllCommits(AzureRepoModel azurerepoRepo, boolean firstTimeRun,
 			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig) throws FetchingCommitException;
-	
+
 	List<MergeRequests> fetchAllMergeRequest(AzureRepoModel azurerepoRepo, boolean firstTimeRun,
-			ProcessorToolConnection azureRepoProcessorInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
+			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

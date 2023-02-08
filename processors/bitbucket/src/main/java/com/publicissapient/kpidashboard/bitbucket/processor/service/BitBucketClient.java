@@ -61,6 +61,6 @@ public interface BitBucketClient {
 	 * the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
-			ProcessorToolConnection bitBucketInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
+			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

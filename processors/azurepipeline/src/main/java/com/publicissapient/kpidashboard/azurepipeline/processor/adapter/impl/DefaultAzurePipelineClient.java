@@ -102,7 +102,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 				url = AzurePipelineUtils.addParam(url, "minTime", minTime);
 			}
 			ResponseEntity<String> responseEntity = doRestCall(url.toString(), azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody(),proBasicConfig);
+			processResponse(azurePipelineServer, result, responseEntity.getBody(), proBasicConfig);
 		} catch (RestClientException rce) {
 			log.error("client exception loading jobs details", rce);
 			throw rce;
@@ -142,7 +142,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			for (Object buildObject : builds) {
 				JSONObject jsonBuild = (JSONObject) buildObject;
 
-				Build build = createBuild(jsonBuild,proBasicConfig);
+				Build build = createBuild(jsonBuild, proBasicConfig);
 				buildSet.add(build);
 				result.put(azurePipelineServer.getId(), buildSet);
 			}

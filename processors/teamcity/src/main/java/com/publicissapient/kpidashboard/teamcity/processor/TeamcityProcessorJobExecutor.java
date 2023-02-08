@@ -196,30 +196,9 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					Map<ObjectId, Set<Build>> buildsByJob = teamcityClient.getInstanceJobs(teamcityServer);
 					log.info("Fetched jobs at : {}", startTime);
 
-					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId(),proBasicConfig);
+					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId(), proBasicConfig);
 					count += updatedJobs;
-					if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-						if (proBasicConfig.isSaveAssigneeDetails()
-								&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-										.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
-										|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-												.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf)))) {
-							List<Build> updateStartedBy = new ArrayList<>();
-
-							for (Build build : buildsByJob.values().iterator().next()) {
-
-								Build buildData = buildRepository
-										.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), build.getNumber());
-								if (buildData != null) {
-									buildData.setStartedBy(build.getStartedBy());
-									updateStartedBy.add(buildData);
-								}
-
-							}
-							buildRepository.saveAll(updateStartedBy);
-
-						}
-					}
+					updateAssigneeDetails(proBasicConfig, teamcityServer, processorExecutionTraceLog, buildsByJob);
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -247,6 +226,24 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		log.info("Processor execution finished");
 		MDC.clear();
 		return executionStatus;
+	}
+
+	private void updateAssigneeDetails(ProjectBasicConfig proBasicConfig, ProcessorToolConnection teamcityServer, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
+		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+
+			List<Build> updateStartedBy = new ArrayList<>();
+
+			for (Build build : buildsByJob.values().iterator().next()) {
+
+				Build buildData = buildRepository
+						.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), build.getNumber());
+				if (buildData != null) {
+					buildData.setStartedBy(build.getStartedBy());
+					updateStartedBy.add(buildData);
+				}
+			}
+			buildRepository.saveAll(updateStartedBy);
+		}
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
@@ -287,7 +284,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 			for (Build buildSummary : builds) {
 				if (isNewBuild(teamcityServer.getId(), buildSummary)) {
 					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
-							teamcityServer,proBasicConfig);
+							teamcityServer, proBasicConfig);
 					if (build != null) {
 						build.setBuildJob(teamcityServer.getJobName());
 						build.setProcessorId(processorId);
@@ -357,11 +354,17 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		}
 	}
 	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
-			ProjectBasicConfig proBasicConfig) {
-		if (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun())) {
-			return true;
-		}
-		return false;
+								 ProjectBasicConfig proBasicConfig) {
+		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+	}
+
+	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
+													 ProjectBasicConfig proBasicConfig) {
+		return (proBasicConfig.isSaveAssigneeDetails()
+				&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+				.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
+				|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
+				.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))));
 	}
 }

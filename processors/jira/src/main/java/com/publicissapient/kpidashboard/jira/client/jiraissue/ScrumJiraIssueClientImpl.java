@@ -1315,7 +1315,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		if (CollectionUtils.isNotEmpty(changeLogList)) {
 			for (ChangelogGroup history : changeLogList) {
-				getHistory(history, values, jiraIssue, issueHistory, jiraStatusForDevelopment, jiraStatusForQa);
+				getHistory(history, values, jiraIssue, issueHistory);
 			}
 		}
 		/**
@@ -1334,12 +1334,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param values
 	 * @param jiraIssue
 	 * @param issueHistory
-	 * @param jiraStatusForDevelopment
-	 * @param jiraStatusForQa
 	 * @return
 	 */
 	private void getHistory(ChangelogGroup history, Map<String, String> values, JiraIssue jiraIssue,
-			List<JiraIssueSprint> issueHistory, List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
+			List<JiraIssueSprint> issueHistory) {
 		String fromSprint = "";
 		String fromSprintId = "";
 		String toSprint = "";

@@ -187,7 +187,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 					+ ProcessorUtils.buildJobQueryString(jenkinsConfig, Constants.CHILD_JOBS_TREE));
 			ResponseEntity<String> responseEntity = doRestCall(url, jenkinsServer);
 			if (responseEntity != null && StringUtils.isNotEmpty(responseEntity.getBody())) {
-				processJobResponse(jenkinsServer, result, responseEntity.getBody(),proBasicConfig);
+				processJobResponse(jenkinsServer, result, responseEntity.getBody(), proBasicConfig);
 			}
 
 		} catch (RestClientException rce) {
@@ -214,7 +214,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 
 			log.debug("Process jobName {}  jobURL {} ", jobName, jobURL);
 
-			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer,proBasicConfig);
+			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer, proBasicConfig);
 		} catch (ParseException e) {
 			log.error(String.format("Parsing jobs details on instance: %s", jenkinsServer.getUrl()), e);
 		}
@@ -244,7 +244,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 
 			Set<Build> builds = new LinkedHashSet<>();
 			for (Object build : jsonBuilds) {
-				createBuildDetailsObject(jenkinsServer, builds, build,proBasicConfig);
+				createBuildDetailsObject(jenkinsServer, builds, build, proBasicConfig);
 			}
 			// add the builds to the job
 			result.put(jenkinsServer.getId(), builds);

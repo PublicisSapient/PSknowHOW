@@ -62,8 +62,7 @@ public interface BambooClient {
 	Build getBuildDetailsFromServer(String buildUrl, String instanceUrl, ProcessorToolConnection bambooServer);
 
 
-	Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException;
+	Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException;
 
 	/**
 	 * Joins a base url to another path or paths - this will handle trailing or //

@@ -110,7 +110,7 @@ public class GitHubClientImpl implements GitHubClient {
 	 *             the exception
 	 */
 	public List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection githubToolConnection,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -149,7 +149,7 @@ public class GitHubClientImpl implements GitHubClient {
 	}
 
 	private void initializeCommitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
+			JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			JSONObject commitObjectt = (JSONObject) jsonObj;
 			String scmRevisionNumber = getString(commitObjectt, GitHubConstants.RESP_ID_KEY);
@@ -176,7 +176,7 @@ public class GitHubClientImpl implements GitHubClient {
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection processorToolConnection,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
@@ -217,7 +217,7 @@ public class GitHubClientImpl implements GitHubClient {
 	}
 
 	private void initializeMergeRequestDetails(ProcessorToolConnection gitLabInfo, List<MergeRequests> mergeRequestList,
-			JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
+			JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -286,7 +286,7 @@ public class GitHubClientImpl implements GitHubClient {
 		}
 		return timestamp;
 	}
-
+   @SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
 			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
 			ProjectBasicConfig proBasicConfig) {
@@ -296,9 +296,9 @@ public class GitHubClientImpl implements GitHubClient {
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		if (proBasicConfig.isSaveAssigneeDetails()) {
-			gitLabCommit.setAuthor(author);
-		}
+	   if (proBasicConfig.isSaveAssigneeDetails()) {
+		   gitLabCommit.setAuthor(author);
+	   }
 		gitLabCommit.setCommitLog(message);
 		gitLabCommit.setParentRevisionNumbers(parentList);
 		gitLabCommit.setCommitTimestamp(timestamp);

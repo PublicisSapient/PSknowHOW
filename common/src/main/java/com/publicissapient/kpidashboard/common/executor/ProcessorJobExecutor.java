@@ -52,7 +52,6 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	private final String processorName;
 	private List<String> projectsBasicConfigIds;
 	private ExecutionLogContext executionLogContext;
-	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
 	public ExecutionLogContext getExecutionLogContext() {
 		return executionLogContext;

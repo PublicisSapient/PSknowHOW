@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BitBucketServerClient extends BasicBitBucketClient implements BitBucketClient {
 
+	private String utfValue ="UTF-8";
 	/**
 	 * Instantiates a new bit bucket server client.
 	 *
@@ -85,7 +86,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			String decryptedPassword = decryptPassword(bitBucketServerInfo.getPassword());
 			boolean isLast = false;
 			String restUrl = new BitBucketServerURIBuilder(repo, config, bitBucketServerInfo).build();
-			restUri = URLDecoder.decode(restUrl, "UTF-8");
+			restUri = URLDecoder.decode(restUrl, utfValue);
 			log.debug("REST URL {}", restUri);
 			while (!isLast) {
 				ResponseEntity<String> respPayload = getResponse(bitBucketServerInfo.getUsername(), decryptedPassword,
@@ -97,7 +98,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 				isLast = parseResp(jsonArray, firstRun, nextPageIndex, responseJson);
 				log.info(String.format("Retrieving page : {%s}", nextPageIndex));
 				if (nextPageIndex != null && !"null".equals(nextPageIndex)) {
-					restUri = URLDecoder.decode(restUrl.concat("&start=").concat(nextPageIndex), "UTF-8");
+					restUri = URLDecoder.decode(restUrl.concat("&start=").concat(nextPageIndex), utfValue);
 				}
 			}
 			repo.setUpdatedTime(System.currentTimeMillis());
@@ -145,7 +146,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 
 		}
 	}
-
+	@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String scmRevisionNumber, String message, String author,
 			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo,ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitBucketCommit = new CommitDetails();
@@ -176,7 +177,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			long start = 0;
 			while (!isLastPage) {
 				ResponseEntity<String> respPayload = getResponse(bitBucketServerInfo.getUsername(), decryptedPassword,
-						URLDecoder.decode(addPaginationInfo(restUrl, start), "UTF-8"));
+						URLDecoder.decode(addPaginationInfo(restUrl, start), utfValue));
 				JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 				JSONArray jsonArray = (JSONArray) responseJson.get(BitBucketConstants.RESP_VALUES_KEY);
 				isLastPage = (boolean) responseJson.get(BitBucketConstants.RESP_IS_LASTPAGE);

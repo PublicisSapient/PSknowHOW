@@ -222,18 +222,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 
 					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
 							firstTimeRun, tool, proBasicConfig);
-					if (proBasicConfig.isSaveAssigneeDetails()
-							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-						List<CommitDetails> updateAuthor = new ArrayList<>();
-						commitDetailList.stream().forEach(commit -> {
-							CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
-									gitHubProcessorItem.getId(), commit.getRevisionNumber());
-							commitDetailsData.setAuthor(commit.getAuthor());
-							updateAuthor.add(commitDetailsData);
-						});
-						commitsRepo.saveAll(updateAuthor);
-
-					}
+					updateAssigneeNameForCommits(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, commitDetailList);
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(gitHubProcessorItem, commit)).collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitHubProcessorItem.getId()));
@@ -244,19 +233,9 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					}
 
 					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
-							firstTimeRun, tool,proBasicConfig);
+							firstTimeRun, tool, proBasicConfig);
 
-					if (proBasicConfig.isSaveAssigneeDetails()
-							&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-						List<MergeRequests> updateAuthor = new ArrayList<>();
-						mergeRequestsList.stream().forEach(mergeRequests -> {
-							MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
-									gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
-							mergeRequestData.setAuthor(mergeRequests.getAuthor());
-							updateAuthor.add(mergeRequestData);
-						});
-						mergReqRepo.saveAll(updateAuthor);
-					}
+					updateAssigneeForMerge(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, mergeRequestsList);
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(gitHubProcessorItem, mergReq))
 							.collect(Collectors.toList());
@@ -303,6 +282,35 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		return executionStatus;
 	}
 
+	private void updateAssigneeNameForCommits(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<CommitDetails> commitDetailList) {
+		if (proBasicConfig.isSaveAssigneeDetails()
+				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+			List<CommitDetails> updateAuthor = new ArrayList<>();
+			commitDetailList.stream().forEach(commit -> {
+				CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
+						gitHubProcessorItem.getId(), commit.getRevisionNumber());
+				commitDetailsData.setAuthor(commit.getAuthor());
+				updateAuthor.add(commitDetailsData);
+			});
+			commitsRepo.saveAll(updateAuthor);
+
+		}
+	}
+
+	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<MergeRequests> mergeRequestsList) {
+		if (proBasicConfig.isSaveAssigneeDetails()
+				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+			List<MergeRequests> updateAuthor = new ArrayList<>();
+			mergeRequestsList.stream().forEach(mergeRequests -> {
+				MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
+						gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
+				mergeRequestData.setAuthor(mergeRequests.getAuthor());
+				updateAuthor.add(mergeRequestData);
+			});
+			mergReqRepo.saveAll(updateAuthor);
+		}
+	}
+
 	private GitHubProcessorItem getGitHubProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
 		List<GitHubProcessorItem> gitHubProcessorItemList = gitHubProcessorItemRepository
 				.findByProcessorIdAndToolConfigId(processorId, tool.getId());
@@ -322,10 +330,10 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
-		});
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+		);
 		return processorExecutionTraceLog;
 	}
 	/**

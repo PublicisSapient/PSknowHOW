@@ -104,9 +104,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	 * @throws ParseException
 	 */
 	@Override
-	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig proBasicConfig)
-			throws ParseException {
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException {
 		Map<ObjectId, Set<Build>> bambooJobs = new LinkedHashMap<>();
 		try {
 			final String planKey = bambooServer.getJobName();
@@ -237,9 +235,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	}
 
 	@Override
-	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig proBasicConfig)
-			throws ParseException, MalformedURLException {
+	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}
 

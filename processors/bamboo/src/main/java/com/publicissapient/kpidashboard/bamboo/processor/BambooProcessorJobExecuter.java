@@ -280,10 +280,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				assigneeToggleDate(proBasicConfig);
 				if (BUILD.equalsIgnoreCase(jobType)) {
 					newBuildCount = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog,
-							activeBuildJobs, newBuildCount, processorId,proBasicConfig);
+							activeBuildJobs, newBuildCount, processorId, proBasicConfig);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
-							activeDeployJobs, processorId,proBasicConfig);
+							activeDeployJobs, processorId, proBasicConfig);
 				}
 
 			} catch (MalformedURLException | ParseException rcp) {
@@ -324,7 +324,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			ProjectBasicConfig proBasicConfig)
 			throws MalformedURLException, ParseException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
-				.getDeployJobsFromServer(bambooJobConfig,proBasicConfig);
+				.getDeployJobsFromServer(bambooJobConfig, proBasicConfig);
 
 		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
 			List<Deployment> updateDeployedBy = new ArrayList<>();
@@ -435,7 +435,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				bambooStart = LocalDateTime.now();
 				bambooEnd = LocalDateTime.now();
 			}
-			return endDb.isBefore(bambooEnd) && (startDb.isBefore(bambooStart)) ? false : true;
+			return !(endDb.isBefore(bambooEnd) && startDb.isBefore(bambooStart));
 		}
 		return true;
 	}
@@ -473,7 +473,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private int processBuildJob(BambooClient bambooClient, ProcessorToolConnection bambooJobConfig,
 			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Build> activeBuildJobs, int newBuildCount,
 			ObjectId processorId, ProjectBasicConfig proBasicConfig) throws MalformedURLException, ParseException {
-		Map<ObjectId, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig,proBasicConfig);
+		Map<ObjectId, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig, proBasicConfig);
 		log.info("Fetched builds By Job map of size: {}", buildsByJobMap.size());
 		int updatedJobCount = addNewBuildsInfoToDb(bambooClient, activeBuildJobs, buildsByJobMap, bambooJobConfig,
 				processorId);

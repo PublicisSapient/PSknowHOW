@@ -47,10 +47,10 @@ public class ProjectBasicConfigDTO {
 
 	private String consumerCreatedOn;
 
-	private boolean enableAssigneeDetailToggle;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
 	private boolean saveAssigneeDetails;
+	private String saveAssigneeDate;
 	/**
 	 * set isKanban value
 	 * 
