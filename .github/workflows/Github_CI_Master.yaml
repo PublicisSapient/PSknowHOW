@@ -100,6 +100,7 @@ jobs:
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           pwd
+          chmod -R 777 /home/runner/
           npm install -D sonarqube-scanner
           npm run sonar
       # - name: Scanning UI with Sonar Qube
