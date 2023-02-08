@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -119,11 +118,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()){
-//			Collection<GrantedAuthority> authorities = Sets.newHashSet();
-//			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-//			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
-//					authorities);
-//			authenticationSso.setDetails(AuthType.SSO);
 
 			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookieSso.getValue())) {
