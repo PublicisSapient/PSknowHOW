@@ -111,13 +111,14 @@ jobs:
         id: SonarUI
         run: | 
           cd UI
-          echo 'sonar.branch.name=${{env.GITHUB_HEAD_NAME}}'>> sonar-project.properties
-          echo 'sonar.branch.name=$GITHUB_HEAD_NAME'>> sonar-project.properties
+          # echo 'sonar.branch.name=${{env.GITHUB_HEAD_NAME}}'>> sonar-project.properties
+          # echo 'sonar.branch.name=$GITHUB_HEAD_NAME'>> sonar-project.properties
+          # echo 'sonar.branch.name=${{env.GITHUB_HEAD_NAME}}'>> sonar-project.properties
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           sudo chmod -R 777 /home/runner/
           npm install -D sonarqube-scanner
-          npm run sonar
+          npm run sonar -Dsonar.branch.name=$GITHUB_HEAD_REF
         env:
           GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
       - name: Checking UI sonar QG 
