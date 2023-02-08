@@ -90,7 +90,7 @@ jobs:
           sudo mv ui2.tar ../files
           sudo rm -rf build
         env:
-          GITHUB_HEAD_NAME: ${ GITHUB_HEAD_REF }
+          GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
       - name: Unit Testing UI
         if: steps.changes.outputs.UI == 'true'
         id: TestUI
@@ -110,7 +110,7 @@ jobs:
           sudo chmod -R 777 /home/runner/
           npm install -D sonarqube-scanner
           npm run sonar
-      - name: Scanning UI QG with Sonar Qube
+      - name: Checking UI sonar QG 
         if: steps.changes.outputs.UI == 'true'
         id: SonarUIqg
         run: |
