@@ -33,7 +33,6 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import io.swagger.models.auth.In;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -118,10 +117,8 @@ public final class CommonUtils {
 	}
 
 	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) throws ParseException {
-		Map<String, Integer> mapDays = new HashMap<>();
 		DateTime theBeginDate = beginDate; //17
 		DateTime theEndDate = endDate; //16
-		String separator = "-";
 		Integer count = 0;
 
 		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
@@ -147,11 +144,9 @@ public final class CommonUtils {
 		return count;
 	}
 
-	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate) throws ParseException {
-		Map<String, Integer> mapDays = new HashMap<>();
+	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate, boolean isSpilled) throws ParseException {
 		DateTime theBeginDate = beginDate;
 		DateTime theEndDate = endDate;
-		String separator = "-";
 		Integer count = 1;
 		Integer count1 = 0;
 
@@ -174,6 +169,10 @@ public final class CommonUtils {
 					count = count-1;
 				}
 				theEndDate = theEndDate.minusDays(1);
+			}
+		}else {
+			if (isSpilled){
+				count = count1 + 1;
 			}
 		}
 		return count;
