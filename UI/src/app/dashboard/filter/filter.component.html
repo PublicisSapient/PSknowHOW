@@ -1,9 +1,3 @@
-<!-- <button class="gototop" title="Go to top"><a href="#top" class="goTo"><span class="fa fa-chevron-circle-up"
-         aria-hidden="true"></span></a></button> -->
-
-
-
-<!-- Oldcode -->
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' ">
    <div class="logo cursor-pointer">
       <!-- <img *ngIf="logoImage" src={{logoImage}} routerLink="mydashboard" routerLinkActive="active"
@@ -231,6 +225,7 @@
       <div style="padding-top: 14px;padding-right: 8px;" role="button">
          <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
             {{username}}
+            <i class="pi pi-bars" style="font-size: 1rem;font-weight: bolder;margin-left: 6px;"></i>
          </div>
          <p-menu #menu [popup]="true" [model]="items"></p-menu>
       </div>

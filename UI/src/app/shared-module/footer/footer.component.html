@@ -16,14 +16,15 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<footer class="footer">
+<footer class="footer" [ngStyle]="styleObj()"
+>
   <div>
     <!-- <div class="float-left w-100">
       
     </div> -->
     <div class="copyright">
       <span class="version-header">
-        Version : 6.1.0-SNAPSHOT
+        {{currentversion}}
       </span>
       &copy; {{currentYear}} Publicis Sapient. All rights reserved.
     </div>

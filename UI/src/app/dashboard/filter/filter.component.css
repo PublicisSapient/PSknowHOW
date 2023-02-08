@@ -966,7 +966,8 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
 }
 
 ::ng-deep .ng-select-container.ng-has-value .ng-placeholder {
-  font-size: inherit;
+  /* font-size: inherit; increased filter label size*/
+  font-size: initial; 
 }
 
 /* this is for notification */
@@ -1029,10 +1030,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
 }
 
 .profile-budge {
-  /* display: inline-table;
-  vertical-align: middle;
-  width: 40px;
-  height: 40px; */
   padding: 11px 18px;
   text-align: center;
   text-decoration: none;
@@ -1041,6 +1038,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   background-color: #C2C2C2AF;
   border-radius: 40px;
   text-transform: uppercase;
+  display: flex;
 }
 
 .noti-count {
