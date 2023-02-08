@@ -83,7 +83,7 @@ jobs:
           echo 4: ${{vars.GITHUB_HEAD_REF}}
           echo 5 : ${{vars.GITHUB_HEAD_NAME}}
           echo 6 : ${{env.GITHUB_HEAD_NAME}}
-          echo 6 : ${{env.GITHUB_HEAD_REF}}
+          echo 7 : ${{env.GITHUB_HEAD_REF}}
 
           sudo npm install
           sudo npm install -g @angular/cli@6.0.8
@@ -96,8 +96,7 @@ jobs:
           sudo tar -czvf ui2.tar *
           sudo mv ui2.tar ../files
           sudo rm -rf build
-        env:
-          GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
+        
       - name: Unit Testing UI
         if: steps.changes.outputs.UI == 'true'
         id: TestUI
@@ -111,12 +110,14 @@ jobs:
         id: SonarUI
         run: | 
           cd UI
-          echo 'sonar.branch.name=$GITHUB_HEAD_REF'>> sonar-project.properties
+          echo 'sonar.branch.name=${{env.GITHUB_HEAD_NAME}}'>> sonar-project.properties
           echo 'sonar.host.url=${{secrets.SONARQUBE_HOST}}'>> sonar-project.properties
           echo 'sonar.login=${{secrets.SONARQUBE_TOKEN}}'>> sonar-project.properties
           sudo chmod -R 777 /home/runner/
           npm install -D sonarqube-scanner
           npm run sonar
+        env:
+          GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
       - name: Checking UI sonar QG 
         if: steps.changes.outputs.UI == 'true'
         id: SonarUIqg
