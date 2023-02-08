@@ -376,8 +376,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			validationData.add(reliabilityValidationData);
 		}
 
-		commitmentResult.put(ISSUE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
 		commitmentResult.put(STORY_POINT, ObjectUtils.defaultIfNull(storyCount, 0L));
+		commitmentResult.put(ISSUE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
 		return commitmentResult;
 
 	}
