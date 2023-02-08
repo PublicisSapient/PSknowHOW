@@ -169,7 +169,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
-		List<String> defectTypes = fieldMapping.getJiradefecttype();
+		List<String> defectTypes = Optional.ofNullable(fieldMapping)
+				.map(FieldMapping::getJiradefecttype).orElse(Collections.emptyList());
 
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
 			List<JiraIssue> alldefects = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
@@ -196,7 +197,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 										&& dateFormat.parse(jiraIssue.getCreatedDate())
 												.after(dateFormat.parse(startDate)));
 					} catch (ParseException e) {
-						e.printStackTrace();
+						LOGGER.error(
+								"There is some error occured in parsing  ", e);
 					}
 					return false;
 				}).collect(Collectors.toList());
@@ -317,7 +319,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 				}
 			}
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOGGER.error(
+					"There is some error occured in parsing  ", e);
 		}
 	}
 }
