@@ -128,11 +128,38 @@ public class WastageServiceImplTest {
 	}
 
 	@Test
-	public void testGetKpiDataProject() throws ApplicationException {
+	public void testGetKpiDataProject_closedSprint() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
+		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
+				.thenReturn(jiraIssueCustomHistoryList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(wastageServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+
+		try {
+			KpiElement kpiElement = wastageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertNotNull((DataCount) kpiElement.getTrendValueList());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	@Test
+	public void testGetKpiDataProject_activeSprint() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		sprintDetails.setState("ACTIVE");
 		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))

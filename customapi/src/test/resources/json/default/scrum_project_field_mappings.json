@@ -171,7 +171,7 @@
     "jiraWaitStatus": [
       "Ready for Testing",
       "In Development",
-      "Open"
+      "Closed"
     ],
     "jiraBlockedStatus": [
       "On Hold",

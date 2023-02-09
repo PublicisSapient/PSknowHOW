@@ -340,6 +340,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	// Calculate the time for entries which lies between sprint start and end date
+	// or one of them is inside sprint start end date
 	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
 			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
 		Minutes minutes;
@@ -362,9 +363,15 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	// Calculate the time for last entry of storySprintDetails
 	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
 			DateTime sprintEndDate, DateTime entryActivityDate) {
-		Minutes minutes;
+		Minutes minutes = null;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
-			minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+			if (entryActivityDate.isBefore(sprintEndDate)) {
+				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
+					minutes = Minutes.minutesBetween(entryActivityDate, DateTime.now());
+				} else {
+					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+				}
+			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				DateTime currDate = DateTime.now();
@@ -389,19 +396,19 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
 		iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
 		if ((blockedTime != 0)) {
-			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + " hrs"));
+			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + "h " + blockedTime % 60 + " m"));
 		} else {
-			iterationKpiModalValue.setBlockedTime(blockedTime + " hrs");
+			iterationKpiModalValue.setBlockedTime(blockedTime + " h");
 		}
 		if ((waitTime != 0)) {
-			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime / 60 + " hrs"));
+			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime / 60 + "h " + waitTime % 60 + " m"));
 		} else {
-			iterationKpiModalValue.setWaitTime(waitTime + " hrs");
+			iterationKpiModalValue.setWaitTime(waitTime + " h");
 		}
 		if ((wastageTime != 0)) {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime / 60 + " hrs"));
+			iterationKpiModalValue.setWastage(String.valueOf(wastageTime / 60 + "h " + wastageTime % 60 + " m"));
 		} else {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime + " hrs"));
+			iterationKpiModalValue.setWastage(String.valueOf(wastageTime + " h"));
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
