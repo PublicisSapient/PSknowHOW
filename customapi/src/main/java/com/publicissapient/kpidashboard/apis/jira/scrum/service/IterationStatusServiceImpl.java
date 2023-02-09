@@ -485,10 +485,15 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		}
 		jiraDelayIssueList.addAll(jiraBeforeTimeIssueList);
 		jiraDelayIssueList.addAll(jiraAfterTimeIssueList);
-		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
-			v.addAll(jiraDelayIssueList);
-			return v;
-		});
+		if(resultList.containsKey(DELAY_DETAILS)){
+			resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+				v.addAll(jiraDelayIssueList);
+				return v;
+			});
+		}
+		else{
+			resultList.put(DELAY_DETAILS,jiraDelayIssueList);
+		}
 		resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
 		resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
 		return resultList;
@@ -533,11 +538,16 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				}
 			}
 		}
-		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
-			v.addAll(jiraNegativeDelayIssueList);
-			return v;
-		});
-		resultListOpenIssues.put(OPEN_ISSUES, jiraDelayIssueList);
+		if(resultList.containsKey(DELAY_DETAILS)){
+			resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+				v.addAll(jiraDelayIssueList);
+				return v;
+			});
+		}
+		else{
+			resultList.put(DELAY_DETAILS,jiraDelayIssueList);
+		}
+		resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
 		return resultListOpenIssues;
 	}
 

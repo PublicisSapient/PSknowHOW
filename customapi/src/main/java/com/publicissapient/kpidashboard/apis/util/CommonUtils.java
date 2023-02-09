@@ -33,10 +33,12 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -117,58 +119,51 @@ public final class CommonUtils {
 	}
 
 	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) throws ParseException {
-		DateTime theBeginDate = beginDate; //17
-		DateTime theEndDate = endDate; //16
 		Integer count = 0;
-
-		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
-		Date d1 = sdformat.parse(String.valueOf(beginDate)); //17
-		Date d2 = sdformat.parse(String.valueOf(endDate)); //16
-		if(d1.compareTo(d2) > 0) {
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
-			while (!theEndDate.isAfter(theBeginDate)) {
-				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count=count+1;
 				}
-				theEndDate = theEndDate.plusDays(1);
+				endLocalDate = endLocalDate.plusDays(1);
 			}
-		} else if(d1.compareTo(d2) < 0) {
+		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
-			while (!theEndDate.isBefore(beginDate)) {
-				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+			while (!(endLocalDate.isBefore(startLocalDate) || endLocalDate.isEqual(startLocalDate))) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count = count-1;
 				}
-				theEndDate = theEndDate.minusDays(1);
+				endLocalDate = endLocalDate.minusDays(1);
 			}
 		}
 		return count;
 	}
 
 	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate, boolean isSpilled) throws ParseException {
-		DateTime theBeginDate = beginDate;
-		DateTime theEndDate = endDate;
 		Integer count = 1;
 		Integer count1 = 0;
 
-		SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
-		Date d1 = sdformat.parse(String.valueOf(beginDate));
-		Date d2 = sdformat.parse(String.valueOf(endDate));
-		if(d1.compareTo(d2) > 0) {
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
-			while (!theEndDate.isAfter(theBeginDate)) {
-				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+			while (!endLocalDate.isAfter(startLocalDate)) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count1=count1+1;
 				}
-				theEndDate = theEndDate.plusDays(1);
+				endLocalDate = endLocalDate.plusDays(1);
 			}
 			count = count1;
-		} else if(d1.compareTo(d2) < 0) {
+		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
-			while (!theEndDate.isBefore(beginDate)) {
-				if (theEndDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+			while (!endLocalDate.isBefore(startLocalDate)) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count = count-1;
 				}
-				theEndDate = theEndDate.minusDays(1);
+				endLocalDate = endLocalDate.minusDays(1);
 			}
 		}else {
 			if (isSpilled){
