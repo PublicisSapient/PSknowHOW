@@ -59,6 +59,9 @@ public final class CommonUtils {
 
 	private static final String DELAY_FORMATTER = "yyyy-MM-dd";
 
+	private static final String POSITIVE_CASE = "PositiveCase";
+	private static final String NEGATIVE_CASE = "NegativeCase";
+
 
 	private CommonUtils() {
 	}
@@ -153,7 +156,7 @@ public final class CommonUtils {
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
 			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
-				count1=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,null,count1,"A");
+				count1=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,null,count1,POSITIVE_CASE);
 
 				endLocalDate = endLocalDate.plusDays(1);
 			}
@@ -161,7 +164,7 @@ public final class CommonUtils {
 		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
 			while (!endLocalDate.isBefore(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
-				count=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,count,null,"B");
+				count=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,count,null,NEGATIVE_CASE);
 
 				endLocalDate = endLocalDate.minusDays(1);
 			}
@@ -174,10 +177,10 @@ public final class CommonUtils {
 	}
 
 
-	private static Integer getInteger(boolean bool, Integer count, Integer count1, String first){
+	private static Integer getInteger(boolean bool, Integer count, Integer count1, String caseDetails){
 		int counter=0;
 		if (bool) {
-			switch (first) {
+			switch (caseDetails) {
 				case "A":
 					counter = count1 + 1;
 					break;
