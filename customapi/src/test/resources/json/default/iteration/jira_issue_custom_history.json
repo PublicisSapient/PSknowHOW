@@ -24,6 +24,141 @@
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
   {
+    "_id" : "63d92b2c85ff84680734c69b",
+    "projectID" : "Iteration Status",
+    "storyID" : "DTS-21835",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-01-19T15:52:37.000+05:30",
+    "projectKey" : "DTS",
+    "projectComponentId" : "Iteration Status_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "storySprintDetails" : [
+      {
+        "sprintId" : "KnowHOW | PI_12| ITR_3",
+        "status" : "ACTIVE",
+        "fromStatus" : "Open",
+        "activityDate" : "2023-01-19T15:52:37.000+05:30",
+        "sprintComponentId" : "41409_Iteration Status_63d9280d5ce3ee7d77551313"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21835",
+    "description" : "Plug-in Production & Playground with current ELK setup",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+  {
+    "_id" : "63d92b2c85ff84680734c69b",
+    "projectID" : "Iteration Status",
+    "storyID" : "DTS-21879",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-01-19T15:52:37.000+05:30",
+    "projectKey" : "DTS",
+    "projectComponentId" : "Iteration Status_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "storySprintDetails" : [
+      {
+        "sprintId" : "KnowHOW | PI_12| ITR_3",
+        "status" : "ACTIVE",
+        "fromStatus" : "Open",
+        "activityDate" : "2023-01-19T15:52:37.000+05:30",
+        "sprintComponentId" : "41409_Iteration Status_63d9280d5ce3ee7d77551313"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21879",
+    "description" : "Plug-in Production & Playground with current ELK setup",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+  {
+    "_id" : "63b3c2264fb395607ec90885",
+    "projectID" : "DueDateCheck",
+    "storyID" : "DTS-21782",
+    "storyType" : "Story",
+    "estimate" : "1.0",
+    "createdDate" : "2022-05-10T10:52:20.000+05:30",
+    "projectKey" : "DTS",
+    "projectComponentId" : "DueDateCheck_63b3c191dcaf4b5404c5bae3",
+    "basicProjectConfigId" : "63b3c191dcaf4b5404c5bae3",
+    "storySprintDetails" : [
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Open",
+        "activityDate" : "2022-05-10T10:52:20.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "In Analysis",
+        "activityDate" : "2022-09-08T15:09:59.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Open",
+        "activityDate" : "2022-09-15T09:57:53.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "In Analysis",
+        "activityDate" : "2022-09-22T09:52:57.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Open",
+        "activityDate" : "2022-10-03T23:07:14.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "In Analysis",
+        "activityDate" : "2022-12-20T09:34:50.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "In Development",
+        "activityDate" : "2022-12-20T14:11:12.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Code Review",
+        "activityDate" : "2022-12-20T14:11:18.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Ready for Testing",
+        "activityDate" : "2022-12-22T17:44:51.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      },
+      {
+        "sprintId" : "DTS | KnowHOW | PI_11| ITR_6",
+        "status" : "CLOSED",
+        "fromStatus" : "Closed",
+        "activityDate" : "2023-01-26T17:44:55.000+05:30",
+        "sprintComponentId" : "40202_DueDateCheck_63b3c191dcaf4b5404c5bae3"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21782",
+    "description" : "Updating automation script for Show/Hide kpis",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+  {
     "_id" : "63b3c2264fb395607ec90885",
     "projectID" : "DueDateCheck",
     "storyID" : "DTS-16627",

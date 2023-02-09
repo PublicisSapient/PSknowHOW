@@ -181,10 +181,10 @@ public final class CommonUtils {
 		int counter=0;
 		if (bool) {
 			switch (caseDetails) {
-				case "A":
+				case POSITIVE_CASE:
 					counter = count1 + 1;
 					break;
-				case "B":
+				case NEGATIVE_CASE:
 					counter = count - 1;
 					break;
 				default:

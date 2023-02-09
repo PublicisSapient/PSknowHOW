@@ -6,7 +6,7 @@
     "originalSprintId" : "41409",
     "state" : "ACTIVE",
     "startDate" : "2023-01-25T15:56:00.000Z",
-    "endDate" : "2023-02-08T15:56:00.000Z",
+    "endDate" : "2023-02-11T15:56:00.000Z",
     "activatedDate" : "2023-01-25T15:58:15.138Z",
     "originBoardId" : [ "11856" ],
     "goal" : "Release v6.1.0",
@@ -17,7 +17,7 @@
         "number" : "DTS-21782",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
-        "status" : "Live",
+        "status" : "Closed",
         "typeName" : "Story",
         "storyPoints" : "3",
         "remainingEstimate" : "0"
@@ -61,6 +61,15 @@
       },
       {
         "number" : "DTS-21835",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "storyPoints" : "3",
+        "remainingEstimate" : "86400"
+      },
+      {
+        "number" : "DTS-21879",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "In Development",
