@@ -1575,9 +1575,11 @@ export class FilterComponent implements OnInit {
     ) {
       switch (type) {
         case 'Project Access Request':
+          this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
           break;
         case 'User Access Request':
+          this.service.setSideNav(false);
           this.router.navigate([
             '/dashboard/Config/Profile/GrantNewUserAuthRequests',
           ]);
