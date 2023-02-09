@@ -57,6 +57,8 @@ public final class CommonUtils {
 
 	public static final int FIFTH_DAY_OF_WEEK = 5;
 
+	private static final String DELAY_FORMATTER = "yyyy-MM-dd";
+
 
 	private CommonUtils() {
 	}
@@ -120,8 +122,8 @@ public final class CommonUtils {
 
 	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) {
 		Integer count = 0;
-		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
-		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
 			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
@@ -146,8 +148,8 @@ public final class CommonUtils {
 		Integer count = 1;
 		Integer count1 = 0;
 
-		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
-		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
 			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
