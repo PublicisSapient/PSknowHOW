@@ -271,6 +271,7 @@ export class NavComponent implements OnInit {
   editDashboardName() {
     this.kpiListData.scrum[0].boardName = this.changedBoardName;
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
+    this.selectedTab = this.changedBoardName;
     this.assignUserNameForKpiData();
     this.httpService.updateUserBoardConfig(this.kpiListData).subscribe(
       (data) => {
