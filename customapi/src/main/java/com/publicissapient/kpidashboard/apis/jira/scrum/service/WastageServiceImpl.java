@@ -284,41 +284,53 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
 			Minutes minutes = null;
 			if (storySprintDetails.size() == index + 1) {
-				if (entryActivityDate.isAfter(sprintStartDate)) {
-					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
-				} else {
-					if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-						DateTime currDate = DateTime.now();
-						minutes = Minutes.minutesBetween(sprintStartDate, currDate);
-					} else {
-						minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
-					}
-				}
+				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate, entryActivityDate);
 			} else {
 				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
 				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					if (nextEntryActivityDate.isBefore(sprintEndDate)) {
-						if (entryActivityDate.isAfter(sprintStartDate)) {
-							minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate);
-						} else {
-							minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate);
-						}
-					} else {
-						if (entryActivityDate.isAfter(sprintStartDate)) {
-							minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
-						} else {
-							minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
-						}
-					}
+					minutes = minutesForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate, nextEntryActivityDate);
 				}
 			}
 			if (minutes != null)
 				time += minutes.getMinutes();
 		}
 		return time;
+	}
+
+	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate, DateTime entryActivityDate, DateTime nextEntryActivityDate) {
+		Minutes minutes;
+		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
+			if (entryActivityDate.isAfter(sprintStartDate)) {
+				minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate);
+			} else {
+				minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate);
+			}
+		} else {
+			if (entryActivityDate.isAfter(sprintStartDate)) {
+				minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+			} else {
+				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+			}
+		}
+		return minutes;
+	}
+
+	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate, DateTime sprintEndDate, DateTime entryActivityDate) {
+		Minutes minutes;
+		if (entryActivityDate.isAfter(sprintStartDate)) {
+			minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+		} else {
+			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
+				DateTime currDate = DateTime.now();
+				minutes = Minutes.minutesBetween(sprintStartDate, currDate);
+			} else {
+				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+			}
+		}
+		return minutes;
 	}
 
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues,
