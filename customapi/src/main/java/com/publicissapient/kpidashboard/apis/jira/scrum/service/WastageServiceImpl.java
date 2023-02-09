@@ -162,51 +162,49 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 			List<String> blockedStatusList = fetchBlockAndWaitStatus.get(0);
 			List<String> waitStatusList = fetchBlockAndWaitStatus.get(1);
-			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
-				priorityWiseIssue.forEach((priority, issues) -> {
-					issueTypes.add(issueType);
-					priorities.add(priority);
-					List<IterationKpiModalValue> modalValues = new ArrayList<>();
-					int blockedTime = 0;
-					int waitedTime = 0;
-					for (JiraIssue jiraIssue : issues) {
-						int jiraIssueWaitedTime = 0;
-						int jiraIssueBlockedTime = 0;
-						JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
-								.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-										.equals(jiraIssue.getNumber()))
-								.findFirst().orElse(new JiraIssueCustomHistory());
+			typeAndPriorityWiseIssues
+					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
+						issueTypes.add(issueType);
+						priorities.add(priority);
+						List<IterationKpiModalValue> modalValues = new ArrayList<>();
+						int blockedTime = 0;
+						int waitedTime = 0;
+						for (JiraIssue jiraIssue : issues) {
+							int jiraIssueWaitedTime = 0;
+							int jiraIssueBlockedTime = 0;
+							JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
+									.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+											.equals(jiraIssue.getNumber()))
+									.findFirst().orElse(new JiraIssueCustomHistory());
 
-						List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
-								sprintDetail, blockedStatusList, waitStatusList);
-						jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
-						jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
-						if (jiraIssueWaitedTime != 0) {
-							waitedTime += jiraIssueWaitedTime;
-							overAllWaitedTime.set(0, overAllWaitedTime.get(0) + jiraIssueWaitedTime);
+							List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
+									sprintDetail, blockedStatusList, waitStatusList);
+							jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
+							jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
+							if (jiraIssueWaitedTime != 0) {
+								waitedTime += jiraIssueWaitedTime;
+								overAllWaitedTime.set(0, overAllWaitedTime.get(0) + jiraIssueWaitedTime);
+							}
+							if (jiraIssueBlockedTime != 0) {
+								blockedTime += jiraIssueBlockedTime;
+								overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
+							}
+							populateIterationData(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
+									jiraIssueWaitedTime);
 						}
-						if (jiraIssueBlockedTime != 0) {
-							blockedTime += jiraIssueBlockedTime;
-							overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
-						}
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
-								jiraIssueWaitedTime);
-					}
-					List<IterationKpiData> data = new ArrayList<>();
-					IterationKpiData wastage = new IterationKpiData(WASTAGE, Double.valueOf((waitedTime + blockedTime)),
-							null, null, HOURS, modalValues);
-					IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
-							null, HOURS, null);
-					IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null, null,
-							HOURS, null);
-					data.add(wastage);
-					data.add(blocked);
-					data.add(waited);
-					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
-					iterationKpiValues.add(iterationKpiValue);
-				});
-
-			});
+						List<IterationKpiData> data = new ArrayList<>();
+						IterationKpiData wastage = new IterationKpiData(WASTAGE,
+								Double.valueOf((waitedTime + blockedTime)), null, null, HOURS, modalValues);
+						IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
+								null, HOURS, null);
+						IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null,
+								null, HOURS, null);
+						data.add(wastage);
+						data.add(blocked);
+						data.add(waited);
+						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
+						iterationKpiValues.add(iterationKpiValue);
+					}));
 			List<IterationKpiData> data = new ArrayList<>();
 			overAllWastedTime.set(0, overAllWaitedTime.get(0) + overAllBlockedTime.get(0));
 			IterationKpiData overAllWastage = new IterationKpiData(WASTAGE, Double.valueOf(overAllWastedTime.get(0)),
@@ -284,14 +282,16 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
 			Minutes minutes = null;
 			if (storySprintDetails.size() == index + 1) {
-				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate, entryActivityDate);
+				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
+						entryActivityDate);
 			} else {
 				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
 				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					minutes = minutesForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate, nextEntryActivityDate);
+					minutes = minutesForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+							nextEntryActivityDate);
 				}
 			}
 			if (minutes != null)
@@ -300,7 +300,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return time;
 	}
 
-	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate, DateTime entryActivityDate, DateTime nextEntryActivityDate) {
+	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
+			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
 		Minutes minutes;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
@@ -318,7 +319,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return minutes;
 	}
 
-	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate, DateTime sprintEndDate, DateTime entryActivityDate) {
+	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
+			DateTime sprintEndDate, DateTime entryActivityDate) {
 		Minutes minutes;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
