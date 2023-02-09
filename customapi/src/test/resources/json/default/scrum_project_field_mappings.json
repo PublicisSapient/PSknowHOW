@@ -168,6 +168,16 @@
       "Enabler Story",
       "Change request"
     ],
+    "jiraWaitStatus": [
+      "Ready for Testing",
+      "In Development",
+      "Open"
+    ],
+    "jiraBlockedStatus": [
+      "On Hold",
+      "In Investigation",
+      "Open"
+    ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 
     "8"

@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifie
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import org.stringtemplate.v4.ST;
 
 /**
  * The type Release data client. Store Release data for the projects in
@@ -294,6 +295,10 @@ public class MetaDataClientImpl implements MetadataClient {
 
 		fieldMapping.setJiraDefectRemovalStatus(
 				workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+		fieldMapping.setJiraWaitStatus(
+				workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
+		fieldMapping.setJiraBlockedStatus(
+				workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraDefectRemovalIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 		fieldMapping
@@ -443,6 +448,12 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else if (identifier.getType().equals(CommonConstant.TICKET_REJECTED_STATUS)) {
 				List<String> list = createFieldList(allworkflow, identifier);
 				workflowMap.put(CommonConstant.TICKET_REJECTED_STATUS, list);
+			} else if(identifier.getType().equals(CommonConstant.JIRA_BLOCKED_STATUS)) {
+				List<String> list = createFieldList(allworkflow, identifier);
+				workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS,list);
+			} else if(identifier.getType().equals(CommonConstant.JIRA_WAIT_STATUS)) {
+				List<String> list = createFieldList(allworkflow, identifier);
+				workflowMap.put(CommonConstant.JIRA_WAIT_STATUS,list);
 			}
 		}
 		return workflowMap;

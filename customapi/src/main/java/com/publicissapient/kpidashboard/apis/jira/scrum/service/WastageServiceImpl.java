@@ -20,9 +20,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
+import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +38,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final Logger LOGGER = LoggerFactory.getLogger(WastageServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-
-	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
 	private static final String ISSUES_CUSTOM_HISTORY = "issues custom history";
 	private static final String SPRINT_DETAILS = "sprint details";
@@ -90,13 +87,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-		});
 
 		if (null != leafNode) {
 			LOGGER.info("Wastage -> Requested sprint : {}", leafNode.getName());
@@ -110,7 +101,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
 							basicProjectConfigId);
 					List<JiraIssueCustomHistory> issueHistoryList = jiraIssueCustomHistoryRepository
-							.findByStoryIDInAndBasicProjectConfigIdIn(totalIssues, basicProjectConfigIds);
+							.findByStoryIDInAndBasicProjectConfigIdIn(totalIssues,
+									Collections.singletonList(basicProjectConfigId));
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -158,7 +150,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Integer> overAllIssueCount = Arrays.asList(0);
 			List<Integer> overAllBlockedTime = Arrays.asList(0);
 			List<Integer> overAllWaitedTime = Arrays.asList(0);
 			List<Integer> overAllWastedTime = Arrays.asList(0);
@@ -167,39 +158,43 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
+			List<List<String>> fetchBlockAndWaitStatus = filedMappingExist(fieldMapping);
+
+			List<String> blockedStatusList = fetchBlockAndWaitStatus.get(0);
+			List<String> waitStatusList = fetchBlockAndWaitStatus.get(1);
 			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
 				priorityWiseIssue.forEach((priority, issues) -> {
 					issueTypes.add(issueType);
 					priorities.add(priority);
 					List<IterationKpiModalValue> modalValues = new ArrayList<>();
-					int issueCount = 0;
 					int blockedTime = 0;
 					int waitedTime = 0;
 					for (JiraIssue jiraIssue : issues) {
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, blockedTime, waitedTime);
-						issueCount = issueCount + 1;
-						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
+						int jiraIssueWaitedTime = 0;
+						int jiraIssueBlockedTime = 0;
 						JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
 								.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 										.equals(jiraIssue.getNumber()))
 								.findFirst().orElse(new JiraIssueCustomHistory());
 
 						List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
-								sprintDetail);
-						waitedTime = waitedTimeAndBlockedTime.get(0);
-						blockedTime = waitedTimeAndBlockedTime.get(1);
-						if (waitedTime != 0) {
-							waitedTime += waitedTime;
-							overAllWaitedTime.set(0, overAllWaitedTime.get(0) + waitedTime);
+								sprintDetail, blockedStatusList, waitStatusList);
+						jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
+						jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
+						if (jiraIssueWaitedTime != 0) {
+							waitedTime += jiraIssueWaitedTime;
+							overAllWaitedTime.set(0, overAllWaitedTime.get(0) + jiraIssueWaitedTime);
 						}
-						if (blockedTime != 0) {
-							blockedTime += blockedTime;
-							overAllBlockedTime.set(0, overAllBlockedTime.get(0) + blockedTime);
+						if (jiraIssueBlockedTime != 0) {
+							blockedTime += jiraIssueBlockedTime;
+							overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
 						}
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
+								jiraIssueWaitedTime);
 					}
 					List<IterationKpiData> data = new ArrayList<>();
-					IterationKpiData wastage = new IterationKpiData(WASTAGE, Double.valueOf((waitedTime+blockedTime)), null, null,
-							HOURS, modalValues);
+					IterationKpiData wastage = new IterationKpiData(WASTAGE, Double.valueOf((waitedTime + blockedTime)),
+							null, null, HOURS, modalValues);
 					IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
 							null, HOURS, null);
 					IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null, null,
@@ -211,7 +206,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 					iterationKpiValues.add(iterationKpiValue);
 				});
 
-		});
+			});
 			List<IterationKpiData> data = new ArrayList<>();
 			overAllWastedTime.set(0, overAllWaitedTime.get(0) + overAllBlockedTime.get(0));
 			IterationKpiData overAllWastage = new IterationKpiData(WASTAGE, Double.valueOf(overAllWastedTime.get(0)),
@@ -240,6 +235,19 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		}
 	}
 
+	private List<List<String>> filedMappingExist(FieldMapping fieldMapping) {
+		List<String> blockedStatus = new ArrayList<>();
+		List<String> waitStatus = new ArrayList<>();
+		if (null != fieldMapping) {
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatus()))
+				blockedStatus = fieldMapping.getJiraBlockedStatus();
+
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraWaitStatus()))
+				waitStatus = fieldMapping.getJiraWaitStatus();
+		}
+		return Arrays.asList(blockedStatus, waitStatus);
+	}
+
 	/**
 	 * Calculate the waitTime and BlockTime
 	 *
@@ -247,49 +255,75 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * @param sprintDetail
 	 * @return List<Integer>
 	 */
-	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail) {
-		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
+			List<String> blockedStatusList, List<String> waitStatusList) {
+		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			storySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
+			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> jiraIssueSprint.getSprintId().equals(sprintDetail.getSprintName()))
 					.collect(Collectors.toList());
 		}
-		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetail.getEndDate(), DATE_TIME_FORMAT);
 		int blockedTime = 0;
 		int waitedTime = 0;
-		for (int i = 0; i < storySprintDetails.size(); i++) {
-			JiraIssueSprint entry = storySprintDetails.get(i);
-			DateTime entryActivityDate = entry.getActivityDate();
-			// On hold and ready for testing will come from fieldMappingStatus...
-			blockedTime = calculateTime(entry, Arrays.asList("Open"), storySprintDetails, i, entryActivityDate,
-					sprintEndDate, blockedTime);
-			waitedTime = calculateTime(entry, Arrays.asList("In Investigation"), storySprintDetails, i,
-					entryActivityDate, sprintEndDate, waitedTime);
+		for (int i = 0; i < filterStorySprintDetails.size(); i++) {
+			JiraIssueSprint entry = filterStorySprintDetails.get(i);
+
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldmapping(entry, blockedStatusList,
+					filterStorySprintDetails, i, sprintDetail, blockedTime);
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldmapping(entry, waitStatusList, filterStorySprintDetails,
+					i, sprintDetail, waitedTime);
 		}
 		return Arrays.asList(waitedTime, blockedTime);
 	}
 
-	private int calculateTime(JiraIssueSprint entry, List<String> fieldMappingStatus,
-			List<JiraIssueSprint> storySprintDetails, int index, DateTime entryActivityDate, DateTime sprintEndDate,
-			int time) {
+	private int calculateBlockAndWaitTimeBasedOnFieldmapping(JiraIssueSprint entry, List<String> fieldMappingStatus,
+			List<JiraIssueSprint> storySprintDetails, int index, SprintDetails sprintDetails, int time) {
+		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
+		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
+		DateTime entryActivityDate = entry.getActivityDate();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
-			Hours hours;
+			Minutes minutes = null;
 			if (storySprintDetails.size() == index + 1) {
-				hours = Hours.hoursBetween(entryActivityDate, sprintEndDate);
+				if (entryActivityDate.isAfter(sprintStartDate)) {
+					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+				} else {
+					if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
+						DateTime currDate = DateTime.now();
+						minutes = Minutes.minutesBetween(sprintStartDate, currDate);
+					} else {
+						minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+					}
+				}
 			} else {
 				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
 				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
-				hours = nextEntryActivityDate.isBefore(sprintEndDate)
-						? Hours.hoursBetween(entryActivityDate, nextEntryActivityDate)
-						: Hours.hoursBetween(entryActivityDate, sprintEndDate);
+				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
+						&& !(entryActivityDate.isAfter(sprintEndDate)
+								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
+					if (nextEntryActivityDate.isBefore(sprintEndDate)) {
+						if (entryActivityDate.isAfter(sprintStartDate)) {
+							minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate);
+						} else {
+							minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate);
+						}
+					} else {
+						if (entryActivityDate.isAfter(sprintStartDate)) {
+							minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+						} else {
+							minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+						}
+					}
+				}
 			}
-			time += hours.getHours();
+			if (minutes != null)
+				time += minutes.getMinutes();
 		}
 		return time;
 	}
 
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime) {
+		int wastageTime = blockedTime + waitTime;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -298,9 +332,21 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
 		iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime + " hrs"));
-		iterationKpiModalValue.setWaitTime(String.valueOf(waitTime + " hrs"));
-		iterationKpiModalValue.setWastage(String.valueOf(blockedTime + waitTime + " hrs"));
+		if ((blockedTime != 0)) {
+			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + " hrs"));
+		} else {
+			iterationKpiModalValue.setBlockedTime(blockedTime + " hrs");
+		}
+		if ((waitTime != 0)) {
+			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime / 60 + " hrs"));
+		} else {
+			iterationKpiModalValue.setWaitTime(waitTime + " hrs");
+		}
+		if ((wastageTime != 0)) {
+			iterationKpiModalValue.setWastage(String.valueOf(wastageTime / 60 + " hrs"));
+		} else {
+			iterationKpiModalValue.setWastage(String.valueOf(wastageTime + " hrs"));
+		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}

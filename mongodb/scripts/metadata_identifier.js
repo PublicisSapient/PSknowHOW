@@ -390,7 +390,20 @@ db.getCollection('metadata_identifier').remove({});
 		                "ACCEPTED", 
 		                "In Development"
 		            ]
-		        }
+		        },
+		        {
+                    "type" : "jiraWaitStatus",
+                    "value" : [
+                        "Ready for Testing"
+                    ]
+                },
+                {
+                    "type" : "jiraBlockedStatus",
+                    "value" : [
+                        "On Hold",
+                        "Blocked"
+                    ]
+                }
 		    ],
 		    "valuestoidentify" : [ 
 		        {

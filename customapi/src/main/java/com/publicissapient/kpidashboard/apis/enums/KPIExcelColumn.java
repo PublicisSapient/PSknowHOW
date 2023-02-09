@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * to order the headings of excel columns
  */
+@SuppressWarnings("java:S1192")
 public enum KPIExcelColumn {
 
     CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url", "Weeks")),

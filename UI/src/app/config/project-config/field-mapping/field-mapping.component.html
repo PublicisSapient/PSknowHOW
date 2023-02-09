@@ -313,6 +313,36 @@
                                 (click)="showDialogToAddValue(false, 'jiraOnHoldStatus', 'workflow')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraBlockedStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Wastage - Blocked Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included. 
+                                                </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraBlockedStatus" formControlName="jiraBlockedStatus"
+                                placeholder="Enter Status to Identify 'Blocked' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraBlockedStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraWaitStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Wastage - Wait Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            The statuses wherein no activity takes place and signify that the issues needs to move to picked up by a team member like Ready for deployment, Ready for testing etc
+                                                </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraWaitStatus" formControlName="jiraWaitStatus"
+                                placeholder="Enter Status to Identify 'Wait' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraWaitStatus', 'workflow')"></button>
+                        </div>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"

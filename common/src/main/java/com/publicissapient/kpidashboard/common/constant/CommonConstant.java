@@ -150,10 +150,8 @@ public final class CommonConstant {
 	public static final String METADATA = "collectMetaData";
 	public static final String PROJECT_RUN = "projectRun";
 	public static final String CRON = "cron";
-
-
-
-
+	public static final String JIRA_WAIT_STATUS = "jiraWaitStatus";
+	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
 
 
 
