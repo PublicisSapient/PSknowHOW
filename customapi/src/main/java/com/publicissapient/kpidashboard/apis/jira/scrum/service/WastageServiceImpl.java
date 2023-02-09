@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -233,6 +251,12 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		}
 	}
 
+	/**
+	 * Check for the fieldMapping and return blockStatus and waitStatus as list
+	 * 
+	 * @param fieldMapping
+	 * @return List<List<String>>
+	 */
 	private List<List<String>> filedMappingExist(FieldMapping fieldMapping) {
 		List<String> blockedStatus = new ArrayList<>();
 		List<String> waitStatus = new ArrayList<>();
@@ -256,6 +280,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList) {
 		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
+		// Filtering the IssueCustomHistory.storySprintDetails on basis of sprintName
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
 			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> jiraIssueSprint.getSprintId().equals(sprintDetail.getSprintName()))
@@ -266,27 +291,41 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		for (int i = 0; i < filterStorySprintDetails.size(); i++) {
 			JiraIssueSprint entry = filterStorySprintDetails.get(i);
 
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldmapping(entry, blockedStatusList,
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList,
 					filterStorySprintDetails, i, sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldmapping(entry, waitStatusList, filterStorySprintDetails,
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, filterStorySprintDetails,
 					i, sprintDetail, waitedTime);
 		}
 		return Arrays.asList(waitedTime, blockedTime);
 	}
 
-	private int calculateBlockAndWaitTimeBasedOnFieldmapping(JiraIssueSprint entry, List<String> fieldMappingStatus,
+	/**
+	 * Calculate the wait and block time w.r.t fieldMappingStatus
+	 * 
+	 * @param entry
+	 * @param fieldMappingStatus
+	 * @param storySprintDetails
+	 * @param index
+	 * @param sprintDetails
+	 * @param time
+	 * @return int
+	 */
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraIssueSprint entry, List<String> fieldMappingStatus,
 			List<JiraIssueSprint> storySprintDetails, int index, SprintDetails sprintDetails, int time) {
 		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
 		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
 		DateTime entryActivityDate = entry.getActivityDate();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
 			Minutes minutes = null;
+			// Checking for indexOutOfBound in storySprintDetails list
 			if (storySprintDetails.size() == index + 1) {
 				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
 						entryActivityDate);
 			} else {
+				// Find fetch the next element of storySprintDetails
 				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
 				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
+				// Checking if both alternate element are inside the sprint start and end date
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
@@ -300,6 +339,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return time;
 	}
 
+	// Calculate the time for entries which lies between sprint start and end date
 	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
 			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
 		Minutes minutes;
@@ -319,6 +359,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return minutes;
 	}
 
+	// Calculate the time for last entry of storySprintDetails
 	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
 			DateTime sprintEndDate, DateTime entryActivityDate) {
 		Minutes minutes;
@@ -335,6 +376,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return minutes;
 	}
 
+	// used for populating the Excel file
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime) {
 		int wastageTime = blockedTime + waitTime;
