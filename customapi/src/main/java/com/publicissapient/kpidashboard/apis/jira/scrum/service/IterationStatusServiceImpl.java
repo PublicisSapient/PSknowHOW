@@ -250,7 +250,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-
 		Set<SprintIssue> completedIssues = (Set<SprintIssue>) resultMap.get(COMPLETED_ISSUES);
 		Set<SprintIssue> openIssues = (Set<SprintIssue>) resultMap.get(NOT_COMPLETED_ISSUES);
 		Map<String, JiraIssue> jiraMap = (Map<String, JiraIssue>) resultMap.get(JIRAISSUEMAP);
@@ -271,7 +270,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			closedIssuesDelay = findDelayOfClosedIssues(completedIssues, jiraMap, jiraHistoryMap, startDate, endDate);
 		}
 		if (CollectionUtils.isNotEmpty((Set<SprintIssue>) resultMap.get(NOT_COMPLETED_ISSUES))) {
-			openIssuesDelay = findDelayOfOpenIssues(openIssues, jiraOpenMap, jiraOpenHistoryMap, startDate, endDate, closedIssuesDelay);
+			openIssuesDelay = findDelayOfOpenIssues(openIssues, jiraOpenMap, jiraOpenHistoryMap, startDate, endDate,
+					closedIssuesDelay);
 		}
 
 		// calculating net delay of closed issues before, after time
@@ -453,9 +453,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * method to find delay in closed issues
 	 */
 	private Map<String, List<IterationStatus>> findDelayOfClosedIssues(Set<SprintIssue> completedIssues,
-																	   Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
-																	   String endDate) {
-
+			Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
+			String endDate) {
 		Map<String, List<IterationStatus>> resultList = new HashMap<>();
 		List<IterationStatus> jiraBeforeTimeIssueList = new ArrayList<>();
 		List<IterationStatus> jiraAfterTimeIssueList = new ArrayList<>();
@@ -485,14 +484,13 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		}
 		jiraDelayIssueList.addAll(jiraBeforeTimeIssueList);
 		jiraDelayIssueList.addAll(jiraAfterTimeIssueList);
-		if(resultList.containsKey(DELAY_DETAILS)){
+		if (resultList.containsKey(DELAY_DETAILS)) {
 			resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
 				v.addAll(jiraDelayIssueList);
 				return v;
 			});
-		}
-		else{
-			resultList.put(DELAY_DETAILS,jiraDelayIssueList);
+		} else {
+			resultList.put(DELAY_DETAILS, jiraDelayIssueList);
 		}
 		resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
 		resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
@@ -516,8 +514,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	private Map<String, List<IterationStatus>> findDelayOfOpenIssues(Set<SprintIssue> openIssues,
-																	 Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
-																	 String startDate, String endDate, Map<String, List<IterationStatus>> resultList) throws ParseException {
+			Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
+			String startDate, String endDate, Map<String, List<IterationStatus>> resultList) throws ParseException {
 
 		Map<String, List<IterationStatus>> resultListOpenIssues = new HashMap<>();
 		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
@@ -530,22 +528,21 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					&& StringUtils.isNotEmpty(issueObject.getDueDate())) {
 				iterationKpiModalValue = createIterationKpiModal(startDate, endDate, issueObject);
 				if ((iterationKpiModalValue.getIssueId() != null)) {
-					if (Integer.parseInt(iterationKpiModalValue.getDelay())<0){
+					if (Integer.parseInt(iterationKpiModalValue.getDelay()) < 0) {
 						jiraNegativeDelayIssueList.add(iterationKpiModalValue);
-					}else{
+					} else {
 						jiraDelayIssueList.add(iterationKpiModalValue);
 					}
 				}
 			}
 		}
-		if(resultList.containsKey(DELAY_DETAILS)){
+		if (resultList.containsKey(DELAY_DETAILS)) {
 			resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
 				v.addAll(jiraDelayIssueList);
 				return v;
 			});
-		}
-		else{
-			resultList.put(DELAY_DETAILS,jiraDelayIssueList);
+		} else {
+			resultList.put(DELAY_DETAILS, jiraDelayIssueList);
 		}
 		resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
 		return resultListOpenIssues;
@@ -626,7 +623,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Integer delayDaysAlready = 0;
 		DateTime currDate = DateTime.now();
 		IterationStatus iterationStatus = new IterationStatus();
-		if (storyDueDate.compareTo(sprintStartDate) > 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
+		if (storyDueDate.compareTo(sprintStartDate) >= 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
 			delayDaysAlready = CommonUtils.getDaysBetwDate2(currDate, dueDate, false);
 			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
 			if (remainingEstimateTime > 0) {

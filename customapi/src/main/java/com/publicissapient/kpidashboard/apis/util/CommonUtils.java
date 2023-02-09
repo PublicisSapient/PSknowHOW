@@ -125,11 +125,11 @@ public final class CommonUtils {
 
 	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) {
 		Integer count = 0;
-		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
-		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
-			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+			while (!endLocalDate.isEqual(startLocalDate)) {
 				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count=count+1;
 				}
@@ -137,7 +137,7 @@ public final class CommonUtils {
 			}
 		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
-			while (!(endLocalDate.isBefore(startLocalDate) || endLocalDate.isEqual(startLocalDate))) {
+			while (!(endLocalDate.isEqual(startLocalDate))) {
 				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
 					count = count-1;
 				}
@@ -151,28 +151,26 @@ public final class CommonUtils {
 		Integer count = 1;
 		Integer count1 = 0;
 
-		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
-		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, DELAY_FORMATTER));
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
-			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+			while (endLocalDate.isBefore(startLocalDate)) {
 				count1=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,null,count1,POSITIVE_CASE);
-
 				endLocalDate = endLocalDate.plusDays(1);
 			}
 			count = count1;
 		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
-			while (!endLocalDate.isBefore(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+			while (endLocalDate.isBefore(startLocalDate)) {
 				count=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,count,null,NEGATIVE_CASE);
-
 				endLocalDate = endLocalDate.minusDays(1);
 			}
-		}else {
+		}
 			if (isSpilled){
 				count = count1 + 1;
 			}
-		}
+
 		return count;
 	}
 
