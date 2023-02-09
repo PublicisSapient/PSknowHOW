@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class CommonUtils {
 
 	public static final int FIFTH_DAY_OF_WEEK = 5;
+
 
 	private CommonUtils() {
 	}
@@ -118,7 +118,7 @@ public final class CommonUtils {
 		return mapDays;
 	}
 
-	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) throws ParseException {
+	public static Integer getDaysBetwDate(DateTime beginDate, DateTime endDate) {
 		Integer count = 0;
 		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
 		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
@@ -142,7 +142,7 @@ public final class CommonUtils {
 		return count;
 	}
 
-	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate, boolean isSpilled) throws ParseException {
+	public static Integer getDaysBetwDate2(DateTime beginDate, DateTime endDate, boolean isSpilled) {
 		Integer count = 1;
 		Integer count1 = 0;
 
@@ -150,19 +150,17 @@ public final class CommonUtils {
 		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT_WITH_SEC, "yyyy-MM-dd"));
 		if(startLocalDate.compareTo(endLocalDate) > 0) {
 			//positive case
-			while (!endLocalDate.isAfter(startLocalDate)) {
-				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
-					count1=count1+1;
-				}
+			while (!endLocalDate.isAfter(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+				count1=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,null,count1,"A");
+
 				endLocalDate = endLocalDate.plusDays(1);
 			}
 			count = count1;
 		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
 			//negative case
-			while (!endLocalDate.isBefore(startLocalDate)) {
-				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
-					count = count-1;
-				}
+			while (!endLocalDate.isBefore(startLocalDate) || endLocalDate.isEqual(startLocalDate)) {
+				count=getInteger(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK,count,null,"B");
+
 				endLocalDate = endLocalDate.minusDays(1);
 			}
 		}else {
@@ -171,6 +169,24 @@ public final class CommonUtils {
 			}
 		}
 		return count;
+	}
+
+
+	private static Integer getInteger(boolean bool, Integer count, Integer count1, String first){
+		int counter=0;
+		if (bool) {
+			switch (first) {
+				case "A":
+					counter = count1 + 1;
+					break;
+				case "B":
+					counter = count - 1;
+					break;
+				default:
+
+			}
+		}
+		return counter;
 	}
 
 	/**
