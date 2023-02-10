@@ -99,7 +99,15 @@ db.getCollection('metadata_identifier').remove({});
         			{
         				"type":"delivered",
         				"value":["Closed","Resolved","Ready for Delivery","Ready for Release"]
-        			}
+        			},
+        			{
+        			    "type" : "jiraWaitStatus",
+                        "value" : [ "Ready for Testing"]
+                    },
+                    {
+                        "type" : "jiraBlockedStatus",
+                        "value" : ["On Hold","Blocked"]
+                    }
         			],
         			"valuestoidentify":[
         			{
@@ -390,20 +398,7 @@ db.getCollection('metadata_identifier').remove({});
 		                "ACCEPTED", 
 		                "In Development"
 		            ]
-		        },
-		        {
-                    "type" : "jiraWaitStatus",
-                    "value" : [
-                        "Ready for Testing"
-                    ]
-                },
-                {
-                    "type" : "jiraBlockedStatus",
-                    "value" : [
-                        "On Hold",
-                        "Blocked"
-                    ]
-                }
+		        }
 		    ],
 		    "valuestoidentify" : [ 
 		        {
