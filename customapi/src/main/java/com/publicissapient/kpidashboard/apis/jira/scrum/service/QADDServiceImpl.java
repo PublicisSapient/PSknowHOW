@@ -276,7 +276,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(storyIds::addAll);
 			processSubCategoryMap(storyIds, storyDefectDataListMap, qaddList, sprintWiseDefectList, totalStoryIdList,
-					storyList, storyFilteredList, storyPointList);
+					storyList, storyFilteredList, storyPointList, fieldMapping);
 
 			double sprintWiseQADD = calculateKpiValue(qaddList, KPICode.DEFECT_DENSITY.getKpiId());
 			sprintWiseQADDMap.put(sprint, sprintWiseQADD);
@@ -310,7 +310,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOPMD
 																											 // //NOSONAR
 			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, // NOSONAR
-			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2) {// NOSONAR
+			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2
+			, FieldMapping fieldMapping) {// NOSONAR
 		HashMap<String, JiraIssue> mapOfStories = new HashMap<>();
 		for (JiraIssue f : storyFilteredList) {
 			mapOfStories.put(f.getNumber(), f);
@@ -333,7 +334,16 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		double qaddForCurrentLeaf = 0.0d;
 		double storyPointsTotal;
 		if (CollectionUtils.isNotEmpty(storyList)) {
-			storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
+			} else {
+				storyPointsTotal = storyList.stream().filter(jiraIssue ->
+								Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				storyPointsTotal = storyPointsTotal / 60;
+				storyPointsTotal = storyPointsTotal / fieldMapping.getStoryPointToHourMapping();
+			}
 			if (storyPointsTotal == 0.0d) {// NOPMD
 				qaddForCurrentLeaf = -1000.0;
 			} else if (CollectionUtils.isNotEmpty(additionalFilterDefectList)) {
