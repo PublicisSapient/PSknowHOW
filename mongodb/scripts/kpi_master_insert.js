@@ -341,8 +341,8 @@ db.getCollection('kpi_master').insert(
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a sprint",
-            "Total no. of defects tagged to stories in a sprint"
+            "No. of defects tagged to stories in a closed sprint",
+            "Total no. of defects tagged to stories in a closed sprint"
           ]
         }
       ],
