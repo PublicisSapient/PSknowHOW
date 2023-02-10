@@ -245,7 +245,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 							Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
 					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 			double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-			howerMap.put(STORY_POINTS_DATA, totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
+			double storyPointsData = Double.parseDouble(String.format("%.2f",
+					totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()));
+			howerMap.put(STORY_POINTS_DATA, storyPointsData);
 		}
 		sprintWiseHowerMap.put(sprint, howerMap);
 	}
