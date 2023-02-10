@@ -55,7 +55,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifie
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import org.stringtemplate.v4.ST;
+
 
 /**
  * The type Release data client. Store Release data for the projects in

@@ -21,15 +21,7 @@
  */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -367,7 +359,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			String name) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (sprintWiseDefectDataList.size() > 0) {
+			if (!Objects.isNull(sprintWiseDefectDataList) && sprintWiseDefectDataList.size() > 0) {
 				KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
 						KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 			}
