@@ -122,8 +122,8 @@ export class FieldMappingComponent implements OnInit {
         value: 'Story Point'
       },
       {
-        label: 'Actual (Original Estimation)',
-        value: 'Actual (Original Estimation)'
+        label: 'Actual Estimation',
+        value: 'Actual Estimation'
       }
     ];
     this.defectIdentification = [

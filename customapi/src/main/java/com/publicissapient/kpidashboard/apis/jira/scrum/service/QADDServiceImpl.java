@@ -320,10 +320,10 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		}
 
 		@SuppressWarnings("unchecked")
-		List<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
+		Set<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
 				.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(),
 						storyIdList == null ? Collections.emptyList() : storyIdList))
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 		populateList(additionalFilterDefectList, mapOfStories);
 		@SuppressWarnings("unchecked")
 		List<JiraIssue> storyPointList = ((List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS)).stream()
@@ -359,19 +359,20 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		totalStoryIdList.addAll(storyIdList == null ? Collections.emptyList() : storyIdList);
 	}
 
-	private void populateList(List<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
+	private void populateList(Set<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
 		if (!additionalFilterDefectList.isEmpty()) {
+			JiraIssue jiraIssue = additionalFilterDefectList.stream().findFirst().orElse(new JiraIssue());
 			// Filter for QA tagged defects
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(new ObjectId(additionalFilterDefectList.get(0).getBasicProjectConfigId()));
+					.get(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 
 			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByQAValue())) {
 				additionalFilterDefectList = additionalFilterDefectList.stream().filter(f -> f.isDefectRaisedByQA()) // NOSONAR
-						.collect(Collectors.toList());
+						.collect(Collectors.toSet());
 			} else if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
 				additionalFilterDefectList = additionalFilterDefectList.stream()
 						.filter(f -> f.getDefectRaisedBy() != null && !(f.getDefectRaisedBy().equalsIgnoreCase("UAT")))
-						.collect(Collectors.toList());
+						.collect(Collectors.toSet());
 			}
 
 			// Filter for defects NOT linked to stories in a given sprint
