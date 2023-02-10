@@ -320,8 +320,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			for (Map.Entry<String, Map<String, List<IterationStatus>>> entry : typeAndPriorityWiseIssues.entrySet()) {
 				Map<String, List<IterationStatus>> typeWiseData = entry.getValue();
 				for (Map.Entry<String, List<IterationStatus>> prData : typeWiseData.entrySet()) {
-					List<IterationStatus> issues;
-					issues = prData.getValue();
+					List<IterationStatus> issues = prData.getValue();
 					// finding the cd issues passing issuetype and priority
 					int cdCount = 0;
 					int cdDelayNumberCount = 0;
@@ -426,7 +425,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			List<IterationStatus> openIssuesCausingDelay) {
 		List<IterationStatus> issuesCausedDelay = new ArrayList<>();
 		if ((issuesClosedAfterDelayDate != null) && !issuesClosedAfterDelayDate.isEmpty()) {
-			issuesCausedDelay.addAll(issuesClosedAfterDelayDate);
+			issuesCausedDelay.addAll(issuesClosedAfterDelayDate.stream()
+					.filter(iterationStatus -> Integer.parseInt(iterationStatus.getDelay()) != 0)
+					.collect(Collectors.toList()));
 		}
 		if ((openIssuesCausingDelay != null) && !openIssuesCausingDelay.isEmpty()) {
 			issuesCausedDelay.addAll(openIssuesCausingDelay);

@@ -23,7 +23,7 @@
 }
 .card-type-1{
     position: relative;
-    width: 100%; 
+    width: 100%;
 }
 
 .text-blue{
@@ -37,5 +37,8 @@
 
 .kpi-content-container{
     border-right: 1px solid #c0c0c0;
+}
+.kpi-sub-headings{
+    height: 40px;
 }
 
