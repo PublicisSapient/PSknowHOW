@@ -326,7 +326,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 					Integer rcaCountHover = rcaMap.getOrDefault(rca, 0L).intValue();
 					overAllHoverValueMap.put(StringUtils.capitalize(rca), rcaCountHover);
 				});
-				populateExcelDataObject(requestTrackerId, storyDefectDataListMap, excelData, jiraIssueList, node.getSprintFilter().getName());
+				populateExcelDataObject(requestTrackerId, excelData, jiraIssueList, node.getSprintFilter().getName());
 			}
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 
@@ -354,18 +354,17 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, Map<String, Object> storyDefectDataListMap,
+	private void populateExcelDataObject(String requestTrackerId,
 			List<KPIExcelData> excelData, List<JiraIssue> sprintWiseDefectDataList,
 			String name) {
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (!Objects.isNull(sprintWiseDefectDataList) && sprintWiseDefectDataList.size() > 0) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& !sprintWiseDefectDataList.isEmpty()) {
 				KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
 						KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 			}
 
 		}
-	}
 
 	/**
 	 * Sets DB Query Logger
