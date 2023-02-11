@@ -20,7 +20,6 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { Router } from '@angular/router';
 import { timer } from 'rxjs/internal/observable/timer';
-import { eventTupleToStore } from '@fullcalendar/core';
 
 @Component({
   selector: 'app-error',
