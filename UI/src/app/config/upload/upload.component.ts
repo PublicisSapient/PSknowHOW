@@ -27,6 +27,7 @@ import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 declare let $: any;
 
 interface CapacitySubmissionReq {
@@ -96,6 +97,11 @@ export class UploadComponent implements OnInit {
     projectDetails: any;
     selectedProjectBaseConfigId: string;
     popupForm: UntypedFormGroup;
+    preventRedirection = true;
+    selectedFile: File;
+    formData = {
+        expirationTime: '',
+    };
 
     statusMessage = {
         200: 'Data Saved Successfully!!',
@@ -122,7 +128,7 @@ export class UploadComponent implements OnInit {
     selectedSprintName: any;
     tableLoader = true;
     currentDate = new Date();
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService) {
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService,private router: Router) {
     }
 
     ngOnInit() {
@@ -222,9 +228,7 @@ export class UploadComponent implements OnInit {
             enableSearchFilter: true,
             classes: 'multi-select-custom-class'
         };
-
-        // this.selectedView = 'emm_upload';
-        this.selectedView = 'logo_upload';
+ this.selectedView = 'logo_upload';
 
         if (this.isSuperAdmin) {
             this.items.unshift(
@@ -234,7 +238,7 @@ export class UploadComponent implements OnInit {
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: true
+                    expanded: false
                 }
             );
             this.selectedView = 'logo_upload';
@@ -243,6 +247,25 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
+         this.selectedView = 'cert_upload';
+                if (this.isSuperAdmin) {
+                    this.items.unshift(
+                        {
+                            label: 'Upload certificate',
+                            icon: 'pi pi-image',
+                            command: (event) => {
+                                this.switchView(event);
+                            },
+                            expanded: true
+                        }
+                    );
+                    this.selectedView = 'cert_upload';
+                } else {
+                    this.handleTepSelect('upload_tep');
+                    document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
+                    document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
+                }
+
         this.kanban = false;
         this.getUploadedImage();
         this.startDate = '';
@@ -293,10 +316,13 @@ export class UploadComponent implements OnInit {
         document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
     }
     switchView(event) {
-        // this.highlightSideBarTab(event);
         switch (event.item.label) {
             case 'Upload Logo': {
                 this.selectedView = 'logo_upload';
+            }
+                break;
+            case 'Upload certificate': {
+                this.selectedView = 'cert_upload';
             }
                 break;
             case 'Test Execution Percentage': {
@@ -424,7 +450,6 @@ export class UploadComponent implements OnInit {
                     });
         }
     }
-
 
     /*call service to delete*/
     onDelete() {
@@ -939,5 +964,55 @@ export class UploadComponent implements OnInit {
                 this.noData = true;
             }
         });
+    }
+    /* Upload and  validate certificate */
+    async uploadAndValidateCertificate(event) {
+        this.selectedFile = event.files[0];
+    }
+    uploadCertificate() {
+        this.preventRedirection = true;
+        const expirationTime=this.formData.expirationTime;
+        const file = this.selectedFile;
+        // this.http_service.uploadCertificate(file,expirationTime).pipe(first())
+        //   	.subscribe(
+        //   	data => {
+        //   		if (data['status'] && data['status'] === 417) {
+        //   			this.error = data['statusText'];
+        //   		} else {
+        //   			this.message = data['message'];
+        //   		}
+        //           this.preventRedirection = false;
+        //   	},
+        //     error => {
+        //         console.log('986');
+        //         console.log(error);
+        //         console.log('988');
+        //         this.error = error;
+        //         this.preventRedirection = true;
+        //     }
+        // );
+        this.http_service.uploadCertificate(file, expirationTime).pipe(first())
+        .subscribe(
+          data => {
+            if (data['status'] && data['status'] === 417) {
+              this.error = data['statusText'];
+              this.preventRedirection = true;
+            } else {
+              this.message = data['message'];
+              this.preventRedirection = false;
+            }
+          },
+          error => {
+            this.error = error.message;
+            this.preventRedirection = true;
+            console.log('1006');
+            console.log(this.preventRedirection);
+            if (!this.preventRedirection) {
+                this.router.navigate(['error']);
+            }
+          }
+        );
+      
+
     }
 }

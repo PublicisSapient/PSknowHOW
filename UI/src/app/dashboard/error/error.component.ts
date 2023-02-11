@@ -20,6 +20,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { Router } from '@angular/router';
 import { timer } from 'rxjs/internal/observable/timer';
+import { eventTupleToStore } from '@fullcalendar/core';
 
 @Component({
   selector: 'app-error',
@@ -33,56 +34,59 @@ export class ErrorComponent implements OnInit, OnDestroy {
   timeLeft: 60;
   interval = null;
   source = null;
+  preventRedirection = true;
 
   constructor(private service: SharedService, private router: Router) {
     // this.pollForAvailability('/');
   }
 
-  ngOnInit() {
-    // for getting error from Shared service
-    this.service.passErrorToErrorPage.subscribe((error) => {
-      console.log(error);
-      switch (error.status) {
-        case 0: this.errorMsg = 'Server not available';
-          this.redirectButtonText = 'Go to homepage';
-          this.redirectButtonRoute = '/';
-          this.pollForAvailability(this.redirectButtonRoute);
-          break;
-        // case 400: this.errorMsg = 'Some error occurred';
-        //   this.redirectButtonText = 'Go to homepage';
-        //   this.redirectButtonRoute = '/';
-        //   break;
-        case 401:
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_name');
-          this.errorMsg = 'Session Expired';
-          this.redirectButtonText = 'Go to Login';
-          this.redirectButtonRoute = './authentication/login';
-          break;
-        case 403: this.errorMsg = 'Unauthorised action';
-          this.redirectButtonText = 'Go to homepage';
-          this.redirectButtonRoute = '/';
-          this.pollForAvailability(this.redirectButtonRoute);
-          break;
-        case 404: this.errorMsg = 'API Not Found';
-          this.redirectButtonText = 'Go to homepage';
-          this.redirectButtonRoute = '/';
-          this.pollForAvailability(this.redirectButtonRoute);
-          break;
-        case 500: this.errorMsg = 'Internal Server error';
-          this.redirectButtonText = 'Go to homepage';
-          this.redirectButtonRoute = '/';
-          this.pollForAvailability(this.redirectButtonRoute);
-          break;
-        default: this.errorMsg = 'Some error occurred';
-          this.redirectButtonText = 'Go to homepage';
-          this.redirectButtonRoute = '/';
-          this.pollForAvailability(this.redirectButtonRoute);
-          break;
-      }
+    ngOnInit() {
+      // for getting error from Shared service
+      this.service.passErrorToErrorPage.subscribe((error) => {
+        console.log('44 line');
+        console.log(error);
+        console.log('46 line');
+        switch (error.status) {
+          case 0: this.errorMsg = 'Server not available';
+            this.redirectButtonText = 'Go to homepage';
+            this.redirectButtonRoute = '/';
+            this.pollForAvailability(this.redirectButtonRoute);
+            break;
+          // case 400: this.errorMsg = 'Some error occurred';
+          //   this.redirectButtonText = 'Go to homepage';
+          //   this.redirectButtonRoute = '/';
+          //   break;
+          case 401:
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            this.errorMsg = 'Session Expired';
+            this.redirectButtonText = 'Go to Login';
+            this.redirectButtonRoute = './authentication/login';
+            break;
+          case 403: this.errorMsg = 'Unauthorised action';
+            this.redirectButtonText = 'Go to homepage';
+            this.redirectButtonRoute = '/';
+            this.pollForAvailability(this.redirectButtonRoute);
+            break;
+          case 404: this.errorMsg = 'API Not Found';
+            this.redirectButtonText = 'Go to homepage';
+            this.redirectButtonRoute = '/';
+            this.pollForAvailability(this.redirectButtonRoute);
+            break;
+          case 500: this.errorMsg = 'Internal Server error';
+            this.redirectButtonText = 'Go to homepage';
+            this.redirectButtonRoute = '/';
+            this.pollForAvailability(this.redirectButtonRoute);
+            break;
+          default: this.errorMsg = 'Some error occurred';
+            this.redirectButtonText = 'Go to homepage';
+            this.redirectButtonRoute = '/';
+            this.pollForAvailability(this.redirectButtonRoute);
+            break;
+        }
 
-    });
-  }
+      });
+    }
 
   // disabling timer
   @HostListener('window:beforeunload')
@@ -93,6 +97,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   pollForAvailability(redirectButtonRoute) {
+    console.log('M i called here!');
+    console.log(redirectButtonRoute);
     if (!this.source) {
       this.source = timer(1000, 1000).subscribe(val => {
         if (this.timeLeft > 0) {

@@ -30,6 +30,8 @@ import { AccessGuard } from '../services/access.guard';
 import { LandingPageComponent } from '../dashboard/landing-page/landing-page.component';
 import { GuestGuard } from '../services/guest.guard';
 import { BacklogComponent } from '../dashboard/backlog/backlog.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -69,7 +71,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' }),MatDatepickerModule,MatInputModule],
 
   exports: [RouterModule],
   providers: [

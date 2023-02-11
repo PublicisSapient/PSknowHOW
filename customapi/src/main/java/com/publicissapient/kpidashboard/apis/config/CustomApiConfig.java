@@ -158,6 +158,10 @@ public class CustomApiConfig {// NOPMD
 	private String feedbackEmailSubject;
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
+
+	@Value("${cert.hostpath}")
+	private String hostPath;
+
 	private int sonarWeekCount;
 	private int jenkinsWeekCount;
 	private int authCookieDuration;
@@ -898,5 +902,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNumberOfFutureDaysForKanbanTestExecution(int numberOfFutureDaysForKanbanTestExecution) {
 		this.numberOfFutureDaysForKanbanTestExecution = numberOfFutureDaysForKanbanTestExecution;
+	}
+
+	public String getHostPath() {
+		return hostPath;
+	}
+
+	public void setHostPath(String hostPath) {
+		this.hostPath = hostPath;
 	}
 }

@@ -130,6 +130,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
 
+    private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -368,7 +369,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             pipe(tap((res) => {
             }));
     }
-
     /** get uploaded image file */
     getUploadedImage(): Observable<object> {
 
@@ -860,5 +860,14 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     deleteProcessorData(toolId, projectId) {
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
+    }
+
+        /** POST: Upload ldap certificate file */
+    uploadCertificate(file, expirationTime): Observable<object> {
+        const fileFormData = new FormData();
+        fileFormData.append('file', file);
+        fileFormData.append('expirationTime', expirationTime);
+        return this.http.post<object>(this.uploadCert, fileFormData).pipe(tap((res) => {
+        }));
     }
 }

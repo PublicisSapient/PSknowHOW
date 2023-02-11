@@ -19,7 +19,11 @@
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,9 @@ import com.publicissapient.kpidashboard.apis.model.BaseResponse;
 import com.publicissapient.kpidashboard.apis.model.Logo;
 import com.publicissapient.kpidashboard.apis.util.ValidExtension;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * REST service managing all requests to File storage utilities
  *
@@ -45,6 +52,9 @@ import com.publicissapient.kpidashboard.apis.util.ValidExtension;
 public class FileStorageController {
 
 	private final FileStorageService fileStorageService;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	public FileStorageController(FileStorageService fileStorageService) {
@@ -72,6 +82,36 @@ public class FileStorageController {
 	public BaseResponse uploadFile(@PathVariable String type,@RequestParam("file") MultipartFile file) {
 		return fileStorageService.upload(type,file);
 	}
+
+	/*@PostMapping("/file/uploadCertificate")
+	@PreAuthorize("hasPermission('LOGO', 'FILE_UPLOAD')")
+	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
+		try {
+			file.transferTo(dest);
+			response = new ServiceResponse(true, "LDAP certificate copied successfully to the host", file.getOriginalFilename());
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}*/
+
+
+	@PostMapping("/file/uploadCertificate")
+	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file,
+			@RequestParam("expirationTime") String expirationTime) {
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
+		try {
+			file.transferTo(dest);
+			response = new ServiceResponse(true, "LDAP certificate copied successfully to the host", file.getOriginalFilename());
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+		}
+	}
+
 	/**
 	 * Gets logo image file
 	 * 
