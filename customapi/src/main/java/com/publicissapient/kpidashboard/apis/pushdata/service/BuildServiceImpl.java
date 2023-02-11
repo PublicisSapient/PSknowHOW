@@ -1,13 +1,17 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.BuildValidationServiceImpl;
+import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,10 +24,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class BuildServiceImpl extends BuildValidation {
+public class BuildServiceImpl{
 
 	@Autowired
 	BuildRepository buildRepository;
+
+	@Autowired
+	BuildValidationServiceImpl buildValidationService;
 
 	public int checkandCreateBuilds(String basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
 			List<BuildDeployErrorData> buildErrorList) {
@@ -58,10 +65,14 @@ public class BuildServiceImpl extends BuildValidation {
 	 */
 	private Map<String, String> createErrorMap(PushBuild pushBuild) {
 		Map<String, String> errors = new HashMap<>();
-		checkJobName(pushBuild.getJobName(), errors);
-		checkNumber(pushBuild.getNumber(), errors);
-		checkTimeDetails(pushBuild.getStartTime(), pushBuild.getEndTime(), pushBuild.getDuration(), errors);
-		checkStatus(pushBuild.getBuildStatus(), errors);
+		Map<Pair<String,String>, List<PushValidationType>> validations=new HashMap<>();
+		validations.put(Pair.of("jobName",pushBuild.getJobName()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("number",pushBuild.getNumber()), Arrays.asList(PushValidationType.BLANK,PushValidationType.NUMERIC));
+		validations.put(Pair.of("buildStatus",pushBuild.getBuildStatus()), Arrays.asList(PushValidationType.BLANK,PushValidationType.BUILD_STATUS));
+		validations.put(Pair.of("startTime",pushBuild.getStartTime().toString()), Arrays.asList(PushValidationType.BLANK,PushValidationType.TIME_DETAILS));
+		validations.put(Pair.of("endTime",pushBuild.getEndTime().toString()), Arrays.asList(PushValidationType.BLANK,PushValidationType.TIME_DETAILS));
+		validations.put(Pair.of("duration",pushBuild.getDuration().toString()), Arrays.asList(PushValidationType.BLANK,PushValidationType.TIME_DETAILS));
+		buildValidationService.createErrorMap(validations,errors);
 		return errors;
 	}
 
@@ -95,18 +106,5 @@ public class BuildServiceImpl extends BuildValidation {
 		build.setUpdateTimestamp(System.currentTimeMillis());
 		return build;
 	}
-
-	/**
-	 * checking valid Status
-	 * @param buildStatus
-	 * @param errors
-	 */
-	@Override
-	public void checkStatus(String buildStatus, Map<String, String> errors) {
-		if (!BuildStatus.contains(buildStatus)) {
-			errors.put("buildStatus", "buildStatus should be among "+BuildStatus.getAllValues());
-		}
-	}
-
 
 }

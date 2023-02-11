@@ -16,20 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.constant;
+package com.publicissapient.kpidashboard.apis.enums;
 
 /**
- * Enumeration of valid build statuses.
+ * The PushValidationType Type Enum
  */
-public enum BuildStatus {
-	SUCCESS, FAILURE, UNSTABLE, ABORTED, IN_PROGRESS, UNKNOWN;
+public enum PushValidationType {
 
-	public static BuildStatus fromString(String value) {
-		for (BuildStatus buildStatus : values()) {
-			if (buildStatus.toString().equalsIgnoreCase(value)) {
-				return buildStatus;
-			}
-		}
-		throw new IllegalArgumentException(value + " is not a valid BuildStatus.");
-	}
+	BLANK, NUMERIC, BUILD_STATUS, DEPLOYMENT_STATUS,TIME_DETAILS;
+
 }
