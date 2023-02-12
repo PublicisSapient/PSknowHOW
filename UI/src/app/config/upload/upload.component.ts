@@ -27,7 +27,6 @@ import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 declare let $: any;
 
 interface CapacitySubmissionReq {
@@ -129,7 +128,7 @@ export class UploadComponent implements OnInit {
     selectedSprintName: any;
     tableLoader = true;
     currentDate = new Date();
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService,private router: Router) {
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService) {
     }
 
     ngOnInit() {

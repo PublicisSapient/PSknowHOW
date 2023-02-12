@@ -95,8 +95,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   pollForAvailability(redirectButtonRoute) {
-    console.log('M i called here!');
-    console.log(redirectButtonRoute);
     if (!this.source) {
       this.source = timer(1000, 1000).subscribe(val => {
         if (this.timeLeft > 0) {
