@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import javax.servlet.http.HttpServletResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface PushDataValidationService {
-    String validateToken(HttpServletResponse response);
+    ExposeApiToken validateToken(HttpServletRequest response);
 }

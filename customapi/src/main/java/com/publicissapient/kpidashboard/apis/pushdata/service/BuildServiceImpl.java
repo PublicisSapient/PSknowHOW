@@ -32,7 +32,7 @@ public class BuildServiceImpl{
 	@Autowired
 	BuildValidationServiceImpl buildValidationService;
 
-	public int checkandCreateBuilds(String basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
+	public int checkandCreateBuilds(ObjectId basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
 			List<BuildDeployErrorData> buildErrorList) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(buildsList)) {
@@ -47,9 +47,8 @@ public class BuildServiceImpl{
 					buildDeployErrorData.setErrors(errorMap);
 				} else {
 					//if no errors are present in the input job then it will create Build List
-					ObjectId basicProjectObjectConfigId = new ObjectId(basicProjectConfigId);
-					buildList.add(createBuild(basicProjectObjectConfigId, pushBuild,
-							checkExisitingJob(pushBuild, basicProjectObjectConfigId)));
+					buildList.add(createBuild(basicProjectConfigId, pushBuild,
+							checkExisitingJob(pushBuild, basicProjectConfigId)));
 				}
 				buildErrorList.add(buildDeployErrorData);
 			});

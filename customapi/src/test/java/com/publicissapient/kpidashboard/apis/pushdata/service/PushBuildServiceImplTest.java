@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -11,6 +12,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +44,13 @@ public class PushBuildServiceImplTest {
 	private CustomApiConfig customApiConfig;
 
 	private PushBuildDeploy pushBuildDeploy;
-	private String projectBasicConfigId;
+	private ObjectId projectBasicConfigId;
 
 	private Validator validator;
 
 	@Before
 	public void setUp() {
-		projectBasicConfigId = "632824e949794a18e8a44787";
+		projectBasicConfigId = new ObjectId("632824e949794a18e8a44787");
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
@@ -62,8 +64,8 @@ public class PushBuildServiceImplTest {
 	@Test
 	public void unsucessfullInsert() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
-		when(buildService.checkandCreateBuilds(anyString(), anyList(), anyList(), anyList())).thenReturn(2);
-		when(deployService.checkandCreateDeployment(anyString(), anyList(), anyList(), anyList())).thenReturn(1);
+		when(buildService.checkandCreateBuilds(any(), anyList(), anyList(), anyList())).thenReturn(2);
+		when(deployService.checkandCreateDeployment(any(), anyList(), anyList(), anyList())).thenReturn(1);
 		Assert.assertThrows(PushDataException.class, () -> {
 			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
 		});

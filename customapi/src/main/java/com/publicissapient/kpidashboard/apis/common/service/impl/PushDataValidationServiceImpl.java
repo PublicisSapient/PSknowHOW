@@ -1,52 +1,55 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.common.service.PushDataValidationService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
-import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @Slf4j
 public class PushDataValidationServiceImpl implements PushDataValidationService {
 //ValidateAPIKey
 	@Autowired
-	UserTokenReopository userTokenReopository;
+	private ExposeApiTokenRepository exposeApiTokenRepository;
 
 	@Autowired
 	ProjectAccessManager projectAccessManager;
 
-	@Autowired
-	private AuthenticationService authenticationService;
-
 	@Override
-	public String validateToken(HttpServletResponse response) {
-		String token = response.getHeader("");
-		UserTokenData userTokenData = userTokenReopository.findByUserToken(token);
-		if (userTokenData == null) {
+	public ExposeApiToken validateToken(HttpServletRequest response) {
+		String token = response.getHeader("Push-Api");
+		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
+		if (exposeApiToken == null) {
 			throw new PushDataException("Create Token To Push Data", HttpStatus.UNAUTHORIZED);
 		}
 
-		//checkExpiry
+		checkExpiryToken(exposeApiToken);
+		checkProjectAccessPermission(exposeApiToken);
+		exposeApiToken.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(30));
+		exposeApiToken.setUpdatedAt(LocalDate.now());
+		return exposeApiToken;
+	}
 
-		// checkUserDetails and its permission of the project
-		// provide ObjectId of the project
-		//projectid will be taken from token repository
-
-		if (!projectAccessManager.hasProjectEditPermission(new ObjectId("projectId"), userTokenData.getUserName() //if not user based, then loggedinuser
+	private void checkProjectAccessPermission(ExposeApiToken exposeApiToken) {
+		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(), exposeApiToken.getUserName() //if not user based, then loggedinuser
 		)) {
 			throw new PushDataException("Permission Denied", HttpStatus.UNAUTHORIZED);
 		}
-		//updateExpiryDate
-		return " ";//return the projectString///return Object
+	}
+
+	private void checkExpiryToken(ExposeApiToken exposeApiToken) {
+		if(exposeApiToken.getExpiryDate().isBefore(LocalDate.now())){
+			throw new PushDataException("Token Expired", HttpStatus.UNAUTHORIZED);
+		}
 	}
 }

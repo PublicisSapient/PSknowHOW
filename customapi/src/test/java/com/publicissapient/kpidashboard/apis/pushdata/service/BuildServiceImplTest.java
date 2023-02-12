@@ -13,6 +13,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.collections.MapUtils;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,14 +41,14 @@ public class BuildServiceImplTest {
 	@Mock
 	BuildRepository buildRepository;
 
-	private String projectBasicConfigId;
+	private ObjectId projectBasicConfigId;
 
 	private Validator validator;
 	List<Build> buildList;
 
 	@Before
 	public void setUp() {
-		projectBasicConfigId = "632824e949794a18e8a44787";
+		projectBasicConfigId = new ObjectId("632824e949794a18e8a44787");
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/pushdata/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
 

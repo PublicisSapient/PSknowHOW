@@ -38,7 +38,7 @@ public class DeployServiceImpl{
 	@Autowired
 	BuildValidationServiceImpl buildValidationService;
 
-	public int checkandCreateDeployment(String basicProjectConfigId, List<PushDeploy> deployList,
+	public int checkandCreateDeployment(ObjectId basicProjectConfigId, List<PushDeploy> deployList,
 			List<Deployment> deploymentList, List<BuildDeployErrorData> deployErrorList) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
@@ -53,9 +53,8 @@ public class DeployServiceImpl{
 					buildDeployErrorData.setErrors(errorMap);
 				} else {
 					//if no errors are present in the input job then it will create Deployment List
-					ObjectId basicProjectObjectConfigId = new ObjectId(basicProjectConfigId);
-					deploymentList.add(createDeployment(basicProjectObjectConfigId, pushDeploy,
-							checkExisitingJob(pushDeploy, basicProjectObjectConfigId)));
+					deploymentList.add(createDeployment(basicProjectConfigId, pushDeploy,
+							checkExisitingJob(pushDeploy, basicProjectConfigId)));
 				}
 				deployErrorList.add(buildDeployErrorData);
 			});

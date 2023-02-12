@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +31,10 @@ public class PushBuildServiceImpl implements PushBaseService {
 	@Autowired
 	CustomApiConfig customApiConfig;
 
-	public PushBuildDeployResponse processPushDataInput(PushBuildDeploy buildDeploy, String projectConfigId) {
+	public PushBuildDeployResponse processPushDataInput(PushBuildDeploy buildDeploy, ObjectId projectConfigId) {
 		PushBuildDeployResponse pushBuildDeployResponse = new PushBuildDeployResponse();
 		pushBuildDeployResponse.setTotalRecords(getTotalRecords(buildDeploy));
-		log.info("Total Records input for "+ projectConfigId+" are " +pushBuildDeployResponse.getTotalRecords());
+		log.info("Total Records input for "+ projectConfigId.toHexString()+" are " +pushBuildDeployResponse.getTotalRecords());
 		List<Build> buildList = new ArrayList<>();
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<BuildDeployErrorData> buildErrorList = new ArrayList<>();
