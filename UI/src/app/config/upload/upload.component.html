@@ -54,13 +54,13 @@
                   <span class="fa fa-download" aria-hidden="true"></span>
                   <div>Select a certificate to upload</div>
                   <div>File should be *.crt format</div>
-                  <p-fileUpload  [customUpload]="true" id="cert-upload" name="certUpload" accept=".crt" maxFileSize="20000" (uploadHandler)="uploadAndValidateCertificate($event)"></p-fileUpload>
+                  <p-fileUpload  chooseLabel ="Upload" chooseIcon="pi pi-upload" id="cert-upload" name="certUpload" accept=".crt" maxFileSize="20000" [showUploadButton]="false" [showCancelButton]="false" (onSelect)="uploadAndValidateCertificate($event)" (onRemove)="clear($event)" (onBeforeUpload)="progressReport($event)"></p-fileUpload>
                   <div class="p-pt-3">Set expiry date <input type="date" class="form-control p-p-2 mb-2 mr-sm-2" [(ngModel)]="formData.expirationTime"  name="expirationTime" id="cert-expire"/></div>
                   <div *ngIf="error" class="invalid-text p-pt-3">{{error}}</div>
                   <div *ngIf="warning" class="warning-text p-pt-3">{{warning}}</div>
                   <div *ngIf="message" class="success p-pt-3">{{message}}</div>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload certificate to host</button>
+                <button type="submit" class="btn btn-primary" [disabled]="isUploadEnabled" [ngClass]="{'disabled-button': isUploadEnabled}">Upload certificate to host</button>
               </label>
             </form>
         </div>

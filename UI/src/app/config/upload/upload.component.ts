@@ -59,6 +59,7 @@ export class UploadComponent implements OnInit {
     logoImage: any;
     invalid: boolean;
     isUploadFile = true;
+    isUploadEnabled = true;
     items: MenuItem[];
     selectedView: string;
     kanban: boolean;
@@ -967,52 +968,34 @@ export class UploadComponent implements OnInit {
     }
     /* Upload and  validate certificate */
     async uploadAndValidateCertificate(event) {
+        this.error = '';
+        this.message = '';
         this.selectedFile = event.files[0];
+        if(this.selectedFile)
+        this.isUploadEnabled= false;
     }
     uploadCertificate() {
-        this.preventRedirection = true;
         const expirationTime=this.formData.expirationTime;
         const file = this.selectedFile;
-        // this.http_service.uploadCertificate(file,expirationTime).pipe(first())
-        //   	.subscribe(
-        //   	data => {
-        //   		if (data['status'] && data['status'] === 417) {
-        //   			this.error = data['statusText'];
-        //   		} else {
-        //   			this.message = data['message'];
-        //   		}
-        //           this.preventRedirection = false;
-        //   	},
-        //     error => {
-        //         console.log('986');
-        //         console.log(error);
-        //         console.log('988');
-        //         this.error = error;
-        //         this.preventRedirection = true;
-        //     }
-        // );
+        this.error = '';
+        this.message = '';
         this.http_service.uploadCertificate(file, expirationTime).pipe(first())
         .subscribe(
           data => {
             if (data['status'] && data['status'] === 417) {
               this.error = data['statusText'];
-              this.preventRedirection = true;
             } else {
               this.message = data['message'];
-              this.preventRedirection = false;
-            }
-          },
-          error => {
-            this.error = error.message;
-            this.preventRedirection = true;
-            console.log('1006');
-            console.log(this.preventRedirection);
-            if (!this.preventRedirection) {
-                this.router.navigate(['error']);
             }
           }
         );
-      
+        this.isUploadEnabled= true;
+    }
+    clear(event) {
+        this.selectedFile = null;
+        this.error = '';
+        this.message = '';
+        this.isUploadEnabled = true;
 
     }
 }

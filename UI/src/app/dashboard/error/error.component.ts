@@ -33,7 +33,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   timeLeft: 60;
   interval = null;
   source = null;
-  preventRedirection = true;
 
   constructor(private service: SharedService, private router: Router) {
     // this.pollForAvailability('/');

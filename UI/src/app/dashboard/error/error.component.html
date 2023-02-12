@@ -17,7 +17,6 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <link href="https://fonts.googleapis.com/css?family=Montserrat:200,400,700" rel="stylesheet">
-<ng-container *ngIf="!preventRedirection">
   <div class="notfound1">
     <div class="notfound">
       <div class="notfound-404">
@@ -29,5 +28,3 @@
       <a routerLink="{{ redirectButtonRoute }}" routerLinkActive="active" *ngIf="redirectButtonText.length">{{ redirectButtonText }}</a>
     </div>
   </div>
-      <app-error [errorMessage]="error"></app-error>
-  </ng-container>

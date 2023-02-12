@@ -406,4 +406,9 @@ div.main {
   position: relative;
   font-size: 20px;
 }
+.disabled-button {
+  background-color: gray !important;
+  color: white;
+  cursor: not-allowed;
+}
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
