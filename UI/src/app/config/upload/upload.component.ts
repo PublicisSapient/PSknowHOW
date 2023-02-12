@@ -966,12 +966,21 @@ export class UploadComponent implements OnInit {
         });
     }
     /* Upload and  validate certificate */
-    async uploadAndValidateCertificate(event) {
+    async validateCertificate(event) {
         this.error = '';
         this.message = '';
         this.selectedFile = event.files[0];
+        const allowedExtensions = ['.crt'];
+        const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
+        if (allowedExtensions.indexOf(fileExtension) === -1) {
+          return;
+        }
+        const maxFileSize = 2 * 1024 * 1024; // 2 MB
+        if (this.selectedFile.size > maxFileSize) {
+          return;
+        }
         if(this.selectedFile)
-        this.isUploadEnabled= false;
+        this.isUploadEnabled = false;
     }
     uploadCertificate() {
         const expirationTime=this.formData.expirationTime;
@@ -986,15 +995,18 @@ export class UploadComponent implements OnInit {
             } else {
               this.message = data['message'];
             }
-          }
+          },
+          error => {},
+          () => this.clear(null)
         );
         this.isUploadEnabled= true;
     }
+    
     clear(event) {
         this.selectedFile = null;
-        this.error = '';
-        this.message = '';
+        this.error = event !== null ? '' : this.error;
+        this.message = event !== null ? '' : this.message;
         this.isUploadEnabled = true;
-
     }
+    
 }
