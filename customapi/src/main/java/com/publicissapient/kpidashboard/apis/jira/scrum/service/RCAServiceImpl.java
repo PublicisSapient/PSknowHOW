@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.*;
@@ -354,17 +352,16 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId,
-			List<KPIExcelData> excelData, List<JiraIssue> sprintWiseDefectDataList,
-			String name) {
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<JiraIssue> sprintWiseDefectDataList, String name) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& !sprintWiseDefectDataList.isEmpty()) {
-				KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
-						KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
-			}
-
+				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
+			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
+					KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 		}
+
+	}
 
 	/**
 	 * Sets DB Query Logger
