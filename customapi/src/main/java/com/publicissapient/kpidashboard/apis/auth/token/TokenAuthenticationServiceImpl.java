@@ -118,14 +118,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()){
-
-			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
-			if (StringUtils.isBlank(authCookieSso.getValue())) {
-				return null;
-			}
-
-			String tokenSso = authCookieSso.getValue();
-			return createAuthenticationForSso(tokenSso);
+			throw new RuntimeException("No implementation is found for SSO");
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
