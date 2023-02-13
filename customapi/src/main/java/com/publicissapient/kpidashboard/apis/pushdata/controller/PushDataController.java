@@ -34,12 +34,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.publicissapient.kpidashboard.apis.common.service.PushDataValidationService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushBuildServiceImpl;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
 
 @Validated
 @RestController
@@ -48,16 +48,16 @@ import com.publicissapient.kpidashboard.apis.pushdata.service.PushBuildServiceIm
 public class PushDataController {
 
 	@Autowired
-	PushBuildServiceImpl pushBuildService;
+	PushBaseService pushBuildService;
 
 	@Autowired
-	PushDataValidationService pushDataValidationService;
+	AuthExposeAPIService authExposeAPIService;
 
 	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
 
-		ExposeApiToken exposeApiToken = pushDataValidationService.validateToken(request);
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
 		final ModelMapper modelMapper = new ModelMapper();
 		PushBuildDeploy buildDeploy = modelMapper.map(pushBuildDeployDTO, PushBuildDeploy.class);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Saved Records successfully",

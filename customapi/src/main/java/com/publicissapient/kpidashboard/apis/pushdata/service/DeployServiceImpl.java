@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
 import java.time.Instant;
@@ -9,54 +27,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.publicissapient.kpidashboard.apis.common.service.BuildValidation;
-import com.publicissapient.kpidashboard.apis.common.service.impl.BuildValidationServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.BuildDeployErrorData;
+import com.publicissapient.kpidashboard.apis.common.service.impl.PushDataValidationServiceImpl;
+import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class DeployServiceImpl{
+public class DeployServiceImpl {
 
 	@Autowired
 	DeploymentRepository deploymentRepository;
 
 	@Autowired
-	BuildValidationServiceImpl buildValidationService;
+	PushDataValidationServiceImpl buildValidationService;
 
 	public int checkandCreateDeployment(ObjectId basicProjectConfigId, List<PushDeploy> deployList,
-			List<Deployment> deploymentList, List<BuildDeployErrorData> deployErrorList) {
+			List<Deployment> deploymentList, List<PushErrorData> deployErrorList) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
 			deployList.forEach(pushDeploy -> {
-				BuildDeployErrorData buildDeployErrorData = new BuildDeployErrorData();
-				buildDeployErrorData.setJobName(pushDeploy.getJobName());
-				buildDeployErrorData.setNumber(pushDeploy.getNumber());
+				PushErrorData pushErrorData = new PushErrorData();
+				pushErrorData.setJobName(pushDeploy.getJobName());
+				pushErrorData.setNumber(pushDeploy.getNumber());
 				Map<String, String> errorMap = createErrorMap(pushDeploy);
 				if (MapUtils.isNotEmpty(errorMap)) {
 					failedRecords.getAndIncrement();
-					log.error("Errors in deploy for jobNumber "+pushDeploy.getNumber()+ " jobName "+pushDeploy.getJobName() +" are ",errorMap);
-					buildDeployErrorData.setErrors(errorMap);
+					log.error("Errors in deploy for jobNumber " + pushDeploy.getNumber() + " jobName "
+							+ pushDeploy.getJobName() + " are ", errorMap);
+					pushErrorData.setErrors(errorMap);
 				} else {
-					//if no errors are present in the input job then it will create Deployment List
+					// if no errors are present in the input job then it will create Deployment List
 					deploymentList.add(createDeployment(basicProjectConfigId, pushDeploy,
 							checkExisitingJob(pushDeploy, basicProjectConfigId)));
 				}
-				deployErrorList.add(buildDeployErrorData);
+				deployErrorList.add(pushErrorData);
 			});
 		}
 		return failedRecords.get();
@@ -86,6 +105,7 @@ public class DeployServiceImpl{
 
 	/**
 	 * check existing job on the basis of jobName/jobNumber/basicprojectConfigId
+	 * 
 	 * @param pushDeploy
 	 * @param basicProjectObjectConfigId
 	 * @return
@@ -100,23 +120,27 @@ public class DeployServiceImpl{
 	}
 
 	/**
-	 *  validation data and creating error map for each validation
+	 * validation data and creating error map for each validation
+	 * 
 	 * @param pushDeploy
 	 * @return
 	 */
 	private Map<String, String> createErrorMap(PushDeploy pushDeploy) {
 		Map<String, String> errors = new HashMap<>();
-		Map<Pair<String,String>, List<PushValidationType>> validations=new HashMap<>();
-		validations.put(Pair.of("jobName",pushDeploy.getJobName()), Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("number",pushDeploy.getNumber()), Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("deploymentStatus",pushDeploy.getDeploymentStatus()), Arrays.asList(PushValidationType.BLANK,PushValidationType.DEPLOYMENT_STATUS));
-		validations.put(Pair.of("envName",pushDeploy.getEnvName()), Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("startTime",pushDeploy.getStartTime().toString()), Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("endTime",pushDeploy.getEndTime().toString()), Arrays.asList(PushValidationType.BLANK));
-		validations.put(Pair.of("duration",pushDeploy.getDuration().toString()), Arrays.asList(PushValidationType.BLANK));
-		buildValidationService.createErrorMap(validations,errors);
+		Map<Pair<String, String>, List<PushValidationType>> validations = new HashMap<>();
+		validations.put(Pair.of("jobName", pushDeploy.getJobName()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("number", pushDeploy.getNumber()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("deploymentStatus", pushDeploy.getDeploymentStatus()),
+				Arrays.asList(PushValidationType.BLANK, PushValidationType.DEPLOYMENT_STATUS));
+		validations.put(Pair.of("envName", pushDeploy.getEnvName()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("startTime", pushDeploy.getStartTime().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("endTime", pushDeploy.getEndTime().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("duration", pushDeploy.getDuration().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		buildValidationService.createBuildDeployErrorMap(validations, errors);
 		return errors;
 	}
-
 
 }

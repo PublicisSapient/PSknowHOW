@@ -1,55 +1,91 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
-import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
-import com.publicissapient.kpidashboard.apis.common.service.PushDataValidationService;
-import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
-import org.springframework.stereotype.Service;
+import com.publicissapient.kpidashboard.apis.common.service.PushDataValidation;
+import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 
-import java.time.LocalDate;
+@Component
+public class PushDataValidationServiceImpl extends PushDataValidation {
 
-@Service
-@Slf4j
-public class PushDataValidationServiceImpl implements PushDataValidationService {
-//ValidateAPIKey
-	@Autowired
-	private ExposeApiTokenRepository exposeApiTokenRepository;
+	private static final String START_TIME = "startTime";
+	private static final String END_TIME = "endTime";
+	private static final String DURATION = "duration";
 
-	@Autowired
-	ProjectAccessManager projectAccessManager;
-
-	@Override
-	public ExposeApiToken validateToken(HttpServletRequest response) {
-		String token = response.getHeader("Push-Api");
-		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
-		if (exposeApiToken == null) {
-			throw new PushDataException("Create Token To Push Data", HttpStatus.UNAUTHORIZED);
+	public void createBuildDeployErrorMap(Map<Pair<String, String>, List<PushValidationType>> validations,
+										  Map<String, String> errors) {
+		if (MapUtils.isNotEmpty(validations)) {
+			AtomicBoolean timeCheck = new AtomicBoolean(false);
+			validations.forEach((key, value) -> {
+				String parameter = key.getLeft();
+				String parameterValue = key.getRight();
+				value.forEach(validate -> {
+					boolean lasttimeCheck = parameterWiseError(errors, parameter, parameterValue, validate);
+					if (!timeCheck.get()) {
+						timeCheck.set(lasttimeCheck);
+					}
+				});
+			});
+			checkRequiredTimeDetails(errors, validations, timeCheck.get());
 		}
 
-		checkExpiryToken(exposeApiToken);
-		checkProjectAccessPermission(exposeApiToken);
-		exposeApiToken.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(30));
-		exposeApiToken.setUpdatedAt(LocalDate.now());
-		return exposeApiToken;
 	}
 
-	private void checkProjectAccessPermission(ExposeApiToken exposeApiToken) {
-		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(), exposeApiToken.getUserName() //if not user based, then loggedinuser
-		)) {
-			throw new PushDataException("Permission Denied", HttpStatus.UNAUTHORIZED);
+	private void checkRequiredTimeDetails(Map<String, String> errors,
+			Map<Pair<String, String>, List<PushValidationType>> validations, boolean timeCheck) {
+		Set<Pair<String, String>> pairs = validations.keySet();
+		List<String> leftKey = pairs.stream().map(Pair::getLeft).collect(Collectors.toList());
+		if (timeCheck
+				&& !(errors.containsKey(START_TIME) && errors.containsKey(END_TIME) && errors.containsKey(DURATION))
+				&& (leftKey.contains(START_TIME) && leftKey.contains(END_TIME) && leftKey.contains(DURATION))) {
+			AtomicReference<String> startTime = new AtomicReference<>();
+			AtomicReference<String> endTime = new AtomicReference<>();
+			AtomicReference<String> duration = new AtomicReference<>();
+			pairs.forEach(pair -> {
+				if (pair.getLeft().equals(START_TIME)) {
+					startTime.set(pair.getValue());
+				}
+				if (pair.getLeft().equals(END_TIME)) {
+					endTime.set(pair.getValue());
+				}
+				if (pair.getLeft().equals(DURATION)) {
+					duration.set(pair.getValue());
+				}
+			});
+			checkTimeDetails(startTime.get(), endTime.get(), duration.get(), errors);
 		}
 	}
 
-	private void checkExpiryToken(ExposeApiToken exposeApiToken) {
-		if(exposeApiToken.getExpiryDate().isBefore(LocalDate.now())){
-			throw new PushDataException("Token Expired", HttpStatus.UNAUTHORIZED);
+	private boolean parameterWiseError(Map<String, String> errors, String parameter, String parameterValue,
+			PushValidationType validate) {
+		boolean timeCheck = false;
+		switch (validate) {
+		case BLANK:
+			checkBlank(parameter, parameterValue, errors);
+			break;
+		case NUMERIC:
+			checkNumeric(parameter, parameterValue, errors);
+			break;
+		case BUILD_STATUS:
+			checkBuildStatus(parameter, parameterValue, errors);
+			break;
+		case DEPLOYMENT_STATUS:
+			checkDeploymentStatus(parameter, parameterValue, errors);
+			break;
+		case TIME_DETAILS:
+			timeCheck = true;
+			break;
+		default:
 		}
+		return timeCheck;
 	}
 }

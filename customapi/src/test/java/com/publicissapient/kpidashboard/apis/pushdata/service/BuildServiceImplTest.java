@@ -26,7 +26,7 @@ import org.modelmapper.ModelMapper;
 
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
-import com.publicissapient.kpidashboard.apis.pushdata.model.BuildDeployErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -69,7 +69,7 @@ public class BuildServiceImplTest {
 		doReturn(buildList.get(0)).when(buildRepository).findByNumberAndBuildJobAndBasicProjectConfigId(
 				Mockito.anyString(), Mockito.anyString(), Mockito.any());
 		List<Build> buildList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
 		Assert.assertEquals(0, errors);
@@ -86,7 +86,7 @@ public class BuildServiceImplTest {
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
 		}
 		List<Build> buildList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
 		Assert.assertEquals(3, errors);
@@ -115,7 +115,7 @@ public class BuildServiceImplTest {
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(3), PushBuildDeploy.class);
 		}
 		List<Build> buildList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
 		Assert.assertEquals(3, errors);

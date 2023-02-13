@@ -11,18 +11,19 @@ import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
-public abstract class BuildValidation {
+public class PushDataValidation {
 
 	protected void checkBlank(String parameter, String literal, Map<String, String> errors) {
 		if (StringUtils.isBlank(literal)) {
-			errors.computeIfPresent(parameter,(param,error)->error.concat(" ,"+parameter + " is Blank"));
+			errors.computeIfPresent(parameter, (param, error) -> error.concat(" ," + parameter + " is Blank"));
 			errors.putIfAbsent(parameter, parameter + " is Blank");
 		}
 	}
 
 	protected void checkNumeric(String parameter, String number, Map<String, String> errors) {
 		if (!StringUtils.isNumeric(number)) {
-			errors.computeIfPresent(parameter,(param,error)->error.concat(" ,"+parameter + " should be in digits"));
+			errors.computeIfPresent(parameter,
+					(param, error) -> error.concat(" ," + parameter + " should be in digits"));
 			errors.putIfAbsent(parameter, parameter + " should be in digits");
 		}
 	}
@@ -31,8 +32,9 @@ public abstract class BuildValidation {
 		Optional<BuildStatus> buildStatusOptional = Arrays.stream(BuildStatus.values())
 				.filter(buildStatus -> buildStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!buildStatusOptional.isPresent()) {
-			errors.computeIfPresent(parameter,(param,error)->error.concat(" ,"+parameter + " should be among " + getAllBuildValues()));
-			errors.putIfAbsent(parameter, parameter +" should be among " + getAllBuildValues());
+			errors.computeIfPresent(parameter,
+					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllBuildValues()));
+			errors.putIfAbsent(parameter, parameter + " should be among " + getAllBuildValues());
 		}
 
 	}
@@ -41,8 +43,9 @@ public abstract class BuildValidation {
 		Optional<DeploymentStatus> deploymentStatusOptional = Arrays.stream(DeploymentStatus.values())
 				.filter(deploymentStatus -> deploymentStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!deploymentStatusOptional.isPresent()) {
-			errors.computeIfPresent(parameter,(param,error)->error.concat(" ,"+parameter + " should be among " + getAllDeploymentValues()));
-			errors.putIfAbsent(parameter, parameter +" should be among " + getAllDeploymentValues());
+			errors.computeIfPresent(parameter,
+					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllDeploymentValues()));
+			errors.putIfAbsent(parameter, parameter + " should be among " + getAllDeploymentValues());
 		}
 	}
 

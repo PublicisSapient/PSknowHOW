@@ -26,7 +26,7 @@ import org.modelmapper.ModelMapper;
 
 import com.publicissapient.kpidashboard.apis.data.DeploymentDataFactory;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
-import com.publicissapient.kpidashboard.apis.pushdata.model.BuildDeployErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -69,7 +69,7 @@ public class DeployServiceImplTest {
 		doReturn(deploymentList.get(0)).when(deploymentRepository)
 				.findByNumberAndJobNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString(), Mockito.any());
 		List<Deployment> deploymentList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
 		Assert.assertEquals(0, errors);
@@ -86,7 +86,7 @@ public class DeployServiceImplTest {
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
 		}
 		List<Deployment> deploymentList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
 		Assert.assertEquals(1, errors);
@@ -115,7 +115,7 @@ public class DeployServiceImplTest {
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(3), PushBuildDeploy.class);
 		}
 		List<Deployment> deploymentList = new ArrayList<>();
-		List<BuildDeployErrorData> errorDataList = new ArrayList<>();
+		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
 		Assert.assertEquals(2, errors);

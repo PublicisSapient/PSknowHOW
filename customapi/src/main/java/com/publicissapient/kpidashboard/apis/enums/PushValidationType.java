@@ -23,6 +23,6 @@ package com.publicissapient.kpidashboard.apis.enums;
  */
 public enum PushValidationType {
 
-	BLANK, NUMERIC, BUILD_STATUS, DEPLOYMENT_STATUS,TIME_DETAILS;
+	BLANK, NUMERIC, BUILD_STATUS, DEPLOYMENT_STATUS, TIME_DETAILS;
 
 }
