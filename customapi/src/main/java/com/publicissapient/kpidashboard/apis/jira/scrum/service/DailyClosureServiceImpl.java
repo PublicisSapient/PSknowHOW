@@ -244,6 +244,8 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
@@ -283,7 +285,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			});
 			trendValueList.add(new DataCount(latestSprint.getProjectFilter().getName(), Lists.reverse(data)));
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateDailyClosureExcelData(excelDataList, issuesExcel);
+				KPIExcelUtility.populateDailyClosureExcelData(excelDataList, issuesExcel, fieldMapping);
 			}
 		}
 		kpiElement.setExcelData(excelDataList);
