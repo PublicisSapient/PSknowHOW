@@ -53,8 +53,10 @@ public class FileStorageController {
 
 	private final FileStorageService fileStorageService;
 
+
 	@Autowired
-	private CustomApiConfig customApiConfig;
+	public CustomApiConfig customApiConfig;
+
 
 	@Autowired
 	public FileStorageController(FileStorageService fileStorageService) {
@@ -83,35 +85,6 @@ public class FileStorageController {
 		return fileStorageService.upload(type,file);
 	}
 
-	/*@PostMapping("/file/uploadCertificate")
-	@PreAuthorize("hasPermission('LOGO', 'FILE_UPLOAD')")
-	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
-		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
-		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
-		try {
-			file.transferTo(dest);
-			response = new ServiceResponse(true, "LDAP certificate copied successfully to the host", file.getOriginalFilename());
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
-	}*/
-
-
-	@PostMapping("/file/uploadCertificate")
-	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file,
-			@RequestParam("expirationTime") String expirationTime) {
-		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
-		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
-		try {
-			file.transferTo(dest);
-			response = new ServiceResponse(true, "LDAP certificate copied successfully to the host", file.getOriginalFilename());
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
-		}
-	}
-
 	/**
 	 * Gets logo image file
 	 * 
@@ -132,6 +105,25 @@ public class FileStorageController {
 	@PreAuthorize("hasPermission('LOGO', 'DELETE_LOGO')")
 	public boolean deleteLogo() {
 		return fileStorageService.deleteLogo();
+	}
+
+	@PostMapping("/file/uploadCertificate")
+	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		// Validate the file type
+		if (!file.getOriginalFilename().endsWith(".crt")) {
+			response.setMessage("Invalid file type. Please upload a .crt file.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
+		try {
+			file.transferTo(dest);
+			response.setSuccess(true);
+			response.setMessage("LDAP certificate copied successfully, please restart the customapi container service.");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+		}
 	}
 
 }

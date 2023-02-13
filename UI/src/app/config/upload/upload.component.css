@@ -411,4 +411,8 @@ div.main {
   color: white !important;
   cursor: not-allowed !important;
 }
+.certupload {
+  margin: 0 !important;
+}
+
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/

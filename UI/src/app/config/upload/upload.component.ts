@@ -99,9 +99,6 @@ export class UploadComponent implements OnInit {
     popupForm: UntypedFormGroup;
     preventRedirection = true;
     selectedFile: File;
-    formData = {
-        expirationTime: '',
-    };
 
     statusMessage = {
         200: 'Data Saved Successfully!!',
@@ -983,11 +980,10 @@ export class UploadComponent implements OnInit {
         this.isUploadEnabled = false;
     }
     uploadCertificate() {
-        const expirationTime=this.formData.expirationTime;
         const file = this.selectedFile;
         this.error = '';
         this.message = '';
-        this.http_service.uploadCertificate(file, expirationTime).pipe(first())
+        this.http_service.uploadCertificate(file).pipe(first())
         .subscribe(
           data => {
             if (data['status'] && data['status'] === 417) {

@@ -863,10 +863,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
         /** POST: Upload ldap certificate file */
-    uploadCertificate(file, expirationTime): Observable<object> {
+    uploadCertificate(file): Observable<object> {
         const fileFormData = new FormData();
         fileFormData.append('file', file);
-        fileFormData.append('expirationTime', expirationTime);
         return this.http.post<object>(this.uploadCert, fileFormData).pipe(tap((res) => {
         }));
     }
