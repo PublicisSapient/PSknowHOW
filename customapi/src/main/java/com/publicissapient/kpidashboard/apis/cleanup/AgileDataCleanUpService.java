@@ -30,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -120,8 +119,6 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 		if (tool != null) {
 			String basicProjectConfigId = tool.getBasicProjectConfigId().toHexString();
 			ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(basicProjectConfigId);
-			FieldMapping fieldMapping = fieldMappingRepository
-					.findByBasicProjectConfigId(tool.getBasicProjectConfigId());
 			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(basicProjectConfigId,
 					tool.getToolName());
 
