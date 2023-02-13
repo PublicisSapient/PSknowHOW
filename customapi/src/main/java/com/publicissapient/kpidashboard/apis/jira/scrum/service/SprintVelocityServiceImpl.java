@@ -69,6 +69,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private static final String SEPARATOR_ASTERISK = "*************************************";
 	private static final String SPRINTVELOCITYKEY = "sprintVelocityKey";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
+	private static final String STORY_LOG = "Story[{}]: {}";
 	@Autowired
 	private KpiHelperService kpiHelperService;
 	@Autowired
@@ -309,7 +310,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			log.info("************* Sprint Velocity (dB) *******************");
 			if (null != jiraIssues && !jiraIssues.isEmpty()) {
 				List<String> storyIdList = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-				log.info("Story[{}]: {}", storyIdList.size(), storyIdList);
+				log.info(STORY_LOG, storyIdList.size(), storyIdList);
 			}
 			log.info(SEPARATOR_ASTERISK);
 			log.info("******************X----X*******************");
@@ -332,11 +333,11 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			if (CollectionUtils.isNotEmpty(issueDetailsSet)) {
 				List<String> storyIdList = issueDetailsSet.stream()
 						.map(issueDetails -> issueDetails.getSprintIssue().getNumber()).collect(Collectors.toList());
-				log.info("Story[{}]: {}", storyIdList.size(), storyIdList);
+				log.info(STORY_LOG, storyIdList.size(), storyIdList);
 				List<Double> storyPointIdList = issueDetailsSet.stream()
 						.map(issueDetails -> issueDetails.getSprintIssue().getStoryPoints())
 						.collect(Collectors.toList());
-				log.info("Story[{}]: {}", storyIdList.size(), storyPointIdList);
+				log.info(STORY_LOG, storyIdList.size(), storyPointIdList);
 			}
 			log.info("Sprint Velocity: {}", sprintVelocity);
 			log.info(SEPARATOR_ASTERISK);

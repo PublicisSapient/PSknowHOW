@@ -427,7 +427,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints());
-		iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
 		if ((blockedTime != 0)) {
 			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + "h " + blockedTime % 60 + " m"));
 		} else {

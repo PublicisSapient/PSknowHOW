@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,8 +37,6 @@ import com.publicissapient.kpidashboard.common.repository.application.GlobalConf
 @Service
 public class GlobalConfigServiceImpl implements GlobalConfigService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalConfigServiceImpl.class);
-
 	private final GlobalConfigRepository globalConfigRepository;
 
 	/**
@@ -52,8 +48,7 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 	}
 
 	@Override
-	public ServiceResponse getZephyrCloudUrlDetails()
-	{
+	public ServiceResponse getZephyrCloudUrlDetails() {
 		boolean success = false;
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
 		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
@@ -62,7 +57,6 @@ public class GlobalConfigServiceImpl implements GlobalConfigService {
 			success = true;
 		}
 
-		return new ServiceResponse(success, "Fetched Zephyr Cloud Base Url successfully",
-				zephyrCloudUrl);
+		return new ServiceResponse(success, "Fetched Zephyr Cloud Base Url successfully", zephyrCloudUrl);
 	}
 }
