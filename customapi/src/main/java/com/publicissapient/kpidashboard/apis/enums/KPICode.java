@@ -349,7 +349,7 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi130", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name());
 
 	// @formatter:on
 

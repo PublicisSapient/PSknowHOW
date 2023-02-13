@@ -415,7 +415,7 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { 'Workflow Status Mapping' : ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus'], 'Defects Mapping' : ['productionDefectIdentifier'] }
       },
       {
-        kpiId: 'kpi130',
+        kpiId: 'kpi131',
         kpiName: 'Wastage',
         kpiSource: 'Jira',
         type: ['Other'],

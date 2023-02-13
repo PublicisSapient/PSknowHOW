@@ -316,7 +316,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
 		DateTime entryActivityDate = entry.getActivityDate();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
-			Minutes minutes = null;
+			int minutes = 0;
 			// Checking for indexOutOfBound in storySprintDetails list
 			if (storySprintDetails.size() == index + 1) {
 				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
@@ -333,54 +333,87 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 							nextEntryActivityDate);
 				}
 			}
-			if (minutes != null)
-				time += minutes.getMinutes();
+			if (minutes != 0)
+				time += minutes;
 		}
 		return time;
 	}
 
 	// Calculate the time for entries which lies between sprint start and end date
 	// or one of them is inside sprint start end date
-	private Minutes minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
+	private int minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
 			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
-		Minutes minutes;
+		int minutes;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate);
+				minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate).getMinutes()
+						- minusMinutesInWeekEndDays(entryActivityDate, nextEntryActivityDate);
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate);
+				minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate).getMinutes()
+						- minusMinutesInWeekEndDays(sprintStartDate, nextEntryActivityDate);
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+				minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate).getMinutes()
+						- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate).getMinutes()
+						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
 		return minutes;
 	}
 
 	// Calculate the time for last entry of storySprintDetails
-	private Minutes minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
+	private int minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
 			DateTime sprintEndDate, DateTime entryActivityDate) {
-		Minutes minutes = null;
+		int minutes = 0;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					minutes = Minutes.minutesBetween(entryActivityDate, DateTime.now());
+					minutes = Minutes.minutesBetween(entryActivityDate, DateTime.now()).getMinutes()
+							- minusMinutesInWeekEndDays(entryActivityDate, DateTime.now());
 				} else {
-					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate);
+					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate).getMinutes()
+							- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				DateTime currDate = DateTime.now();
-				minutes = Minutes.minutesBetween(sprintStartDate, currDate);
+				minutes = Minutes.minutesBetween(sprintStartDate, currDate).getMinutes()
+						- minusMinutesInWeekEndDays(sprintStartDate, currDate);
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate);
+				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate).getMinutes()
+						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
 		return minutes;
+	}
+
+	public boolean isWeekEnd(DateTime dateTime) {
+		int dayOfWeek = dateTime.getDayOfWeek();
+		return dayOfWeek == 6 || dayOfWeek == 7;
+	}
+
+	public int saturdaySundayCount(DateTime d1, DateTime d2) {
+		int countWeekEnd = 0;
+		while (!d1.isAfter(d2)) {
+			if (isWeekEnd(d1)) {
+				countWeekEnd++;
+			}
+			d1 = d1.plusDays(1);
+		}
+		return countWeekEnd;
+	}
+
+	public int minusMinutesInWeekEndDays(DateTime d1, DateTime d2) {
+		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
+		if (countOfWeekEndDays != 0) {
+			return countOfWeekEndDays * 24 * 60;
+		} else {
+			return 0;
+		}
 	}
 
 	// used for populating the Excel file
