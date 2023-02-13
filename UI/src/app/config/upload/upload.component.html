@@ -147,7 +147,7 @@
               <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="capacityKanbanData?.length > 0 else noDataTemp">
                 <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}</div>
                 <p-table [columns]="cols.capacityKanbanKeys" [value]="capacityKanbanData" class="capacity-table custom-grid"
-                  loadingIcon="loading-img" [expandedRowKeys]="expandedRows" dataKey="startDate" (onRowExpand)="onCapacitySprintRowSelection($event)"  rowExpandMode="single">
+                  loadingIcon="loading-img" [expandedRowKeys]="expandedRows" dataKey="startDate" (onRowExpand)="onCapacitySprintRowSelection()"  rowExpandMode="single">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
                       <th *ngFor="let col of columns" class="upload_sprint_capacity">
@@ -212,30 +212,28 @@
                           </th>
                         </tr>
                       </ng-template>
-                      <ng-template pTemplate="body" let-assignee>
+                      <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                         <tr class="expanded-table-body-row">
-                          <td class="expanded-table-body-cell">{{assignee.userName ? assignee.userName : '- -'}}</td>
+                          <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
                           <td class="expanded-table-body-cell">
-                            <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" [(ngModel)]="assignee.role"
-                              optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole"
-                              [style]="{'min-width':'200px'}"></p-dropdown>
-                            <ng-template #showRole>{{assignee.role ? assignee.role : '- -'}}</ng-template>
+                            <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}" 
+                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
+                            <ng-template #showRole>{{assignee?.role ? projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                           </td>
                           <td class="expanded-table-body-cell">
-                            <input type="number" pInputText [(ngModel)]="assignee.plannedCapacity"
-                              *ngIf="projectCapacityEditMode;else showPlannedCapacity" (input)="calculateAvaliableCapacity(assignee)"
-                              [style]="{'width':'150px'}" [disabled]="!assignee.role">
-                            <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template>
-                          </td>
-                          <td class="expanded-table-body-cell">
-                            <input type="number" min="0" [max]="assignee?.plannedCapacity" pInputText [(ngModel)]="assignee.leaves"
-                              *ngIf="projectCapacityEditMode;else showLeaves" (input)="calculateAvaliableCapacity(assignee)"
-                              [style]="{'width':'150px'}" [disabled]="!(assignee.plannedCapacity && assignee.role)">
-                            <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '- -'}}</ng-template>
-                          </td>
+                            <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity" 
+                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}" 
+                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity" (keypress)="validateInput($event)">
+                            <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template></td>
+                          <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
+                            <input type="number"  min="0"  (keypress)="validateInput($event)"
+                            pInputText *ngIf="projectCapacityEditMode;else showLeaves" [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
+                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')" [style]="{'width':'150px'}" [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
+                            <small *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"  class="p-error-block">value must be less than or equal to plannedCapacity.</small>
+                            <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '- -'}}</ng-template></td>
                           <td class="expanded-table-body-cell">{{assignee?.availableCapacity ? assignee?.availableCapacity : '- -'}}</td>
                         </tr>
-                      </ng-template>
+                    </ng-template>
                       <ng-template pTemplate="emptymessage">
                         <tr class="expanded-table-body-row">
                           <td colspan="5" class="expanded-table-body-cell no-assignee">Click on Manage Users to add users.</td>
@@ -249,7 +247,7 @@
                           (click)="onSprintCapacityCancel(item)"></button>
                       
                         <button pButton pRipple label="Save" icon="pi pi-save" class="p-button-secondary p-button-sm"
-                          (click)="onSprintCapacitySave(item)"></button>
+                          (click)="onSprintCapacitySave(item)"  [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
                       </div>
                       </div>
                       </td>
@@ -271,7 +269,7 @@
             <ng-template #capacityScrumDataTable>
               <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-scrum-table" *ngIf="capacityScrumData?.length > 0 else noDataTemp">
                 <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}</div>
-                <p-table [columns]="cols.capacityScrumKeys" [value]="capacityScrumData" dataKey="sprintNodeId" class="capacity-table custom-grid" (onRowExpand)="onCapacitySprintRowSelection($event)"
+                <p-table [columns]="cols.capacityScrumKeys" [value]="capacityScrumData" dataKey="sprintNodeId" class="capacity-table custom-grid" (onRowExpand)="onCapacitySprintRowSelection()"
                 [expandedRowKeys]="expandedRows" loadingIcon="loading-img" expandableRows="true" rowExpandMode="single">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
@@ -321,19 +319,24 @@
                                   <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">Available Capacity (in Hrs) <p-sortIcon field="availableCapacity"></p-sortIcon></th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-assignee>
+                            <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                                 <tr class="expanded-table-body-row">
                                   <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
                                   <td class="expanded-table-body-cell">
-                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" [(ngModel)]="assignee.role" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"></p-dropdown>
-                                    <ng-template #showRole>{{assignee?.role ? assignee?.role : '- -'}}</ng-template>
-                                    </td>
+                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}" 
+                                    [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
+                                    <ng-template #showRole>{{assignee?.role ? projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
+                                  </td>
                                   <td class="expanded-table-body-cell">
-                                    <input type="number" pInputText [(ngModel)]="assignee.plannedCapacity" *ngIf="projectCapacityEditMode;else showPlannedCapacity" 
-                                    (input)="calculateAvaliableCapacity(assignee)" [style]="{'width':'150px'}" [disabled]="!assignee?.role">
+                                    <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity" 
+                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}" 
+                                    [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity" (keypress)="validateInput($event)">
                                     <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template></td>
-                                  <td class="expanded-table-body-cell">
-                                    <input type="number" min="0" [max]="assignee?.plannedCapacity" [disabled]="!(assignee?.role && assignee?.plannedCapacity)" pInputText [(ngModel)]="assignee.leaves" *ngIf="projectCapacityEditMode;else showLeaves" (input)="calculateAvaliableCapacity(assignee)" [style]="{'width':'150px'}">
+                                  <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
+                                    <input type="number"  min="0" (keypress)="validateInput($event)"
+                                    pInputText *ngIf="projectCapacityEditMode;else showLeaves" [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
+                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')" [style]="{'width':'150px'}" [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
+                                    <small *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"  class="p-error-block">value must be less than or equal to plannedCapacity.</small>
                                     <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '- -'}}</ng-template></td>
                                   <td class="expanded-table-body-cell">{{assignee?.availableCapacity ? assignee?.availableCapacity : '- -'}}</td>
                                 </tr>
@@ -350,7 +353,7 @@
                           class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm" (click)="onSprintCapacityCancel(item)"></button>
                       
                           <button pButton pRipple label="Save" icon="pi pi-save"
-                          class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"></button>
+                          class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)" [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
                         </div>
                         </div>
                       </td>
@@ -464,8 +467,8 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true">
-  <app-manage-assignee [assigneeList]="manageAssigneeList"></app-manage-assignee>
+<p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true" (onShow)="onAssigneeModalOpen()">
+  <app-manage-assignee [assigneeList]="manageAssigneeList" #manageAssignee></app-manage-assignee>
   <ng-template pTemplate="footer">
     <button pButton pRipple label="Cancel" icon="pi pi-times"
       class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm"
