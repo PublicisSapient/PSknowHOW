@@ -341,8 +341,8 @@ db.getCollection('kpi_master').insert(
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a sprint",
-            "Total no. of defects tagged to stories in a sprint"
+            "No. of defects tagged to stories in a closed sprint",
+            "Total no. of defects tagged to stories in a closed sprint"
           ]
         }
       ],
@@ -3258,6 +3258,35 @@ db.getCollection('kpi_master').insert(
     "boxType": "2_column_big",
     "calculateMaturity": false
   },
+  {
+      "kpiId": "kpi130",
+      "kpiName": "Iteration Status",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 11,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "kpiInfo": {
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "Iteration Status KPI gives a representation of delays in the story."
+          },
+          {
+            "type": "paragraph",
+            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+          }
+        ]
+      },
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "2_column",
+      "calculateMaturity": false
+    },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",

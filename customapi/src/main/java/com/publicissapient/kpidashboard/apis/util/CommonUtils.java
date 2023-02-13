@@ -32,18 +32,20 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-
-import lombok.extern.slf4j.Slf4j;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * Provides Common utilities.
@@ -54,6 +56,12 @@ import lombok.extern.slf4j.Slf4j;
 public final class CommonUtils {
 
 	public static final int FIFTH_DAY_OF_WEEK = 5;
+
+	private static final String DELAY_FORMATTER = "yyyy-MM-dd";
+
+	private static final String POSITIVE_CASE = "PositiveCase";
+	private static final String NEGATIVE_CASE = "NegativeCase";
+
 
 	private CommonUtils() {
 	}
@@ -113,6 +121,77 @@ public final class CommonUtils {
 			theBeginDate = theBeginDate.plusDays(1);
 		}
 		return mapDays;
+	}
+
+	public static Integer ClosedStoryAndPotentialDelays(DateTime beginDate, DateTime endDate) {
+		Integer count = 0;
+		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		if(startLocalDate.compareTo(endLocalDate) > 0) {
+			//positive case
+			while (!endLocalDate.isEqual(startLocalDate)) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count=count+1;
+				}
+				endLocalDate = endLocalDate.plusDays(1);
+			}
+		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
+			//negative case
+			while (!(endLocalDate.isEqual(startLocalDate))) {
+				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
+					count = count-1;
+				}
+				endLocalDate = endLocalDate.minusDays(1);
+			}
+		}
+		return count;
+	}
+
+	public static Integer OpenStoryDelay(DateTime beginDate, DateTime endDate, boolean isSpilled) {
+		Integer count = 1;
+		Integer count1 = 0;
+
+		LocalDate startLocalDate = new LocalDate(
+				DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(
+				DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		if (startLocalDate.compareTo(endLocalDate) > 0) {
+			// positive case
+			while (endLocalDate.isBefore(startLocalDate)) {
+				count1 = getCounter(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK, null, count1, POSITIVE_CASE);
+				endLocalDate = endLocalDate.plusDays(1);
+			}
+			count = count1;
+		} else if (startLocalDate.compareTo(endLocalDate) < 0) {
+			// negative case
+			while (endLocalDate.isBefore(startLocalDate)) {
+				count = getCounter(endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK, count, null, NEGATIVE_CASE);
+				endLocalDate = endLocalDate.minusDays(1);
+			}
+		}
+		if (isSpilled) {
+			count = count1 + 1;
+		}
+
+		return count;
+	}
+
+
+	private static Integer getCounter(boolean isWeekDay, Integer count, Integer count1, String caseDetails) {
+		int counter = 0;
+		if (isWeekDay) {
+			switch (caseDetails) {
+			case POSITIVE_CASE:
+				counter = count1 + 1;
+				break;
+			case NEGATIVE_CASE:
+				counter = count - 1;
+				break;
+			default:
+
+			}
+		}
+		return counter;
 	}
 
 	/**

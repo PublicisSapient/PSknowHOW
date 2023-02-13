@@ -141,6 +141,9 @@ public enum KPIExcelColumn {
     ESTIMATE_HYGINE("kpi124",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
 
+    ITERATION_STATUS("kpi130",
+            Arrays.asList("Issue Id", "Issue Type", "Priority", "Issue Description", "Issue Status", "Due Date", "Remaining Hours", "Delay")),
+
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
 

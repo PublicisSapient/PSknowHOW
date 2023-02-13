@@ -681,7 +681,7 @@ public class KPIExcelUtility {
                                                      FieldMapping fieldMapping) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
-            issuesExcel.forEach((e) -> {
+            issuesExcel.forEach(e -> {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
