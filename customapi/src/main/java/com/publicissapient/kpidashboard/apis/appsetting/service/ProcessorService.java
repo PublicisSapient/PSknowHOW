@@ -34,11 +34,12 @@ public interface ProcessorService {
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse getAllProcessorDetails();
-	
+
 	/**
 	 * Triggers the processor to fetch the latest data based on the processor name
 	 * 
-	 * @param processorName name of the processor same as in the processor collection
+	 * @param processorName
+	 *            name of the processor same as in the processor collection
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);

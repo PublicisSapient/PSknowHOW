@@ -106,9 +106,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.COMMITMENT_RELIABILITY);
+		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream()
+				.sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
-
-		trendValuesMap.forEach((statusType, dataCounts) -> {
+		unsortedMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
 			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
@@ -376,8 +378,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			validationData.add(reliabilityValidationData);
 		}
 
-		commitmentResult.put(ISSUE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
 		commitmentResult.put(STORY_POINT, ObjectUtils.defaultIfNull(storyCount, 0L));
+		commitmentResult.put(ISSUE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
 		return commitmentResult;
 
 	}
