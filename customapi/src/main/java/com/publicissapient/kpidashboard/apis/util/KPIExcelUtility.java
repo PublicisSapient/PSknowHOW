@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -111,7 +112,8 @@ public class KPIExcelUtility {
     }
 
     public static void populateDefectDensityExcelData(String sprint, List<String> storyIds, List<JiraIssue> defects,
-                                                      List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
+                                                      List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData
+            , FieldMapping fieldMapping) {
         if (CollectionUtils.isNotEmpty(storyIds)) {
             storyIds.forEach(story -> {
                 Map<String, String> linkedDefects = new HashMap<>();
@@ -127,7 +129,14 @@ public class KPIExcelUtility {
                         Map<String, String> storyId = new HashMap<>();
                         storyId.put(story, checkEmptyURL(jiraIssue));
                         excelData.setStoryId(storyId);
-                        excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+                        if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                                fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                            excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
+                        } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                            Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+                            excelData.setStoryPoint(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
+                                    + "/" + originalEstimateInHours + " hrs");
+                        }
                     }
                 }
                 kpiExcelData.add(excelData);
@@ -450,7 +459,8 @@ public class KPIExcelUtility {
     }
 
     public static void populateSprintVelocity(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData) {
+                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData,
+                                              FieldMapping fieldMapping) {
         if (CollectionUtils.isEmpty(issueDetailsSet)) {
             if (MapUtils.isNotEmpty(totalStoriesMap)) {
                 totalStoriesMap.forEach((storyId, jiraIssue) -> {
@@ -460,8 +470,15 @@ public class KPIExcelUtility {
                     storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                     excelData.setStoryId(storyDetails);
                     excelData.setIssueDesc(checkEmptyName(jiraIssue));
-                    excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
-
+                    if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                            fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                        excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                    } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                        Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+                        Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                        excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                                totalOriginalEstimate / 60 + " hrs");
+                    }
                     kpiExcelData.add(excelData);
                 });
             }
@@ -473,8 +490,16 @@ public class KPIExcelUtility {
                 storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
                 excelData.setStoryId(storyDetails);
                 excelData.setIssueDesc(checkEmptyName(issueDetails));
-                excelData.setStoryPoints(
-                        Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(
+                            Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                } else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
+                    Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+                    Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                    excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                            totalOriginalEstimate / 60 + " hrs");
+                }
                 kpiExcelData.add(excelData);
             }
         }
@@ -595,7 +620,8 @@ public class KPIExcelUtility {
      */
 
     public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
+                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData,
+                                                      FieldMapping fieldMapping) {
         if (MapUtils.isNotEmpty(totalStoriesMap)) {
             List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
                     .collect(Collectors.toList());
@@ -608,7 +634,12 @@ public class KPIExcelUtility {
                 storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                 excelData.setStoryId(storyDetails);
                 excelData.setClosedStatus(present);
-                excelData.setStoryPoints(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(jiraIssue.getOriginalEstimateMinutes() / 60 + " hrs");
+                }
 
                 kpiExcelData.add(excelData);
 
@@ -646,7 +677,8 @@ public class KPIExcelUtility {
         }
     }
 
-    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel) {
+    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
+                                                     FieldMapping fieldMapping) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
             issuesExcel.forEach(e -> {
@@ -657,7 +689,12 @@ public class KPIExcelUtility {
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
-                excelData.setSizeInStoryPoints(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                }else if (null != e.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(e.getOriginalEstimateMinutes()/60+" hrs");
+                }
                 excelDataList.add(excelData);
             });
         }
