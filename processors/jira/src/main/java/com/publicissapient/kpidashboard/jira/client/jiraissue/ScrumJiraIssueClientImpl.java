@@ -53,6 +53,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;

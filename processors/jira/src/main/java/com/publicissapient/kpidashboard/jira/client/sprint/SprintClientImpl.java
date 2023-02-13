@@ -235,8 +235,6 @@ public class SprintClientImpl implements SprintClient {
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} catch (IOException ioe) {
 			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException ie){
-			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return sprintDetailsList;
 	}
