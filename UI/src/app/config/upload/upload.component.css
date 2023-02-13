@@ -529,3 +529,12 @@ div.main {
 .upload_sprint_capacity {
   width: calc(100% / 4);
 }
+
+.p-error-block{
+  color: red;
+  font-size: 0.7rem;
+  position: absolute;
+  left: -12px;
+  top: 60px;
+  width: 280px;
+}
