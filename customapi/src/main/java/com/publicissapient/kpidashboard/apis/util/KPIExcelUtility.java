@@ -113,7 +113,7 @@ public class KPIExcelUtility {
 
     public static void populateDefectDensityExcelData(String sprint, List<String> storyIds, List<JiraIssue> defects,
                                                       List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData
-                                                    , FieldMapping fieldMapping) {
+            , FieldMapping fieldMapping) {
         if (CollectionUtils.isNotEmpty(storyIds)) {
             storyIds.forEach(story -> {
                 Map<String, String> linkedDefects = new HashMap<>();
@@ -134,8 +134,8 @@ public class KPIExcelUtility {
                             excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
                         } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
                             Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-                            excelData.setStoryPoint(originalEstimateInHours/ fieldMapping.getStoryPointToHourMapping()
-                                    +"/"+originalEstimateInHours + " hrs");
+                            excelData.setStoryPoint(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
+                                    + "/" + originalEstimateInHours + " hrs");
                         }
                     }
                 }

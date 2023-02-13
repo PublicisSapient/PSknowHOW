@@ -155,7 +155,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 	}
 
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue>
-			modalValues, JiraIssue jiraIssue, boolean flag, FieldMapping fieldMapping) {
+			modalValues, JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping) {
 		int originalEstimate = 0;
 		int loggedTime = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -164,7 +164,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R,S> imple
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		if (flag) {
+		if (estimationFlag) {
 			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 				iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());

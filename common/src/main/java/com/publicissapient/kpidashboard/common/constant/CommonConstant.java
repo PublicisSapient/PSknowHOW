@@ -155,13 +155,6 @@ public final class CommonConstant {
 	public static final String SP = "SP";
 	public static final String HOURS = "Hours";
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
-	public static final String JOB_NAME = "Job Name";
-	public static final String WEEKS = "Weeks";
-	public static final String PROJECT_NAME = "Project Name";
-	public static final String STORY_ID = "Story ID";
-	public static final String ISSUE_DESCRIPTION = "Issue Description";
-	public static final String SPRINT_NAME = "Sprint Name";
-	public static final String SIZE = "Size(story point/hours)";
 
 
 

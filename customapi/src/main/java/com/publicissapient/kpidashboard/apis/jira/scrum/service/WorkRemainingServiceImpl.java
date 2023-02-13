@@ -170,7 +170,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			List<Integer> overAllRemHours = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
-			typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) -> {
+			typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 				statusWiseIssue.forEach((status, issues) -> {
 					issueTypes.add(issueType);
 					statuses.add(status);
@@ -215,9 +215,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					data.add(hours);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
 					iterationKpiValues.add(iterationKpiValue);
-				});
-
-			});
+				}));
 			List<IterationKpiData> data = new ArrayList<>();
 			IterationKpiData overAllCount = new IterationKpiData(ISSUE_COUNT, Double.valueOf(overAllIssueCount.get(0)),
 					null, null, "", overAllmodalValues);
