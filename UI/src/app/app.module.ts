@@ -160,7 +160,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         GroupedColumnPlusLineChartComponent,
         BacklogComponent,
         TableComponent,
-        ExportExcelComponent
+        ExportExcelComponent,
         TableComponent,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent
