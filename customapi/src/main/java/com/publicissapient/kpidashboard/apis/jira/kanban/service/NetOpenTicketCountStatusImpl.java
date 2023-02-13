@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
 @Component
@@ -293,7 +292,7 @@ public class NetOpenTicketCountStatusImpl
 			String projectNodeId, String date) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		Map<String, Long> finalMap = new HashMap<>();
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWiseStatusList)) {
 			projectWiseStatusList.forEach(status -> {
 				Long statusWiseCount = projectWiseStatusCountMap.getOrDefault(status, 0L);
@@ -357,13 +356,13 @@ public class NetOpenTicketCountStatusImpl
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String status,
-			Map<String, Integer> overAllHoverValueMap) {
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(status);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (status.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {

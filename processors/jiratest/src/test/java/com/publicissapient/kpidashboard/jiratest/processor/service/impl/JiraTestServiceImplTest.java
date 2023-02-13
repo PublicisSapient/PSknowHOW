@@ -102,7 +102,7 @@ class JiraTestServiceImplTest {
 		when(jiraRestClientFactory.getJiraClient(jiraInfo)).thenReturn(client);
 		when(jiraTestProcessorConfig.getStartDate()).thenReturn("2020-01-01T00:00:00.0000000");
 		when(jiraTestProcessorConfig.getMinsToReduce()).thenReturn(30L);
-		when(jiraTestProcessorConfig.getPageSize()).thenReturn(1);
+		when(jiraTestProcessorConfig.getPageSize()).thenReturn(30);
 		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);

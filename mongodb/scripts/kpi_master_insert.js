@@ -341,8 +341,8 @@ db.getCollection('kpi_master').insert(
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a sprint",
-            "Total no. of defects tagged to stories in a sprint"
+            "No. of defects tagged to stories in a closed sprint",
+            "Total no. of defects tagged to stories in a closed sprint"
           ]
         }
       ],
@@ -3259,6 +3259,35 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+      "kpiId": "kpi130",
+      "kpiName": "Iteration Status",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 11,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "kpiInfo": {
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "Iteration Status KPI gives a representation of delays in the story."
+          },
+          {
+            "type": "paragraph",
+            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+          }
+        ]
+      },
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "2_column",
+      "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",
@@ -3297,92 +3326,24 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-      "kpiId": "kpi130",
-      "kpiName": "Defects by Root Cause",
-      "maxValue": "",
-      "kpiUnit": "Count",
-      "isDeleted": "False",
-      "defaultOrder": 10,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "kanban": false,
-      "chartType": "pieChart",
-      "kpiInfo": {
-        "details": [
-          {
-            "type": "paragraph",
-            "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
-          },
-          {
-            "type": "paragraph",
-            "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-          },
-          {
-            "type": "paragraph",
-            "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-          }
-        ]
-      },
-      "xAxisLabel": "",
-      "yAxisLabel": "",
-      "isPositiveTrend": true,
-      "showTrend": false,
-      "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
-      "boxType": "chart",
-      "calculateMaturity": false
-    },
-  {
-    "kpiId": "kpi79",
-    "kpiName": "Test Cases Without Story Link",
-    "maxValue": "5000",
-    "kpiUnit": "",
+    "kpiId": "kpi129",
+    "kpiName": "Issues Without Story Link",
+    "maxValue": "",
+    "kpiUnit": "Hours",
     "isDeleted": "False",
     "defaultOrder": 1,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Zypher",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "progress-bar",
-    "kpiInfo": {
-      "formula": [
-        {
-          "lhs": "Testcases without story link",
-          "rhs": "# of total non-regression test cases without story link"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi80",
-    "kpiName": "Defects Without Story Link",
-    "maxValue": "500",
-    "kpiUnit": "",
-    "isDeleted": "False",
-    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "progress-bar",
+    "chartType": null,
     "kpiInfo": {
       "formula": [
+        {
+          "lhs": "Testcases without story link",
+          "rhs": "# of total non-regression test cases without story link"
+        },
         {
           "lhs": "Defect Count Without Story Link",
           "rhs": "# of total defects without Story link"
@@ -3391,17 +3352,23 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
+          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
+        },
+        {
+          "type": "paragraph",
           "value": "This Kpi works only on Project level."
         }
       ]
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
-    "isPositiveTrend": false,
+    "isPositiveTrend": true,
     "showTrend": false,
+    "isSquadSupport": false,
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "kpiFilter": "multiSelectDropDown"
+    "kpiFilter": "",
+    "boxType": "3_column",
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi127",

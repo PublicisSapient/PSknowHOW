@@ -16,14 +16,22 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.rbac;
+package com.publicissapient.kpidashboard.common.model;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssigneeRolesData;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public interface ProjectAssigneeRolesRepository extends MongoRepository<ProjectAssigneeRolesData, ObjectId> {
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+public class ProcessorExecutionBasicConfig {
+	private List<String> projectBasicConfigIds;
+	private ExecutionLogContext logContext;
 }

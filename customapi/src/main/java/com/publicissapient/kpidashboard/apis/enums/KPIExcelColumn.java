@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * to order the headings of excel columns
  */
+@SuppressWarnings("java:S1192")
 public enum KPIExcelColumn {
 
     CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url", "Weeks")),
@@ -36,17 +37,17 @@ public enum KPIExcelColumn {
 
     LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)", "Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
-    SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Story Size(In story point)")),
+    SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
     SPRINT_PREDICTABILITY("kpi5", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Story Size(In story point)")),
     SPRINT_CAPACITY_UTILIZATION("kpi46", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Original Time Estimate (in hours)", "Total Time Spent (in hours)")),
-    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed", "Story Size(In story point)")),
+    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed", "Size(story point/hours)")),
 
 
     DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects")),
 
     FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "First Time Pass")),
 
-    DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story", "Story Size(In story point)")),
+    DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story", "Size(story point/hours)")),
 
     DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Escaped Defect")),
 
@@ -78,7 +79,7 @@ public enum KPIExcelColumn {
 
     COST_OF_DELAY("kpi113", Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
 
-    DAILY_CLOSURES("kpi125", Arrays.asList("Date", "Issue Type", "Issue ID", "Issue Description", "Size (In Story Points)")),
+    DAILY_CLOSURES("kpi125", Arrays.asList("Date", "Issue Type", "Issue ID", "Issue Description", "Size(story point/hours)")),
 
     RELEASE_FREQUENCY("kpi73", Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
@@ -87,6 +88,8 @@ public enum KPIExcelColumn {
     DEFECTS_WITHOUT_STORY_LINK("kpi80", Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
 
     TEST_WITHOUT_STORY_LINK("kpi79", Arrays.asList("Project Name", "Test Case ID", "Linked to Story")),
+
+    ISSUES_WITHOUT_STORY_LINK("kpi129", Arrays.asList("Issue Id", "Issue Description")),
 
     PRODUCTION_DEFECTS_AGEING("kpi127", Arrays.asList("Project Name", "Defect ID", "Issue Description", "Priority", "Created Date", "Status")),
 
@@ -132,13 +135,16 @@ public enum KPIExcelColumn {
             Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
     ISSUES_LIKELY_TO_SPILL("kpi123",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
 
     SCOPE_CHANGE("kpi120",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
 
     ESTIMATE_HYGINE("kpi124",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    ITERATION_STATUS("kpi130",
+            Arrays.asList("Issue Id", "Issue Type", "Priority", "Issue Description", "Issue Status", "Due Date", "Remaining Hours", "Delay")),
 
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
@@ -147,10 +153,10 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Remaining Hours")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Remaining Hours")),
 
     CLOSURES_POSSIBLE_TODAY("kpi122",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 

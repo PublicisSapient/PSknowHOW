@@ -256,16 +256,6 @@ public enum KPICode {
 	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
 	 */
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
-
-	/**
-	 * Test Case without Story link
-	 */
-	TEST_WITHOUT_STORY("kpi79", KPISource.ZEPHYR.name()),
-	
-	/**
-	 * Defects Without Story link
-	 */
-	DEFECTS_WITHOUT_STORY_LINK("kpi80", KPISource.JIRA.name()),
 	/**
 	 * First time pass rate
 	 */
@@ -299,6 +289,8 @@ public enum KPICode {
 	 * Work Remaining
 	 */
 	WORK_REMAINING("kpi119", KPISource.JIRA.name()),
+
+	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
 	
 	/**
 	 * Scope Change
@@ -351,9 +343,10 @@ public enum KPICode {
 	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
 
 	/**
-	 * Defect rca kpi code.
+	 * Issues Without Story Link
 	 */
-	DEFECT_COUNT_BY_RCA_PIECHART("kpi130", KPISource.JIRA.name());
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name());
+
 	// @formatter:on
 
 	private String kpiId;

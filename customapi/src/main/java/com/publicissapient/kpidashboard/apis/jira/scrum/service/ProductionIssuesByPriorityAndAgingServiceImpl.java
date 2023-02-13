@@ -292,7 +292,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			Set<String> projectWisePriorityList, Map<String, List<DataCount>> trendValueMap, String projectName,
 			String rangeMonth) {
 		Map<String, Long> projectFilterWiseDataMap = new HashMap<>();
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
 			projectWisePriorityList.forEach(priority -> {
 				Long priorityCount = projectWisePriorityCountMap.getOrDefault(priority, 0L);
@@ -320,13 +320,13 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String priority,
-			Map<String, Integer> overAllHoverValueMap) {
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(priority);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (priority.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {

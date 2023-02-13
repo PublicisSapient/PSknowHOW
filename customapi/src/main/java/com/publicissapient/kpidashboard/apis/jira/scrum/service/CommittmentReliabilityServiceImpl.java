@@ -13,8 +13,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +51,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Component
 @Slf4j
 public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
@@ -65,6 +66,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String COMMITTED = "Commited";
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
+	private static final String TOTAL_ORIGINAL_ESTIMATE = "totalOriginalEstimate";
+	private static final String COMPLETED_ORIGINAL_ESTIMATE = "completedOriginalEstimate";
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -106,9 +109,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.COMMITMENT_RELIABILITY);
+		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream()
+				.sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
-
-		trendValuesMap.forEach((statusType, dataCounts) -> {
+		unsortedMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
 			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
@@ -142,6 +147,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
@@ -210,8 +217,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
 			Map<String, Long> commitmentMap = getCommitmentMap(totalPresentJiraIssue, totalPresentCompletedIssue,
-					validationDataList, commitmentHowerMap);
-			populateExcelData(requestTrackerId, excelData, validationDataList, node);
+					validationDataList, commitmentHowerMap, fieldMapping);
+			populateExcelData(requestTrackerId, excelData, validationDataList, node, fieldMapping);
 
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 
@@ -223,7 +230,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				dataCount.setValue(map.getValue());
 				dataCount.setKpiGroup(map.getKey());
-				dataCount.setHoverValue(generateHowerMap(commitmentHowerMap, map.getKey()));
+				dataCount.setHoverValue(generateHowerMap(commitmentHowerMap, map.getKey(), fieldMapping));
 				dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
 			}
 			mapTmp.get(node.getId()).setValue(dataCountMap);
@@ -306,15 +313,26 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 * @param key
 	 * @return
 	 */
-	private Map<String, Integer> generateHowerMap(Map<String, Double> commitmentHowerMap, String key) {
-		Map<String, Integer> howerMap = new LinkedHashMap<>();
-		if (ISSUE_COUNT.equalsIgnoreCase(key)) {
-			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d).intValue());
-			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d).intValue());
+	private Map<String, Object> generateHowerMap(Map<String, Double> commitmentHowerMap, String key,
+												 FieldMapping fieldMapping) {
+		Map<String, Object> howerMap = new LinkedHashMap<>();
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			if (ISSUE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
+				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
+			} else {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d));
+				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_STORY_POINTS, 0.0d));
+			}
 		} else {
-			howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d).intValue());
-			howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_STORY_POINTS, 0.0d).intValue());
-
+			if (ISSUE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
+				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
+			} else {
+				howerMap.put(DELIVERED, commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE)+" hrs");
+				howerMap.put(COMMITTED, commitmentHowerMap.get(TOTAL_ORIGINAL_ESTIMATE)+" hrs");
+			}
 		}
 		return howerMap;
 	}
@@ -325,7 +343,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 * @param requestTrackerId
 	 */
 	private void populateExcelData(String requestTrackerId, List<KPIExcelData> excelData,
-			List<CommitmentReliabilityValidationData> validationDataList, Node node) {
+			List<CommitmentReliabilityValidationData> validationDataList, Node node, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String sprintName = node.getSprintFilter().getName();
 			if (CollectionUtils.isNotEmpty(validationDataList)) {
@@ -335,7 +353,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					data.getTotalIssueNumbers().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap,
-							data.getCompletedIssueNumber(), excelData);
+							data.getCompletedIssueNumber(), excelData, fieldMapping);
 
 				});
 
@@ -351,11 +369,13 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 * @return
 	 */
 	private Map<String, Long> getCommitmentMap(List<JiraIssue> totalJiraIssue, List<JiraIssue> completed,
-			List<CommitmentReliabilityValidationData> validationData, Map<String, Double> commitmentHowerMap) {
+			List<CommitmentReliabilityValidationData> validationData, Map<String, Double> commitmentHowerMap,
+											   FieldMapping fieldMapping) {
 
 		Map<String, Long> commitmentResult = new LinkedHashMap<>();
 		long issueCount = 0L;
 		long storyCount = 0L;
+		long totalHours = 0L;
 		CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
 		if (CollectionUtils.isNotEmpty(totalJiraIssue)) {
 			reliabilityValidationData.setTotalIssueNumbers(totalJiraIssue);
@@ -368,7 +388,18 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					.mapToDouble(JiraIssue::getStoryPoints).sum();
 			double completedSum = completed.stream().filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
 					.mapToDouble(JiraIssue::getStoryPoints).sum();
+			double totalOriginalEstimate = totalJiraIssue.stream().filter(jiraIssue ->
+							Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+			double completedOriginalEstimate = completed.stream().filter(jiraIssue ->
+							Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 			storyCount = (long) ((completedSum / totalSum) * 100);
+			Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+			Double completedOriginalEstimateInHours = completedOriginalEstimate / 60;
+			totalHours = (long) ((completedOriginalEstimateInHours / totalOriginalEstimateInHours) * 100);
+			commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimateInHours);
+			commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimateInHours);
 			commitmentHowerMap.put(TOTAL_ISSUE_SIZE, sprintSize);
 			commitmentHowerMap.put(COMPLETED_ISSUE_SIZE, completedSize);
 			commitmentHowerMap.put(TOTAL_STORY_POINTS, totalSum);
@@ -376,8 +407,13 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			validationData.add(reliabilityValidationData);
 		}
 
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			commitmentResult.put(STORY_POINT, ObjectUtils.defaultIfNull(storyCount, 0L));
+		} else {
+			commitmentResult.put(CommonConstant.HOURS, ObjectUtils.defaultIfNull(totalHours, 0L));
+		}
 		commitmentResult.put(ISSUE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
-		commitmentResult.put(STORY_POINT, ObjectUtils.defaultIfNull(storyCount, 0L));
 		return commitmentResult;
 
 	}

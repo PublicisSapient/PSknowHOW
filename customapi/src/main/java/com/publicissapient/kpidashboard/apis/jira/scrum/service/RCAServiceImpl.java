@@ -16,20 +16,10 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -325,7 +315,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			Map<String, Long> rcaMap = sprintWiseRCAMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
 			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
 			Map<String, Long> finalMap = new HashMap<>();
-			Map<String, Integer> overAllHoverValueMap = new HashMap<>();
+			Map<String, Object> overAllHoverValueMap = new HashMap<>();
 			if (allRCA.size() > 1) {
 				allRCA.forEach(rca -> {
 					finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
@@ -334,7 +324,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 					Integer rcaCountHover = rcaMap.getOrDefault(rca, 0L).intValue();
 					overAllHoverValueMap.put(StringUtils.capitalize(rca), rcaCountHover);
 				});
-				populateExcelDataObject(requestTrackerId, storyDefectDataListMap, excelData, jiraIssueList, node.getSprintFilter().getName());
+				populateExcelDataObject(requestTrackerId, excelData, jiraIssueList, node.getSprintFilter().getName());
 			}
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 
@@ -346,7 +336,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				dataCount.setValue(value);
 				dataCount.setKpiGroup(key);
-				Map<String, Integer> hoverValueMap = new HashMap<>();
+				Map<String, Object> hoverValueMap = new HashMap<>();
 				if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
 					dataCount.setHoverValue(overAllHoverValueMap);
 				} else {
@@ -362,17 +352,15 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, Map<String, Object> storyDefectDataListMap,
-			List<KPIExcelData> excelData, List<JiraIssue> sprintWiseDefectDataList,
-			String name) {
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<JiraIssue> sprintWiseDefectDataList, String name) {
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (sprintWiseDefectDataList.size() > 0) {
-				KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
-						KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
-			}
-
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
+			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
+					KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 		}
+
 	}
 
 	/**

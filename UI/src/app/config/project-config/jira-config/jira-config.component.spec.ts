@@ -433,4 +433,306 @@ describe('JiraConfigComponent', () => {
     expect(component.configuredTools).not.toContain(tool);
   }))
 
+  it('should Edit tool', fakeAsync(() => {
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    const tool = {
+      id: "5fc643cd11193836e6545560",
+      toolName: "Bamboo",
+      basicProjectConfigId: "63b3f9098ec44416b3ce9699",
+      connectionId: "5fc643cd11193836e6545560",
+      connectionName: "Bamboo Connection",
+      jobName: "REL-BAM",
+      jobType: "Build",
+      createdAt: "2023-01-04T07:15:08",
+      updatedAt: "2023-01-04T07:15:08",
+      queryEnabled: false,
+      boards: [
+          null
+      ]
+    };
+    component.connections = fakeJiraConnections.data;
+    component.editTool(tool);
+    expect(component.isEdit).toBeTruthy();  
+  }))
+
+  it("should add new tool",()=>{
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    component.addNewTool();
+    expect(component.isEdit).toBeFalse();
+  })
+
+  it('should disable loading when connection is already Jira', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Jira',
+      connectionName: 'Test Internal -Jira Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+    expect(component.isLoading).toBeFalse();
+
+  });
+
+  it('should disable loading when connection is Bamboo', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Bamboo',
+      connectionName: 'Test Internal -Bamboo Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Bamboo';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'getPlansForBamboo')
+    spyOn(component,'getDeploymentProjects')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.getPlansForBamboo).toHaveBeenCalled();
+   expect(component.getDeploymentProjects).toHaveBeenCalled();
+  });
+
+  it('should clear sonar form  when connection changed to Sonar', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Sonar',
+      connectionName: 'Test Internal -Sonar Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Sonar';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'clearSonarForm')
+    spyOn(component,'updateSonarConnectionTypeAndVersionList')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.clearSonarForm).toHaveBeenCalled();
+   expect(component.updateSonarConnectionTypeAndVersionList).toHaveBeenCalled();
+  });
+
+  it('should get jenkins job name when connection changes to jenkins', () => {
+   
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Jenkins',
+      connectionName: 'Test Internal -Jenkins Connection',
+      cloudEnv: false,
+      baseUrl: 'https://tools.test.test2.com/jira',
+      username: '',
+      password: '',
+      apiEndPoint: 'rest/api/2/',
+      consumerKey: '',
+      privateKey: '',
+      isOAuth: false,
+      offline: true,
+      offlineFilePath: '',
+    };
+    component.urlParam = 'Jenkins';
+    component.initializeFields(component.urlParam);
+    spyOn(component,'getJenkinsJobNames')
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+   expect(component.getJenkinsJobNames).toHaveBeenCalled();
+  });
+
+  it("should load elements for customfield",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testAutomatedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1)
+  })
+
+  it("should load elements for lables",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testAutomatedIdentification";
+    spyOn(component, 'showFormElements');
+    spyOn(component, 'hideFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+    expect(component.hideFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for customfield and elementID is testAutomationCompletedIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testAutomationCompletedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for labels and elementID is testAutomationCompletedIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testAutomationCompletedIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should load and hide elements for labels and elementID is testRegressionIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "labels";
+    const elementId = "testRegressionIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+
+
+  it("should load and hide elements for customfield and elementID is testRegressionIdentification",()=>{
+    component.urlParam = 'Jira';
+    component.initializeFields(component.urlParam);
+    const value = "customfield";
+    const elementId = "testRegressionIdentification";
+    spyOn(component, 'showFormElements');
+    component.changeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalledTimes(1);
+  })
+
+  it("should blank for branch field",()=>{
+    const id  = 'projectKey';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
+
+  it("should getOptionlist for testRegressionIdentification field",()=>{
+    const id  = 'testAutomatedIdentification';
+    const fakeResponse = [
+      {
+        code: '',
+        name: 'Select',
+      },
+      {
+        code: 'CustomField',
+        name: 'CustomField',
+      },
+      {
+        code: 'Labels',
+        name: 'Labels',
+      },
+    ];
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual(fakeResponse);
+  })
+
+  it("should blank for apiVersion field",()=>{
+    const id  = 'apiVersion';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
+
+  it("should blank for branch field",()=>{
+    const id  = 'branch';
+    component.getOptionList(id);
+    expect(component.getOptionList(id)).toEqual([]);
+  })
+
+  it("should load form fiels Bamboo tool and build value",()=>{
+    const value = "Build";
+    const elementId = "jobType";
+    component.urlParam = "Bamboo";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Bamboo tool and Deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "Bamboo";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels AzurePipeline tool and build value",()=>{
+    const value = "Build";
+    const elementId = "jobType";
+    component.urlParam = "AzurePipeline";
+    component.initializeFields(component.urlParam);
+    component.bambooPlanList = [];
+    spyOn(component,'getAzureBuildPipelines');
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.getAzureBuildPipelines).toHaveBeenCalled();
+  })
+
+  it("should load form fiels AzurePipeline tool and deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "AzurePipeline";
+    component.initializeFields(component.urlParam);
+    component.bambooPlanList = [];
+    spyOn(component,'getAzureReleasePipelines');
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.getAzureReleasePipelines).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Jenkins tool and deploy value",()=>{
+    const value = "deploy";
+    const elementId = "jobType";
+    component.urlParam = "Jenkins";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'showFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.showFormElements).toHaveBeenCalled();
+  })
+
+  it("should load form fiels Jenkins tool and build value",()=>{
+    const value = "build";
+    const elementId = "jobType";
+    component.urlParam = "Jenkins";
+    component.initializeFields(component.urlParam);
+    spyOn(component,'hideFormElements');
+    component.bambooPlanList = [];
+    component.jobTypeChangeHandler(value,elementId);
+    expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
 });

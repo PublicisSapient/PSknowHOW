@@ -37,6 +37,7 @@ import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
+import { TestConnectionService } from 'src/app/services/test-connection.service';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
@@ -44,6 +45,7 @@ describe('ConnectionListComponent', () => {
   let httpMock;
   let httpService;
   const baseUrl = environment.baseUrl;
+  let testConnectionService;
   const connectionTableData = [
     {
       connectionName: 'jenkinsJenkins',
@@ -258,7 +260,7 @@ describe('ConnectionListComponent', () => {
   ];
 
 
-  const getConnectionsResponse = require('../../../../test/resource/FakeGetConnectionResponse.json');
+  const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
   
 
   const connectionLabelsFields = [
@@ -703,6 +705,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'accessToken',
         'connPrivate',
+        "accessTokenEnabled",
       ],
     },
     {
@@ -976,6 +979,7 @@ describe('ConnectionListComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
+    testConnectionService = TestBed.inject(TestConnectionService);
     fixture.detectChanges();
   });
 
@@ -1263,4 +1267,741 @@ describe('ConnectionListComponent', () => {
       expect(component.basicConnectionForm.get('password').value).toBe('');
     });
   });
+
+  it('should be username,accesstoken blank when Sonar connection selected and cloudEnv switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('username').value).toBe('');
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+      expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+    });
+  });
+
+  it('should be password blank when Sonar connection selected and vault switch is enabled', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = true;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be password blank when cloudEnv switch is true and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.basicConnectionForm.get('password').value).toBe('');
+    });
+  });
+
+  it('should be accesstoken blank when cloudEnv switch is false and sonar connection is selected', () => {
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = false;
+    component.selectedConnectionType = 'Sonar';
+
+    component.connectionTypeFieldsAssignment();
+    fixture.detectChanges();
+    component.enableDisableFieldsOnIsCloudSwithChange();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+     expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+     });
+  });
+
+  it("should be password blank when accessToken or password is toggling",()=>{
+    component.connection['accessTokenEnabled'] = true;
+    component.enableDisableFieldsOnAccessTokenORPasswordToggle();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].value).toBe("")
+  })
+
+  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTruthy();
+  })
+
+  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled",()=>{
+    component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
+    component.connection['isOAuth'] =false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
+  })
+
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
+
+
+  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "zephyr"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+  })
+
+  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalsy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalsy();
+
+  })
+
+  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['cloudEnv'].setValue("Any value")
+    component.connection['cloudEnv'] = false;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
+  })
+
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['vault'].setValue("Any value")
+    component.connection['vault'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
+  })
+
+  it("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
+    component.selectedConnectionType = "sonar"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['accessTokenEnabled'].setValue("Any value")
+    component.connection['accessTokenEnabled'] = true;
+    component.defaultEnableDisableSwitch();
+    fixture.detectChanges();
+    expect(component.basicConnectionForm.controls['password'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['username'].enabled).toBeFalse();
+    expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
+  })
+
+  it("should be fields enable when checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+
+  it("should be privatekey enabled when isOAuth key is true", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(true);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeTruthy();
+  })
+
+  it("should be privatekey disabled when isOAuth key is false", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'offline';
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field);
+
+    expect(
+      component.basicConnectionForm.controls['privateKey'].enabled,
+    ).toBeFalsy();
+  })
+
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+  it("should enable form control while testing connections",()=>{
+
+    component.testingConnection = true;
+    const reqData = {};
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connection['vault'] = false;
+    component.connection['cloudEnv'] = true;
+    component.selectedConnectionType = 'Sonar';
+    component.connectionTypeFieldsAssignment();
+    component.testConnection();
+    fixture.detectChanges();
+    component.addEditConnectionFieldsNlabels.forEach(data => {
+      if (!!component.connection.type && !!data.connectionType && (component.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
+        data.inputFields.forEach(inputField => {
+          if (component.basicConnectionForm.value[inputField] !== undefined && component.basicConnectionForm.value[inputField] !== '' && component.basicConnectionForm.value[inputField] !== 'undefined') {
+            expect(reqData[inputField]).toEqual(component.basicConnectionForm.value[inputField])
+          }
+        });
+      }
+    });
+
+  })
+
+  it("should be disabled fields when field is cloudEnv and type is sonar and checkbox is unchecked ", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'cloudEnv';
+    const type = 'sonar'
+    component.basicConnectionForm.controls['isOAuth'].setValue(false);
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeFalsy();
+      },
+    );
+  })
+
+  it("should empty url for Zephyr",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['type'].setValue("zephyr");
+    component.basicConnectionForm.controls['cloudEnv'].setValue("any Value");
+    component.basicConnectionForm.controls['baseUrl'].setValue("");
+    component.emptyUrlInZephyr();
+    expect(component.emptyUrlInZephyr()).toBeFalse();
+  })
+
+ 
+
+  it("should give success response, while testing for jira",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Jira';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testJira').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testJira).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for jira",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Jira';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testJira').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testJira).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Azure",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Azure';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzureBoards').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzureBoards).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Azure",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Azure';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzureBoards').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzureBoards).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for GitLab",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'GitLab';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testGitLab').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testGitLab).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should empty url for Zephyr",()=>{
+    component.selectedConnectionType = "zephyr"
+    component.connection['type'] = "sonar"
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connectionTypeFieldsAssignment();
+    component.basicConnectionForm.controls['type'].setValue("");
+    component.basicConnectionForm.controls['cloudEnv'].setValue("any Value");
+    component.basicConnectionForm.controls['baseUrl'].setValue("");
+    component.emptyUrlInZephyr();
+    expect(component.emptyUrlInZephyr()).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for GitLab",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'GitLab';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testGitLab').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testGitLab).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Bitbucket",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Bitbucket';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testBitbucket').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testBitbucket).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Bitbucket",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Bitbucket';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testBitbucket').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testBitbucket).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Sonar",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testSonar').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testSonar).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Sonar",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Sonar';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testSonar').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testSonar).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Jenkins",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Jenkins';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testJenkins').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testJenkins).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Jenkins",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Jenkins';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testJenkins').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testJenkins).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for NewRelic",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'NewRelic';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testNewRelic').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testNewRelic).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give success response, while testing for Bamboo",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Bamboo';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testBamboo').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testBamboo).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Bamboo",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Bamboo';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testBamboo').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testBamboo).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Teamcity",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Teamcity';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testTeamCity').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testTeamCity).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Teamcity",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Teamcity';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testTeamCity').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testTeamCity).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for AzurePipeline",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'AzurePipeline';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzurePipeline').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzurePipeline).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for AzurePipeline",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'AzurePipeline';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzurePipeline').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzurePipeline).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for AzureRepository",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'AzureRepository';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzureRepository').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzureRepository).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for AzureRepository",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'AzureRepository';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testAzureRepository').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testAzureRepository).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for GitHub",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'GitHub';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testGithub').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testGithub).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for GitHub",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'GitHub';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testGithub').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testGithub).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it("should give success response, while testing for Zephyr",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Zephyr';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testZephyr').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testZephyr).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for Zephyr",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'Zephyr';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testZephyr').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testZephyr).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
+  })
+
 });

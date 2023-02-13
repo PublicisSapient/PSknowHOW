@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.common.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +35,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
 /**
  * Rest Controller to handle bit bucket specific requests.
@@ -53,25 +54,24 @@ public class RunProcessorController {
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
 
-
-	/**
-	 * Run processor
-	 * @param projectsBasicConfigIds
-	 * @return processors running status
-	 */
 	@RequestMapping(value = "/processor/run", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map> runProcessorForProjects(@RequestBody List<String> projectsBasicConfigIds) {
+	public ResponseEntity<Map> runProcessorForProjects(
+			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
+		ExecutionLogContext.set(processorExecutionBasicConfig.getLogContext());
 		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
 		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Received request to run the processor: {} for projects {}",
-				jobExecuter.getProcessor().getProcessorName(), projectsBasicConfigIds);
+				jobExecuter.getProcessor().getProcessorName(),
+				processorExecutionBasicConfig.getProjectBasicConfigIds());
 
-		jobExecuter.setProjectsBasicConfigIds(projectsBasicConfigIds);
-
+		jobExecuter.setProjectsBasicConfigIds(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		jobExecuter.setExecutionLogContext(ExecutionLogContext.getContext());
 		PROCESSOR_EXECUTORS.execute(jobExecuter);
 
 		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
 		LOGGER.info("Processor execution called");
+		ExecutionLogContext.getContext().destroy();
+		jobExecuter.getExecutionLogContext().destroy();
 		MDC.clear();
 		Map response = new HashMap();
 		response.put("status", "processing");

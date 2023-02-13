@@ -58,7 +58,7 @@ public class DataCount implements Serializable {
 	private String sRootCause;
 	private transient Object value;
 	private String kanbanDate;
-	private Map<String, Integer> hoverValue;
+	private Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
 	private Map<String,Integer> lineHoverValue;
 	private String executed;
@@ -113,13 +113,13 @@ public class DataCount implements Serializable {
 		this.priority = priority;
 		this.value = value;
 	}
-	
+
 	/**
-	 * Instantiates a new Data count.
 	 *
-	 * @param data     the data
-	 * @param priority the priority
-	 * @param value    the value
+	 * @param data
+	 * @param maturity
+	 * @param maturityValue
+	 * @param value
 	 */
 	public DataCount(String data, String maturity, Object maturityValue,Object value) {
 		this.data = data;

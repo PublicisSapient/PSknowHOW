@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -219,7 +218,6 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 
 	private void kpiWithFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
@@ -311,7 +309,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 			String rangeMonth) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		Map<String, Long> projectFilterWiseDataMap = new HashMap<>();
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
 			projectWisePriorityList.forEach(priority -> {
 				Long priorityCount = projectWisePriorityCountMap.getOrDefault(priority, 0L);
@@ -339,13 +337,13 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String priority,
-			Map<String, Integer> overAllHoverValueMap) {
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(priority);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (priority.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {

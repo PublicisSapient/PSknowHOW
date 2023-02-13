@@ -41,6 +41,7 @@ public class TestCaseDetails extends BasicModel {
     private String projectName;
     private String projectID;
     private String basicProjectConfigId;
+    private String name;
     /*
      * Automated Test Data
      */
