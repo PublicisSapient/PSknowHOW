@@ -25,9 +25,6 @@
           <!-- <div class="knowHowImage w-100"></div> -->
           <img src="../../../assets/img/knowHOW_logo_final.png" alt="Publicis Sapient" class="knowHowImage">
           <div class="login-form">
-            <div *ngIf="sessionMsg && sessionMsg.length" class="alert alert-danger w-100 p-mb-0">Session expired or Access
-              permissions
-              have been updated. Please login again.</div>
            <!-- Display error messages-->
            <div *ngIf="error" class="alert alert-danger w-100 p-mb-0">{{error}}</div>
             <p-tabView class="title w-100" [activeIndex]="adLogin ? 0 : 1">

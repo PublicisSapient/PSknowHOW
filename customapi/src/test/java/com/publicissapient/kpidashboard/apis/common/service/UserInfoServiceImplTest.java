@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
@@ -102,7 +103,10 @@ public class UserInfoServiceImplTest {
 	
 	@Mock
 	private ProjectAccessManager projectAccessManager;
-	
+
+	@Mock
+	TokenAuthenticationService tokenAuthenticationService;
+
 	private static final String ROLE_VIEWER="ROLE_VIEWER";
 	private static final String ROLE_SUPERADMIN="ROLE_SUPERADMIN";
 	@Before
@@ -404,6 +408,14 @@ public class UserInfoServiceImplTest {
 		when(userInfoRepository.findByAuthType("STANDARD")).thenReturn(Arrays.asList(new UserInfo()));
 		service.getUserInfoByAuthType("STANDARD");
 		verify(userInfoRepository, times(1)).findByAuthType("STANDARD");
+	}
+
+	@Test
+	public void getOrSaveUserInfoTest() {
+		when(userInfoRepository.findByUsername(anyString())).thenReturn(null);
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("user");
+		assertEquals(service.getOrSaveUserInfo("user", null, null), userInfo);
 	}
 
 }

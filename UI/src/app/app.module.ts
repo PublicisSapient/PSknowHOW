@@ -18,10 +18,10 @@
 
 
 /******************* Modules   ***********************/
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule } from '@angular/common';
@@ -98,8 +98,31 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+import { environment } from 'src/environments/environment';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
+import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 
 /******************************************************/
+
+const initializeAppFactory = (http: HttpClient): () => void  =>{
+    if (!environment.production) {
+        return  ()=>{
+           // environment['baseUrl']='localhost:8080';
+        };
+    } else {
+        return async () => {
+        const env$ = http.get('assets/env.json').pipe(
+                tap(env => {
+                    environment['baseUrl'] = env['baseUrl'] || '';
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                }));
+
+        await env$.toPromise().then(res => console.log);
+        };
+    }
+};
 
 
 @NgModule({
@@ -138,6 +161,9 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         BacklogComponent,
         TableComponent,
         ExportExcelComponent
+        TableComponent,
+        SsoAuthFailureComponent,
+        UnauthorisedAccessComponent
     ],
     imports: [
         DropdownModule,
@@ -179,7 +205,14 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         MessageService,
         TextEncryptionService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: APP_CONFIG, useValue: AppConfig },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeAppFactory,
+            deps: [HttpClient],
+            multi: true
+          }
     ],
     bootstrap: [AppComponent]
 })

@@ -37,6 +37,11 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   authorized = <boolean>true;
   headerFixed = <boolean>false;
   scrollOffset = <number>150;
+  displayModal = false;
+  modalDetails={
+    header:'User Request Approved',
+    content:'Click on "Continue" to reflect the changes happened from requested Role change.'
+  };
   constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
     this.renderer.listen('document', 'click',(e: Event)=>{
       // setting document click event data to identify outside click for show/hide kpi filter
@@ -47,6 +52,13 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
     // this.authorized = this.getAuth.checkAuth();
+    this.httpService.loadApp.subscribe(data=>{
+      if(this.httpService.createdProjectName){
+        this.modalDetails.header =`Project Created`;
+        this.modalDetails.content =`The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
+      }
+      this.displayModal =data;
+    });
 
   }
 
@@ -61,6 +73,14 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     } else {
       this.headerFixed = false;
     }
+  }
+
+  reloadApp(){
+    this.displayModal=false;
+    this.router.navigate(['./dashboard/mydashboard']).then(success =>{
+    window.location.reload();
+    });
+
   }
 
   ngAfterContentInit() {

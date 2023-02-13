@@ -27,6 +27,7 @@ import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -934,6 +935,8 @@ public class OnlineAdapter implements JiraAdapter {
 			log.error("Malformed url for loading epic data", mfe, kv(CommonConstant.PSLOGDATA, logData));
 		} catch (IOException ioe) {
 			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, logData));
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return getEpicIssuesQuery(epicList, logData);
 	}

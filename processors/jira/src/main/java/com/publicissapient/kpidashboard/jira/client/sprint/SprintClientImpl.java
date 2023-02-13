@@ -235,6 +235,8 @@ public class SprintClientImpl implements SprintClient {
 					kv(CommonConstant.PSLOGDATA, psLogData));
 		} catch (IOException ioe) {
 			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
+		} catch (InterruptedException ie){
+			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return sprintDetailsList;
 	}
@@ -292,11 +294,10 @@ public class SprintClientImpl implements SprintClient {
 			throws IOException {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-
 		String username = null;
 		String password = null;
 
-		if (connectionOptional.isPresent()) {
+		if(connectionOptional.isPresent()) {
 			Connection conn = connectionOptional.get();
 			if (conn.isVault()) {
 				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
@@ -310,6 +311,7 @@ public class SprintClientImpl implements SprintClient {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
+
 		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();

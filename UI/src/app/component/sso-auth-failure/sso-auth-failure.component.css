@@ -15,14 +15,11 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package com.publicissapient.kpidashboard.common.constant;
-
-/**
- * The Auth Type Enum
- */
-public enum AuthType {
-
-	STANDARD, LDAP, CROWDSSO, APIKEY, SSO;
-
+.container{
+    height: 100%;
+    flex-direction: column;
 }
+
+ .message{
+    font-size: 3rem;
+ }
