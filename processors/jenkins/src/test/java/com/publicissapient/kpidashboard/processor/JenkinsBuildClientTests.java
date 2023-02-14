@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,7 @@ public class JenkinsBuildClientTests {
 	private JenkinsBuildClient jenkinsBuildClient;
 
 	private static final ProcessorToolConnection JENKINS_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -154,7 +156,7 @@ public class JenkinsBuildClientTests {
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -165,7 +167,7 @@ public class JenkinsBuildClientTests {
 				eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs_2_builds.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 
@@ -187,7 +189,7 @@ public class JenkinsBuildClientTests {
 				eq(String.class))).thenReturn(
 						new ResponseEntity<>(getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 

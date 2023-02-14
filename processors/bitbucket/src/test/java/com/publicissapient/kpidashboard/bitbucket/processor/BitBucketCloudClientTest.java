@@ -20,10 +20,12 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,6 +87,7 @@ class BitBucketCloudClientTest {
 		ResponseEntity<String> responseEntity = new ResponseEntity<String>(serverResponse, HttpStatus.ACCEPTED);
 		BitbucketRepo repo = new BitbucketRepo();
 		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
 		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");

@@ -24,7 +24,9 @@ import static org.mockito.Mockito.when;
 import java.net.URLDecoder;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,6 +90,9 @@ public class BitBucketServerClientTest {
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
+		ProjectBasicConfig projectBasicConfig =new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		connectionDetail.setBranch("release/core-r4.4");
 		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
@@ -97,7 +102,7 @@ public class BitBucketServerClientTest {
 		when(stashClient.decryptPassword(connectionDetail.getPassword())).thenReturn("test");
 		
 		when(restTemplate.exchange(eq(URLDecoder.decode(restUri,"UTF-8")), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail);
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail,projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		
 		CommitDetails bitBucketCommit = commits.get(0);

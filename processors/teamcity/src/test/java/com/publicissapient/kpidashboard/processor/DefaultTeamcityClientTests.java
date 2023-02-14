@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,7 @@ public class DefaultTeamcityClientTests {
 	private static final int PAGE_SIZE = 10;
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -216,6 +218,8 @@ public class DefaultTeamcityClientTests {
 
 	 @Test
 	public void buildDetails_full() throws Exception {
+
+		 projectBasicConfig.setSaveAssigneeDetails(true);
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
@@ -232,7 +236,7 @@ public class DefaultTeamcityClientTests {
 						.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
 
 		Build build = teamcityClient.getBuildDetails("http://server/app/rest/buildTypes/id:Project2_Build2/",
-				"http://server", TEAMCITY_SAMPLE_SERVER_TWO);
+				"http://server", TEAMCITY_SAMPLE_SERVER_TWO,projectBasicConfig);
 
 		assertThat(build.getTimestamp(), notNullValue());
 		assertThat(build.getNumber(), is("3"));

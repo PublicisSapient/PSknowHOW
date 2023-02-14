@@ -127,6 +127,13 @@ public class BambooProcessorJobExecuterTests {
 	private BambooClientDeployImpl bambooClientDeploy;
 	@InjectMocks
 	private BambooProcessorJobExecuter task;
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	Deployment deployment3 = new Deployment();
+	Deployment deployment1 = new Deployment();
+	Deployment deployment2 = new Deployment();
+	Deployment deployment = new Deployment();
+
 
 	@Before
 	public void init() {
@@ -179,9 +186,10 @@ public class BambooProcessorJobExecuterTests {
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("60b7dbb489c5974a407e923b"));
 		basicConfig.setId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
+		basicConfig.setSaveAssigneeDetails(true);
 		projectConfigList.add(basicConfig);
 
-		Deployment deployment = new Deployment();
+
 		deployment.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -192,8 +200,9 @@ public class BambooProcessorJobExecuterTests {
 		deployment.setJobId("190709761");
 		deployment.setNumber("189988914");
 		deployment.setJobName("KnowHowDeployemnt");
+		deployment.setDeployedBy("Akshat");
 
-		Deployment deployment1 = new Deployment();
+
 		deployment1.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment1.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment1.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -204,8 +213,9 @@ public class BambooProcessorJobExecuterTests {
 		deployment1.setJobId("190709761");
 		deployment1.setNumber("189988914");
 		deployment1.setJobName("KnowHowDeployemnt");
+		deployment1.setDeployedBy("Shivani");
 
-		Deployment deployment2 = new Deployment();
+
 		deployment2.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment2.setProjectToolConfigId(new ObjectId("6706661b307f0239477f1e9e"));
 		deployment2.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -216,8 +226,9 @@ public class BambooProcessorJobExecuterTests {
 		deployment2.setJobId("190709761");
 		deployment2.setNumber("189988914");
 		deployment2.setJobName("KnowHowDeployemnt");
+		deployment2.setDeployedBy("Hiren");
 
-		Deployment deployment3 = new Deployment();
+
 		deployment3.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment3.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment3.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -285,6 +296,7 @@ public class BambooProcessorJobExecuterTests {
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(true);
 		processorExecutionTraceLog.setProcessorName("Bamboo");
 		processorExecutionTraceLog.setBasicProjectConfigId("5f9014743cb73ce896167659");
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
 
 	}
@@ -329,6 +341,10 @@ public class BambooProcessorJobExecuterTests {
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
 			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(any(), any())).thenReturn(processorExecutionTraceLogs);
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
+			when(processorExecutionTraceLogRepository.
+					findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, "5f9014743cb73ce896167659"))
+					.thenReturn(optionalProcessorExecutionTraceLog);
+			when(deploymentRepository.findByProjectToolConfigIdAndNumber(any(),any())).thenReturn(deployment);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());

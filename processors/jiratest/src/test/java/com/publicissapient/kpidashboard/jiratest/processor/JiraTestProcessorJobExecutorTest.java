@@ -119,7 +119,7 @@ public class JiraTestProcessorJobExecutorTest {
 		toolList.add(toolInfo);
 		jiraTestProcessorJobExecutor = new JiraTestProcessorJobExecutor(taskScheduler);
 		this.jiraTestProcessor = jiraTestProcessorJobExecutor.getProcessor();
-		MockitoAnnotations.openMocks(this);
+		////MockitoAnnotations.openMocks(this);
 		projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("604092b52b424d5e90d39342"));
 		projectBasicConfig.setIsKanban(true);

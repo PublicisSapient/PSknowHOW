@@ -36,8 +36,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,14 +126,20 @@ public class AzurePipelineProcessorTaskTests {
 	private DeploymentRepository deploymentRepository;
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 	private static final String SERVER1 = "server1";
 	private static final String NICENAME1 = "niceName1";
 	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	private static final long LASTUPDATEDTIME = 0;
 
 	Map<String, List<ProjectToolConfig>> azurePipelineJobFromConfig = Maps.newHashMap();
 	List<ProjectBasicConfig> listProjectBasicConfig = new ArrayList<>();
 	List<ProcessorToolConnection> listProcessorToolConnection = new ArrayList<>();
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
 
 	@BeforeEach
 	public void initMocks() {
@@ -163,6 +172,13 @@ public class AzurePipelineProcessorTaskTests {
 		listProjectBasicConfig.add(projectBasicConfig);
 		listProjectBasicConfig.add(projectBasicConfig2);
 
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZUREPIPELINE);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("63da71facaac4d289c38744d");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
+
 		ProcessorToolConnection processorToolConnection = new ProcessorToolConnection();
 		processorToolConnection.setId(new ObjectId("507f191e810c19729de860ea"));
 		processorToolConnection.setToolName("toolName");
@@ -186,7 +202,7 @@ public class AzurePipelineProcessorTaskTests {
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(buildClient);
 		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
 		when(buildRepository.findByProjectToolConfigIdAndBuildJob(any(), any())).thenReturn(new ArrayList<Build>());
-		when(buildClient.getInstanceJobs(any(), any(Long.class))).thenReturn(new HashMap<ObjectId, Set<Build>>());
+		when(buildClient.getInstanceJobs(any(), any(Long.class),any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		AzurePipelineProcessor azurePipelineProcessor = new AzurePipelineProcessor();
 		task.execute(azurePipelineProcessor);
@@ -196,7 +212,7 @@ public class AzurePipelineProcessorTaskTests {
 
 	@Test
 	public void collectNoJobsOnServerNothingAdded() {
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(new HashMap<ObjectId, Set<Build>>());
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		task.execute(processorWithOneServer());
@@ -209,7 +225,7 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineProcessor processor = processorWithOneServer();
 		processor.setId(new ObjectId("507f191e810c19729de860ea"));
 
-		when(azurePipelineClient.getInstanceJobs(any(), Mockito.anyLong()))
+		when(azurePipelineClient.getInstanceJobs(any(), Mockito.anyLong(),any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 
@@ -237,8 +253,11 @@ public class AzurePipelineProcessorTaskTests {
 		basicConfigs.add(config);
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(azurePipelineClient);
 		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
-		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong()))
+		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(),any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
+		when(processorExecutionTraceLogRepository.
+				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}
@@ -260,8 +279,11 @@ public class AzurePipelineProcessorTaskTests {
 		basicConfigs.add(config);
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(azurePipelineClient);
 		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
-		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong()))
+		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(),any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
+		when(processorExecutionTraceLogRepository.
+				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}
@@ -293,7 +315,7 @@ public class AzurePipelineProcessorTaskTests {
 	@Test
 	public void collectTwoJobsJobsAddedRandomOrder() {
 		AzurePipelineProcessor processor = processorWithOneServer();
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(twoJobsWithTwoBuildsRandom(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 
@@ -305,7 +327,7 @@ public class AzurePipelineProcessorTaskTests {
 	@Test
 	public void collectOneJobExistsNotAdded() {
 		AzurePipelineProcessor processor = processorWithOneServer();
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 
@@ -328,7 +350,7 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineProcessor processor = processorWithOneServer();
 		Set<ObjectId> udId = new HashSet<>();
 		udId.add(processor.getId());
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(twoJobsWithTwoBuildsRandom(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		task.execute(processor);
@@ -341,7 +363,7 @@ public class AzurePipelineProcessorTaskTests {
 		processor.setId(new ObjectId("507f191e810c19729de860ea"));
 		Set<ObjectId> udId = new HashSet<>();
 		udId.add(processor.getId());
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		boolean actualStatus = task.execute(processor);
@@ -359,7 +381,7 @@ public class AzurePipelineProcessorTaskTests {
 
 		Set<ObjectId> udId = new HashSet<>();
 		udId.add(processor.getId());
-		when(deployClient.getDeploymentJobs(any(), any(Long.class)))
+		when(deployClient.getDeploymentJobs(any(), any(Long.class),any()))
 				.thenReturn(twoJobsWithTwoDeployRandom(SERVER1, NICENAME1));
 		when(deploymentRepository.findByProcessorIdIn(udId)).thenReturn(deployJobs);
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(null);
@@ -373,7 +395,7 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineProcessor processor = processorWithOneServer();
 		Build build = build("1", "JOB1_1_URL");
 
-		when(azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER, LASTUPDATEDTIME))
+		when(azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER, LASTUPDATEDTIME,projectBasicConfig))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		task.execute(processor);
 
@@ -385,7 +407,7 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineProcessor processor = processorWithOneServer();
 		Build build = build("1", "JOB1_1_URL");
 		AzurePipelineClient client2 = mock(AzurePipelineClient.class);
-		when(client2.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER, LASTUPDATEDTIME))
+		when(client2.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER, LASTUPDATEDTIME,projectBasicConfig))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(buildRepository.findByProjectToolConfigIdAndBuildJob(AZUREPIPELINE_SAMPLE_SERVER.getId(),
 				build.getNumber())).thenReturn(null);
@@ -399,7 +421,7 @@ public class AzurePipelineProcessorTaskTests {
 		AzurePipelineProcessor processor = processorWithOneServer();
 		Build build = build("1", "JOB1_1_URL");
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(oneJobWithBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 
 		boolean actualStatus = task.execute(processor);
@@ -417,7 +439,7 @@ public class AzurePipelineProcessorTaskTests {
 		processorItem.put(ProcessorType.BUILD, Arrays.asList(getProcessorItems(id)));
 		AzurePipelineClient client2 = mock(AzurePipelineClient.class);
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
-		when(client2.getInstanceJobs(any(), any(Long.class))).thenReturn(new HashMap<ObjectId, Set<Build>>());
+		when(client2.getInstanceJobs(any(), any(Long.class),any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 
@@ -427,7 +449,7 @@ public class AzurePipelineProcessorTaskTests {
 	public void collectEnableJob() {
 
 		AzurePipelineProcessor processor = processorWithOneServer();
-		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class)))
+		when(azurePipelineClient.getInstanceJobs(any(), any(Long.class),any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 

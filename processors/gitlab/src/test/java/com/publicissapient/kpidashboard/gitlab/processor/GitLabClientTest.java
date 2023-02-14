@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import java.net.URLDecoder;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +70,7 @@ public class GitLabClientTest {
 	@Mock
 	private AesEncryptionService aesEncryptionService;
 	ProcessorToolConnection gitLabInfo=new ProcessorToolConnection();
+	ProjectBasicConfig projectBasicConfig=new ProjectBasicConfig();
 	@BeforeEach
 	public void init() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -91,9 +93,10 @@ public class GitLabClientTest {
 		String serverResponse = getServerResponse("/gitlab-server/stashresponse.json");
 		String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).build();
 		restUrl = URLDecoder.decode(restUrl, "UTF-8");
+		projectBasicConfig.setSaveAssigneeDetails(true);
 		when(restTemplate.exchange(eq(restUrl), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo, true,gitLabInfo);
+		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo,gitLabInfo,projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		CommitDetails gitLabCommit = commits.get(0);
 		Assert.assertEquals("userab", gitLabCommit.getAuthor());

@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +66,7 @@ class AzurePipelineDeploymentClientTest {
 
 	private static final ProcessorToolConnection azurePipelineServer = new ProcessorToolConnection();
 	private static final ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	@BeforeEach
 	public void init() {
 		azurePipelineServer.setUrl("https://dev.azure.com/KnowHOW-demo/KnowHow");
@@ -74,6 +77,11 @@ class AzurePipelineDeploymentClientTest {
 		azurePipelineServer.setId(new ObjectId("629f47946000f87b2c5050b3"));
 		azurePipelineServer.setId(new ObjectId("629f47946000f87b2c5050b4"));
 		azurePipelineServer.setApiVersion("6.0");
+
+
+		proBasicConfig.setId(new ObjectId("629f47946000f87b2c5050b5"));
+		proBasicConfig.setSaveAssigneeDetails(true);
+		projectConfigList.add(proBasicConfig);
 
 	}
 

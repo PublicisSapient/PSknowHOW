@@ -25,7 +25,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -127,7 +131,11 @@ class BitBucketProcessorJobExecutorTest {
 	private BitBucketServerClient bitBucketServerClient;
 	
 	private List<ProjectBasicConfig> projectConfigList;
-
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 	@BeforeEach
 	public void setUp() {
 		bitBucketProcessorJobExecutor = new BitBucketProcessorJobExecutor(taskScheduler);
@@ -144,6 +152,13 @@ class BitBucketProcessorJobExecutorTest {
 			p.setId(PROCESSORID);
 			p.setProjectName("projectName");
 			projectConfigList.add(p);
+
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("5e2ac020e4b098db0edf5145");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 	}
 
 	@Test
@@ -163,6 +178,8 @@ class BitBucketProcessorJobExecutorTest {
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
 		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
+		proBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		bitbucketRepos.add(bitbucketRepo);
@@ -186,6 +203,9 @@ class BitBucketProcessorJobExecutorTest {
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
 
@@ -198,6 +218,8 @@ class BitBucketProcessorJobExecutorTest {
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
 		ProjectBasicConfig proBasicConfig= new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
+		proBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
@@ -222,6 +244,9 @@ class BitBucketProcessorJobExecutorTest {
 		Mockito.when(bitBucketRepository.save(any(BitbucketRepo.class))).thenReturn(bitbucketRepo);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
 

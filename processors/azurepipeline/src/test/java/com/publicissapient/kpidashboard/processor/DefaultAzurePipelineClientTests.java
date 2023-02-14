@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,7 @@ public class DefaultAzurePipelineClientTests {
 
 	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
 	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private  ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	private static final long LASTUPDATEDTIME = 0;
 	private static final long LASTUPDATEDTIME1 = 500000;
 	@Mock
@@ -156,7 +158,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE,
-				LASTUPDATEDTIME);
+				LASTUPDATEDTIME,projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -168,7 +170,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"), HttpStatus.OK));
-		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds);
+		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds,projectBasicConfig);
 		assertEquals(0, lastStartTimeOfBuilds);
 	}
 
@@ -178,7 +180,7 @@ public class DefaultAzurePipelineClientTests {
 		when(azurePipelineConfig.getApiEndPoint()).thenReturn("_apis/build/builds");
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds);
+		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds,projectBasicConfig);
 		assertEquals(0, lastStartTimeOfBuilds);
 	}
 

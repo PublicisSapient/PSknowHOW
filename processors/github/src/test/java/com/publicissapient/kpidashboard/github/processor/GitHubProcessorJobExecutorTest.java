@@ -2,10 +2,15 @@ package com.publicissapient.kpidashboard.github.processor;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -88,6 +93,12 @@ public class GitHubProcessorJobExecutorTest {
 
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+
 
 
 	@Before
@@ -112,6 +123,11 @@ public class GitHubProcessorJobExecutorTest {
 		gitHubProcessor.setProcessorType(ProcessorType.SCM);
 		gitHubProcessor.setProcessorName("GitHub");
 		gitHubProcessor.setId(new ObjectId());
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
@@ -120,6 +136,9 @@ public class GitHubProcessorJobExecutorTest {
 
 		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(),ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
+		when(processorExecutionTraceLogRepository.
+				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);
 	}
