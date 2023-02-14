@@ -1111,6 +1111,31 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
+                    <div class="p-mb-3 p-d-flex p-align-center" *ngIf="fieldstoShow.length === 0">
+                        <label class="field-title">Due Date <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                            Definition:
+                                            This field is to track due date of issues tagged in the iteration
+                                        </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false"></span></label>
+                        <div class="fields-container p-p-2">
+                            <div class="p-m-2">
+                                <label for="dueDateEnabled" class="p-mr-2">Due Date Enable <span class="fa fa-info-circle"
+                                        aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        If the check box is checked, then due date needs to be considered for calculation
+                                    </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                        [escape]="false"></span></label>
+                                <p-inputSwitch name="dueDateEnabled" id="dueDateEnabled"
+                                    formControlName="dueDateEnabled">
+                                </p-inputSwitch>
+                                <div class="p-inputgroup p-mt-2">
+                                    <p-calendar inputId="basic" name="dueDate" id="dueDate" formControlName="dueDate"
+                                        [style]="{'max-width':'initial','width':'61vw'}"></p-calendar>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                   </div>
               </p-accordionTab>
 

@@ -40,6 +40,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { environment } from 'src/environments/environment';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { BadgeModule } from 'primeng/badge';
+import { CalendarModule } from 'primeng/calendar';
+import { of } from 'rxjs';
 
 const completeHierarchyData = {
   kanban: [
@@ -650,7 +652,8 @@ describe('FieldMappingComponent', () => {
         DialogModule,
         InputNumberModule,
         RadioButtonModule,
-        BadgeModule
+        BadgeModule,
+        CalendarModule
       ],
       providers: [
         HttpService,
@@ -865,4 +868,45 @@ describe('FieldMappingComponent', () => {
     httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
+
+  it("should dropdowns close once scroll",()=>{
+    component.scrollToPosition();
+    expect(component.populateDropdowns).toBeFalsy();
+  })
+
+  it("should open/close the dropdown dialog",()=>{
+    component.selectedToolConfig = fakeSelectedTool;
+    spyOn(httpService, 'getKPIConfigMetadata').and.callThrough();
+    component.getDropdownData();
+    // fixture.detectChanges();
+    expect(httpService.getKPIConfigMetadata).toHaveBeenCalledTimes(1);
+    const metadataReq = httpMock.expectOne(baseUrl + '/api/editConfig/jira/editKpi/' + sharedService.getSelectedToolConfig()[0].id);
+    expect(metadataReq.request.method).toBe('GET');
+    metadataReq.flush(dropDownMetaData);
+
+    component.initializeFields();
+    component.fieldMappingMetaData = {};
+    fixture.detectChanges();
+    component.showDialogToAddValue(true, 'epicCostOfDelay', 'fields');
+    component.showDialogToAddValue(false, 'jiraIssueTypeNames', 'Issue_Type');
+    component.showDialogToAddValue(false, 'jiradefecttype', 'Issue_Link');
+    component.showDialogToAddValue(true, 'storyFirstStatus', 'workflow');
+    expect(component.fieldMappingMultiSelectValues.length).toBe(0);
+  })
+
+  it("should get relation between field mappings",()=>{
+    const fakeResponse = {
+      kpiFieldMappingList: [{
+        id: '63e643be461d7a93eed8bebc',
+        kpiId: 'kpi14',
+        kpiName: 'Defect Injection Rate',
+        kpiSource: 'Jira',
+        type :['Scrum']
+      }],
+    };
+    spyOn(httpService,'getKPIFieldMappingRelationships').and.returnValue(of(fakeResponse));
+    component.getKPIFieldMappingRelationships();
+    expect(component.kpiRelationShips).not.toBeNull();
+  })
+
 });
