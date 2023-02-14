@@ -291,7 +291,8 @@ public enum KPICode {
 	WORK_REMAINING("kpi119", KPISource.JIRA.name()),
 
 	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
-	
+
+	DEFECT_COUNT_BY_RCA_PIECHART("kpi131",KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */

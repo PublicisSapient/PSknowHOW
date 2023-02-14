@@ -125,7 +125,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<JiraIssue> allCompletedIssuesExcludeStory = filterCompletedIssues(resultMap, fieldMapping);
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseRCAList = getPriorityWiseRCAList(allCompletedIssuesExcludeStory);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-				String trendLineName = latestSprint.getProjectFilter().getName();
 				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
 				// filterDataList will consist of DataCountGroup which will be set for all priorities
 				List<DataCountGroup> filterDataList = new ArrayList<>();
@@ -142,6 +141,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 					int priorityRCACount = 0;
 					Map<String, Integer> rcaCountMap = new HashMap<>();
+					// update and set the overall data
 					for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
 						String rcaName = rcaEntry.getKey();
 						List<JiraIssue> issues = rcaEntry.getValue();
@@ -149,13 +149,8 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 						priorityRCACount += issues.size();
 						rcaCountMap.put(rcaName, issues.size());
 						overallRCACount += issues.size();
-						if (overallRCACountMap.containsKey(rcaName)) {
-							overallRCACountMap.put(rcaName, overallRCACountMap.get(rcaName) + issues.size());
-						} else {
-							overallRCACountMap.put(rcaName, issues.size());
-						}
+						overallRCACountMap.merge(rcaName, issues.size(), Integer::sum);
 					}
-
 					DataCount priorityRCAData = new DataCount();
 					priorityRCAData.setData(String.valueOf(priorityRCACount));
 					priorityRCAData.setValue(rcaCountMap);
@@ -179,30 +174,13 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					priorityData.setValue(dataCountList);
 					dataCountListForAllPriorities.add(priorityRCAData);
 				}
-
 				// logic to create "Overall" Priority which will contain aggregate of all the priorities such as P1, P2, P3 and P4
-				List<DataCount> overallRCADataList = new ArrayList<>();
-				for (Map.Entry<String, Integer> entry : overallRCACountMap.entrySet()) {
-					DataCount overallRCAData = new DataCount();
-					overallRCAData.setData(entry.getKey());
-					overallRCAData.setValue(entry.getValue());
-					overallRCADataList.add(overallRCAData);
-				}
 				Map<String, Integer> overallRCACountMapAggregate = new HashMap<>();
 				for (DataCount dataCount : dataCountListForAllPriorities) {
 					Map<String, Integer> rcaCountMap = (Map<String, Integer>) dataCount.getValue();
-					for (Map.Entry<String, Integer> rcaCount : rcaCountMap.entrySet()) {
-						String rcaName = rcaCount.getKey();
-						int rcaCountValue = rcaCount.getValue();
-						if (overallRCACountMapAggregate.containsKey(rcaName)) {
-							int currentRcaCount = overallRCACountMapAggregate.get(rcaName);
-							overallRCACountMapAggregate.put(rcaName, currentRcaCount + rcaCountValue);
-						} else {
-							overallRCACountMapAggregate.put(rcaName, rcaCountValue);
-						}
-					}
+					rcaCountMap.forEach((rcaName, rcaCountValue) ->
+							overallRCACountMapAggregate.merge(rcaName, rcaCountValue, Integer::sum));
 				}
-
 				// trendValueListOverAll will consist of data only pertaining to "Overall" Priority Filter
 				List<DataCount> trendValueListOverAll = new ArrayList<>();
 				DataCount overallData = new DataCount();
@@ -232,39 +210,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId, overAllRCAIssueCount.get(0));
 			}
 		}
-	}
-
-	private DataCount getDataCountObject(Node node, String trendLineName, Map<String, Integer> overAllHoverValueMap,
-										 String key, Long value) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(trendLineName);
-		dataCount.setSSprintID(node.getSprintFilter().getId());
-		dataCount.setSSprintName(node.getSprintFilter().getName());
-		dataCount.setValue(value);
-		dataCount.setKpiGroup(key);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
-		if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
-			dataCount.setHoverValue(overAllHoverValueMap);
-		} else {
-			hoverValueMap.put(key, value.intValue());
-			dataCount.setHoverValue(hoverValueMap);
-		}
-		return dataCount;
-	}
-	private Map<String, IterationKpiData> groupIterationKpiData(List<IterationKpiData> overAllRCAData) {
-		Map<String, IterationKpiData> groupedDataMap = new HashMap<>();
-		for (IterationKpiData item : overAllRCAData) {
-			IterationKpiData existingData = groupedDataMap.get(item.getLabel());
-			if (existingData == null) {
-				groupedDataMap.put(item.getLabel(), item);
-			} else {
-				existingData.setValue(existingData.getValue() + item.getValue());
-				existingData.getModalValues().addAll(item.getModalValues());
-			}
-		}
-		LOGGER.info("DefectCountByRCAServiceImpl -> groupedIterationKpiData ->  : {}", groupedDataMap);
-		return groupedDataMap;
 	}
 
 	private List<JiraIssue> filterCompletedIssues(Map<String, Object> resultMap, FieldMapping fieldMapping) {
