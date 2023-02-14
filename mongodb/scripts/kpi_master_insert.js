@@ -335,14 +335,14 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the  development team in closing defects raised because of new feature development within the sprint",
+      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the development team in closing defects raised because of new functionalities within the iteration",
       "formula": [
         {
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a closed sprint",
-            "Total no. of defects tagged to stories in a closed sprint"
+            "No. of defects tagged to stories in the iteration that are fixed",
+            "Total no. of defects tagged to stories in a iteration"
           ]
         }
       ],
