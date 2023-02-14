@@ -326,18 +326,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
 				.getDeployJobsFromServer(bambooJobConfig, proBasicConfig);
 
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-			List<Deployment> updateDeployedBy = new ArrayList<>();
-			deployJobsFromBamboo.forEach((basicConfigID, deploymentList) ->
-					deploymentList.forEach(deployment -> {
-						Deployment deploymentData = deploymentRepository.findByProjectToolConfigIdAndNumber(deployment.getProjectToolConfigId(), deployment.getNumber());
-						if (deploymentData != null) {
-							deploymentData.setDeployedBy(deployment.getDeployedBy());
-							updateDeployedBy.add(deploymentData);
-						}
-					})
-			);
-			deploymentRepository.saveAll(updateDeployedBy);
+		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+			updateAssigneeDetailForDeploy(processorExecutionTraceLog, proBasicConfig, deployJobsFromBamboo);
 		}
 		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs);
 		Set<Deployment> saveDeployments = new HashSet<>();
@@ -353,6 +343,22 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 		log.info("Finished with total deployed activeJobs count: {}", activeJobs.size());
+	}
+
+	private void updateAssigneeDetailForDeploy(ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig, Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo) {
+		if(checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+			List<Deployment> updateDeployedBy = new ArrayList<>();
+			deployJobsFromBamboo.forEach((basicConfigID, deploymentList) ->
+					deploymentList.forEach(deployment -> {
+						Deployment deploymentData = deploymentRepository.findByProjectToolConfigIdAndNumber(deployment.getProjectToolConfigId(), deployment.getNumber());
+						if (deploymentData != null) {
+							deploymentData.setDeployedBy(deployment.getDeployedBy());
+							updateDeployedBy.add(deploymentData);
+						}
+					})
+			);
+			deploymentRepository.saveAll(updateDeployedBy);
+		}
 	}
 
 	private boolean checkDeploymentConditionsNotNull(Deployment deployment) {
@@ -556,12 +562,11 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-		if (existingTraceLogOptional.isPresent()) {
 			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 				processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
 				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
 			});
-		}
+
 		return processorExecutionTraceLog;
 	}
 	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
@@ -572,8 +577,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
 								 ProjectBasicConfig proBasicConfig) {
-		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+		return (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun()));
 	}
 
 	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,

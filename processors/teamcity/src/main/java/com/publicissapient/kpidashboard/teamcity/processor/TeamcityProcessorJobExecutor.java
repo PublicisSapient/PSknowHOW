@@ -229,8 +229,13 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	}
 
 	private void updateAssigneeDetails(ProjectBasicConfig proBasicConfig, ProcessorToolConnection teamcityServer, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+			updateAssignee(proBasicConfig, teamcityServer, processorExecutionTraceLog, buildsByJob);
+		}
+	}
 
+	private void updateAssignee(ProjectBasicConfig proBasicConfig, ProcessorToolConnection teamcityServer, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
+		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
 			List<Build> updateStartedBy = new ArrayList<>();
 
 			for (Build build : buildsByJob.values().iterator().next()) {
@@ -251,7 +256,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.TEAMCITY);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, basicProjectConfigId);
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.TEAMCITY, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
 			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
@@ -356,7 +361,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
 								 ProjectBasicConfig proBasicConfig) {
 		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
 	}
 
 	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,

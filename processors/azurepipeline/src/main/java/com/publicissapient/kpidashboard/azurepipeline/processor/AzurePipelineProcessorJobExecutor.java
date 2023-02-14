@@ -254,7 +254,16 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				lastStartTimeOfJobs, proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 		activeDeployJobs.addAll(deploymentsByJob.keySet());
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+	if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+		updateAssigneeDetailsForDeploy(activeDeployJobs, azurePipelineServer, proBasicConfig, processorExecutionTraceLog);
+	}
+
+		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
+
+	}
+
+	private void updateAssigneeDetailsForDeploy(List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog) {
+		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
 
 			List<Deployment> updateDeployedBy = new ArrayList<>();
 
@@ -266,11 +275,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 			});
 			deploymentRepository.saveAll(updateDeployedBy);
-
 		}
-
-		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
-
 	}
 
 	private int buildJobs(AzurePipelineProcessor processor, long startTime, int count,
@@ -282,8 +287,16 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 		int updatedJobs = addNewBuilds(processor.getId(), azurePipelineServer, buildsByJob);
 		count += updatedJobs;
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+			updateAssigneeDetailsForBuild(azurePipelineServer, proBasicConfig, processorExecutionTraceLog, buildsByJob);
 
+		}
+
+		return count;
+	}
+
+	private void updateAssigneeDetailsForBuild(ProcessorToolConnection azurePipelineServer, ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
+		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
 			List<Build> updateStartedBy = new ArrayList<>();
 
 			for (Build build : buildsByJob.values().iterator().next()) {
@@ -295,10 +308,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 			}
 			buildRepository.saveAll(updateStartedBy);
-
 		}
-
-		return count;
 	}
 
 	/**
@@ -529,8 +539,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
 								 ProjectBasicConfig proBasicConfig) {
-		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+		return (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun()));
 	}
 
 	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,

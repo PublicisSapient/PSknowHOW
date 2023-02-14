@@ -231,19 +231,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId());
 			count += updatedJobs;
 			log.info("Job updated for :{}", count);
-			if (!checkLastRun(processorExecutionTraceLog, proBasicConfig) && checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-				List<Build> updateStartedBy = new ArrayList<>();
-
-				for (Build build : buildsByJob.values().iterator().next()) {
-
-					Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
-							build.getNumber());
-					buildData.setStartedBy(build.getStartedBy());
-					updateStartedBy.add(buildData);
-
-				}
-				buildRepository.saveAll(updateStartedBy);
-
+			if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
+				updateAssigneeDetailForBuild(jenkinsServer, processorExecutionTraceLog, proBasicConfig, buildsByJob);
 			}
 
 
@@ -255,6 +244,22 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+	}
+
+	private void updateAssigneeDetailForBuild(ProcessorToolConnection jenkinsServer, ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig, Map<ObjectId, Set<Build>> buildsByJob) {
+		if(checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
+			List<Build> updateStartedBy = new ArrayList<>();
+
+			for (Build build : buildsByJob.values().iterator().next()) {
+
+				Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
+						build.getNumber());
+				buildData.setStartedBy(build.getStartedBy());
+				updateStartedBy.add(buildData);
+
+			}
+			buildRepository.saveAll(updateStartedBy);
+		}
 	}
 
 	private void processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
@@ -427,8 +432,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
 								 ProjectBasicConfig proBasicConfig) {
-		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				&& StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
+		return (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
+				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun()));
 	}
 
 	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
