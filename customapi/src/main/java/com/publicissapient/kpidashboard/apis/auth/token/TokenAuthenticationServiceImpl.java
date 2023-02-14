@@ -31,10 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -119,19 +118,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()){
-//			Collection<GrantedAuthority> authorities = Sets.newHashSet();
-//			authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-//			PreAuthenticatedAuthenticationToken authenticationSso = new PreAuthenticatedAuthenticationToken("SUPERADMIN", null,
-//					authorities);
-//			authenticationSso.setDetails(AuthType.SSO);
-
-			Cookie authCookieSso = cookieUtil.getAuthCookie(request);
-			if (StringUtils.isBlank(authCookieSso.getValue())) {
-				return null;
-			}
-
-			String tokenSso = authCookieSso.getValue();
-			return createAuthenticationForSso(tokenSso);
+			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
@@ -172,22 +159,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 	}
 
-	private Authentication createAuthenticationForSso(String token){
-		try {
-			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
-					.getBody();
-			String username = claims.getSubject();
-			Collection<? extends GrantedAuthority> authorities = getAuthorities(
-					claims.get(ROLES_CLAIM, Collection.class));
-			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
-					authorities);
-			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			return authentication;
-
-		} catch (ExpiredJwtException e) {
-			return null;
-		}
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
