@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +22,8 @@ public class PushDataValidationServiceImpl extends PushDataValidation {
 	private static final String END_TIME = "endTime";
 	private static final String DURATION = "duration";
 
-	public void createBuildDeployErrorMap(Map<Pair<String, String>, List<PushValidationType>> validations,
-										  Map<String, String> errors) {
+	public Map<String, String> createBuildDeployErrorMap(Map<Pair<String, String>, List<PushValidationType>> validations) {
+		Map<String, String> errors = new HashMap<>();
 		if (MapUtils.isNotEmpty(validations)) {
 			AtomicBoolean timeCheck = new AtomicBoolean(false);
 			validations.forEach((key, value) -> {
@@ -37,7 +38,7 @@ public class PushDataValidationServiceImpl extends PushDataValidation {
 			});
 			checkRequiredTimeDetails(errors, validations, timeCheck.get());
 		}
-
+		return errors;
 	}
 
 	private void checkRequiredTimeDetails(Map<String, String> errors,

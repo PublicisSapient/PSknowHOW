@@ -49,7 +49,7 @@ public class BuildServiceImpl {
 	BuildRepository buildRepository;
 
 	@Autowired
-	PushDataValidationServiceImpl buildValidationService;
+	PushDataValidationServiceImpl pushDataValidationService;
 
 	public int checkandCreateBuilds(ObjectId basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
 			List<PushErrorData> buildErrorList) {
@@ -84,7 +84,6 @@ public class BuildServiceImpl {
 	 * @return
 	 */
 	private Map<String, String> createErrorMap(PushBuild pushBuild) {
-		Map<String, String> errors = new HashMap<>();
 		Map<Pair<String, String>, List<PushValidationType>> validations = new HashMap<>();
 		validations.put(Pair.of("jobName", pushBuild.getJobName()), Arrays.asList(PushValidationType.BLANK));
 		validations.put(Pair.of("number", pushBuild.getNumber()),
@@ -97,8 +96,7 @@ public class BuildServiceImpl {
 				Arrays.asList(PushValidationType.BLANK, PushValidationType.TIME_DETAILS));
 		validations.put(Pair.of("duration", pushBuild.getDuration().toString()),
 				Arrays.asList(PushValidationType.BLANK, PushValidationType.TIME_DETAILS));
-		buildValidationService.createBuildDeployErrorMap(validations, errors);
-		return errors;
+		return pushDataValidationService.createBuildDeployErrorMap(validations);
 	}
 
 	/**

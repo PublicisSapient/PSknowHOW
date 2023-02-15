@@ -126,7 +126,6 @@ public class DeployServiceImpl {
 	 * @return
 	 */
 	private Map<String, String> createErrorMap(PushDeploy pushDeploy) {
-		Map<String, String> errors = new HashMap<>();
 		Map<Pair<String, String>, List<PushValidationType>> validations = new HashMap<>();
 		validations.put(Pair.of("jobName", pushDeploy.getJobName()), Arrays.asList(PushValidationType.BLANK));
 		validations.put(Pair.of("number", pushDeploy.getNumber()), Arrays.asList(PushValidationType.BLANK));
@@ -139,8 +138,7 @@ public class DeployServiceImpl {
 				Arrays.asList(PushValidationType.BLANK));
 		validations.put(Pair.of("duration", pushDeploy.getDuration().toString()),
 				Arrays.asList(PushValidationType.BLANK));
-		buildValidationService.createBuildDeployErrorMap(validations, errors);
-		return errors;
+		return buildValidationService.createBuildDeployErrorMap(validations);
 	}
 
 }

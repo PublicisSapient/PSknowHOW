@@ -1,9 +1,14 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,10 +29,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.PushDataValidationServiceImpl;
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
@@ -39,7 +45,10 @@ public class BuildServiceImplTest {
 	private BuildServiceImpl buildService;
 
 	@Mock
-	BuildRepository buildRepository;
+	private BuildRepository buildRepository;
+
+	@Mock
+	private PushDataValidationServiceImpl pushDataValidationService;
 
 	private ObjectId projectBasicConfigId;
 
@@ -68,6 +77,8 @@ public class BuildServiceImplTest {
 		}
 		doReturn(buildList.get(0)).when(buildRepository).findByNumberAndBuildJobAndBasicProjectConfigId(
 				Mockito.anyString(), Mockito.anyString(), Mockito.any());
+		Map<String, String> errorsMap = new HashMap<>();
+		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
 		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
@@ -87,6 +98,8 @@ public class BuildServiceImplTest {
 		}
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		Map<String, String> errorsMap = new HashMap<>();
+		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
 		Assert.assertEquals(3, errors);
