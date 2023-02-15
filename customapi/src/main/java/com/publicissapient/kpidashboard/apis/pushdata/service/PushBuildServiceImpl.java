@@ -27,11 +27,13 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 
@@ -44,6 +46,9 @@ public class PushBuildServiceImpl implements PushBaseService {
 
 	@Autowired
 	private DeployServiceImpl deployService;
+
+	@Autowired
+	private CacheService cacheService;
 
 	@Autowired
 	CustomApiConfig customApiConfig;
@@ -88,6 +93,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 		}
 		buildService.saveBuilds(buildList);
 		deployService.saveDeployments(deploymentList);
+		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
 	}
 
 	/**
