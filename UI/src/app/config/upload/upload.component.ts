@@ -513,8 +513,7 @@ export class UploadComponent implements OnInit {
                         this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
-                        if (Object.keys(filterData).length !== 0) {
-                        } else {
+                        if (Object.keys(filterData).length === 0) {
                             this.resetProjectSelection();
                             // show error message
                             this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
