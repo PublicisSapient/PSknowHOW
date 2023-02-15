@@ -208,7 +208,7 @@
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" style="margin: 0rem 0.4rem;position: relative"
                (click)="notification.toggle($event)" role="button">
                <img src="../../../assets/img/icon-bell.svg" alt="Bell" />
-               <span *ngIf="notificationList.length" class="noti-count">{{notificationList.length}}</span>
+               <span *ngIf="requestCountMoreThanZero" class="noti-count">{{notificationList.length}}</span>
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
             <!-- Notification button end -->

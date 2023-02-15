@@ -1098,14 +1098,6 @@ describe('FilterComponent', () => {
     expect(component.isTooltip).toBe(true);
    })
 
-  //  it('checking logout functionality ', (done) => {
-    //   const navigateSpy = spyOn(router, 'navigate');
-    //   component.logout();
-    //   httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);
-    //   expect(navigateSpy).toHaveBeenCalledWith(['./authentication/login']);
-    //   done();
-    // });
-
     it('should redirect on login page',inject([Router], (router: Router) => {
       const navigateSpy = spyOn(router, 'navigate');
       component.logout();

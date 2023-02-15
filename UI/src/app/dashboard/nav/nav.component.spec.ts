@@ -125,14 +125,14 @@ describe('NavComponent', () => {
   })
 
   it("should open edit model",(done)=>{
-    shareService.changedMainDashboardValueSub.next("updated bard name");
+    shareService.changedMainDashboardValueSub.next("updated board name");
     component.openEditModal();
     expect(component.displayEditModal).toBeTruthy();
     done();
   })
 
   it("should close edit model",()=>{
-    shareService.changedMainDashboardValueSub.next("updated bard name");
+    shareService.changedMainDashboardValueSub.next("updated board name");
     component.closeEditModal();
     expect(component.displayEditModal).toBeFalsy();
   })

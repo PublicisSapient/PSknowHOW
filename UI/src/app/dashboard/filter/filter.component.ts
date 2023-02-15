@@ -120,6 +120,7 @@ export class FilterComponent implements OnInit {
   username: string;
   isGuest = false;
   logoImage: any;
+  requestCountMoreThanZero : boolean = false;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -327,7 +328,6 @@ export class FilterComponent implements OnInit {
        this.router.url !== '/dashboard/Maturity' &&
        this.router.url !== '/dashboard/EngineeringMaturity'
      ) {
-      console.log("inside true",this.headerFixed)
        this.headerFixed =
          (window.pageYOffset ||
            document.documentElement.scrollTop ||
@@ -1529,6 +1529,9 @@ export class FilterComponent implements OnInit {
         if (response && response.success) {
           if (response.data?.length) {
             this.notificationList = [...response.data].map((obj) => {
+              if(obj.count > 0 ){
+                this.requestCountMoreThanZero = true;
+              }
               return {
                 label: obj.type + ' : ' + obj.count,
                 icon: '',
@@ -1585,7 +1588,6 @@ export class FilterComponent implements OnInit {
           ]);
           break;
         default:
-          console.log('default case');
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
