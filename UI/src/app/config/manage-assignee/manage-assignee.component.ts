@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Table } from 'primeng/table';
 
@@ -25,16 +25,12 @@ import { Table } from 'primeng/table';
   templateUrl: './manage-assignee.component.html',
   styleUrls: ['./manage-assignee.component.css']
 })
-export class ManageAssigneeComponent implements OnInit {
+export class ManageAssigneeComponent {
 
   @ViewChild('dt') table: Table;
   @Input() assigneeList = [];
   @Output() onAssigneeSave = new EventEmitter();
   searchText = new FormControl('');
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   onUserSelectionChange(event, assignee) {
     assignee['checked'] = event.target.checked;

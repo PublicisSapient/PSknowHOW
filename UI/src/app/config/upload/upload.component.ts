@@ -236,7 +236,6 @@ export class UploadComponent implements OnInit {
             classes: 'multi-select-custom-class'
         };
 
-        // this.selectedView = 'emm_upload';
         this.selectedView = 'logo_upload';
 
         if (this.isSuperAdmin) {
@@ -306,7 +305,6 @@ export class UploadComponent implements OnInit {
         document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
     }
     switchView(event) {
-        // this.highlightSideBarTab(event);
         switch (event.item.label) {
             case 'Upload Logo': {
                 this.selectedView = 'logo_upload';
@@ -516,7 +514,6 @@ export class UploadComponent implements OnInit {
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
                         if (Object.keys(filterData).length !== 0) {
-                            // this.getMasterData();
                         } else {
                             this.resetProjectSelection();
                             // show error message
@@ -695,7 +692,9 @@ export class UploadComponent implements OnInit {
                 this.reqObj['sprintNodeId'] = this.selectedSprintId;
             }
         } else {
-            this.selectedView === 'upload_tep' ? this.reqObj['executionDate'] = this.executionDate : '';
+            if(this.selectedView === 'upload_tep'){
+                this.reqObj['executionDate'] = this.executionDate;
+            }
         }
         if (this.selectedView === 'upload_tep') {
             this.popupForm = new UntypedFormGroup({
