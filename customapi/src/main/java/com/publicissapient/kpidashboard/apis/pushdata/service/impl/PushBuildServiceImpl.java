@@ -56,6 +56,16 @@ public class PushBuildServiceImpl implements PushBaseService {
 	@Autowired
 	CustomApiConfig customApiConfig;
 
+	/**
+	 * validate pushed buildDeploy data and if all requested data is valid then only saved
+	 * in db , otherwise rejected all data and show errors msg of particular failed
+	 * data
+	 * 
+	 * @param buildDeploy
+	 * @param projectConfigId
+	 * @return
+	 */
+
 	@Override
 	public PushDataResponse processPushDataInput(PushBuildDeploy buildDeploy, ObjectId projectConfigId) {
 		PushDataResponse pushDataResponse = new PushDataResponse();

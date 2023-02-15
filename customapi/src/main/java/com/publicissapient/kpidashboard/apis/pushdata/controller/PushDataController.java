@@ -53,6 +53,14 @@ public class PushDataController {
 	@Autowired
 	AuthExposeAPIService authExposeAPIService;
 
+	/**
+	 * push data api for build tools
+	 * 
+	 * @param request
+	 * @param pushBuildDeployDTO
+	 * @return
+	 */
+
 	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {

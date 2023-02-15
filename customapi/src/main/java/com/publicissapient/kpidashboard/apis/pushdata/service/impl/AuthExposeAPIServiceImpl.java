@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,21 +46,23 @@ import com.publicissapient.kpidashboard.common.util.EncryptionException;
 @Service
 @Slf4j
 public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
-
-	private static final long TOKEN_EXPIRY_DAYS = 30L;
 	private static final String TOKEN_KEY = "Api-Key";
 
 	@Autowired
 	private ExposeApiTokenRepository exposeApiTokenRepository;
 
 	@Autowired
-	ProjectAccessManager projectAccessManager;
+	private ProjectAccessManager projectAccessManager;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	final ModelMapper modelMapper = new ModelMapper();
 
 	/**
-	 * only one generate token per project and user wise, if user generate token
-	 * again for same then existing token and expiry will be updated.
+	 * user can only one generate token per project and user wise. if same user
+	 * request again generate token for same project then previously generated token
+	 * will be updated
 	 * 
 	 * @param exposeAPITokenRequestDTO
 	 * @return
@@ -75,16 +78,18 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 			apiAccessToken = Encryption.getStringKey();
 			if (Objects.nonNull(exposeApiTokenExist)) {
 				exposeApiTokenExist.setApiToken(apiAccessToken);
-				exposeApiTokenExist.setExpiryDate(LocalDate.now().plusDays(TOKEN_EXPIRY_DAYS));
+				exposeApiTokenExist
+						.setExpiryDate(LocalDate.now().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
 				exposeApiTokenExist.setUpdatedAt(LocalDate.now());
 				exposeApiTokenRepository.save(exposeApiTokenExist);
 				exposeAPITokenResponseDTO = modelMapper.map(exposeApiTokenExist, ExposeAPITokenResponseDTO.class);
-				return new ServiceResponse(true, "API token Is updated , after onward use this token",
+				return new ServiceResponse(true, "API token Is updated , All previously generated tokens will expiry",
 						exposeAPITokenResponseDTO);
 			} else {
 				ExposeApiToken exposeApiTokenNew = new ExposeApiToken();
 				exposeApiTokenNew.setUserName(exposeAPITokenRequestDTO.getUserName());
-				exposeApiTokenNew.setExpiryDate(LocalDate.now().plusDays(TOKEN_EXPIRY_DAYS));
+				exposeApiTokenNew
+						.setExpiryDate(LocalDate.now().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
 				exposeApiTokenNew.setCreatedAt(LocalDate.now());
 				exposeApiTokenNew
 						.setBasicProjectConfigId(new ObjectId(exposeAPITokenRequestDTO.getBasicProjectConfigId()));
@@ -92,31 +97,38 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 				exposeApiTokenNew.setApiToken(apiAccessToken);
 				exposeApiTokenRepository.save(exposeApiTokenNew);
 				exposeAPITokenResponseDTO = modelMapper.map(exposeApiTokenNew, ExposeAPITokenResponseDTO.class);
-				return new ServiceResponse(true, "Please save this API token for API Call", exposeAPITokenResponseDTO);
+				return new ServiceResponse(true, "API token is generated Successfully", exposeAPITokenResponseDTO);
 			}
 		} catch (EncryptionException e) {
 			return new ServiceResponse(false, "Error while Creating token", null);
 		}
 	}
 
+	/**
+	 * check valid token and expiry of token
+	 * 
+	 * @param request
+	 * @return ExposeApiToken
+	 */
 	@Override
 	public ExposeApiToken validateToken(HttpServletRequest request) {
 		String token = request.getHeader(TOKEN_KEY);
 		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
 		if (exposeApiToken == null) {
-			throw new PushDataException("Create Token To Push Data", HttpStatus.UNAUTHORIZED);
+			throw new PushDataException("Generate Token Push Data via KnowHow tool configuration screen",
+					HttpStatus.UNAUTHORIZED);
 		}
 		checkExpiryToken(exposeApiToken);
 		checkProjectAccessPermission(exposeApiToken);
-		exposeApiToken.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(TOKEN_EXPIRY_DAYS));
+		exposeApiToken
+				.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
 		exposeApiToken.setUpdatedAt(LocalDate.now());
 		return exposeApiToken;
 	}
 
 	private void checkProjectAccessPermission(ExposeApiToken exposeApiToken) {
 		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(),
-				exposeApiToken.getUserName() // if not user based, then loggedinuser
-		)) {
+				exposeApiToken.getUserName())) {
 			throw new PushDataException("Permission Denied", HttpStatus.UNAUTHORIZED);
 		}
 	}

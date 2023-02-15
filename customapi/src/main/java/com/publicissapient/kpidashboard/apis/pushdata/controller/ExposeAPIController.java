@@ -46,7 +46,13 @@ public class ExposeAPIController {
 	@Autowired
 	private AuthExposeAPIService authExposeAPIService;
 
-	@PreAuthorize("hasPermission(null, 'SAVE_PROJECT_TOOL')")
+	/**
+	 * API to generate token for push data based and
+	 * generate token has permission only superadmin and project admin of particular project
+	 * @param exposeAPITokenRequestDTO
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#exposeAPITokenRequestDTO.basicProjectConfigId, 'SAVE_PROJECT_TOOL')")
 	@RequestMapping(value = "/generateToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> generateAndSaveToken(
 			@RequestBody @Valid ExposeAPITokenRequestDTO exposeAPITokenRequestDTO) {

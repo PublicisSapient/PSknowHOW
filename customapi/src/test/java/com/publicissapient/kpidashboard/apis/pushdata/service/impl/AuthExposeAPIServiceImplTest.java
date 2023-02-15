@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 import java.time.LocalDate;
 
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.pushdata.service.impl.AuthExposeAPIServiceImpl;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import org.bson.types.ObjectId;
@@ -57,6 +58,9 @@ public class AuthExposeAPIServiceImplTest {
 	@Mock
 	private ProjectAccessManager projectAccessManager;
 
+	@Mock
+	private CustomApiConfig customApiConfig;
+
 	private ExposeApiToken exposeApiTokenDbExist;
 
 	@Before
@@ -69,6 +73,8 @@ public class AuthExposeAPIServiceImplTest {
 		exposeApiTokenDbExist.setUserName("SUPERADMIN");
 		exposeApiTokenDbExist.setCreatedAt(LocalDate.now());
 		exposeApiTokenDbExist.setExpiryDate(LocalDate.now().plusDays(30));
+
+		when(customApiConfig.getExposeAPITokenExpiryDays()).thenReturn(30);
 	}
 
 	@Test

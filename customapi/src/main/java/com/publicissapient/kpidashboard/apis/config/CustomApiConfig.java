@@ -183,6 +183,10 @@ public class CustomApiConfig {// NOPMD
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
 
+	private int pushDataLimit;//limit of data allowed to push through api
+
+	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
+
 	public int getPushDataLimit() {
 		return pushDataLimit;
 	}
@@ -191,7 +195,13 @@ public class CustomApiConfig {// NOPMD
 		this.pushDataLimit = pushDataLimit;
 	}
 
-	private int pushDataLimit;//limit of data allowed to push through api
+	public int getExposeAPITokenExpiryDays() {
+		return exposeAPITokenExpiryDays;
+	}
+
+	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
+		this.exposeAPITokenExpiryDays = exposeAPITokenExpiryDays;
+	}
 
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;

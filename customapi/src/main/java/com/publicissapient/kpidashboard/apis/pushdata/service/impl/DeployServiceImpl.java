@@ -56,6 +56,14 @@ public class DeployServiceImpl {
 	@Autowired
 	PushDataValidationServiceImpl buildValidationService;
 
+	/**
+	 *
+	 * @param basicProjectConfigId
+	 * @param deployList
+	 * @param deploymentList
+	 * @param deployErrorList
+	 * @return
+	 */
 	public int checkandCreateDeployment(ObjectId basicProjectConfigId, List<PushDeploy> deployList,
 			List<Deployment> deploymentList, List<PushErrorData> deployErrorList) {
 		AtomicInteger failedRecords = new AtomicInteger();
@@ -81,6 +89,14 @@ public class DeployServiceImpl {
 		return failedRecords.get();
 
 	}
+
+	/**
+	 *
+	 * @param basicProjectConfigId
+	 * @param pushDeploy
+	 * @param checkExisitingDeployment
+	 * @return
+	 */
 
 	private Deployment createDeployment(ObjectId basicProjectConfigId, PushDeploy pushDeploy,
 			Deployment checkExisitingDeployment) {
