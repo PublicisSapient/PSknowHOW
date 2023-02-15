@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.slf4j.Logger;
@@ -208,7 +209,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 								overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
 							}
 							populateIterationData(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
-									jiraIssueWaitedTime);
+									jiraIssueWaitedTime, fieldMapping);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData wastage = new IterationKpiData(WASTAGE,
@@ -418,8 +419,10 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	// used for populating the Excel file
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime,
+			FieldMapping fieldMapping) {
 		int wastageTime = blockedTime + waitTime;
+		int originalEstimate = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -427,8 +430,16 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		if(null != jiraIssue.getStoryPoints()) {
+
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
 		}
 		if ((blockedTime != 0)) {
 			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + "h " + blockedTime % 60 + " m"));
