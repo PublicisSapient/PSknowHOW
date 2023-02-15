@@ -87,7 +87,6 @@ public class FilterHelperService {
 
 		List<AccountHierarchyData> dataList = getAccountHierarchyDataForRequest(
 				new HashSet<>(kpiRequest.getSprintIncluded()), accountDataListAll);
-		Set<String> str = new HashSet<>(kpiRequest.getSelectedMap().getOrDefault(groupName, new ArrayList<>()));
 		List<AccountHierarchyData> filteredDataSetNew = null;
 		filteredDataSetNew = filter(dataList,groupName,kpiRequest);
 		if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap()

@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 @Component
@@ -159,7 +158,6 @@ public class NetOpenTicketCountByRCAServiceImpl
 
 	private void kpiWithFilter(Map<String, Map<String, Map<String, Set<String>>>> resultMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
@@ -351,16 +349,15 @@ public class NetOpenTicketCountByRCAServiceImpl
 			Map<String, Map<String, Set<String>>> jiraHistoryRCAAndDateWiseIssueMap, Node node,
 			Set<String> projectWiseRCAList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (MapUtils.isNotEmpty(jiraHistoryRCAAndDateWiseIssueMap)) {
-				String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
-				String date = getRange(
-						KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
-						kpiRequest);
-				KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
-						jiraHistoryRCAAndDateWiseIssueMap, projectWiseRCAList, kanbanJiraIssues, excelData, date,
-						KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId());
-			}
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& MapUtils.isNotEmpty(jiraHistoryRCAAndDateWiseIssueMap)) {
+			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String date = getRange(
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+					kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey, jiraHistoryRCAAndDateWiseIssueMap,
+					projectWiseRCAList, kanbanJiraIssues, excelData, date,
+					KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId());
 
 		}
 	}

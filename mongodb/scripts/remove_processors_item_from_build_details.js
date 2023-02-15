@@ -1,4 +1,4 @@
-db.project_tool_configs.find({"jobType": "Build"}).forEach(function(toolConfig) {
+db.project_tool_configs.find({"toolName": { $in : [ "Jenkins" , "Bamboo" , "AzurePipeline" , "Teamcity"]}}).forEach(function(toolConfig) {
     var dbToolConfigId = toolConfig._id;
     var dbToolName = toolConfig.toolName;
 	var dbBasicProjectConfigId = toolConfig.basicProjectConfigId;

@@ -139,6 +139,7 @@ public class ScopeChangeServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChangeServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
