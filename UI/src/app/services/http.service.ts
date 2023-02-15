@@ -128,6 +128,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
 
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
@@ -692,6 +693,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getEmmStats(): Observable<any> {
         return this.http.get<any>(this.getEmmStatsUrl);
+    }
+
+    generateToken(postData): Observable<any> {
+        return this.http.post<any>(this.generateTokenUrl, postData);
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
