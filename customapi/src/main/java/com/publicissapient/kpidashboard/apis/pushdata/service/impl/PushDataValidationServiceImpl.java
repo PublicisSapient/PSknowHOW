@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.common.service.impl;
+package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.util.HashMap;
 import java.util.List;

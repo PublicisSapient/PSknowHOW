@@ -1,9 +1,12 @@
-package com.publicissapient.kpidashboard.apis.pushdata.service;
+package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,33 +27,36 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
-import com.publicissapient.kpidashboard.apis.data.DeploymentDataFactory;
+import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeployServiceImplTest {
+public class BuildServiceImplTest {
 
 	@InjectMocks
-	private DeployServiceImpl deployService;
+	private BuildServiceImpl buildService;
 
 	@Mock
-	DeploymentRepository deploymentRepository;
+	private BuildRepository buildRepository;
+
+	@Mock
+	private PushDataValidationServiceImpl pushDataValidationService;
 
 	private ObjectId projectBasicConfigId;
 
 	private Validator validator;
-	List<Deployment> deploymentList;
+	List<Build> buildList;
 
 	@Before
 	public void setUp() {
 		projectBasicConfigId = new ObjectId("632824e949794a18e8a44787");
-		DeploymentDataFactory deployDataFactory = DeploymentDataFactory.newInstance("/json/pushdata/deployment.json");
-		deploymentList = deployDataFactory.getDeploymentDataList();
+		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/pushdata/build_details.json");
+		buildList = buildDataFactory.getbuildDataList();
 
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
@@ -66,14 +72,16 @@ public class DeployServiceImplTest {
 			pushBuildDeployCorrectData = new ModelMapper()
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(0), PushBuildDeploy.class);
 		}
-		doReturn(deploymentList.get(0)).when(deploymentRepository)
-				.findByNumberAndJobNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString(), Mockito.any());
-		List<Deployment> deploymentList = new ArrayList<>();
+		doReturn(buildList.get(0)).when(buildRepository).findByNumberAndBuildJobAndBasicProjectConfigId(
+				Mockito.anyString(), Mockito.anyString(), Mockito.any());
+		Map<String, String> errorsMap = new HashMap<>();
+		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
+		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
 		Assert.assertEquals(0, errors);
-		Assert.assertEquals(2, deploymentList.size());
+		Assert.assertEquals(3, buildList.size());
 	}
 
 	@Test
@@ -85,13 +93,19 @@ public class DeployServiceImplTest {
 			pushBuildDeployCorrectData = new ModelMapper()
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
 		}
-		List<Deployment> deploymentList = new ArrayList<>();
+		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(1, errors);
-		Assert.assertEquals(1, deploymentList.size());
-		Assert.assertEquals(1,
+		Map<String, String> errorsMap = new HashMap<>();
+		errorsMap.put("jobName", "jobName is Blank");
+		errorsMap.put("number", "number should be in digits");
+		errorsMap.put("buildStatus",
+				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
+		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
+		Assert.assertEquals(3, errors);
+		Assert.assertEquals(0, buildList.size());
+		Assert.assertEquals(3,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());
@@ -106,7 +120,7 @@ public class DeployServiceImplTest {
 	}
 
 	@Test
-	public void builddeployAllValidation() {
+	public void buildAllValidation() {
 		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
 				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(3));
@@ -114,13 +128,19 @@ public class DeployServiceImplTest {
 			pushBuildDeployCorrectData = new ModelMapper()
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(3), PushBuildDeploy.class);
 		}
-		List<Deployment> deploymentList = new ArrayList<>();
+		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(2, errors);
-		Assert.assertEquals(0, deploymentList.size());
-		Assert.assertEquals(2,
+		Map<String, String> errorsMap = new HashMap<>();
+		errorsMap.put("jobName", "jobName is Blank");
+		errorsMap.put("number", "number should be in digits");
+		errorsMap.put("buildStatus",
+				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
+		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
+		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+				buildList, errorDataList);
+		Assert.assertEquals(3, errors);
+		Assert.assertEquals(0, buildList.size());
+		Assert.assertEquals(3,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());

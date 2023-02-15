@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pushdata.service;
+package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.publicissapient.kpidashboard.apis.pushdata.service.impl.PushDataValidationServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -37,7 +38,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.PushDataValidationServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
