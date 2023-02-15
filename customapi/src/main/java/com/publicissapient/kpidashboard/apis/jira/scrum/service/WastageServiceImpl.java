@@ -59,7 +59,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final String ISSUES = "issues";
 	private static final String ISSUES_CUSTOM_HISTORY = "issues custom history";
 	private static final String SPRINT_DETAILS = "sprint details";
-	private static final String BLOCKED_TIME = "Block Time";
+	private static final String BLOCKED_TIME = "Blocked Time";
 	private static final String WAITING_TIME = "Waiting Time";
 	private static final String WASTAGE = "Wastage";
 	private static final String HOURS = "Hours";
