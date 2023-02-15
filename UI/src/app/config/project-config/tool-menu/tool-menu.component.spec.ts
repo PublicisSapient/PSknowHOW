@@ -24,12 +24,13 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
-import { MessageService } from 'primeng/api';
+import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 
 import { DataViewModule } from 'primeng/dataview';
 
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
+import { of } from 'rxjs';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
@@ -38,6 +39,8 @@ describe('ToolMenuComponent', () => {
   let sharedService: SharedService;
   let httpMock;
   let router: Router;
+  let confirmationService;
+  let messageService;
   const baseUrl = environment.baseUrl;
 
   const toolsData = require('../../../../test/resource/fakeToolsData.json');
@@ -64,6 +67,7 @@ describe('ToolMenuComponent', () => {
         HttpService,
         SharedService,
         MessageService,
+        ConfirmationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -75,6 +79,8 @@ describe('ToolMenuComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
+    confirmationService = TestBed.inject(ConfirmationService);
+    messageService = TestBed.inject(MessageService);
     sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
@@ -108,4 +114,75 @@ describe('ToolMenuComponent', () => {
     component.ngOnInit();
     expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
   });
+
+  it('should call generate token on click of continue on confirmation popup', () => {
+    const mockConfirm: any = spyOn<any>(
+      confirmationService,
+      'confirm',
+    ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+    const generateTokenSpy = spyOn(component, 'generateToken');
+    component.generateTokenConfirmation();
+    expect(generateTokenSpy).toHaveBeenCalled();
+  });
+
+  it('should not call generate token on click of cancel on confirmation popup', () => {
+    const mockConfirm: any = spyOn<any>(
+      confirmationService,
+      'confirm',
+    ).and.callFake((confirmation: Confirmation) => confirmation.reject);
+    const generateTokenSpy = spyOn(component, 'generateToken');
+    component.generateTokenConfirmation();
+    expect(generateTokenSpy).not.toHaveBeenCalled();
+  });
+
+  it('should make an api call for generating token and dispaly token on modal',()=>{
+    const response = {
+      message: "API token is updated",
+      success: true,
+      data:{
+        basicProjectConfigId: '6360fefc3fa9e175755f0728',
+        projectName: '"KnowHOW"',
+        userName: 'SUPERADMIN',
+        apiToken: 'Egrgeedsjyekdsvntwymmt',
+        expiryDate:'2023-03-10',
+        createdAt: '2023-02-10'
+      }
+    };
+    spyOn(sharedService,'getSelectedProject').and.returnValue({
+      id:'6360fefc3fa9e175755f0728',
+      Project:'KnowHOW'
+    });
+
+    spyOn(httpService,'generateToken').and.returnValue(of(response));
+    component.generateToken();
+    fixture.detectChanges();
+    expect(component.generatedToken).toEqual(response.data.apiToken);
+  });
+
+  it('should show error message if generate token api fails',()=>{
+    const response = {
+      message: "Failed fetching API token",
+      success: false,
+      data:null
+    };
+    spyOn(sharedService,'getSelectedProject').and.returnValue({
+      id:'6360fefc3fa9e175755f0728',
+      Project:'KnowHOW'
+    });
+
+    spyOn(httpService,'generateToken').and.returnValue(of(response));
+    const messageServiceSpy = spyOn(messageService,'add');
+    component.generateToken();
+    fixture.detectChanges();
+    expect(messageServiceSpy).toHaveBeenCalled();
+  });
+
+  it('should copy token to clipboard',()=>{
+    component.generatedToken='ergbrtrehehehwweheh';
+    const spyDocumentExec = spyOn(document,'execCommand');
+    component.copyToken();
+    expect(component.tokenCopied).toBeTrue();
+    expect(spyDocumentExec).toHaveBeenCalled();
+  });
+
 });
