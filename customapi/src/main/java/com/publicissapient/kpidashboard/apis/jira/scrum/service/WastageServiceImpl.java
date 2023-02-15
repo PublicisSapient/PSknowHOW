@@ -280,21 +280,19 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList) {
-		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
-		// Filtering the IssueCustomHistory.storySprintDetails on basis of sprintName
+		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
-					.filter(jiraIssueSprint -> jiraIssueSprint.getSprintId().equals(sprintDetail.getSprintName()))
-					.collect(Collectors.toList());
+			storySprintDetails = issueCustomHistory.getStorySprintDetails();
 		}
 		int blockedTime = 0;
 		int waitedTime = 0;
-		for (int i = 0; i < filterStorySprintDetails.size(); i++) {
-			JiraIssueSprint entry = filterStorySprintDetails.get(i);
+		for (int i = 0; i < storySprintDetails.size(); i++) {
+			JiraIssueSprint entry = storySprintDetails.get(i);
 
 			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList,
-					filterStorySprintDetails, i, sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, filterStorySprintDetails,
+					storySprintDetails, i, sprintDetail, blockedTime);
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails,
 					i, sprintDetail, waitedTime);
 		}
 		return Arrays.asList(waitedTime, blockedTime);
