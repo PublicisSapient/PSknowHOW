@@ -76,9 +76,9 @@ public class DeployServiceImplTest {
 				.findByNumberAndJobNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString(), Mockito.any());
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
+		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(0, errors);
+		Assert.assertEquals(0, deployFailedRecords);
 		Assert.assertEquals(2, deploymentList.size());
 	}
 
@@ -92,15 +92,16 @@ public class DeployServiceImplTest {
 					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(1), PushBuildDeploy.class);
 		}
 		Map<String, String> errorsMap = new HashMap<>();
-		errorsMap.put("jobName", "jobName is Blank");
+		errorsMap.put("EnvName", "EnvName is Blank");
+		errorsMap.put("deploymentStatus", "deploymentStatus is Blank");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
+		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(2, errors);
-		Assert.assertEquals(1, deploymentList.size());
-		Assert.assertEquals(1,
+		Assert.assertEquals(2, deployFailedRecords);
+		Assert.assertEquals(0, deploymentList.size());
+		Assert.assertEquals(2,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());
@@ -126,14 +127,12 @@ public class DeployServiceImplTest {
 		Map<String, String> errorsMap = new HashMap<>();
 		errorsMap.put("jobName", "jobName is Blank");
 		errorsMap.put("number", "number should be in digits");
-		errorsMap.put("buildStatus",
-				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = deployService.checkandCreateDeployment(projectBasicConfigId,
+		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(2, errors);
+		Assert.assertEquals(2, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
 		Assert.assertEquals(2,
 				errorDataList.stream()

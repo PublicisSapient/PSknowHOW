@@ -12,8 +12,8 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.common.service.PushDataValidation;
 import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataValidation;
 
 @Component
 public class PushDataValidationServiceImpl extends PushDataValidation {

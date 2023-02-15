@@ -74,13 +74,13 @@ public class BuildServiceImplTest {
 		}
 		doReturn(buildList.get(0)).when(buildRepository).findByNumberAndBuildJobAndBasicProjectConfigId(
 				Mockito.anyString(), Mockito.anyString(), Mockito.any());
-		Map<String, String> errorsMap = new HashMap<>();
-		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
+		Map<String, String> noErrors = new HashMap<>();
+		doReturn(noErrors).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
-		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
-		Assert.assertEquals(0, errors);
+		Assert.assertEquals(0, buildFailedRecords);
 		Assert.assertEquals(3, buildList.size());
 	}
 
@@ -101,9 +101,9 @@ public class BuildServiceImplTest {
 		errorsMap.put("buildStatus",
 				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
-		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
-		Assert.assertEquals(3, errors);
+		Assert.assertEquals(3, buildFailedRecords);
 		Assert.assertEquals(0, buildList.size());
 		Assert.assertEquals(3,
 				errorDataList.stream()
@@ -136,9 +136,9 @@ public class BuildServiceImplTest {
 		errorsMap.put("buildStatus",
 				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
-		int errors = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
+		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList);
-		Assert.assertEquals(3, errors);
+		Assert.assertEquals(3, buildFailedRecords);
 		Assert.assertEquals(0, buildList.size());
 		Assert.assertEquals(3,
 				errorDataList.stream()
