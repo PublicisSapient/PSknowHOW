@@ -1,117 +1,75 @@
 print("Start : Assignee details delete script from all tools");
 
+function deleteAssigneeFromMerge(basicProjectConfigId) {
+    if (db.getCollection('merge_requests').find({"basicProjectConfigId": ObjectId(basicProjectConfigId),"author": {$exists: true}}).count() > 0)
+    {
+        print("Update assignee details for the basic project config id in commit details: ", basicProjectConfigId);
+        db.merge_requests.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {author: 1}});
+    }
+}
 
-  if(db.getCollection('project_basic_configs').find({enableAssigneeDetailToggle: false}).count()>0)
-  {
-  db.getCollection('project_basic_configs').find({enableAssigneeDetailToggle: false}).forEach(
-              basicProjectConfig => {
-              var basicProjectConfigIdDisableToggle =  basicProjectConfig._id;
-              print("Project basic cofig Id for disable toggle projects in var form :",basicProjectConfigIdDisableToggle);
-              var convertingBasicConfigIdToStr = basicProjectConfigIdDisableToggle.str;
-              print("Converting basicProjectConfigIdDisableToggle to string ",convertingBasicConfigIdToStr);
-              deleteAssigneeDetailsFromJira(convertingBasicConfigIdToStr);
-              deleteAssigneeDetailsFromJiraKanban(convertingBasicConfigIdToStr);
-              deleteAssigneeDetailsFromNonJiraProcessor(convertingBasicConfigIdToStr);
-              deleteAssigneeDetailsFromDeployment(convertingBasicConfigIdToStr);
-    });}
-
-
-
-function deleteAssigneeDetailsFromNonJiraProcessor(convertingBasicConfigIdToStr)
+function deleteAssigneeFromBuild(basicProjectConfigId)
 {
-  if(db.getCollection('project_tool_configs').find({"basicProjectConfigId" : ObjectId(convertingBasicConfigIdToStr)}).count()>0)
-  {
-             db.getCollection('project_tool_configs').
-             find({"basicProjectConfigId" : ObjectId(convertingBasicConfigIdToStr)}).forEach(
-             projectToolConfig => {
-             var projectToolId = projectToolConfig._id;
-             print("Project Tool config id :",projectToolId);
-             var convertingProjectToolIdToStr = projectToolId.str;
-             fetchProcessorItemId(convertingProjectToolIdToStr);
-
-    });
-
-
-}
+    if (db.getCollection('build_details').find({"basicProjectConfigId": ObjectId(basicProjectConfigId),"startedBy": {$exists: true}}).count() > 0)
+    {
+        print("Update assignee details for the basic project config id in build details:", basicProjectConfigId);
+        db.build_details.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {startedBy: 1}});
+    }
 }
 
-function fetchProcessorItemId(convertingProjectToolIdToStr)
+function deleteAssigneeFromCommit(basicProjectConfigId)
 {
-   if(db.processor_items.find({"toolConfigId" : ObjectId(convertingProjectToolIdToStr)}).count()>0)
-                {
-                  db.getCollection('processor_items').
-                  find({"toolConfigId" : ObjectId(convertingProjectToolIdToStr)}).forEach(
-                  processorItems => {
-                  var processorItemID = processorItems._id;
-                  print("Processor item id : ",processorItemID);
-                  var convertingProcessorItemIDToStr = processorItemID.str;
-                  deleteAssigneeFromBuild(convertingProcessorItemIDToStr);
-                  deleteAssigneeFromCommit(convertingProcessorItemIDToStr);
-                  deleteAssigneeFromMerge(convertingProcessorItemIDToStr);
-            })
-                }
+    if (db.getCollection('commit_details').find({"basicProjectConfigId": ObjectId(basicProjectConfigId),"author": {$exists: true}}).count() > 0)
+    {
+        print("Update assignee details for the basic project config id in commit details: ", basicProjectConfigId);
+        db.commit_details.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {author: 1}});
+    }
 
 }
 
-
-function deleteAssigneeFromMerge(convertingProcessorItemIDToStr)
+function deleteAssigneeDetailsFromDeployment(basicProjectConfigId)
 {
-  if(db.getCollection('merge_requests').find({"processorItemId" : ObjectId(convertingProcessorItemIDToStr), "author" : {$exists : true}}).count()>0)
-  {
-                  print("Update assignee details for the projects in commit details: ",convertingProcessorItemIDToStr);
-                  db.merge_requests.updateMany({"processorItemId" : ObjectId(convertingProcessorItemIDToStr)}, { $unset: { author: 1 }});
+    if (db.getCollection('deployments').find({"basicProjectConfigId": ObjectId(basicProjectConfigId),"deployedBy": {$exists: true}}).count() > 0)
+     {
+        print("Update assignee details for the basic config project id in deployments : ", basicProjectConfigId);
+        db.deployments.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {deployedBy: 1}});
+    }
 
-  }
 }
 
-function deleteAssigneeFromBuild(convertingProcessorItemIDToStr)
+
+function deleteAssigneeDetailsFromJira(basicProjectConfigId)
 {
-   if(db.getCollection('build_details').find({"processorItemId" : ObjectId(convertingProcessorItemIDToStr), "startedBy" : {$exists : true}}).count()>0)
-  {
-      print("Update assignee details for the projects in build details:",convertingProcessorItemIDToStr);
-      db.build_details.updateMany({"processorItemId" : ObjectId(convertingProcessorItemIDToStr)}, { $unset: { startedBy: 1 }});
-  }
-
+    if (db.getCollection('jira_issue').find({"basicProjectConfigId": basicProjectConfigId,"assigneeName": {$exists: true},"assigneeId": {$exists: true}}).count() > 0)
+    {
+                  print("Update assignee details for this basic project id in jira issue:", basicProjectConfigId);
+                  db.jira_issue.updateMany({"basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1}})
+    }
 }
 
-function deleteAssigneeFromCommit(convertingProcessorItemIDToStr)
+function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId) {
+    if (db.getCollection('kanban_jira_issue').find({"basicProjectConfigId": basicProjectConfigId,"assigneeName": {$exists: true},"assigneeId": {$exists: true}}).count() > 0)
+    {
+        print("Update assignee details for this basic project id :", basicProjectConfigId);
+        db.kanban_jira_issue.updateMany({ "basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1,assigneeName: 1}})
+    }
+}
+
+if (db.getCollection('project_basic_configs').find({saveAssigneeDetails: false}).count() > 0)
 {
-    if(db.getCollection('commit_details').
-    find({"processorItemId" : ObjectId(convertingProcessorItemIDToStr), "author" : {$exists : true}}).count()>0)
-   {
-    print("Update assignee details for the projects in commit details: ",convertingProcessorItemIDToStr);
-    db.commit_details.updateMany({"processorItemId" : ObjectId(convertingProcessorItemIDToStr)}, { $unset: { author: 1 }});
-   }
+    db.getCollection('project_basic_configs').find({saveAssigneeDetails: false}).forEach(
+        basicProjectConfig => {
+            var basicProjectConfigIdDisableToggle = basicProjectConfig._id;
+            print("Project basic cofig Id for disable toggle projects in var form :", basicProjectConfigIdDisableToggle);
+            var basicProjectConfigId = basicProjectConfigIdDisableToggle.str;
+            print("Converting basicProjectConfigIdDisableToggle to string ", basicProjectConfigId);
+            deleteAssigneeDetailsFromJira(basicProjectConfigId);
+            deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId);
+            deleteAssigneeFromCommit(basicProjectConfigId);
+            deleteAssigneeDetailsFromDeployment(basicProjectConfigId);
+            deleteAssigneeFromBuild(basicProjectConfigId);
+            deleteAssigneeFromMerge(basicProjectConfigId);
 
-}
-
-function deleteAssigneeDetailsFromDeployment(convertingBasicConfigIdToStr)
-{
- if(db.getCollection('deployments').find({"basicProjectConfigId": ObjectId(convertingBasicConfigIdToStr), "deployedBy" : {$exists : true}}).count()>0)
-  {
-    print("Update assignee details for the basic config project id in deployments : ",convertingBasicConfigIdToStr);
-      db.deployments.updateMany({"basicProjectConfigId":ObjectId(convertingBasicConfigIdToStr)}, { $unset: { deployedBy: 1}});
-  }
-
-}
-
-
-function deleteAssigneeDetailsFromJira(convertingBasicConfigIdToStr)
-{
- if(db.getCollection('jira_issue').find({"basicProjectConfigId": convertingBasicConfigIdToStr, "assigneeName" : {$exists : true},"assigneeId" : {$exists : true}}).count()>0)
-  {
-    print("Update assignee details for this basic project id in jira issue:",convertingBasicConfigIdToStr);
-      db.jira_issue.updateMany({"basicProjectConfigId":convertingBasicConfigIdToStr}, { $unset: { assigneeId: 1, assigneeName: 1 }})
-
-  }
-
-}
-
-function deleteAssigneeDetailsFromJiraKanban(convertingBasicConfigIdToStr)
-{
-if(db.getCollection('kanban_jira_issue').find({"basicProjectConfigId": convertingBasicConfigIdToStr, "assigneeName" : {$exists : true},"assigneeId" : {$exists : true}}).count()>0)
-  {
-    print("Update assignee details for this basic project id :",convertingBasicConfigIdToStr);
-      db.kanban_jira_issue.updateMany({"basicProjectConfigId":convertingBasicConfigIdToStr}, { $unset: { assigneeId: 1, assigneeName: 1 }})
-  }
-}
+        });
+} else
+    { print(" Assignee details are not present for those project basic config Id ...."); }

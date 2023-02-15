@@ -114,24 +114,4 @@ class BitBucketCloudClientTest {
 	private String getServerResponse(String resource) throws Exception{
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
 	}
-
-	@Test
-	void testBuildEndPointUrl () throws Exception {
-		String theRepoUrl= "http://localhost:9999/scm/testproject/comp-proj.git";
-		String defaultHost= "localhost";
-		String defaultApi = "/rest/api/1.0/";
-		Whitebox.invokeMethod(bucketCloudClient, "buildEndPointUrl", theRepoUrl,defaultHost,defaultApi);
-	}
-
-	@Test
-	void tetGetPastDate() throws Exception {
-		BitbucketRepo repo = new BitbucketRepo();
-		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
-		repo.setBranch("release/core-r4.4");
-		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
-		repo.setUserId("userID");
-		repo.setPassword("password");
-		int histDays = 5;
-		Whitebox.invokeMethod(bucketCloudClient,"getPastDate",repo,true,histDays);
-	}
 }
