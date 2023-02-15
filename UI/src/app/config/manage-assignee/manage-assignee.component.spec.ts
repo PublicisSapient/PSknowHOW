@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Table } from 'primeng/table';
 
 import { ManageAssigneeComponent } from './manage-assignee.component';
 
@@ -37,5 +38,26 @@ describe('ManageAssigneeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should update assignee selected status', () => {
+    const assignee = {
+      "name": "abikanna1",
+      "displayName": "Abinaya Kannan",
+      "checked": true
+    };
+    const event = {
+      target: {
+        checked: true
+      }
+    };
+    component.onUserSelectionChange(event, assignee);
+    expect(assignee.checked).toBeTrue();
+  });
+
+  it('should reset table filter and Search field',()=>{
+    component.table = TestBed.createComponent(Table).componentInstance;
+    component.reset();
+    expect(component.searchText.value).toBeFalsy();
   });
 });

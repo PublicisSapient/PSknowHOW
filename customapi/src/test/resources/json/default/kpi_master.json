@@ -339,8 +339,8 @@
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects fixed in a sprint",
-            "Total no. of defects reported in a sprint"
+            "No. of defects fixed in a closed sprint",
+            "Total no. of defects reported in a closed sprint"
           ]
         }
       ],

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -26,7 +26,8 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 declare let $: any;
 
 interface CapacitySubmissionReq {
@@ -52,7 +53,7 @@ interface CapacitySubmissionReq {
     styleUrls: ['./upload.component.css']
 })
 export class UploadComponent implements OnInit {
-
+    @ViewChild('manageAssignee') manageAssignee: ManageAssigneeComponent;
     error = '';
     message = '';
     uploadedFile: File;
@@ -128,10 +129,13 @@ export class UploadComponent implements OnInit {
     projectJiraAssignees ={};
     manageAssigneeList=[];
     projectAssigneeRoles=[];
+    projectAssigneeRolesObj;
     projectCapacityEditMode =false;
     selectedSprint;
     expandedRows={};
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService) {
+    selectedSprintAssigneFormArray=[];
+    selectedSprintAssigneValidator=[];
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
     }
 
     ngOnInit() {
@@ -232,7 +236,6 @@ export class UploadComponent implements OnInit {
             classes: 'multi-select-custom-class'
         };
 
-        // this.selectedView = 'emm_upload';
         this.selectedView = 'logo_upload';
 
         if (this.isSuperAdmin) {
@@ -302,7 +305,6 @@ export class UploadComponent implements OnInit {
         document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
     }
     switchView(event) {
-        // this.highlightSideBarTab(event);
         switch (event.item.label) {
             case 'Upload Logo': {
                 this.selectedView = 'logo_upload';
@@ -453,6 +455,7 @@ export class UploadComponent implements OnInit {
 
     // called when user switches the "Scrum/Kanban" switch
     kanbanActivation(type) {
+        this.selectedSprintAssigneValidator=[];
         const scrumTarget = document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button');
         const kanbanTarget = document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button');
         if(type === 'scrum') {
@@ -501,7 +504,6 @@ export class UploadComponent implements OnInit {
 
         this.selectedFilterData.kanban = this.kanban;
         this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE', 'FUTURE'];
-        console.log(this.selectedFilterData);
         this.filter_kpiRequest = this.http_service.getFilterData(this.selectedFilterData)
             .subscribe(filterData => {
                 if (filterData[0] !== 'error') {
@@ -511,9 +513,7 @@ export class UploadComponent implements OnInit {
                         this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
-                        if (Object.keys(filterData).length !== 0) {
-                            // this.getMasterData();
-                        } else {
+                        if (Object.keys(filterData).length === 0) {
                             this.resetProjectSelection();
                             // show error message
                             this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
@@ -691,7 +691,9 @@ export class UploadComponent implements OnInit {
                 this.reqObj['sprintNodeId'] = this.selectedSprintId;
             }
         } else {
-            this.selectedView === 'upload_tep' ? this.reqObj['executionDate'] = this.executionDate : '';
+            if(this.selectedView === 'upload_tep'){
+                this.reqObj['executionDate'] = this.executionDate;
+            }
         }
         if (this.selectedView === 'upload_tep') {
             this.popupForm = new UntypedFormGroup({
@@ -973,6 +975,7 @@ export class UploadComponent implements OnInit {
             this.http_service.getAssigneeRoles()
                 .subscribe(response => {
                     if (response && response?.success && response?.data) {
+                        this.projectAssigneeRolesObj = response.data;
                         for (const key in response.data) {
                             this.projectAssigneeRoles.push({ name: response.data[key], value: key });
                         }
@@ -992,19 +995,48 @@ export class UploadComponent implements OnInit {
         }
     }
 
-    calculateAvaliableCapacity(assignee) {
-        if (assignee.plannedCapacity && assignee.leaves) {
-            assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
-        } else if (assignee.plannedCapacity) {
-            assignee.availableCapacity = assignee.plannedCapacity;
+    calculateAvaliableCapacity(assignee, assigneeFormControls, fieldName) {
+        assignee[fieldName] = assigneeFormControls[fieldName]?.value;
+        if (fieldName === 'role') {
+            assigneeFormControls.plannedCapacity.enable();
         } else {
-            assignee.availableCapacity = 0;
+            if (assigneeFormControls.plannedCapacity.value > 0) {
+                assigneeFormControls.leaves.setValidators([Validators.max(assignee.plannedCapacity)]);
+                assigneeFormControls.leaves.enable();
+                assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
+            } else {
+                assigneeFormControls.leaves.setValue(0);
+                assigneeFormControls.leaves.disable();
+                assignee.leaves = 0;
+                assignee.availableCapacity = 0;
+            }
+            this.cdr.detectChanges();
+            const currentAssigneeExist = this.selectedSprintAssigneValidator.findIndex(selectedassignee => selectedassignee === assignee);
+            if (assigneeFormControls['leaves'].status === 'INVALID') {
+                if (currentAssigneeExist === -1 && assignee.leaves > assignee.plannedCapacity) {
+                    this.selectedSprintAssigneValidator.push(assignee);
+                }
+            } else {
+                if (currentAssigneeExist !== -1) {
+                    this.selectedSprintAssigneValidator.splice(currentAssigneeExist, 1);
+                }
+            }
+        }
+    }
+
+    onAssigneeModalOpen(){
+        this.manageAssignee.reset();
+    }
+
+    validateInput($event){
+        if($event.key === 'e'){
+            $event.preventDefault();
         }
     }
     calculateTotalCapacityForSprint(selectedSprint) {
         let totalCapacity = 0;
         selectedSprint.assigneeCapacity.forEach(assignee => {
-            totalCapacity += assignee.availableCapacity;
+            totalCapacity += assignee?.availableCapacity ? assignee?.availableCapacity : 0;
         });
         return totalCapacity;
     }
@@ -1012,6 +1044,16 @@ export class UploadComponent implements OnInit {
     onSprintCapacityEdit(selectedSprint) {
         this.projectCapacityEditMode = true;
         this.selectedSprint = JSON.parse(JSON.stringify(selectedSprint));
+        this.selectedSprintAssigneFormArray = [];
+        selectedSprint.assigneeCapacity.forEach(assignee => {
+            this.selectedSprintAssigneFormArray.push(
+                {
+                    role: new FormControl(assignee.role),
+                    plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
+                    leaves: new FormControl({ value: assignee.leaves, disabled: !(assignee?.role && assignee?.plannedCapacity) }, [Validators.min(0), Validators.max(assignee.plannedCapacity)])
+                }
+            );
+        });
     }
 
     onSprintCapacitySave(selectedSprint) {
@@ -1043,7 +1085,7 @@ export class UploadComponent implements OnInit {
 
     }
 
-    onCapacitySprintRowSelection(event) {
+    onCapacitySprintRowSelection() {
         if (this.projectCapacityEditMode) {
             this.onSprintCapacityCancel(this.selectedSprint);
             this.projectCapacityEditMode = false;

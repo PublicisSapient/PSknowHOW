@@ -448,7 +448,6 @@ div.main {
 :host ::ng-deep .custom-grid .p-datatable tbody tr.sprint {
   display: block;
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.6);
   padding: 5px;
   border-radius: 5px;
   margin: 10px 0px;
@@ -528,4 +527,13 @@ div.main {
 
 .upload_sprint_capacity {
   width: calc(100% / 4);
+}
+
+.p-error-block{
+  color: red;
+  font-size: 0.7rem;
+  position: absolute;
+  left: -12px;
+  top: 60px;
+  width: 280px;
 }
