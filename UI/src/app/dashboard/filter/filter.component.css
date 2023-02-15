@@ -1015,7 +1015,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   left: 0;
   top: 0;
   animation: smoothScroll 0.5s forwards;
-  position: -webkit-sticky;
 }
 
 .logo {
@@ -1032,8 +1031,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   padding: 11px 18px;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
-  /* margin: 4px 2px; */
   background-color: #C2C2C2AF;
   border-radius: 40px;
   text-transform: uppercase;

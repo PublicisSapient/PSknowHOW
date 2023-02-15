@@ -1254,14 +1254,10 @@ export class FilterComponent implements OnInit {
         this.trendLineValueList = this.makeUniqueArrayList(
           this.trendLineValueList,
         );
-        this.filterForm
-          ?.get('selectedProjectValue')
-          .setValue(this.trendLineValueList[0]['nodeId']);
-        this.selectedTab?.toLowerCase() != 'backlog'
-          ? this.getProcessorsTraceLogsForProject(
-              this.trendLineValueList[0]?.basicProjectConfigId,
-            )
-          : '';
+        this.filterForm?.get('selectedProjectValue').setValue(this.trendLineValueList[0]['nodeId']);
+          if(this.selectedTab?.toLowerCase() != 'backlog'){
+            this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId)
+          }
       } else {
         this.filterForm?.get('selectedProjectValue').setValue('');
       }
