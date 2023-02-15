@@ -69,6 +69,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private String count;
     private List<String> labels;
     private String createdDate;
+    private String dueDate;
     // environmented impacted Eg. Development,QA,MTE,Beta,Production
     private String envImpacted;
     // build number

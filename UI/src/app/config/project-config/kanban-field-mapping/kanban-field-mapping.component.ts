@@ -124,10 +124,6 @@ export class KanbanFieldMappingComponent implements OnInit {
       {
         label: 'Actual Estimation',
         value: 'Actual Estimation'
-      },
-      {
-        label: 'Buffered Estimation',
-        value: 'Buffered Estimation'
       }
     ];
     this.testCaseIdentification = [
