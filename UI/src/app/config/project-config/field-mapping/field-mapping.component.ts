@@ -437,7 +437,6 @@ export class FieldMappingComponent implements OnInit {
       epicJobSize: [''],
       workingHoursDayCPT: [''],
       dueDate : [''],
-      dueDateEnabled : [false],
       // defect mapping
       jiradefecttype: [[]],
 
