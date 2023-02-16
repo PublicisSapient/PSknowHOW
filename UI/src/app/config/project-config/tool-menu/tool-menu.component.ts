@@ -22,6 +22,7 @@ import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -36,11 +37,13 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
+  isProjectAdmin = false;
+  isSuperAdmin = false;
   generateTokenLoader = false;
   displayGeneratedToken= false;
   generatedToken='';
   tokenCopied =false;
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService) {
+  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
 
   }
 
@@ -49,6 +52,9 @@ export class ToolMenuComponent implements OnInit {
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
+
+    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
 
     this.selectedProject = this.sharedService.getSelectedProject();
     if (!this.selectedProject) {
