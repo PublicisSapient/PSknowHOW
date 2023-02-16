@@ -202,6 +202,15 @@ services:
       - "2181:2181"
     networks:
       - Network_apps
+volumes:
+  notification-consumervol:
+  azure_processorvol:
+  nonazureboards_processorvol:
+  nonjira_processorvol:
+  jira_processorvol:
+  uivol:
+  customapivol:
+  mongodbvol:
 
 networks:
   Network_apps:
