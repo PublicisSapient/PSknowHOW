@@ -313,6 +313,25 @@
                                 (click)="showDialogToAddValue(false, 'jiraOnHoldStatus', 'workflow')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraStatusForInProgress') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify In Progress
+                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                                The status of Defect Issue Type which identifies the "In-Progress" status in JIRA. <br>
+                                                Example: In Progress<hr>
+                                                KPI Impacted:
+                                                Work Completed
+                                               </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraStatusForInProgress" formControlName="jiraStatusForInProgress"
+                                placeholder="Enter Status to identify 'In Progress' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraStatusForInProgress', 'workflow')"></button>
+                        </div>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"
