@@ -108,9 +108,7 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 
 const initializeAppFactory = (http: HttpClient): () => void  =>{
     if (!environment.production) {
-        return  ()=>{
-           // environment['baseUrl']='localhost:8080';
-        };
+        return  ()=> undefined;
     } else {
         return async () => {
         const env$ = http.get('assets/env.json').pipe(

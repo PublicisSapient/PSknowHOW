@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,7 +30,7 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
@@ -95,9 +95,6 @@ export class SharedService implements OnInit {
     this.isDownloadExcel = new EventEmitter();
   }
 
-
-  ngOnInit() {
-  }
 
   // calls when tab is selected
   selectTab(selectedTab) {

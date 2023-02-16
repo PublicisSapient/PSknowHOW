@@ -482,10 +482,8 @@ export class ConnectionListComponent implements OnInit {
         header: 'Connection Deletion Status',
         key: 'cannotDeleteMessageDialog',
         // icon: 'fa fa-times-circle text-danger',
-        accept: () => {
-        },
-        reject: () => {
-        }
+        accept: null,
+        reject: null
       });
     }
   }
@@ -494,7 +492,6 @@ export class ConnectionListComponent implements OnInit {
     this.httpService.getAllConnections().subscribe(response => {
       this.renderConnectionList(response);
     }, error => {
-
     });
   }
 
@@ -628,10 +625,8 @@ export class ConnectionListComponent implements OnInit {
         header,
         icon: 'fa fa-times-circle text-danger',
         key: 'connectionStatus',
-        accept: () => {
-        },
-        reject: () => {
-        }
+        accept: null,
+        reject: null
       });
     }
     this.hideDialog();
