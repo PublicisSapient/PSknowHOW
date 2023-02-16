@@ -108,7 +108,6 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		clearSelectedBasicProjectConfigIds();
 
 		fetchIssueDetail(executionStatus, projectConfigList);
-        projectConfigList.forEach(v->System.out.println(v+" Harsh"));;
 		long endTime = System.currentTimeMillis();
 		MDC.put("processorEndTime", String.valueOf(endTime));
 		MDC.put("executionTime", String.valueOf(endTime - start));

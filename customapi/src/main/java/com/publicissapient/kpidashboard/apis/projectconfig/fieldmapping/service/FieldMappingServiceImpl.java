@@ -177,8 +177,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		boolean isUpdated;
 
 		List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", "jiraStoryPointsCustomField",
-				"rootCause", "jiraIssueTypeNames", "storyFirstStatus", "epicCostOfDelay", "epicRiskReduction",
-				"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize" , "additionalFilterConfig");
+				"rootCause", "jiraIssueTypeNames", "epicCostOfDelay", "epicRiskReduction",
+				"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize" , "additionalFilterConfig",
+				"jiraAssigneeCustomField","jiraPriorityCustomField","jiraFixVersionCustomField","jiraLabelsCustomField","jiraDueDateCustomField");
 
 		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameList);
 
