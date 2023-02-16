@@ -12,7 +12,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +26,7 @@ import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,14 +35,11 @@ public class PushDataValidationServiceImplTest {
 	@InjectMocks
 	private PushDataValidationServiceImpl pushDataValidationService;
 
-	private ObjectId projectBasicConfigId;
-
 	private Validator validator;
 	List<Build> buildList;
 
 	@Before
 	public void setUp() {
-		projectBasicConfigId = new ObjectId("632824e949794a18e8a44787");
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/pushdata/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
 		buildList.get(0);
@@ -53,7 +50,7 @@ public class PushDataValidationServiceImplTest {
 	}
 
 	@Test
-	public void sucessfullInsert() {
+	public void sucessfullBuildInsert() {
 		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
 		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
 				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(0));
@@ -67,6 +64,39 @@ public class PushDataValidationServiceImplTest {
 		Map<String, String> errorsMap = pushDataValidationService.createBuildDeployErrorMap(buildValidationMap);
 		Assert.assertEquals(0, errorsMap.size());
 
+	}
+
+	@Test
+	public void sucessfullDeployInsert() {
+		PushBuildDeploy pushBuildDeployCorrectData = new PushBuildDeploy();
+		Set<ConstraintViolation<PushBuildDeployDTO>> validate = validator
+				.validate(PushDataFactory.newInstance().getPushBuildDeploy().get(0));
+		if (validate.isEmpty()) {
+			pushBuildDeployCorrectData = new ModelMapper()
+					.map(PushDataFactory.newInstance().getPushBuildDeploy().get(0), PushBuildDeploy.class);
+		}
+
+		Map<Pair<String, String>, List<PushValidationType>> buildValidationMap = createDeployValidationMap(
+				pushBuildDeployCorrectData.getDeployments().get(0));
+		Map<String, String> errorsMap = pushDataValidationService.createBuildDeployErrorMap(buildValidationMap);
+		Assert.assertEquals(0, errorsMap.size());
+
+	}
+
+	private Map<Pair<String, String>, List<PushValidationType>> createDeployValidationMap(PushDeploy pushDeploy) {
+		Map<Pair<String, String>, List<PushValidationType>> validations = new HashMap<>();
+		validations.put(Pair.of("jobName", pushDeploy.getJobName()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("number", pushDeploy.getNumber()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("deploymentStatus", pushDeploy.getDeploymentStatus()),
+				Arrays.asList(PushValidationType.BLANK, PushValidationType.DEPLOYMENT_STATUS));
+		validations.put(Pair.of("envName", pushDeploy.getEnvName()), Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("startTime", pushDeploy.getStartTime().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("endTime", pushDeploy.getEndTime().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		validations.put(Pair.of("duration", pushDeploy.getDuration().toString()),
+				Arrays.asList(PushValidationType.BLANK));
+		return validations;
 	}
 
 	private Map<Pair<String, String>, List<PushValidationType>> createBuildValidationMap(PushBuild pushBuild) {

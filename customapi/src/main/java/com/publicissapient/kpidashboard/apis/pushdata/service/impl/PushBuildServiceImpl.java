@@ -20,9 +20,6 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.BuildServiceImpl;
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.DeployServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -35,6 +32,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -57,9 +55,9 @@ public class PushBuildServiceImpl implements PushBaseService {
 	CustomApiConfig customApiConfig;
 
 	/**
-	 * validate pushed buildDeploy data and if all requested data is valid then only saved
-	 * in db , otherwise rejected all data and show errors msg of particular failed
-	 * data
+	 * validate pushed buildDeploy data and if all requested data is valid then only
+	 * saved in db , otherwise rejected all data and show errors msg of particular
+	 * failed data
 	 * 
 	 * @param buildDeploy
 	 * @param projectConfigId
@@ -120,7 +118,9 @@ public class PushBuildServiceImpl implements PushBaseService {
 				&& buildDeploy.getDeployments().size() > customApiConfig.getPushDataLimit())
 				|| (CollectionUtils.isNotEmpty(buildDeploy.getBuilds())
 						&& buildDeploy.getBuilds().size() > customApiConfig.getPushDataLimit())) {
-			throw new PushDataException("Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit());
+			throw new PushDataException("Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit()
+					+ ", input-builds are " + buildDeploy.getBuilds().size() + " and input-deployments are "
+					+ buildDeploy.getDeployments().size());
 		}
 		return (CollectionUtils.isNotEmpty(buildDeploy.getDeployments()) ? buildDeploy.getDeployments().size() : 0)
 				+ (CollectionUtils.isNotEmpty(buildDeploy.getBuilds()) ? buildDeploy.getBuilds().size() : 0);

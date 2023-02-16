@@ -18,13 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.PushDataValidationServiceImpl;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -59,7 +61,6 @@ public class BuildServiceImpl {
 	 * @param buildErrorList
 	 * @return
 	 */
-
 	public int checkandCreateBuilds(ObjectId basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
 			List<PushErrorData> buildErrorList) {
 		AtomicInteger failedRecords = new AtomicInteger();
@@ -136,7 +137,9 @@ public class BuildServiceImpl {
 		build.setDuration(pushBuild.getDuration());
 		build.setBuildStatus(BuildStatus.fromString(pushBuild.getBuildStatus()));
 		build.setTimestamp(build.getTimestamp() == 0 ? System.currentTimeMillis() : build.getTimestamp());
-		build.setUpdateTimestamp(System.currentTimeMillis());
+		build.setUpdatedTime(DateUtil.dateTimeFormatter(
+				Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+				DateUtil.TIME_FORMAT));
 		return build;
 	}
 

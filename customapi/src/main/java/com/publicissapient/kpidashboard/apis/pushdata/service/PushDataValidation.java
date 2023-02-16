@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
 import java.time.LocalDateTime;
@@ -13,14 +31,26 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 public class PushDataValidation {
 
-	protected void checkBlank(String parameter, String literal, Map<String, String> errors) {
+	/**
+	 * check the Blank
+	 * @param parameter
+	 * @param literal
+	 * @param errors
+	 */
+	public static void checkBlank(String parameter, String literal, Map<String, String> errors) {
 		if (StringUtils.isBlank(literal)) {
 			errors.computeIfPresent(parameter, (param, error) -> error.concat(" ," + parameter + " is Blank"));
 			errors.putIfAbsent(parameter, parameter + " is Blank");
 		}
 	}
 
-	protected void checkNumeric(String parameter, String number, Map<String, String> errors) {
+	/**
+	 * check if input is numeric
+	 * @param parameter
+	 * @param number
+	 * @param errors
+	 */
+	public static void checkNumeric(String parameter, String number, Map<String, String> errors) {
 		if (!StringUtils.isNumeric(number)) {
 			errors.computeIfPresent(parameter,
 					(param, error) -> error.concat(" ," + parameter + " should be in digits"));
@@ -28,7 +58,13 @@ public class PushDataValidation {
 		}
 	}
 
-	protected void checkBuildStatus(String parameter, String status, Map<String, String> errors) {
+	/**
+	 * check if status is among Build Statuses
+	 * @param parameter
+	 * @param status
+	 * @param errors
+	 */
+	public static void checkBuildStatus(String parameter, String status, Map<String, String> errors) {
 		Optional<BuildStatus> buildStatusOptional = Arrays.stream(BuildStatus.values())
 				.filter(buildStatus -> buildStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!buildStatusOptional.isPresent()) {
@@ -39,7 +75,13 @@ public class PushDataValidation {
 
 	}
 
-	protected void checkDeploymentStatus(String parameter, String status, Map<String, String> errors) {
+	/**
+	 * check if status among Deployments Statuses
+	 * @param parameter
+	 * @param status
+	 * @param errors
+	 */
+	public static void checkDeploymentStatus(String parameter, String status, Map<String, String> errors) {
 		Optional<DeploymentStatus> deploymentStatusOptional = Arrays.stream(DeploymentStatus.values())
 				.filter(deploymentStatus -> deploymentStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!deploymentStatusOptional.isPresent()) {
@@ -49,7 +91,7 @@ public class PushDataValidation {
 		}
 	}
 
-	protected String getAllBuildValues() {
+	private static String getAllBuildValues() {
 		StringBuilder allStatus = new StringBuilder();
 		for (BuildStatus buildStatus : BuildStatus.values()) {
 			allStatus.append(buildStatus + "/");
@@ -57,7 +99,7 @@ public class PushDataValidation {
 		return allStatus.substring(0, allStatus.length() - 1);
 	}
 
-	protected String getAllDeploymentValues() {
+	private static String getAllDeploymentValues() {
 		StringBuilder allStatus = new StringBuilder();
 		for (DeploymentStatus deploymentStatus : DeploymentStatus.values()) {
 			allStatus.append(deploymentStatus + "/");
@@ -73,7 +115,7 @@ public class PushDataValidation {
 	 * @param duration
 	 * @param errors
 	 */
-	protected void checkTimeDetails(String startTime, String endTime, String duration, Map<String, String> errors) {
+	public static void checkTimeDetails(String startTime, String endTime, String duration, Map<String, String> errors) {
 		LocalDateTime startLocalTime = DateUtil.convertMillisToLocalDateTime(Long.parseLong(startTime));
 		LocalDateTime endLocalDateTime = DateUtil.convertMillisToLocalDateTime(Long.parseLong(endTime));
 		if (!startLocalTime.isEqual(endLocalDateTime)) {

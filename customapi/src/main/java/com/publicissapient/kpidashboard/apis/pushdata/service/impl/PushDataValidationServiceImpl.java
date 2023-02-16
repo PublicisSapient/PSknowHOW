@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.util.HashMap;
@@ -16,12 +34,17 @@ import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataValidation;
 
 @Component
-public class PushDataValidationServiceImpl extends PushDataValidation {
+public class PushDataValidationServiceImpl {
 
 	private static final String START_TIME = "startTime";
 	private static final String END_TIME = "endTime";
 	private static final String DURATION = "duration";
 
+	/**
+	 * create Build and Deploy Error Map based on the required types
+	 * @param validations
+	 * @return
+	 */
 	public Map<String, String> createBuildDeployErrorMap(Map<Pair<String, String>, List<PushValidationType>> validations) {
 		Map<String, String> errors = new HashMap<>();
 		if (MapUtils.isNotEmpty(validations)) {
@@ -62,7 +85,7 @@ public class PushDataValidationServiceImpl extends PushDataValidation {
 					duration.set(pair.getValue());
 				}
 			});
-			checkTimeDetails(startTime.get(), endTime.get(), duration.get(), errors);
+			PushDataValidation.checkTimeDetails(startTime.get(), endTime.get(), duration.get(), errors);
 		}
 	}
 
@@ -71,16 +94,16 @@ public class PushDataValidationServiceImpl extends PushDataValidation {
 		boolean timeCheck = false;
 		switch (validate) {
 		case BLANK:
-			checkBlank(parameter, parameterValue, errors);
+			PushDataValidation.checkBlank(parameter, parameterValue, errors);
 			break;
 		case NUMERIC:
-			checkNumeric(parameter, parameterValue, errors);
+			PushDataValidation.checkNumeric(parameter, parameterValue, errors);
 			break;
 		case BUILD_STATUS:
-			checkBuildStatus(parameter, parameterValue, errors);
+			PushDataValidation.checkBuildStatus(parameter, parameterValue, errors);
 			break;
 		case DEPLOYMENT_STATUS:
-			checkDeploymentStatus(parameter, parameterValue, errors);
+			PushDataValidation.checkDeploymentStatus(parameter, parameterValue, errors);
 			break;
 		case TIME_DETAILS:
 			timeCheck = true;

@@ -31,7 +31,6 @@ import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.application.Week;
-import org.joda.time.DateTime;
 
 /**
  * @author narsingh9

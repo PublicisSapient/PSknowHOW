@@ -91,13 +91,12 @@ public class DeployServiceImpl {
 	}
 
 	/**
-	 *
+	 *create Deployment Object based on the existence in collection
 	 * @param basicProjectConfigId
 	 * @param pushDeploy
 	 * @param checkExisitingDeployment
 	 * @return
 	 */
-
 	private Deployment createDeployment(ObjectId basicProjectConfigId, PushDeploy pushDeploy,
 			Deployment checkExisitingDeployment) {
 		Deployment deployment = (checkExisitingDeployment != null) ? checkExisitingDeployment : new Deployment();
