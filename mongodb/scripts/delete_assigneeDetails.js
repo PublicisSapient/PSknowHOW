@@ -2,7 +2,7 @@ print("Start : Assignee details delete script from all tools");
 
 function deleteAssigneeFromMerge(basicProjectConfigId)
 {
-        print("Update assignee details for the basic project config id in commit details: ", basicProjectConfigId);
+        print("Update assignee details for the basic project config id in merge details: ", basicProjectConfigId);
         db.merge_requests.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {author: 1}});
 }
 
