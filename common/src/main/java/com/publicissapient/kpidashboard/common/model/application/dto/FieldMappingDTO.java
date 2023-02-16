@@ -53,7 +53,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiradefecttype;
 	private List<String> defectPriority;
 	private String[] jiraIssueTypeNames;
-	private String storyFirstStatus;
 	private String[] linkDefectToStoryField;
 	private String envImpacted;
 	private String rootCause;
@@ -124,6 +123,11 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
+	private String jiraAssigneeCustomField="demo1";
+	private String jiraFixVersionCustomField="test";
+	private String jiraLabelsCustomField="random";
+	private String jiraDueDateCustomField="";
+	private String storyFirstStatus;
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;

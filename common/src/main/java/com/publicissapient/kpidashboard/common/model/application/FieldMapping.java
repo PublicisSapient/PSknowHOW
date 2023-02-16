@@ -52,12 +52,12 @@ public class FieldMapping extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private String storyFirstStatus;
 
 	// defectPriority
 	private List<String> defectPriority;
 	private String[] jiraIssueTypeNames;
 	private List<String> jiraIssueEpicType;
-	private String storyFirstStatus;
 	private String envImpacted;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
@@ -82,7 +82,15 @@ public class FieldMapping extends BasicModel {
 	 * Device Platform (iOS/Android/Desktop)
 	 */
 	private String devicePlatform;
+	//Custom Field for jira Issue custom history
 	private String jiraStoryPointsCustomField;
+	private String jiraStatusMappingCustomField;
+	private String jiraAssigneeCustomField;
+	private String jiraFixVersionCustomField;
+	private String jiraLabelsCustomField;
+	private String jiraDueDateCustomField;
+
+
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
@@ -123,7 +131,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTicketWipStatus;
 	private List<String> jiraTicketRejectedStatus;
 
-	private String jiraStatusMappingCustomField;
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
