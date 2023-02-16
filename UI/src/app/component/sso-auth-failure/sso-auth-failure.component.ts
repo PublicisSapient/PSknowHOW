@@ -16,6 +16,7 @@
  *
  ******************************************************************************/
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sso-auth-failure',
@@ -24,9 +25,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SsoAuthFailureComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  reloadApp() {
+    this.router.navigate(['./dashboard/mydashboard']).then(success => {
+      window.location.reload();
+    });
   }
 
 }

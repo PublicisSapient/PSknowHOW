@@ -17,6 +17,6 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
   <div class="p-d-flex p-justify-center p-align-center container">
     <h1 class="message">Authentication Failed!</h1>
-    <button pButton pRipple type="button" label="Retry" class="p-button-danger" [routerLink]="['/']"></button>
+    <button pButton pRipple type="button" label="Retry" class="p-button-danger" (click)="reloadApp()"></button>
   </div>
 
