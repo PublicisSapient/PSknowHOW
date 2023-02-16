@@ -1683,6 +1683,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (null != issue.getTimeTracking()) {
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
+			if(null != issue.getDueDate()){
+				jiraIssue.setDueDate(issue.getDueDate().toString());
+			}
 		}
 	}
 

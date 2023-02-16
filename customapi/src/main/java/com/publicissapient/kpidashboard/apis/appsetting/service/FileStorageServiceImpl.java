@@ -121,11 +121,6 @@ public class FileStorageServiceImpl implements FileStorageService {
 				return new ServiceResponse(false, "Invalid file", INVALID_FILE_CODE);
 			}
 			String filePath = "";
-			switch (type) {
-
-			default:
-				break;
-			}
 			if (StringUtils.isEmpty(filePath)) {
 				return new ServiceResponse(false, "Invalid upload type", INVALID_UPLOAD_TYPE);
 			}

@@ -379,10 +379,8 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 
 	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
 			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName, List<KPIExcelData> excelData) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) && CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
 				KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey,projectName,dateWiseIssueTypeList,dateWiseIssueClosedStatusList,excelData,KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
-			}
 		}
 	}
 
