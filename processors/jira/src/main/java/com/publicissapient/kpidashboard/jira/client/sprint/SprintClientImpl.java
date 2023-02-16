@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -250,7 +251,7 @@ public class SprintClientImpl implements SprintClient {
 					valuesJson = (JSONArray) obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
-				isLast = Boolean.valueOf(obj.get("isLast").toString());
+				isLast = Boolean.parseBoolean(Objects.requireNonNull(obj).get("isLast").toString());
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}
