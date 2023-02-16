@@ -32,8 +32,17 @@ export class SsoAuthFailureComponent implements OnInit {
 
   reloadApp() {
     this.router.navigate(['./dashboard/mydashboard']).then(success => {
+      this.clearAllCookies();
       window.location.reload();
     });
+  }
+
+  clearAllCookies() {
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
   }
 
 }
