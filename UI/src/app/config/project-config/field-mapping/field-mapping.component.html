@@ -317,10 +317,7 @@
                         *ngIf="fieldstoShow?.includes('jiraStatusForInProgress') || fieldstoShow.length === 0">
                         <label class="field-title">Status to identify In Progress
                              <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
-                                                The status of Defect Issue Type which identifies the "In-Progress" status in JIRA. <br>
-                                                Example: In Progress<hr>
-                                                KPI Impacted:
-                                                Work Completed
+                                This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>
                                                </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
