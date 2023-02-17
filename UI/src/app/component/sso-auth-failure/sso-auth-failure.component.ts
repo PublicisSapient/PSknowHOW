@@ -31,6 +31,7 @@ export class SsoAuthFailureComponent implements OnInit {
   }
 
   reloadApp() {
+    console.log('Reload App Called');
     this.router.navigate(['./dashboard/mydashboard']).then(success => {
       this.clearAllCookies();
       window.location.reload();
@@ -38,6 +39,7 @@ export class SsoAuthFailureComponent implements OnInit {
   }
 
   clearAllCookies() {
+    console.log('clear all cookie Called');
     const cookies = document.cookie.split(';');
     // set past expiry to all cookies
     for (const cookie of cookies) {

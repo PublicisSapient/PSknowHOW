@@ -93,6 +93,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             if(!environment.SSO_LOGIN){
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }else{
+                                console.log('navigating to auth fail page in case of 401');
                                 this.router.navigate(['/authentication-fail']);
                             }
                         }
