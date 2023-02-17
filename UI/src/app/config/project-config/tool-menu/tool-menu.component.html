@@ -43,7 +43,7 @@
                 </p-selectButton>
                 <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
                 <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()" 
-                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3" [style]="{'height':'2.5rem'}" pTooltip="You can generate the token to submit tools data via knowHOW POST APIs." tooltipPosition="top"></button>
+                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3" [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}" pTooltip="You can generate the token to submit tools data via knowHOW POST APIs." tooltipPosition="top"></button>
                 </div>
                 <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
             </div>
