@@ -83,7 +83,7 @@ export class FieldMappingComponent implements OnInit {
       dynamicDownload: null as HTMLElement
     }
   };
-  
+
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
     private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService) { }
 
@@ -209,7 +209,7 @@ export class FieldMappingComponent implements OnInit {
 
   getMappings() {
     this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
-   if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
+    if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
       for (const obj in this.selectedFieldMapping) {
         if (this.fieldMappingForm && this.fieldMappingForm.controls[obj]) {
           this.fieldMappingForm.controls[obj].setValue(this.selectedFieldMapping[obj]);
@@ -408,7 +408,6 @@ export class FieldMappingComponent implements OnInit {
       resolutionTypeForRejection: [],
       jiraStatusForDevelopment: [[]],
       jiraStatusForQa: [[]],
-      jiraStatusForInProgress: [[]],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -437,7 +436,6 @@ export class FieldMappingComponent implements OnInit {
       epicTimeCriticality: [''],
       epicJobSize: [''],
       workingHoursDayCPT: [''],
-      dueDate : [''],
       // defect mapping
       jiradefecttype: [[]],
 

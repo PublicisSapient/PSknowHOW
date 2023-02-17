@@ -56,6 +56,7 @@ import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 
+
 /**
  * The type Release data client. Store Release data for the projects in
  * persistence store
@@ -294,6 +295,10 @@ public class MetaDataClientImpl implements MetadataClient {
 
 		fieldMapping.setJiraDefectRemovalStatus(
 				workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+		fieldMapping.setJiraWaitStatus(
+				workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
+		fieldMapping.setJiraBlockedStatus(
+				workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraDefectRemovalIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 		fieldMapping
@@ -404,45 +409,75 @@ public class MetaDataClientImpl implements MetadataClient {
 	private Map<String, List<String>> compareWorkflow(List<Identifier> workflowList, Set<String> allworkflow) {
 		Map<String, List<String>> workflowMap = new HashMap<>();
 		for (Identifier identifier : workflowList) {
-			if (identifier.getType().equals(CommonConstant.DOR)) {
-				List<String> dorList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DOR, dorList);
-			} else if (identifier.getType().equals(CommonConstant.DOD)) {
-				List<String> dodList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DOD, dodList);
-			} else if (identifier.getType().equals(CommonConstant.DEVELOPMENT)) {
-				List<String> devList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DEVELOPMENT, devList);
-			} else if (identifier.getType().equals(CommonConstant.QA)) {
-				List<String> qaList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.QA, qaList);
-			} else if (identifier.getType().equals(CommonConstant.FIRST_STATUS)) {
-				List<String> fList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.FIRST_STATUS, fList);
-			} else if (identifier.getType().equals(CommonConstant.REJECTION)) {
-				List<String> rejList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.REJECTION, rejList);
-			} else if (identifier.getType().equals(CommonConstant.DELIVERED)) {
-				List<String> delList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.DELIVERED, delList);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_CLOSED_STATUS)) {
-				List<String> closedList = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_CLOSED_STATUS, closedList);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_RESOLVED_STATUS)) {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_RESOLVED_STATUS, list);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_REOPEN_STATUS)) {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_REOPEN_STATUS, list);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_TRIAGED_STATUS)) {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_TRIAGED_STATUS, list);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_WIP_STATUS)) {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_WIP_STATUS, list);
-			} else if (identifier.getType().equals(CommonConstant.TICKET_REJECTED_STATUS)) {
-				List<String> list = createFieldList(allworkflow, identifier);
-				workflowMap.put(CommonConstant.TICKET_REJECTED_STATUS, list);
+			switch (identifier.getType()) {
+				case CommonConstant.DOR:
+					List<String> dorList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DOR, dorList);
+					break;
+				case CommonConstant.DOD:
+					List<String> dodList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DOD, dodList);
+					break;
+				case CommonConstant.DEVELOPMENT:
+					List<String> devList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DEVELOPMENT, devList);
+					break;
+				case CommonConstant.QA:
+					List<String> qaList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.QA, qaList);
+					break;
+				case CommonConstant.FIRST_STATUS:
+					List<String> fList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.FIRST_STATUS, fList);
+					break;
+				case CommonConstant.REJECTION:
+					List<String> rejList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.REJECTION, rejList);
+					break;
+				case CommonConstant.DELIVERED:
+					List<String> delList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.DELIVERED, delList);
+					break;
+				case CommonConstant.TICKET_CLOSED_STATUS:
+					List<String> closedList = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_CLOSED_STATUS, closedList);
+					break;
+				case CommonConstant.TICKET_RESOLVED_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_RESOLVED_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_REOPEN_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_REOPEN_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_TRIAGED_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_TRIAGED_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_WIP_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_WIP_STATUS, list);
+					break;
+				}
+				case CommonConstant.TICKET_REJECTED_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.TICKET_REJECTED_STATUS, list);
+					break;
+				}
+				case CommonConstant.JIRA_BLOCKED_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS, list);
+					break;
+				}
+				case CommonConstant.JIRA_WAIT_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_WAIT_STATUS, list);
+					break;
+				}
+				default:
 			}
 		}
 		return workflowMap;
