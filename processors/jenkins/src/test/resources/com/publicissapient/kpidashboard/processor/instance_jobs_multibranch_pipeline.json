@@ -33,7 +33,7 @@
 			"duration": 296508,
 			"result": "SUCCESS",
 			"timestamp": 1614251789526,
-			"url": "http://server/job/master/1/",
+			"url": "http://server/job/job1/1/",
 			"culprits": []
 		},
 		{
@@ -43,7 +43,7 @@
 			"duration": 296508,
 			"result": "FAILURE",
 			"timestamp": 1614251789526,
-			"url": "http://server/job/master/2/",
+			"url": "http://server/job/job2/2/",
 			"culprits": []
 		}]
 	}]

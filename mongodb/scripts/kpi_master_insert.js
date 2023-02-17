@@ -335,14 +335,14 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the  development team in closing defects raised because of new feature development within the sprint",
+      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the development team in closing defects raised because of new functionalities within the iteration",
       "formula": [
         {
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a sprint",
-            "Total no. of defects tagged to stories in a sprint"
+            "No. of defects tagged to stories in the iteration that are fixed",
+            "Total no. of defects tagged to stories in a iteration"
           ]
         }
       ],
@@ -3259,6 +3259,35 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+      "kpiId": "kpi130",
+      "kpiName": "Iteration Status",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 11,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "kpiInfo": {
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "Iteration Status KPI gives a representation of delays in the story."
+          },
+          {
+            "type": "paragraph",
+            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+          }
+        ]
+      },
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "2_column",
+      "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi131",
     "kpiName": "Defect Raised",
     "maxValue": "",
@@ -3413,6 +3442,52 @@ db.getCollection('kpi_master').insert(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi131",
+    "kpiName": "Wastage",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Wastage KPI gives a depiction of total time an issue was not being worked upon in the iteration by anyone in the team after moving to in progress."
+        },
+        {
+          "type": "paragraph",
+          "value": "Blocked time - Total time when any issue type is waiting for input from internal team or external stakeholders."
+        },
+        {
+          "type": "paragraph",
+          "value": "Wait time : Total time when any issue is in statuses similar to Ready for testing, ready for deployment etc."
+        },
+        {
+          "type": "paragraph",
+          "value": "Wastage - Sum of Blocked time and Wait time hours as mentioned in Jira of all issues in the iteration which is either block or in wait"
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {

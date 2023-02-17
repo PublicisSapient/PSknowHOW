@@ -22,7 +22,6 @@ import com.publicissapient.kpidashboard.apis.rbac.projectassignee.service.Projec
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
 import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
-import com.publicissapient.kpidashboard.common.repository.rbac.ProjectAssigneeRolesRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectAssigneeControllerTest {
@@ -34,9 +33,6 @@ public class ProjectAssigneeControllerTest {
 
 	@Mock
 	private ProjectAssigneeService assigneeService;
-
-	@Mock
-	private ProjectAssigneeRolesRepository assigneeRolesRepository;
 
 	private ProjectAssignee projectAssignee;
 

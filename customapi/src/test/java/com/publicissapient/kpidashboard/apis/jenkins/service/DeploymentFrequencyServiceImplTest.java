@@ -146,7 +146,6 @@ public class DeploymentFrequencyServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
 		when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
-		when(configHelperService.getProjectToolConfigMap()).thenReturn(toolProjectMap);
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
@@ -172,7 +171,6 @@ public class DeploymentFrequencyServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
 		when(deploymentRepository.findDeploymentList(any(), any(), any(), any())).thenReturn(deploymentList);
-		when(configHelperService.getProjectToolConfigMap()).thenReturn(toolProjectMap);
 		String startDate = "2022-06-03T06:39:40.000";
 		String endDate = "2022-01-03T06:39:40.000";
 		Map<ObjectId, List<Deployment>> deploymentListMap = deploymentFrequencyService.fetchKPIDataFromDb(leafNodeList,

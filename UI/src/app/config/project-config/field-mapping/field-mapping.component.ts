@@ -124,10 +124,6 @@ export class FieldMappingComponent implements OnInit {
       {
         label: 'Actual Estimation',
         value: 'Actual Estimation'
-      },
-      {
-        label: 'Buffered Estimation',
-        value: 'Buffered Estimation'
       }
     ];
     this.defectIdentification = [
@@ -412,6 +408,8 @@ export class FieldMappingComponent implements OnInit {
       resolutionTypeForRejection: [],
       jiraStatusForDevelopment: [[]],
       jiraStatusForQa: [[]],
+      jiraBlockedStatus:[],
+      jiraWaitStatus:[],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],

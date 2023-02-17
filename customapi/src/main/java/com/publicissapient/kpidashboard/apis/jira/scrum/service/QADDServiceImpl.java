@@ -26,12 +26,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +156,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
@@ -167,7 +173,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 		Map<Pair<String, String>,List<String>> sprintWiseStoryMAP= new HashMap<>();
 		Map<Pair<String, String>,Set<JiraIssue>> sprintWiseDefectListMap=new HashMap<>();
-		processHowerMap(sprintWiseMap, storyDefectDataListMap,sprintWiseQADDMap, sprintWiseHowerMap, storyFilteredList,sprintWiseStoryMAP,sprintWiseDefectListMap);
+		processHowerMap(sprintWiseMap, storyDefectDataListMap,sprintWiseQADDMap, sprintWiseHowerMap,
+				storyFilteredList,sprintWiseStoryMAP,sprintWiseDefectListMap, fieldMapping);
 
 		Map<String, JiraIssue> allStoryMap = new HashMap<>();
 		storyFilteredList.stream().forEach(story -> allStoryMap.putIfAbsent(story.getNumber(), story));
@@ -187,7 +194,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 					List<String> totalStoryIdList = sprintWiseStoryMAP.get(currentNodeIdentifier);
 					Set<JiraIssue> sprintWiseDefectList = sprintWiseDefectListMap.get(currentNodeIdentifier);
 					KPIExcelUtility.populateDefectDensityExcelData(node.getSprintFilter().getName(), totalStoryIdList,
-							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap);
+							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap, fieldMapping);
 				}
 			} else {
 				qaddForCurrentLeaf = 0.0d;
@@ -232,15 +239,25 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 *            the sprint wise defect list
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
-			Pair<String, String> sprint, List<JiraIssue> storyList, Set<JiraIssue> sprintWiseDefectList) {
+			Pair<String, String> sprint, List<JiraIssue> storyList, Set<JiraIssue> sprintWiseDefectList, FieldMapping fieldMapping) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
-		double storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();
 		if (CollectionUtils.isNotEmpty(sprintWiseDefectList)) {
 			howerMap.put(DEFECT, sprintWiseDefectList.size());
 		} else {
 			howerMap.put(DEFECT, 0);
 		}
-		howerMap.put(STORY_POINTS_DATA, storyPointsTotal);
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			howerMap.put(STORY_POINTS_DATA, storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum());
+		} else {
+			double totalOriginalEstimate = storyList.stream().filter(jiraIssue ->
+							Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+			double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+			double storyPointsData = Double.parseDouble(String.format("%.2f",
+					totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()));
+			howerMap.put(STORY_POINTS_DATA, storyPointsData);
+		}
 		sprintWiseHowerMap.put(sprint, howerMap);
 	}
 
@@ -259,7 +276,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			Map<String, Object> storyDefectDataListMap, Map<Pair<String, String>, Double> sprintWiseQADDMap, // NOSONAR
 			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, List<JiraIssue> storyFilteredList,
 			Map<Pair<String, String>, List<String>> sprintWiseStoryMAP,
-			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap) {// NOSONAR
+			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap, FieldMapping fieldMapping) {// NOSONAR
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			Set<JiraIssue> sprintWiseDefectList = new HashSet<>();
 			List<Double> qaddList = new ArrayList<>();
@@ -270,14 +287,14 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(storyIds::addAll);
 			processSubCategoryMap(storyIds, storyDefectDataListMap, qaddList, sprintWiseDefectList, totalStoryIdList,
-					storyList, storyFilteredList, storyPointList);
+					storyList, storyFilteredList, storyPointList, fieldMapping);
 
 			double sprintWiseQADD = calculateKpiValue(qaddList, KPICode.DEFECT_DENSITY.getKpiId());
 			sprintWiseQADDMap.put(sprint, sprintWiseQADD);
 			sprintWiseStoryMAP.put(sprint, totalStoryIdList);
 			sprintWiseDefectListMap.put(sprint, sprintWiseDefectList);
 
-			setHowerMap(sprintWiseHowerMap, sprint, storyList, sprintWiseDefectList);
+			setHowerMap(sprintWiseHowerMap, sprint, storyList, sprintWiseDefectList, fieldMapping);
 		});
 	}
 
@@ -304,17 +321,18 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOPMD
 																											 // //NOSONAR
 			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, // NOSONAR
-			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2) {// NOSONAR
+			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2
+			, FieldMapping fieldMapping) {// NOSONAR
 		HashMap<String, JiraIssue> mapOfStories = new HashMap<>();
 		for (JiraIssue f : storyFilteredList) {
 			mapOfStories.put(f.getNumber(), f);
 		}
 
 		@SuppressWarnings("unchecked")
-		List<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
+		Set<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
 				.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(),
 						storyIdList == null ? Collections.emptyList() : storyIdList))
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 		populateList(additionalFilterDefectList, mapOfStories);
 		@SuppressWarnings("unchecked")
 		List<JiraIssue> storyPointList = ((List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS)).stream()
@@ -327,7 +345,16 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		double qaddForCurrentLeaf = 0.0d;
 		double storyPointsTotal;
 		if (CollectionUtils.isNotEmpty(storyList)) {
-			storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
+			} else {
+				storyPointsTotal = storyList.stream().filter(jiraIssue ->
+								Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				storyPointsTotal = storyPointsTotal / 60;
+				storyPointsTotal = storyPointsTotal / fieldMapping.getStoryPointToHourMapping();
+			}
 			if (storyPointsTotal == 0.0d) {// NOPMD
 				qaddForCurrentLeaf = -1000.0;
 			} else if (CollectionUtils.isNotEmpty(additionalFilterDefectList)) {
@@ -341,19 +368,20 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		totalStoryIdList.addAll(storyIdList == null ? Collections.emptyList() : storyIdList);
 	}
 
-	private void populateList(List<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
+	private void populateList(Set<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
 		if (!additionalFilterDefectList.isEmpty()) {
+			JiraIssue jiraIssue = additionalFilterDefectList.stream().findFirst().orElse(new JiraIssue());
 			// Filter for QA tagged defects
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(new ObjectId(additionalFilterDefectList.get(0).getBasicProjectConfigId()));
+					.get(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 
 			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByQAValue())) {
 				additionalFilterDefectList = additionalFilterDefectList.stream().filter(f -> f.isDefectRaisedByQA()) // NOSONAR
-						.collect(Collectors.toList());
+						.collect(Collectors.toSet());
 			} else if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
 				additionalFilterDefectList = additionalFilterDefectList.stream()
 						.filter(f -> f.getDefectRaisedBy() != null && !(f.getDefectRaisedBy().equalsIgnoreCase("UAT")))
-						.collect(Collectors.toList());
+						.collect(Collectors.toSet());
 			}
 
 			// Filter for defects NOT linked to stories in a given sprint
