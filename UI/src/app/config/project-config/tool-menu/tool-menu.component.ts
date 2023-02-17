@@ -293,12 +293,7 @@ export class ToolMenuComponent implements OnInit {
 
   copyToken(){
     this.tokenCopied = true;
-    document.addEventListener('copy', (e: ClipboardEvent) => {
-      e.clipboardData.setData('text/plain', (this.generatedToken));
-      e.preventDefault();
-      document.removeEventListener('copy', null);
-    });
-    document.execCommand('copy');
+    navigator.clipboard.writeText(this.generatedToken);
   }
   // Preserve original property order
   originalOrder = (a: KeyValue<number,string>, b: KeyValue<number,string>): number => 0;
