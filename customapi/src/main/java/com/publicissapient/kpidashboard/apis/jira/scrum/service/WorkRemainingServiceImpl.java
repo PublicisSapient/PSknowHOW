@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,18 +30,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
@@ -51,9 +55,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -71,6 +78,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String REM_HOURS = "Hours";
 	private static final String OVERALL = "Overall";
+	private static final String SPRINT_DETAILS = "sprint details";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -126,6 +134,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(SPRINT_DETAILS, sprintDetails);
 				}
 			}
 		}
@@ -156,11 +165,13 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
+		SprintDetails sprintDetails= (SprintDetails) resultMap.get(SPRINT_DETAILS);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Work Remaining -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
+			//List<IterationPotentialDelay> iterationPotentialDelayList=calculatePotentialDelay(sprintDetails,allIssues,fieldMapping);
 
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
@@ -180,7 +191,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					Double originalEstimate = 0.0;
 					int remHours = 0;
 					for (JiraIssue jiraIssue : issues) {
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
+						KPIExcelUtility.populateWorkRemainingIterationData(overAllmodalValues, modalValues, jiraIssue, fieldMapping);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getRemainingEstimateMinutes()) {
@@ -197,41 +208,54 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 						}
 					}
 					List<IterationKpiData> data = new ArrayList<>();
-					IterationKpiData issueCounts = new IterationKpiData(ISSUE_COUNT, Double.valueOf(issueCount), null,
-							null, "", modalValues);
+					IterationKpiData issueCounts;
+					//= new IterationKpiData(ISSUE_COUNT, Double.valueOf(issueCount), null,
+					//		null, "", modalValues);
 					IterationKpiData storyPoints;
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
-								null, null, CommonConstant.SP, null);
+					//	storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
+					//			null, null, CommonConstant.SP, null);
+						issueCounts = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT, Double.valueOf(issueCount), storyPoint,
+								null, CommonConstant.SP, modalValues);
 					} else {
-						storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
-								null, null, CommonConstant.HOURS, null);
+						//storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
+						//		null, null, CommonConstant.HOURS, null);
+						issueCounts = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE, Double.valueOf(issueCount), originalEstimate,
+								null, CommonConstant.HOURS, modalValues);
 					}
+
 					IterationKpiData hours = new IterationKpiData(REM_HOURS, Double.valueOf(remHours), null, null,
 							CommonConstant.HOURS, null);
 					data.add(issueCounts);
-					data.add(storyPoints);
+					//data.add(storyPoints);
 					data.add(hours);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
 					iterationKpiValues.add(iterationKpiValue);
 				}));
 			List<IterationKpiData> data = new ArrayList<>();
-			IterationKpiData overAllCount = new IterationKpiData(ISSUE_COUNT, Double.valueOf(overAllIssueCount.get(0)),
-					null, null, "", overAllmodalValues);
+			IterationKpiData overAllCount;
+					//= new IterationKpiData(ISSUE_COUNT, Double.valueOf(overAllIssueCount.get(0)),
+					//null, null, "", overAllmodalValues);
 			IterationKpiData overAllStPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
-						null, null, CommonConstant.SP, null);
+				///overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
+					//	null, null, CommonConstant.SP, null);
+
+				overAllCount = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT, Double.valueOf(overAllIssueCount.get(0)),
+						overAllStoryPoints.get(0), null, CommonConstant.SP, overAllmodalValues);
+
 			} else {
-				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
-						null, null, CommonConstant.HOURS, null);
+				//overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+				//		null, null, CommonConstant.HOURS, null);
+				overAllCount = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE, Double.valueOf(overAllIssueCount.get(0)),
+						overAllOriginalEstimate.get(0), null, CommonConstant.HOURS, overAllmodalValues);
 			}
 			IterationKpiData overAllHours = new IterationKpiData(REM_HOURS, Double.valueOf(overAllRemHours.get(0)),
 					null, null, CommonConstant.HOURS, null);
 			data.add(overAllCount);
-			data.add(overAllStPoints);
+			//data.add(overAllStPoints);
 			data.add(overAllHours);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 			iterationKpiValues.add(overAllIterationKpiValue);
@@ -246,5 +270,139 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			kpiElement.setModalHeads(KPIExcelColumn.WORK_REMAINING.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	private List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
+																  List<JiraIssue> allIssues, FieldMapping fieldMapping) {
+		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
+		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = allIssues.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
+		if (MapUtils.isEmpty(assigneeWiseJiraIssue)) {
+			allIssues.stream().forEach(jiraIssue -> iterationPotentialDelayList.add(IterationPotentialDelay.builder()
+					.issueId(jiraIssue.getIssueId()).predictedCompletedDate("-").potentialDelay(0).build()));
+		}
+		else{
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(arrangeJiraIssueList(fieldMapping,allIssues),sprintDetails));
+
+		}
+		return iterationPotentialDelayList;
+
+	}
+
+	private List<IterationPotentialDelay> sprintWiseDelayCalculation(List<JiraIssue> arrangeJiraIssueList, SprintDetails sprintDetails) {
+		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
+		LocalDate pivotPCD = null;
+		Map<LocalDate, List<JiraIssue>> dueDateJiraIssue = createDueDateWiseMap(arrangeJiraIssueList);
+		for (Map.Entry<LocalDate, List<JiraIssue>> entry : dueDateJiraIssue.entrySet()) {
+			LocalDate pivotPCDLocal = null;
+			for (JiraIssue issue : entry.getValue()) {
+				int remainingEstimateTime = getRemainingEstimateTime(issue);
+				LocalDate potentialClosedDate = (remainingEstimateTime == 0
+						&& sprintDetails.getState().equalsIgnoreCase("closed"))
+								? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(),DateUtil.TIME_FORMAT_WITH_SEC)
+								: createPotentialClosedDate(sprintDetails, remainingEstimateTime, pivotPCD);
+				int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
+				iterationPotentialDelayList.add(createIterationPotentialDelay(potentialClosedDate,potentialDelay,remainingEstimateTime,issue,sprintDetails.getState().equalsIgnoreCase("closed"),entry.getKey()));
+				pivotPCDLocal=checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
+			}
+			LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal, 1);
+			pivotPCD = workingDayAfterAdditionofDays == null ? pivotPCD : workingDayAfterAdditionofDays;
+		}
+		return iterationPotentialDelayList;
+	}
+
+	private IterationPotentialDelay createIterationPotentialDelay(LocalDate potentialClosedDate, int potentialDelay,
+			int remainingEstimateTime, JiraIssue issue, boolean sprintClosed, LocalDate dueDate) {
+		IterationPotentialDelay iterationPotentialDelay = new IterationPotentialDelay();
+		iterationPotentialDelay.setIssueId(issue.getNumber());
+		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
+		iterationPotentialDelay.setDueDate(dueDate.toString());
+		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
+		return iterationPotentialDelay;
+
+	}
+
+	private int getPotentialDelay(LocalDate dueDate, LocalDate potentialClosedDate) {
+		int potentialDelays = CommonUtils.createPotentialDelays(dueDate, potentialClosedDate);
+		return (dueDate.isAfter(potentialClosedDate))?potentialDelays*(-1):potentialDelays;
+	}
+
+	private LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate, int remainingEstimateTime,
+			LocalDate pivotPCDLocal) {
+		// agar sprint closed hai... R.E =0 --> pivot pcd update nahi hoga
+		if (remainingEstimateTime != 0 && !sprintDetails.getState().equalsIgnoreCase("closed")
+				&& (pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))) {
+			pivotPCDLocal = potentialClosedDate;
+		}
+		return pivotPCDLocal;
+
+	}
+
+	private Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
+		Map<LocalDate, List<JiraIssue>> localDateListMap = new HashMap<>();
+		arrangeJiraIssueList.forEach(jiraIssue -> {
+			LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+			localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
+				issue.add(jiraIssue);
+				return issue;
+			});
+			localDateListMap.computeIfAbsent(dueDate, value -> {
+				List<JiraIssue> issues = new ArrayList<>();
+				issues.add(jiraIssue);
+				return issues;
+			});
+		});
+		return localDateListMap;
+	}
+
+	private LocalDate createPotentialClosedDate(SprintDetails sprintDetails, int remainingEstimateTime, LocalDate pivotPCD) {
+		LocalDate pcd = null;
+		
+		if (pivotPCD == null) {
+			// for the first calculation
+			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase("closed")
+					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(),DateUtil.TIME_FORMAT_WITH_SEC)
+					: LocalDate.now();
+
+			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(startDate, remainingEstimateTime);
+		} else {
+			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCD, remainingEstimateTime);
+		}
+
+		return pcd;
+
+	}
+
+	private int getRemainingEstimateTime(JiraIssue issueObject) {
+		int remainingEstimate = 0;
+		if (issueObject.getRemainingEstimateMinutes() != null) {
+			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
+		}
+		return remainingEstimate;
+	}
+
+	/**
+	 * first in progress then open
+	 * @param fieldMapping
+	 * @param allIssues
+	 * @return
+	 */
+	private List<JiraIssue> arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues) {
+		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream().filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
+		jiraIssuesWithDueDate.sort((JiraIssue issue1, JiraIssue issue2) -> DateUtil.stringToLocalDate(issue1.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC)
+						.compareTo(DateUtil.stringToLocalDate(issue1.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC)));
+		List<JiraIssue> arrangedList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+			arrangedList.addAll(allIssues.stream()
+					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.collect(Collectors.toList()));
+			arrangedList.addAll(allIssues.stream()
+					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.collect(Collectors.toList()));
+		} else {
+			arrangedList.addAll(allIssues);
+		}
+		return arrangedList;
+
 	}
 }

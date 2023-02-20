@@ -157,4 +157,9 @@ public class DateUtil {
 		 return DateTimeFormat.forPattern(formater)
 				  .parseDateTime(date);
 	}
+
+	public static LocalDate stringToLocalDate(String time, String format){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		return LocalDate.parse(time, formatter);
+	}
 }
