@@ -1405,7 +1405,7 @@ db.getCollection('kpi_master').insert(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
+    "hideOverallFilter" : false,
     "maturityRange": ["-10","10-8","8-5","5-3","3-"]
   },
   {
