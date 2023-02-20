@@ -236,6 +236,25 @@ public class KPIExcelUtility {
             });
         }
     }
+    public static void populateDefectRCARelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
+                                                      List<KPIExcelData> kpiExcelData, String kpiId) {
+        if (CollectionUtils.isNotEmpty(jiraIssues)) {
+            jiraIssues.stream().forEach(jiraIssue -> {
+                KPIExcelData excelData = new KPIExcelData();
+                excelData.setSprintName(sprint);
+                Map<String, String> defectIdDetails = new HashMap<>();
+                defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+                excelData.setDefectId(defectIdDetails);
+                excelData.setIssueDesc(checkEmptyName(jiraIssue));
+                excelData.setIssueStatus(jiraIssue.getStatus());
+                excelData.setIssueType(jiraIssue.getTypeName());
+                excelData.setSizeInStoryPoints(String.valueOf(jiraIssue.getStoryPoints()));
+                excelData.setRootCause(jiraIssue.getRootCauseList());
+                excelData.setPriority(jiraIssue.getPriority());
+                kpiExcelData.add(excelData);
+            });
+        }
+    }
 
     /**
      * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is

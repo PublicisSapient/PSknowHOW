@@ -10,12 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -47,6 +50,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 	@Autowired
 	private ConfigHelperService configHelperService;
+
+	@Autowired
+	private CommonServiceImpl commonService;
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -115,9 +121,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		String requestTrackerId = getRequestTrackerId();
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
+		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+		Node latestSprint = sprintLeafNodeList.get(0);		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 		if(latestSprint !=null) {
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(latestSprint.getProjectFilter().getBasicProjectConfigId());
@@ -169,6 +175,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					middleTrendValueListForPriorities.add(middleOverallData);
 
 					DataCountGroup filterData = new DataCountGroup(priority, middleTrendValueListForPriorities);
+
 					filterDataList.add(filterData);
 					dataCountList.add(priorityRCAData);
 					priorityData.setValue(dataCountList);
@@ -192,26 +199,41 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				overallData.setKpiGroup(OVERALL);
 				overallData.setSProjectName(latestSprint.getProjectFilter().getName());
 				trendValueListOverAll.add(overallData);
-
 				// add one more data count group and data count for middle level structure to store "Overall" Priority
 				List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
 				DataCount middleOverallData = new DataCount();
 				middleOverallData.setData(latestSprint.getProjectFilter().getName());
 				middleOverallData.setValue(trendValueListOverAll);
 				middleTrendValueListOverAll.add(middleOverallData);
+				populateExcelDataObject(requestTrackerId, excelData, allCompletedIssuesExcludeStory, latestSprint.getSprintFilter().getName());
 
 				// "Overall" dataCountGroup added to filterDataList and added in the final filterDataList
 				DataCountGroup filterDataOverall = new DataCountGroup(OVERALL, middleTrendValueListOverAll);
 				filterDataList.add(filterDataOverall);
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIECHART.getColumns());
+				kpiElement.setExcelData(excelData);
+				sortListByKey(filterDataList);
 				// filterDataList will consist of dataCountGroup for all the available priorities such as P1, P2, P3, P4, Overall etc.
 				kpiElement.setTrendValueList(filterDataList);
 				LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId, overAllRCAIssueCount.get(0));
 			}
 		}
 	}
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+										 List<JiraIssue> sprintWiseDefectDataList, String name) {
 
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
+			KPIExcelUtility.populateDefectRCARelatedExcelData(name, sprintWiseDefectDataList, excelData,
+					KPICode.DEFECT_COUNT_BY_RCA_PIECHART.getKpiId());
+		}
+
+	}
+
+	private void sortListByKey(List<DataCountGroup> list) {
+		list.sort(Comparator.comparing(DataCountGroup::getFilter));
+	}
 	private List<JiraIssue> filterCompletedIssues(Map<String, Object> resultMap, FieldMapping fieldMapping) {
 		List<String> defectStatuses = fieldMapping.getJiradefecttype();
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(TOTAL_ISSUES))) {
