@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -76,7 +75,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String REM_HOURS = "Hours";
+	private static final String REMAINING_WORK = "Remaining Work";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
 
@@ -209,53 +208,36 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issueCounts;
-					//= new IterationKpiData(ISSUE_COUNT, Double.valueOf(issueCount), null,
-					//		null, "", modalValues);
-					IterationKpiData storyPoints;
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					//	storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
-					//			null, null, CommonConstant.SP, null);
 						issueCounts = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT, Double.valueOf(issueCount), storyPoint,
-								null, CommonConstant.SP, modalValues);
+								null, "",CommonConstant.SP, modalValues);
 					} else {
-						//storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
-						//		null, null, CommonConstant.HOURS, null);
 						issueCounts = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE, Double.valueOf(issueCount), originalEstimate,
-								null, CommonConstant.HOURS, modalValues);
+								null,"",CommonConstant.DAY, modalValues);
 					}
 
-					IterationKpiData hours = new IterationKpiData(REM_HOURS, Double.valueOf(remHours), null, null,
-							CommonConstant.HOURS, null);
+					IterationKpiData hours = new IterationKpiData(REMAINING_WORK, Double.valueOf(remHours), null, null,
+							CommonConstant.DAY, null);
 					data.add(issueCounts);
-					//data.add(storyPoints);
 					data.add(hours);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
 					iterationKpiValues.add(iterationKpiValue);
 				}));
 			List<IterationKpiData> data = new ArrayList<>();
 			IterationKpiData overAllCount;
-					//= new IterationKpiData(ISSUE_COUNT, Double.valueOf(overAllIssueCount.get(0)),
-					//null, null, "", overAllmodalValues);
-			IterationKpiData overAllStPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				///overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
-					//	null, null, CommonConstant.SP, null);
-
 				overAllCount = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT, Double.valueOf(overAllIssueCount.get(0)),
-						overAllStoryPoints.get(0), null, CommonConstant.SP, overAllmodalValues);
+						overAllStoryPoints.get(0), null, "",CommonConstant.SP, overAllmodalValues);
 
 			} else {
-				//overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
-				//		null, null, CommonConstant.HOURS, null);
 				overAllCount = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE, Double.valueOf(overAllIssueCount.get(0)),
-						overAllOriginalEstimate.get(0), null, CommonConstant.HOURS, overAllmodalValues);
+						overAllOriginalEstimate.get(0), null,"", CommonConstant.DAY, overAllmodalValues);
 			}
-			IterationKpiData overAllHours = new IterationKpiData(REM_HOURS, Double.valueOf(overAllRemHours.get(0)),
-					null, null, CommonConstant.HOURS, null);
+			IterationKpiData overAllHours = new IterationKpiData(REMAINING_WORK, Double.valueOf(overAllRemHours.get(0)),
+					null, null, CommonConstant.DAY, null);
 			data.add(overAllCount);
-			//data.add(overAllStPoints);
 			data.add(overAllHours);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 			iterationKpiValues.add(overAllIterationKpiValue);
