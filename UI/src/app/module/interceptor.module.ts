@@ -92,10 +92,14 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             localStorage.removeItem('authorities');
                             if(!environment.SSO_LOGIN){
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
-                            }else{
-                                console.log('navigating to auth fail page in case of 401');
-                                this.router.navigate(['/authentication-fail']);
                             }
+                        }
+
+                        if (environment.SSO_LOGIN) {
+                            console.log('Navigating to dashboard');
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
                         }
                     } else if(err.status === 403){
                         this.httpService.unauthorisedAccess =true;
