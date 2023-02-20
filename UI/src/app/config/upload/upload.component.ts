@@ -135,6 +135,7 @@ export class UploadComponent implements OnInit {
     expandedRows={};
     selectedSprintAssigneFormArray=[];
     selectedSprintAssigneValidator=[];
+    jiraAssigneeLoader = false;
     constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
     }
 
@@ -912,9 +913,11 @@ export class UploadComponent implements OnInit {
     }
 
     getCapacityJiraAssignee(projectId) {
+        this.jiraAssigneeLoader = true;
         if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
             this.http_service.getJiraProjectAssignee(projectId)
                 .subscribe(response => {
+                    this.jiraAssigneeLoader = false;
                     if (response && response?.success && response?.data) {
                         this.projectJiraAssignees = response['data'];
                     } else {
