@@ -963,7 +963,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			String parentKey = null;
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
 						&& jiraProcessorConfig.getExcludeLinks().stream()
@@ -973,24 +972,29 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
 
-			if (issue.getIssueType().isSubtask()) {
-				if (MapUtils.isNotEmpty(fields)) {
-					try {
-						parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
-								.toString();
-						defectStorySet.add(parentKey);
-					} catch (JSONException e) {
-						log.error(
-								"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
-								e);
-					}
-
-				}
-			}
+			storyWithSubTaskDefect(issue, fields, defectStorySet);
 
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
 	}
+
+	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields, Set<String> defectStorySet) {
+		String parentKey;
+		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
+
+			try {
+				parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
+						.toString();
+				defectStorySet.add(parentKey);
+			} catch (JSONException e) {
+				log.error(
+						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
+						e);
+			}
+
+		}
+	}
+
 
 	/**
 	 * Finds one JiraIssue by issueId
