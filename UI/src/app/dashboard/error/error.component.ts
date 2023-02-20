@@ -41,9 +41,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
     ngOnInit() {
       // for getting error from Shared service
       this.service.passErrorToErrorPage.subscribe((error) => {
-        console.log('44 line');
-        console.log(error);
-        console.log('46 line');
         switch (error.status) {
           case 0: this.errorMsg = 'Server not available';
             this.redirectButtonText = 'Go to homepage';

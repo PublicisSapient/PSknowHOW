@@ -963,7 +963,7 @@ export class UploadComponent implements OnInit {
         });
     }
     /* Upload and  validate certificate */
-    async validateCertificate(event) {
+    validateCertificate(event) {
         this.error = '';
         this.message = '';
         this.selectedFile = event.files[0];
