@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -17,41 +16,29 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.bson.types.ObjectId;
+
 @Data
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "build_details")
-public class Build extends BasicModel {
-	private ObjectId processorId;
-	private ObjectId basicProjectConfigId;
-	private ObjectId projectToolConfigId;
-	private long timestamp;
-	private String buildJob;
-	private String jobFolder;
-	private String number;
-	private String buildUrl;
-	private long startTime;
-	private long endTime;
-	private long duration;
-	private BuildStatus buildStatus;
-	private String startedBy;
-	private String log;
-	private String updatedTime;
+public class ExposeAPITokenResponseDTO {
 
+	private ObjectId basicProjectConfigId;
+	private String projectName;
+	private String username;
+	private String apiToken;
+	private String expiryDate;
+	private String createdAt;
 }

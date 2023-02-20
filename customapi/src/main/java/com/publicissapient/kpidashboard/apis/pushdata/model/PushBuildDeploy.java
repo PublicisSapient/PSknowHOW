@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -17,13 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;
+package com.publicissapient.kpidashboard.apis.pushdata.model;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,27 +26,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "build_details")
-public class Build extends BasicModel {
-	private ObjectId processorId;
-	private ObjectId basicProjectConfigId;
-	private ObjectId projectToolConfigId;
-	private long timestamp;
-	private String buildJob;
-	private String jobFolder;
-	private String number;
-	private String buildUrl;
-	private long startTime;
-	private long endTime;
-	private long duration;
-	private BuildStatus buildStatus;
-	private String startedBy;
-	private String log;
-	private String updatedTime;
-
+public class PushBuildDeploy {
+	List<PushBuild> builds;
+	List<PushDeploy> deployments;
 }

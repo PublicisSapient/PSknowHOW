@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -16,14 +15,10 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
-package com.publicissapient.kpidashboard.common.model.application;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,27 +26,33 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "build_details")
-public class Build extends BasicModel {
-	private ObjectId processorId;
-	private ObjectId basicProjectConfigId;
-	private ObjectId projectToolConfigId;
-	private long timestamp;
-	private String buildJob;
-	private String jobFolder;
+public class BuildDeployFields {
+	@NotNull(message = "The jobName must not be null.")
+	@JsonProperty("jobName")
+	private String jobName;
+	@NotNull(message = "The number must not be null.")
+	@JsonProperty("number")
 	private String number;
-	private String buildUrl;
-	private long startTime;
-	private long endTime;
-	private long duration;
-	private BuildStatus buildStatus;
-	private String startedBy;
-	private String log;
-	private String updatedTime;
 
+	@NotNull(message = "The startTime must not be null.")
+	@Min(value = 0, message = "The startTime must be positive.")
+	@JsonProperty("startTime")
+	private Long startTime;
+
+	@NotNull(message = "The endTime must not be null.")
+	@Min(value = 0, message = "The endTime must be positive.")
+	@JsonProperty("endTime")
+	private Long endTime;
+
+	@NotNull(message = "The duration must not be null.")
+	@Min(value = 0, message = "The duration must be positive.")
+	@JsonProperty("duration")
+	private Long duration;
 }

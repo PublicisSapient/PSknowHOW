@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -17,13 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;
+package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,27 +26,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "build_details")
-public class Build extends BasicModel {
-	private ObjectId processorId;
-	private ObjectId basicProjectConfigId;
-	private ObjectId projectToolConfigId;
-	private long timestamp;
-	private String buildJob;
-	private String jobFolder;
-	private String number;
-	private String buildUrl;
-	private long startTime;
-	private long endTime;
-	private long duration;
-	private BuildStatus buildStatus;
-	private String startedBy;
-	private String log;
-	private String updatedTime;
+public class PushDeploy extends BuildDeployFields {
+	@NotNull(message = "The environment must not be null.")
+	@JsonProperty("envName")
+	private String envName;
 
+	@NotNull(message = "The deploymentStatus must not be null.")
+	@JsonProperty("deploymentStatus")
+	private String deploymentStatus;
 }
