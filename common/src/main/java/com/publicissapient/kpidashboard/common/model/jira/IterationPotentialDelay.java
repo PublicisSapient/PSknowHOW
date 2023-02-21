@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,16 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Data
 public class IterationPotentialDelay {
-    private String issueId;
-    private String url;
-    private String typeName;
-    private String issueDescription;
-    private String priority;
-    private String issueStatus;
-    private String dueDate;
-    private int remainingHours;
-    private int originalEstimate;
-    private int potentialDelay;
-    private int size;
-    private String predictedCompletedDate;
+	private String issueId;
+	private String dueDate;
+	private int potentialDelay;
+	private String predictedCompletedDate;
 }

@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -1145,9 +1146,8 @@ public class KPIExcelUtility {
     }
 
 	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
-			FieldMapping fieldMapping) {
-		int loggedTime = 0;
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+			Map<String, List<IterationPotentialDelay>> issueWiseDelay) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -1164,11 +1164,22 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setIssueSize(convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
 		}
 
-		if (jiraIssue.getRemainingEstimateMinutes() != null) {
-			iterationKpiModalValue.setRemainingTimeInDays(convertIntoDays(jiraIssue.getRemainingEstimateMinutes()));
+		iterationKpiModalValue.setRemainingTimeInDays(
+				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
+						? convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
+						: "0m");
+		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
+			List<IterationPotentialDelay> delay = issueWiseDelay.get(jiraIssue.getNumber());
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(delay.get(0).getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(delay.get(0).getPredictedCompletedDate());
+
+		} else {
+			iterationKpiModalValue.setPotentialDelay("-");
+			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
-		loggedTime = jiraIssue.getTimeSpentInMinutes() / 60;
-		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime + " hrs"));
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
@@ -1183,9 +1194,9 @@ public class KPIExcelUtility {
 			if (hours % 8 > 0) {
 				returnString.append(hours % 8 + "h ");
 			}
-			if (minutes % 60 > 0) {
-				returnString.append(minutes % 60 + "m");
-			}
+		}
+		if (minutes % 60 > 0) {
+			returnString.append(minutes % 60 + "m");
 		}
 		return returnString.toString();
 	}

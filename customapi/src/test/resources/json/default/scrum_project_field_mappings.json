@@ -156,6 +156,7 @@
     "jiraAutomatedTestValue": [
       "UI"
     ],
+    "jiraStatusForInProgress" : [ "Open"],
     "jiraRegressionTestValue": [
       "JAVA",
       "UI"

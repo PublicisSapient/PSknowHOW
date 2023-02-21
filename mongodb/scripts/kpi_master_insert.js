@@ -2993,23 +2993,11 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Work Remaining KPI gives a depiction of the pending work in an iteration from three available dimensions"
+          "value": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues, Size of Work (in SP) and Hours required to complete remaining tasks"
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are not completed based on DOD in the iteration."
-        },
-        {
-          "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues not completed based on DOD in the iteration"
-        },
-        {
-          "type": "paragraph",
-          "value": "Hours - Sum of remaining hours as mentioned in Jira of all issues not completed based on DOD in the iteration"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "value": "Remaining work is based on the ‘Issues not completed’ list in Sprint report in Jira"
         }
       ]
     },
