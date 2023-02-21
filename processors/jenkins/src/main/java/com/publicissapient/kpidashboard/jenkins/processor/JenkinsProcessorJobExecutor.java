@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -193,7 +192,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
-					assigneeToggleDate(proBasicConfig);
+
 					if (BUILD.equalsIgnoreCase(jobType)) {
 						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count, proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
@@ -228,13 +227,9 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		Map<ObjectId, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer, proBasicConfig);
 		if (MapUtils.isNotEmpty(buildsByJob)) {
 
-			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId());
+			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId(), proBasicConfig);
 			count += updatedJobs;
 			log.info("Job updated for :{}", count);
-			if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-				updateAssigneeDetailForBuild(jenkinsServer, processorExecutionTraceLog, proBasicConfig, buildsByJob);
-			}
-
 
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
@@ -246,21 +241,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
 
-	private void updateAssigneeDetailForBuild(ProcessorToolConnection jenkinsServer, ProcessorExecutionTraceLog processorExecutionTraceLog, ProjectBasicConfig proBasicConfig, Map<ObjectId, Set<Build>> buildsByJob) {
-		if(checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-			List<Build> updateStartedBy = new ArrayList<>();
 
-			for (Build build : buildsByJob.values().iterator().next()) {
-
-				Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
-						build.getNumber());
-				buildData.setStartedBy(build.getStartedBy());
-				updateStartedBy.add(buildData);
-
-			}
-			buildRepository.saveAll(updateStartedBy);
-		}
-	}
 
 	private void processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
 			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog) {
@@ -307,33 +288,42 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	/**
 	 * Iterates over the enabled build jobs and adds new builds to the database.
 	 *
-	 * @param buildsByJob
-	 *            the build by job
+	 * @param buildsByJob                the build by job
+	 * @param proBasicConfig
 	 * @return build count
 	 */
 	private int addNewBuildDetails(Map<ObjectId, Set<Build>> buildsByJob, ProcessorToolConnection jenkinsServer,
-			ObjectId processorId) {
+								   ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
 		for (Build build : buildsByJob.values().iterator().next()) {
-			if (isNewBuild(jenkinsServer.getId(), build.getNumber())) {
+			Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(jenkinsServer.getId(),
+					build.getNumber());
+			if (buildData == null) {
 				build.setJobFolder(jenkinsServer.getJobName());
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(jenkinsServer.getBasicProjectConfigId());
 				build.setProjectToolConfigId(jenkinsServer.getId());
 				build.setBuildJob(jenkinsServer.getJobName());
-
 				buildsToSave.add(build);
 				count++;
+			} else {
+
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+					buildData.setStartedBy(build.getStartedBy());
+					buildsToSave.add(buildData);
+				}
 			}
 		}
+
 		if (CollectionUtils.isNotEmpty(buildsToSave)) {
 			buildRepository.saveAll(buildsToSave);
 		}
 		log.info("New builds {} {}", start, count);
 		return count;
 	}
+
 
 	private String decryptKey(String encryptedKey) {
 		return aesEncryptionService.decrypt(encryptedKey, jenkinsConfig.getAesEncryptionKey());
@@ -350,19 +340,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		);
 
 		return processorExecutionTraceLog;
-	}
-
-	/**
-	 * Checks whether the build is new.
-	 *
-	 * @param jobId
-	 *            the Jenkins jobs
-	 * @param buildNumber
-	 *            the Jenkins build
-	 * @return boolean
-	 */
-	private boolean isNewBuild(ObjectId jobId, String buildNumber) {
-		return buildRepository.findByProjectToolConfigIdAndNumber(jobId, buildNumber) == null;
 	}
 
 	/**
@@ -423,25 +400,4 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		setProjectsBasicConfigIds(null);
 	}
 
-	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
-		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
-			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
-			projectConfigRepository.save(projectBasicConfig);
-		}
-	}
-
-	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
-								 ProjectBasicConfig proBasicConfig) {
-		return (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun()));
-	}
-
-	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
-													 ProjectBasicConfig proBasicConfig) {
-		return (proBasicConfig.isSaveAssigneeDetails()
-				&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
-				|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))));
-	}
 }

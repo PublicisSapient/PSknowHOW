@@ -1,9 +1,9 @@
 print("Start : Assignee details delete script from all tools");
 
-function deleteAssigneeFromMerge(basicProjectConfigId)
+function deleteAssigneeFromMerge(processorItemId)
 {
-        print("Update assignee details for the basic project config id in merge details: ", basicProjectConfigId);
-        db.merge_requests.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {author: 1}});
+        print("Update assignee details for the processorItemId in merge details: ", processorItemId);
+        db.merge_requests.updateMany({"processorItemId": ObjectId(processorItemId)}, {$unset: {author: 1}});
 }
 
 function deleteAssigneeFromBuild(basicProjectConfigId)
@@ -12,10 +12,10 @@ function deleteAssigneeFromBuild(basicProjectConfigId)
         db.build_details.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {startedBy: 1}});
 }
 
-function deleteAssigneeFromCommit(basicProjectConfigId)
+function deleteAssigneeFromCommit(processorItemId)
 {
-        print("Update assignee details for the basic project config id in commit details: ", basicProjectConfigId);
-        db.commit_details.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {author: 1}});
+        print("Update assignee details for the processorItemId in commit details: ", processorItemId);
+        db.commit_details.updateMany({"processorItemId": ObjectId(processorItemId)}, {$unset: {author: 1}});
 }
 
 function deleteAssigneeDetailsFromDeployment(basicProjectConfigId)
@@ -37,6 +37,36 @@ function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId)
         db.kanban_jira_issue.updateMany({ "basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1,assigneeName: 1}});
 }
 
+function deleteAssigneeDetailsFromCommitAndMerge(basicProjectConfigId) {
+    if (db.getCollection('project_tool_configs').find({"basicProjectConfigId": ObjectId(basicProjectConfigId)}).count() > 0)
+    {
+        db.getCollection('project_tool_configs').find({"basicProjectConfigId": ObjectId(basicProjectConfigId)}).forEach(
+            projectToolConfig => {
+                const projectToolId = projectToolConfig._id;
+                print("Project Tool config id :", projectToolId);
+                const toolConfigId = projectToolId.str;
+                fetchProcessorItemId(toolConfigId);
+            });
+    }
+}
+
+
+function fetchProcessorItemId(toolConfigId)
+{
+    if (db.processor_items.find({"toolConfigId": ObjectId(toolConfigId)}).count() > 0)
+    {
+        db.getCollection('processor_items').find({"toolConfigId": ObjectId(toolConfigId)}).forEach(
+            processorItems => {
+                const processorItemElement = processorItems._id;
+                print("Processor item id in object form : ", processorItemElement);
+                const processorItemId = processorItemElement.str;
+                deleteAssigneeFromCommit(processorItemId);
+                deleteAssigneeFromMerge(processorItemId);
+            })
+    }
+
+}
+
 
     db.getCollection('project_basic_configs').find({saveAssigneeDetails: false}).forEach(
         basicProjectConfig => {
@@ -45,9 +75,8 @@ function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId)
              print("Project basic configId for disable toggle projects", basicProjectConfigId);
             deleteAssigneeDetailsFromJira(basicProjectConfigId);
             deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId);
-            deleteAssigneeFromCommit(basicProjectConfigId);
             deleteAssigneeDetailsFromDeployment(basicProjectConfigId);
             deleteAssigneeFromBuild(basicProjectConfigId);
-            deleteAssigneeFromMerge(basicProjectConfigId);
+            deleteAssigneeDetailsFromCommitAndMerge(basicProjectConfigId);
 
         });

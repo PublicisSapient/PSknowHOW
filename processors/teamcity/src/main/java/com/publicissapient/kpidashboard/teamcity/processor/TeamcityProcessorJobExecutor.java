@@ -189,7 +189,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
-					assigneeToggleDate(proBasicConfig);
+
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					teamcityClient = teamcityClientFactory.getTeamcityClient(TEAMCITY_CLIENT);
 
@@ -198,7 +198,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId(), proBasicConfig);
 					count += updatedJobs;
-					updateAssigneeDetails(proBasicConfig, teamcityServer, processorExecutionTraceLog, buildsByJob);
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -228,28 +227,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		return executionStatus;
 	}
 
-	private void updateAssigneeDetails(ProjectBasicConfig proBasicConfig, ProcessorToolConnection teamcityServer, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-			updateAssignee(proBasicConfig, teamcityServer, processorExecutionTraceLog, buildsByJob);
-		}
-	}
-
-	private void updateAssignee(ProjectBasicConfig proBasicConfig, ProcessorToolConnection teamcityServer, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
-		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-			List<Build> updateStartedBy = new ArrayList<>();
-
-			for (Build build : buildsByJob.values().iterator().next()) {
-
-				Build buildData = buildRepository
-						.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), build.getNumber());
-				if (buildData != null) {
-					buildData.setStartedBy(build.getStartedBy());
-					updateStartedBy.add(buildData);
-				}
-			}
-			buildRepository.saveAll(updateStartedBy);
-		}
-	}
 
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
@@ -268,37 +245,41 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	/**
 	 * Iterates over fetched build jobs and adds new builds to the database.
 	 *
-	 * @param savedTotalBuilds
-	 * 		the list of builds total for each projects
-	 * @param buildsByJob
-	 * 		the build by job
-	 * @param teamcityServer
-	 * 		the teamcity server
+	 * @param savedTotalBuilds           the list of builds total for each projects
+	 * @param buildsByJob                the build by job
+	 * @param teamcityServer             the teamcity server
 	 * @param proBasicConfig
 	 * @return adds new build
 	 */
 	private int addNewBuilds(List<Build> savedTotalBuilds, Map<ObjectId, Set<Build>> buildsByJob,
-			ProcessorToolConnection teamcityServer , ObjectId processorId, ProjectBasicConfig proBasicConfig) {
+							 ProcessorToolConnection teamcityServer, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
-			// process new builds in the order of their build numbers - this has
-			// implication to handling of commits in BuildEventListener
-			ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(teamcityServer.getId())));
-			builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
-			for (Build buildSummary : builds) {
-				if (isNewBuild(teamcityServer.getId(), buildSummary)) {
-					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
-							teamcityServer, proBasicConfig);
-					if (build != null) {
-						build.setBuildJob(teamcityServer.getJobName());
-						build.setProcessorId(processorId);
-						build.setBasicProjectConfigId(teamcityServer.getBasicProjectConfigId());
-						build.setProjectToolConfigId(teamcityServer.getId());
-						count++;
-					}
+		// process new builds in the order of their build numbers - this has
+		// implication to handling of commits in BuildEventListener
+		ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(teamcityServer.getId())));
+		builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
+		for (Build buildSummary : builds) {
+			Build buildData = buildRepository
+					.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), buildSummary.getNumber());
+			if (buildData == null) {
+				Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
+						teamcityServer, proBasicConfig);
+				if (build != null) {
+					build.setBuildJob(teamcityServer.getJobName());
+					build.setProcessorId(processorId);
+					build.setBasicProjectConfigId(teamcityServer.getBasicProjectConfigId());
+					build.setProjectToolConfigId(teamcityServer.getId());
+					count++;
+				}
+			} else {
+					if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+						buildData.setStartedBy(buildSummary.getStartedBy());
+						buildsToSave.add(buildData);
 				}
 			}
+		}
 
 		if (CollectionUtils.isNotEmpty(buildsToSave)) {
 			savedTotalBuilds.addAll(buildsToSave);
@@ -319,18 +300,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		return builds == null ? new HashSet<>() : builds;
 	}
 
-	/**
-	 * Checks whether the build is new.
-	 * 
-	 * @param projectToolConfigId
-	 *            the Teamcity tool id
-	 * @param build
-	 *            the Teamcity build
-	 * @return boolean
-	 */
-	private boolean isNewBuild(ObjectId projectToolConfigId, Build build) {
-		return buildRepository.findByProjectToolConfigIdAndNumber(projectToolConfigId, build.getNumber()) == null;
-	}
 
 	private String decryptPassword(String encryptedValue) {
 		return aesEncryptionService.decrypt(encryptedValue, teamcityConfig.getAesEncryptionKey());
@@ -352,24 +321,5 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
-		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
-			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
-			projectConfigRepository.save(projectBasicConfig);
-		}
-	}
-	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
-								 ProjectBasicConfig proBasicConfig) {
-		return StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun());
-	}
 
-	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
-													 ProjectBasicConfig proBasicConfig) {
-		return (proBasicConfig.isSaveAssigneeDetails()
-				&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
-				|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))));
-	}
 }

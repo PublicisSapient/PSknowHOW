@@ -343,7 +343,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				return null;
 			}
 
-			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer,proBasicConfig);
+			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer, proBasicConfig);
 		} catch (UnsupportedEncodingException e) {
 			log.error(String.format("Unsupported Encoding Exception in getting build details. URL=%s", buildUrl), e);
 		} catch (URISyntaxException e) {
@@ -429,7 +429,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 			JSONObject latestBuildDetails = getBuildInfo(latestbuildUrl, teamcityServer.getUrl(), teamcityServer);
 
 			if(null != latestBuildDetails)
-				return createBuild(latestbuildUrl, teamcityServer, latestBuildDetails,proBasicConfig);
+				return createBuild(latestbuildUrl, teamcityServer, latestBuildDetails, proBasicConfig);
 		} catch (ParseException parseException) {
 			log.error(String.format("Error in parsing build response: %s", buildUrl), parseException);
 		}

@@ -206,10 +206,9 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 					long lastStartTimeOfJobs = lastStartTime(proBasicConfig, processorExecutionTraceLog, processor, azurePipelineServer, deploymentJobs);
 
-					assigneeToggleDate(proBasicConfig);
 
 					if (azurePipelineServer.getJobType().equalsIgnoreCase(BUILD)) {
-						count = buildJobs(processor, startTime, count, azurePipelineServer, lastStartTimeOfJobs, proBasicConfig, processorExecutionTraceLog);
+						count = buildJobs(processor, startTime, count, azurePipelineServer, lastStartTimeOfJobs, proBasicConfig);
 					} else {
 						count = deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
 								lastStartTimeOfJobs, proBasicConfig, processorExecutionTraceLog);
@@ -254,62 +253,23 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				lastStartTimeOfJobs, proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 		activeDeployJobs.addAll(deploymentsByJob.keySet());
-	if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-		updateAssigneeDetailsForDeploy(activeDeployJobs, azurePipelineServer, proBasicConfig, processorExecutionTraceLog);
-	}
 
-		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
+		return addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor, proBasicConfig, azurePipelineServer);
 
-	}
-
-	private void updateAssigneeDetailsForDeploy(List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog) {
-		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-
-			List<Deployment> updateDeployedBy = new ArrayList<>();
-
-			activeDeployJobs.stream().forEach(deployment -> {
-				Deployment deploymentData = deploymentRepository
-						.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(), deployment.getNumber());
-				deploymentData.setDeployedBy(deployment.getDeployedBy());
-				updateDeployedBy.add(deploymentData);
-
-			});
-			deploymentRepository.saveAll(updateDeployedBy);
-		}
 	}
 
 	private int buildJobs(AzurePipelineProcessor processor, long startTime, int count,
-						  ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig,
-						  ProcessorExecutionTraceLog processorExecutionTraceLog) {
+						  ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
 		Map<ObjectId, Set<Build>> buildsByJob = azurePipelineClient.getInstanceJobs(azurePipelineServer,
 				lastStartTimeOfJobs, proBasicConfig);
 		log.info("Fetched jobs : {}", startTime);
 
-		int updatedJobs = addNewBuilds(processor.getId(), azurePipelineServer, buildsByJob);
+		int updatedJobs = addNewBuilds(processor.getId(), azurePipelineServer, buildsByJob, proBasicConfig);
 		count += updatedJobs;
-		if (!checkLastRun(processorExecutionTraceLog, proBasicConfig)) {
-			updateAssigneeDetailsForBuild(azurePipelineServer, proBasicConfig, processorExecutionTraceLog, buildsByJob);
-
-		}
 
 		return count;
 	}
 
-	private void updateAssigneeDetailsForBuild(ProcessorToolConnection azurePipelineServer, ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, Map<ObjectId, Set<Build>> buildsByJob) {
-		if (checkAssigneeFlagAndAssigneeDate(processorExecutionTraceLog, proBasicConfig)) {
-			List<Build> updateStartedBy = new ArrayList<>();
-
-			for (Build build : buildsByJob.values().iterator().next()) {
-
-				Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(),
-						build.getNumber());
-				buildData.setStartedBy(build.getStartedBy());
-				updateStartedBy.add(buildData);
-
-			}
-			buildRepository.saveAll(updateStartedBy);
-		}
-	}
 
 	/**
 	 * Gets the last start time from the list of azurepipeline builds in db
@@ -388,31 +348,42 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	/**
 	 * Iterates over the build jobs and adds new builds to the database.
-	 * 
+	 *
 	 * @param processorId
 	 * @param azurePipelineServer
-	 * @param buildsByJob
-	 *            the build by job
+	 * @param buildsByJob                the build by job
+	 * @param proBasicConfig
 	 * @return adds new build
 	 */
 	private int addNewBuilds(ObjectId processorId, ProcessorToolConnection azurePipelineServer,
-			Map<ObjectId, Set<Build>> buildsByJob) {
+							 Map<ObjectId, Set<Build>> buildsByJob, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
+		List<Build> buildsToSave = new ArrayList<>();
 		// process new builds in the order of their build numbers - this has
 		// implication to handling of commits in BuildEventListener
 		ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(azurePipelineServer.getId())));
 		builds.sort((Build b1, Build b2) -> Long.valueOf(b1.getStartTime()).compareTo(Long.valueOf(b2.getStartTime())));
 		for (Build build : builds) {
-			if (isNewBuild(azurePipelineServer.getId(), build.getNumber())) {
+			Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(),
+					build.getNumber());
+			if (buildData == null) {
 
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				build.setProjectToolConfigId(azurePipelineServer.getId());
 				build.setBuildJob(azurePipelineServer.getJobName());
-				buildRepository.save(build);
+				buildsToSave.add(build);
 				count++;
+			} else {
+					if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+							buildData.setStartedBy(build.getStartedBy());
+							buildsToSave.add(buildData);
+					}
 			}
+		}
+		if (CollectionUtils.isNotEmpty(buildsToSave)) {
+			buildRepository.saveAll(buildsToSave);
 		}
 
 		if (log.isInfoEnabled()) {
@@ -432,26 +403,15 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		return builds == null ? new HashSet<>() : builds;
 	}
 
-	/**
-	 * Checks whether the build is new.
-	 * 
-	 * @param jobId
-	 *            the ProcessorToolConfig jobs
-	 * @param buildNumber
-	 *            the Build Number
-	 * @return boolean
-	 */
-	private boolean isNewBuild(ObjectId jobId, String buildNumber) {
-		return buildRepository.findByProjectToolConfigIdAndNumber(jobId, buildNumber) == null;
-	}
-
 	private int addNewDeploymentJobs(Map<Deployment, Set<Deployment>> deploymentsByJob, List<Deployment> existingJobs,
-			AzurePipelineProcessor processor) {
+									 AzurePipelineProcessor processor, ProjectBasicConfig proBasicConfig, ProcessorToolConnection azurePipelineServer) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Deployment> newJobs = new ArrayList<>();
 		for (Deployment job : deploymentsByJob.keySet()) {
 			Deployment existing = null;
+			Deployment deploymentData = deploymentRepository
+					.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(), job.getNumber());
 			if (!CollectionUtils.isEmpty(existingJobs) && existingJobs.contains(job)) {
 				existing = existingJobs.get(existingJobs.indexOf(job));
 			}
@@ -460,6 +420,11 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				job.setProcessorId(processor.getId());
 				newJobs.add(job);
 				count++;
+			}
+
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData.getDeployedBy() == null) {
+				deploymentData.setDeployedBy(job.getDeployedBy());
+				newJobs.add(deploymentData);
 			}
 		}
 
@@ -529,27 +494,6 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
-	}
-	public void assigneeToggleDate(ProjectBasicConfig projectBasicConfig) {
-		if (projectBasicConfig.isSaveAssigneeDetails() && projectBasicConfig.getSaveAssigneeDate() == null) {
-			projectBasicConfig.setSaveAssigneeDate(dtf.format(today));
-			projectConfigRepository.save(projectBasicConfig);
-		}
-	}
-
-	private boolean checkLastRun(ProcessorExecutionTraceLog processorExecutionTraceLog,
-								 ProjectBasicConfig proBasicConfig) {
-		return (StringUtils.isEmpty(proBasicConfig.getSaveAssigneeDate())
-				|| StringUtils.isEmpty(processorExecutionTraceLog.getLastSuccessfulRun()));
-	}
-
-	private boolean checkAssigneeFlagAndAssigneeDate(ProcessorExecutionTraceLog processorExecutionTraceLog,
-													 ProjectBasicConfig proBasicConfig) {
-		return (proBasicConfig.isSaveAssigneeDetails()
-				&& (LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isBefore(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))
-				|| LocalDate.parse(processorExecutionTraceLog.getLastSuccessfulRun(), dtf)
-				.isEqual(LocalDate.parse(proBasicConfig.getSaveAssigneeDate(), dtf))));
 	}
 
 	private long lastStartTime(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, AzurePipelineProcessor processor, ProcessorToolConnection azurePipelineServer, List<Deployment> deploymentJobs)
