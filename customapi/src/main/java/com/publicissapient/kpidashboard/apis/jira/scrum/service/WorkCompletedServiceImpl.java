@@ -229,11 +229,11 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 						if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 								&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-									Double.valueOf(issueCount), Double.valueOf(storyPoint), null, "", CommonConstant.SP,
+									Double.valueOf(issueCount), storyPoint, null, "", CommonConstant.SP,
 									modalValues);
 						} else {
 							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-									Double.valueOf(issueCount), Double.valueOf(originalEstimate), null, "",
+									Double.valueOf(issueCount), originalEstimate, null, "",
 									CommonConstant.DAY, modalValues);
 						}
 						IterationKpiData delay = new IterationKpiData(DELAY, Double.valueOf(delayCount), null, null, "",
@@ -248,11 +248,11 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-						Double.valueOf(overAllIssueCount.get(0)), Double.valueOf(overAllStoryPoints.get(0)), null, "",
+						Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, "",
 						CommonConstant.SP, overAllmodalValues);
 			} else {
 				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-						Double.valueOf(overAllIssueCount.get(0)), Double.valueOf(overAllOriginalEstimate.get(0)), null,
+						Double.valueOf(overAllIssueCount.get(0)), overAllOriginalEstimate.get(0), null,
 						"", CommonConstant.DAY, overAllmodalValues);
 			}
 			IterationKpiData overAllDelay = new IterationKpiData(DELAY, Double.valueOf(overAllDelayCount.get(0)), null,
