@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
@@ -76,11 +77,8 @@ public class JiraToolConfigServiceImplTest {
 	private ProjectToolConfig projectTool;
 	private BoardRequestDTO boardRequestDTO;
 	private String basicConfigId;
-	private AssigneeDetails role;
-	private List<AssigneeDetails> roles;
-	private ResponseEntity<String> response;
 	private static final String RESOURCE_JIRA_BOARD_ENDPOINT = "https://test.server.com/jira/rest/agile/1.0/board?projectKeyOrId=testProjectKey&startAt=0&type=scrum";
-	private static final String RESOURCE_JIRA_ASSINGEE_ENDPOINT = "https://test.server.com/jira/rest/user/assignable/search?project=ABC";
+	private static final String RESOURCE_JIRA_ASSINGEE_ENDPOINT = "https://test.server.com/jira/rest/api/2/user/assignable/search?project=ABC";
 
 	@Before
 	public void setup() {
@@ -90,6 +88,7 @@ public class JiraToolConfigServiceImplTest {
 		connection1.setBaseUrl("https://test.server.com/jira");
 		connection1.setUsername("testDummyUser");
 		connection1.setPassword("encryptKey");
+		connection1.setCloudEnv(false);
 		testConnectionOpt = Optional.ofNullable(connection1);
 
 		boardRequestDTO = new BoardRequestDTO();
@@ -107,7 +106,6 @@ public class JiraToolConfigServiceImplTest {
 		projectTool.setConnectionId(new ObjectId(connectionId));
 		projectTool.setProjectKey("ABC");
 		projectToolConfigs.add(projectTool);
-		response = new ResponseEntity<>(HttpStatus.OK);
 
 	}
 
@@ -168,9 +166,16 @@ public class JiraToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
 				.thenReturn(projectToolConfigs);
+		when(restAPIUtils.decryptPassword(connection1.getPassword())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);
+		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraAssigneeListResponse.json"), HttpStatus.OK))
+				.when(restTemplate)
+				.exchange(eq(RESOURCE_JIRA_ASSINGEE_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		AssigneeResponseDTO assigneeResponseDTO =  jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);
+		assertEquals(1, assigneeResponseDTO.getAssigneeDetailsList().size());
 	}
 
 	@Test
@@ -183,11 +188,12 @@ public class JiraToolConfigServiceImplTest {
 		assigneeRoles.add(assigneeRoles1);
 		HttpHeaders header = new HttpHeaders();
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		header.add("Authorization", "base64str");
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("jiraAssigneeListResponse.json"), HttpStatus.OK))
 				.when(restTemplate)
-				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+				.exchange(eq(RESOURCE_JIRA_ASSINGEE_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		List<AssigneeDetails> testRoles = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
-				RESOURCE_JIRA_BOARD_ENDPOINT);
+				RESOURCE_JIRA_ASSINGEE_ENDPOINT , connection1.isCloudEnv());
 		assertEquals(testRoles.size(), assigneeRoles.size());
 	}
 
@@ -196,9 +202,9 @@ public class JiraToolConfigServiceImplTest {
 		HttpHeaders header = new HttpHeaders();
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate)
-				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+				.exchange(eq(RESOURCE_JIRA_ASSINGEE_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		List<AssigneeDetails> assignee = jiraToolConfigService.fetchAssigneeDetailsRestAPICall(projectTool, httpEntity,
-				RESOURCE_JIRA_BOARD_ENDPOINT);
+				RESOURCE_JIRA_ASSINGEE_ENDPOINT , connection1.isCloudEnv());
 		assertEquals(0, assignee.size());
 	}
 

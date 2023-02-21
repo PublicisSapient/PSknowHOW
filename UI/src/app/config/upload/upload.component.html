@@ -170,7 +170,8 @@
                       </td>
                       <td class="upload_sprint_capacity"><button pButton type="button" class="p-button-sm btn-active edit-btn"
                           label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
-                          (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"></button>
+                          (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
+                           iconPos="right" [loading]="isToggleEnableForSelectedProject ? jiraAssigneeLoader : false"></button>
                       </td>
                       </tr>
                       </ng-template>
@@ -288,7 +289,7 @@
                       </td>
                       <td class="upload_sprint_capacity">
                         <button pButton type="button" class="p-button-sm btn-active edit-btn"
-                          label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}" (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"></button>
+                          label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}" (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)" iconPos="right" [loading]="isToggleEnableForSelectedProject ? jiraAssigneeLoader : false"></button>
                       </td>
                     </tr>
                   </ng-template>

@@ -180,14 +180,14 @@ public class JiraToolConfigServiceImpl {
 			url = url + RESOURCE_JIRA_ASSINGEE_ENDPOINT + projectToolConfig.getProjectKey().trim();
 			HttpEntity<?> httpEntity = getHttpEntity(connection);
 			List<AssigneeDetails> assigneeDetailsResponse = fetchAssigneeDetailsRestAPICall(projectToolConfig,
-					httpEntity, url);
+					httpEntity, url , connection.isCloudEnv());
 			assigneeDetailsResponseList.addAll(assigneeDetailsResponse);
 
 		}
 	}
 
 	public List<AssigneeDetails> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
-			String url) {
+			String url , boolean jiraCloud) {
 
 		List<AssigneeDetails> assigneeRoles = new ArrayList<>();
 
@@ -195,7 +195,7 @@ public class JiraToolConfigServiceImpl {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 			if (response.getStatusCode() == HttpStatus.OK) {
 				log.info(response.getBody());
-				assigneeRoles = convertListFromArray(response, assigneeRoles);
+				assigneeRoles = convertListFromArray(response, assigneeRoles , jiraCloud);
 			} else {
 				String statusCode = response.getStatusCode().toString();
 				log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
@@ -209,7 +209,7 @@ public class JiraToolConfigServiceImpl {
 		return assigneeRoles;
 	}
 
-	public List<AssigneeDetails> convertListFromArray(ResponseEntity<String> response, List<AssigneeDetails> list) {
+	public List<AssigneeDetails> convertListFromArray(ResponseEntity<String> response, List<AssigneeDetails> list , boolean jiraCloud) {
 		JSONParser jsonParser = new JSONParser();
 		JSONArray jsonArray = null;
 		try {
@@ -219,8 +219,13 @@ public class JiraToolConfigServiceImpl {
 				AssigneeDetails assigneeRole = new AssigneeDetails();
 				JSONObject jsonObject = (JSONObject) obj;
 				if (jsonObject != null) {
-					assigneeRole.setName(jsonObject.get("name").toString());
-					assigneeRole.setDisplayName(jsonObject.get("displayName").toString());
+					if (jiraCloud) {
+						assigneeRole.setName(jsonObject.get("emailAddress").toString());
+						assigneeRole.setDisplayName(jsonObject.get("displayName").toString());
+					} else {
+						assigneeRole.setName(jsonObject.get("name").toString());
+						assigneeRole.setDisplayName(jsonObject.get("displayName").toString());
+					}
 					list.add(assigneeRole);
 				}
 			}
