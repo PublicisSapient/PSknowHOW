@@ -49,6 +49,11 @@
       "Enabler Story",
       "Change request"
     ],
+    "jiraStatusForInProgress": [
+      "On Progress",
+      "In Development",
+      "In Testing"
+    ],
     "jiraTechDebtIdentification": "",
     "jiraTechDebtCustomField": "",
     "jiraTechDebtValue": [],

@@ -631,17 +631,26 @@ iAdjust = 1;
   }
 
   convertToHoursIfTime(val, unit) {
-    if (unit?.toLowerCase() == 'hours') {
-      const hours = (val / 60);
-      const rhours = Math.floor(hours);
-      const minutes = (hours - rhours) * 60;
-      const rminutes = Math.round(minutes);
+    const hours = (val / 60);
+    let rhours = Math.floor(hours);
+    const minutes = (hours - rhours) * 60;
+    const rminutes = Math.round(minutes);
+    if (unit?.toLowerCase() === 'hours') {
       if (rminutes == 0) {
         val = rhours + 'h';
       } else if (rhours == 0) {
         val = rminutes + 'm';
       } else {
         val = rhours + 'h ' + rminutes + 'm';
+      }
+    } else if (unit?.toLowerCase() === 'day') {
+      if (val !== 0) {
+        const days = rhours / 8;
+        const rdays = Math.floor(days);
+        rhours = (days - rdays) * 8;
+        val = `${(rdays > 0) ? rdays + 'd' : ''} ${(rhours > 0) ? rhours + 'h' : ''} ${(rminutes > 0) ? rminutes + 'm' : ''}`;
+      } else {
+        val = '0d';
       }
     }
     return val;

@@ -188,6 +188,8 @@ public class FieldMapping extends BasicModel {
 	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
+	//field for In Progress status
+	private List<String> jiraStatusForInProgress;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

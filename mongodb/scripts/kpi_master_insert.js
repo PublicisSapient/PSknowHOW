@@ -3038,16 +3038,40 @@ db.getCollection('kpi_master').insert(
     "kpiInfo": {
       "details": [
         {
-          "type": "paragraph",
-          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+            "type": "paragraph",
+            "value": "Work Completed KPI gives a depiction of completion status based on  no. of issues and size of work (in SP)."
+        },
+        {
+            "type": "paragraph",
+            "value": "In addition, it also lets the user know the day wise delay for each issue that has been completed. The calculation consider issues of each individual in an iteration and then considers original estimate."
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+          "value": "For the KPI to reflect meaningful info,"
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+          "value": " 1. Map all ‘In Progress status’ in mappings for your project."
+        },
+        {
+            "type": "paragraph",
+            "value": " 2. Ensure Original Estimate is added to all issues in a sprint."
+        },
+        {
+            "type": "paragraph",
+            "value": " 3. Assignees should be kept up to date in Jira."
+        },
+        {
+            "type": "paragraph",
+            "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues that are completed"
         },
         {
           "type": "paragraph",

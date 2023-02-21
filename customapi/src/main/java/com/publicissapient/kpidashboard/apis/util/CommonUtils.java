@@ -433,5 +433,43 @@ public final class CommonUtils {
 		value = value.replaceAll(Constant.ROUND_CLOSE_BRACKET,Constant.BACKWARD_SLASH_CLOSE);
 		return value.replaceAll(Constant.ROUND_OPEN_BRACKET,Constant.BACKWARD_SLASH_OPEN);
 	}
-	
+
+	public static int getWorkingDays(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+		Integer count = 0;
+		if (startDate.isAfter(endDate)) {
+			// positive case
+			while (!startDate.isEqual(endDate)) {
+				if (endDate.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
+					count = count + 1;
+				}
+				endDate = endDate.plusDays(1);
+			}
+		} else if (startDate.isBefore(endDate)) {
+			// negative case
+			while (!(startDate.isEqual(endDate))) {
+				if (endDate.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
+					count = count + 1;
+				}
+				endDate = endDate.minusDays(1);
+			}
+		}
+		return count;
+	}
+
+	public static String convertIntoDays(Integer minutes) {
+		StringBuilder returnString = new StringBuilder();
+		int hours = minutes / 60;
+		if (hours > 0) {
+			if (hours / 8 > 0) {
+				returnString.append(hours / 8 + "d ");
+			}
+			if (hours % 8 > 0) {
+				returnString.append(hours % 8 + "h ");
+			}
+			if (minutes % 60 > 0) {
+				returnString.append(minutes % 60 + "m");
+			}
+		}
+		return returnString.toString();
+	}
 }
