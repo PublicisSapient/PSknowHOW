@@ -913,8 +913,8 @@ export class UploadComponent implements OnInit {
     }
 
     getCapacityJiraAssignee(projectId) {
-        this.jiraAssigneeLoader = true;
         if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
+            this.jiraAssigneeLoader = true;
             this.http_service.getJiraProjectAssignee(projectId)
                 .subscribe(response => {
                     this.jiraAssigneeLoader = false;
@@ -1032,7 +1032,7 @@ export class UploadComponent implements OnInit {
     }
 
     validateInput($event){
-        if($event.key === 'e'){
+        if($event.key === 'e' || $event.key === '-'){
             $event.preventDefault();
         }
     }
