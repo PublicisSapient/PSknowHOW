@@ -81,6 +81,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String POTENTIAL_DELAY = "Potential Delay";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
+	private static final String CLOSED = "closed";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -284,6 +285,14 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		return finalDelay.get();
 	}
 
+	/**
+	 * with assignees criteria calculating potential delay for inprogress and open issues and
+	 * without assignees calculating potential delay for inprogress stories
+	 * @param sprintDetails
+	 * @param allIssues
+	 * @param fieldMapping
+	 * @return
+	 */
 	private List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
 			List<JiraIssue> allIssues, FieldMapping fieldMapping) {
 		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
@@ -312,7 +321,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 		}
 		return iterationPotentialDelayList;
-
 	}
 
 	private List<IterationPotentialDelay> sprintWiseDelayCalculation(List<JiraIssue> inProgressIssuesJiraIssueList,
@@ -332,7 +340,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
 					iterationPotentialDelayList.add(
 							createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime,
-									issue, sprintDetails.getState().equalsIgnoreCase("closed"), entry.getKey()));
+									issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 					pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime,
 							pivotPCDLocal);
 				}
@@ -349,7 +357,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
 					iterationPotentialDelayList.add(
 							createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime,
-									issue, sprintDetails.getState().equalsIgnoreCase("closed"), entry.getKey()));
+									issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 					pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime,
 							pivotPCDLocal);
 				}
@@ -359,15 +367,22 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		return iterationPotentialDelayList;
 	}
 
+	/**
+	 * when a story is expected to get completed, the subsequent story will be
+	 * picked up the next working day
+	 * 
+	 * @param pivotPCD
+	 * @param pivotPCDLocal
+	 * @return
+	 */
 	private LocalDate checkSubsequentPCD(LocalDate pivotPCD, LocalDate pivotPCDLocal) {
-		LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal,
-				1);
+		LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal, 1);
 		pivotPCD = workingDayAfterAdditionofDays == null ? pivotPCD : workingDayAfterAdditionofDays;
 		return pivotPCD;
 	}
 
 	private LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD, int estimatedTime) {
-		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase("closed"))
+		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
 				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
 	}
@@ -383,21 +398,43 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	}
 
+	/**
+	 * if due date is less than potential closed date, then potential delay will be negative
+	 * @param dueDate
+	 * @param potentialClosedDate
+	 * @return
+	 */
 	private int getPotentialDelay(LocalDate dueDate, LocalDate potentialClosedDate) {
 		int potentialDelays = CommonUtils.createPotentialDelays(dueDate, potentialClosedDate);
 		return (dueDate.isAfter(potentialClosedDate)) ? potentialDelays * (-1) : potentialDelays;
 	}
 
+	/**
+	 * In closed sprint if a Remaining Estimate is 0, then the potential closing
+	 * date will be same as sprint' end date, whose potential closing date will not
+	 * be taken into account for further storie's delay calculation
+	 * 
+	 * @param sprintDetails
+	 * @param potentialClosedDate
+	 * @param remainingEstimateTime
+	 * @param pivotPCDLocal
+	 * @return
+	 */
 	private LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate,
 			int remainingEstimateTime, LocalDate pivotPCDLocal) {
 		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))
-				&& (!sprintDetails.getState().equalsIgnoreCase("closed")
-						|| (sprintDetails.getState().equalsIgnoreCase("closed") && remainingEstimateTime != 0))) {
+				&& (!sprintDetails.getState().equalsIgnoreCase(CLOSED)
+						|| (sprintDetails.getState().equalsIgnoreCase(CLOSED) && remainingEstimateTime != 0))) {
 			pivotPCDLocal = potentialClosedDate;
 		}
 		return pivotPCDLocal;
 	}
 
+	/**
+	 * create dueDateWise sorted Map only for the stories having dueDate 
+	 * @param arrangeJiraIssueList
+	 * @return
+	 */
 	private Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
 		if(CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
