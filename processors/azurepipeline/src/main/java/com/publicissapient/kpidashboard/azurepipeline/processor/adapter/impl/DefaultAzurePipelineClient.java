@@ -62,30 +62,33 @@ import lombok.extern.slf4j.Slf4j;
 @Primary
 public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
-	/**
-	 * Instantiate DefaultAzurePipelineClient.
-	 *
-	 * @param restOperationsFactory
-	 * the object supplier for RestOperations
-	 * @param azurePipelineConfig
-	 * the AzurePipeline configuration details
-	 */
-	@Autowired
-	RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Autowired
 	private AzurePipelineConfig azurePipelineConfig;
 
 	/**
+	 * Instantiate DefaultAzurePipelineClient.
+	 *
+	 * @param restOperationsFactory
+	 *            the object supplier for RestOperations
+	 * @param azurePipelineConfig
+	 *            the AzurePipeline configuration details
+	 */
+	@Autowired
+	RestOperationsFactory<RestOperations> restOperationsFactory;
+
+	/**
 	 * Provides Instance Jobs.
 	 *
-	 * @param azurePipelineServer   the connection properties for AzurePipeline server
-	 * @param lastStartTimeOfBuilds the last updated time of the processor which is used for delta import
+	 * @param azurePipelineServer
+	 * 		the connection properties for AzurePipeline server
+	 * @param lastStartTimeOfBuilds
+	 * 		the last updated time of the processor which is used for delta import
 	 * @param proBasicConfig
 	 * @return the map of azurePipeline jobs and set of builds
 	 */
 	@Override
 	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-													 long lastStartTimeOfBuilds, ProjectBasicConfig proBasicConfig) {
+			long lastStartTimeOfBuilds, ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getInstanceJobs");
 		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
@@ -109,7 +112,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-															  long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
+			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 
@@ -121,13 +124,16 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * This was done if in future we change the implementation to include more than 1 job only the rest api call would
 	 * change.
 	 *
-	 * @param azurePipelineServer the connection properties for AzurePipeline server
-	 * @param result              the map of azurePipeline jobs and set of builds
-	 * @param resJSON             response body of rest api call
+	 * @param azurePipelineServer
+	 * 		the connection properties for AzurePipeline server
+	 * @param result
+	 * 		the map of azurePipeline jobs and set of builds
+	 * @param resJSON
+	 * 		response body of rest api call
 	 * @param proBasicConfig
 	 */
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<ObjectId, Set<Build>> result,
-								 String resJSON, ProjectBasicConfig proBasicConfig) {
+			String resJSON, ProjectBasicConfig proBasicConfig) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject resObject = (JSONObject) parser.parse(resJSON);
@@ -149,7 +155,8 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	/**
 	 * Creates Build Object
 	 *
-	 * @param buildJson      the build as JSON object
+	 * @param buildJson
+	 * 		the build as JSON object
 	 * @param proBasicConfig
 	 * @return the build object
 	 */
@@ -172,31 +179,35 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	/**
 	 * Provides Build Status.
 	 *
-	 * @param buildJson the build as JSON object
+	 * @param buildJson
+	 *            the build as JSON object
 	 * @return the build status
 	 */
 	private BuildStatus getBuildStatus(JSONObject buildJson) {
 		String status = AzurePipelineUtils.getString(buildJson, "result");
 		switch (status) {
-			case "succeeded":
-				return BuildStatus.SUCCESS;
-			case "partiallySucceeded":
-				return BuildStatus.UNSTABLE;
-			case "failed":
-				return BuildStatus.FAILURE;
-			case "canceled":
-				return BuildStatus.ABORTED;
-			default:
-				return BuildStatus.UNKNOWN;
+		case "succeeded":
+			return BuildStatus.SUCCESS;
+		case "partiallySucceeded":
+			return BuildStatus.UNSTABLE;
+		case "failed":
+			return BuildStatus.FAILURE;
+		case "canceled":
+			return BuildStatus.ABORTED;
+		default:
+			return BuildStatus.UNKNOWN;
 		}
 	}
 
 	/**
 	 * Makes Rest Call.
 	 *
-	 * @param sUrl                the rest call URL
-	 * @param azurePipelineServer the connection properties for AzurePipeline server
+	 * @param sUrl
+	 *            the rest call URL
+	 * @param azurePipelineServer
+	 *            the connection properties for AzurePipeline server
 	 * @return the response entity
+	 *
 	 */
 	public ResponseEntity<String> doRestCall(String sUrl, ProcessorToolConnection azurePipelineServer) {
 		log.debug("Enter makeRestCall {}", sUrl);
@@ -214,8 +225,10 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	/**
 	 * Gets pat info
 	 *
-	 * @param sUrl                the url
-	 * @param azurePipelineServer azurePipeline server url
+	 * @param sUrl
+	 *            the url
+	 * @param azurePipelineServer
+	 *            azurePipeline server url
 	 * @return pat info eg. :pat
 	 */
 	private String getPat(String sUrl, ProcessorToolConnection azurePipelineServer) {

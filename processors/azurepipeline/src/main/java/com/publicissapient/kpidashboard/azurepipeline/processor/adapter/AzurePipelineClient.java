@@ -37,25 +37,29 @@ public interface AzurePipelineClient {
 	 * Finds all of the configured jobs for a given instance and returns the set of builds for each job. At a minimum,
 	 * the number and url of each Build will be populated.
 	 *
-	 * @param azurePipelineServer the URL for the AzurePipeline instance
-	 * @param lastStartTimeOfJobs lastStartTimeOfBuilds
+	 * @param azurePipelineServer
+	 * 		the URL for the AzurePipeline instance
+	 * @param lastStartTimeOfJobs
+	 * 		lastStartTimeOfBuilds
 	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 */
 	Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs,
-											  ProjectBasicConfig proBasicConfig);
+			ProjectBasicConfig proBasicConfig);
 
 	/**
 	 * Finds all of the configured jobs for a given instance and returns the set of deployments for each job. At a
 	 * minimum, the number and url of each Deployment will be populated.
 	 *
-	 * @param azurePipelineServer the URL for the AzurePipeline instance
-	 * @param lastStartTimeOfJobs lastStartTimeOfDeployments
+	 * @param azurePipelineServer
+	 * 		the URL for the AzurePipeline instance
+	 * @param lastStartTimeOfJobs
+	 * 		lastStartTimeOfDeployments
 	 * @param proBasicConfig
 	 * @return a summary of every deployment for each job on the instance
 	 */
 
 	Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-													   long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig);
+			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig);
 
 }
