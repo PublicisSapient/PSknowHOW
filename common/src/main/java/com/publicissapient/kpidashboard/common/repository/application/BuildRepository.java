@@ -48,4 +48,6 @@ public interface BuildRepository
 
 	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
 
+	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number,String buildJob,ObjectId basicProjectConfigId);
+
 }

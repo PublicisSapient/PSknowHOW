@@ -150,7 +150,11 @@ public class DateUtil {
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
-		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+		return convertMillisToLocalDateTime(milliSeconds).toString();
+	}
+
+	public static LocalDateTime convertMillisToLocalDateTime(long milliSeconds) {
+		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
 	public static DateTime stringToDateTime(String date, String formater) {
