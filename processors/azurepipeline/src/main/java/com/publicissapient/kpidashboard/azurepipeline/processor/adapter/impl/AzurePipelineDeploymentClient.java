@@ -98,7 +98,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody(),proBasicConfig);
+			processResponse(azurePipelineServer, result, responseEntity.getBody(), proBasicConfig);
 
 		} catch (RestClientException exception) {
 			log.error("client exception loading jobs details", exception);
