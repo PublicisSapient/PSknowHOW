@@ -73,5 +73,7 @@ public class IterationKpiModalValue implements Serializable {
 	private String waitTime;
 	@JsonProperty("Total Wastage")
 	private String wastage;
+	@JsonProperty("Remaining Days")
+	private String remainingTimeInDays;
 
 }

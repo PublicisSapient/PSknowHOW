@@ -1147,7 +1147,6 @@ public class KPIExcelUtility {
 	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
 			FieldMapping fieldMapping) {
-		int originalEstimate = 0;
 		int loggedTime = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
@@ -1162,17 +1161,33 @@ public class KPIExcelUtility {
 		if (null != jiraIssue.getOriginalEstimateMinutes()
 				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
-			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
+			iterationKpiModalValue.setIssueSize(convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
 		}
 
 		if (jiraIssue.getRemainingEstimateMinutes() != null) {
-			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes() / 60);
+			iterationKpiModalValue.setRemainingTimeInDays(convertIntoDays(jiraIssue.getRemainingEstimateMinutes()));
 		}
 		loggedTime = jiraIssue.getTimeSpentInMinutes() / 60;
 		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime + " hrs"));
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
+	static String convertIntoDays(Integer minutes) {
+		StringBuilder returnString = new StringBuilder();
+		int hours = minutes / 60;
+		if (hours > 0) {
+			if (hours / 8 > 0) {
+				returnString.append(hours / 8 + "d ");
+			}
+			if (hours % 8 > 0) {
+				returnString.append(hours % 8 + "h ");
+			}
+			if (minutes % 60 > 0) {
+				returnString.append(minutes % 60 + "m");
+			}
+		}
+		return returnString.toString();
 	}
 
 }
