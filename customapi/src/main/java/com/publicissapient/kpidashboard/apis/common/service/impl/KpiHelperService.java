@@ -700,9 +700,9 @@ public class KpiHelperService { // NOPMD
 
 			setJiraClosedStatusMap(projectWiseClosedStatusMap, leaf, fieldMapping);
 
-			if (Optional.ofNullable(fieldMapping.getStoryFirstStatus()).isPresent()) {
+		/*	if (Optional.ofNullable(fieldMapping.getStoryFirstStatus()).isPresent()) {
 				projectWiseOpenStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getStoryFirstStatus());
-			}
+			}*/
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});

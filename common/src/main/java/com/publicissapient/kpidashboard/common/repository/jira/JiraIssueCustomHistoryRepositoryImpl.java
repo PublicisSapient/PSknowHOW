@@ -138,7 +138,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			JiraIssueCustomHistory history = new JiraIssueCustomHistory();
 			history.setStoryID(result.getId().getStoryID());
 			history.setBasicProjectConfigId(result.getId().getBasicProjectConfigId());
-			history.setStorySprintDetails(result.getStorySprintDetails());
+			//history.setStorySprintDetails(result.getStorySprintDetails());
 			resultList.add(history);
 		});
 		return resultList;

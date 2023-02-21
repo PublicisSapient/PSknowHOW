@@ -776,7 +776,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		if (null != issueCreatedDate) {
 			KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
 			kanbanHistory.setActivityDate(issueCreatedDate.toString());
-			kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
+			//kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
 			historyDetails.add(kanbanHistory);
 		}
 		if (CollectionUtils.isNotEmpty(changeLogList)) {

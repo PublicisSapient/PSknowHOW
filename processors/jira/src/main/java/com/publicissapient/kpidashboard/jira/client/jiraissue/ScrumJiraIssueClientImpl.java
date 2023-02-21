@@ -39,12 +39,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -1160,12 +1155,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
-			List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
+
+			List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog( changeLogList,
 					fieldMapping);
-			jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+			jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLog);
 		}
 
 	}
+
+
 
 	/**
 	 * Adds Jira issue history
@@ -1184,7 +1182,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 				fieldMapping);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-		jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+		//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
 		// estimate
@@ -1220,7 +1218,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (null != issueCreatedDate) {
 			JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
 			jiraIssueSprint.setActivityDate(issueCreatedDate);
-			jiraIssueSprint.setFromStatus(fieldMapping.getStoryFirstStatus());
+			//jiraIssueSprint.setFromStatus(fieldMapping.getStoryFirstStatus());
 			jiraIssueSprint.setSprintId("");
 			jiraIssueSprint.setSprintComponentId("");
 			jiraIssueSprint.setStatus("");
@@ -1242,6 +1240,26 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			updateChangeLogWithSprint(issueHistory, jiraIssue);
 		}
 		return issueHistory;
+	}
+
+	private List<JiraHistoryChangeLog> getStatusChangeLog( List<ChangelogGroup> changeLogList,  FieldMapping fieldMapping) {
+
+		List<JiraHistoryChangeLog> statusHistory = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(changeLogList)) {
+			for (ChangelogGroup history : changeLogList) {
+				history.getItems().forEach(item -> {
+
+					if (item.getField().trim().equalsIgnoreCase("status")) {
+						JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+						jiraHistoryChangeLog.setChangedFrom(item.getFromString());
+						jiraHistoryChangeLog.setChangedTo(item.getToString());
+						jiraHistoryChangeLog.setUpdatedOn(history.getCreated());
+						statusHistory.add(jiraHistoryChangeLog);
+					}
+				});
+			}
+		}
+		return statusHistory;
 	}
 
 	/**
