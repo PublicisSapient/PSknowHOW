@@ -40,7 +40,7 @@ services:
       - CONFIG_LOCATION=file:/app/properties/customapi.properties
       - forgotPassword.uiHost=<Your-Public-IP>or<Your-DNS>
       - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
-      - versionnumber=<Your version here>
+      - versionnumber=6.4.0
       - dbname=kpidashboard
       - dbusername=devadmin
       - dbpassword=admin@123
