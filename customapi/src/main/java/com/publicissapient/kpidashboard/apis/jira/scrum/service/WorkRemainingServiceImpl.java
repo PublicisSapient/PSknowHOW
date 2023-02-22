@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -54,7 +52,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -65,7 +62,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 @Component
 public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -81,7 +79,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String POTENTIAL_DELAY = "Potential Delay";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
-	private static final String CLOSED = "closed";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -323,160 +320,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		return iterationPotentialDelayList;
 	}
 
-	private List<IterationPotentialDelay> sprintWiseDelayCalculation(List<JiraIssue> inProgressIssuesJiraIssueList,
-			List<JiraIssue> openIssuesJiraIssueList, SprintDetails sprintDetails) {
-		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
-		LocalDate pivotPCD = null;
-		Map<LocalDate, List<JiraIssue>> dueDateWiseInProgressJiraIssue = createDueDateWiseMap(
-				inProgressIssuesJiraIssueList);
-		Map<LocalDate, List<JiraIssue>> dueDateWiseOpenJiraIssue = createDueDateWiseMap(openIssuesJiraIssueList);
-		if (MapUtils.isNotEmpty(dueDateWiseInProgressJiraIssue)) {
-			for (Map.Entry<LocalDate, List<JiraIssue>> entry : dueDateWiseInProgressJiraIssue.entrySet()) {
-				LocalDate pivotPCDLocal = null;
-				for (JiraIssue issue : entry.getValue()) {
-					int remainingEstimateTime = getRemainingEstimateTime(issue);
-					LocalDate potentialClosedDate = getPotentialClosedDate(sprintDetails, pivotPCD,
-							remainingEstimateTime);
-					int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
-					iterationPotentialDelayList.add(
-							createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime,
-									issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
-					pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime,
-							pivotPCDLocal);
-				}
-				pivotPCD = checkSubsequentPCD(pivotPCD, pivotPCDLocal);
-			}
-		}
-		if (MapUtils.isNotEmpty(dueDateWiseOpenJiraIssue)) {
-			for (Map.Entry<LocalDate, List<JiraIssue>> entry : dueDateWiseOpenJiraIssue.entrySet()) {
-				LocalDate pivotPCDLocal = null;
-				for (JiraIssue issue : entry.getValue()) {
-					int remainingEstimateTime = getRemainingEstimateTime(issue);
-					LocalDate potentialClosedDate = getPotentialClosedDate(sprintDetails, pivotPCD,
-							remainingEstimateTime);
-					int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
-					iterationPotentialDelayList.add(
-							createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime,
-									issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
-					pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime,
-							pivotPCDLocal);
-				}
-				pivotPCD = checkSubsequentPCD(pivotPCD, pivotPCDLocal);
-			}
-		}
-		return iterationPotentialDelayList;
-	}
-
-	/**
-	 * when a story is expected to get completed, the subsequent story will be
-	 * picked up the next working day
-	 * 
-	 * @param pivotPCD
-	 * @param pivotPCDLocal
-	 * @return
-	 */
-	private LocalDate checkSubsequentPCD(LocalDate pivotPCD, LocalDate pivotPCDLocal) {
-		LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal, 1);
-		pivotPCD = workingDayAfterAdditionofDays == null ? pivotPCD : workingDayAfterAdditionofDays;
-		return pivotPCD;
-	}
-
-	private LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD, int estimatedTime) {
-		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
-				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
-	}
-
-	private IterationPotentialDelay createIterationPotentialDelay(LocalDate potentialClosedDate, int potentialDelay,
-			int remainingEstimateTime, JiraIssue issue, boolean sprintClosed, LocalDate dueDate) {
-		IterationPotentialDelay iterationPotentialDelay = new IterationPotentialDelay();
-		iterationPotentialDelay.setIssueId(issue.getNumber());
-		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
-		iterationPotentialDelay.setDueDate(dueDate.toString());
-		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
-		return iterationPotentialDelay;
-
-	}
-
-	/**
-	 * if due date is less than potential closed date, then potential delay will be negative
-	 * @param dueDate
-	 * @param potentialClosedDate
-	 * @return
-	 */
-	private int getPotentialDelay(LocalDate dueDate, LocalDate potentialClosedDate) {
-		int potentialDelays = CommonUtils.createPotentialDelays(dueDate, potentialClosedDate);
-		return (dueDate.isAfter(potentialClosedDate)) ? potentialDelays * (-1) : potentialDelays;
-	}
-
-	/**
-	 * In closed sprint if a Remaining Estimate is 0, then the potential closing
-	 * date will be same as sprint' end date, whose potential closing date will not
-	 * be taken into account for further storie's delay calculation
-	 * 
-	 * @param sprintDetails
-	 * @param potentialClosedDate
-	 * @param remainingEstimateTime
-	 * @param pivotPCDLocal
-	 * @return
-	 */
-	private LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate,
-			int remainingEstimateTime, LocalDate pivotPCDLocal) {
-		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))
-				&& (!sprintDetails.getState().equalsIgnoreCase(CLOSED)
-						|| (sprintDetails.getState().equalsIgnoreCase(CLOSED) && remainingEstimateTime != 0))) {
-			pivotPCDLocal = potentialClosedDate;
-		}
-		return pivotPCDLocal;
-	}
-
-	/**
-	 * create dueDateWise sorted Map only for the stories having dueDate 
-	 * @param arrangeJiraIssueList
-	 * @return
-	 */
-	private Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
-		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
-		if(CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
-			arrangeJiraIssueList.forEach(jiraIssue -> {
-				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
-				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
-					issue.add(jiraIssue);
-					return issue;
-				});
-				localDateListMap.computeIfAbsent(dueDate, value -> {
-					List<JiraIssue> issues = new ArrayList<>();
-					issues.add(jiraIssue);
-					return issues;
-				});
-			});
-		}
-		return localDateListMap;
-	}
-
-	private LocalDate createPotentialClosedDate(SprintDetails sprintDetails, int remainingEstimateTime,
-			LocalDate pivotPCD) {
-		LocalDate pcd = null;
-		if (pivotPCD == null) {
-			// for the first calculation
-			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase("closed")
-					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-					: LocalDate.now();
-
-			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(startDate, remainingEstimateTime);
-		} else {
-			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCD, remainingEstimateTime);
-		}
-		return pcd;
-	}
-
-	private int getRemainingEstimateTime(JiraIssue issueObject) {
-		int remainingEstimate = 0;
-		if (issueObject.getRemainingEstimateMinutes() != null) {
-			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
-		}
-		return remainingEstimate;
-	}
 
 	/**
 	 * setting in progress and open issues
