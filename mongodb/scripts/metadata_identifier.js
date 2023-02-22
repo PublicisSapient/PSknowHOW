@@ -110,7 +110,7 @@ db.getCollection('metadata_identifier').remove({});
                     },
                     {
                         "type" : "jiraStatusForInProgress",
-                        "value" : ["In Analysis", "In Development", "In Testing"]
+                        "value" : ["In Analysis", "In Development", "In Progress"]
                     }
         			],
         			"valuestoidentify":[

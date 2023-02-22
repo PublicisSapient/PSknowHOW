@@ -30,10 +30,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -229,12 +226,11 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 						if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 								&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-									Double.valueOf(issueCount), storyPoint, null, "", CommonConstant.SP,
-									modalValues);
+									Double.valueOf(issueCount), storyPoint, null, "", CommonConstant.SP, modalValues);
 						} else {
 							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-									Double.valueOf(issueCount), originalEstimate, null, "",
-									CommonConstant.DAY, modalValues);
+									Double.valueOf(issueCount), originalEstimate, null, "", CommonConstant.DAY,
+									modalValues);
 						}
 						IterationKpiData delay = new IterationKpiData(DELAY, Double.valueOf(delayCount), null, null, "",
 								null);
@@ -252,8 +248,8 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 						CommonConstant.SP, overAllmodalValues);
 			} else {
 				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
-						Double.valueOf(overAllIssueCount.get(0)), overAllOriginalEstimate.get(0), null,
-						"", CommonConstant.DAY, overAllmodalValues);
+						Double.valueOf(overAllIssueCount.get(0)), overAllOriginalEstimate.get(0), null, "",
+						CommonConstant.DAY, overAllmodalValues);
 			}
 			IterationKpiData overAllDelay = new IterationKpiData(DELAY, Double.valueOf(overAllDelayCount.get(0)), null,
 					null, "", null);
@@ -293,13 +289,15 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 
 		// filtering storySprintDetails lies in between sprintStart and sprintEnd
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			LocalDate finalEndDate = sprintEndDate;
 			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
 							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
-							sprintStartDate, finalEndDate))
+							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}
+
+		Set<String> closedStatus = sprintDetail.getCompletedIssues().stream().map(SprintIssue::getStatus)
+				.collect(Collectors.toSet());
 
 		// sorting the story history on basis of activityDate
 		filterStorySprintDetails.sort(Comparator.comparing(JiraIssueSprint::getActivityDate));
@@ -309,7 +307,7 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 		}
 
 		LocalDate startDate = null;
-		sprintEndDate = null;
+		LocalDate endDate = null;
 		boolean isStartDateFound = false;
 		for (JiraIssueSprint storySprintDetail : filterStorySprintDetails) {
 			LocalDate activityLocalDate = LocalDate
@@ -319,17 +317,17 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 				startDate = activityLocalDate;
 				isStartDateFound = true;
 			}
-			if (storySprintDetail.getFromStatus().equalsIgnoreCase("Closed")) {
-				sprintEndDate = activityLocalDate;
+			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
+				endDate = activityLocalDate;
 			}
 		}
-		if (startDate != null && sprintEndDate != null) {
+		if (startDate != null && endDate != null) {
 			// +1 to include end date
-			resultList.put(ACTUAL_COMPLETION_DAYS, CommonUtils.getWorkingDays(startDate, sprintEndDate) + 1);
+			resultList.put(ACTUAL_COMPLETION_DAYS, CommonUtils.getWorkingDays(startDate, endDate) + 1);
 		} else {
 			resultList.put(ACTUAL_COMPLETION_DAYS, "-");
 		}
-		resultList.put(ACTUAL_COMPLETE_DATE, sprintEndDate);
+		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
 	}
 
