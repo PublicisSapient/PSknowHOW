@@ -1161,18 +1161,18 @@ public class KPIExcelUtility {
 		if (null != jiraIssue.getOriginalEstimateMinutes()
 				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			iterationKpiModalValue.setIssueSize(convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
+			iterationKpiModalValue.setIssueSize(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
 		}
         iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		iterationKpiModalValue.setOriginalEstimateMinutes(
 				Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0).toString());
         iterationKpiModalValue.setOriginalEstimateMinutes(
                 (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
-                        ? convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
+                        ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
                         : "0m");
 		iterationKpiModalValue.setRemainingTimeInDays(
 				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
-						? convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
+						? CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
 						: "0m");
 		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
 				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
@@ -1188,23 +1188,6 @@ public class KPIExcelUtility {
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
-	}
-
-	static String convertIntoDays(Integer minutes) {
-		StringBuilder returnString = new StringBuilder();
-		int hours = minutes / 60;
-		if (hours > 0) {
-			if (hours / 8 > 0) {
-				returnString.append(hours / 8 + "d ");
-			}
-			if (hours % 8 > 0) {
-				returnString.append(hours % 8 + "h ");
-			}
-		}
-		if (minutes % 60 > 0) {
-			returnString.append(minutes % 60 + "m");
-		}
-		return returnString.toString();
 	}
 
 }

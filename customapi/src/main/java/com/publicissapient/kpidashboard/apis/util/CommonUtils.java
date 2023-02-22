@@ -446,30 +446,6 @@ public final class CommonUtils {
 		return localDate;
 	}
 
-	public static int createPotentialDelays(java.time.LocalDate dueDate, java.time.LocalDate pcd) {
-		Integer count = 0;
-		if(dueDate.isAfter(pcd)) {
-			//positive case
-			while (!dueDate.isEqual(pcd)) {
-				if (pcd.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
-					count=count+1;
-				}
-				pcd = pcd.plusDays(1);
-			}
-		} else if(dueDate.isBefore(pcd)) {
-			//negative case
-			while (!(dueDate.isEqual(pcd))) {
-				if (pcd.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
-					count = count+1;
-				}
-				pcd = pcd.minusDays(1);
-			}
-		}
-		return count;
-	}
-
-
-
 	public static int getWorkingDays(java.time.LocalDate startDate, java.time.LocalDate endDate) {
 		Integer count = 0;
 		if (startDate.isAfter(endDate)) {
@@ -502,9 +478,9 @@ public final class CommonUtils {
 			if (hours % 8 > 0) {
 				returnString.append(hours % 8 + "h ");
 			}
-			if (minutes % 60 > 0) {
-				returnString.append(minutes % 60 + "m");
-			}
+		}
+		if (minutes % 60 > 0) {
+			returnString.append(minutes % 60 + "m");
 		}
 		return returnString.toString();
 	}

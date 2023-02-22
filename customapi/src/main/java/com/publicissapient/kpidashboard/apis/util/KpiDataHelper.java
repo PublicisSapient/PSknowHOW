@@ -464,7 +464,7 @@ public final class KpiDataHelper {
 	 * @return
 	 */
 	private static int getPotentialDelay(LocalDate dueDate, LocalDate potentialClosedDate) {
-		int potentialDelays = CommonUtils.createPotentialDelays(dueDate, potentialClosedDate);
+		int potentialDelays = CommonUtils.getWorkingDays(dueDate, potentialClosedDate);
 		return (dueDate.isAfter(potentialClosedDate)) ? potentialDelays * (-1) : potentialDelays;
 	}
 
