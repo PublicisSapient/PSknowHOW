@@ -1646,7 +1646,12 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+        },
+        {
+          "type": "paragraph",
+          "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
+        
       ],
       "maturityLevels": [
         {
