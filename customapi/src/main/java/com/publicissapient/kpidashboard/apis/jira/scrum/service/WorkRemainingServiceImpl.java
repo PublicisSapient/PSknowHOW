@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -273,13 +272,16 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private int checkDelay(JiraIssue jiraIssue, Map<String, List<IterationPotentialDelay>> issueWiseDelay, int potentialDelay, List<Integer> overallPotentialDelay) {
-		AtomicInteger finalDelay = new AtomicInteger();
-		issueWiseDelay.computeIfPresent(jiraIssue.getNumber(),(issue,delay)->{
-			finalDelay.set(potentialDelay + getDelayInMinutes(delay.get(0).getPotentialDelay()));
-			overallPotentialDelay.set(0, overallPotentialDelay.get(0) + getDelayInMinutes(delay.get(0).getPotentialDelay()));
-			return delay;
-		});
-		return finalDelay.get();
+		int finalDelay=0;
+		if(issueWiseDelay.containsKey(jiraIssue.getNumber())){
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber()).get(0);
+			finalDelay=potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
+			overallPotentialDelay.set(0, overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
+		}
+		else{
+			finalDelay=potentialDelay+finalDelay;
+		}
+		return finalDelay;
 	}
 
 	/**

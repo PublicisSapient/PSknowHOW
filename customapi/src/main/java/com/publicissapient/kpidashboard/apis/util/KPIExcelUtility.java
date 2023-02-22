@@ -1163,7 +1163,13 @@ public class KPIExcelUtility {
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 			iterationKpiModalValue.setIssueSize(convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
 		}
-
+        iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+		iterationKpiModalValue.setOriginalEstimateMinutes(
+				Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0).toString());
+        iterationKpiModalValue.setOriginalEstimateMinutes(
+                (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
+                        ? convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
+                        : "0m");
 		iterationKpiModalValue.setRemainingTimeInDays(
 				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
 						? convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
