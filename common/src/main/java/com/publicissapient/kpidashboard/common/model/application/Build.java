@@ -52,5 +52,6 @@ public class Build extends BasicModel {
 	private BuildStatus buildStatus;
 	private String startedBy;
 	private String log;
+	private String updatedTime;
 
 }

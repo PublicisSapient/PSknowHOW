@@ -1,0 +1,185 @@
+[
+  {
+    "builds": [
+      {
+        "jobName": "Test",
+        "number": 12,
+        "buildStatus": "FAILURE",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675331999000
+      },
+      {
+        "jobName": "Test",
+        "number": 123,
+        "buildStatus": "SUCCESS",
+        "startTime": 1675048599000,
+        "duration": 1556204,
+        "endTime": 1675108599000
+      },
+      {
+        "jobName": "Test",
+        "number": 125,
+        "buildStatus": "SUCCESS",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675409600000
+      }
+    ],
+    "deployments": [
+      {
+        "jobName": "Test",
+        "number": 12,
+        "deploymentStatus": "FAILURE",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675331999000,
+        "envName": "ABC"
+      },
+      {
+        "jobName": "Test",
+        "number": 123,
+        "deploymentStatus": "SUCCESS",
+        "startTime": 1675048599000,
+        "duration": 5,
+        "endTime": 1675108599000,
+        "envName": "ABC"
+      }
+    ]
+  },
+  {
+    "builds": [
+      {
+        "jobName": "",
+        "number": 12,
+        "buildStatus": "FAILURE",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675331999000
+      },
+      {
+        "jobName": "Test",
+        "number": -1,
+        "buildStatus": "SUCCESS",
+        "startTime": 1675048599000,
+        "duration": 1556204,
+        "endTime": 1675108599000
+      },
+      {
+        "jobName": "Test",
+        "number": 125,
+        "buildStatus": "TEN",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675409600000
+      }
+    ],
+    "deployments": [
+      {
+        "jobName": "Test",
+        "number": 121,
+        "deploymentStatus": "A",
+        "startTime": 1675048599000,
+        "duration": 0,
+        "endTime": 1675108599000,
+        "envName": " "
+      },
+      {
+        "jobName": "Test",
+        "number": 123,
+        "deploymentStatus": "SUCCESS",
+        "startTime": 1675048599000,
+        "duration": 5,
+        "endTime": 1675108599000,
+        "envName": "ABC"
+      }
+    ]
+  },
+  {
+    "builds": [
+      {
+        "jobName": "Test",
+        "number": "",
+        "buildStatus": "FAILURE",
+        "startTime": "",
+        "duration": 5,
+        "endTime": 1675331999000
+      },
+      {
+        "jobName": "Test",
+        "number": 123,
+        "buildStatus": "SUCCESS",
+        "startTime": 1675048599000,
+        "duration": 1556204,
+        "endTime": 1675108599000
+      },
+      {
+        "jobName": "Test",
+        "number": 125,
+        "buildStatus": "SUCCESS",
+        "startTime": 1675047599000,
+        "duration": 0,
+        "endTime": ""
+      }
+    ],
+    "deployments": [
+      {
+        "jobName": "",
+        "number": "",
+        "deploymentStatus": "A",
+        "startTime": 5,
+        "duration": 5,
+        "endTime": 0,
+        "envName": ""
+      }
+    ]
+  },
+  {
+    "builds": [
+      {
+        "jobName": "Test",
+        "number": 12,
+        "buildStatus": "FAILURE",
+        "startTime": 5,
+        "duration": 5,
+        "endTime": 0
+      },
+      {
+        "jobName": "Test",
+        "number": 123,
+        "buildStatus": "SUCCESS",
+        "startTime": 9,
+        "duration": 0,
+        "endTime": 5
+      },
+      {
+        "jobName": "Test",
+        "number": "",
+        "buildStatus": "SUCCESS",
+        "startTime": 1675047599000,
+        "duration": 5,
+        "endTime": 1675409600000
+      }
+    ],
+    "deployments": [
+      {
+        "jobName": "",
+        "number": "",
+        "deploymentStatus": "A",
+        "startTime": 5,
+        "duration": 5,
+        "endTime": 0,
+        "envName": ""
+      },
+      {
+        "jobName": "",
+        "number": "",
+        "deploymentStatus": "A",
+        "startTime": 5,
+        "duration": 0,
+        "endTime": 0,
+        "envName": ""
+      }
+    ]
+  }
+]

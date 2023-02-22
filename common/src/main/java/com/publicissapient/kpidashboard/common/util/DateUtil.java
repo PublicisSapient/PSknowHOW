@@ -27,10 +27,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.application.Week;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 /**
  * @author narsingh9
@@ -147,6 +150,15 @@ public class DateUtil {
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
-		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+		return convertMillisToLocalDateTime(milliSeconds).toString();
+	}
+
+	public static LocalDateTime convertMillisToLocalDateTime(long milliSeconds) {
+		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static DateTime stringToDateTime(String date, String formater) {
+		 return DateTimeFormat.forPattern(formater)
+				  .parseDateTime(date);
 	}
 }
