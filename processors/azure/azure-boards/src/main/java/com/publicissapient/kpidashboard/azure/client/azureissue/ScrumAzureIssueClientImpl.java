@@ -389,9 +389,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				if (null != sprintPathsMap && sprintPathsMap.containsKey(finalsprintPathFromIssue)) {
 					processSprintData(azureIssue, sprintPathsMap.get(finalsprintPathFromIssue), projectConfig, sprintDetailsSet);
 				}
-				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					setJiraAssigneeDetails(azureIssue, fields);
-				}
+
+				setJiraAssigneeDetails(azureIssue, fields);
+
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
