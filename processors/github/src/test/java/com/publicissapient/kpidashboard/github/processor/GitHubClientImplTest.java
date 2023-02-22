@@ -4,7 +4,6 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.github.config.GitHubConfig;
 import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.impl.GitHubClientImpl;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
  * @author narsingh9
@@ -52,7 +52,7 @@ public class GitHubClientImplTest {
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(ArgumentMatchers.eq(restURI),ArgumentMatchers.eq(HttpMethod.GET),ArgumentMatchers.any(HttpEntity.class),ArgumentMatchers.eq(String.class));
-		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true,getToolConnection(),new ProjectBasicConfig());
+		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true,getToolConnection(), new ProjectBasicConfig());
 		Assert.assertEquals(11, commits.size());
 	}
 	
@@ -63,7 +63,7 @@ public class GitHubClientImplTest {
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(ArgumentMatchers.eq(restURI),ArgumentMatchers.eq(HttpMethod.GET),ArgumentMatchers.any(HttpEntity.class),ArgumentMatchers.eq(String.class));
-		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,getToolConnection(),new ProjectBasicConfig());
+		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,getToolConnection(), new ProjectBasicConfig());
 		Assert.assertEquals(1, mergeRequests.size());
 	}
 	
