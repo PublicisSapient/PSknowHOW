@@ -408,7 +408,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
-		} else {
+		}else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
@@ -480,6 +480,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		List<KanbanIssueCustomHistory> kanbanIssueHistoryToDelete = Lists.newArrayList();
 		purgeIssuesList.forEach(issue -> {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
+			String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 			KanbanJiraIssue kanbanJiraIssue = findOneKanbanIssueRepo(issueId,
 					projectConfig.getBasicProjectConfigId().toString());
 			KanbanIssueCustomHistory kanbanHistory = findOneKanbanIssueCustomHistory(issueId,
@@ -748,7 +749,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		if (null == jiraIssueCustomHistory.getStoryID()) {
 			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping);
 		} else {
-			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList);
+			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList, fieldMapping);
 		}
 
 	}
@@ -786,27 +787,38 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	/**
 	 * Adds Sprint in Story
 	 *
-	 * @param jiraIssueCustomHistory JiraIssueCustomHistory
-	 * @param jiraIssue              JiraIssue instance
-	 * @param changeLogList          List of Change log in jira
+	 * @param jiraIssueCustomHistory
+	 *            JiraIssueCustomHistory
+	 * @param jiraIssue
+	 *            JiraIssue instance
+	 * @param changeLogList
+	 *            List of Change log in jira
+	 * @param fieldMapping
+	 *            FieldMapping config
 	 */
 	private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-			List<ChangelogGroup> changeLogList) {
+			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
-		createKanbanIssueHistory(jiraIssueCustomHistory, changeLogList);
+		createKanbanIssueHistory(jiraIssueCustomHistory, jiraIssue, changeLogList, fieldMapping);
 		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
 	}
 
 	/**
 	 * Creates Issue Kanban history details for delta changed statuses start
 	 *
-	 * @param jiraIssueCustomHistory JiraIssueCustomHistory
-	 * @param changeLogList          Change Log list
+	 * @param jiraIssueCustomHistory
+	 *            JiraIssueCustomHistory
+	 * @param jiraIssue
+	 *            jiraIssue
+	 * @param changeLogList
+	 *            Change Log list
+	 * @param fieldMapping
+	 *            List of JiraIssueCustomHistory
 	 */
-	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory,
-										  List<ChangelogGroup> changeLogList) {
+	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
+			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
 		for (ChangelogGroup history : changeLogList) {
 			for (ChangelogItem changelogItem : history.getItems()) {
@@ -839,7 +851,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue jiraIssue, List<ChangelogGroup> changeLogList,
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
-
+		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
+		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
 
 		// creating first entry of issue
 		if (null != issueCreatedDate) {
@@ -850,13 +863,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		if (CollectionUtils.isNotEmpty(changeLogList)) {
 			for (ChangelogGroup history : changeLogList) {
-				historyDetails.addAll(getIssueHistory(jiraIssue, history));
+				historyDetails.addAll(getIssueHistory(jiraIssue, history, jiraStatusForDevelopment, jiraStatusForQa));
 			}
 		}
 		return historyDetails;
 	}
 
-	private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history) {
+	private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history,
+			List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 		for (ChangelogItem changelogItem : history.getItems()) {
 			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {

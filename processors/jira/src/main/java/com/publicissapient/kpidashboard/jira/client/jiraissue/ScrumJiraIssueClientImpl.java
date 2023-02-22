@@ -458,7 +458,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
-		} else {
+		}else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
@@ -1315,7 +1315,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		if (CollectionUtils.isNotEmpty(changeLogList)) {
 			for (ChangelogGroup history : changeLogList) {
-				getHistory(history, values, jiraIssue, issueHistory);
+				getHistory(history, values, jiraIssue, issueHistory, jiraStatusForDevelopment, jiraStatusForQa);
 			}
 		}
 		/**
@@ -1334,10 +1334,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param values
 	 * @param jiraIssue
 	 * @param issueHistory
+	 * @param jiraStatusForDevelopment
+	 * @param jiraStatusForQa
 	 * @return
 	 */
 	private void getHistory(ChangelogGroup history, Map<String, String> values, JiraIssue jiraIssue,
-			List<JiraIssueSprint> issueHistory) {
+			List<JiraIssueSprint> issueHistory, List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
 		String fromSprint = "";
 		String fromSprintId = "";
 		String toSprint = "";
