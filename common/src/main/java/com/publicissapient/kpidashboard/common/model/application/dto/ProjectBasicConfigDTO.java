@@ -46,11 +46,9 @@ public class ProjectBasicConfigDTO {
 	private String updatedAt;
 
 	private String consumerCreatedOn;
-
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
 	private boolean saveAssigneeDetails;
-
 	/**
 	 * set isKanban value
 	 * 
