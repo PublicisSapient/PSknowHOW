@@ -122,7 +122,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			CommitRepository commitsRepo, ConnectionRepository connectionsRepository,
 			ProcessorToolConnectionService processorToolConnectionService,
 			ProjectBasicConfigRepository projectConfigRepository, MergeRequestRepository mergReqRepo,
-			ProcessorExecutionTraceLogService processorExecutionTraceLogService) {
+			ProcessorExecutionTraceLogService processorExecutionTraceLogService, ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository) {
 		super(taskScheduler, ProcessorConstants.AZUREREPO);
 		this.azureRepoProcessorRepo = azureRepoProcessorRepo;
 		this.azureRepoConfig = azureRepoConfig;
@@ -136,6 +136,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		this.projectConfigRepository = projectConfigRepository;
 		this.processorExecutionTraceLogService = processorExecutionTraceLogService;
 		this.mergReqRepo = mergReqRepo;
+		this.processorExecutionTraceLogRepository = processorExecutionTraceLogRepository;
 	}
 
 	/**

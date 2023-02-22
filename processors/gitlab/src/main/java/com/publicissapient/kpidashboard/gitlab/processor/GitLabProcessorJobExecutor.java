@@ -132,7 +132,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 			GitLabClient gitLabClient, ProcessorItemRepository<ProcessorItem> processorItemRepository,
 			CommitRepository commitsRepo, ProcessorToolConnectionService processorToolConnectionService,
 			MergeRequestRepository mergReqRepo, ProjectBasicConfigRepository projectConfigRepository,
-			ProcessorExecutionTraceLogService processorExecutionTraceLogService) {
+			ProcessorExecutionTraceLogService processorExecutionTraceLogService, ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository) {
 		super(scheduler, ProcessorConstants.GITLAB);
 		this.gitLabProcessorRepository = gitLabProcessorRepository;
 		this.gitLabConfig = gitLabConfig;
@@ -146,6 +146,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 		this.mergReqRepo = mergReqRepo;
 		this.projectConfigRepository = projectConfigRepository;
 		this.processorExecutionTraceLogService = processorExecutionTraceLogService;
+		this.processorExecutionTraceLogRepository = processorExecutionTraceLogRepository;
 	}
 
 	/**

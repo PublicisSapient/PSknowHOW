@@ -151,7 +151,7 @@ public class AzureRepoProcessorJobExecutorTest {
 		azureRepoProcessorJobExecutor = new AzureRepoProcessorJobExecutor(taskScheduler, azureRepoProcessorRepo,
 				azureRepoConfig, toolConfigRepository, azureRepoRepository, azureRepoClient, processorItemRepository,
 				commitsRepo, connectionsRepository, processorToolConnectionService, projectConfigRepository,
-				mergReqRepo, processorExecutionTraceLogService);
+				mergReqRepo, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 		Mockito.when(azurerepoRestOperations.getTypeInstance()).thenReturn(new RestTemplate());
 		basicAzureRepoClient = new BasicAzureRepoClient(azureRepoConfig, azurerepoRestOperations, aesEncryptionService);
 

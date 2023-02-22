@@ -120,7 +120,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitBucketProcessorJobExecutor = new GitLabProcessorJobExecutor(scheduler, gitLabProcessorRepository,
 				gitLabConfig, toolConfigRepository, connectionsRepository, gitLabRepository, gitLabClient,
 				processorItemRepository, commitRepository, processorToolConnectionService, mergReqRepo,
-				projectConfigRepository, processorExecutionTraceLogService);
+				projectConfigRepository, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 	}
 
 	@Test
@@ -142,6 +142,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
+		gitLabInfo.setId(new ObjectId("63ea43592181ac0bad9846db"));
 
 		List<GitLabRepo> gitLabRepos = new ArrayList<>();
 		GitLabRepo gitLabRepo = new GitLabRepo();
@@ -151,6 +152,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitLabRepo.setGitLabAccessToken("abc");
 		gitLabRepo.setGitLabProjectId("557");
 		gitLabRepo.setUserId("sgshj");
+		gitLabRepo.setToolConfigId(new ObjectId("63ea43592181ac0bad9846db"));
 		gitLabRepo.setProcessor(gitLabProcessor);
 		gitLabRepos.add(gitLabRepo);
 		List<CommitDetails> commitDetailList = new ArrayList<>();
