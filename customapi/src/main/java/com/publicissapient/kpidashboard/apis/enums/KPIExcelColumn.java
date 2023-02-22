@@ -151,7 +151,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay")),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Remaining Hours")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Days","Due Date","Predicted Completion Date","Potential Delay(in days)")),
 
     WASTAGE("kpi131",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),

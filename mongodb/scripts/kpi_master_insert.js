@@ -1646,7 +1646,12 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+        },
+        {
+          "type": "paragraph",
+          "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
+        
       ],
       "maturityLevels": [
         {
@@ -2993,19 +2998,23 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Work Remaining KPI gives a depiction of the pending work in an iteration from three available dimensions"
+          "value": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues, Size of Work (in SP) and Hours required to complete remaining tasks"
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are not completed based on DOD in the iteration."
+          "value": "Remaining work is based on the ‘Issues not completed’ list in Sprint report in Jira"
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues not completed based on DOD in the iteration"
+          "value": "Issue count - Total no. of issues that are not completed."
         },
         {
           "type": "paragraph",
-          "value": "Hours - Sum of remaining hours as mentioned in Jira of all issues not completed based on DOD in the iteration"
+          "value": "Story Points - Sum of story points of all issues not completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
         },
         {
           "type": "paragraph",

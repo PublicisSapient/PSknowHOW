@@ -2462,7 +2462,7 @@ describe('IterationComponent', () => {
         expect(result).toEqual('1h');
     });
 
-    it('should convert to day',()=>{
+    it('should convert to daya',()=>{
         let result =component.convertToHoursIfTime(25,'day');
         expect(result.trim()).toEqual('25m');
 

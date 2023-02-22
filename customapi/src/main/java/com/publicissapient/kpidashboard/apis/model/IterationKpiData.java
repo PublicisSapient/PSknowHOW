@@ -66,4 +66,5 @@ public class IterationKpiData implements Serializable {
 		this.unit = unit;
 		this.modalValues = modalValues;
 	}
+
 }
