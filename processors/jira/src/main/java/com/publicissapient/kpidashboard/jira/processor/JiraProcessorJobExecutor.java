@@ -26,6 +26,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.fetchData.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -75,6 +77,9 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	private JiraRestClientFactory jiraRestClientFactory;
 
 	@Autowired
+	private FetchProjectConfiguration fetchProjectConfiguration;
+
+	@Autowired
 	public JiraProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JIRA);
 	}
@@ -100,7 +105,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	/**
 	 * Gets called on a schedule to gather data from the feature content source
 	 * system and update the repository with retrieved data.
-	 * 
+	 *
 	 * @param jiraProcessor jiraProcessor instance
 	 */
 	@Override
@@ -109,6 +114,9 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
+		Map<String, ProjectConfFieldMapping> projectConfMap= fetchProjectConfiguration.fetchConfiguration();
+		log.info("Map of project name and field mapping: ");
+		System.out.println(projectConfMap);
 		// change 2--
 		if (ObjectUtils.isNotEmpty(getExecutionLogContext())
 				&& (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {

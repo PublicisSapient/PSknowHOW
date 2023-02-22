@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import com.publicissapient.kpidashboard.common.repository.application.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,12 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
@@ -122,7 +116,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 
 	/**
-	 * Validates and collects Jira issues using JIA API for projects with onlinemode
+	 * Validates and collects Jira issues using JIRA API for projects with onlinemode
 	 * 
 	 * @param projectConfigList List of all configured projects
 	 */
@@ -135,7 +129,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 		issueCountMap.put(JiraConstants.SCRUM_DATA, 0);
 		issueCountMap.put(JiraConstants.KANBAN_DATA, 0);
 		try {
-
 			Map<String, ProjectConfFieldMapping> onlineLineprojectConfigMap = createProjectConfigMap(
 					getRelevantProjects(projectConfigList), fieldMappingList);
 			executor = Executors.newFixedThreadPool(jiraProcessorConfig.getThreadPoolSize());
