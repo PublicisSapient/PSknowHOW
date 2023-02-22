@@ -2449,6 +2449,28 @@ describe('IterationComponent', () => {
         };
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
-    })
+    });
+
+    it('should convert to hours',()=>{
+        let result =component.convertToHoursIfTime(25,'hours');
+        expect(result).toEqual('25m');
+
+        result = component.convertToHoursIfTime(65,'hours');
+        expect(result).toEqual('1h 5m');
+
+        result = component.convertToHoursIfTime(60,'hours');
+        expect(result).toEqual('1h');
+    });
+
+    it('should convert to daya',()=>{
+        let result =component.convertToHoursIfTime(25,'day');
+        expect(result.trim()).toEqual('25m');
+
+        result = component.convertToHoursIfTime(480,'day');
+        expect(result.trim()).toEqual('1d');
+
+        result = component.convertToHoursIfTime(0,'day');
+        expect(result.trim()).toEqual('0d');
+    });
 
 });
