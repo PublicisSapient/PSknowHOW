@@ -2998,6 +2998,22 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Remaining work is based on the ‘Issues not completed’ list in Sprint report in Jira"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are not completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues not completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
         }
       ]
     },
