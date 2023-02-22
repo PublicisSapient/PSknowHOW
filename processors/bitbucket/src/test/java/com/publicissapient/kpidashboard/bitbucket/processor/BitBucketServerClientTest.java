@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import java.net.URLDecoder;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -50,6 +49,7 @@ import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServerClientTest {
@@ -102,7 +102,7 @@ public class BitBucketServerClientTest {
 		when(stashClient.decryptPassword(connectionDetail.getPassword())).thenReturn("test");
 		
 		when(restTemplate.exchange(eq(URLDecoder.decode(restUri,"UTF-8")), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail,projectBasicConfig);
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		
 		CommitDetails bitBucketCommit = commits.get(0);

@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -48,6 +47,7 @@ import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 class BitBucketCloudClientTest {
@@ -107,7 +107,7 @@ class BitBucketCloudClientTest {
 				ArgumentMatchers.<Class<String>> any()
 				)
 		).thenReturn(responseEntity);
-		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail,proBasicConfig);
+		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail, proBasicConfig);
 		Assert.assertEquals(2, commits.size());
 	}
 

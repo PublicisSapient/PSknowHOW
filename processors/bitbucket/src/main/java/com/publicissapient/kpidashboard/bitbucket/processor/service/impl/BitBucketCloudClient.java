@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -54,6 +53,7 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,7 +93,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean initialRunOccurrence,
-			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		List<CommitDetails> commits = new ArrayList<>();
 		try {
 			String restUrl = new BitBucketCloudURIBuilder(bitbucketRepo, config, bitBucketServerInfo).build();
@@ -129,7 +129,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	}
 
 	private void initializeCommitDetails(List<CommitDetails> commits, JSONArray jsonArray,
-			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonItem : jsonArray) {
 			JSONObject commitObj = (JSONObject) jsonItem;
 			String hash = getString(commitObj, BitBucketConstants.RESP_HASH_KEY);
@@ -147,15 +147,15 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	}
 @SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String hash, String message, String author, long timestamp,
-			List<String> parentList, ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) {
+			List<String> parentList, ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitbucketCommit = new CommitDetails();
 		bitbucketCommit.setBranch(bitBucketServerInfo.getBranch());
 		bitbucketCommit.setUrl(bitBucketServerInfo.getUrl());
 		bitbucketCommit.setTimestamp(System.currentTimeMillis());
 		bitbucketCommit.setCommitLog(message);
-		if(proBasicConfig.isSaveAssigneeDetails()) {
-			bitbucketCommit.setAuthor(author);
-		}
+	if (proBasicConfig.isSaveAssigneeDetails()) {
+		bitbucketCommit.setAuthor(author);
+	}
 		bitbucketCommit.setRevisionNumber(hash);
 		bitbucketCommit.setParentRevisionNumbers(parentList);
 		bitbucketCommit.setCommitTimestamp(timestamp);
@@ -180,7 +180,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo,ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -219,7 +219,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 * @param mergeRequests
 	 * @param jsonArray
 	 */
-	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray,ProjectBasicConfig proBasicConfig) {
+	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
