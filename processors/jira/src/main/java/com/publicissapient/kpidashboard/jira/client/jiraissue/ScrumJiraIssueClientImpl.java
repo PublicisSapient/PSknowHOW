@@ -648,9 +648,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					setJiraAssigneeDetails(jiraIssue, assignee);
-				}
+				updateAssigneeDetails(projectConfig, jiraIssue, assignee);
 
 				setEstimates(jiraIssue, issue);
 
@@ -677,6 +675,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee) {
+		if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			setJiraAssigneeDetails(jiraIssue, assignee);
+		}
 	}
 
 	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
