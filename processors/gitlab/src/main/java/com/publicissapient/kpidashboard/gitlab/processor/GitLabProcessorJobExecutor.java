@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -73,6 +72,7 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabClient;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabProcessorRepository;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabRepoRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -338,7 +338,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 											+ " and branch : " + entry.getBranch());
 
 							List<CommitDetails> commitDetailList = gitLabClient.fetchAllCommits(gitRepo,
-									entry,proBasicConfig);
+									entry, proBasicConfig);
 							updateAssigneeNameForCommit(proBasicConfig, gitRepo, processorExecutionTraceLog, commitDetailList);
 							List<CommitDetails> unsavedCommits = commitDetailList.stream()
 									.filter(commit -> isNewCommit(gitRepo, commit)).collect(Collectors.toList());

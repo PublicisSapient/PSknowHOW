@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -56,6 +55,7 @@ import com.publicissapient.kpidashboard.gitlab.config.GitLabConfig;
 import com.publicissapient.kpidashboard.gitlab.constants.GitLabConstants;
 import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 

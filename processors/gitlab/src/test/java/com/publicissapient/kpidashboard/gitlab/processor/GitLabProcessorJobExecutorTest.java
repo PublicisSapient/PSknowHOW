@@ -26,10 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +59,10 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabProcessorRepository;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabRepoRepository;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class GitLabProcessorJobExecutorTest {

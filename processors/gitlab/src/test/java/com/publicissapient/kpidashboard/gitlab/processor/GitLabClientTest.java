@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import java.net.URLDecoder;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabClient;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabURIBuilder;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GitLabClientTest {
@@ -96,7 +96,7 @@ public class GitLabClientTest {
 		projectBasicConfig.setSaveAssigneeDetails(true);
 		when(restTemplate.exchange(eq(restUrl), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo,gitLabInfo,projectBasicConfig);
+		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo,gitLabInfo, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		CommitDetails gitLabCommit = commits.get(0);
 		Assert.assertEquals("userab", gitLabCommit.getAuthor());
