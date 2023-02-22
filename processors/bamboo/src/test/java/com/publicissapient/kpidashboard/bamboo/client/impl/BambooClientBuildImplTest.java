@@ -27,7 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -64,6 +63,7 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BambooClientBuildImplTest {
@@ -237,7 +237,7 @@ public class BambooClientBuildImplTest {
 	public void instanceJobsEmptyResponseReturnsEmptyMap() throws MalformedURLException, ParseException {
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH,proBasicConfig);
+		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 	}
 
@@ -249,7 +249,7 @@ public class BambooClientBuildImplTest {
 				eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
 		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
-		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH,proBasicConfig);
+		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsTestReturnsMap", jobs.size(), is(0));
 	}
 

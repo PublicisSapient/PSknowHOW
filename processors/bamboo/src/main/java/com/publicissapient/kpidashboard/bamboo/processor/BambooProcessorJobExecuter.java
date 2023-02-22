@@ -26,7 +26,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -63,6 +62,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -244,7 +244,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				if (!CollectionUtils.isEmpty(bambooJobList)) {
 					totalCount = bambooJobList.size();
 					processEachBambooJobOnJobType(bambooJobList, existingDeployJobs, activeBuildJobs, activeDeployJobs,
-							processorId,proBasicConfig);
+							processorId, proBasicConfig);
 				}
 			}
 			// Delete jobs that will be no longer collected because servers have
@@ -397,7 +397,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				deploy.add(deployment);
 			}
 			existingdeployments.forEach(deployments -> {
-				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy()== null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null) {
 					deployments.setDeployedBy(deployment.getDeployedBy());
 					deploy.add(deployments);
 				}
@@ -427,7 +427,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				bambooStart = LocalDateTime.now();
 				bambooEnd = LocalDateTime.now();
 			}
-			return !(endDb.isBefore(bambooEnd) && startDb.isBefore(bambooStart));
+			return endDb.isBefore(bambooEnd) && (startDb.isBefore(bambooStart)) ? false : true;
 		}
 		return true;
 	}
