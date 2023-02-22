@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +57,7 @@ import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.DefaultTeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class DefaultTeamcityClientTests {
@@ -236,7 +236,7 @@ public class DefaultTeamcityClientTests {
 						.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
 
 		Build build = teamcityClient.getBuildDetails("http://server/app/rest/buildTypes/id:Project2_Build2/",
-				"http://server", TEAMCITY_SAMPLE_SERVER_TWO,projectBasicConfig);
+				"http://server", TEAMCITY_SAMPLE_SERVER_TWO, projectBasicConfig);
 
 		assertThat(build.getTimestamp(), notNullValue());
 		assertThat(build.getNumber(), is("3"));

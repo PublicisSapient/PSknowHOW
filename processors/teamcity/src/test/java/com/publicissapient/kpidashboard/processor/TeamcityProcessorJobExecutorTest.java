@@ -13,15 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +33,15 @@ import com.publicissapient.kpidashboard.teamcity.factory.TeamcityClientFactory;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 import com.publicissapient.kpidashboard.teamcity.processor.TeamcityProcessorJobExecutor;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
+import com.publicissapient.kpidashboard.common.constant.BuildStatus;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 @SuppressWarnings("javadoc")
 @ExtendWith(SpringExtension.class)
@@ -157,7 +157,7 @@ public class TeamcityProcessorJobExecutorTest {
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(),any())).thenReturn(connList);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(teamcityConfig.getAesEncryptionKey()).thenReturn("aesKey");
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
@@ -174,7 +174,7 @@ public class TeamcityProcessorJobExecutorTest {
 			when(teamcityClient.getInstanceJobs(any())).thenReturn(buildMap);
 			when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build1);
 			when(teamcityClient.getBuildDetails(any(), any(),
-					any(),any())).thenReturn(build2);
+					any(), any())).thenReturn(build2);
 			when(processorExecutionTraceLogRepository.
 					findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
 					.thenReturn(optionalProcessorExecutionTraceLog);

@@ -29,10 +29,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -57,6 +53,9 @@ import com.publicissapient.kpidashboard.teamcity.factory.TeamcityClientFactory;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.repository.TeamcityProcessorRepository;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -189,7 +188,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
-
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					teamcityClient = teamcityClientFactory.getTeamcityClient(TEAMCITY_CLIENT);
 
@@ -226,7 +224,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		MDC.clear();
 		return executionStatus;
 	}
-
 
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
@@ -274,9 +271,9 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					count++;
 				}
 			} else {
-					if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
-						buildData.setStartedBy(buildSummary.getStartedBy());
-						buildsToSave.add(buildData);
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+					buildData.setStartedBy(buildSummary.getStartedBy());
+					buildsToSave.add(buildData);
 				}
 			}
 		}
@@ -321,5 +318,4 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
 }

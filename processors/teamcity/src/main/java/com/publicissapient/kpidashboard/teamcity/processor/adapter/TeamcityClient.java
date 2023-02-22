@@ -21,11 +21,11 @@ package com.publicissapient.kpidashboard.teamcity.processor.adapter;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
  * Client for fetching job and build information from Teamcity.
