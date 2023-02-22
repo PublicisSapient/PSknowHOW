@@ -429,6 +429,14 @@ public final class KpiDataHelper {
 		return pivotPCD;
 	}
 
+	/**
+	 * if remaining time is 0 and sprint is closed, then PCD is sprint end time
+	 * otherwise will create PCD
+	 * @param sprintDetails
+	 * @param pivotPCD
+	 * @param estimatedTime
+	 * @return
+	 */
 	private static LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD,
 			int estimatedTime) {
 		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
@@ -511,7 +519,7 @@ public final class KpiDataHelper {
 		LocalDate pcd = null;
 		if (pivotPCD == null) {
 			// for the first calculation
-			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase("closed")
+			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
 					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					: LocalDate.now();
 
