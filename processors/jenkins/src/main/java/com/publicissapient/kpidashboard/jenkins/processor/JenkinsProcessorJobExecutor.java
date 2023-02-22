@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +67,7 @@ import com.publicissapient.kpidashboard.jenkins.factory.JenkinsClientFactory;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -192,7 +192,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
-
 					if (BUILD.equalsIgnoreCase(jobType)) {
 						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count, proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
@@ -240,7 +239,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
-
 
 
 	private void processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
