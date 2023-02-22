@@ -316,7 +316,7 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraBlockedStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Wastage - Blocked Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
-                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included. 
+                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included.
                                                 </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -981,7 +981,7 @@
                                 <div class="p-inputgroup">
                                     <ng-container *ngFor="let estimationType of estimationCriteriaTypes">
                                         <p-radioButton placeholder="Select" formControlName="estimationCriteria"
-                                            value="{{estimationType.value}}" label="{{estimationType.value}}"
+                                            value="{{estimationType.value}}" label="{{estimationType.label}}"
                                             class="p-m-2">
                                         </p-radioButton>
                                     </ng-container>
