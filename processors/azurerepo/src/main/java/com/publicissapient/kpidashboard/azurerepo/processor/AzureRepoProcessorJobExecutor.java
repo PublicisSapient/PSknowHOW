@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -72,6 +71,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -307,8 +307,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				if (CollectionUtils.isNotEmpty(azureRepoInfo)) {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
-					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount,proBasicConfig);
-					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount,proBasicConfig);
+					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig);
+					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig);
 					MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -356,7 +356,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * @return executionStatus
 	 */
 	private int processRepoData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount,ProjectBasicConfig projectBasicConfig) {
+			int reposCount, ProjectBasicConfig projectBasicConfig) {
 		int commitsCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
@@ -415,7 +415,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 	
 	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount,ProjectBasicConfig proBasicConfig) {
+			int reposCount, ProjectBasicConfig proBasicConfig) {
 		
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
