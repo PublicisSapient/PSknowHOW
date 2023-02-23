@@ -18,13 +18,19 @@
 
 package com.publicissapient.kpidashboard.jira.processor;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -32,10 +38,13 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
@@ -43,15 +52,13 @@ import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Collects {@link JiraProcessor} data from feature content source system.
  */
 @Component
 @Slf4j
 public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor> {
-
+	PSLogData psLogData = new PSLogData();
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
 
@@ -101,18 +108,35 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		boolean executionStatus = true;
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
-		MDC.put("processorExecutionUid", uid);
-		MDC.put("processorStartTime", String.valueOf(start));
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		MDC.put("TotalSelectedProjectsForProcessing", String.valueOf(projectConfigList.size()));
-		clearSelectedBasicProjectConfigIds();
+		// change 2--
+		if (ObjectUtils.isNotEmpty(getExecutionLogContext())
+				&& (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {
+			// setting execution context as per user request
+			getExecutionLogContext().setIsCron("false");
+		} else {
+			// setting execution context as per for cron job uuid
+			ExecutionLogContext cronExecutionContext = new ExecutionLogContext();
+			cronExecutionContext.setRequestId(uid);
+			cronExecutionContext.setIsCron("true");
+			setExecutionLogContext(cronExecutionContext);
+		}
+		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
+		log.info("Jira Processor Started", kv(CommonConstant.PSLOGDATA, psLogData));
 
-		fetchIssueDetail(executionStatus, projectConfigList);
+		clearSelectedBasicProjectConfigIds();
+		ExecutionLogContext executionLocalLogContext = getExecutionLogContext();
+		fetchIssueDetail(executionStatus, projectConfigList, executionLocalLogContext);
+
 		long endTime = System.currentTimeMillis();
-		MDC.put("processorEndTime", String.valueOf(endTime));
-		MDC.put("executionTime", String.valueOf(endTime - start));
-		MDC.put("executionStatus", String.valueOf(executionStatus));
-		log.info("Jira execution completed");
+		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));
+		psLogData.setTimeTaken(String.valueOf(endTime - start));
+		psLogData.setExecutionStatus(String.valueOf(executionStatus));
+		ExecutionLogContext.updateContext(executionLocalLogContext);
+		log.info("Jira execution completed", kv(CommonConstant.PSLOGDATA, psLogData));
+		// Change 6-- clear Execution context
+		ExecutionLogContext.getContext().destroy();
+		destroyLogContext();
 		MDC.clear();
 		return executionStatus;
 	}
@@ -120,22 +144,23 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	/**
 	 * @param executionStatus
 	 * @param projectConfigList
+	 * @param executionLogContext
 	 * @return
 	 */
-	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList) {
+	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList, ExecutionLogContext executionLogContext) {
 		AtomicReference<Integer> scrumIssueCount = new AtomicReference<>(0);
 		AtomicReference<Integer> kanbanIssueCount = new AtomicReference<>(0);
 
 		if (!modeBasedProcessors.isEmpty() && CollectionUtils.isNotEmpty(projectConfigList)) {
 			try {
 				modeBasedProcessors.parallelStream().forEach(modeBasedProcessor -> {
+					modeBasedProcessor.setExecutionLogContext(executionLogContext);
 					Map<String, Integer> issueCountMap = modeBasedProcessor.validateAndCollectIssues(projectConfigList);
 					scrumIssueCount.updateAndGet(v -> v + issueCountMap.get(JiraConstants.SCRUM_DATA));
 					kanbanIssueCount.updateAndGet(v -> v + issueCountMap.get(JiraConstants.KANBAN_DATA));
 				});
 			} catch (RuntimeException e) {
 				log.error("Got error while validateAndCollectIssues", e);
-				MDC.put("error", e.getMessage());
 				executionStatus = false;
 			}
 		}
@@ -158,8 +183,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	private List<ProjectBasicConfig> getSelectedProjects() {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
 
-		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
-
+		psLogData.setTotalConfiguredProject(String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
@@ -174,5 +198,4 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
 	}
-
 }

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,9 +41,37 @@ import lombok.ToString;
 @ToString
 public class IterationKpiModalValue implements Serializable {
 	private static final long serialVersionUID = -6376203644006393547L;
-	private IterationKpiModalColoumn col1;
+	@JsonProperty("Issue Id")
+	private String issueId;
+	@JsonProperty("Issue URL")
+	private String issueURL;
+	@JsonProperty("Issue Description")
 	private String description;
+	@JsonProperty("Issue Status")
 	private String issueStatus;
+	@JsonProperty("Issue Type")
 	private String issueType;
+	@JsonProperty("Size(story point/hours)")
+	private String issueSize;
+	@JsonProperty("Remaining Hours")
+	private Integer remainingTime;
+	@JsonProperty("Logged Work")
+	private String timeSpentInMinutes;
+	@JsonProperty("Original Estimate")
+	private String originalEstimateMinutes;
+	@JsonProperty("Priority")
+	private String priority;
+	@JsonProperty("Due Date")
+	private String dueDate;
+	@JsonProperty("Delay")
+	private String delay;
+	@JsonProperty("Remaining Estimate")
+	private Integer remainingEstimateMinutes;
+	@JsonProperty("Blocked Time")
+	private String blockedTime;
+	@JsonProperty("Wait Time")
+	private String waitTime;
+	@JsonProperty("Total Wastage")
+	private String wastage;
 
 }

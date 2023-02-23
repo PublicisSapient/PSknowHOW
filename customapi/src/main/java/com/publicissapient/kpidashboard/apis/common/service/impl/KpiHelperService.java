@@ -455,17 +455,6 @@ public class KpiHelperService { // NOPMD
 			sprintDetails.stream().forEach(sprintDetail -> {
 
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
-
-					/*List<String> closedStatus = closedStatusMap
-							.getOrDefault(sprintDetail.getBasicProjectConfigId().toString(), new ArrayList<>());
-					List<String> typeName = typeNameMap.getOrDefault(sprintDetail.getBasicProjectConfigId().toString(),
-							new ArrayList<>());
-
-					Set<SprintIssue> filterTotalIssues = sprintDetail.getTotalIssues().stream()
-							.filter(sprintIssue -> (closedStatus.contains(sprintIssue.getStatus())
-									&& typeName.contains(sprintIssue.getTypeName())))
-							.collect(Collectors.toSet());
-					sprintDetail.setTotalIssues(filterTotalIssues);*/
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
 					totalIssueIds.addAll(sprintWiseIssueIds);
@@ -1260,13 +1249,11 @@ public class KpiHelperService { // NOPMD
 		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
 	}
 
-	public static void getDefectsWithoutDrop(Map<String, Map<String,List<String>>> droppedDefects, List<JiraIssue> defectDataList,
-											 List<JiraIssue> defectListWoDrop) {
+	public static void getDefectsWithoutDrop(Map<String, Map<String, List<String>>> droppedDefects,
+			List<JiraIssue> defectDataList, List<JiraIssue> defectListWoDrop) {
 		if (CollectionUtils.isNotEmpty(defectDataList)) {
 			Set<JiraIssue> defectListWoDropSet = new HashSet<>();
-			defectDataList.forEach(jiraIssue -> {
-				getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue);
-			});
+			defectDataList.forEach(jiraIssue -> getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue));
 			defectListWoDrop.addAll(defectListWoDropSet);
 		}
 	}

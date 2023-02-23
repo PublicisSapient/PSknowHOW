@@ -282,7 +282,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		dataCount.setDate(date);
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
-		Map<String, Integer> hoverValue = new HashMap<>();
+		Map<String, Object> hoverValue = new HashMap<>();
 		hoverValue.put("No. of Checkins", value.intValue());
 		dataCount.setHoverValue(hoverValue);
 		return dataCount;

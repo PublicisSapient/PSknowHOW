@@ -88,7 +88,6 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	private static final String GITLAB = "GitLab";
 	private static final String GITHUB = "GitHub";
 	private static final String YYYYMMDD = "yyyy-MM-dd";
-	private static final String DATE = "Date ";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
 
@@ -325,7 +324,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		while (DateTimeComparator.getDateOnlyInstance().compare(startDateTime, end) <= 0) {
 			String currentDate = formatter.print(startDateTime);
 			DataCount dataCount = new DataCount();
-			Map<String, Integer> hoverValues = new HashMap<>();
+			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
 				excelDataLoader.put(formatDate(currentDate), commitForDay);

@@ -149,6 +149,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 			ZephyrTestCaseDTO zephyrTestCaseDTO = new ZephyrTestCaseDTO();
 			JSONObject testcaseResponse = (JSONObject) testCaseObj;
 			String key = getString(testcaseResponse, KEY);
+			String name = getString(testcaseResponse, NAME);
 			String createdDate = getString(testcaseResponse, CREATED_ON);
 			List<String> labels = prepareLabelsDetails(testcaseResponse);
 			Map<String, String> customFields = prepareCustomFieldsDetails(testcaseResponse);
@@ -156,6 +157,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 			String folder = prepareFolderDetails(testcaseResponse, accessToken, folderMap);
 			Set<String> issueLinks = prepareIssueLinks(testcaseResponse, jiraCloudCredential);
 			zephyrTestCaseDTO.setKey(key);
+			zephyrTestCaseDTO.setName(name);
 			zephyrTestCaseDTO.setCreatedOn(createdDate);
 			zephyrTestCaseDTO.setUpdatedOn(createdDate);
 			zephyrTestCaseDTO.setLabels(labels);

@@ -257,7 +257,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectNodeId, String date) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		projectWisePriorityMap.forEach((key, value) -> {
 			hoverValueMap.put(key, value.intValue());
 			DataCount dcObj = getDataCountObject(value, projectName, date, projectNodeId, key, hoverValueMap);
@@ -317,13 +317,13 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String projectNodeId,
-			String priority, Map<String, Integer> overAllHoverValueMap) {
+			String priority, Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(priority);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (priority.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {
@@ -340,17 +340,15 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			Map<String, Map<String, Set<String>>> jiraHistoryPriorityAndDateWiseIssueMap, Node node,
 			Set<String> projectWisePriorityList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-			if (MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
-				String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
-				String date = getRange(
-						KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
-						kpiRequest);
-				KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
-						jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData,
-						date, KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
-			}
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
+			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String date = getRange(
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+					kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
+					jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData, date,
+					KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 		}
 	}
 

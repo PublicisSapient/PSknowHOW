@@ -25,10 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -37,17 +35,22 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 import com.publicissapient.kpidashboard.common.model.application.Subproject;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author yasbano
@@ -66,9 +69,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private SubProjectRepository subProjectRepository;
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
+	@Autowired
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	private static final String SUCCESS_MSG ="Successfully fetched all records for projectToolConfig";
@@ -419,6 +423,26 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			log.error("basicConfigId = {}, toolConfigId = {} - not found", basicProjectConfigId, projectToolId);
 			throw new ToolNotFoundException("Tool not found");
 		}
+	}
+
+	@Override
+	public ServiceResponse getJiraProjects() {
+		List<ProjectAssigneeDTO> projectList = new ArrayList<>();
+		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(ProcessorConstants.JIRA);
+		if (null != projectToolConfigList) {
+			for (ProjectToolConfig projectToolConfig : projectToolConfigList) {
+				ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository
+						.findById(projectToolConfig.getBasicProjectConfigId()).get();
+				ProjectAssigneeDTO projectAssignee = new ProjectAssigneeDTO();
+				projectAssignee.setBasicProjectConfigId(projectBasicConfig.getId());
+				projectAssignee.setProjectName(projectBasicConfig.getProjectName());
+				projectList.add(projectAssignee);
+			}
+			if (CollectionUtils.isNotEmpty(projectList)) {
+				return new ServiceResponse(true, "List of Projects", projectList);
+			}
+		}
+		return new ServiceResponse(false, "No Projects Found", null);
 	}
 
 }

@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
+import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,8 @@ public class ConfigHelperService {
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
 	private ProjectToolConfigRepository projectToolConfigRepository;
+	@Autowired
+	private UserBoardConfigRepository userBoardConfigRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
@@ -296,6 +300,13 @@ public class ConfigHelperService {
 	public Object loadKpiFieldMapping() {
 		LOGGER.info("loading KPI FieldMapping data");
 		return kpiFieldMappingRepository.findAll();
+	}
+
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
+	public List<UserBoardConfig> loadUserBoardConfig() {
+		LOGGER.info("loading UserBoarConfig");
+		return userBoardConfigRepository.findAll();
 	}
 
 }

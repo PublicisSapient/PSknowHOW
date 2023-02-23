@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * to order the headings of excel columns
  */
+@SuppressWarnings("java:S1192")
 public enum KPIExcelColumn {
 
     CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url", "Weeks")),
@@ -32,21 +33,21 @@ public enum KPIExcelColumn {
 
     MEAN_TIME_TO_MERGE("kpi84", Arrays.asList("Project", "Repository Url", "Branch", "Weeks", "Mean Time To Merge (In Hours)")),
     AVERAGE_RESOLUTION_TIME("kpi83", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type", "Resolution Time(In Days)")),
-    LEAD_TIME("kpi3", Arrays.asList("Project Name", "Story ID","Issue Description","Intake to DOR(In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Lead Time (In Days)")),
+    LEAD_TIME("kpi3", Arrays.asList("Project Name", "Story ID", "Issue Description", "Intake to DOR(In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Lead Time (In Days)")),
 
-    LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name","Story ID","Issue Description", "Open to Triage(In Days)", "Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
+    LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)", "Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
-    SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Story Size(In story point)")),
-	SPRINT_PREDICTABILITY("kpi5", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Story Size(In story point)")),
-	SPRINT_CAPACITY_UTILIZATION("kpi46", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Original Time Estimate (in hours)", "Total Time Spent (in hours)")),
-    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed" ,"Story Size(In story point)")),
+    SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
+    SPRINT_PREDICTABILITY("kpi5", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Story Size(In story point)")),
+    SPRINT_CAPACITY_UTILIZATION("kpi46", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Original Time Estimate (in hours)", "Total Time Spent (in hours)")),
+    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed", "Size(story point/hours)")),
 
 
     DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects")),
 
     FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "First Time Pass")),
 
-    DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story","Story Size(In story point)")),
+    DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story", "Size(story point/hours)")),
 
     DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Escaped Defect")),
 
@@ -76,58 +77,89 @@ public enum KPIExcelColumn {
 
     COST_OF_DELAY("kpi113", Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
 
+    DAILY_CLOSURES("kpi125", Arrays.asList("Date", "Issue Type", "Issue ID", "Issue Description", "Size(story point/hours)")),
+
     RELEASE_FREQUENCY("kpi73", Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
     DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Month", "Environment")),
 
-    DEFECTS_WITHOUT_STORY_LINK("kpi80", Arrays.asList("Project Name","Priority","Defects Without Story Link", "Issue Description")),
+    DEFECTS_WITHOUT_STORY_LINK("kpi80", Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
 
-    TEST_WITHOUT_STORY_LINK("kpi79", Arrays.asList("Project Name","Test Case ID","Linked to Story")),
+    TEST_WITHOUT_STORY_LINK("kpi79", Arrays.asList("Project Name", "Test Case ID", "Linked to Story")),
+
+    ISSUES_WITHOUT_STORY_LINK("kpi129", Arrays.asList("Issue Id", "Issue Description")),
 
     PRODUCTION_DEFECTS_AGEING("kpi127", Arrays.asList("Project Name", "Defect ID", "Issue Description", "Priority", "Created Date", "Status")),
 
-	UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name", "Unit Coverage", "Day/Week/Month")),
+    UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name", "Unit Coverage", "Day/Week/Month")),
 
-	SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name", "Sonar Violations", "Day/Week/Month")),
+    SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name", "Sonar Violations", "Day/Week/Month")),
 
-	SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Day/Week/Month")),
+    SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Day/Week/Month")),
 
-	TEST_EXECUTION_KANBAN("kpi71", Arrays.asList("Project", "Execution Date", "Total Test", "Executed Test",
-			"Execution %", "Passed Test", "Passed %")),
+    TEST_EXECUTION_KANBAN("kpi71", Arrays.asList("Project", "Execution Date", "Total Test", "Executed Test",
+            "Execution %", "Passed Test", "Passed %")),
 
-	KANBAN_REGRESSION_PASS_PERCENTAGE("kpi63", Arrays.asList("Project","Day/Week/Month", "Test Case ID", "Automated")),
+    KANBAN_REGRESSION_PASS_PERCENTAGE("kpi63", Arrays.asList("Project", "Day/Week/Month", "Test Case ID", "Automated")),
 
-	OPEN_TICKET_AGING_BY_PRIORITY("kpi997",
-			Arrays.asList("Project", "Ticket Issue ID", "Priority", "Created Date", "Issue Status")),
+    OPEN_TICKET_AGING_BY_PRIORITY("kpi997",
+            Arrays.asList("Project", "Ticket Issue ID", "Priority", "Created Date", "Issue Status")),
 
-	NET_OPEN_TICKET_COUNT_BY_STATUS("kpi48",
-			Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Status", "Created Date")),
+    NET_OPEN_TICKET_COUNT_BY_STATUS("kpi48",
+            Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Status", "Created Date")),
 
-	NET_OPEN_TICKET_COUNT_BY_RCA("kpi51",
-			Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Root Cause", "Created Date")),
+    NET_OPEN_TICKET_COUNT_BY_RCA("kpi51",
+            Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Root Cause", "Created Date")),
 
-	TICKET_COUNT_BY_PRIORITY("kpi50",
-			Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Priority", "Created Date")),
+    TICKET_COUNT_BY_PRIORITY("kpi50",
+            Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Priority", "Created Date")),
 
-	TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE("kpi55",
-			Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Type", "Status")),
+    TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE("kpi55",
+            Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Type", "Status")),
 
-	TICKET_OPEN_VS_CLOSE_BY_PRIORITY("kpi54",
-			Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Priority", "Status")),
+    TICKET_OPEN_VS_CLOSE_BY_PRIORITY("kpi54",
+            Arrays.asList("Project", "Day/Week/Month", "Ticket Issue ID", "Issue Priority", "Status")),
 
-	TICKET_VELOCITY("kpi49",
-			Arrays.asList("Project Name", "Day/Week/Month", "Ticket Issue ID", "Issue Type", "Size (In Story Points)")),
+    TICKET_VELOCITY("kpi49",
+            Arrays.asList("Project Name", "Day/Week/Month", "Ticket Issue ID", "Issue Type", "Size (In Story Points)")),
 
-	CODE_BUILD_TIME_KANBAN("kpi66", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration",
-			"Build Status", "Build Url")),
+    CODE_BUILD_TIME_KANBAN("kpi66", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration",
+            "Build Status", "Build Url")),
 
-	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit")),
+    CODE_COMMIT_MERGE_KANBAN("kpi65",
+            Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit")),
 
-	TEAM_CAPACITY_KANBAN("kpi58",
-			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
+    TEAM_CAPACITY_KANBAN("kpi58",
+            Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
-	INVALID("INVALID_KPI", Arrays.asList("Invalid"));
+    ISSUES_LIKELY_TO_SPILL("kpi123",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
+
+    SCOPE_CHANGE("kpi120",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    ESTIMATE_HYGINE("kpi124",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    ITERATION_STATUS("kpi130",
+            Arrays.asList("Issue Id", "Issue Type", "Priority", "Issue Description", "Issue Status", "Due Date", "Remaining Hours", "Delay")),
+
+    ESTIMATE_VS_ACTUAL("kpi75",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
+
+    WORK_COMPLETED("kpi128",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+
+    WORK_REMAINING("kpi119",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Remaining Hours")),
+
+    WASTAGE("kpi131",
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),
+
+    CLOSURES_POSSIBLE_TODAY("kpi122",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
+
+    INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 
     // @formatter:on
 

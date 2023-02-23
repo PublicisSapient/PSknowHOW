@@ -185,6 +185,15 @@ public class FieldMappingDTO extends BasicModel {
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusExcluMissingWork;
 
+	// issue On Hold status to exclude Closure possible
+	private List<String> jiraOnHoldStatus;
+
+	//field for Wasting - wait status
+	private List<String> jiraWaitStatus;
+
+	//field for Wasting - block status
+	private List<String> jiraBlockedStatus;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *

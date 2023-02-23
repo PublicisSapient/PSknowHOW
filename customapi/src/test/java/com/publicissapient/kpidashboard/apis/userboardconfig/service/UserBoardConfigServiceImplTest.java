@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,6 +90,9 @@ public class UserBoardConfigServiceImplTest {
 
 	@Mock
 	private ConfigHelperService configHelperService;
+
+	@Mock
+	private CacheService cacheService;
 
 	private List<KpiCategory> kpiCategoryList;
 	private List<KpiCategoryMapping> kpiCategoryMappingList;

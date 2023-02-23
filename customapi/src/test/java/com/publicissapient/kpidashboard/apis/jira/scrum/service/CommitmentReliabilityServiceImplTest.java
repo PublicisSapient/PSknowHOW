@@ -194,7 +194,7 @@ public class CommitmentReliabilityServiceImplTest {
 		dataCount.setSProjectName("PR");
 		dataCount.setSSprintID(sprint);
 		dataCount.setSSprintName(sprintName);
-		Map<String, Integer> howermap = new HashMap<>();
+		Map<String, Object> howermap = new HashMap<>();
 		howermap.put("Delivered", delivered);
 		howermap.put("Committed", commited);
 		dataCount.setHoverValue(howermap);
