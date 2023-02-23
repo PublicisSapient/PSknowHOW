@@ -30,6 +30,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -96,6 +98,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	CustomApiConfig customApiConfig;
 
+	@Autowired
+	UserTokenDeletionService userTokenDeletionService;
+
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
@@ -106,6 +111,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		UserTokenData data = new UserTokenData();
 		data.setUserName(authentication.getName());
 		data.setUserToken(jwt);
+		userTokenReopository.deleteAllByUserName(authentication.getName());
 		userTokenReopository.save(data);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
@@ -120,28 +126,24 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()){
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
+				Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
 				return null;
 			}
 
+
 			String token = authCookie.getValue();
 
-			UserTokenData data = null;
-
-			data = userTokenReopository.findByUserToken(token);
-
-			if (null == data) {
+			if (null == token) {
 				return null;
 			}
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(data));
-			return createAuthentication(token);
+			return createAuthentication(token, response);
 		}
 
 	}
 
 
-	private Authentication createAuthentication(String token) {
+	private Authentication createAuthentication(String token, HttpServletResponse response) {
 		try {
 			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
 					.getBody();
@@ -151,6 +153,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
+			List<UserTokenData> userTokenData = userTokenReopository.findAllByUserName(username);
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(userTokenData));
 
 			return authentication;
 
@@ -159,6 +163,20 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 	}
 
+	public UserTokenData getLatestUser(List<UserTokenData> userTokenDataList) {
+		if (userTokenDataList == null || userTokenDataList.size() == 0) {
+			return null;
+		}
+		List<UserTokenData> dataList = userTokenDataList.stream().filter(data -> data.getExpiryDate() != null)
+				.collect(Collectors.toList());
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT).optionalStart()
+				.appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd()
+				.toFormatter();
+		UserTokenData userTokenData = dataList.stream()
+				.max(Comparator.comparing(data -> LocalDateTime.parse(data.getExpiryDate(), formatter))).orElse(null);
+		return userTokenData;
+
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -217,13 +235,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String setUpdateAuthFlag(UserTokenData userTokenData) {
-		if (userTokenData != null) {
+	public String setUpdateAuthFlag(List<UserTokenData> userTokenDataList) {
+		UserTokenData userTokenData = getLatestUser(userTokenDataList);
+		if(userTokenData != null){
 			String expiryDate = userTokenData.getExpiryDate();
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
-			if (expiryDate != null && LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
+			if (LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
 				return Boolean.toString(true);
 			}
 		}
@@ -234,13 +253,15 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
-			UserTokenData userTokenData = userTokenReopository
-					.findByUserToken(cookieUtil.getAuthCookie(request).getValue());
+			String userName = request.getHeader("username") != null ? request.getHeader("username")
+					: authentication.getName();
+			List<UserTokenData> userTokenDataList = userTokenReopository.findAllByUserName(userName);
+			UserTokenData userTokenData = getLatestUser(userTokenDataList);
 			if (userTokenData != null) {
 				updateExpiryDate(userTokenData.getUserName(), null);
 			} else {
-				userTokenData = new UserTokenData(authenticationService.getLoggedInUser(),
-						cookieUtil.getAuthCookie(request).getValue(), null);
+				userTokenReopository.deleteAllByUserName(userName);
+				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(), null);
 				userTokenReopository.save(userTokenData);
 			}
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
@@ -253,13 +274,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
-		JSONObject json = new JSONObject();
-		json.put(USER_NAME, userInfo.getUsername());
-		json.put(USER_EMAIL, userInfo.getEmailAddress());
-		json.put(USER_AUTHORITIES, userInfo.getAuthorities());
-		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(userInfo.getUsername());
-		json.put(PROJECTS_ACCESS, projectAccessesWithRole);
-		return json;
+		if(userInfo != null) {
+			JSONObject json = new JSONObject();
+			json.put(USER_NAME, userInfo.getUsername());
+			json.put(USER_EMAIL, userInfo.getEmailAddress());
+			json.put(USER_AUTHORITIES, userInfo.getAuthorities());
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(userInfo.getUsername());
+			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
+			return json;
+		}
+		return null;
 	}
 
 }
