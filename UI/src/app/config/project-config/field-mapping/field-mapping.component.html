@@ -1096,6 +1096,20 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
+                      <div class="p-mb-3 p-d-flex p-align-center"
+                      *ngIf="fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0">
+                      <label class="field-title">Due Date <span class="fa fa-info-circle" aria-hidden="true"
+                              pTooltip='<span>
+                              Definition:
+                              This field is to track due date of issues tagged in the iteration
+                          </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
+                                placeholder="Enter Due Date" [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                        </div>
+                    </div>
                   </div>
               </p-accordionTab>
 
