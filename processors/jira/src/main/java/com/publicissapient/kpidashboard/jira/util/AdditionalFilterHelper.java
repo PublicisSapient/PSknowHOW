@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,11 +152,14 @@ public class AdditionalFilterHelper {
 				StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
 			try {
 				if (fields.get(customField).getValue() instanceof JSONObject) {
-					if (StringUtils.isNotBlank(
-							(String) ((JSONObject) fields.get(customField).getValue()).get(JiraConstants.VALUE))) {
-						values.add((String) ((JSONObject) fields.get(customField).getValue()).get(JiraConstants.VALUE));
-					} else {
-						values.add(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()));
+					JSONObject jsonObject = (JSONObject) fields.get(customField).getValue();
+					getValueFromField(values, jsonObject);
+				} else if (fields.get(customField).getValue() instanceof JSONArray) {
+					JSONArray fieldArray = (JSONArray) fields.get(customField).getValue();
+					if(fieldArray.length() > 0) {
+						for(int i = 0; i < fieldArray.length(); i++) {
+							getValueFromField(values,(JSONObject) fieldArray.get(i));
+						}
 					}
 				} else {
 					values.add(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()));
@@ -167,4 +171,14 @@ public class AdditionalFilterHelper {
 		return values;
 	}
 
+	private void getValueFromField(Set<String> values, JSONObject jsonObject){
+		try {
+			if (null != jsonObject && StringUtils.isNotBlank(
+					(String) jsonObject.get(JiraConstants.VALUE))) {
+				values.add((String) jsonObject.get(JiraConstants.VALUE));
+			}
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

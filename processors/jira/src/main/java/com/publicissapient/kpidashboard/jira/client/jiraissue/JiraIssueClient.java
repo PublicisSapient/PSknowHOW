@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -37,7 +38,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
@@ -46,15 +46,12 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
-import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class JiraIssueClient {// NOPMD //NOSONAR
@@ -398,7 +395,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	public String getDeltaDate(String lastSuccessfulRun) {
 		LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
 		ldt = ldt.minusDays(30);
-		return DateUtil.dateTimeFormatter(ldt,QUERYDATEFORMAT);
+		return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
 	}
 
 	public void setStartDate(JiraProcessorConfig jiraProcessorConfig) {

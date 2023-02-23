@@ -20,8 +20,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -36,7 +37,13 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService) {
+  isProjectAdmin = false;
+  isSuperAdmin = false;
+  generateTokenLoader = false;
+  displayGeneratedToken= false;
+  generatedToken='';
+  tokenCopied =false;
+  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
 
   }
 
@@ -45,6 +52,9 @@ export class ToolMenuComponent implements OnInit {
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
+
+    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
 
     this.selectedProject = this.sharedService.getSelectedProject();
     if (!this.selectedProject) {
@@ -246,6 +256,44 @@ export class ToolMenuComponent implements OnInit {
     }
     const configuredProject = this.selectedTools.filter((tool) => tool.toolName.toLowerCase() == toolName.toLowerCase());
     return (configuredProject && configuredProject.length > 0 ? true : false);
+  }
+
+  generateTokenConfirmation(){
+    this.confirmationService.confirm({
+			message:`If you create a token, all previously generated tokens will expire, do you want to continue?`,
+			header: `Generate Token?`,
+			icon: 'pi pi-info-circle',
+			accept: () => {
+				this.generateToken();
+			},
+			reject: null
+		});
+  }
+
+  generateToken(){
+    this.tokenCopied = false;
+    this.generateTokenLoader =true;
+    const projectDetails = this.sharedService.getSelectedProject();
+    const postData = {
+      basicProjectConfigId: projectDetails['id'],
+      projectName: projectDetails['Project'],
+      userName: localStorage.getItem('user_name')
+    };
+
+    this.http.generateToken(postData).subscribe(response =>{
+      this.generateTokenLoader =false;
+      this.displayGeneratedToken =true;
+      if(response['success'] && response['data']){
+        this.generatedToken = response['data'].apiToken;
+      }else{
+        this.messenger.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
+      }
+    });
+  }
+
+  copyToken(){
+    this.tokenCopied = true;
+    navigator.clipboard.writeText(this.generatedToken);
   }
   // Preserve original property order
   originalOrder = (a: KeyValue<number,string>, b: KeyValue<number,string>): number => 0;

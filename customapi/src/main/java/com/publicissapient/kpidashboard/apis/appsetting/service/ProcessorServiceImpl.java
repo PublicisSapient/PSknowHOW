@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -80,7 +81,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	}
 
 	@Override
-	public ServiceResponse runProcessor(String processorName, List<String> projectBasicConfigIds) {
+	public ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
@@ -94,8 +95,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.add("Authorization", token);
 
-				HttpEntity<List<String>> requestEntity = new HttpEntity<>(projectBasicConfigIds, headers);
-
+				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {

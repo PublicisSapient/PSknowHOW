@@ -212,33 +212,37 @@
       shell: ( crontab -u root -l; echo "0 * * * 2 /var/knh/cleanup.sh" ) | crontab -u root -
       ignore_errors: yes
     
-    - name: copy certs_import.sh file for sape cloud
-      copy:
-        src: ../playbooks/certs_import.sh
-        dest: /var/knh/certs_import.sh
-        mode: 0755
+    - name: copy cert file for sape cloud
+      copy: src={{ item.src }} dest={{ item.dest }} mode=0755
+      with_items:
+        - {src: '../playbooks/ldap_certs_import_sapecloud.sh', dest: '/var/knh/ldap_certs_import_sapecloud.sh'}
+        - {src: '../playbooks/ssl_cert_import_sapecloud.sh', dest: '/var/knh/ssl_cert_import_sapecloud.sh'}
       ignore_errors: yes
       when: 
         - selected_server is match("10.")
-      
-    - name: Execute certs_import  script for sape cloud
-      shell: /var/knh/certs_import.sh {{edcurl}} {{ldapurl}}
+    
+    - name: Executing SSL cert import script for sape cloud
+      shell: /var/knh/ssl_cert_import_sapecloud.sh {{edcurl}}
       ignore_errors: yes
       when: 
         - selected_server is match("10.")
 
-    - name: copy certs_edc_2.sh file for EDC
+    - name: Executing LDAP cert import script for sape cloud
+      shell: /var/knh/ldap_certs_import_sapecloud.sh {{ldapurl}}
+      when: 
+        - selected_server is match("10.")
+
+    - name: copy cert_import_edc.sh file for EDC
       copy:
-        src: ../playbooks/cert_edc_2.sh
-        dest: /var/knh/cert_edc_2.sh
+        src: ../playbooks/cert_import_edc.sh
+        dest: /var/knh/cert_import_edc.sh
         mode: 0755
       when:
         - selected_server is match("81.")
 
-    - name: Execute certs_edc_2 script EDC
-      shell: yes yes | ./cert_edc_2.sh {{ldapurl2}}
+    - name: Executing LDAP certificate script on EDC
+      shell: yes yes | ./cert_import_edc.sh {{ldapurl2}}
       args:
         chdir: /var/knh/
       when:
         - selected_server is match("81.")
-      ignore_errors: yes

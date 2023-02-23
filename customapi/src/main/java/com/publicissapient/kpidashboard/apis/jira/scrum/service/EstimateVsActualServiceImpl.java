@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,6 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalColoumn;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -64,8 +64,6 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ORIGINAL_ESTIMATES = "Original Estimates";
 	private static final String LOGGED_WORK = "Logged Work";
 	private static final String OVERALL = "Overall";
@@ -167,14 +165,9 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<IterationKpiModalValue> modalValues = new ArrayList<>();
 				int origEstData = 0;
 				int logWorkData = 0;
-				for (JiraIssue jiraIssue : issues) {
-					IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-							jiraIssue.getNumber(), jiraIssue.getUrl());
-					IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(iterationKpiModalColoumn,
-							jiraIssue.getName(), jiraIssue.getStatus(), jiraIssue.getTypeName());
-					modalValues.add(iterationKpiModalValue);
-					overAllmodalValues.add(iterationKpiModalValue);
 
+				for (JiraIssue jiraIssue : issues) {
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null);
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
 						overAllOrigEst.set(0, overAllOrigEst.get(0) + jiraIssue.getOriginalEstimateMinutes());
@@ -209,14 +202,12 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			// Modal Heads Options
-			List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC, CommonConstant.MODAL_HEAD_ISSUE_STATUS,
-					CommonConstant.MODAL_HEAD_ISSUE_TYPE);
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(modalHeads);
+			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_VS_ACTUAL.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
+
 }

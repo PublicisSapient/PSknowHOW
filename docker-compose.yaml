@@ -8,8 +8,8 @@ services:
       - 27017:27017
     restart: on-failure
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/db_data:/data/db
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/mongodb:/data/logs
+      - mongodbvol:/data/db
+      - mongodbvol:/data/logs
     environment:
       - MONGODB_ADMIN_USER=admin
       - MONGODB_ADMIN_PASS=reset@123
@@ -32,15 +32,15 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/customapi:/app/logs
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/offline_data:/app/offline_data/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/certs:/app/certs/
+      - customapivol:/app/logs
+      - customapivol:/app/properties/
+      - customapivol:/app/offline_data/
+      - customapivol:/app/certs/
     environment:
       - CONFIG_LOCATION=file:/app/properties/customapi.properties
       - forgotPassword.uiHost=<Your-Public-IP>or<Your-DNS>
       - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
-      - versionnumber=<Your version here>
+      - versionnumber=6.4.0
       - dbname=kpidashboard
       - dbusername=devadmin
       - dbpassword=admin@123
@@ -63,8 +63,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/ui:/var/log/nginx
-      - <Location-of-knowhow>/PSKnowhow/app/apps/certs/:/etc/ssl/certs/
+      - uivol:/var/log/nginx
+      #- uivol:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
     links:
       - CustomAPI:customapi
     environment:
@@ -84,9 +84,9 @@ services:
     mem_limit: 4096m
     mem_reservation: 1024m
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/jira_processor:/app/logs
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/offline_data:/app/offline_data
+      - jira_processorvol:/app/logs
+      - jira_processorvol:/app/properties/
+      - jira_processorvol:/app/offline_data
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
     links:
@@ -104,10 +104,10 @@ services:
     mem_limit: 8192m
     mem_reservation: 2048m
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/nonjira_processor:/app/logs
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/offline_data:/app/offline_data
-      - <Location-of-knowhow>/PSKnowhow/app/apps/certs:/app/certs/
+      - nonjira_processorvol:/app/logs
+      - nonjira_processorvol:/app/properties/
+      - nonjira_processorvol:/app/offline_data
+      - nonjira_processorvol:/app/certs/
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - producer.instanceName=<Your-IP>
@@ -126,9 +126,9 @@ services:
     mem_limit: 1024m
     mem_reservation: 512m
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/azure_processor:/app/logs
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/offline_data:/app/offline_data
+      - azure_processorvol:/app/logs
+      - azure_processorvol:/app/properties/
+      - azure_processorvol:/app/offline_data
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
     links:
@@ -146,10 +146,10 @@ services:
     mem_limit: 2048m
     mem_reservation: 1024m
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/logs/nonazureboards_processor:/app/logs
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
-      - <Location-of-knowhow>/PSKnowhow/app/apps/offline_data:/app/offline_data
-      - <Location-of-knowhow>/PSKnowhow/app/apps/certs:/app/certs/
+      - nonazureboards_processorvol:/app/logs
+      - nonazureboards_processorvol:/app/properties/
+      - nonazureboards_processorvol:/app/offline_data
+      - nonazureboards_processorvol:/app/certs/
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
     links:
@@ -165,7 +165,7 @@ services:
     tty: true
     container_name: notification-consumer
     volumes:
-      - <Location-of-knowhow>/PSKnowhow/app/apps/properties/:/app/properties/
+      - notification-consumervol:/app/properties/
     mem_limit: 2048m
     mem_reservation: 1024m
     ports:
@@ -202,6 +202,15 @@ services:
       - "2181:2181"
     networks:
       - Network_apps
+volumes:
+  notification-consumervol:
+  azure_processorvol:
+  nonazureboards_processorvol:
+  nonjira_processorvol:
+  jira_processorvol:
+  uivol:
+  customapivol:
+  mongodbvol:
 
 networks:
   Network_apps:

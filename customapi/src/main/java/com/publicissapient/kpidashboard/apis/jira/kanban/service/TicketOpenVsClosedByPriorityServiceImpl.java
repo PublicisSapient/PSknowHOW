@@ -354,7 +354,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		Map<String, Integer> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new HashMap<>();
 		howerMap.put(OPENED_TICKET, value.intValue());
 		howerMap.put(CLOSED_TICKET, lineValue.intValue());
 		dataCount.setHoverValue(howerMap);
@@ -368,11 +368,10 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
 			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName,
 			List<KPIExcelData> excelData) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			if (CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
-				KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
-						dateWiseIssueClosedStatusList, excelData, KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId());
-			}
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
+			KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
+					dateWiseIssueClosedStatusList, excelData, KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId());
 
 		}
 

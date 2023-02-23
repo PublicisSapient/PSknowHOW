@@ -278,6 +278,16 @@ db.getCollection('action_policy_rule').insert([
             "createdDate": new Date(),
             "lastModifiedDate": new Date(),
             "isDeleted": false
+        },
+        {
+            "name": "Project Assignee",
+            "roleAllowed": "",
+            "description": "get, save and update project Assignee",
+            "roleActionCheck": "action == 'PROJECT_ASSIGNEE'",
+            "condition": "subject.authorities.contains('ROLE_SUPERADMIN')",
+            "createdDate": new Date(),
+            "lastModifiedDate": new Date(),
+            "isDeleted": false
         }
 
     ]);

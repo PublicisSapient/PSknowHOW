@@ -169,6 +169,7 @@ public class ZephyrDBServiceImpl implements ZephyrDBService {
 			testCaseDetails.setCreatedDate(getDateFormatter(testCase.getCreatedOn(), isZephyrCloud));
 		}
 		testCaseDetails.setDefectRaisedBy(testCase.getOwner());
+		testCaseDetails.setName(testCase.getName());
 	}
 
 	/**

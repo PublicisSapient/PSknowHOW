@@ -258,15 +258,6 @@ public enum KPICode {
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
 
 	/**
-	 * Test Case without Story link
-	 */
-	TEST_WITHOUT_STORY("kpi79", KPISource.ZEPHYR.name()),
-	
-	/**
-	 * Defects Without Story link
-	 */
-	DEFECTS_WITHOUT_STORY_LINK("kpi80", KPISource.JIRA.name()),
-	/**
 	 * First time pass rate
 	 */
 	FIRST_TIME_PASS_RATE("kpi82", KPISource.JIRA.name()),
@@ -299,6 +290,8 @@ public enum KPICode {
 	 * Work Remaining
 	 */
 	WORK_REMAINING("kpi119", KPISource.JIRA.name()),
+
+	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
 	
 	/**
 	 * Scope Change
@@ -348,7 +341,17 @@ public enum KPICode {
 	/**
 	 * Work Completed
 	 */
-	WORK_COMPLETED("kpi128", KPISource.JIRA.name());
+	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
+
+	/**
+	 * Issues Without Story Link
+	 */
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+
+	/**
+	 * Wastage
+	 */
+	WASTAGE("kpi131", KPISource.JIRA.name());
 
 	// @formatter:on
 

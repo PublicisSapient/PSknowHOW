@@ -42,7 +42,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,12 +87,10 @@ public class ChangeFailureRateServiceImplTest {
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 
-	List<Tool> toolList;
+
 
 	@Before
 	public void setup() {
-
-		setToolMap();
 
 		setTreadValuesDataCount();
 
@@ -106,7 +103,7 @@ public class ChangeFailureRateServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance();
+		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
 
 		projectConfigList.forEach(projectConfig -> {
@@ -138,51 +135,13 @@ public class ChangeFailureRateServiceImplTest {
 		return dataCount;
 	}
 
-	private void setToolMap() {
-		toolList = new ArrayList<>();
-
-		ProcessorItem collectorItemFirst = new ProcessorItem();
-		collectorItemFirst.setId(new ObjectId("633552f909c7635933ad192c"));
-		collectorItemFirst.setDesc("UI_BUILD");
-
-		ProcessorItem collectorItemSecond = new ProcessorItem();
-		collectorItemSecond.setId(new ObjectId("633552f809c7635933ad1924"));
-		collectorItemSecond.setDesc("API_BUILD");
-
-		List<ProcessorItem> collectorItemFirstList = new ArrayList<>();
-		collectorItemFirstList.add(collectorItemFirst);
-
-		List<ProcessorItem> collectorItemSecondList = new ArrayList<>();
-		collectorItemSecondList.add(collectorItemSecond);
-
-		tool1 = createTool("UI_BUILD", "url1", collectorItemFirstList);
-		tool2 = createTool("API_BUILD", "url2", collectorItemSecondList);
-
-		toolList.add(tool1);
-		toolList.add(tool2);
-
-		toolGroup.put(Constant.TOOL_JENKINS, toolList);
-
-		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
-	}
-
-	private Tool createTool(String toolType, String url, List<ProcessorItem> collectorItemList) {
-		Tool tool = new Tool();
-		tool.setTool(toolType);
-		tool.setUrl(url);
-		tool.setProcessorItemList(collectorItemList);
-		return tool;
-	}
-
 	@Test
 	public void testGetChangeFailureRate() throws Exception {
-		setToolMap();
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 
 		when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
 
@@ -192,7 +151,6 @@ public class ChangeFailureRateServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 
 		try {
 

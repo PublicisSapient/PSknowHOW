@@ -1950,3 +1950,7 @@ p-dialog .p-button-cancel.p-button-secondary {
   display: none;
   pointer-events: none;
 }
+
+.p-h-fit-content{
+  height: fit-content;
+}

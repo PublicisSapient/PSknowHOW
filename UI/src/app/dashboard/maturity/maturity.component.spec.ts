@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { MaturityComponent } from './maturity.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
@@ -106,24 +106,85 @@ describe('MaturityComponent', () => {
 
 
 
-  it('should call kpi grouping methos on receiveing data',()=>{
+  it('should call kpi grouping methods on receiveing data for Scrum',()=>{
     const event ={
       masterData :[],
-      filterData:[],
+      filterData:[
+        {
+        "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
+        "nodeName": "3.0",
+        "path": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu",
+            "40208_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu"
+        ],
+        "labelName": "sqd",
+        "parentId": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187",
+            "40208_Test Map Query_63d107f21589e175b8fa6187"
+        ],
+        "level": 7
+    }],
       filterApplyData :[],
     };
     const masterData = {
       kpiList :[
         {
           calculateMaturity:true,
-          kpiId:'kpi12'
+          kpiId:'kpi12',
+          kanban:false
         }
       ]
     };
     const spy = spyOn(service,'getSelectedTab').and.returnValue('Maturity');
     const spyongetMasterData = spyOn(service,'getMasterData').and.returnValue(masterData);
+    component.selectedtype ='Scrum';
     // let spyDrawAreaChart =spyOn(component,'drawAreaChart');
     const groupingMethods =['groupJenkinsKpi','groupZypherKpi','groupBitBucketKpi','groupSonarKpi','groupJiraKpi'];
+    const spyGroupingMthods =[];
+    for(let i=0;i<groupingMethods.length;i++){
+     spyGroupingMthods.push(spyOn(component,groupingMethods[i] as any));
+    }
+
+    component.receiveSharedData(event);
+    // expect(spyDrawAreaChart).toHaveBeenCalled();
+    for(let i=0;i<groupingMethods.length;i++){
+     expect(spyGroupingMthods[i]).toHaveBeenCalled();
+     }
+  });
+
+  it('should call kpi grouping methods on receiveing data for Kanban',()=>{
+    const event ={
+      masterData :[],
+      filterData:[        {
+        "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
+        "nodeName": "3.0",
+        "path": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu",
+            "40208_Test Map Query_63d107f21589e175b8fa6187###Test Map Query_63d107f21589e175b8fa6187###Q4_port###Q3_acc###Q2_ver###Q1_bu"
+        ],
+        "labelName": "sqd",
+        "parentId": [
+            "42081_Test Map Query_63d107f21589e175b8fa6187",
+            "40208_Test Map Query_63d107f21589e175b8fa6187"
+        ],
+        "level": 7
+    }],
+      filterApplyData :[],
+    };
+    const masterData = {
+      kpiList :[
+        {
+          calculateMaturity:true,
+          kpiId:'kpi12',
+          kanban:true
+        }
+      ]
+    };
+    const spy = spyOn(service,'getSelectedTab').and.returnValue('Maturity');
+    const spyongetMasterData = spyOn(service,'getMasterData').and.returnValue(masterData);
+    component.selectedtype ='Kanban';
+    // let spyDrawAreaChart =spyOn(component,'drawAreaChart');
+    const groupingMethods =['groupJenkinsKanbanKpi','groupZypherKanbanKpi','groupBitBucketKanbanKpi','groupSonarKanbanKpi','groupJiraKanbanKpi'];
     const spyGroupingMthods =[];
     for(let i=0;i<groupingMethods.length;i++){
      spyGroupingMthods.push(spyOn(component,groupingMethods[i] as any));
@@ -162,6 +223,7 @@ describe('MaturityComponent', () => {
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postSonarSpy=spyOn(component,'postSonarKpi');
     component.groupSonarKpi(['kpi17']);
+    component.groupSonarKanbanKpi(['kpi17']);
     expect(postSonarSpy).toHaveBeenCalled();
   });
 
@@ -175,6 +237,7 @@ describe('MaturityComponent', () => {
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postJenkinsSpy=spyOn(component,'postJenkinsKpi');
     component.groupJenkinsKpi(['kpi17']);
+    component.groupJenkinsKanbanKpi(['kpi17']);
     expect(postJenkinsSpy).toHaveBeenCalled();
   });
 
@@ -188,6 +251,7 @@ describe('MaturityComponent', () => {
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postZypherSpy=spyOn(component,'postZypherKpi');
     component.groupZypherKpi(['kpi17']);
+    component.groupZypherKanbanKpi(['kpi17']);
     expect(postZypherSpy).toHaveBeenCalled();
   });
 
@@ -201,6 +265,7 @@ describe('MaturityComponent', () => {
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postBitBucketSpy=spyOn(component,'postBitBucketKpi');
     component.groupBitBucketKpi(['kpi17']);
+    component.groupBitBucketKanbanKpi(['kpi17']);
     expect(postBitBucketSpy).toHaveBeenCalled();
   });
 
@@ -225,7 +290,30 @@ describe('MaturityComponent', () => {
     expect(postJiraSpy).toHaveBeenCalled();
   });
 
-  it('should call postSonar',fakeAsync(()=>{
+  it('should make post call when kpi available for Jira for Kanban',()=>{
+    const kpiListJira =[{
+      id: '6332dd4b82451128f9939a29',
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage'
+  }];
+  component.masterData ={
+    kpiList :[{
+      kpiId: 'kpi17',
+      kanban:true,
+      kpiSource:'Jira',
+      groupId:1
+    }]
+  };
+    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListJira});
+    const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
+    const postJiraSpy=spyOn(component,'postJiraKpi');
+    component.groupJiraKanbanKpi(['kpi17']);
+    expect(postJiraSpy).toHaveBeenCalled();
+  });
+
+
+
+  it('should make post call for each Kpi categories',fakeAsync(()=>{
     const sonarKpiData =[
       {
           kpiId: 'kpi17',
@@ -661,7 +749,10 @@ describe('MaturityComponent', () => {
   component.zypherKpiRequest='';
   component.sonarKpiRequest='';
   component.bitBucketKpiRequest='';
+  component.selectedtype = 'Scrum';
+  component.noOfJiraGroups =1;
   const spydrawAreaChart =spyOn(component,'drawAreaChart');
+  const spyhandleTabChange = spyOn(component,'handleTabChange');
   const sources =['sonar','jenkins','zypher','jira','bitbucket'];
   const postMethods =['postSonarKpi','postJenkinsKpi','postZypherKpi','postJiraKpi','postBitBucketKpi'];
   const fakeResponses = [fakeSonarResponse,fakeJenkinsResponse,fakeZypherResponse,fakeJiraGroupId1,fakeBitbucketResponse];
@@ -677,6 +768,7 @@ describe('MaturityComponent', () => {
   expect(Object.keys(component.zypherKpiData).length).toEqual(zypherKpiData.length);
   expect(Object.keys(component.jiraKpiData).length).toEqual(jiraKpiData.length);
   expect(Object.keys(component.bitBucketKpiData).length).toEqual(bitBucketKpiData.length);
+  expect(spyhandleTabChange).toHaveBeenCalled();
   }));
 
   it('should receive data on passDataToDashboard',()=>{
@@ -692,4 +784,397 @@ describe('MaturityComponent', () => {
     fixture.detectChanges();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should handle Tab Change',()=>{
+    component.selectedtype ='Scrum';
+    const configData ={scrum:[ {
+      boardId: 2,
+      boardName: 'Category One',
+      kpis:[
+        {
+          kpiId: 'kpi40',
+          kpiName: 'Story Count',
+          isEnabled: true,
+          order: 1,
+          kpiDetail: {
+            calculateMaturity :true
+          },
+          shown: true
+      }
+      ]
+  }]};
+  component.jiraKpiData={kpi40:{kpiId:'kpi40'}};
+  component.jenkinsKpiData={};
+  component.sonarKpiData={};
+  component.zypherKpiData={};
+  component.bitBucketKpiData={};
+  const spyGetDashboardObject =spyOn(service, 'getDashConfigData').and.returnValue(configData);
+  const spyDrawAreaChart = spyOn(component,'drawAreaChart');
+  component.handleTabChange(0);
+  expect(component.maturityValue.hasOwnProperty('kpi40')).toBeTruthy();
+  expect(spyDrawAreaChart).toHaveBeenCalled();
+  });
+
+  it('should draw chart',()=>{
+    component.noKpi =false;
+    component.selectedTab = 'Overall';
+    component.maturityValue={kpi3:{
+      "kpiId": "kpi3",
+      "kpiName": "Lead Time",
+      "unit": "Days",
+      "chartType": "",
+      "kpiInfo": {
+          "definition": "LEAD TIME is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client.",
+          "details": [
+              {
+                  "type": "paragraph",
+                  "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+              }
+          ],
+          "maturityLevels": [
+              {
+                  "level": "M5",
+                  "bgColor": "#6cab61",
+                  "range": "< 2 Days"
+              },
+              {
+                  "level": "M4",
+                  "bgColor": "#AEDB76",
+                  "range": "2-5 Days"
+              },
+              {
+                  "level": "M3",
+                  "bgColor": "#eff173",
+                  "range": "5-15 Days"
+              },
+              {
+                  "level": "M2",
+                  "bgColor": "#ffc35b",
+                  "range": "15-30 Days"
+              },
+              {
+                  "level": "M1",
+                  "bgColor": "#F06667",
+                  "range": "> 30 Days"
+              },
+              {
+                  "level": "DOD to Live"
+              },
+              {
+                  "level": "M5",
+                  "bgColor": "#6cab61",
+                  "range": "< 3 Days"
+              },
+              {
+                  "level": "M4",
+                  "bgColor": "#AEDB76",
+                  "range": "3-7 Days"
+              },
+              {
+                  "level": "M3",
+                  "bgColor": "#eff173",
+                  "range": "7-10 Days"
+              },
+              {
+                  "level": "M2",
+                  "bgColor": "#ffc35b",
+                  "range": "10-20 Days"
+              },
+              {
+                  "level": "M1",
+                  "bgColor": "#F06667",
+                  "range": "> 20 Days"
+              },
+              {
+                  "level": "DOR to DOD"
+              },
+              {
+                  "level": "M5",
+                  "bgColor": "#6cab61",
+                  "range": "< 5 Days"
+              },
+              {
+                  "level": "M4",
+                  "bgColor": "#AEDB76",
+                  "range": "5-10 Days"
+              },
+              {
+                  "level": "M3",
+                  "bgColor": "#eff173",
+                  "range": "10-20 Days"
+              },
+              {
+                  "level": "M2",
+                  "bgColor": "#ffc35b",
+                  "range": "20-30 Days"
+              },
+              {
+                  "level": "M1",
+                  "bgColor": "#F06667",
+                  "range": "> 30 Days"
+              },
+              {
+                  "level": "Intake to DOR"
+              },
+              {
+                  "level": "M5",
+                  "bgColor": "#6cab61",
+                  "range": "< 10 Days"
+              },
+              {
+                  "level": "M4",
+                  "bgColor": "#AEDB76",
+                  "range": "10-30 Days"
+              },
+              {
+                  "level": "M3",
+                  "bgColor": "#eff173",
+                  "range": "30-45 Days"
+              },
+              {
+                  "level": "M2",
+                  "bgColor": "#ffc35b",
+                  "range": "45-60 Days"
+              },
+              {
+                  "level": "M1",
+                  "bgColor": "#F06667",
+                  "range": "> 60 Days"
+              },
+              {
+                  "level": "Lead Time"
+              }
+          ]
+      },
+      "id": "63a9655046ebb3eca68e7f3b",
+      "isDeleted": "False",
+      "kpiInAggregatedFeed": "True",
+      "kpiOnDashboard": [
+          "Aggregated"
+      ],
+      "kpiBaseLine": "0",
+      "kpiUnit": "Days",
+      "kanban": false,
+      "kpiSource": "Jira",
+      "trendValueList": [
+          {
+              "filter": "Lead Time",
+              "value": [
+                  {
+                      "data": "ABC",
+                      "value": [],
+                      "maturity": "5",
+                      "maturityValue": 0
+                  }
+              ]
+          },
+          {
+              "filter": "Intake - DoR",
+              "value": [
+                  {
+                      "data": "ABC",
+                      "value": [],
+                      "maturity": "5",
+                      "maturityValue": 0
+                  }
+              ]
+          },
+          {
+              "filter": "DoR - DoD",
+              "value": [
+                  {
+                      "data": "ABC",
+                      "value": [],
+                      "maturity": "5",
+                      "maturityValue": 0
+                  }
+              ]
+          },
+          {
+              "filter": "DoD - Live",
+              "value": [
+                  {
+                      "data": "ABC",
+                      "value": [],
+                      "maturity": "5",
+                      "maturityValue": 0
+                  }
+              ]
+          }
+      ],
+      "maturityRange": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-",
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-",
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-",
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+      ],
+      "groupId": 3,
+      "group": 1
+  }};
+    component.tabs = [
+      {
+      boardId: 1,
+      boardName: "My KnowHow",
+      kpis:[
+        {
+          "kpiId": "kpi3",
+          "kpiName": "Lead Time",
+          "isEnabled": true,
+          "order": 26,
+          "kpiDetail": {
+              "id": "63a9655046ebb3eca68e7f3b",
+              "kpiId": "kpi3",
+              "kpiName": "Lead Time",
+              "isDeleted": "False",
+              "defaultOrder": 26,
+              "kpiInAggregatedFeed": "True",
+              "kpiOnDashboard": [
+                  "Aggregated"
+              ],
+              "kpiBaseLine": "0",
+              "kpiUnit": "Days",
+              "chartType": "table",
+              "showTrend": false,
+              "isPositiveTrend": false,
+              "calculateMaturity": true,
+              "hideOverallFilter": false,
+              "kpiSource": "Jira",
+              "kanban": false,
+              "groupId": 3,
+              "kpiInfo": {
+                  "definition": "LEAD TIME is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client.",
+                  "details": [
+                      {
+                          "type": "paragraph",
+                          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+                      },
+                      {
+                          "type": "paragraph",
+                          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+                      },
+                      {
+                          "type": "paragraph",
+                          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+                      },
+                      {
+                          "type": "paragraph",
+                          "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+                      }
+                  ],
+              },
+              "kpiFilter": "radioButton",
+              "aggregationCriteria": "average",
+              "maturityRange": [
+                  "-60",
+                  "60-45",
+                  "45-30",
+                  "30-10",
+                  "10-"
+              ]
+          },
+          "shown": true
+      }
+      ]
+    },
+  {   boardId: 2,
+    boardName: 'Category One',
+  kpis:[{
+    "kpiId": 'kpi3',
+    "kpiName": 'Lead Time',
+    "isEnabled": true,
+    "order": 10,
+    "kpiDetail": {
+        "id": "63a9655046ebb3eca68e7f3b",
+        "kpiId": "kpi3",
+        "kpiName": "Lead Time",
+        "isDeleted": "False",
+        "defaultOrder": 26,
+        "kpiInAggregatedFeed": "True",
+        "kpiOnDashboard": [
+            "Aggregated"
+        ],
+        "kpiBaseLine": "0",
+        "kpiUnit": "Days",
+        "chartType": "table",
+        "showTrend": false,
+        "isPositiveTrend": false,
+        "calculateMaturity": true,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "kanban": false,
+        "groupId": 3,
+        "kpiInfo": {
+            "definition": "LEAD TIME is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client.",
+            "formula": [
+                {
+                    "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
+                }
+            ],
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+                }
+            ]
+        },
+        "kpiFilter": "radioButton",
+        "aggregationCriteria": "average",
+        "maturityRange": [
+            "-60",
+            "60-45",
+            "45-30",
+            "30-10",
+            "10-"
+        ],
+        "trendCalculative": false,
+        "additionalFilterSupport": false,
+        "xaxisLabel": "",
+        "yaxisLabel": ""
+    },
+    "shown": true
+}]}];
+  component.drawAreaChart(0);
+  expect(component.loader).toBeFalse();
+
+  })
 });

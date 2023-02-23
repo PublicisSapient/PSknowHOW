@@ -140,7 +140,6 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
         List<String> basicProjectConfigIds = new ArrayList<>();
         Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
         Map<String, Map<String, Object>> uniqueProjectMapForTestCase = new HashMap<>();
-        Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
         Map<String, String> sprintProjectIdMap = new HashMap<>();
         Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
                 .cacheProjectToolConfigMapData();
@@ -306,7 +305,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
                     .of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
             String validationKey = node.getSprintFilter().getName();
 
-            Map<String, Integer> howerMap = new LinkedHashMap<>();
+            Map<String, Object> howerMap = new LinkedHashMap<>();
             Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
             currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
                     sprintWiseAutoTestMap.get(currentNodeIdentifier));
@@ -383,13 +382,12 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
     /**
      * Sets Hower map
-     *
-     * @param sprintId
+     *  @param sprintId
      * @param howerMap
      */
     private void setHowerMap(Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseAutomatedMap,
                              Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseTotalMap, Pair<String, String> sprintId,
-                             Map<String, Integer> howerMap) {
+                             Map<String, Object> howerMap) {
         if (CollectionUtils.isNotEmpty(sprintWiseAutomatedMap.get(sprintId))) {
             howerMap.put(AUTOMATED, sprintWiseAutomatedMap.get(sprintId).size());
         } else {
