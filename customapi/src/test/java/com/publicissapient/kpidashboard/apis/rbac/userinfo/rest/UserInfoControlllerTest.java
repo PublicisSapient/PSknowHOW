@@ -175,7 +175,7 @@ public class UserInfoControlllerTest {
 	public void testdeleteSuperAdminUser() throws Exception {
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		ServiceResponse response = userInfoController.deleteUser("testuser");
+		ServiceResponse response = userInfoController.deleteUser("testuser").getBody();
 		assertEquals(false, response.getSuccess());
 	}
 
