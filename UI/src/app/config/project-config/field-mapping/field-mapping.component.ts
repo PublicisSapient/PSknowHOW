@@ -438,6 +438,7 @@ export class FieldMappingComponent implements OnInit {
       epicTimeCriticality: [''],
       epicJobSize: [''],
       workingHoursDayCPT: [''],
+      jiraDueDateCustomField : [''],
       // defect mapping
       jiradefecttype: [[]],
 
@@ -630,6 +631,7 @@ export class FieldMappingComponent implements OnInit {
       this.fieldstoShow=[];
       this.groupsToShow.showAllgroups =true;
     }
+    console.log("fieldshow",this.fieldstoShow)
   }
 
   closeAllAccordionTabs() {
