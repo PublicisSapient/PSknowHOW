@@ -83,9 +83,9 @@ public interface TokenAuthenticationService {
 
 	void updateExpiryDate(String username, String expiryDate);
 
-	String setUpdateAuthFlag(UserTokenData userTokenData);
+	String setUpdateAuthFlag(List<UserTokenData> userTokenData);
 
 	JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 
-	public JSONObject createAuthDetailsJson(UserInfo userInfo);
+	JSONObject createAuthDetailsJson(UserInfo userInfo);
 }
