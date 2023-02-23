@@ -55,6 +55,8 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 	 */
 	void deleteByuserName(String userName);
 
+	void deleteAllByUserName(String userName);
+
 	void  deleteByUserNameIn(List<String> usernames);
 
 	UserTokenData findByUserName(String userName);

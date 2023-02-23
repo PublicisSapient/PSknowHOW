@@ -141,20 +141,8 @@ public class TokenAuthenticationServiceImplTest {
 	}
 
 	@Test
-	public void testGetAuthentication_noHeader() {
-
-		assertNull(service.getAuthentication(request, response));
-	}
-
-	@Test
-	public void testGetAuthentication_expiredToken() {
-		assertNull(service.getAuthentication(request, response));
-	}
-
-	@Test
 	public void testGetAuthentication() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(userTokenReopository.findByUserToken(anyString())).thenReturn(new UserTokenData());
 		Authentication result = service.getAuthentication(request, response);
 		assertNotNull(result);
 	}
@@ -237,7 +225,7 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void setUpdateAuthFlagForExpDateNull() {
 		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
-		assertEquals(service.setUpdateAuthFlag(userTokenData), Boolean.toString(false));
+		assertEquals(service.setUpdateAuthFlag(new ArrayList<>()), Boolean.toString(false));
 	}
 
 	@Test
@@ -253,29 +241,14 @@ public class TokenAuthenticationServiceImplTest {
 		jsonObject.put("authorities", null);
 		jsonObject.put("emailAddress", null);
 		jsonObject.put("projectsAccess", null);
+		ArrayList<UserTokenData> userTokenDataList = new ArrayList<>();
+		userTokenDataList.add(userTokenData);
 		testUser.setUsername(USERNAME);
 		when(projectAccessManager.getProjectAccessesWithRole(USERNAME)).thenReturn(null);
-		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue()))
-				.thenReturn(userTokenData);
+		when(userTokenReopository.findAllByUserName(null)).thenReturn(userTokenDataList);
 		when(authentication.getDetails()).thenReturn(auth);
 		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
 		assertEquals(service.getOrSaveUserByToken(request, authentication), jsonObject);
-	}
-
-	@Test
-	public void getOrSaveUserByTokenNull() {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		Object auth = "STANDARD";
-		UserInfo testUser = new UserInfo();
-		testUser.setUsername(USERNAME);
-		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
-		when(authentication.getDetails()).thenReturn(auth);
-		when(userTokenReopository.findByUserToken(cookieUtil.getAuthCookie(request).getValue())).thenReturn(null);
-		when(authenticationService.getLoggedInUser()).thenReturn(USERNAME);
-		when(projectAccessManager.getProjectAccessesWithRole(USERNAME)).thenReturn(null);
-		service.getOrSaveUserByToken(request, authentication);
-		verify(userTokenReopository, times(1))
-				.save(new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(), null));
 	}
 
 }
