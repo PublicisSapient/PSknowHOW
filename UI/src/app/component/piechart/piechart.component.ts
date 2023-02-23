@@ -26,6 +26,7 @@ import {
 } from '@angular/core';
 
 import * as d3 from 'd3';
+import { AnyARecord } from 'dns';
 
 @Component({
   selector: 'app-piechart',
@@ -36,13 +37,7 @@ export class PiechartComponent implements OnChanges,OnDestroy {
   @Input() data: any; // json data
   elem;
 
-  // ngOnChanges(){
 
-  // }
-
-  // draw(status){
-  //   d3.select(this.elem).select('figure#pie').select('svg').remove();
-  // }
 
   private svg: any;
   private margin = 20;
@@ -52,6 +47,10 @@ export class PiechartComponent implements OnChanges,OnDestroy {
   private radius = Math.min(this.width, this.height) / 2 - this.margin;
   private colors;
 
+  
+  private pieChartValuesArray = [];
+
+
 
   constructor(private viewContainerRef: ViewContainerRef) { 
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -60,7 +59,6 @@ export class PiechartComponent implements OnChanges,OnDestroy {
   private createSvg(): void {
     d3.select(this.elem).select('figure#pie').select('svg').remove();
     console.log(this.elem);
-    console.log("pie data", this.data);
     this.svg = d3
       .select('figure#pie')
       .append('svg')
@@ -76,7 +74,7 @@ export class PiechartComponent implements OnChanges,OnDestroy {
   private createColors(): void {
     this.colors = d3
       .scaleOrdinal()
-      .domain(this.data[0].data.map((d) => d.value.toString()))
+      .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
       .range(['#fafa6e',
         '#c4ec74',
         '#92dc7e',
@@ -90,12 +88,23 @@ export class PiechartComponent implements OnChanges,OnDestroy {
   }
   private drawChart(): void {
     // Compute the position of each group on the pie:
+    this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
+    console.log(this.data);
+    const pieChartValues = this.data[0].value[0].value;
 
+for (const property in pieChartValues) {
+  this.pieChartValuesArray.push({
+    ['title'] : property,
+  	['value']: pieChartValues[property]
+  }
+         )
+}
+console.log(this.pieChartValuesArray)
     // Build the pie chart
     this.svg
       .selectAll('pieces')
-      .data(pie(this.data[0].data))
+      .data(pie(this.pieChartValuesArray))
       .enter()
       .append('path')
       .attr('d', d3.arc().innerRadius(0).outerRadius(this.radius))
@@ -105,13 +114,12 @@ export class PiechartComponent implements OnChanges,OnDestroy {
 
     // Add labels
     const labelLocation = d3.arc().innerRadius(100).outerRadius(this.radius);
-
     this.svg
       .selectAll('pieces')
-      .data(pie(this.data[0].data))
+      .data(pie(this.pieChartValuesArray))
       .enter()
       .append('text')
-      .text((d: any) => `${d.data.label} (${d.data.value})`)
+      .text((d: any) => `${d?.data?.title} (${d?.data.value})`)
       .attr(
         'transform',
         (d: any) => 'translate(' + labelLocation.centroid(d) + ')',
@@ -122,19 +130,22 @@ export class PiechartComponent implements OnChanges,OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
-    console.log(this.data);
+    console.log(this.pieChartValuesArray);
     this.createSvg();
     this.createColors();
     this.drawChart();
   }
 
-  ngOnDestroy() {        // this is used for removing svg already made when value is updated
+  ngOnDestroy() {   
+         // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('figure#pie').select('svg').remove();
-    this.data = [];
+   
+    this.pieChartValuesArray = [];
   }
 
   destroySVG(){
     d3.select(this.elem).select('figure#pie').select('svg').remove();
-    this.data = [];
+   
+    this.pieChartValuesArray = [];
   }
 }

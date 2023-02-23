@@ -471,9 +471,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     return aggregatedArr;
   }
 
-  getChartData(kpiId, idx) {
+  getChartData(kpiId, idx,aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
-    if (trendValueList && Object.keys(trendValueList)?.length > 0) {
+    if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
+
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')
@@ -496,7 +497,8 @@ export class IterationComponent implements OnInit, OnDestroy {
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
+      } 
+      else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
         || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0)) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
@@ -508,7 +510,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else {
+      } 
+     
+      else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
         if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
@@ -520,7 +524,27 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.kpiChartData[kpiId]?.push(obj);
         }
       }
-    }else{
+    }
+    else if(trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')){
+      
+      if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
+        const tempArr = {};
+        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        }
+        this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+
+    } else {
+        if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
+            this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+        } else {
+            this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
+        }
+    }
+
+    }
+    else{
       this.kpiChartData[kpiId] = [];
     }
 
@@ -537,6 +561,9 @@ export class IterationComponent implements OnInit, OnDestroy {
       };
       this.service.iterationCongifData.next(iterationConfigData);
     }
+console.log(kpiId,this.kpiChartData[kpiId])
+
+
   }
 
   ifKpiExist(kpiId) {
@@ -553,7 +580,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.allKpiArray.push(data[key]);
         const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
         const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+      
         if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
+        
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
           const tempObj = {};
           for (const key in filters) {
@@ -564,14 +593,40 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
           this.getDropdownArray(data[key]?.kpiId);
         }
+        else if(trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')){
+        
+
+       
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
+          this.getDropdownArray(data[key]?.kpiId);
+          const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
+          if (formType?.toLowerCase() == 'radiobutton') {
+              this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          } 
+          // else if (formType?.toLowerCase() == 'dropdown') {
+          //   console.log(this.kpiDropdowns)
+          //     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          //     console.log(this.kpiSelectedFilterObj)
+          // } 
+          else {
+              this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+          }
+          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+        }
+        else{
+        
+        }
+
         this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
+
   }
 
   getDropdownArray(kpiId) {
     const idx = this.ifKpiExist(kpiId);
     let filters = {};
     const dropdownArr = [];
+    let trendValueList = this.allKpiArray[idx]?.trendValueList;
 
     if (idx != -1) {
       filters = this.allKpiArray[idx]?.filters;
@@ -579,14 +634,50 @@ export class IterationComponent implements OnInit, OnDestroy {
         Object.keys(filters)?.forEach(x => {
           dropdownArr.push(filters[x]);
         });
+        this.kpiDropdowns[kpiId] = [...dropdownArr];
       }
+      else if(trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')){
+        const obj = {};
+
+        for (let i = 0; i < trendValueList?.length; i++) {
+
+            //for(let key in this.colorObj){
+                //let kpiFilter = trendValueList[i]?.findIndex(x => this.colorObj[key]?.nodeName == x.data);
+                
+                //if(kpiFilter != -1){
+
+                    let ifExist = dropdownArr.findIndex(x=>x == trendValueList[i]?.filter);
+                    if(ifExist == -1){
+                      dropdownArr?.push(trendValueList[i]?.filter);
+                    }
+                //}
+            //}
+        }
+        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+       
+        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+            const index = dropdownArr?.findIndex(x => x?.toLowerCase() == 'overall');
+          
+            if (index > -1) {
+              dropdownArr?.splice(index, 1);
+            }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = dropdownArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
+      
     }
-    this.kpiDropdowns[kpiId] = [...dropdownArr];
+   
+    
   }
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-    if (event && Object.keys(event)?.length !== 0) {
+console.log(event,kpi);
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+    
       for (const key in event) {
         if (event[key]?.length == 0) {
           delete event[key];
@@ -596,9 +687,11 @@ export class IterationComponent implements OnInit, OnDestroy {
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
     }
-
+console.log(this.kpiSelectedFilterObj[kpi?.kpiId])
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
+ 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
   }
 
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
