@@ -631,6 +631,8 @@ iAdjust = 1;
   }
 
   convertToHoursIfTime(val, unit) {
+    const isLessThanZero = val < 0;
+    val = Math.abs(val);
     const hours = (val / 60);
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
@@ -643,6 +645,9 @@ iAdjust = 1;
       } else {
         val = '0d';
       }
+    }
+    if(isLessThanZero){
+      val = '-'+ val;
     }
     return val;
   }
@@ -661,7 +666,7 @@ iAdjust = 1;
       const days = rhours / 8;
       const rdays = Math.floor(days);
       rhours = (days - rdays) * 8;
-      return `${(rdays > 0) ? rdays + 'd' : ''} ${(rhours > 0) ? rhours + 'h' : ''} ${(rminutes > 0) ? rminutes + 'm' : ''}`;
+      return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
   }
 
   handleArrowClick(kpi, label, tableValues) {
