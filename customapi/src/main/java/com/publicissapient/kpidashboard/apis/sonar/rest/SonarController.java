@@ -133,8 +133,9 @@ public class SonarController {
 	 * @return #{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/version", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getSonarVersionList() {
-		return sonarToolConfigService.getSonarVersionList();
+	public ResponseEntity<ServiceResponse> getSonarVersionList() {
+		ServiceResponse response = sonarToolConfigService.getSonarVersionList();
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -147,16 +148,19 @@ public class SonarController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/project/{connectionId}/{organizationKey}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getSonarProjectList(@PathVariable String connectionId, @PathVariable String organizationKey) {
-		ServiceResponse response;
+	public ResponseEntity<ServiceResponse> getSonarProjectList(
+			@PathVariable String connectionId,
+			@PathVariable String organizationKey) {
 		List<String> projectKeyList = sonarToolConfigService.getSonarProjectKeyList(connectionId, organizationKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
-			response = new ServiceResponse(false,
-					"Api version is not supported with provided connection details", null);
+			return ResponseEntity
+					.status(HttpStatus.NOT_FOUND)
+					.body(new ServiceResponse(false, "No projects found", null));
 		} else {
-			response = new ServiceResponse(true, FETCHED_SUCCESSFULLY, projectKeyList);
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, projectKeyList));
 		}
-		return response;
 	}
 
 	/**
@@ -172,9 +176,16 @@ public class SonarController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/branch/{connectionId}/{version}/{projectKey}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getSonarProjectBranchList(@PathVariable String connectionId, @PathVariable String version,
-			@PathVariable String projectKey) {
-		return sonarToolConfigService.getSonarProjectBranchList(connectionId, version, projectKey);
+	public ResponseEntity<ServiceResponse> getSonarProjectBranchList(@PathVariable String connectionId,
+			@PathVariable String version, @PathVariable String projectKey) {
+		ServiceResponse response = sonarToolConfigService.getSonarProjectBranchList(connectionId, version, projectKey);
+		HttpStatus httpStatus = HttpStatus.OK;
+		if (!response.getSuccess()) {
+			httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+		} else if (response.getData() == null) {
+			httpStatus = HttpStatus.NOT_FOUND;
+		}
+		return ResponseEntity.status(httpStatus).body(response);
 	}
 
 }
