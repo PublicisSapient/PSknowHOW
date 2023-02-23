@@ -181,10 +181,10 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		jiraIssue.setState(JiraProcessorUtil.deodeUTF8String(status));
 
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraStatusMappingCustomField())) {
-			JSONObject josnObject = (JSONObject) fields.get(fieldMapping.getJiraStatusMappingCustomField()).getValue();
-			if (null != josnObject) {
-				jiraIssue.setJiraStatus((String) josnObject.get(JiraConstants.VALUE));
-			}
+	//		JSONObject josnObject = (JSONObject) fields.get(fieldMapping.getJiraStatusMappingCustomField()).getValue();
+	//		if (null != josnObject) {
+	//			jiraIssue.setJiraStatus((String) josnObject.get(JiraConstants.VALUE));
+	//		}
 		} else {
 			jiraIssue.setJiraStatus(issue.getStatus().getName());
 		}

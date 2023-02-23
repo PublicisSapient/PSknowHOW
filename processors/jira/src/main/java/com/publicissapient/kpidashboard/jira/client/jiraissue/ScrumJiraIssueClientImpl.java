@@ -131,6 +131,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
+	@Autowired
+	private HandleJiraHistory handleJiraHistory;
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -1156,8 +1159,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
 
-			List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog( changeLogList,
-					fieldMapping);
+			List<JiraHistoryChangeLog> statusChangeLog = handleJiraHistory.getStatusChangeLog(changeLogList, fieldMapping);
 			jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLog);
 		}
 
@@ -1242,25 +1244,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return issueHistory;
 	}
 
-	private List<JiraHistoryChangeLog> getStatusChangeLog( List<ChangelogGroup> changeLogList,  FieldMapping fieldMapping) {
-
-		List<JiraHistoryChangeLog> statusHistory = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(changeLogList)) {
-			for (ChangelogGroup history : changeLogList) {
-				history.getItems().forEach(item -> {
-
-					if (item.getField().trim().equalsIgnoreCase("status")) {
-						JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
-						jiraHistoryChangeLog.setChangedFrom(item.getFromString());
-						jiraHistoryChangeLog.setChangedTo(item.getToString());
-						jiraHistoryChangeLog.setUpdatedOn(history.getCreated());
-						statusHistory.add(jiraHistoryChangeLog);
-					}
-				});
-			}
-		}
-		return statusHistory;
-	}
 
 	/**
 	 * @param history
