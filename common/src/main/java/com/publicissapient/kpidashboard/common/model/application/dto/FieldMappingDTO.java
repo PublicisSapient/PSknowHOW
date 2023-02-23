@@ -123,10 +123,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
-	private String jiraAssigneeCustomField;
-	private String jiraPriorityCustomField;
-	private String jiraFixVersionCustomField;
-	private String jiraLabelsCustomField;
 	private String jiraDueDateCustomField;
 
 

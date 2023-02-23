@@ -82,13 +82,8 @@ public class FieldMapping extends BasicModel {
 	 */
 	private String devicePlatform;
 
-	//Custom Field for jira Issue custom history
 	private String jiraStoryPointsCustomField;
 	private String jiraStatusMappingCustomField;
-	private String jiraAssigneeCustomField;
-	private String jiraPriorityCustomField;
-	private String jiraFixVersionCustomField;
-	private String jiraLabelsCustomField;
 	private String jiraDueDateCustomField;
 
 
