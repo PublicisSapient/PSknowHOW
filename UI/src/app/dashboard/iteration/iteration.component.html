@@ -142,7 +142,7 @@
                                 <p class="text-data">
                                   <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value != -99 ?
                                     convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                                  <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined" 
+                                  <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                     x?.value1}}</span>
                                   <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
@@ -162,7 +162,7 @@
                       <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                         (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                         [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                        [showExport]="false" [isShow]="true">
+                        [showExport]="true" [isShow]="true">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                             <div class="p-pl-3 p-pr-3 w-100 position-relative" [ngSwitch]="kpi?.kpiDetail?.chartType"
@@ -174,7 +174,7 @@
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                   [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                 </app-groupstackchart>
-                              
+
                                 <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                   [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel" [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
