@@ -30,8 +30,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -98,9 +96,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	CustomApiConfig customApiConfig;
 
-	@Autowired
-	UserTokenDeletionService userTokenDeletionService;
-
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
@@ -164,7 +159,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	public UserTokenData getLatestUser(List<UserTokenData> userTokenDataList) {
-		if (userTokenDataList == null || userTokenDataList.size() == 0) {
+		if (CollectionUtils.isEmpty(userTokenDataList)) {
 			return null;
 		}
 		List<UserTokenData> dataList = userTokenDataList.stream().filter(data -> data.getExpiryDate() != null)
