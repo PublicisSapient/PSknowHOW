@@ -1154,19 +1154,16 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-		}
-		if (null != jiraIssue.getOriginalEstimateMinutes()
-				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			iterationKpiModalValue.setIssueSize(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
-		}
-        iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+        if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+            iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+        }
+        if (null != jiraIssue.getOriginalEstimateMinutes()
+                && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+            iterationKpiModalValue.setIssueSize((String.valueOf(jiraIssue.getOriginalEstimateMinutes()/60)+" hrs"));
+        }
 		iterationKpiModalValue.setOriginalEstimateMinutes(
-				Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0).toString());
-        iterationKpiModalValue.setOriginalEstimateMinutes(
                 (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
                         ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
                         : "0m");

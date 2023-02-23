@@ -56,7 +56,7 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String ISSUE_COUNT_STORY_POINT = "Issue Count/Story Points";
+	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String DELAY = "Delay";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprintDetails";
@@ -225,10 +225,10 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 						IterationKpiData issueCountsStoryPoints;
 						if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 								&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
+							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT,
 									Double.valueOf(issueCount), storyPoint, null, "", CommonConstant.SP, modalValues);
 						} else {
-							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
+							issueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE,
 									Double.valueOf(issueCount), originalEstimate, null, "", CommonConstant.DAY,
 									modalValues);
 						}
@@ -243,11 +243,11 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 			IterationKpiData overAllIssueCountsStoryPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
+				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.STORY_POINT,
 						Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, "",
 						CommonConstant.SP, overAllmodalValues);
 			} else {
-				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT_STORY_POINT,
+				overAllIssueCountsStoryPoints = new IterationKpiData(ISSUE_COUNT+"/"+CommonConstant.ORIGINAL_ESTIMATE,
 						Double.valueOf(overAllIssueCount.get(0)), overAllOriginalEstimate.get(0), null, "",
 						CommonConstant.DAY, overAllmodalValues);
 			}
