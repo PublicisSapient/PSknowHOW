@@ -1,10 +1,11 @@
 const duplicateSprints = new Set();
 const uniqueSprints = new Set();
-db.sprint_details.find().forEach(sprint => {
+db.sprint_details.find().sort({_id:-1}).forEach(sprint =>{
     if(!uniqueSprints.has(sprint.sprintID)){
+        console.log("unique with id :"+sprint.sprintID);
         uniqueSprints.add(sprint.sprintID);
     }else{
-        console.log("duplicate sprint detail with id :"+sprint.sprintID);
+        console.log("duplicate with id :"+sprint.sprintID);
         duplicateSprints.add(sprint._id);
     }
 });
@@ -12,6 +13,6 @@ db.sprint_details.find().forEach(sprint => {
 console.log(duplicateSprints);
 
 console.log("deleting duplicate sprint....");
-duplicateSprints.forEach(sprint => {
+duplicateSprints.forEach(sprint=>{
     db.sprint_details.deleteOne({"_id": new ObjectId(sprint)});
 });
