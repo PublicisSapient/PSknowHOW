@@ -156,7 +156,7 @@ public final class CommonConstant {
 	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
 
 	public static final String STORY_POINT = "Story Point";
-	public static final String ACTUAL_ESTIMATION = "Actual (Original Estimation)";
+	public static final String ACTUAL_ESTIMATION = "Actual Estimation";
 	public static final String SP = "SP";
 	public static final String HOURS = "Hours";
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
