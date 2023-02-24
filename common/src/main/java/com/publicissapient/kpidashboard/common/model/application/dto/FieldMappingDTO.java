@@ -124,6 +124,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
+	private String jiraDueDateCustomField;
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;

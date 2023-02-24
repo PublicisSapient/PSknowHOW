@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
+ * Copyright 2014 CapitalOne, LLC.3
  * Further development Copyright 2022 Sapient Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: '//customapi:8080'
+  baseUrl: '//localhost:8080'
 };
 
 /*
