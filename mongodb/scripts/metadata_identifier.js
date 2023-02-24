@@ -107,6 +107,10 @@ db.getCollection('metadata_identifier').remove({});
                     {
                         "type" : "jiraBlockedStatus",
                         "value" : ["On Hold","Blocked"]
+                    },
+                    {
+                        "type" : "jiraStatusForInProgress",
+                        "value" : ["In Analysis", "In Development", "In Progress"]
                     }
         			],
         			"valuestoidentify":[

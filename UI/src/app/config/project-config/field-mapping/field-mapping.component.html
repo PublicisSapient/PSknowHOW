@@ -343,6 +343,22 @@
                                 (click)="showDialogToAddValue(false, 'jiraWaitStatus', 'workflow')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraStatusForInProgress') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify In Progress
+                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>
+                                               </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraStatusForInProgress" formControlName="jiraStatusForInProgress"
+                                placeholder="Enter Status to identify 'In Progress' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraStatusForInProgress', 'workflow')"></button>
+                        </div>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"
@@ -537,8 +553,7 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraIntakeToDorIssueType') || fieldstoShow.length === 0">
-                        <label class="field-title">Cycle Time
-                            Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                        <label class="field-title">Lead time issue type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 The issue type which is to be considered while calculating cycle time KPIs, i.e. intake to DOR and DOR and DOD ... <br>
                                 Example: Story, Change Request <hr>

@@ -650,7 +650,6 @@ describe('FieldMappingComponent', () => {
         DialogModule,
         InputNumberModule,
         RadioButtonModule,
-        BadgeModule
       ],
       providers: [
         HttpService,

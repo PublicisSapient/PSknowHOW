@@ -109,6 +109,7 @@ public final class CommonConstant {
 	public static final String WEEK = "WEEKS";
 	public static final String MONTH = "MONTHS";
 	public static final String DAYS = "DAYS";
+	public static final String DAY = "day";
 	public static final String date = "date";
 
 
@@ -152,6 +153,8 @@ public final class CommonConstant {
 	public static final String CRON = "cron";
 	public static final String JIRA_WAIT_STATUS = "jiraWaitStatus";
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
+	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
+
 	public static final String STORY_POINT = "Story Point";
 	public static final String ACTUAL_ESTIMATION = "Actual (Original Estimation)";
 	public static final String SP = "SP";

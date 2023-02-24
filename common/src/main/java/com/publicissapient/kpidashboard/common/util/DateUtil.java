@@ -26,8 +26,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -160,5 +160,17 @@ public class DateUtil {
 	public static DateTime stringToDateTime(String date, String formater) {
 		 return DateTimeFormat.forPattern(formater)
 				  .parseDateTime(date);
+	}
+
+	public static LocalDate stringToLocalDate(String time, String format){
+		LocalDate formattedDate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try{
+			formattedDate=LocalDate.parse(time, formatter);
+		}
+		catch (DateTimeParseException dateTimeParseException){
+			formattedDate=stringToLocalDate(time.split("\\+")[0]+"Z",format);
+		}
+		return formattedDate;
 	}
 }
