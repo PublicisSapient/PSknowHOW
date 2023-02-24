@@ -471,7 +471,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				if (StringUtils.isNotEmpty(dueDate)) {
 					// count the number of days excluding weekends
 					daysDiff = String
-							.valueOf(CommonUtils.ClosedStoryAndPotentialDelays(DateTime.parse(dueDate), DateTime.parse(closedDate)));
+							.valueOf(CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate), DateTime.parse(closedDate)));
 					if (Integer.valueOf(daysDiff) > 0) {
 						daysDiff = ("+" + daysDiff);
 						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
@@ -593,7 +593,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		String diffREDelays = null;
 		IterationStatus iterationStatus = new IterationStatus();
 		if (todayDate.compareTo(sprintEndData) < 0) {
-			Integer daysDiff = CommonUtils.ClosedStoryAndPotentialDelays(dueDate, currDate);
+			Integer daysDiff = CommonUtils.closedStoryAndPotentialDelays(dueDate, currDate);
 			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
 			if (remainingEstimateTime > daysDiff) {
 				diffREDelays = String.valueOf(remainingEstimateTime - daysDiff);
@@ -619,7 +619,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		DateTime currDate = DateTime.now();
 		IterationStatus iterationStatus = new IterationStatus();
 		if (storyDueDate.compareTo(sprintStartDate) >= 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
-			delayDaysAlready = CommonUtils.OpenStoryDelay(currDate, dueDate, false);
+			delayDaysAlready = CommonUtils.openStoryDelay(currDate, dueDate, false);
 			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
 			if (remainingEstimateTime > 0) {
 				delayDaysAlready = remainingEstimateTime + delayDaysAlready;
@@ -636,7 +636,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Integer delayDaysAlready = 0;
 		Integer delayList = 0;
 		Integer estimateTime = getRemainingEstimateTime(issueObject);
-		delayDaysAlready = CommonUtils.OpenStoryDelay(currDate, sprintStart, true);
+		delayDaysAlready = CommonUtils.openStoryDelay(currDate, sprintStart, true);
 		delayList = (delayList + delayDaysAlready + estimateTime) * -1;
 		return prepareStoryDetails(issueObject, String.valueOf(delayList));
 	}
@@ -659,7 +659,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Date sprintEndData = sdformat.parse(String.valueOf(endDate));
 		DateTime sprintEnd = DateTime.parse(endDate);
 		if (storyDueDate.compareTo(sprintEndData) < 0) {
-			Integer delayDaysAlready = CommonUtils.ClosedStoryAndPotentialDelays(sprintEnd, dueDate);
+			Integer delayDaysAlready = CommonUtils.closedStoryAndPotentialDelays(sprintEnd, dueDate);
 			delayList = (delayList + delayDaysAlready) * -1;
 			iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
 		}

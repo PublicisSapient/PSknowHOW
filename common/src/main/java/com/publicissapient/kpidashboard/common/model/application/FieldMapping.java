@@ -164,6 +164,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
 
+	//field for In Progress status
+	private List<String> jiraStatusForInProgress;
+
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
 

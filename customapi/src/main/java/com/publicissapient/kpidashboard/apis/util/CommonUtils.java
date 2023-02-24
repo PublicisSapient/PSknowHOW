@@ -123,7 +123,7 @@ public final class CommonUtils {
 		return mapDays;
 	}
 
-	public static Integer ClosedStoryAndPotentialDelays(DateTime beginDate, DateTime endDate) {
+	public static Integer closedStoryAndPotentialDelays(DateTime beginDate, DateTime endDate) {
 		Integer count = 0;
 		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
 		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
@@ -147,7 +147,7 @@ public final class CommonUtils {
 		return count;
 	}
 
-	public static Integer OpenStoryDelay(DateTime beginDate, DateTime endDate, boolean isSpilled) {
+	public static Integer openStoryDelay(DateTime beginDate, DateTime endDate, boolean isSpilled) {
 		Integer count = 1;
 		Integer count1 = 0;
 
@@ -433,5 +433,62 @@ public final class CommonUtils {
 		value = value.replaceAll(Constant.ROUND_CLOSE_BRACKET,Constant.BACKWARD_SLASH_CLOSE);
 		return value.replaceAll(Constant.ROUND_OPEN_BRACKET,Constant.BACKWARD_SLASH_OPEN);
 	}
-	
+
+	public static java.time.LocalDate getWorkingDayAfterAdditionofDays(java.time.LocalDate startDate,
+			int timeToAddInDays) {
+		java.time.LocalDate localDate = null;
+		int dayToAdd = 0;
+		if (startDate != null) {
+			localDate = startDate;
+			if (timeToAddInDays > 0) {
+				while (dayToAdd < timeToAddInDays) {
+					localDate = localDate.plusDays(1);
+					while (localDate.getDayOfWeek().getValue() > FIFTH_DAY_OF_WEEK) {
+						localDate = localDate.plusDays(1);
+					}
+					dayToAdd++;
+				}
+			}
+		}
+		return localDate;
+	}
+
+	public static int getWorkingDays(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+		Integer count = 0;
+		if (startDate.isAfter(endDate)) {
+			// positive case
+			while (!startDate.isEqual(endDate)) {
+				if (endDate.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
+					count = count + 1;
+				}
+				endDate = endDate.plusDays(1);
+			}
+		} else if (startDate.isBefore(endDate)) {
+			// negative case
+			while (!(startDate.isEqual(endDate))) {
+				if (endDate.getDayOfWeek().getValue() <= FIFTH_DAY_OF_WEEK) {
+					count = count + 1;
+				}
+				endDate = endDate.minusDays(1);
+			}
+		}
+		return count;
+	}
+
+	public static String convertIntoDays(Integer minutes) {
+		StringBuilder returnString = new StringBuilder();
+		int hours = minutes / 60;
+		if (hours > 0) {
+			if (hours / 8 > 0) {
+				returnString.append(hours / 8 + "d ");
+			}
+			if (hours % 8 > 0) {
+				returnString.append(hours % 8 + "h ");
+			}
+		}
+		if (minutes % 60 > 0) {
+			returnString.append(minutes % 60 + "m");
+		}
+		return returnString.toString();
+	}
 }
