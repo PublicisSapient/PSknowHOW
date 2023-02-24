@@ -124,7 +124,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
-	private String jiraDueDateCustomField;
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
@@ -191,6 +190,11 @@ public class FieldMapping extends BasicModel {
 
 	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
+
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField="dueDate";
+	private String jiraDueDateCustomField;
 
 	/**
 	 * Get jira issue type names string [ ].
