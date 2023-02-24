@@ -81,17 +81,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-<<<<<<< HEAD
 import com.publicissapient.kpidashboard.common.model.jira.*;
-=======
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
->>>>>>> 005665ff41d7157cdc0d6e2bff5230bcdf59cb10
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -1268,8 +1259,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
 
-			List<JiraHistoryChangeLog> statusChangeLog = handleJiraHistory.getStatusChangeLog(changeLogList, fieldMapping);
-			jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLog);
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory,changeLogList, fieldMapping);
 		}
 
 	}
@@ -1290,10 +1280,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
-		List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-				fieldMapping);
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory,changeLogList, fieldMapping);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-		//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
 		// estimate
