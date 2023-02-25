@@ -47,6 +47,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -645,7 +646,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				setJiraAssigneeDetails(jiraIssue, assignee);
 
-				setEstimates(jiraIssue, issue);
+				setEstimates(jiraIssue, issue,fields,fieldMapping);
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
@@ -1683,12 +1684,23 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	}
 
-	private void setEstimates(JiraIssue jiraIssue, Issue issue) {
+	private void setEstimates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+			FieldMapping fieldMapping) {
 		if (null != issue.getTimeTracking()) {
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
-			if(null != issue.getDueDate()){
-				jiraIssue.setDueDate(issue.getDueDate().toString());
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+				if (fieldMapping.getJiraDueDateField().equalsIgnoreCase("duedate") && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+				} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+						&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+					IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+					if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+						jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+					}
+				}
 			}
 		}
 	}
