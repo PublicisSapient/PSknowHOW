@@ -85,13 +85,13 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraLiveStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Live Status - Cycle Time <span class="fa fa-info-circle"
+                        <label class="field-title">Live Status - Lead Time <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                     Definition:
                                                     Provide any status from workflow on which Live is considered. <br>
                                                     Example: Live<hr>
                                                     KPI Impacted:
-                                                    Cycle Time - DOD to Live
+                                                    Lead Time - DOD to Live
                                             </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -103,13 +103,13 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDor') || fieldstoShow.length === 0">
-                        <label class="field-title">DOR Status - Cycle Time <span class="fa fa-info-circle"
+                        <label class="field-title">DOR Status - Lead Time <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                 Definition:
                                                 Definition of Readiness. Provide any status from workflow on which DOR is considered. <br>
                                                 Example: In Sprint<hr>
                                                 KPI Impacted:
-                                                Cycle Time - Intake to DOR and DOR to DOD
+                                                Lead Time - Intake to DOR and DOR to DOD
                                             </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -207,7 +207,7 @@
                                                 Definition of Doneness. Provide any status from workflow on which DOD is considered. <br>
                                                 Example: In Testing <hr>
                                                 KPI Impacted:
-                                                QA Defect Density and Cycle Time - DOR to DOD and DOD to Live
+                                                QA Defect Density and Lead Time - DOR to DOD and DOD to Live
                                               </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
