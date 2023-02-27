@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.bitbucket.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.bitbucket.model.BitbucketRepo;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -45,7 +46,7 @@ public interface BitBucketClient {
 	 *             the exception
 	 */
 	List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
-			ProcessorToolConnection bitBucketInfo) throws FetchingCommitException;
+			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 	
 	/**
 	 * @param bitbucketRepo
@@ -60,6 +61,6 @@ public interface BitBucketClient {
 	 * the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
-			ProcessorToolConnection bitBucketInfo) throws FetchingCommitException;
+			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

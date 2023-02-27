@@ -175,6 +175,7 @@ public class KanbanJiraIssueClientImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
+		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -379,6 +380,9 @@ public class KanbanJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 		ProjectToolConfig jiraConfig = new ProjectToolConfig();
 		BoardDetails board = new BoardDetails();
 		board.setBoardId("1111");

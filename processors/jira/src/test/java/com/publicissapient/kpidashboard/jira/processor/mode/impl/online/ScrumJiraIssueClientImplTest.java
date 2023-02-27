@@ -191,6 +191,7 @@ public class ScrumJiraIssueClientImplTest {
 //        projectConfig.setProjectId("63102");
 //        projectConfig.setProjectKey("TEST");
 		projectConfig.setProjectName("TestProject");
+		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -410,6 +411,9 @@ public class ScrumJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 
 		/*
 		 * BeanUtils.copyProperties(projectConfFieldMapping2, kanbanProjectlist.get(0));
