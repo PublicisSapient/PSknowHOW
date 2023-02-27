@@ -2995,7 +2995,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-      "definition": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues/ Size of Work (in SP) and in terms of Remaining Hours required to complete pending work."
+      "definition": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues/ Size of Work (in SP) and in terms of Remaining Hours required to complete pending work.",
       "details": [
         {
            "type": "paragraph",
