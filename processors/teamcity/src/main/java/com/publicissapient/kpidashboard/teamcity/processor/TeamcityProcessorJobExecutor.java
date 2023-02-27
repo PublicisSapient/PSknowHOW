@@ -75,8 +75,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private static final String EXECUTION_TIME = "executionTime";
 	private static final String EXECUTION_STATUS = "executionStatus";
 	private static final String TEAMCITY_CLIENT = "teamcityClient";
-	private LocalDate today = LocalDate.now();
-	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	@Autowired
 	private TeamcityProcessorRepository teamcityProcessorRepository;
@@ -199,7 +197,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
@@ -231,11 +228,10 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.TEAMCITY, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
 			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
-		});
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+		);
 		return processorExecutionTraceLog;
 	}
 
@@ -271,7 +267,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					count++;
 				}
 			} else {
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null && buildSummary.getStartedBy() != null) {
 					buildData.setStartedBy(buildSummary.getStartedBy());
 					buildsToSave.add(buildData);
 				}

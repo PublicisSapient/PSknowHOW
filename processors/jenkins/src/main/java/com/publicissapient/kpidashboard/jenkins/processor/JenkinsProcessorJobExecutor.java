@@ -121,8 +121,6 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	}
 
 	private static final String BUILD = "build";
-	private LocalDate today = LocalDate.now();
-	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	/**
 	 * Provides Processor.
@@ -236,7 +234,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
-		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
 
@@ -308,7 +306,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 				count++;
 			} else {
 
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null && build.getStartedBy() != null) {
 					buildData.setStartedBy(build.getStartedBy());
 					buildsToSave.add(buildData);
 				}
@@ -334,7 +332,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
-				processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun())
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
 		);
 
 		return processorExecutionTraceLog;

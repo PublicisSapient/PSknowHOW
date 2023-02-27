@@ -86,8 +86,6 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	private static final String EXECUTION_TIME = "executionTime";
 	private static final String EXECUTION_STATUS = "executionStatus";
 	private static final String BUILD = "build";
-	private LocalDate today = LocalDate.now();
-	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	@Autowired
 	private AzurePipelineProcessorRepository azurePipelineProcessorRepository;
@@ -213,7 +211,6 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					log.info("Finished : {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
@@ -327,11 +324,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-			processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
 			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
-		});
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+		);
 		return processorExecutionTraceLog;
 	}
 
@@ -365,7 +361,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				buildsToSave.add(build);
 				count++;
 			} else {
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null && build.getStartedBy() != null) {
 					buildData.setStartedBy(build.getStartedBy());
 					buildsToSave.add(buildData);
 				}
@@ -412,7 +408,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				count++;
 			}
 
-			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData.getDeployedBy() == null) {
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData.getDeployedBy() == null && job.getDeployedBy() != null) {
 				deploymentData.setDeployedBy(job.getDeployedBy());
 				newJobs.add(deploymentData);
 			}

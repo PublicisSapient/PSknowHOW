@@ -78,8 +78,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private boolean executionStatus = true;
 	private int failureCount;
 	private int newBuildCount;
-	private LocalDate today = LocalDate.now();
-	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
 	@Autowired
 	private BambooProcessorRepository bambooProcessorRepository;
@@ -336,7 +334,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		activeJobs.addAll(saveDeployments);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
-		processorExecutionTraceLog.setLastSuccessfulRun(dtf.format(today));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 		log.info("Finished with total deployed activeJobs count: {}", activeJobs.size());
 	}
@@ -397,7 +394,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				deploy.add(deployment);
 			}
 			existingdeployments.forEach(deployments -> {
-				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null && deployment.getDeployedBy() != null) {
 					deployments.setDeployedBy(deployment.getDeployedBy());
 					deploy.add(deployments);
 				}
@@ -548,10 +545,9 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
-				processorExecutionTraceLog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
-			});
+			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+			);
 
 		return processorExecutionTraceLog;
 	}
