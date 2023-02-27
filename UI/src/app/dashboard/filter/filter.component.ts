@@ -291,15 +291,11 @@ export class FilterComponent implements OnInit {
         this.selectedFilterData.kanban = this.kanban;
         this.selectedFilterData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
         const filterData = this.service.getFilterData();
-        if (!Object.keys(filterData).length || (this.previousType !== this.kanban) || this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'backlog' || this.initFlag) {
             this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData)
                 .subscribe(filterApiData => {
                     this.processFilterData(filterApiData);
                     this.initFlag = false;
                 });
-        } else {
-            this.processFilterData(filterData);
-        }
     }
 
     processFilterData(filterData) {
