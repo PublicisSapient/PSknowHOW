@@ -976,8 +976,9 @@ export class UploadComponent implements OnInit {
         if (this.selectedFile.size > maxFileSize) {
           return;
         }
-        if(this.selectedFile)
-        this.isUploadEnabled = false;
+        if (this.selectedFile) {
+            this.isUploadEnabled = false;
+        }
     }
     uploadCertificate() {
         const file = this.selectedFile;
@@ -992,7 +993,7 @@ export class UploadComponent implements OnInit {
               this.message = data['message'];
             }
           },
-          error => {},
+          error => null,
           () => this.clear(null)
         );
         this.isUploadEnabled= true;
