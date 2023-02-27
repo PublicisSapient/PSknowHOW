@@ -193,7 +193,7 @@ public class FieldMapping extends BasicModel {
 
 	//for for JiraDueDate
 	@Builder.Default
-	private String jiraDueDateField="dueDate";
+	private String jiraDueDateField="Due Date";
 	private String jiraDueDateCustomField;
 
 	/**
