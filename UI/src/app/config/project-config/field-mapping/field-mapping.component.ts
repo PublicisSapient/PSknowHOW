@@ -123,7 +123,7 @@ export class FieldMappingComponent implements OnInit {
         value: 'Story Point'
       },
       {
-        label: 'Actual Estimation',
+        label: 'Actual (Original Estimation)',
         value: 'Actual Estimation'
       }
     ];
