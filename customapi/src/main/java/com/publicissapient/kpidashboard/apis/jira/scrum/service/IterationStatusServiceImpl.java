@@ -467,7 +467,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
 				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
 				String dueDate = issueObject.getDueDate();
-				if (StringUtils.isNotEmpty(dueDate)) {
+				if (StringUtils.isNotEmpty(dueDate) && StringUtils.isNotEmpty(closedDate)) {
 					// count the number of days excluding weekends
 					daysDiff = String
 							.valueOf(CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate), DateTime.parse(closedDate)));
