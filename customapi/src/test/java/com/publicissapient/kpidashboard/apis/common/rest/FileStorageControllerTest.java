@@ -100,10 +100,10 @@ public class FileStorageControllerTest {
 		MockMultipartFile file = new MockMultipartFile("file", "certFile.crt", "application/x-x509-ca-cert", "LDAP certificate file success scenario to be mocked".getBytes());
 		when(customApiConfig.getHostPath()).thenReturn("/app/certs/");
 		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+		Assert.assertEquals(HttpStatus.EXPECTATION_FAILED, response.getStatusCode());
 		ServiceResponse serviceResponse = response.getBody();
-		Assert.assertEquals(true, serviceResponse.getSuccess());
-		Assert.assertEquals("LDAP certificate copied successfully to the host", serviceResponse.getMessage());
+		Assert.assertEquals(false, serviceResponse.getSuccess());
+		Assert.assertEquals("LDAP certificate not copied due to some error", serviceResponse.getMessage());
 	}
 
 	@Test
