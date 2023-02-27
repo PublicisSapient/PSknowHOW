@@ -12,7 +12,6 @@ export class TrendIndicatorComponent implements OnInit {
   @Input() noOfBox: number;
   @Input() cols?: Array<object> = [];
 
-  constructor() { }
 
   ngOnInit(): void {
     // if (this.kpiData && this.kpiData['kpiDetail']['chartType'] === 'stackedColumn') {
