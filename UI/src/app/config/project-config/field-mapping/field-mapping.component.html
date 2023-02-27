@@ -1156,18 +1156,42 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
-                      <div class="p-mb-3 p-d-flex p-align-center"
-                      *ngIf="fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0">
-                      <label class="field-title">Due Date <span class="fa fa-info-circle" aria-hidden="true"
-                              pTooltip='<span>
-                              Definition:
-                              This field is to track due date of issues tagged in the iteration
-                          </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
-                                placeholder="Enter Due Date" [style]="{'max-width':'initial','width':'60vw'}">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                      
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
+                        <label class="field-title">Select Due Date <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                This field is to track due date of issues tagged in the iteration
+                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false" tooltipPosition="top"></span></label>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let dueDateType of dueDateTypes">
+                                        <p-radioButton placeholder="Select" formControlName="jiraDueDateField"
+                                            value="{{dueDateType.value}}" label="{{dueDateType.value}}"
+                                            class="p-m-2">
+                                        </p-radioButton>
+                                    </ng-container>
+                                </div>
+                             </div>
+
+                            <div class="p-m-2"
+                                *ngIf="fieldMapping['jiraDueDateField'] && fieldMapping['jiraDueDateField'].value === 'Custom Field' && (fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0)">
+                                <label class="field-title">Due Date Custom Field <span
+                                        class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        This field is to track due date of issues tagged in the iteration
+                                  </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                        [escape]="false"></span></label>
+                                <div class="p-inputgroup p-mt-2">
+                                    <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
+                                        placeholder="Enter Due Date" [style]="{'max-width':'initial','width':'60vw'}">
+                                    <button type="button" pButton pRipple icon="pi pi-search"
+                                        (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                   </div>
