@@ -3288,7 +3288,7 @@ db.getCollection('kpi_master').insert(
       "calculateMaturity": false
     },
   {
-    "kpiId": "kpi131",
+    "kpiId": "kpi132",
     "kpiName": "Defect Raised",
     "maxValue": "",
     "kpiUnit": "",

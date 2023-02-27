@@ -21,16 +21,12 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -51,18 +47,13 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -75,11 +66,6 @@ public class DefectRaisedServiceImplTest {
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
-	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
 
 	@InjectMocks
 	private DefectsRaisedServiceImpl defectRaisedServiceImpl;
@@ -97,7 +83,7 @@ public class DefectRaisedServiceImplTest {
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi131");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi132");
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -147,6 +133,45 @@ public class DefectRaisedServiceImplTest {
 			KpiElement kpiElement = defectRaisedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	@Test
+	public void testGetKpiData_CalculateDefectDensity() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(defectRaisedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = defectRaisedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			DataCount testDataList = (DataCount) kpiElement.getTrendValueList();
+			List<IterationKpiValue> testDataListValue = (List<IterationKpiValue>) testDataList.getValue();
+			double actualDefectDensityValue = testDataListValue.get(0).getData().get(0).getValue();
+			String actualDefectDensityLabel = testDataListValue.get(0).getData().get(0).getLabel();
+			double actualUnLinkedDefect = testDataListValue.get(0).getData().get(1).getValue();
+			String actualUnLinkedDefectLabel = testDataListValue.get(0).getData().get(1).getLabel();
+			double actualLinkedDefect = testDataListValue.get(0).getData().get(2).getValue();
+			String actualLinkedDefectLabel = testDataListValue.get(0).getData().get(2).getLabel();
+
+			assertEquals(0.4, actualDefectDensityValue, 0.1);
+			assertEquals(DefectsRaisedServiceImpl.DEFECT_DENSITY, actualDefectDensityLabel);
+			assertEquals(2, actualLinkedDefect, 0.1);
+			assertEquals(DefectsRaisedServiceImpl.LINKED_DEFECTS, actualLinkedDefectLabel);
+			assertEquals(0, actualUnLinkedDefect, 0.1);
+			assertEquals(DefectsRaisedServiceImpl.UNLINKED_DEFECTS, actualUnLinkedDefectLabel);
 
 		} catch (ApplicationException enfe) {
 

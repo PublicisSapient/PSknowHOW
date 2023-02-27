@@ -59,9 +59,9 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	public static final String UNCHECKED = "unchecked";
 	private static final String OVERALL = "Overall";
 
-	private static final String LINKED_DEFECTS = "Linked defects";
-	private static final String UNLINKED_DEFECTS = "Unlinked defects";
-	private static final String DEFECT_DENSITY = "Defect density";
+	public static final String LINKED_DEFECTS = "Linked defects";
+	public static final String UNLINKED_DEFECTS = "Unlinked defects";
+	public static final String DEFECT_DENSITY = "Defect density";
 	private static final String SEARCH_BY_STATUS = "Filter by Status";
 	private static final String STORY_LIST = "Storylist";
 
@@ -139,6 +139,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	}
 
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
@@ -169,15 +171,15 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
-		List<String> defectTypes = Optional.ofNullable(fieldMapping)
-				.map(FieldMapping::getJiradefecttype).orElse(Collections.emptyList());
+		List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+				.orElse(Collections.emptyList());
 
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
 			List<JiraIssue> alldefects = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			List<JiraIssue> allStory = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			List<JiraIssue> tempDefects = alldefects.stream()
+			List<JiraIssue> tempLinkDefects = alldefects.stream()
 					.filter(jiraIssue -> !jiraIssue.getDefectStoryID().isEmpty()).collect(Collectors.toList());
 
 			if (CollectionUtils.isNotEmpty(alldefects)) {
@@ -186,10 +188,10 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = alldefects.stream().collect(
 						Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
 				Set<String> priorities = new HashSet<>();
 				Set<String> statuses = new HashSet<>();
-				List<JiraIssue> tempLinkedDefect = tempDefects.stream().filter(jiraIssue -> {
+				List<JiraIssue> tempLinkedDefect = tempLinkDefects.stream().filter(jiraIssue -> {
 					try {
 						return (dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(endDate))
 								|| dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(startDate)))
@@ -197,13 +199,12 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 										&& dateFormat.parse(jiraIssue.getCreatedDate())
 												.after(dateFormat.parse(startDate)));
 					} catch (ParseException e) {
-						LOGGER.error(
-								"There is some error occured in parsing  ", e);
+						LOGGER.error("There is some error occured in parsing  ", e);
 					}
 					return false;
 				}).collect(Collectors.toList());
 
-				double overAllDefectDensity = getDefectDensity(allStory, tempLinkedDefect);
+				double overAllDefectDensity = calculateDefectDensity(allStory, tempLinkedDefect);
 
 				List<Double> overAllLinkedDefects = Arrays.asList(0.0);
 				List<Double> overAllUnlinkedDefects = Arrays.asList(0.0);
@@ -227,13 +228,13 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 							for (JiraIssue jiraIssue : issues) {
 
-								checkDefectType(overAllUnlinkedmodalValues, overAlllinkedmodalValues, linkedModalValues,
-										unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue, endDate,
-										startDate);
-								populateIterationData(overAllModalValues, modalValues, jiraIssue);
+								createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, overAlllinkedmodalValues,
+										linkedModalValues, unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue,
+										endDate, startDate);
+								populateIterationData(overAllModalValues, modalValues, jiraIssue, false, null);
 
 							}
-							double defectDensity = getDefectDensity(allStory, linkedDefect);
+							double defectDensity = calculateDefectDensity(allStory, linkedDefect);
 
 							overAllLinkedDefects.set(0, overAllLinkedDefects.get(0) + linkedDefect.size());
 							overAllUnlinkedDefects.set(0, overAllUnlinkedDefects.get(0) + unlinkedDefect.size());
@@ -280,7 +281,12 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		}
 	}
 
-	private double getDefectDensity(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
+	/**
+	 * This is a Java method that calculates the defect density of a set of linked
+	 * defects relative to a set of all user stories.
+	 */
+
+	private double calculateDefectDensity(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
 
 		if (allStory == null || linkedDefect == null) {
 			return 0;
@@ -296,14 +302,18 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 					return jiraIssue.getStoryPoints();
 				}).sum();
 
-		return storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints;
+		return (Math.round(100.0 * (storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints)) / 100.0);
 	}
 
-	private void checkDefectType(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
+	/**
+	 * This is a Java method that takes in a set of parameters and checks Jira issue
+	 * based on its creation date, and adds it to either a list of linked or
+	 * unlinked defects accordingly.
+	 */
+	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
 			List<IterationKpiModalValue> overAlllinkedmodalValues, List<IterationKpiModalValue> linkedModalValues,
 			List<IterationKpiModalValue> unLinkedModalValues, List<JiraIssue> linkedDefect,
 			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, String endDate, String startDate) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
 		try {
 			if ((dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(endDate))
@@ -312,15 +322,14 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 							&& dateFormat.parse(jiraIssue.getCreatedDate()).after(dateFormat.parse(startDate)))) {
 				if (!jiraIssue.getDefectStoryID().isEmpty()) {
 					linkedDefect.add(jiraIssue);
-					populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue);
+					populateIterationData(overAlllinkedmodalValues, linkedModalValues, jiraIssue, false, null);
 				} else {
 					unlinkedDefect.add(jiraIssue);
-					populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue);
+					populateIterationData(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue, false, null);
 				}
 			}
 		} catch (ParseException e) {
-			LOGGER.error(
-					"There is some error occured in parsing  ", e);
+			LOGGER.error("There is some error occured in parsing  ", e);
 		}
 	}
 }

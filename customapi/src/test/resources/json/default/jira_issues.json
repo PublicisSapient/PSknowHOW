@@ -1527,6 +1527,91 @@
     "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },
   {
+    "_id": "6335e31c4fd2f76a821114c7",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "15598467",
+    "number": "DTS-18547",
+    "name": "Separate mongo scripts in pscode repository and add dummy script",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Closed",
+    "state": "Closed",
+    "estimate": "2.0",
+    "storyPoints": "5",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "DevOps",
+      "ScriptRunner",
+      "Core"
+    ],
+    "createdDate": "2022-08-31T10:25:07.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "rapkalya"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "rapkalya"
+    ],
+    "ownersFullName": [
+      "Raparthi Kalyan"
+    ],
+    "ownersShortName": [
+      "rapkalya"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2022-09-14T09:00:00.0000000",
+    "sprintName": "DTS| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "DTS",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [],
+    "assigneeId": "rapkalya",
+    "assigneeName": "Raparthi Kalyan",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 480,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T16:22:33.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
     "_id": "6335e3a64fd2f76a8211162c",
     "processorId": "632902802757f265fcb6c452",
     "issueId": "15261794",
@@ -1715,15 +1800,19 @@
     "typeName": "Bug",
     "status": "Closed",
     "state": "Closed",
-    "estimate": "0",
-    "storyPoints": "0",
-    "changeDate": "2022-08-24T03:31:20.0000000",
+    "estimate": "2.0",
+    "storyPoints": "2",
+    "changeDate": "2022-09-27T05:08:53.0000000",
     "isDeleted": "False",
     "priority": "P2 - Critical",
-    "labels": [],
-    "createdDate": "2022-08-23T04:45:17.0000000",
+    "labels": [
+      "JAVA",
+      "prod_defect",
+      "UI"
+    ],
+    "createdDate": "2022-09-14T05:24:45.0000000",
     "rootCauseList": [
-      "code issue"
+      "None"
     ],
     "ownersID": [
       "sumgoyal1"
@@ -1745,14 +1834,14 @@
     "sprintIsDeleted": "False",
     "sprintChangeDate": "",
     "sprintAssetState": "CLOSED",
-    "sprintEndDate": "2022-08-24T09:47:00.0000000",
-    "sprintBeginDate": "2022-08-10T09:47:00.0000000",
-    "sprintName": "KnowHOW|PI_10|ITR_4| 10th Aug",
-    "sprintID": "38294_Scrum Project_6335363749794a18e8a4479b",
+    "sprintEndDate": "2022-09-27T17:00:00.0000000",
+    "sprintBeginDate": "2022-09-07T14:08:00.0000000",
+    "sprintName": "KnowHOW|PI_10|ITR_6| 07th Sep",
+    "sprintID": "38296_Scrum Project_6335363749794a18e8a4479b",
     "sprintIdList": [
-      "38294"
+      "38296"
     ],
-    "costOfDelay": "6",
+    "costOfDelay": "2",
     "jobSize": "0",
     "wsjf": "0",
     "businessValue": "0",
@@ -1768,28 +1857,37 @@
     "projectID": "Scrum Project_6335363749794a18e8a4479b",
     "projectKey": "DTS",
     "resolution": "Fixed or Completed",
-    "affectedVersions": [],
-    "additionalFilters": [],
+    "affectedVersions": [
+      "KnowHOW v5.1.0"
+    ],
+    "additionalFilters": [
+      {
+        "filterId": "afOne",
+        "filterValues": [
+          {
+            "valueId": "JAVA_afOne_6335363749794a18e8a4479b",
+            "value": "JAVA"
+          },
+          {
+            "valueId": "UI_afOne_6335363749794a18e8a4479b",
+            "value": "UI"
+          }
+        ]
+      }
+    ],
     "assigneeId": "sumgoyal1",
     "assigneeName": "Sumit Goyal",
     "defectRaisedBy": "",
     "jiraStatus": "Closed",
-    "defectStoryID": [
-      "DTS-17949"
-    ],
-    "timeSpentInMinutes": 180,
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
-    "releaseVersions": [
-      {
-        "releaseName": "KnowHOW v5.1.0",
-        "releaseDate": "2022-09-09T05:30:00.000+05:30"
-      }
-    ],
+    "releaseVersions": [],
     "defectRaisedByQA": false,
-    "originalEstimateMinutes": 0,
+    "originalEstimateMinutes": 960,
     "remainingEstimateMinutes": 0,
-    "productionDefect": false,
-    "updateDate": "2022-08-24T03:31:20.0000000",
+    "productionDefect": true,
+    "updateDate": "2022-09-27T05:08:53.0000000",
     "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },
   {

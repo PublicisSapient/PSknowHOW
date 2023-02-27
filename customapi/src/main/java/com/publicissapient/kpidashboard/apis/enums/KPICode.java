@@ -347,7 +347,7 @@ public enum KPICode {
 	/**
 	 * Work Completed
 	 */
-	DEFECT_RAISED("kpi131", KPISource.JIRA.name()),
+	DEFECT_RAISED("kpi132", KPISource.JIRA.name()),
 
 	/**
 	 * Issues Without Story Link

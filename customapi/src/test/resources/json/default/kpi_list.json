@@ -3561,7 +3561,7 @@
     "kpiFilter": "multiSelectDropDown"
   },
   {
-    "kpiId": "kpi131",
+    "kpiId": "kpi132",
     "kpiName": "Defect Raised",
     "maxValue": "",
     "kpiUnit": "",
