@@ -159,7 +159,7 @@ public class CustomApiConfig {// NOPMD
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
 
-	@Value("${cert.hostpath}")
+	@Value("${certhostpath}")
 	private String hostPath;
 
 	private int sonarWeekCount;
