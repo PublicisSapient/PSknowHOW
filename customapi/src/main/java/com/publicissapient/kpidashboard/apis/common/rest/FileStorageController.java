@@ -109,9 +109,10 @@ public class FileStorageController {
 
 	@PostMapping("/file/uploadCertificate")
 	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
-		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error",
+				file.getOriginalFilename());
 		// Validate the file type
-		if (!file.getOriginalFilename().endsWith(".crt")) {
+		if (file.getOriginalFilename() != null && !file.getOriginalFilename().endsWith(".crt")) {
 			response.setMessage("Invalid file type. Please upload a .crt file.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
@@ -119,7 +120,8 @@ public class FileStorageController {
 		try {
 			file.transferTo(dest);
 			response.setSuccess(true);
-			response.setMessage("LDAP certificate copied successfully, please restart the customapi container service.");
+			response.setMessage(
+					"LDAP certificate copied successfully, please restart the customapi container service.");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
