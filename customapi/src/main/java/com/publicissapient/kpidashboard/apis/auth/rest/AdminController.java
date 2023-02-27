@@ -44,13 +44,9 @@ import com.publicissapient.kpidashboard.common.util.EncryptionException;
 /**
  * Rest Controller to handle admin request
  */
-@RestController
-@RequestMapping("/admin")
-@Admin
-public class AdminController {
+@RestController @RequestMapping("/admin") @Admin public class AdminController {
 
-	@Autowired
-	private UserInfoService userInfoService;
+	@Autowired private UserInfoService userInfoService;
 
 	private final ApiTokenService apiTokenService;
 
@@ -59,18 +55,18 @@ public class AdminController {
 	 *
 	 * @param apiTokenService
 	 */
-	@Autowired
-	public AdminController(ApiTokenService apiTokenService) {
+	@Autowired public AdminController(ApiTokenService apiTokenService) {
 		this.apiTokenService = apiTokenService;
 	}
 
-
-	/** 
+	/**
 	 * Creates access token.
+	 *
 	 * @param apiTokenRequest
 	 * @return api access token
 	 */
-	@RequestMapping(value = "/createToken", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/createToken", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	// NOSONAR
 	public ResponseEntity<String> createToken(@Valid @RequestBody ApiTokenRequest apiTokenRequest) {
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
@@ -82,6 +78,7 @@ public class AdminController {
 
 	/**
 	 * Returns list of tokens
+	 *
 	 * @return list of tokens
 	 */
 	@RequestMapping(path = "/apitokens", method = RequestMethod.GET) // NOSONAR

@@ -19,7 +19,11 @@
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,9 @@ import com.publicissapient.kpidashboard.apis.model.BaseResponse;
 import com.publicissapient.kpidashboard.apis.model.Logo;
 import com.publicissapient.kpidashboard.apis.util.ValidExtension;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * REST service managing all requests to File storage utilities
  *
@@ -45,6 +52,11 @@ import com.publicissapient.kpidashboard.apis.util.ValidExtension;
 public class FileStorageController {
 
 	private final FileStorageService fileStorageService;
+
+
+	@Autowired
+	public CustomApiConfig customApiConfig;
+
 
 	@Autowired
 	public FileStorageController(FileStorageService fileStorageService) {
@@ -72,6 +84,7 @@ public class FileStorageController {
 	public BaseResponse uploadFile(@PathVariable String type,@RequestParam("file") MultipartFile file) {
 		return fileStorageService.upload(type,file);
 	}
+
 	/**
 	 * Gets logo image file
 	 * 
@@ -92,6 +105,25 @@ public class FileStorageController {
 	@PreAuthorize("hasPermission('LOGO', 'DELETE_LOGO')")
 	public boolean deleteLogo() {
 		return fileStorageService.deleteLogo();
+	}
+
+	@PostMapping("/file/uploadCertificate")
+	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		// Validate the file type
+		if (!file.getOriginalFilename().endsWith(".crt")) {
+			response.setMessage("Invalid file type. Please upload a .crt file.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
+		try {
+			file.transferTo(dest);
+			response.setSuccess(true);
+			response.setMessage("LDAP certificate copied successfully, please restart the customapi container service.");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+		}
 	}
 
 }
