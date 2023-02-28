@@ -3340,7 +3340,6 @@
     "resolution" : "Fixed or Completed",
     "affectedVersions" : [ ],
     "additionalFilters" : [ ],
-    "assigneeId" : "sumgoyal1",
     "assigneeName" : "Sumit Goyal",
     "jiraStatus" : "Live",
     "timeSpentInMinutes" : 0,
@@ -3356,6 +3355,7 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2022-12-06T15:08:46.0000000",
+    "dueDate": "2022-09-29T00:00:00.000Z",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },
   {
@@ -3428,6 +3428,7 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2022-11-11T07:34:37.0000000",
+    "dueDate": "2022-09-29T00:00:00.000Z",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },
   {
@@ -3498,6 +3499,7 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2022-12-06T15:08:48.0000000",
+    "dueDate": "2022-09-06T00:00:00.000Z",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   },
   {

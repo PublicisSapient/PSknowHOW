@@ -1,20 +1,21 @@
 .text-data {
-    font-size: 1.875rem;
+    font-size: 1.6rem;
     color: var(--color-secondary-blue);
     margin: 0;
 }
 
 .text-label {
     color: var(--color-cyan-blue);
-    font-size: 1.25rem;
-    margin: 0;
+    font-size: 1.2rem;
+    margin: 0 0.5rem 0 0.75rem;
+    white-space: nowrap;
 }
 
 .text-time {
     color: var(--color-red);
 }
 .text-data .unit{
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 .btn-arrow-down{
     color: var(--color-black);
@@ -35,6 +36,9 @@
     width: 50%;
 }
 
+.p-flex-basis-auto {
+    flex-basis: auto;
+}
 .kpi-content-container{
     border-right: 1px solid #c0c0c0;
 }

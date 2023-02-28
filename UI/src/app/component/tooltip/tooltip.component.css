@@ -21,6 +21,11 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.tooltip-wrapper-card{
+    max-height: 120px;
+}
+
 ::ng-deep .tooltip-wrapper::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;

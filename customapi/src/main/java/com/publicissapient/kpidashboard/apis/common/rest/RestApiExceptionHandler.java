@@ -27,6 +27,8 @@ import javax.ws.rs.BadRequestException;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.InvalidAuthTypeConfigException;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -301,6 +303,21 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 				HttpStatus.BAD_REQUEST.getReasonPhrase(), invalidAuthTypeConfigException.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
+
+	@ExceptionHandler(PushDataException.class)
+	protected ResponseEntity<Object> handlePushDataExceptions(PushDataException ex) {
+		log.error(ex.getMessage());
+		if(ex.getPushBuildDeployResponse()!=null){
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
+		}
+		if(ex.getCode()!=null){
+			return ResponseEntity.status(ex.getCode()).body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
+		}
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("error", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+	}
+
 
 	private ErrorResponse createErrorResponse(int code, String error, String message) {
 		ErrorResponse errorResponse = new ErrorResponse();

@@ -45,7 +45,7 @@
                 </ng-template>
 
                 <div class="p-p-0">
-                    <div class="p-mb-3 p-d-flex p-align-center"
+                    <!-- <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('storyFirstStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Story First Status <span class="fa fa-info-circle" aria-hidden="true"
                                 pTooltip='<span>
@@ -63,7 +63,7 @@
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(true, 'storyFirstStatus', 'workflow')"></button>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDefectCreatedStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Defect Created Status <span class="fa fa-info-circle"
@@ -316,7 +316,7 @@
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraBlockedStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Wastage - Blocked Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
-                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included. 
+                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included.
                                                 </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -341,6 +341,22 @@
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'jiraWaitStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraStatusForInProgress') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify In Progress
+                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>
+                                               </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraStatusForInProgress" formControlName="jiraStatusForInProgress"
+                                placeholder="Enter Status to identify 'In Progress' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraStatusForInProgress', 'workflow')"></button>
                         </div>
                     </div>
                 </div>
@@ -537,8 +553,7 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraIntakeToDorIssueType') || fieldstoShow.length === 0">
-                        <label class="field-title">Cycle Time
-                            Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                        <label class="field-title">Lead time issue type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 The issue type which is to be considered while calculating cycle time KPIs, i.e. intake to DOR and DOR and DOD ... <br>
                                 Example: Story, Change Request <hr>
@@ -981,7 +996,7 @@
                                 <div class="p-inputgroup">
                                     <ng-container *ngFor="let estimationType of estimationCriteriaTypes">
                                         <p-radioButton placeholder="Select" formControlName="estimationCriteria"
-                                            value="{{estimationType.value}}" label="{{estimationType.value}}"
+                                            value="{{estimationType.value}}" label="{{estimationType.label}}"
                                             class="p-m-2">
                                         </p-radioButton>
                                     </ng-container>
@@ -1141,6 +1156,44 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
+                      
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
+                        <label class="field-title">Select Due Date <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                This field is to track due date of issues tagged in the iteration
+                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false" tooltipPosition="top"></span></label>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let dueDateType of dueDateTypes">
+                                        <p-radioButton placeholder="Select" formControlName="jiraDueDateField"
+                                            value="{{dueDateType.value}}" label="{{dueDateType.value}}"
+                                            class="p-m-2">
+                                        </p-radioButton>
+                                    </ng-container>
+                                </div>
+                             </div>
+
+                            <div class="p-m-2"
+                                *ngIf="fieldMapping['jiraDueDateField'] && fieldMapping['jiraDueDateField'].value === 'Custom Field' && (fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0)">
+                                <label class="field-title">Due Date Custom Field <span
+                                        class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        This field is to track due date of issues tagged in the iteration
+                                  </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                        [escape]="false"></span></label>
+                                <div class="p-inputgroup p-mt-2">
+                                    <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
+                                        placeholder="Enter due date custom field" [style]="{'max-width':'initial','width':'60vw'}">
+                                    <button type="button" pButton pRipple icon="pi pi-search"
+                                        (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                   </div>
               </p-accordionTab>
 

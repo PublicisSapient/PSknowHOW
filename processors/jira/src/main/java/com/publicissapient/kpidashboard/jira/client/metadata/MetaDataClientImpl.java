@@ -299,6 +299,8 @@ public class MetaDataClientImpl implements MetadataClient {
 				workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraBlockedStatus(
 				workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
+		fieldMapping.setJiraStatusForInProgress(
+				workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraDefectRemovalIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 		fieldMapping
@@ -475,6 +477,11 @@ public class MetaDataClientImpl implements MetadataClient {
 				case CommonConstant.JIRA_WAIT_STATUS: {
 					List<String> list = createFieldList(allworkflow, identifier);
 					workflowMap.put(CommonConstant.JIRA_WAIT_STATUS, list);
+					break;
+				}
+				case CommonConstant.JIRA_IN_PROGRESS_STATUS: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.JIRA_IN_PROGRESS_STATUS, list);
 					break;
 				}
 				default:
