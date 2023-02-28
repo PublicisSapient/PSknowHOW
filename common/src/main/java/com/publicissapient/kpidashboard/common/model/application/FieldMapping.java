@@ -161,6 +161,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
 
+	//field for In Progress status
+	private List<String> jiraStatusForInProgress;
+
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
 
@@ -181,6 +184,17 @@ public class FieldMapping extends BasicModel {
 
 	//field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
+
+	//field for Wasting - wait status
+	private List<String> jiraWaitStatus;
+
+	//field for Wasting - block status
+	private List<String> jiraBlockedStatus;
+
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField="Due Date";
+	private String jiraDueDateCustomField;
 
 	/**
 	 * Get jira issue type names string [ ].

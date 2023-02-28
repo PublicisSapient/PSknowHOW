@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -576,8 +577,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 				setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
 				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					setJiraAssigneeDetails(jiraIssue, assignee);
+				setJiraAssigneeDetails(jiraIssue, assignee);
 				}
+				setEstimates(jiraIssue, issue,fields,fieldMapping);
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
@@ -596,6 +598,22 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		saveKanbanAccountHierarchy(kanbanIssuesToSave, projectConfig);
 
 		return kanbanIssuesToSave;
+	}
+
+	private void setEstimates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase("Due Date") && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+				}
+			}
+		}
 	}
 
 	private void setAdditionalFilters(KanbanJiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
@@ -718,6 +736,13 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 
 		return lastUpdatedDateByIssueType;
+	}
+
+	private boolean isDataExist(boolean dataExist) {
+		if (!dataExist) {
+			dataExist = true;
+		}
+		return dataExist;
 	}
 
 	/**
@@ -1277,13 +1302,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		} else {
 			List<String> assigneeKey = new ArrayList<>();
 			List<String> assigneeName = new ArrayList<>();
-			if (user.getName().isEmpty() || (user.getName() == null)) {
+			String uniqueAssigneeId = getAssignee(user);
+			if (uniqueAssigneeId.isEmpty() || (uniqueAssigneeId == null)) {
 				assigneeKey = new ArrayList<>();
 				assigneeName = new ArrayList<>();
 			} else {
-				assigneeKey.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-				assigneeName.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-				jiraIssue.setAssigneeId(user.getName());
+				assigneeKey.add(JiraProcessorUtil.deodeUTF8String(uniqueAssigneeId));
+				assigneeName.add(JiraProcessorUtil.deodeUTF8String(uniqueAssigneeId));
+				jiraIssue.setAssigneeId(uniqueAssigneeId);
 			}
 			jiraIssue.setOwnersShortName(assigneeName);
 			jiraIssue.setOwnersUsername(assigneeName);

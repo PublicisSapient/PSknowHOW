@@ -83,7 +83,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private changePasswordUrl = this.baseUrl + '/api/changePassword';
     private changeEmailUrl = this.baseUrl + '/api/users/';
     private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
-    // private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
+    private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
     private getAllUsersUrl = this.baseUrl + '/api/userinfo';
     private updateAccessUrl = this.baseUrl + '/api/userinfo/';
     private getKPIConfigMetadataUrl = this.baseUrl + '/api/editConfig/jira/editKpi/';
@@ -128,6 +128,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
@@ -635,7 +636,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     deleteProject(project) {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.append('httpErrorHandler', 'local');
-        return this.http.delete(this.basicConfigUrl + `/${project.id}`, { headers });
+        return this.http.delete(this.deleteProjectUrl + `/${project.id}`, { headers });
     }
 
     /** Get all Field Mappings */
@@ -681,6 +682,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getEmmStats(): Observable<any> {
         return this.http.get<any>(this.getEmmStatsUrl);
+    }
+
+    generateToken(postData): Observable<any> {
+        return this.http.post<any>(this.generateTokenUrl, postData);
     }
 
     getJiraProjectAssignee(projectId){
@@ -854,11 +859,11 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
     deleteProcessorData(toolId, projectId) {
-        return this.http.delete(this.basicConfigUrl + `/${projectId}/tools/clean/` + toolId);
+        return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
     /* Update project details  */
-    updateProjectDetails(updatedDetails,id){
-        return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
-    }
+      updateProjectDetails(updatedDetails,id){
+            return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
+        }
 }
