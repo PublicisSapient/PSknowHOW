@@ -1651,7 +1651,7 @@ db.getCollection('kpi_master').insert(
           "type": "paragraph",
           "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
-        
+
       ],
       "maturityLevels": [
         {
@@ -2995,14 +2995,36 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
+      "definition": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues/ Size of Work (in SP) and in terms of Remaining Hours required to complete pending work.",
       "details": [
         {
-          "type": "paragraph",
-          "value": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues, Size of Work (in SP) and Hours required to complete remaining tasks"
+           "type": "paragraph",
+           "value": "In addition, it also shows the potential delay because of all pending stories. Potential delay and predicted completion date can be seen for each issue as well"
         },
         {
+            "type": "paragraph",
+            "value": "For the KPI to reflect meaningful info, "
+        },
+        {
+            "type": "paragraph",
+            "value": "1. Update Due date on each issue"
+        },
+        {
+            "type": "paragraph",
+            "value": "2. Update remaining estimate on each issue"
+        },
+        {
+            "type": "paragraph",
+            "value": "3. Ensure issues are assigned to the correct person."
+        },
+        {
+            "type": "paragraph",
+            "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
+        },
+
+        {
           "type": "paragraph",
-          "value": "Remaining work is based on the ‘Issues not completed’ list in Sprint report in Jira"
+          "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
         },
         {
           "type": "paragraph",
