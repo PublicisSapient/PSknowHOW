@@ -967,7 +967,7 @@ export class UploadComponent implements OnInit {
         this.error = '';
         this.message = '';
         this.selectedFile = event.files[0];
-        const allowedExtensions = ['.crt'];
+        const allowedExtensions = ['.cer'];
         const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
         if (allowedExtensions.indexOf(fileExtension) === -1) {
           return;
@@ -998,12 +998,12 @@ export class UploadComponent implements OnInit {
         );
         this.isUploadEnabled= true;
     }
-    
+
     clear(event) {
         this.selectedFile = null;
         this.error = event !== null ? '' : this.error;
         this.message = event !== null ? '' : this.message;
         this.isUploadEnabled = true;
     }
-    
+
 }

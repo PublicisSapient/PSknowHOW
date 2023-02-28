@@ -97,7 +97,7 @@ public class FileStorageControllerTest {
 
 	@Test
 	public void testUploadCertificateSuccess() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "certFile.crt", "application/x-x509-ca-cert", "LDAP certificate file success scenario to be mocked".getBytes());
+		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert", "LDAP certificate file success scenario to be mocked".getBytes());
 		when(customApiConfig.getHostPath()).thenReturn("/app/certs/");
 		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
 		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -108,7 +108,7 @@ public class FileStorageControllerTest {
 
 	@Test
 	public void testUploadCertificateFailure() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "certFile.crt", "application/x-x509-ca-cert", "LDAP certificate file failure scenario to be mocked".getBytes());
+		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert", "LDAP certificate file failure scenario to be mocked".getBytes());
 		when(customApiConfig.getHostPath()).thenReturn("/nonexistent/");
 		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
 		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -119,13 +119,13 @@ public class FileStorageControllerTest {
 
 	@Test
 	public void testUploadCertificateTypeFailure() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "certFile.txt", "application/x-x509-ca-cert", "LDAP certificate file type scenario to be mocked".getBytes());
+		MockMultipartFile file = new MockMultipartFile("file", "cerFile.txt", "application/x-x509-ca-cert", "LDAP certificate file type scenario to be mocked".getBytes());
 		when(customApiConfig.getHostPath()).thenReturn("/app/certs/");
 		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		ServiceResponse serviceResponse = response.getBody();
 		Assert.assertEquals(false, serviceResponse.getSuccess());
-		Assert.assertEquals("Invalid file type. Please upload a .crt file.", serviceResponse.getMessage());
+		Assert.assertEquals("Invalid file type. Please upload a .cer file.", serviceResponse.getMessage());
 	}
 
 }

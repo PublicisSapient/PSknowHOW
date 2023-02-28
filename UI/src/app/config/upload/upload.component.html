@@ -43,7 +43,7 @@
     </div>
   </div>
 
- 
+
   <div class="p-col-10" *ngIf="isSuperAdmin && selectedView === 'cert_upload'">
     <div class="main">
       <!-- Certificate Upload  -->
@@ -53,32 +53,32 @@
                 <div class="start">
                   <span class="fa fa-download" aria-hidden="true"></span>
                   <div>Select a certificate to upload</div>
-                  <div>File should be *.crt format</div>
-                  <p-fileUpload chooseLabel ="Upload" chooseIcon="pi pi-upload" 
-                  id="cert-upload" name="certUpload" accept=".crt" 
-                  maxFileSize="20000" [showUploadButton]="false" [showCancelButton]="false" 
+                  <div>File should be *.cer format</div>
+                  <p-fileUpload chooseLabel ="Upload" chooseIcon="pi pi-upload"
+                  id="cert-upload" name="certUpload" accept=".cer"
+                  maxFileSize="20000" [showUploadButton]="false" [showCancelButton]="false"
                   (onSelect)="validateCertificate($event)" (onRemove)="clear($event)">
                   <ng-template pTemplate="toolbar"  >
-                    <button type="submit" class="btn btn-primary certupload" [disabled]="isUploadEnabled" 
+                    <button type="submit" class="btn btn-primary certupload" [disabled]="isUploadEnabled"
                       [ngClass]="{'disabled-button': isUploadEnabled}">Apply</button>
                   </ng-template>
                  </p-fileUpload>
-                  
+
                   <div *ngIf="error" class="invalid-text p-pt-3">{{error}}</div>
                   <div *ngIf="warning" class="warning-text p-pt-3">{{warning}}</div>
                   <div *ngIf="message" class="success p-pt-3">{{message}}</div>
                 </div>
-                
+
               </label>
             </form>
         </div>
       </div>
   </div>
-  
+
   <div class="p-col-10 horizontal-tabs" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
     <div class="main">
       <div class="tabs-container">
-        <p-button *ngFor='let item of tabHeaders' label="{{item?.toUpperCase()}}" icon="pi pi-{{item?.toLowerCase()}}" 
+        <p-button *ngFor='let item of tabHeaders' label="{{item?.toUpperCase()}}" icon="pi pi-{{item?.toLowerCase()}}"
         class="btn-tab pi-{{item?.toLowerCase()}}-button" [ngClass]="{'btn-active':item?.toLowerCase() === 'scrum'}"
         (click)="kanbanActivation(item?.toLowerCase())"></p-button>
       </div>
@@ -330,10 +330,10 @@
         <p class="text-danger p-text-left p-mt-0" [hidden]="!isCapacitySaveDisabled">{{capacityErrorMessage}}</p>
       </ng-template>
       <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
-        <button pButton pRipple label="Cancel" icon="pi pi-times" 
+        <button pButton pRipple label="Cancel" icon="pi pi-times"
         class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm" (click)="showPopuup=false"></button>
         <button pButton pRipple label="Save" icon="pi pi-save"
-           class="p-button-secondary p-button-sm" (click)="submitTestExecution()" [disabled]="isTestExecutionSaveDisabled" 
+           class="p-button-secondary p-button-sm" (click)="submitTestExecution()" [disabled]="isTestExecutionSaveDisabled"
            *ngIf="selectedView === 'upload_tep' else capacitySubmitTemp"></button>
            <ng-template #capacitySubmitTemp>
             <button pButton pRipple label="Save" icon="pi pi-save" [disabled]="isCapacitySaveDisabled"

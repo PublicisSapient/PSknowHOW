@@ -121,12 +121,12 @@ public class FileStorageController {
 		String extension = file.getOriginalFilename();
 		// Validate the file type
 		if (!isValidFile(extension)) {
-			response.setMessage("Invalid file type. Please upload a .crt file.");
+			response.setMessage("Invalid file type. Please upload a .cer file.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-		String fileName = extension.replace(".crt", "") + "_" + timestamp + ".crt";
+		String fileName = extension.replace(".cer", "") + "_" + timestamp + ".cer";
 		File dest = new File(customApiConfig.getHostPath(), fileName);
 		try {
 			dest.getParentFile().mkdirs();
@@ -144,7 +144,7 @@ public class FileStorageController {
 
 		boolean isValidFileExtension = false;
 		try {
-			isValidFileExtension = (null != extension) && (extension.endsWith(".crt") || extension.endsWith(".CRT"));
+			isValidFileExtension = (null != extension) && (extension.endsWith(".cer"));
 
 		} catch (Exception e) {
 			log.error("Uploded File is either null or in incorrect format");
