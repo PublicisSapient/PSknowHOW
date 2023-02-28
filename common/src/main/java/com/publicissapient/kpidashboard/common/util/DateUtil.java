@@ -24,6 +24,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -51,6 +52,10 @@ public class DateUtil {
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
 	public static final String TIME_FORMAT_WITH_SEC_DATE = "yyyy-MM-dd'T'HH:mm:ssX";
+
+	public static final String ZERO_TIME_ZONE_FORMAT = "T00:00:00.000Z";
+
+
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -169,7 +174,7 @@ public class DateUtil {
 			formattedDate=LocalDate.parse(time, formatter);
 		}
 		catch (DateTimeParseException dateTimeParseException){
-			formattedDate=stringToLocalDate(time.split("\\+")[0]+"Z",format);
+			formattedDate= OffsetDateTime.parse(time).toLocalDate();
 		}
 		return formattedDate;
 	}
