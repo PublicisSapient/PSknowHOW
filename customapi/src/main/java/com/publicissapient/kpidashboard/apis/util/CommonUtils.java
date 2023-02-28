@@ -183,15 +183,15 @@ public final class CommonUtils {
 			switch (caseDetails) {
 			case POSITIVE_CASE:
 				counter = count1 + 1;
-				break;
+				return counter;
 			case NEGATIVE_CASE:
 				counter = count - 1;
-				break;
+				return counter;
 			default:
 
 			}
 		}
-		return counter;
+		return (count==null)?count1:count;
 	}
 
 	/**

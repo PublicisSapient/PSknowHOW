@@ -366,7 +366,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					issueTypes.add(entry.getKey());
 					priorities.add(prData.getKey());
 					List<IterationKpiModalValue> modalValues = new ArrayList<>();
-					int issueCount = 0;
 					int delayCount = 0;
 					int delayNumberCount = 0;
 					for (IterationStatus iterationStatus : issues) {
@@ -380,11 +379,11 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issueAtRisk = new IterationKpiData(NET_DELAYED_ISSUES,
-							Double.valueOf(delayNumberCount), Double.valueOf(issueCount), null, DAYS, modalValues);
+							Double.valueOf(delayNumberCount),null, null, DAYS, modalValues);
 					IterationKpiData issuecd = new IterationKpiData(ISSUES_CAUSING_DELAY, Double.valueOf(cdCount),
-							Double.valueOf(issueCount), LABELINFO, "", null);
+							null, LABELINFO, "", null);
 					IterationKpiData issuebt = new IterationKpiData(ISSUES_DONE_BEFORE_TIME, Double.valueOf(btCount),
-							Double.valueOf(issueCount), LABELINFO, "", null);
+							null, LABELINFO, "", null);
 					data.add(issueAtRisk);
 					data.add(issuecd);
 					data.add(issuebt);
@@ -468,7 +467,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
 				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
 				String dueDate = issueObject.getDueDate();
-				if (StringUtils.isNotEmpty(dueDate)) {
+				if (StringUtils.isNotEmpty(dueDate) && StringUtils.isNotEmpty(closedDate)) {
 					// count the number of days excluding weekends
 					daysDiff = String
 							.valueOf(CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate), DateTime.parse(closedDate)));

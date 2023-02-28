@@ -191,6 +191,11 @@ public class FieldMapping extends BasicModel {
 	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField="Due Date";
+	private String jiraDueDateCustomField;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
