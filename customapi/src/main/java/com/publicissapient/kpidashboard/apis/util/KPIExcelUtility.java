@@ -35,17 +35,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,11 +42,24 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
+import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -685,7 +687,7 @@ public class KPIExcelUtility {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
-                excelData.setDate(e.getUpdateDate());
+                excelData.setDate(LocalDate.parse(e.getUpdateDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
@@ -1142,5 +1144,47 @@ public class KPIExcelUtility {
         excelData.setEstimatedCapacity(df2.format(capacity));
         kpiExcelData.add(excelData);
     }
+
+	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+			Map<String, List<IterationPotentialDelay>> issueWiseDelay) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+            iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+        }
+        if (null != jiraIssue.getOriginalEstimateMinutes()
+                && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+            iterationKpiModalValue.setIssueSize((String.valueOf(jiraIssue.getOriginalEstimateMinutes()/60)+" hrs"));
+        }
+		iterationKpiModalValue.setOriginalEstimateMinutes(
+                (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
+                        ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
+                        : "0m");
+		iterationKpiModalValue.setRemainingTimeInDays(
+				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
+						? CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
+						: "0m");
+		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
+			List<IterationPotentialDelay> delay = issueWiseDelay.get(jiraIssue.getNumber());
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(delay.get(0).getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(delay.get(0).getPredictedCompletedDate());
+
+		} else {
+			iterationKpiModalValue.setPotentialDelay("-");
+			iterationKpiModalValue.setPredictedCompletionDate("-");
+		}
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
 
 }

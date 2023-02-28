@@ -99,7 +99,19 @@ db.getCollection('metadata_identifier').remove({});
         			{
         				"type":"delivered",
         				"value":["Closed","Resolved","Ready for Delivery","Ready for Release"]
-        			}
+        			},
+        			{
+        			    "type" : "jiraWaitStatus",
+                        "value" : [ "Ready for Testing"]
+                    },
+                    {
+                        "type" : "jiraBlockedStatus",
+                        "value" : ["On Hold","Blocked"]
+                    },
+                    {
+                        "type" : "jiraStatusForInProgress",
+                        "value" : ["In Analysis", "In Development", "In Progress"]
+                    }
         			],
         			"valuestoidentify":[
         			{

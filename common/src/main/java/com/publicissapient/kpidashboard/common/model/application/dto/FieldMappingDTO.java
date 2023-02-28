@@ -187,6 +187,21 @@ public class FieldMappingDTO extends BasicModel {
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
 
+	//field for Wasting - wait status
+	private List<String> jiraWaitStatus;
+
+	//field for Wasting - block status
+	private List<String> jiraBlockedStatus;
+
+	//field for In Progress status
+	private List<String> jiraStatusForInProgress;
+
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField="dueDate";
+	private String jiraDueDateCustomField;
+
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *

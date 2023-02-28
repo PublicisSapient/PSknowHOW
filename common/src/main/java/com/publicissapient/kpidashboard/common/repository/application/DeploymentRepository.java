@@ -25,6 +25,8 @@ public interface DeploymentRepository extends MongoRepository<Deployment, Object
 
 	List<Deployment> findByProjectToolConfigIdAndJobName(ObjectId projectToolConfigId, String jobName );
 
+	Deployment findByNumberAndJobNameAndBasicProjectConfigId(String number, String jobName, ObjectId basicProjectConfigId);
+
 	Deployment findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
 
 }
