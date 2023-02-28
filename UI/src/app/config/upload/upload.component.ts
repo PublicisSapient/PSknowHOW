@@ -239,6 +239,8 @@ export class UploadComponent implements OnInit {
                 }
             );
             this.selectedView = 'logo_upload';
+            this.error = '';
+            this.message = '';
         } else {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
@@ -316,6 +318,8 @@ export class UploadComponent implements OnInit {
         switch (event.item.label) {
             case 'Upload Logo': {
                 this.selectedView = 'logo_upload';
+                this.error = '';
+                this.message = '';
             }
                 break;
             case 'Upload certificate': {
