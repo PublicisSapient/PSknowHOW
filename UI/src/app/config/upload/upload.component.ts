@@ -324,6 +324,8 @@ export class UploadComponent implements OnInit {
                 break;
             case 'Upload certificate': {
                 this.selectedView = 'cert_upload';
+                 this.error = '';
+                 this.message = '';
             }
                 break;
             case 'Test Execution Percentage': {
