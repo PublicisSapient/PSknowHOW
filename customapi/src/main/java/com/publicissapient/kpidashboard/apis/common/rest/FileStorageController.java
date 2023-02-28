@@ -18,9 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.FileStorageService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.BaseResponse;
 import com.publicissapient.kpidashboard.apis.model.Logo;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.ValidExtension;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * REST service managing all requests to File storage utilities
@@ -49,14 +52,13 @@ import java.io.IOException;
  */
 @Validated
 @RestController
+@Slf4j
 public class FileStorageController {
 
 	private final FileStorageService fileStorageService;
 
-
 	@Autowired
 	public CustomApiConfig customApiConfig;
-
 
 	@Autowired
 	public FileStorageController(FileStorageService fileStorageService) {
@@ -64,9 +66,11 @@ public class FileStorageController {
 	}
 
 	/**
-	 * Uploads image file as logo  
+	 * Uploads image file as logo
+	 * 
 	 * @param file
-	 * @return BaseResponse with <tt>message</tt> and <tt>success status(true or false)</tt> of upload 
+	 * @return BaseResponse with <tt>message</tt> and
+	 *         <tt>success status(true or false)</tt> of upload
 	 */
 	@PostMapping("/file/upload")
 	@PreAuthorize("hasPermission('LOGO', 'FILE_UPLOAD')")
@@ -76,13 +80,15 @@ public class FileStorageController {
 
 	/**
 	 * Uploads image file as logo
+	 * 
 	 * @param file
-	 * @return BaseResponse with <tt>message</tt> and <tt>success status(true or false)</tt> of upload
+	 * @return BaseResponse with <tt>message</tt> and
+	 *         <tt>success status(true or false)</tt> of upload
 	 */
 	@PostMapping("/file/upload/{type}")
 	@PreAuthorize("hasPermission(#type, 'FILE_UPLOAD')")
-	public BaseResponse uploadFile(@PathVariable String type,@RequestParam("file") MultipartFile file) {
-		return fileStorageService.upload(type,file);
+	public BaseResponse uploadFile(@PathVariable String type, @RequestParam("file") MultipartFile file) {
+		return fileStorageService.upload(type, file);
 	}
 
 	/**
@@ -111,13 +117,19 @@ public class FileStorageController {
 	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
 		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error",
 				file.getOriginalFilename());
+
+		String extension = file.getOriginalFilename();
 		// Validate the file type
-		if (file.getOriginalFilename() != null && !file.getOriginalFilename().endsWith(".crt")) {
+		if (!isValidFile(extension)) {
 			response.setMessage("Invalid file type. Please upload a .crt file.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
-		File dest = new File(customApiConfig.getHostPath() + file.getOriginalFilename());
+		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+		String fileName = extension.replace(".crt", "") + "_" + timestamp + ".crt";
+		File dest = new File(customApiConfig.getHostPath(), fileName);
 		try {
+			dest.getParentFile().mkdirs();
 			file.transferTo(dest);
 			response.setSuccess(true);
 			response.setMessage(
@@ -126,6 +138,18 @@ public class FileStorageController {
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
 		}
+	}
+
+	private boolean isValidFile(String extension) {
+
+		boolean isValidFileExtension = false;
+		try {
+			isValidFileExtension = (null != extension) && (extension.endsWith(".crt") || extension.endsWith(".CRT"));
+
+		} catch (Exception e) {
+			log.error("Uploded File is either null or in incorrect format");
+		}
+		return isValidFileExtension;
 	}
 
 }
