@@ -181,7 +181,6 @@ export class LoginComponent implements OnInit {
                 localStorage.setItem('SpeedyUser', username);
             } else {
                 localStorage.removeItem('SpeedyUser');
-                // localStorage.removeItem('SpeedyPassword');
             }
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);

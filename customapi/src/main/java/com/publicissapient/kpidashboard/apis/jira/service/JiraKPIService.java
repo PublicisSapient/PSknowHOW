@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,9 +166,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
         iterationKpiModalVal.setPriority(iterationStatus.getPriority());
         iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
         iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-        Date date = DateUtil.dateTimeParser(iterationStatus.getDueDate(), DATE_FORMAT);
-        String dueDate = DateUtil.dateTimeFormatter(date, TIME_FORMAT);
-        iterationKpiModalVal.setDueDate(dueDate);
+        iterationKpiModalVal.setDueDate(DateUtil.stringToLocalDate(iterationStatus.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).toString());
         if (iterationStatus.getRemainingEstimateMinutes() != null)
             iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
         else

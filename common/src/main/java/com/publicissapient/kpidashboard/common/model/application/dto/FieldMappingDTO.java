@@ -197,6 +197,12 @@ public class FieldMappingDTO extends BasicModel {
 	//field for In Progress status
 	private List<String> jiraStatusForInProgress;
 
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField="dueDate";
+	private String jiraDueDateCustomField;
+
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
