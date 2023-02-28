@@ -79,7 +79,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
+                        console.log(event?.url?.includes('api/authdetails'), event.headers.has('auth-details-updated'),event.headers.get('auth-details-updated'), localStorage.getItem('authorities'));
                         if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
+                            console.log('---------------------calling auth details------------------------------------');
                             this.httpService.getAuthDetails();
                         }
                     }
