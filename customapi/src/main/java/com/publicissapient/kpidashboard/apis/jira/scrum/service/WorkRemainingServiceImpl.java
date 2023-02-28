@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -171,7 +172,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<IterationPotentialDelay> iterationPotentialDelayList=calculatePotentialDelay(sprintDetails,allIssues,fieldMapping);
-			Map<String, List<IterationPotentialDelay>> issueWiseDelay = iterationPotentialDelayList.stream().collect(Collectors.groupingBy(IterationPotentialDelay::getIssueId));
+			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,Function.identity()));
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -271,10 +272,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		return delay*60*8;
 	}
 
-	private int checkDelay(JiraIssue jiraIssue, Map<String, List<IterationPotentialDelay>> issueWiseDelay, int potentialDelay, List<Integer> overallPotentialDelay) {
+	private int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay, List<Integer> overallPotentialDelay) {
 		int finalDelay=0;
 		if(issueWiseDelay.containsKey(jiraIssue.getNumber())){
-			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber()).get(0);
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			finalDelay=potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 			overallPotentialDelay.set(0, overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
 		}

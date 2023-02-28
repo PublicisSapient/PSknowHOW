@@ -1147,7 +1147,7 @@ public class KPIExcelUtility {
 
 	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, List<IterationPotentialDelay>> issueWiseDelay) {
+			Map<String, IterationPotentialDelay> issueWiseDelay) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -1175,9 +1175,9 @@ public class KPIExcelUtility {
 				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
 				: "-");
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
-			List<IterationPotentialDelay> delay = issueWiseDelay.get(jiraIssue.getNumber());
-			iterationKpiModalValue.setPotentialDelay(String.valueOf(delay.get(0).getPotentialDelay()) + "d");
-			iterationKpiModalValue.setPredictedCompletionDate(delay.get(0).getPredictedCompletedDate());
+			IterationPotentialDelay delay = issueWiseDelay.get(jiraIssue.getNumber());
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(delay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(delay.getPredictedCompletedDate());
 
 		} else {
 			iterationKpiModalValue.setPotentialDelay("-");

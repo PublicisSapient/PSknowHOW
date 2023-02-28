@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
@@ -169,8 +170,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
 					allIssues, fieldMapping);
-			Map<String, List<IterationPotentialDelay>> issueWiseDelay = iterationPotentialDelayList.stream()
-					.collect(Collectors.groupingBy(IterationPotentialDelay::getIssueId));
+			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream()
+					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity()));
 			Set<String> issueTypes = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllIssueCount = Arrays.asList(0);
@@ -185,7 +186,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
-							.get(0).getPredictedCompletedDate().equals(LocalDate.now().toString())) {
+							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
 						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
