@@ -58,7 +58,7 @@ export class ToolMenuComponent implements OnInit {
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
-     this.isAssigneeSwitchChecked = this.selectedProject.saveAssigneeDetails;
+     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
 
     this.selectedProject = this.sharedService.getSelectedProject();
     if (!this.selectedProject) {

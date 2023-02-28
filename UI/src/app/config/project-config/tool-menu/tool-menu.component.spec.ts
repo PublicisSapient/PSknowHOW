@@ -37,6 +37,8 @@ describe('ToolMenuComponent', () => {
   let fixture: ComponentFixture<ToolMenuComponent>;
   let httpService: HttpService;
   let sharedService: SharedService;
+  let confirmationService: ConfirmationService;
+  let messageService: MessageService;
   let httpMock;
   let router: Router;
   const baseUrl = environment.baseUrl;
