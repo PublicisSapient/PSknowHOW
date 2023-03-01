@@ -1,9 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
 import lombok.*;
-import org.joda.time.DateTime;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,5 +12,6 @@ import java.time.LocalDate;
 public class JiraHistoryChangeLog {
     private String changedFrom;
     private String changedTo;
-    private DateTime updatedOn;
+    private LocalDateTime updatedOn;
+    private String sprintId;
 }

@@ -123,7 +123,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
-	private String jiraDueDateCustomField;
 
 
 	private List<String> rootCauseValue;
@@ -143,6 +142,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
+	private String storyFirstStatus;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;

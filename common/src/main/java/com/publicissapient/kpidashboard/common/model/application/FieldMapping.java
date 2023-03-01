@@ -77,6 +77,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
+	private String storyFirstStatus;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
@@ -84,7 +85,6 @@ public class FieldMapping extends BasicModel {
 
 	private String jiraStoryPointsCustomField;
 	private String jiraStatusMappingCustomField;
-	private String jiraDueDateCustomField;
 
 
 	// parent issue type for the test
