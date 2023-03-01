@@ -133,6 +133,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
 
+    private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -197,8 +198,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     /** GET getMasterData from the server */
     getMasterData(): Observable<any> {
         return this.http.get(this.masterDataUrl);
-
-
     }
 
     /** GET getTooltipData from the server */
@@ -357,7 +356,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             pipe(tap((res) => {
             }));
     }
-
     /** get uploaded image file */
     getUploadedImage(): Observable<object> {
 
@@ -866,4 +864,11 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
       updateProjectDetails(updatedDetails,id){
             return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
         }
+        /** POST: Upload ldap certificate file */
+    uploadCertificate(file): Observable<object> {
+        const fileFormData = new FormData();
+        fileFormData.append('file', file);
+        return this.http.post<object>(this.uploadCert, fileFormData).pipe(tap((res) => {
+        }));
+    }
 }

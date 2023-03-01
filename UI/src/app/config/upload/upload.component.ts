@@ -60,6 +60,7 @@ export class UploadComponent implements OnInit {
     logoImage: any;
     invalid: boolean;
     isUploadFile = true;
+    isUploadEnabled = true;
     items: MenuItem[];
     selectedView: string;
     kanban: boolean;
@@ -98,6 +99,8 @@ export class UploadComponent implements OnInit {
     projectDetails: any;
     selectedProjectBaseConfigId: string;
     popupForm: UntypedFormGroup;
+    preventRedirection = true;
+    selectedFile: File;
 
     statusMessage = {
         200: 'Data Saved Successfully!!',
@@ -247,15 +250,36 @@ export class UploadComponent implements OnInit {
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: true
+                    expanded: false
                 }
             );
             this.selectedView = 'logo_upload';
+            this.error = '';
+            this.message = '';
         } else {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
+         this.selectedView = 'cert_upload';
+                if (this.isSuperAdmin) {
+                    this.items.unshift(
+                        {
+                            label: 'Upload certificate',
+                            icon: 'pi pi-image',
+                            command: (event) => {
+                                this.switchView(event);
+                            },
+                            expanded: true
+                        }
+                    );
+                    this.selectedView = 'cert_upload';
+                } else {
+                    this.handleTepSelect('upload_tep');
+                    document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
+                    document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
+                }
+
         this.kanban = false;
         this.getUploadedImage();
         this.startDate = '';
@@ -309,6 +333,14 @@ export class UploadComponent implements OnInit {
         switch (event.item.label) {
             case 'Upload Logo': {
                 this.selectedView = 'logo_upload';
+                this.error = '';
+                this.message = '';
+            }
+                break;
+            case 'Upload certificate': {
+                this.selectedView = 'cert_upload';
+                 this.error = '';
+                 this.message = '';
             }
                 break;
             case 'Test Execution Percentage': {
@@ -436,7 +468,6 @@ export class UploadComponent implements OnInit {
                     });
         }
     }
-
 
     /*call service to delete*/
     onDelete() {
@@ -1147,4 +1178,48 @@ export class UploadComponent implements OnInit {
             }
         });
     }
+    /* Upload and  validate certificate */
+    validateCertificate(event) {
+        this.error = '';
+        this.message = '';
+        this.selectedFile = event.files[0];
+        const allowedExtensions = ['.cer'];
+        const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
+        if (allowedExtensions.indexOf(fileExtension) === -1) {
+          return;
+        }
+        const maxFileSize = 2 * 1024 * 1024; // 2 MB
+        if (this.selectedFile.size > maxFileSize) {
+          return;
+        }
+        if (this.selectedFile) {
+            this.isUploadEnabled = false;
+        }
+    }
+    uploadCertificate() {
+        const file = this.selectedFile;
+        this.error = '';
+        this.message = '';
+        this.http_service.uploadCertificate(file).pipe(first())
+        .subscribe(
+          data => {
+            if (data['status'] && data['status'] === 417) {
+              this.error = data['statusText'];
+            } else {
+              this.message = data['message'];
+            }
+          },
+          error => null,
+          () => this.clear(null)
+        );
+        this.isUploadEnabled= true;
+    }
+
+    clear(event) {
+        this.selectedFile = null;
+        this.error = event !== null ? '' : this.error;
+        this.message = event !== null ? '' : this.message;
+        this.isUploadEnabled = true;
+    }
+
 }

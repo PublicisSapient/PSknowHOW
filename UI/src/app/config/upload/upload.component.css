@@ -537,3 +537,13 @@ div.main {
   top: 60px;
   width: 280px;
 }
+.disabled-button {
+  background-color: gray !important;
+  color: white !important;
+  cursor: not-allowed !important;
+}
+.certupload {
+  margin: 0 !important;
+}
+
+/*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
