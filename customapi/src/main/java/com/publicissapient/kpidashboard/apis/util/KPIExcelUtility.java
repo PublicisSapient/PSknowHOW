@@ -1147,7 +1147,7 @@ public class KPIExcelUtility {
 
 	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, List<IterationPotentialDelay>> issueWiseDelay) {
+			Map<String, IterationPotentialDelay> issueWiseDelay) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -1167,22 +1167,36 @@ public class KPIExcelUtility {
                 (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
                         ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
                         : "0m");
-		iterationKpiModalValue.setRemainingTimeInDays(
+        if(jiraIssue.getRemainingEstimateMinutes()!=null){
+            iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
+            if(jiraIssue.getRemainingEstimateMinutes() > 0){
+                iterationKpiModalValue.setRemainingTimeInDays(CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes()));
+            }
+        }
+        else{
+            iterationKpiModalValue.setRemainingTimeInDays("0m");
+        }
+
+		/*iterationKpiModalValue.setRemainingTimeInDays(
 				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
 						? CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
 						: "0m");
+        if(jiraIssue.getRemainingEstimateMinutes() != null) {
+            iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
+        }*/
 		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
 				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
 				: "-");
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
-			List<IterationPotentialDelay> delay = issueWiseDelay.get(jiraIssue.getNumber());
-			iterationKpiModalValue.setPotentialDelay(String.valueOf(delay.get(0).getPotentialDelay()) + "d");
-			iterationKpiModalValue.setPredictedCompletionDate(delay.get(0).getPredictedCompletedDate());
+            IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+            iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
 			iterationKpiModalValue.setPotentialDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
+        iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
