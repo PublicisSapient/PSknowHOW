@@ -268,7 +268,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay, List<Integer> overallPotentialDelay) {
 		int finalDelay=0;
 		if(issueWiseDelay.containsKey(jiraIssue.getNumber())){
-			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber()).get(0);
 			finalDelay=potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 			overallPotentialDelay.set(0, overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
 		}
