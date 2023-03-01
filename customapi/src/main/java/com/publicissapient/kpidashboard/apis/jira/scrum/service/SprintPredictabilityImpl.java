@@ -17,6 +17,7 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,6 +269,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafPredictabilityMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			sprintDetails.forEach(sd -> {
@@ -283,8 +286,15 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 									issueDetails.setUrl(jiraIssue.getUrl());
 									issueDetails.setDesc(jiraIssue.getName());
 									storyList.add(sprintIssue.getNumber());
-									effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints())
-											.orElse(0.0d).doubleValue());
+									if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+											fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+										effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints())
+												.orElse(0.0d));
+									} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+										Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
+										effectSumDouble
+												.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
+									}
 									filterIssueDetailsSet.add(issueDetails);
 								}
 							}));
@@ -348,7 +358,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			populateExcelDataObject(requestTrackerId , excelData, currentSprintLeafPredictabilityMap, node);
+			populateExcelDataObject(requestTrackerId , excelData, currentSprintLeafPredictabilityMap, node, fieldMapping);
 			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
 					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
 			if (predictability.get(currentNodeIdentifier) != null) {
@@ -464,7 +474,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param node
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node) {
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
@@ -473,7 +483,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					&& CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
-						excelData);
+						excelData, fieldMapping);
 			}
 		}
 	}
