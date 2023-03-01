@@ -677,6 +677,25 @@ iAdjust = 1;
     this.modalDetails['tableValues'] = tableValues;
   }
 
+  generateExcel() {
+    const kpiData = {
+      headerNames: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      kpiData.headerNames.push({
+        header: colHeader,
+        key: colHeader,
+        width: 25
+      });
+    });
+    this.modalDetails['tableValues'].forEach(colData => {
+      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+    });
+
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  }
+
   drop(event: CdkDragDrop<string[]>) {
     if (event?.previousIndex !== event.currentIndex) {
       moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
