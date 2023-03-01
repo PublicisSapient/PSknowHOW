@@ -3208,23 +3208,15 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of iteration."
+          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of an iteration. An issue is included as a possible closure based on the calculation of Predicted completion date."
         },
         {
-          "type": "paragraph",
-          "value": "An issues is included as a possible closure based on 2 criteria"
-        },
-        {
-          "type": "paragraph",
-          "value": "1. If the remaining hours of an issues is less than 8 hrs OR"
-        },
-        {
-          "type": "paragraph",
-          "value": "2. If an issue is in Testing status (as defined in KnowHOW)"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of KPI is Jira and KnowHOW"
+          "type": "link",
+          "value":
+            {
+                "text":"Predicted completion date logic is detailed at "
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
         }
       ]
     },
