@@ -3212,9 +3212,8 @@ db.getCollection('kpi_master').insert(
         },
         {
           "type": "link",
-          "value":
-            {
-                "text":"Predicted completion date logic is detailed at "
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
                 "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
             }
         }
