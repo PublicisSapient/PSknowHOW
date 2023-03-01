@@ -79,7 +79,7 @@ public class CommonUtilsTest {
 		DateTime endDate = DateTime.now();
 		String separator = "-";
 		DateTime beginDate = endDate.minusDays(3);
-		Integer returnMap = CommonUtils.ClosedStoryAndPotentialDelays(beginDate, endDate);
+		Integer returnMap = CommonUtils.closedStoryAndPotentialDelays(beginDate, endDate);
 		String key = beginDate.getYear() + separator + beginDate.getMonthOfYear() + separator
 				+ beginDate.getDayOfMonth();
 
@@ -90,7 +90,7 @@ public class CommonUtilsTest {
 		DateTime endDate = DateTime.now();
 		String separator = "-";
 		DateTime beginDate = endDate.minusDays(3);
-		Integer returnMap = CommonUtils.OpenStoryDelay(beginDate, endDate, true);
+		Integer returnMap = CommonUtils.openStoryDelay(beginDate, endDate, true);
 		String key = beginDate.getYear() + separator + beginDate.getMonthOfYear() + separator
 				+ beginDate.getDayOfMonth();
 
