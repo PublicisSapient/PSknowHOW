@@ -19,14 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -171,7 +164,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
 					allIssues, fieldMapping);
 			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream()
-					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity()));
+					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(),(e1,e2)->e2,LinkedHashMap::new));
 			Set<String> issueTypes = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllIssueCount = Arrays.asList(0);

@@ -157,7 +157,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),
 
     CLOSURES_POSSIBLE_TODAY("kpi122",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate")),
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 

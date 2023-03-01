@@ -66,7 +66,7 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Delay")
 	private String delay;
 	@JsonProperty("Remaining Estimate")
-	private Integer remainingEstimateMinutes;
+	private String remainingEstimateMinutes;
 	@JsonProperty("Blocked Time")
 	private String blockedTime;
 	@JsonProperty("Wait Time")

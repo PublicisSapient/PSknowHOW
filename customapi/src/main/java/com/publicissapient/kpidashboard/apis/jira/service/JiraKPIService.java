@@ -208,6 +208,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
 		}
+		iterationKpiModalValue.setRemainingEstimateMinutes(
+				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
+						? CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
+						: "0m");
+		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
 		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
 		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
 		modalValues.add(iterationKpiModalValue);

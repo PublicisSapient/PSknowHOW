@@ -20,14 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -172,7 +165,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<IterationPotentialDelay> iterationPotentialDelayList=calculatePotentialDelay(sprintDetails,allIssues,fieldMapping);
-			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,Function.identity()));
+			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,Function.identity(),(e1,e2)->e2, LinkedHashMap::new));
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
