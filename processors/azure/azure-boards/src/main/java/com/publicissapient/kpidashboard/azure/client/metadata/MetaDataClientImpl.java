@@ -250,7 +250,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
-
 		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatus(firstStatusList.get(0));
