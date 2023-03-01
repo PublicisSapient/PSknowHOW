@@ -16,6 +16,7 @@ import java.util.Map;
 @Document(collection = "kpi_comments")
 public class KPIComments extends BasicModel {
 
+    private String node;
     private String projectBasicConfig;
     private List<CommentKpiWise> commentKpiWise;
 

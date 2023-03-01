@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface CommentService {
    boolean submitComment(CommentSubmitDTO comment);
-    List<KPIComments> findCommentByKPIId(String projectBasicConfig,String kpi);
+    List<CommentKpiWise> findCommentByKPIId(String projectBasicConfig,String kpi);
+   List<KPIComments> findCommentByKPIIdList(String projectBasicConfig,String kpi);
 
 }
