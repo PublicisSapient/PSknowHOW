@@ -21,7 +21,7 @@
                         {{item?.value}}
                     </p>
                     <p *ngSwitchCase="'link'" class="paragraph p-pl-3 p-mb-0 kpi-info-list">
-                        {{item?.value?.text}} <a [href]="item?.value?.link" class="link" target="_blank">{{item?.value?.link}}</a>
+                        {{item?.kpiLinkDetail?.text}} <a [href]="item?.kpiLinkDetail?.link" class="link" target="_blank">{{item?.kpiLinkDetail?.link}}</a>
                     </p>
                     
                     <table *ngSwitchCase="'table'" class="p-d-flex p-flex-column p-align-center border">
