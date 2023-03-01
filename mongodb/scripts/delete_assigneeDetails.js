@@ -28,17 +28,17 @@ function deleteAssigneeDetailsFromDeployment(basicProjectConfigId)
 function deleteAssigneeDetailsFromJira(basicProjectConfigId)
 {
               print("Remove assignee details for basic project id in jira issue:", basicProjectConfigId);
-              print(db.jira_issue.updateMany({"basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1}}));
+              print(db.jira_issue.updateMany({"basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1, ownersID: 1, ownersState: 1, ownersUsername: 1, ownersFullName: 1, ownersShortName: 1}}));
 }
 
 function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId)
 {
         print("Remove assignee details for basic project id in kanban jira issue:", basicProjectConfigId);
-        print(db.kanban_jira_issue.updateMany({ "basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1}}));
+        print(db.kanban_jira_issue.updateMany({ "basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1, ownersID: 1, ownersState: 1, ownersUsername: 1, ownersFullName: 1, ownersShortName: 1}}));
 }
 
 function deleteAssigneeDetailsFromCommitAndMerge(basicProjectConfigId) {
-  
+
         db.getCollection('project_tool_configs').find({"basicProjectConfigId": ObjectId(basicProjectConfigId)}).forEach(
             projectToolConfig => {
                 const projectToolId = projectToolConfig._id;
@@ -51,7 +51,7 @@ function deleteAssigneeDetailsFromCommitAndMerge(basicProjectConfigId) {
 
 function fetchProcessorItemId(toolConfigId)
 {
-  
+
         db.getCollection('processor_items').find({"toolConfigId": ObjectId(toolConfigId)}).forEach(
             processorItems => {
                 const processorItemElement = processorItems._id;
