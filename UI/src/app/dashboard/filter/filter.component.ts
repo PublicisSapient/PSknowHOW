@@ -905,7 +905,7 @@ export class FilterComponent implements OnInit {
         !boardDetails &&
         this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0
       ) {
-        boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0];
+        boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][4];
       }
       this.selectedTab = boardDetails?.boardName;
       this.service.setSelectedTab(
@@ -1197,8 +1197,9 @@ export class FilterComponent implements OnInit {
       this.selectedTab?.toLowerCase() != 'iteration' &&
       this.selectedTab?.toLowerCase() != 'backlog'
     ) {
-      for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) {
-        const arrList = this.filterData?.filter(
+      // for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) { 
+        for (let i = 0; i < this.hierarchyLevels?.length; i++) {  
+      const arrList = this.filterData?.filter(
           (x) =>
             x.labelName?.toLowerCase() ==
             this.hierarchyLevels[i]?.hierarchyLevelId?.toLowerCase(),
@@ -1212,14 +1213,14 @@ export class FilterComponent implements OnInit {
         } else {
           this.filterForm
             ?.get('selectedLevel')
-            ?.setValue(this.hierarchyLevels[0]?.hierarchyLevelId);
+            ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
           this.trendLineValueList = [...arrList];
         }
       }
       if (this.trendLineValueList?.length == 0) {
         this.filterForm
           ?.get('selectedLevel')
-          ?.setValue(this.hierarchyLevels[0]?.hierarchyLevelId);
+          ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
         const arrList = this.filterData?.filter(
           (x) =>
             x.labelName?.toLowerCase() ==
@@ -1560,6 +1561,7 @@ export class FilterComponent implements OnInit {
         }
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
+        this.service.setSelectedTab(null,null); // doing null bcoz it was landing on previous tab 
 
         this.router.navigate(['./authentication/login']);
       }

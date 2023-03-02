@@ -51,7 +51,7 @@ export class NavComponent implements OnInit {
   mainTab: string;
   boardNameArr: any[] = [];
   boardId = 1;
-  visibleSidebar = false;
+  visibleSidebar = true;
   kanban = false;
   constructor(
     private httpService: HttpService,
@@ -99,6 +99,10 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.service.setSideNav(true);
+    this.service.onTabRefresh.subscribe(tab=>{
+      this.selectedTab=tab;
+    })
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
