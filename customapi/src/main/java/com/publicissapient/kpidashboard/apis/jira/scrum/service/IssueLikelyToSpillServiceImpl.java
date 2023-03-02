@@ -193,7 +193,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
-							if(isIssueAtRisk(jiraIssue,issueWiseDelay,sprintEndDate)) {
+							if(isIssueAtRisk(jiraIssue,issueWiseDelay,sprintEndDate) || (jiraIssue.getDueDate() != null) &&
+									DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isAfter(sprintEndDate)) {
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
 								KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping, issueWiseDelay);
