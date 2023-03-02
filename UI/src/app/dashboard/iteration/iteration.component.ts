@@ -538,6 +538,8 @@ export class IterationComponent implements OnInit, OnDestroy {
     } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
             this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+        } else if(this.kpiSelectedFilterObj[kpiId].filter1.length > 0) {
+            this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId].filter1[0])[0]?.value
         } else {
             this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
         }
