@@ -1,22 +1,21 @@
 package com.publicissapient.kpidashboard.apis.comments.service;
 
-import com.publicissapient.kpidashboard.apis.comments.rest.CommentController;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.common.model.comment.CommentInfo;
 import com.publicissapient.kpidashboard.common.model.comment.CommentKpiWise;
 import com.publicissapient.kpidashboard.common.model.comment.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comment.KPIComments;
+import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.repository.commentshistory.KpiCommentsHistoryRepository;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.publicissapient.kpidashboard.common.repository.comment.KpiCommentRepository;
 
-import java.util.ArrayList;
-import  java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-
+import java.util.*;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,58 +25,85 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CommentServiceImpl implements CommentService {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     @Autowired
     private KpiCommentRepository kpiCommentRepository;
 
- public List<KPIComments> findCommentByKPIIdList(String projectBasicConfig,String kpi){
-     final ModelMapper modelMapper = new ModelMapper();
-
-     final List<KPIComments> kpiComment1 = kpiCommentRepository.findByCommentKpiWiseKpiIdList(projectBasicConfig,kpi);
-    List<KPIComments> commentKpiWise   = kpiComment1.stream().map(h1 -> modelMapper.map(h1 ,KPIComments.class)).collect(Collectors.toList());
-          return kpiComment1;
-    }
+    @Autowired
+    private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 
     @Override
-    public List<CommentKpiWise> findCommentByKPIId(String projectBasicConfig,String kpi) {
-        final ModelMapper modelMapper = new ModelMapper();
-        List<CommentKpiWise> finalCommentKpiWise = new ArrayList<>();
+    public Map<String, Object>  findCommentByKPIId(String projectBasicConfig,String kpi) {
 
         List<KPIComments>  kpiComments =  kpiCommentRepository.findByCommentKpiWiseKpiId(projectBasicConfig,kpi);
+        LOGGER.info("Received all matching comment from Db {}", kpiComments);
 
+
+        Map<String, Object> mappedCollection= new LinkedHashMap<>();
         if(kpiComments !=null && !kpiComments.isEmpty()) {
-            //Converted Entity class into Model class
-            List<KPIComments> commentKpiWise   = kpiComments.stream().map(h1 -> modelMapper.map(h1 ,KPIComments.class)).collect(Collectors.toList());
+            List<CommentInfo> finalCommentInfo =commentMappingOperation(kpi, kpiComments);
+            mappedCollection.put("ProjectBasicConfig",projectBasicConfig);
+            mappedCollection.put("KpiId",kpi);
+            mappedCollection.put("CommentsInfo",finalCommentInfo);
+         }
+        LOGGER.info("final filter comments of matching kpiId {}", mappedCollection);
 
-            for (KPIComments var1 : commentKpiWise) {
-                List<CommentKpiWise> ckw = var1.getCommentKpiWise();
-                 if(ckw !=null) {
-                     for (CommentKpiWise var : ckw) {
-                         //Checking condition with kpiId and adding into list
-                               if (kpi.equalsIgnoreCase(var.getKpiId())) {
-                                   finalCommentKpiWise.add(var);
-                                  List<CommentInfo> commentInfo = var.getCommentInfo();
-                                 LOGGER.info(var.getCommentInfo().toString());
-                         }
-                     }
-                 }
-            }
-        }
-
-        return finalCommentKpiWise;
-
+        return mappedCollection;
     }
-
-
 
     @Override
     public boolean submitComment(CommentSubmitDTO comment) {
 
         final ModelMapper modelMapper = new ModelMapper();
-        //Converted Model class into Entity class
-        final KPIComments kpicomments = modelMapper.map(comment, KPIComments.class);
-       kpiCommentRepository.save(kpicomments);
+        setCommentOnDate(comment);
+       final KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
+        final KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
+        kpiCommentRepository.save(kpiComments);
+        kpiCommentsHistoryRepository.save(kpiCommentsHistory);
         return true;
     }
+    private List<CommentInfo> commentMappingOperation(String kpi, List<KPIComments> kpiComments) {
+
+        List<CommentInfo> kpiIdMappedWithCommentInfo=new ArrayList<>();
+
+        for (KPIComments var1 : kpiComments) {
+            List<CommentKpiWise> kpiWiseList = var1.getCommentKpiWise();
+            if(kpiWiseList !=null) {
+                for (CommentKpiWise var2 : kpiWiseList) {
+                    if (kpi.equalsIgnoreCase(var2.getKpiId())) {
+                        kpiIdMappedWithCommentInfo.addAll(var2.getCommentInfo());
+                       /*
+                        List<KPIComments>  kpiComments1 =  kpiCommentRepository.findByCommentKpiWiseKpiId(projectBasicConfig,kpi);
+                       if(kpiComments1.size()> Constant.PER_KPI_COMMENTS_DATA_STORE_COUNT)
+                        {
+                            kpiCommentRepository.delete();
+                        }
+
+                        */
+
+                    }
+                }
+            }
+        }
+        return kpiIdMappedWithCommentInfo;
+    }
+
+    private void setCommentOnDate(CommentSubmitDTO comment)
+    {
+
+        List<CommentKpiWise> commentKpiWise1=   comment.getCommentKpiWise();
+        for(CommentKpiWise var1 : commentKpiWise1)
+        {
+            List<CommentInfo> commentInfo= var1.getCommentInfo();
+            if(commentInfo != null) {
+                for (CommentInfo var2 : commentInfo) {
+                    var2.setCommentOn(new Date());
+                }
+            }
+
+
+        }
+    }
+
 }

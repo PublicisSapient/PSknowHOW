@@ -4,7 +4,6 @@ package com.publicissapient.kpidashboard.common.model.comment;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder

@@ -132,6 +132,8 @@ public final class Constant {
 	public static final String CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL = "additionalFilterHierLevel";
 	public static final String RESOLUTION_TYPE_FOR_REJECTION = "Resolution Type for Rejection";
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
+	public static final Integer PER_KPI_COMMENTS_DATA_STORE_COUNT = 10;
+
 
 
 	private Constant() {

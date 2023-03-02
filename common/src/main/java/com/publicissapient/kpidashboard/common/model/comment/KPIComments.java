@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.Map;
+
 
 @Data
 @Builder
@@ -19,7 +19,6 @@ public class KPIComments extends BasicModel {
     private String node;
     private String projectBasicConfig;
     private List<CommentKpiWise> commentKpiWise;
-
 
 
 }

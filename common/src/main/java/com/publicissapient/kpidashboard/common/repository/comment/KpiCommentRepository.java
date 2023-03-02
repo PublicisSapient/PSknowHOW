@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.common.repository.comment;
 
-import com.publicissapient.kpidashboard.common.model.comment.CommentKpiWise;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
