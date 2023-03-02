@@ -852,7 +852,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     uploadCertificate(file): Observable<object> {
         const fileFormData = new FormData();
         fileFormData.append('file', file);
-        return this.http.post<object>(this.uploadCert, fileFormData).pipe(tap((res) => {
-        }));
+        return this.http.post<object>(this.uploadCert, fileFormData);
     }
 }
