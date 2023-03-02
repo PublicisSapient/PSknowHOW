@@ -185,8 +185,7 @@ export class JiraConfigComponent implements OnInit {
       this.bambooPlanList = [];
       this.showLoadingOnFormElement('planName');
       this.http.getPlansForBamboo(connectionId).subscribe((data) => {
-        try {
-          if (data.success) {
+          if (data.success && data?.data?.length > 0) {
             this.bambooProjectDataFromAPI = [...data.data];
             this.bambooPlanList = [...this.bambooProjectDataFromAPI].map(
               (item) => ({ planName: item.projectAndPlanName }),
@@ -202,21 +201,13 @@ export class JiraConfigComponent implements OnInit {
             this.toolForm?.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
-
+            if (this.toolForm?.controls['jobType'].value === 'Build') {
+              this.messenger.add({
+                severity: 'error',
+                summary: data.message,
+              });
+            }
           }
-        } catch (error) {
-          this.bambooPlanList = [];
-          this.toolForm?.controls['planKey'].setValue('');
-          this.toolForm?.controls['branchKey'].setValue('');
-          this.bambooBranchList = [];
-          this.hideLoadingOnFormElement('planName');
-          if (this.toolForm?.controls['jobType'].value === 'Build') {
-            this.messenger.add({
-              severity: 'error',
-              summary: error.message,
-            });
-          }
-        }
       });
     }
 
@@ -601,7 +592,8 @@ export class JiraConfigComponent implements OnInit {
     switch (this.urlParam) {
       case 'Bamboo':
         if (value.toLowerCase() === 'build') {
-          if (this.bambooPlanList?.length == 0) {
+          const planField =this.formTemplate?.elements?.find(element => element.id === 'planName');
+          if (this.bambooPlanList?.length == 0 && !planField?.isLoading) {
             this.messenger.add({
               severity: 'error',
               summary: 'No plan details found',
