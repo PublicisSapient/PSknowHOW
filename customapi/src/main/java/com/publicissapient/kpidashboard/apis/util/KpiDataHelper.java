@@ -144,7 +144,7 @@ public final class KpiDataHelper {
 			String subGroupCategory, FilterHelperService flterHelperService) {
 		Map<String, List<KanbanJiraIssue>> projectAndDateWiseTicketMap = new HashMap<>();
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
-		List<String> addFilterCategoryList = new ArrayList(addFilterCat.keySet());
+		List<String> addFilterCategoryList = new ArrayList<>(addFilterCat.keySet());
 		if (Constant.DATE.equals(subGroupCategory) || addFilterCategoryList.contains(subGroupCategory)) {
 			projectAndDateWiseTicketMap = ticketList.stream()
 					.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId));
@@ -165,7 +165,7 @@ public final class KpiDataHelper {
 			List<KanbanIssueCustomHistory> ticketList, String subGroupCategory, FilterHelperService flterHelperService) {
 		Map<String, List<KanbanIssueCustomHistory>> projectAndDateWiseTicketMap = new HashMap<>();
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
-		List<String> addFilterCategoryList = new ArrayList(addFilterCat.keySet());
+		List<String> addFilterCategoryList = new ArrayList<>(addFilterCat.keySet());
 		if (Constant.DATE.equals(subGroupCategory) || addFilterCategoryList.contains(subGroupCategory)) {
 			projectAndDateWiseTicketMap = ticketList.stream()
 					.collect(Collectors.groupingBy(KanbanIssueCustomHistory::getBasicProjectConfigId));
@@ -184,7 +184,7 @@ public final class KpiDataHelper {
 	public static Map<String, Map<String, List<KanbanCapacity>>> createDateWiseCapacityMap(
 			List<KanbanCapacity> ticketList, String subGroupCategory, FilterHelperService flterHelperService) {
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
-		List<String> addFilterCategoryList = new ArrayList(addFilterCat.keySet());
+		List<String> addFilterCategoryList = new ArrayList<>(addFilterCat.keySet());
 		Map<String, Map<String, List<KanbanCapacity>>> projectAndDateWiseCapacityMap = new HashMap<>();
 		if (Constant.DATE.equals(subGroupCategory) || addFilterCategoryList.contains(subGroupCategory)) {
 			Map<String, List<KanbanCapacity>> projectWiseCapacityMap =  ticketList.stream()
@@ -379,9 +379,15 @@ public final class KpiDataHelper {
 				filterJiraIssue.setPriority(sprintIssue.getPriority());
 				filterJiraIssue.setStatus(sprintIssue.getStatus());
 				filterJiraIssue.setTypeName(sprintIssue.getTypeName());
-				if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
+				if(null!=filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()){
+					filterJiraIssue.setRemainingEstimateMinutes((filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()));
+				}
+				else if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
 					Double remainingEst = (sprintIssue.getRemainingEstimate()) / 60;
 					filterJiraIssue.setRemainingEstimateMinutes(remainingEst.intValue());
+				}
+				if(null!=filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()){
+					filterJiraIssue.setOriginalEstimateMinutes((filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 				}
 				filteredIssues.add(filterJiraIssue);
 			}
