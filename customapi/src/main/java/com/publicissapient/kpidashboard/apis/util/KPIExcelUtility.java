@@ -1145,7 +1145,7 @@ public class KPIExcelUtility {
         kpiExcelData.add(excelData);
     }
 
-	public static void populateWorkRemainingIterationData(List<IterationKpiModalValue> overAllmodalValues,
+	public static void populateIterationKpiWithPCD(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
 			Map<String, IterationPotentialDelay> issueWiseDelay) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -1168,22 +1168,15 @@ public class KPIExcelUtility {
                         ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
                         : "0m");
         if(jiraIssue.getRemainingEstimateMinutes()!=null){
-            iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
+            String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
+            iterationKpiModalValue.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
             if(jiraIssue.getRemainingEstimateMinutes() > 0){
-                iterationKpiModalValue.setRemainingTimeInDays(CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes()));
+                iterationKpiModalValue.setRemainingTimeInDays(remEstimate);
             }
         }
         else{
             iterationKpiModalValue.setRemainingTimeInDays("0m");
         }
-
-		/*iterationKpiModalValue.setRemainingTimeInDays(
-				(jiraIssue.getRemainingEstimateMinutes() != null && jiraIssue.getRemainingEstimateMinutes() > 0)
-						? CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes())
-						: "0m");
-        if(jiraIssue.getRemainingEstimateMinutes() != null) {
-            iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
-        }*/
 		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
 				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
 				: "-");

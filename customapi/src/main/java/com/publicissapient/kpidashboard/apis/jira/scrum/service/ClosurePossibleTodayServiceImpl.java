@@ -260,7 +260,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
@@ -279,30 +279,4 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		return iterationPotentialDelayList;
 	}
 
-	/**
-	 * setting in progress and open issues
-	 * 
-	 * @param fieldMapping
-	 * @param allIssues
-	 * @param inProgressIssues
-	 * @param openIssues
-	 * @return
-	 */
-	private void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
-			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
-				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress()
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-		} else {
-			openIssues.addAll(jiraIssuesWithDueDate);
-		}
-
-	}
 }

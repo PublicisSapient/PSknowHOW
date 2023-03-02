@@ -3174,11 +3174,14 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potential not get completed. It also represents the corresponding size of work likely to spill."
+          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potentially not get completed. This prediction is based on the the Predicted Completion date i.e if Predicted completion completion date > Sprint end date for an issue, it is considered to be potential spill."
         },
         {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "type": "link",
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
         }
       ]
     },

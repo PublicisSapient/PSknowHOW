@@ -186,7 +186,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					int remHours = 0;
 					int delay=0;
 					for (JiraIssue jiraIssue : issues) {
-						KPIExcelUtility.populateWorkRemainingIterationData(overAllmodalValues, modalValues, jiraIssue, fieldMapping,issueWiseDelay);
+						KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping,issueWiseDelay);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getRemainingEstimateMinutes()) {
@@ -268,7 +268,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay, List<Integer> overallPotentialDelay) {
 		int finalDelay=0;
 		if(issueWiseDelay.containsKey(jiraIssue.getNumber())){
-			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber()).get(0);
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			finalDelay=potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 			overallPotentialDelay.set(0, overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
 		}
@@ -297,7 +297,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
@@ -316,28 +316,4 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		return iterationPotentialDelayList;
 	}
 
-
-	/**
-	 * setting in progress and open issues
-	 * @param fieldMapping
-	 * @param allIssues
-	 * @param inProgressIssues
-	 * @param openIssues
-	 * @return
-	 */
-	private void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues, List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream().filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress()
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-		} else {
-			openIssues.addAll(jiraIssuesWithDueDate);
-		}
-
-	}
 }

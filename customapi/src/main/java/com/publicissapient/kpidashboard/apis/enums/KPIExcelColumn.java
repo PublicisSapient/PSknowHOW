@@ -133,7 +133,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
     ISSUES_LIKELY_TO_SPILL("kpi123",
-            Arrays.asList("Issue Id", "Issue Type","Issue Description", "Issue Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Hours","Predicted Completion Date")),
+            Arrays.asList("Issue Id", "Issue Type","Issue Description", "Issue Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Estimate","Predicted Completion Date")),
 
     SCOPE_CHANGE("kpi120",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
