@@ -1,7 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.comment;
 
-import java.util.Date;
-
 
 import lombok.*;
 //import org.springframework.data.annotation.GeneratedValue;
@@ -23,7 +21,7 @@ public class CommentInfo {
 
     private  String commentBy;
 
-    private Date commentOn;
+    private String commentOn;
 
     private String comment;
 

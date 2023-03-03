@@ -23,12 +23,12 @@ public class CommentController {
 public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestParam String projectBasicConfig, String kpi) {
 
     final Map<String, Object> mappedCommentInfo = commentService.findCommentByKPIId(projectBasicConfig,kpi);
-    if(mappedCommentInfo==null || mappedCommentInfo.isEmpty())
-    {
+    if(mappedCommentInfo== null || mappedCommentInfo.isEmpty())
+      {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new ServiceResponse(true, "search not found", mappedCommentInfo));
-    }
-    return ResponseEntity.status(HttpStatus.OK)
+                .body(new ServiceResponse(true, "Comment not found", mappedCommentInfo));
+       }
+     return ResponseEntity.status(HttpStatus.OK)
             .body(new ServiceResponse(true, "Found comments", mappedCommentInfo));
 
 }
@@ -42,7 +42,7 @@ public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestParam String pro
                     "Your Comment has been submitted", comment));
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
-                    "issue in comment saving ", comment));
+                    "Issue occur while saving the comment ", comment));
         }
 
     }

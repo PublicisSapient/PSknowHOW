@@ -7,6 +7,7 @@ import com.publicissapient.kpidashboard.common.model.comment.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comment.KPIComments;
 import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.commentshistory.KpiCommentsHistoryRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,11 @@ import com.publicissapient.kpidashboard.common.repository.comment.KpiCommentRepo
 
 
 import java.util.*;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 
 
 @Service
@@ -54,14 +56,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean submitComment(CommentSubmitDTO comment) {
-
-        final ModelMapper modelMapper = new ModelMapper();
-        setCommentOnDate(comment);
-       final KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
-        final KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
-        kpiCommentRepository.save(kpiComments);
-        kpiCommentsHistoryRepository.save(kpiCommentsHistory);
-        return true;
+        try {
+            final ModelMapper modelMapper = new ModelMapper();
+            setCommentOnDate(comment);
+            KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
+            final KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
+            kpiCommentRepository.saveIntoCollection(kpiComments);
+            kpiCommentsHistoryRepository.save(kpiCommentsHistory);
+           return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            log.error("Issue occur while saving the comment");
+        }
+        return false;
     }
     private List<CommentInfo> commentMappingOperation(String kpi, List<KPIComments> kpiComments) {
 
@@ -69,40 +78,57 @@ public class CommentServiceImpl implements CommentService {
 
         for (KPIComments var1 : kpiComments) {
             List<CommentKpiWise> kpiWiseList = var1.getCommentKpiWise();
-            if(kpiWiseList !=null) {
+            if(CollectionUtils.isNotEmpty(kpiWiseList)){
                 for (CommentKpiWise var2 : kpiWiseList) {
                     if (kpi.equalsIgnoreCase(var2.getKpiId())) {
                         kpiIdMappedWithCommentInfo.addAll(var2.getCommentInfo());
-                       /*
-                        List<KPIComments>  kpiComments1 =  kpiCommentRepository.findByCommentKpiWiseKpiId(projectBasicConfig,kpi);
-                       if(kpiComments1.size()> Constant.PER_KPI_COMMENTS_DATA_STORE_COUNT)
-                        {
-                            kpiCommentRepository.delete();
-                        }
-
-                        */
-
                     }
                 }
             }
-        }
+           }
         return kpiIdMappedWithCommentInfo;
-    }
+     }
 
     private void setCommentOnDate(CommentSubmitDTO comment)
     {
-
-        List<CommentKpiWise> commentKpiWise1=   comment.getCommentKpiWise();
-        for(CommentKpiWise var1 : commentKpiWise1)
+      String projectBasicConfig=  comment.getProjectBasicConfig();
+        List<CommentKpiWise> commentKpiWise=   comment.getCommentKpiWise();
+        for(CommentKpiWise var1 : commentKpiWise)
         {
+            String kpi=var1.getKpiId();
+
+            oldKpiCommentDelete(projectBasicConfig, kpi);
+
             List<CommentInfo> commentInfo= var1.getCommentInfo();
-            if(commentInfo != null) {
+            if(CollectionUtils.isNotEmpty(commentInfo)) {
                 for (CommentInfo var2 : commentInfo) {
-                    var2.setCommentOn(new Date());
+                     if(var2 !=null) {
+                         String date = dateTimeFormatter(new Date(), Constant.KPI_COMMENT_ON_DATE_FORMAT);
+                         var2.setCommentOn(date);
+                     }
                 }
             }
 
 
+        }
+    }
+
+    private void oldKpiCommentDelete(String projectBasicConfig, String kpi) {
+         if (projectBasicConfig != null && kpi != null )
+          {
+            List<KPIComments> kpiCommentsSorted = kpiCommentRepository.findByKpiCommentSortByCommentOn(projectBasicConfig, kpi);
+            LOGGER.info(" kpiCommentsSorted list basis on commentOn filed  {}", kpiCommentsSorted.size());
+
+            if (CollectionUtils.isNotEmpty(kpiCommentsSorted) &&
+                    kpiCommentsSorted.size() > Constant.PER_KPI_COMMENTS_DATA_STORE_COUNT)
+                 {
+                   KPIComments oldCommentId = kpiCommentsSorted.get(0);
+                   Boolean result = kpiCommentRepository.deleteKpiCommentsData(oldCommentId);
+                     if (result) {
+                      LOGGER.info(" Old Comment got deleted from kpi_comments collection & document id is :{}", oldCommentId);
+                      }
+
+            }
         }
     }
 
