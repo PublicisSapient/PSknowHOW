@@ -71,6 +71,7 @@
     color: #707070;
     vertical-align: middle;
     margin-top: -2px;
+    margin-right: 5px;
 }
 
 .kpi-download-icon{
@@ -97,4 +98,76 @@
 
 ::ng-deep .kpi-filter .ng-placeholder {
     top: 5px;
+}
+
+:host::ng-deep .p-dialog{
+    width: auto !important;
+    max-width: 90vw !important;
+    min-width: 544px;
+}
+
+:host ::ng-deep.p-dialog-header-icons{
+    top: -8px;
+    right: -8px;
+    border-radius: 2px;
+    background-color: black;
+    border: none;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+}
+
+:host ::ng-deep .p-overlaypanel {
+    background: black;
+    color: #ffffff;
+    width: 20px;
+    height: 20px;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    /* border-radius: 50%; */
+    position: absolute;
+    top: -0.7rem;
+    right: -0.7rem;
+}
+
+:host ::ng-deep.p-overlaypanel .p-overlaypanel-close{
+        /* background: #3F51B5; */
+    /* color: #ffffff; */
+    width: 1rem;
+    height: 1rem;
+    /* transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; */
+    /* border-radius: 50%; */
+    position: absolute;
+    /* top: -1.25rem; */
+    /* right: -1.25rem; */
+    top: -0.5rem;
+    right: -0.5rem;
+    border-radius: 2px;
+    /* background-color: black; */
+    border: none;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+}
+
+.comment{
+    resize: none;
+    width: 100%;
+    height: 10rem;
+    margin-top: 5px;
+}
+
+.comment-box{
+    border: 1px solid;
+    border-radius: 0px;
+    padding: 0px 10px 0px 10px;
+}
+
+.comment-combo{
+    margin: 20px 0px 20px 0px;
+}
+
+.p-button{
+    margin-left: 5px;
 }

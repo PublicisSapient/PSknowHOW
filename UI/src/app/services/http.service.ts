@@ -129,6 +129,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
+    private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
+    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
 
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
@@ -846,6 +848,14 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     deleteProcessorData(toolId, projectId) {
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
+    }
+
+    getComment(kpiID, projectId){
+        return this.http.get<any>(`${this.getCommentUrl}?projectBasicConfig=${projectId}&kpi=${kpiID}`);
+    }
+
+    submitComment(data): Observable<any> {
+        return this.http.post<object>(this.submitCommentUrl, data);
     }
 
         /** POST: Upload ldap certificate file */

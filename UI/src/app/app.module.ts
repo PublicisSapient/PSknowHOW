@@ -64,6 +64,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 
 /******************************************************/
@@ -165,7 +166,8 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         AccordionModule,
         DialogModule,
         FontAwesomeModule,
-        DragDropModule
+        DragDropModule,
+        OverlayPanelModule
     ],
     providers: [
         ExcelService,

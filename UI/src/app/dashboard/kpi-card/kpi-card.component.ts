@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
+import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-kpi-card',
@@ -28,8 +29,55 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
+  displayCommentsList: boolean;
+  showAddComment: boolean = false;
+  commentText = '';
+  selectedFilters = [];
+  selectedTabIndex = 0;
+  dummyData = {
+    "node": "nodevalue",
+    "projectBasicConfig": "projectId",
+    "commentKpiWise": [
+      {
+        "kpiId": "kpi14",
+        "commentInfo": [
+          {
+            "commentId": "1",
+            "commentBy": "pravin",
+            "commentOn": "22/02/2023 10:00",
+            "comment": "With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team"
+          },
+          {
+            "commentId": "2",
+            "commentBy": "patil",
+            "commentOn": "23/02/2023 17:00",
+            "comment": "Less data required"
+          }
+        ]
+      },
+      {
+        "kpiId": "105",
+        "commentInfo": [
+          {
+            "commentId": "1",
+            "commentBy": "tom",
+            "commentOn": "26/02/2023 20:00",
+            "comment": "More data required"
+          },
+          {
+            "docId": "2",
+            "commentBy": "hanks",
+            "commentOn": "27/02/2023 22:00",
+            "comment": "Less data required"
+          }
+        ]
+      }
+    ]
+  }
+  commentsList = [];
+  
 
-  constructor(private service: SharedService) {
+  constructor(private service: SharedService, private http_service: HttpService) {
   }
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -116,6 +164,61 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     } else {
       this.filterMultiSelectOptionsData = {};
     }
+  }
+
+  openComments(){
+    this.selectedFilters = []
+    const sharedObj = this.service.getFilterObject()
+    for (let i = 0; i < sharedObj.filterApplyData.ids.length; i++) {
+      this.selectedFilters.push(sharedObj.filterData.filter(data => {
+        return data.nodeId === sharedObj.filterApplyData.ids[i]
+      })[0]);
+    }
+  }
+
+  submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
+    const reqObj = {
+      node: 'nodeValue',
+      projectBasicConfig: filterData.nodeId,
+      commentKpiWise: [
+        {
+          kpiId: this.kpiData?.kpiId,
+          commentInfo: [
+            {
+              commentBy: localStorage.getItem('user_name'),
+              commentOn: new Date(),
+              comment: this.commentText
+            }
+          ]
+        }
+      ]
+    }
+    this.http_service.submitComment(reqObj).subscribe((response) => {
+      
+    }, error => {
+      console.log(error);
+      // this.isFeedbackSubmitted = false;
+      setTimeout(() => {
+        // this.formMessage = '';
+      }, 3000);
+    });
+  }
+
+  viewAllHandler(){
+    console.log('kpiid', this.kpiData?.kpiId);
+
+    this.displayCommentsList = true;
+    this.http_service.getComment(this.kpiData?.kpiId, this.selectedFilters[this.selectedTabIndex].nodeId)
+      .subscribe(response => {
+        this.commentsList = response.data.CommentsInfo;
+      });
+    // this.commentsList = this.dummyData.commentKpiWise.filter(comment=>{
+    //   return comment.kpiId === this.kpiData?.kpiId
+    // })[0]?.commentInfo;
+  }
+
+  commentTabChange(data){
+    this.selectedTabIndex = data.index;
   }
 
   ngOnDestroy() {
