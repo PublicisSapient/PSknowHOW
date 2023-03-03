@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
-import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.*;
@@ -79,7 +78,7 @@ public class HandleJiraHistory {
 
         List<JiraHistoryChangeLog> fieldHistoryLog;
         String field = jiraField;
-        if(StringUtils.isNotEmpty(jiraCustomField.trim())){
+        if(StringUtils.isNotEmpty(jiraCustomField.trim()) && ObjectUtils.isNotEmpty(fields.get(jiraCustomField.trim()))){
             field = fields.get(jiraCustomField.trim()).getName();
             log.info("In getCustomFieldChangeLog for custom field : "+field+" and fieldId : "+jiraCustomField);
         }
