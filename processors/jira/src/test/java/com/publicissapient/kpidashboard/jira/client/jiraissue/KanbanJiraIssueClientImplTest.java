@@ -3,10 +3,12 @@ package com.publicissapient.kpidashboard.jira.client.jiraissue;
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -64,6 +66,9 @@ public class KanbanJiraIssueClientImplTest {
     @Mock
     private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
 
+    @Mock
+    private AssigneeDetailsRepository assigneeDetailsRepository;
+
     @Test
     public void processesJiraIssuesTest() {
         KanbanJiraIssue kanbanJiraIssue = getKanbanJiraIssue();
@@ -119,6 +124,7 @@ public class KanbanJiraIssueClientImplTest {
         when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchies);
         when(kanbanJiraRepo.findTopByBasicProjectConfigId(Mockito.anyString())).thenReturn(getKanbanJiraIssue());
         when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(Arrays.asList(getKanbanJiraIssue()));
+        when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(Mockito.anyString(), Mockito.anyString())).thenReturn(new AssigneeDetails());
         Map<String, LocalDateTime> map = new HashMap<>();
         map.put("KnowHOW", LocalDateTime.now());
         doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
@@ -221,7 +227,7 @@ public class KanbanJiraIssueClientImplTest {
 
     @Test
     public void setJiraAssigneeDetailsTest() {
-        kanbanJiraIssueClient.setJiraAssigneeDetails(getKanbanJiraIssue(), null);
+        kanbanJiraIssueClient.setJiraAssigneeDetails(getKanbanJiraIssue(), null , null );
     }
 
     @Test
