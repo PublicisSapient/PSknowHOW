@@ -232,7 +232,7 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 									Double.valueOf(issueCount), originalEstimate, null, "", CommonConstant.DAY,
 									modalValues);
 						}
-						IterationKpiData delay = new IterationKpiData(DELAY, Double.valueOf(delayCount), null, null, "",
+						IterationKpiData delay = new IterationKpiData(DELAY, Double.valueOf(getDelayInMinutes(delayCount)), null, null, CommonConstant.DAY,
 								null);
 						data.add(issueCountsStoryPoints);
 						data.add(delay);
@@ -251,8 +251,8 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 						Double.valueOf(overAllIssueCount.get(0)), overAllOriginalEstimate.get(0), null, "",
 						CommonConstant.DAY, overAllmodalValues);
 			}
-			IterationKpiData overAllDelay = new IterationKpiData(DELAY, Double.valueOf(overAllDelayCount.get(0)), null,
-					null, "", null);
+			IterationKpiData overAllDelay = new IterationKpiData(DELAY, Double.valueOf(getDelayInMinutes(overAllDelayCount.get(0))), null,
+					null, CommonConstant.DAY, null);
 			data.add(overAllIssueCountsStoryPoints);
 			data.add(overAllDelay);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
@@ -330,5 +330,7 @@ public class WorkCompletedServiceImpl extends JiraKPIService<Integer, List<Objec
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
 	}
-
+	private int getDelayInMinutes(int delay) {
+		return delay*60*8;
+	}
 }

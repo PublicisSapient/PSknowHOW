@@ -20,6 +20,9 @@
                     <p *ngSwitchCase="'paragraph'" class="paragraph p-pl-3 p-mb-0 kpi-info-list">
                         {{item?.value}}
                     </p>
+                    <p *ngSwitchCase="'link'" class="paragraph p-pl-3 p-mb-0 kpi-info-list">
+                        {{item?.kpiLinkDetail?.text}} <a [href]="item?.kpiLinkDetail?.link" class="link" target="_blank">{{item?.kpiLinkDetail?.link}}</a>
+                    </p>
                     
                     <table *ngSwitchCase="'table'" class="p-d-flex p-flex-column p-align-center border">
                         <ng-container *ngFor="let element of item?.tableRows;last as isLast">
