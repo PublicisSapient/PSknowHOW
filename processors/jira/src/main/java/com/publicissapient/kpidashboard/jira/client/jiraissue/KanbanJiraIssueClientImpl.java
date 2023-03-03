@@ -757,7 +757,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 * @param projectTraceLog
 	 * @param lastSavedEntryUpdatedDateByType
 	 */
-	private static void clearEntryDateForAssigneeUpdates(ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog projectTraceLog, Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType) {
+	private void clearEntryDateForAssigneeUpdates(ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog projectTraceLog, Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType) {
 		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
 			lastSavedEntryUpdatedDateByType.clear();
 		}
