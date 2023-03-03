@@ -212,7 +212,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				filterDataList.add(filterDataOverall);
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIECHART.getColumns());
+				kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIECHART.getColumns());
 				kpiElement.setExcelData(excelData);
+
 				sortListByKey(filterDataList);
 				// filterDataList will consist of dataCountGroup for all the available priorities such as P1, P2, P3, P4, Overall etc.
 				kpiElement.setTrendValueList(filterDataList);
