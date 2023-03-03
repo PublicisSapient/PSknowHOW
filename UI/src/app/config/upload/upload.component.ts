@@ -709,9 +709,7 @@ export class UploadComponent implements OnInit {
                 this.reqObj['sprintNodeId'] = this.selectedSprintId;
             }
         } else {
-            if(this.selectedView === 'upload_tep'){
-                this.reqObj['executionDate'] = this.executionDate;
-            }
+            this.selectedView === 'upload_tep' ? this.reqObj['executionDate'] = this.executionDate : '';
         }
         if (this.selectedView === 'upload_tep') {
             this.popupForm = new UntypedFormGroup({

@@ -30,6 +30,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from 'primeng/fieldset';
 import { PasswordModule } from 'primeng/password';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+// import { ButtonModule, SharedModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { AutoCompleteComponent } from '../component/auto-complete/auto-complete.component';
 import { ConfigComponent } from './config.component';
@@ -41,7 +42,7 @@ import { MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ScrumKanbanPipe } from './pipes/scrumKanbanPipe';
-
+// import { TextMaskPipe } from './pipes/textMaskPipe';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ProfileModule } from './profile/profile.module';
@@ -73,6 +74,7 @@ import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithC
     MultiSelectModule,
     ChipsModule,
     AccordionModule,
+    // ButtonModule, SharedModule,
     FieldsetModule,
     DropdownModule,
     PasswordModule,
@@ -98,11 +100,13 @@ import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithC
     UploadComponent,
     DashboardconfigComponent,
     ScrumKanbanPipe,
+    // TextMaskPipe,
     AdvancedSettingsComponent,
     AdSettingsComponent,
     ViewNewUserAuthRequestComponent,
     TypeofPipe,
     CompareStartEndWithCurrentDatePipe
+    // FilterComponent
   ],
   providers: [MessageService, ConfirmationService]
 

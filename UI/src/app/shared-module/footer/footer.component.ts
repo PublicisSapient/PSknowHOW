@@ -17,9 +17,6 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { HttpService } from 'src/app/services/http.service';
-import { SharedService } from 'src/app/services/shared.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
@@ -28,35 +25,11 @@ import { Router } from '@angular/router';
 })
 export class FooterComponent implements OnInit {
   currentYear: number;
-  currentversion : string;
-  isSide : boolean;
 
-  constructor(private httpService : HttpService,private sharedService : SharedService,public router : Router) { }
+  constructor() { }
 
   ngOnInit() {
     this.currentYear = (new Date()).getFullYear();
-    this.getMatchVersions();
-    this.sharedService.isSideNav.subscribe(flag=>{
-       this.isSide = flag;
-    })
-  }
-
-  // getting the version details from server
-  getMatchVersions() {
-    this.httpService.getMatchVersions().subscribe((filterData) => {
-      if (filterData && filterData.versionDetailsMap) {
-        this.currentversion = filterData.versionDetailsMap.currentVersion;
-      }
-    });
-  }
-
-  styleObj():object{
-    let marginLeft = this.isSide ? '16rem' : '5rem'; 
-    if(this.router.url.split('/').includes('Help') || this.router.url.split('/').includes('Config') || this.router.url.split('/').includes('login')){
-      marginLeft = '0rem'
-    }
-    return {'margin-left': marginLeft}
-
   }
 
 }

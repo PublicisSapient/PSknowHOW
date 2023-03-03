@@ -31,6 +31,10 @@ import { RsaEncryptionService } from '../../services/rsa.encryption.service';
 export class AdSettingsComponent implements OnInit {
   adSettingsForm: UntypedFormGroup;
   adSettingsFormObj: any;
+  // standardLoginForm: UntypedFormGroup;
+  // standardLoginFormObj: any;
+  // pingAuthenticationForm: UntypedFormGroup;
+  // pingAuthenticationFormObj: any;
   submitted = false;
   loginSettingsTypes = [{
     name: 'standardLogin',
@@ -57,9 +61,11 @@ export class AdSettingsComponent implements OnInit {
   getAuthSettings() {
     this.initializeFields();
     this.adSettingsForm = this.formBuilder.group(this.adSettingsFormObj);
+    // this.standardLoginForm = this.formBuilder.group(this.standardLoginFormObj);
+    // this.pingAuthenticationForm = this.formBuilder.group(this.pingAuthenticationFormObj);
     this.http.getAuthConfig().subscribe(response => {
       if (response && response.success) {
-        if (response.data && response.data.authTypeStatus) {
+        if (response && response.data && response.data.authTypeStatus) {
           this.selectedTypes = [];
           if (response.data.authTypeStatus.standardLogin) {
             this.selectedTypes.push({
@@ -109,7 +115,11 @@ export class AdSettingsComponent implements OnInit {
       }];
     }
 
-    
+    // if (!this.selectedTypes.length) {
+    //   this.disableSave = true;
+    // } else {
+    //   this.disableSave = false;
+    // }
   }
 
   // convenience getter for easy access to form fields
@@ -117,7 +127,13 @@ export class AdSettingsComponent implements OnInit {
     return this.adSettingsForm.controls;
   }
 
-  
+  // get standardLogin() {
+  //   return this.standardLoginForm.controls;
+  // }
+
+  // get pingForm() {
+  //   return this.pingForm.controls;
+  // }
 
 
   initializeFields() {
@@ -130,7 +146,15 @@ export class AdSettingsComponent implements OnInit {
       domain: ['', Validators.required]
     };
 
-    
+    // this.standardLoginFormObj = {
+    //   username: ['', Validators.required],
+    //   password: ['', Validators.required]
+    // };
+
+    // this.pingAuthenticationFormObj = {
+    //   field1: ['', Validators.required],
+    //   field2: ['', Validators.required]
+    // };
   }
 
   submit() {

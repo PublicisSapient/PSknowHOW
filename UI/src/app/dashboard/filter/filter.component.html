@@ -1,240 +1,225 @@
-<div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
-   <div class="logo cursor-pointer">
-      <img *ngIf="logoImage" src={{logoImage}} routerLink="mydashboard" routerLinkActive="active"
-         (click)="navigateToSelectedTab()" alt="Logo" />
-      <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG" routerLink="mydashboard" routerLinkActive="active"
-         (click)="navigateToSelectedTab()" alt="Logo" />
+<button class="gototop" title="Go to top"><a href="#top" class="goTo"><span class="fa fa-chevron-circle-up"
+         aria-hidden="true"></span></a></button>
+<div id="Filters" #filterDiv
+   class="tabs border-bottom p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
+
+   <!--Scrum/Kanban Switch starts-->
+   <div
+      *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
+      <input id="tab1" class="tab1" type="radio" name="tabs" [checked]='!kanban'>
+      <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedType('Scrum')" id="Layout-Scrum">
+         <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
+         <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
+      <input id="tab2" class="tab2" type="radio" name="tabs" [checked]='kanban'>
+      <label class="label2 rounded filter-btn" for="tab2" (click)="selectedType('Kanban')" id="Layout-Kanban">
+         <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
+         <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
    </div>
-   <div class="f"
-   *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
-      <div id="Filters" #filterDiv class="tabs p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
-         <div class="filter-nav p-justify-between"
-            *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'">
-            <form [formGroup]="filterForm">
-               <div class="p-d-flex p-justify-between p-align-center">
-                  <div class="p-d-flex p-align-end">
-                     <!-- Aggregation level -->
-                     <div class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
-                        <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
-                           (change)="handleSelect($event)" placeholder="Organization Level"
-                           id="Filter-Aggregation-Level" class="p-pb-0">
-                           <ng-option *ngFor="let item of hierarchyLevels" [value]="item.hierarchyLevelId">
-                              {{item?.hierarchyLevelName}}
-                           </ng-option>
-                        </ng-select>
+   <!--Scrum/Kanban Switch ends-->
+   <div class="filter-nav p-justify-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'"
+      >
+      <form [formGroup]="filterForm"
+        >
+         <div class="p-d-flex p-justify-between p-align-center">
+            <div class="p-d-flex p-align-end">
+               <!-- Aggregation level -->
+               <div class="form-check filter-box p-col-lg">
+                  <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
+                     (change)="handleSelect($event)" placeholder="Organization Level" id="Filter-Aggregation-Level"
+                     class="p-pb-0">
+                     <ng-option *ngFor="let item of hierarchyLevels" [value]="item.hierarchyLevelId">
+                        {{item?.hierarchyLevelName}}
+                     </ng-option>
+                  </ng-select>
+               </div>
+               <!-- Trend line value -->
+               <div class="form-check filter-box p-col-lg trend-line-container">
+                  <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
+                     (remove)="handleRemove()" [multiple]="true"
+                     [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(up to ' + (this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount) + ')'"
+                     [closeOnSelect]="false"
+                     [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount"
+                     class="trend-line-value p-pb-0" [clearable]="false">
+                     <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
+                     </ng-option>
+                     <ng-template ng-footer-tmp>
+                        <div class="p-d-flex p-justify-end p-align-center p-mt-1">
+                           <button pButton pRipple label="Cancel" icon="pi pi-times"
+                              class="p-button-secondary p-button-text p-mr-2 p-button-sm"
+                              (click)="handleClose()"></button>
+                           <button pButton pRipple label="Apply" icon="pi pi-save"
+                              class="p-button-secondary p-button-sm" (click)="onSelectedTrendValueChange()"
+                              [disabled]="filterForm.get('selectedTrendValue')?.value?.length == 0"></button>
+                           <!-- <button class="btn btn-filter rounded p-mr-2">Cancel</button> -->
+                           <!-- <button class="btn btn-filter rounded" (click)="applyChanges(true)">Apply</button> -->
+                        </div>
+                     </ng-template>
+                  </ng-select>
+               </div>
+            </div>
+            <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity'">
+               <!-- Date filter start -->
+               <div *ngIf="kanban && selectedDateFilter !== ''"
+                  class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
+                  <img src="../../../assets/img/ico-date.svg" alt="date" class="p-mr-1" />
+                  <span>{{selectedDateFilter}}</span>
+               </div>
+               <div class="position-relative" *ngIf="kanban">
+                  <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
+                     #dateToggleButton [ngClass]="{'active': toggleDateDropdown}"
+                     (click)="toggleDateDropdown = !toggleDateDropdown">
+                     Date
+                  </div>
+                  <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
+                     <div class="filter-options filter-date">
+                        <div class="p-buttonset">
+                           <button pButton type="button" class="p-button-secondary p-button-sm"
+                              *ngFor='let label of dateRangeFilter?.types'
+                              [ngClass]="{'btn-active': selectedDayType === label}" label={{label}}
+                              (click)="setSelectedDateType(label)"></button>
+                        </div>
+                        <div class="ui-g-12" *ngFor='let count of dateRangeFilter?.counts;'>
+                           <p-radioButton value="{{count}}" label="{{count}}" formControlName="date"
+                              inputId="{{count}}"></p-radioButton>
+                        </div>
                      </div>
-                     <!-- Trend line value -->
-                     <div class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
-                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
-                           (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(up to ' + (this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount) + ')'"
-                           [closeOnSelect]="false"
-                           [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount"
-                           class="trend-line-value p-pb-0" [clearable]="false">
-                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                           </ng-option>
-                           <ng-template ng-footer-tmp>
-                              <div class="p-d-flex p-justify-end p-align-center p-mt-1">
-                                 <button pButton pRipple label="Cancel" icon="pi pi-times"
-                                    class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                                    (click)="handleClose()"></button>
-                                 <button pButton pRipple label="Apply" icon="pi pi-save"
-                                    class="p-button-secondary p-button-sm" (click)="onSelectedTrendValueChange()"
-                                    [disabled]="filterForm.get('selectedTrendValue')?.value?.length == 0"></button>
-                                 <!-- <button class="btn btn-filter rounded p-mr-2">Cancel</button> -->
-                                 <!-- <button class="btn btn-filter rounded" (click)="applyChanges(true)">Apply</button> -->
-                              </div>
-                           </ng-template>
-                        </ng-select>
+                     <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
+                        <button pButton pRipple label="Cancel" icon="pi pi-times"
+                           class="p-button-secondary p-button-text p-mr-2 p-button-sm"
+                           (click)="toggleDateDropdown = false"></button>
+                        <button pButton pRipple label="Apply" icon="pi pi-save" class="p-button-secondary p-button-sm"
+                           (click)="applyChanges('date')"></button>
                      </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity'">
-                     <!-- Date filter start -->
-                     <div *ngIf="kanban && selectedDateFilter !== ''"
-                        class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
-                        <img src="../../../assets/img/ico-date.svg" alt="date" class="p-mr-1" />
-                        <span>{{selectedDateFilter}}</span>
+               </div>
+               <!-- Date filter end -->
+               <!-- additional filters start -->
+               <div class="p-d-flex"
+                  *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity'">
+                  <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
+                     <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
+                        [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
+                        (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
+                        [id]="item.hierarchyLevelId+'Btn'">
+                        {{item?.hierarchyLevelName}}
                      </div>
-                     <div class="position-relative" *ngIf="kanban">
-                        <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
-                           #dateToggleButton [ngClass]="{'active': toggleDateDropdown}"
-                           (click)="toggleDateDropdown = !toggleDateDropdown">
-                           Date
+                     <div class="filter-options-container add-filters-dropdown" [id]="item.hierarchyLevelId+'DDn'"
+                        *ngIf="toggleDropdownObj[item?.hierarchyLevelId] && filteredAddFilters[item.hierarchyLevelId]?.length > 0">
+                        <div class="filter-options">
+                           <label class="checkbox-modified"
+                              *ngFor="let key of filteredAddFilters[item.hierarchyLevelId]; let i = index">
+                              <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
+                                 [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
+                              <div *ngIf="item?.hierarchyLevelId === 'sprint'" [formGroupName]="item?.hierarchyLevelId">
+                                 <input type="checkbox" [formControlName]="key.nodeId"
+                                    [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
+                                    class="p-mr-1" />
+                              </div>
+                              {{key.nodeName}}
+                           </label>
                         </div>
-                        <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown"
-                           #dateDrpmenu>
-                           <div class="filter-options filter-date">
-                              <div class="p-buttonset">
-                                 <button pButton type="button" class="p-button-secondary p-button-sm"
-                                    *ngFor='let label of dateRangeFilter?.types'
-                                    [ngClass]="{'btn-active': selectedDayType === label}" label={{label}}
-                                    (click)="setSelectedDateType(label)"></button>
-                              </div>
-                              <div class="ui-g-12" *ngFor='let count of dateRangeFilter?.counts;'>
-                                 <p-radioButton value="{{count}}" label="{{count}}" formControlName="date"
-                                    inputId="{{count}}"></p-radioButton>
-                              </div>
-                           </div>
-                           <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
-                              <button pButton pRipple label="Cancel" icon="pi pi-times"
-                                 class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                                 (click)="toggleDateDropdown = false"></button>
-                              <button pButton pRipple label="Apply" icon="pi pi-save"
-                                 class="p-button-secondary p-button-sm" (click)="applyChanges('date')"></button>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Date filter end -->
-                     <!-- additional filters start -->
-                     <div class="p-d-flex"
-                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity'">
-                        <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
-                           <div
-                              class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
-                              [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
-                              (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
-                              [id]="item.hierarchyLevelId+'Btn'">
-                              {{item?.hierarchyLevelName}}
-                           </div>
-                           <div class="filter-options-container add-filters-dropdown" [id]="item.hierarchyLevelId+'DDn'"
-                              *ngIf="toggleDropdownObj[item?.hierarchyLevelId] && filteredAddFilters[item.hierarchyLevelId]?.length > 0">
-                              <div class="filter-options">
-                                 <label class="checkbox-modified"
-                                    *ngFor="let key of filteredAddFilters[item.hierarchyLevelId]; let i = index">
-                                    <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
-                                       [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
-                                    <div *ngIf="item?.hierarchyLevelId === 'sprint'"
-                                       [formGroupName]="item?.hierarchyLevelId">
-                                       <input type="checkbox" [formControlName]="key.nodeId"
-                                          [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
-                                          class="p-mr-1" />
-                                    </div>
-                                    {{key.nodeName}}
-                                 </label>
-                              </div>
-                              <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
-                                 <button pButton pRipple label="Cancel" icon="pi pi-times"
-                                    class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                                    (click)="toggleDropdownObj[item?.hierarchyLevelId] = false"></button>
-                                 <button pButton pRipple label="Apply" icon="pi pi-save"
-                                    class="p-button-secondary p-button-sm"
-                                    (click)="applyChanges(item?.hierarchyLevelId)"
-                                    [attr.disabled]="checkIfBtnDisabled(item?.hierarchyLevelId)"></button>
-                              </div>
-                           </div>
+                        <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
+                           <button pButton pRipple label="Cancel" icon="pi pi-times"
+                              class="p-button-secondary p-button-text p-mr-2 p-button-sm"
+                              (click)="toggleDropdownObj[item?.hierarchyLevelId] = false"></button>
+                           <button pButton pRipple label="Apply" icon="pi pi-save"
+                              class="p-button-secondary p-button-sm" (click)="applyChanges(item?.hierarchyLevelId)"
+                              [attr.disabled]="checkIfBtnDisabled(item?.hierarchyLevelId)"></button>
                         </div>
                      </div>
-                     <!-- additional filters end -->
                   </div>
+               </div>
+               <!-- additional filters end -->
+            </div>
+         </div>
+
+      </form>
+   </div>
+   <form [formGroup]="filterForm"
+      *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'backlog'"
+      class="p-d-flex p-align-center">
+      <!-- project -->
+      <div class="form-check filter-box p-col-lg trend-line-container">
+         <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
+            (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false" class="p-pb-0">
+            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
+            </ng-option>
+         </ng-select>
+      </div>
+      <!-- sprint -->
+
+      <div class="form-check filter-box p-col-lg trend-line-container sprint-filter"
+         *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
+         <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
+            (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false" class="p-pb-0">
+            <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
+               {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
+            </ng-option>
+         </ng-select>
+      </div>
+   </form>
+   <div class="p-d-flex p-align-center">
+      <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
+         <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data</h4>
+         <p class="last-sync-date p-m-0 p-text-right">
+            {{(selectedProjectLastSyncDate == undefined || selectedProjectLastSyncDate == null) ? "NA":
+            selectedProjectLastSyncDate?.executionEndedAt | date :'dd/MM/yyyy h:mm:ss a'}}
+         </p>
+      </div>
+      <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"
+         [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
+         <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
+            #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
+            Show/Hide
+         </div>
+         <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0" class="position-absolute kpi-dropdown"
+            #drpmenu>
+            <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
+
+               <div class="p-d-flex p-align-center p-p-3 border-bottom">
+                  <p-inputSwitch formControlName="enableAllKpis" (onChange)="handleAllKpiChange($event)">All KPI's
+                  </p-inputSwitch>
+                  <span class="p-ml-2">All KPI's</span>
+               </div>
+               <ul formGroupName="kpis" class="kpiList p-pl-3 p-pr-3 p-mb-0 p-pb-3">
+                  <li *ngFor="let kpi of this.showKpisList" class="p-d-flex p-align-center p-p-2 border rounded p-mt-3">
+                     <p-inputSwitch [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event)">
+                     </p-inputSwitch>
+                     <span class="p-ml-2">{{kpi.kpiName}}</span>
+                  </li>
+               </ul>
+               <div class="p-p-3 border-top p-text-right">
+                  <button pButton pRipple label="Cancel" icon="pi pi-times"
+                     class="p-button-secondary p-button-text p-mr-2 p-button-sm"
+                     (click)="toggleDropdown = false"></button>
+
+                  <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
+                     icon="pi pi-check" iconPos="left" label="Save"></button>
                </div>
 
             </form>
          </div>
-         <form [formGroup]="filterForm"
-            *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'backlog'"
-            class="p-d-flex p-align-center">
-            <!-- project -->
-            <div class="form-check filter-box p-col-lg trend-line-container abc">
-               <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
-                  (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false"
-                  class="p-pb-0">
-                  <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                  </ng-option>
-               </ng-select>
-            </div>
-            <!-- sprint -->
-
-            <div class="form-check filter-box p-col-lg trend-line-container sprint-filter abc"
-               *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
-               <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-                  (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false"
-                  class="p-pb-0">
-                  <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
-                     {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
-                  </ng-option>
-               </ng-select>
-            </div>
-         </form>
-         <div class="p-d-flex p-align-center">
-            <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-               <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data</h4>
-               <p class="last-sync-date p-m-0 p-text-right">
-                  {{(selectedProjectLastSyncDate == undefined || selectedProjectLastSyncDate == null) ? "NA":
-                  selectedProjectLastSyncDate?.executionEndedAt | date :'dd/MM/yyyy h:mm:ss a'}}
-               </p>
-            </div>
-
-            <!-- SHow/Hide start for iteration and backlog -->
-
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration')"
-               [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
-               <div
-                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
-                  Show/Hide
-               </div>
-               <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
-                  class="position-absolute kpi-dropdown" #drpmenu>
-                  <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
-
-                     <div class="p-d-flex p-align-center p-p-3 border-bottom">
-                        <p-inputSwitch formControlName="enableAllKpis" (onChange)="handleAllKpiChange($event)">All KPI's
-                        </p-inputSwitch>
-                        <span class="p-ml-2">All KPI's</span>
-                     </div>
-                     <ul formGroupName="kpis" class="kpiList p-pl-3 p-pr-3 p-mb-0 p-pb-3">
-                        <li *ngFor="let kpi of this.showKpisList"
-                           class="p-d-flex p-align-center p-p-2 border rounded p-mt-3">
-                           <p-inputSwitch [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event)">
-                           </p-inputSwitch>
-                           <span class="p-ml-2">{{kpi.kpiName}}</span>
-                        </li>
-                     </ul>
-                     <div class="p-p-3 border-top p-text-right">
-                        <button pButton pRipple label="Cancel" icon="pi pi-times"
-                           class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                           (click)="toggleDropdown = false"></button>
-
-                        <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
-                           icon="pi pi-check" iconPos="left" label="Save"></button>
-                     </div>
-
-                  </form>
-               </div>
-            </div>
-
-            <!-- /show/hide kpi's ends -->
-            <!-- Notification button start -->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" style="margin: 0rem 0.4rem;position: relative"
-               (click)="notification.toggle($event)" role="button">
-               <img src="../../../assets/img/icon-bell.svg" alt="Bell" />
-               <span *ngIf="requestCountMoreThanZero" class="noti-count">{{notificationList.length}}</span>
-            </div>
-            <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
-            <!-- Notification button end -->
-
-         </div>
       </div>
-
-   </div>
-  
-   <div style="display: flex;">
-      <div style="display: flex;justify-content: center;align-items: center">
-      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="btn-custom p-p-2 rounded p-mr-3 filter-btn cursor-pointer" style="padding-right: 8px;"  >
-         <a routerLink="mydashboard" routerLinkActive="active" (click)="navigateToSelectedTab()">BACK TO DASHBOARD</a>
-      </div>
-     </div>
-      <div style="display: flex;justify-content: center;align-items: center;padding-right: 7px;" role="button">
-         <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
-            {{username}}
-            <i class="pi pi-bars" style="font-size: 1rem;font-weight: bolder;margin-left: 6px;"></i>
-         </div>
-         <p-menu #menu [popup]="true" [model]="items"></p-menu>
-      </div>
+      <!-- /show/hide kpi's ends -->
+      
+      <!-- Download button start -->
+       <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
+      <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'" 
+      id="Filter-Download-Btn" (click)="exportToExcel($event)"
+         [ngClass]="{'disabled': showChart}" [attr.title]="'Export View'"
+         >
+         <img src="../../../assets/img/ico-download.svg" alt="Download" />
+      </div> 
+      <!-- Download button end -->
+      <!-- Download excel Button error message start -->
+      <span class="float-right errMsz alert alert-danger" style="padding: 6px 17px;"
+         *ngIf="( enginneringMaturityErrorMessage !== '' ) && ( selectedTab === 'EngineeringMaturity' )">{{
+         enginneringMaturityErrorMessage }}</span>
+      <!-- Download excel Button error message end -->
    </div>
 </div>
+<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
 
-<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
    <div class="filter-nav">
 
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration'">
@@ -285,97 +270,41 @@
                <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
                <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
             </label>
-
-            <!-- SHow/Hide start -->
-
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"
-               [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
-               <div
-                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
-                  Show/Hide
-               </div>
-               <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
-                  class="position-absolute kpi-dropdown" #drpmenu>
-                  <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
-
-                     <div class="p-d-flex p-align-center p-p-3 border-bottom">
-                        <p-inputSwitch formControlName="enableAllKpis" (onChange)="handleAllKpiChange($event)">All KPI's
-                        </p-inputSwitch>
-                        <span class="p-ml-2">All KPI's</span>
-                     </div>
-                     <ul formGroupName="kpis" class="kpiList p-pl-3 p-pr-3 p-mb-0 p-pb-3">
-                        <li *ngFor="let kpi of this.showKpisList"
-                           class="p-d-flex p-align-center p-p-2 border rounded p-mt-3">
-                           <p-inputSwitch [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event)">
-                           </p-inputSwitch>
-                           <span class="p-ml-2">{{kpi.kpiName}}</span>
-                        </li>
-                     </ul>
-                     <div class="p-p-3 border-top p-text-right">
-                        <button pButton pRipple label="Cancel" icon="pi pi-times"
-                           class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                           (click)="toggleDropdown = false"></button>
-
-                        <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
-                           icon="pi pi-check" iconPos="left" label="Save"></button>
-                     </div>
-
-                  </form>
-               </div>
-            </div>
-
-            <!-- Download button start -->
-            <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
-               *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
-               id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart}"
-               [attr.title]="'Export View'">
-               <img src="../../../assets/img/ico-download.svg" alt="Download" />
-            </div>
-            <!-- Download button end -->
-            <!-- Download excel Button error message start -->
-            <span class="float-right errMsz alert alert-danger" style="padding: 6px 17px;"
-               *ngIf="( enginneringMaturityErrorMessage !== '' ) && ( selectedTab === 'EngineeringMaturity' )">{{
-               enginneringMaturityErrorMessage }}</span>
-            <!-- Download excel Button error message end -->
          </div>
       </div>
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-         <!--start date and end date-->
-         <div class="p-d-flex p-ml-3 p-align-end" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
-            <span class="p-mr-5">
-               <h4 class="label-text p-mt-0 p-mb-2">Start Date</h4>
-               <p class="p-m-0 selected-data"
-                  [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
-                  {{getDate('start')}}</p>
-            </span>
-            <span class="p-mr-5">
-               <h4 class="label-text p-mt-0 p-mb-2">End Date</h4>
-               <p class="p-m-0 selected-data"
-                  [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
-                  {{getDate('end')}}</p>
-            </span>
-            <span class="p-mr-5" *ngIf="iterationConfigData?.daysLeft != undefined">
-               <h4 class="label-text p-mt-0 p-mb-2">Days Left</h4>
-               <p class="p-m-0 text-red">
-                  {{iterationConfigData?.daysLeft > 0 ? iterationConfigData?.daysLeft : 0}} Days</p>
-            </span>
-            <span class="p-mr-5" *ngIf="iterationConfigData?.capacity != undefined">
-               <h4 class="label-text p-mt-0 p-mb-2">Capacity <span class="fa fa-info-circle" aria-hidden="true"
-                     (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
-                     <app-tooltip *ngIf="isTooltip" [data]="iterationConfigData?.capacity?.kpiInfo"></app-tooltip>
-                  </span></h4>
-               <p class="p-m-0 text-blue">
-                  {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' :
-                  'NA'}}</p>
-            </span>
-         </div>
-         <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
-            [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
-            class="p-button-secondary" (click)="setKPIOrder()"></button>
+      <!--start date and end date-->
+      <div class="p-d-flex p-ml-3 p-align-end" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
+         <span class="p-mr-5">
+            <h4 class="label-text p-mt-0 p-mb-2">Start Date</h4>
+            <p class="p-m-0 selected-data"
+               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
+               {{getDate('start')}}</p>
+         </span>
+         <span class="p-mr-5">
+            <h4 class="label-text p-mt-0 p-mb-2">End Date</h4>
+            <p class="p-m-0 selected-data"
+               [ngClass]="{'active-state': selectedFilterArray[0]?.sprintState?.toLowerCase() === 'active'}">
+               {{getDate('end')}}</p>
+         </span>
+         <span class="p-mr-5" *ngIf="iterationConfigData?.daysLeft != undefined">
+            <h4 class="label-text p-mt-0 p-mb-2">Days Left</h4>
+            <p class="p-m-0 text-red">
+               {{iterationConfigData?.daysLeft > 0 ? iterationConfigData?.daysLeft : 0}} Days</p>
+         </span>
+         <span class="p-mr-5" *ngIf="iterationConfigData?.capacity != undefined">
+            <h4 class="label-text p-mt-0 p-mb-2">Capacity <span class="fa fa-info-circle"
+               aria-hidden="true" (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
+               <app-tooltip *ngIf="isTooltip" [data]="iterationConfigData?.capacity?.kpiInfo"
+               ></app-tooltip>
+            </span></h4>
+            <p class="p-m-0 text-blue">
+               {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours'  : 'NA'}}</p>
+         </span>
       </div>
-
+      <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0" [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW" class="p-button-secondary" (click)="setKPIOrder()"></button>
+      </div>
+      
    </div>
 
 </div>
