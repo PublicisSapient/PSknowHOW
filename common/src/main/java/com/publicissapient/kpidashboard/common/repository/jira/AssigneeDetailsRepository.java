@@ -16,23 +16,19 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;
-
-import java.util.List;
+package com.publicissapient.kpidashboard.common.repository.jira;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+/**
+ * Repository for assignee info of tools like jira , builds , repo.
+ */
+@Repository
+public interface AssigneeDetailsRepository extends MongoRepository<AssigneeDetails, ObjectId> {
 
-@Data
-@Setter
-@Getter
-public class AssigneeResponseDTO extends BasicModel {
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeDetailsDTO> assigneeDetailsList;
+	AssigneeDetails findByBasicProjectConfigIdAndSource(String basicProjectConfigId, String source);
 }

@@ -58,9 +58,6 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 						processorExecutionTracelog.getBasicProjectConfigId());
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 			processorExecutionTracelog.setId(existingProcessorExecutionTraceLog.getId());
-			processorExecutionTracelog.setLastSuccessfulRun(existingProcessorExecutionTraceLog.getLastSuccessfulRun());
-			processorExecutionTracelog.setLastEnableAssigneeToggleState(
-					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState());
 			if (MapUtils.isNotEmpty(existingProcessorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())
 					&& MapUtils.isEmpty(processorExecutionTracelog.getLastSavedEntryUpdatedDateByType())) {
 				processorExecutionTracelog.setLastSavedEntryUpdatedDateByType(

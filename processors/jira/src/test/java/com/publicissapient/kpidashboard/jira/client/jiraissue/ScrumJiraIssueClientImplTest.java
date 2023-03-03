@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -38,11 +39,13 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -89,6 +92,9 @@ public class ScrumJiraIssueClientImplTest {
 
     @Mock
     private AdditionalFilterHelper additionalFilterHelper;
+
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 
     @Test
@@ -192,6 +198,7 @@ public class ScrumJiraIssueClientImplTest {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
 		when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(new AssigneeDetails());
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
 		assertEquals(1,
 				scrumJiraIssueClient.processesJiraIssues(
