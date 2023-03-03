@@ -29,5 +29,6 @@ public class KpiDetail {
 
     private String type;
     private String value;
+    private KpiLinkDetail kpiLinkDetail;
     private List<KpiDetailsTableRow> tableRows;
 }
