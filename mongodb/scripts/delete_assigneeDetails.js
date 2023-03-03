@@ -1,38 +1,31 @@
 print("Start : Assignee details delete script from all tools");
 
-function deleteAssigneeFromMerge(processorItemId)
-{
+function deleteAssigneeFromMerge(processorItemId) {
         print("Remove assignee details for the processorItemId in merge details: ", processorItemId);
         print(db.merge_requests.updateMany({"processorItemId": ObjectId(processorItemId)}, {$unset: {author: 1}}));
 }
 
-function deleteAssigneeFromBuild(basicProjectConfigId)
-{
+function deleteAssigneeFromBuild(basicProjectConfigId) {
         print("Remove assignee details for the basic project config id in build details:", basicProjectConfigId);
         print(db.build_details.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {startedBy: 1}}));
 }
 
-function deleteAssigneeFromCommit(processorItemId)
-{
+function deleteAssigneeFromCommit(processorItemId) {
         print("Remove assignee details for the processorItemId in commit details: ", processorItemId);
         print(db.commit_details.updateMany({"processorItemId": ObjectId(processorItemId)}, {$unset: {author: 1}}));
 }
 
-function deleteAssigneeDetailsFromDeployment(basicProjectConfigId)
-{
+function deleteAssigneeDetailsFromDeployment(basicProjectConfigId) {
         print("Remove assignee details for the basic config project id in deployments : ", basicProjectConfigId);
         print(db.deployments.updateMany({"basicProjectConfigId": ObjectId(basicProjectConfigId)}, {$unset: {deployedBy: 1}}));
 }
 
-
-function deleteAssigneeDetailsFromJira(basicProjectConfigId)
-{
+function deleteAssigneeDetailsFromJira(basicProjectConfigId) {
               print("Remove assignee details for basic project id in jira issue:", basicProjectConfigId);
               print(db.jira_issue.updateMany({"basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1, ownersID: 1, ownersState: 1, ownersUsername: 1, ownersFullName: 1, ownersShortName: 1}}));
 }
 
-function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId)
-{
+function deleteAssigneeDetailsFromJiraKanban(basicProjectConfigId) {
         print("Remove assignee details for basic project id in kanban jira issue:", basicProjectConfigId);
         print(db.kanban_jira_issue.updateMany({ "basicProjectConfigId": basicProjectConfigId}, {$unset: {assigneeId: 1, assigneeName: 1, ownersID: 1, ownersState: 1, ownersUsername: 1, ownersFullName: 1, ownersShortName: 1}}));
 }
@@ -49,8 +42,7 @@ function deleteAssigneeDetailsFromCommitAndMerge(basicProjectConfigId) {
 }
 
 
-function fetchProcessorItemId(toolConfigId)
-{
+function fetchProcessorItemId(toolConfigId) {
 
         db.getCollection('processor_items').find({"toolConfigId": ObjectId(toolConfigId)}).forEach(
             processorItems => {
