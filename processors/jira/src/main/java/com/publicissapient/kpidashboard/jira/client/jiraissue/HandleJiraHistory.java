@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
@@ -28,7 +29,7 @@ public class HandleJiraHistory {
         {
             JiraHistoryChangeLog jiraHistoryChangeLog=new JiraHistoryChangeLog();
             jiraHistoryChangeLog.setChangedFrom("");
-            jiraHistoryChangeLog.setChangedTo("Open");
+            jiraHistoryChangeLog.setChangedTo(CommonConstant.OPEN);
             jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(jiraIssue.getCreatedDate()))));
             fieldHistoryLog.add(jiraHistoryChangeLog);
         }
