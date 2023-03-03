@@ -71,8 +71,6 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
     this.selectedView = 'processor_state';
-    // this.getServerRole();
-    // this.getPreCalculatedConfig();
     this.getProcessorData();
     this.getProjects();
   }
@@ -163,7 +161,6 @@ export class AdvancedSettingsComponent implements OnInit {
     const that = this;
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
-        //console.log(JSON.stringify(response));
 
         if (response.success) {
           that.processorsTracelogs = response.data;
@@ -175,13 +172,11 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   updateProjectSelection(projectSelectionEvent) {
-    //console.log(JSON.stringify(projectSelectionEvent));
     const currentSelection = projectSelectionEvent.value;
     if (currentSelection) {
       this.selectedProject = currentSelection;
     }
 
-    //console.log(JSON.stringify( this.selectedProject));
     this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
 

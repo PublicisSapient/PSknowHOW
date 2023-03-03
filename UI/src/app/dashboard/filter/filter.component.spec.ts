@@ -1097,5 +1097,65 @@ describe('FilterComponent', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBe(true);
    })
+
+    it('should redirect on login page',inject([Router], (router: Router) => {
+      const navigateSpy = spyOn(router, 'navigate');
+      component.logout();
+      httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);
+      expect(navigateSpy).toHaveBeenCalledWith(['./authentication/login']);
+    }));
+
+    it("should redirect from notification",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      component.routeForAccess("Project Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/RequestStatus']);
+    }))
+
+    it("should redirect on project access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("Project Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantRequests']);
+    }))
+
+    it("should redirect on User access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("User Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+    }))
+
+    it("should not redirect on User access/project access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("Default case");
+      expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+    }))
+
+    it("should notification lis not null if response is comming",()=>{
+      const fakeResponce = {
+        message: 'Data came successfully',
+        success: true,
+        data: [{ count: 2, type: 'User Access Request' }],
+      };
+      spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+      component.getNotification();
+      expect(component.notificationList).not.toBe(null);
+    })
+
+    it("should call message service if notification api is facing any issue",()=>{
+      const fakeResponce = {
+        message: 'some error occured',
+        success: false,
+        data: [],
+      };
+      spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+      const spy = spyOn(messageService,'add');
+      component.getNotification();
+      expect(spy).toHaveBeenCalled();
+    })
    
 });
