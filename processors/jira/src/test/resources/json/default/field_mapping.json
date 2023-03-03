@@ -1,0 +1,139 @@
+[{
+  "_id": "63fc696585fb7939e95e7a0b",
+  "projectToolConfigId": "63fc5dbb49f0b31028df8d92",
+  "basicProjectConfigId": "63fc5d8649f0b31028df8d90",
+  "sprintName": "customfield_12700",
+  "jiradefecttype": [
+    "Defect"
+  ],
+  "jiraIssueTypeNames": [
+    "Story",
+    "Enabler Story",
+    "Change request",
+    "Defect",
+    "Epic"
+  ],
+  "jiraIssueEpicType": [
+    "Epic"
+  ],
+  "rootCause": "customfield_19121",
+  "jiraStatusForDevelopment": [
+    "Implementing",
+    "In Development",
+    "In Analysis"
+  ],
+  "jiraStatusForQa": [
+    "In Testing"
+  ],
+  "jiraDefectInjectionIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraDod": [
+    "Closed",
+    "Ready for Delivery"
+  ],
+  "jiraTechDebtIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraDefectSeepageIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraDefectRemovalStatus": [
+    "Closed",
+    "Ready for Delivery"
+  ],
+  "jiraDefectRemovalIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraStoryPointsCustomField": "customfield_20803",
+  "jiraTestAutomationIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraSprintVelocityIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraSprintCapacityIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraDefectRejectionlIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraDefectCountlIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraIssueDeliverdStatus": [
+    "Closed",
+    "Ready for Delivery"
+  ],
+  "jiraDor": "Ready for Sprint Planning",
+  "jiraIntakeToDorIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraStoryIdentification": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "rootCauseValue": [
+    "Coding"
+  ],
+  "resolutionTypeForRejection": [
+    "Invalid",
+    "Duplicate",
+    "Unrequired"
+  ],
+  "qaRootCauseValue": [
+    "Coding",
+    "Configuration",
+    "Regression",
+    "Data"
+  ],
+  "jiraQADefectDensityIssueType": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "epicCostOfDelay": "customfield_58102",
+  "epicRiskReduction": "customfield_58101",
+  "epicUserBusinessValue": "customfield_58100",
+  "epicWsjf": "customfield_58104",
+  "epicTimeCriticality": "customfield_51002",
+  "epicJobSize": "customfield_58103",
+  "jiraStatusForInProgress": [],
+  "estimationCriteria": "Story Point",
+  "storyPointToHourMapping": "8",
+  "workingHoursDayCPT": "6",
+  "issueStatusExcluMissingWork": [
+    "Open"
+  ],
+  "jiraFTPRStoryIdentification": [
+    "Story",
+    "Enabler Story",
+    "Change request"
+  ],
+  "jiraWaitStatus": [],
+  "jiraBlockedStatus": [],
+  "jiraDueDateField" : "Custom Field",
+  "jiraDueDateCustomField" : "customfield_11528",
+  "_class": "com.publicissapient.kpidashboard.common.model.application.FieldMapping"
+}]
