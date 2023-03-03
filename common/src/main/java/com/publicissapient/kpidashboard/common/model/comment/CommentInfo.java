@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.common.model.comment;
 
 
 import lombok.*;
-//import org.springframework.data.annotation.GeneratedValue;
 import org.springframework.data.annotation.Id;
 
 
@@ -15,7 +14,6 @@ import org.springframework.data.annotation.Id;
 public class CommentInfo {
 
 
-   // @GeneratedValue
    @Id
     private Integer commentId;
 

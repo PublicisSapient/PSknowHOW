@@ -12,7 +12,7 @@ public interface KpiCommentRepository  {
   void saveIntoCollection(KPIComments kpiComments);
 
 
-  public boolean deleteKpiCommentsData(KPIComments oldCommentId);
+  boolean deleteKpiCommentsData(KPIComments oldCommentId);
 
 
 

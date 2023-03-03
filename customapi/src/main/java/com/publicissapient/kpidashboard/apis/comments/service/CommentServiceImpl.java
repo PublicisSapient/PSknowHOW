@@ -63,6 +63,7 @@ public class CommentServiceImpl implements CommentService {
             final KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
             kpiCommentRepository.saveIntoCollection(kpiComments);
             kpiCommentsHistoryRepository.save(kpiCommentsHistory);
+            LOGGER.info("saved comments info {}", kpiComments);
            return true;
         }
         catch (Exception e)
@@ -70,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
             e.printStackTrace();
             log.error("Issue occur while saving the comment");
         }
-        return false;
+       return false;
     }
     private List<CommentInfo> commentMappingOperation(String kpi, List<KPIComments> kpiComments) {
 
@@ -123,7 +124,7 @@ public class CommentServiceImpl implements CommentService {
                     kpiCommentsSorted.size() > Constant.PER_KPI_COMMENTS_DATA_STORE_COUNT)
                  {
                    KPIComments oldCommentId = kpiCommentsSorted.get(0);
-                   Boolean result = kpiCommentRepository.deleteKpiCommentsData(oldCommentId);
+                     boolean result = kpiCommentRepository.deleteKpiCommentsData(oldCommentId);
                      if (result) {
                       LOGGER.info(" Old Comment got deleted from kpi_comments collection & document id is :{}", oldCommentId);
                       }
