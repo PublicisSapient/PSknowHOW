@@ -1239,9 +1239,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
 						.getLastSavedEntryUpdatedDateByType();
 				//when assignee toggle off to on then we have to fetch data from start date
-				if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-					lastSavedEntryUpdatedDateByType.clear();
-				}
+				assigneeDetailsUpdate(projectBasicConfig, projectTraceLog, lastSavedEntryUpdatedDateByType);
 				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
 					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
 					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
@@ -1255,6 +1253,13 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		return lastUpdatedDateByIssueType;
+	}
+
+	private void assigneeDetailsUpdate(ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog projectTraceLog,
+			Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastSavedEntryUpdatedDateByType.clear();
+		}
 	}
 
 	/**
