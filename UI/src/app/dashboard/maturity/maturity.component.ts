@@ -97,7 +97,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.selectedtype = this.service.getSelectedType();
 
         this.subscription.push(this.service.onTypeRefresh.pipe(distinctUntilChanged(),mergeMap(selectedtype =>{
-            this.jiraGroups = 0;
             this.noOfJiraGroups=0;
             this.loaderSonar = false;
             this.loaderZypher = false;
@@ -122,6 +121,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
     receiveSharedData($event) {
         this.loader =true;
+        this.jiraGroups = 0;
         this.showNoDataMsg = false;
         if (this.service.getSelectedTab() === 'Maturity') {
             this.masterData = $event?.masterData;
@@ -207,13 +207,13 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 groupIdSet.add(obj.groupId);
             }
         });
+        this.noOfJiraGroups =groupIdSet.size;
 
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
                 if (this.kpiJira?.kpiList?.length > 0) {
-                    this.noOfJiraGroups++;
                     this.postJiraKpi(this.kpiJira, 'jira');
                 }
             }
@@ -239,12 +239,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
             }
         });
 
+        this.noOfJiraGroups =groupIdSet.size;
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
                 if (this.kpiJira?.kpiList?.length > 0) {
-                    this.noOfJiraGroups++;
                     this.postJiraKpi(this.kpiJira, 'jira');
                 }
             }
