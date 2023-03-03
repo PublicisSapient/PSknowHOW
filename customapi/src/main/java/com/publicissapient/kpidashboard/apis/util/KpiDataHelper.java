@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -542,6 +543,31 @@ public final class KpiDataHelper {
 			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
 		}
 		return remainingEstimate;
+	}
+
+	/**
+	 * setting in progress and open issues
+	 * @param fieldMapping
+	 * @param allIssues
+	 * @param inProgressIssues
+	 * @param openIssues
+	 * @return
+	 */
+	public static void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
+			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
+		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
+				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
+		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
+				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
+					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.collect(Collectors.toList()));
+			openIssues.addAll(jiraIssuesWithDueDate.stream()
+					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.collect(Collectors.toList()));
+		} else {
+			openIssues.addAll(jiraIssuesWithDueDate);
+		}
 	}
 
 }
