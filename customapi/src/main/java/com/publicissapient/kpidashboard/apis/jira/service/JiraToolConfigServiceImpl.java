@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -150,8 +151,8 @@ public class JiraToolConfigServiceImpl {
 		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(projectConfigId,
 				ProcessorConstants.JIRA);
-		if (assigneeDetails != null) {
-			List<AssigneeDetailsDTO> assigneeDetailsDTOResponseList = new ArrayList<>();
+		List<AssigneeDetailsDTO> assigneeDetailsDTOResponseList = new ArrayList<>();
+		if (assigneeDetails != null && CollectionUtils.isNotEmpty(assigneeDetails.getAssignee())) {
 			assigneeDetails.getAssignee().stream().forEach(assignee -> {
 				AssigneeDetailsDTO assigneeDetailsDTO = new AssigneeDetailsDTO();
 				assigneeDetailsDTO.setName(assignee.getAssigneeId());
@@ -160,9 +161,9 @@ public class JiraToolConfigServiceImpl {
 			});
 			Collections.sort(assigneeDetailsDTOResponseList, (AssigneeDetailsDTO o1, AssigneeDetailsDTO o2) -> o1
 					.getDisplayName().compareTo(o2.getDisplayName()));
-			assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
-			assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOResponseList);
 		}
+		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
+		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOResponseList);
 		return assigneeResponseDTO;
 	}
 }
