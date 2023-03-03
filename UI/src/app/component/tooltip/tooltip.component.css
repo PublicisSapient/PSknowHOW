@@ -48,6 +48,11 @@
     font-weight: normal;
     font-family: 'FuturaNext_Medium', sans-serif;
 }
+
+.link{
+    color: #079FFF;
+    word-wrap: break-word;
+}
 ul.kpi-info-list {
     list-style: none;
     /* Remove default bullets */
