@@ -46,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 /**
@@ -247,15 +247,14 @@ public class JiraControllerRTest {
 	public void getJiraAssigneesListReturnValue() throws Exception {
 		String request = "634fdf4ec859a424263dc035";
 		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
-		List<AssigneeDetails> assigneeRolesList = new ArrayList<>();
-		AssigneeDetails roles = new AssigneeDetails();
-		roles.setName("Raghu");
-		roles.setDisplayName("Raghavendra");
-		assigneeRolesList.add(roles);
+		List<AssigneeDetailsDTO> assigneeDetailsDTOList = new ArrayList<>();
+		AssigneeDetailsDTO assigneeDetailsDTO = new AssigneeDetailsDTO();
+		assigneeDetailsDTO.setName("Radhu");
+		assigneeDetailsDTO.setDisplayName("Raghavendra");
+		assigneeDetailsDTOList.add(assigneeDetailsDTO);
 
-		assigneeResponseDTO.setProjectName("ABC");
 		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(request));
-		assigneeResponseDTO.setAssigneeDetailsList(assigneeRolesList);
+		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOList);
 		when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(assigneeResponseDTO);
 		mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().is2xxSuccessful());

@@ -82,6 +82,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -90,6 +92,7 @@ import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -143,6 +146,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
+	
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
@@ -182,8 +188,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean dataExist = (jiraIssueRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 
-			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-					projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
 
 			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
 
@@ -248,7 +253,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			lastSavedJiraIssueChangedDateByType.clear();
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete,psLogData);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
 			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
@@ -259,7 +264,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				processorExecutionTraceLog
 						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
-			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
+					projectConfig.getProjectBasicConfig());
 		}
 
 		return savedIsuesCount;
@@ -358,7 +364,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				processorExecutionTraceLog
 						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
-			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
+					projectConfig.getProjectBasicConfig());
 		}
 		return savedIsuesCount;
 	}
@@ -457,23 +464,20 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
 					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 			}
-		}else {
+		} else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-			processorExecutionTraceLog
-					.setLastEnableAssigneeToggleState(projectConfig.getProjectBasicConfig().isSaveAssigneeDetails());
 		}
 		return processorExecutionTraceLog;
 	}
 
 	private void saveExecutionTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog,
-			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, boolean isSuccess) {
+			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, boolean isSuccess,
+			ProjectBasicConfig projectBasicConfig) {
 
 		if (lastSavedJiraIssueChangedDateByType.isEmpty()) {
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(null);
@@ -481,6 +485,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(lastSavedJiraIssueChangedDateByType);
 		}
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		savingTraceLogToLog(processorExecutionTraceLog);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
@@ -566,6 +571,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
+		Set<Assignee> assigneeSetToSave = new HashSet<>();
 
 		if (null == currentPagedJiraRs) {
 			log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -575,7 +581,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<String, String> issueEpics = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
-
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
+				projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.JIRA);
 		for (Issue issue : currentPagedJiraRs) {
 			FieldMapping fieldMapping = projectConfig.getFieldMapping();
 
@@ -650,7 +657,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				updateAssigneeDetails(projectConfig, jiraIssue, assignee);
+				updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
 
 				setEstimates(jiraIssue, issue,fields,fieldMapping);
 
@@ -669,6 +676,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
+		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		if (!dataFromBoard) {
 			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter);
 		}
@@ -679,9 +687,34 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return jiraIssuesToSave;
 	}
 
-	private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee) {
+	/**
+	 * save assignee details from jira issue and if already exist then update assignee list
+	 * @param projectConfig
+	 * @param assigneeSetToSave
+	 * @param assigneeDetails
+	 */
+	private void saveAssigneeDetailsToDb(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave,
+			AssigneeDetails assigneeDetails) {
+		if (CollectionUtils.isNotEmpty(assigneeSetToSave)) {
+			if (assigneeDetails == null) {
+				assigneeDetails = new AssigneeDetails();
+				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+				assigneeDetails.setSource(ProcessorConstants.JIRA);
+				assigneeDetails.setAssignee(assigneeSetToSave);
+			} else {
+				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
+				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
+				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
+				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+			}
+			assigneeDetailsRepository.save(assigneeDetails);
+		}
+	}
+
+	private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee,
+			Set<Assignee> assigneeSetToSave) {
 		if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-			setJiraAssigneeDetails(jiraIssue, assignee);
+			setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave);
 		}
 	}
 
@@ -1180,8 +1213,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	}
 
-	private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
-			FieldMapping fieldMapping) {
+	private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ProjectConfFieldMapping projectConfig) {
+		ObjectId basicProjectConfigId = projectConfig.getBasicProjectConfigId();
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
 
 		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
 		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
@@ -1203,6 +1238,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (projectTraceLog != null) {
 				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
 						.getLastSavedEntryUpdatedDateByType();
+				clearEntryDateForAssigneeUpdates(projectBasicConfig, projectTraceLog, lastSavedEntryUpdatedDateByType);
 				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
 					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
 					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
@@ -1216,6 +1252,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		return lastUpdatedDateByIssueType;
+	}
+
+	/**
+	 * when assignee toggle off to on then we have to fetch data from start date
+	 * @param projectBasicConfig
+	 * @param projectTraceLog
+	 * @param lastSavedEntryUpdatedDateByType
+	 */
+	private void clearEntryDateForAssigneeUpdates(ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog projectTraceLog, Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastSavedEntryUpdatedDateByType.clear();
+		}
 	}
 
 	/**

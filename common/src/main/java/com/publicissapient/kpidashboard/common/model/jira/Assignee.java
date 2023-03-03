@@ -16,23 +16,46 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;
+package com.publicissapient.kpidashboard.common.model.jira;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
-@Setter
+import java.util.Objects;
+
+/**
+ * user assignee details
+ */
+
 @Getter
-public class AssigneeResponseDTO extends BasicModel {
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeDetailsDTO> assigneeDetailsList;
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Assignee {
+
+	private String assigneeId;
+	private String assigneeName;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Assignee))
+			return false;
+
+		Assignee assignee = (Assignee) o;
+
+		return Objects.equals(assigneeId, assignee.assigneeId);
+	}
+
+	@Override
+	public int hashCode() {
+		return assigneeId != null ? assigneeId.hashCode() : 0;
+	}
 }

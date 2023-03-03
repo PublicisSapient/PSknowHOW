@@ -16,23 +16,36 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;
+package com.publicissapient.kpidashboard.common.model.application;
 
-import java.util.List;
+import com.google.common.base.Objects;
 
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Data
-@Setter
+@Builder
 @Getter
-public class AssigneeResponseDTO extends BasicModel {
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeDetailsDTO> assigneeDetailsList;
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class AssigneeDetailsDTO {
+    private String name;
+    private String displayName;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof AssigneeDetailsDTO) {
+            AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;
+            return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName);
+        }
+        return false;
+    }
+
+
 }

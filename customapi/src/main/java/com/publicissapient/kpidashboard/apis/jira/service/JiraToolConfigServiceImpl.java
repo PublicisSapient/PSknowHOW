@@ -1,18 +1,30 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,16 +39,19 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * class for jira tool config fetch data api
@@ -49,7 +64,6 @@ import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 public class JiraToolConfigServiceImpl {
 
 	private static final String RESOURCE_JIRA_BOARD_ENDPOINT = "/rest/agile/1.0/board?projectKeyOrId=%s&startAt=%d&type=%s";
-	private static final String RESOURCE_JIRA_ASSINGEE_ENDPOINT = "user/assignable/search?project=";
 	final ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
@@ -69,6 +83,9 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
@@ -150,96 +167,22 @@ public class JiraToolConfigServiceImpl {
 
 	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
 		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
-		List<AssigneeDetails> assigneeDetailsResponseList = new ArrayList<>();
-		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
-		if (basicConfig.isPresent()) {
-			ProjectBasicConfig projectBasicConfig = basicConfig.get();
-			List<ProjectToolConfig> projectToolConfigs = projectToolConfigRepository
-					.findByToolNameAndBasicProjectConfigId(Constant.TOOL_JIRA, new ObjectId(projectConfigId));
-			projectToolConfigs.stream().forEach(projectToolConfig -> {
-				Optional<Connection> optConnection = connectionRepository.findById(projectToolConfig.getConnectionId());
-				if (optConnection.isPresent()) {
-					Connection connection = optConnection.get();
-					String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
-					String endPoint = connection.getApiEndPoint() == null ? null : connection.getApiEndPoint().trim();
-					String url = createApiUrl(baseUrl, endPoint);
-					getApiCreationAndCall(assigneeDetailsResponseList, projectToolConfig, connection, url);
-				}
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(projectConfigId,
+				ProcessorConstants.JIRA);
+		List<AssigneeDetailsDTO> assigneeDetailsDTOResponseList = new ArrayList<>();
+		if (assigneeDetails != null && CollectionUtils.isNotEmpty(assigneeDetails.getAssignee())) {
+			assigneeDetails.getAssignee().stream().forEach(assignee -> {
+				AssigneeDetailsDTO assigneeDetailsDTO = new AssigneeDetailsDTO();
+				// assigneeId will be unique id for assignee
+				assigneeDetailsDTO.setName(assignee.getAssigneeId());
+				assigneeDetailsDTO.setDisplayName(assignee.getAssigneeName());
+				assigneeDetailsDTOResponseList.add(assigneeDetailsDTO);
 			});
-
-			assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
-			assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsResponseList);
-			assigneeResponseDTO.setProjectName(projectBasicConfig.getProjectName());
+			Collections.sort(assigneeDetailsDTOResponseList, (AssigneeDetailsDTO o1, AssigneeDetailsDTO o2) -> o1
+					.getDisplayName().compareTo(o2.getDisplayName()));
 		}
+		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
+		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOResponseList);
 		return assigneeResponseDTO;
-	}
-
-	private void getApiCreationAndCall(List<AssigneeDetails> assigneeDetailsResponseList,
-			ProjectToolConfig projectToolConfig, Connection connection, String url) {
-		if (StringUtils.isNotEmpty(url)) {
-			url = url + RESOURCE_JIRA_ASSINGEE_ENDPOINT + projectToolConfig.getProjectKey().trim();
-			HttpEntity<?> httpEntity = getHttpEntity(connection);
-			List<AssigneeDetails> assigneeDetailsResponse = fetchAssigneeDetailsRestAPICall(projectToolConfig,
-					httpEntity, url , connection.isCloudEnv());
-			assigneeDetailsResponseList.addAll(assigneeDetailsResponse);
-
-		}
-	}
-
-	public List<AssigneeDetails> fetchAssigneeDetailsRestAPICall(ProjectToolConfig toolConfig, HttpEntity<?> httpEntity,
-			String url , boolean jiraCloud) {
-
-		List<AssigneeDetails> assigneeRoles = new ArrayList<>();
-
-		try {
-			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-			if (response.getStatusCode() == HttpStatus.OK) {
-				log.info(response.getBody());
-				assigneeRoles = convertListFromArray(response, assigneeRoles , jiraCloud);
-			} else {
-				String statusCode = response.getStatusCode().toString();
-				log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
-			}
-
-		} catch (Exception exception) {
-			log.error("Error while fetching assignees for projectKey Id {}:  {}", toolConfig.getProjectKey(),
-					exception.getMessage());
-		}
-
-		return assigneeRoles;
-	}
-
-	public List<AssigneeDetails> convertListFromArray(ResponseEntity<String> response, List<AssigneeDetails> list , boolean jiraCloud) {
-		JSONParser jsonParser = new JSONParser();
-		JSONArray jsonArray = null;
-		try {
-			jsonArray = (JSONArray) jsonParser.parse(response.getBody());
-
-			for (Object obj : jsonArray) {
-				AssigneeDetails assigneeRole = new AssigneeDetails();
-				JSONObject jsonObject = (JSONObject) obj;
-				if (jsonObject != null) {
-					if (jiraCloud) {
-						assigneeRole.setName(jsonObject.get("emailAddress").toString());
-						assigneeRole.setDisplayName(jsonObject.get("displayName").toString());
-					} else {
-						assigneeRole.setName(jsonObject.get("name").toString());
-						assigneeRole.setDisplayName(jsonObject.get("displayName").toString());
-					}
-					list.add(assigneeRole);
-				}
-			}
-		} catch (ParseException e) {
-			log.error("error while fetching assignee details {}", e.getMessage());
-		}
-		return list;
-	}
-
-	private String createApiUrl(String baseUrl, String endPoint) {
-
-		if (StringUtils.isNotEmpty(baseUrl) && StringUtils.isNotEmpty(endPoint)) {
-			return baseUrl.endsWith("/") ? baseUrl.concat(endPoint) : baseUrl.concat("/").concat(endPoint);
-		}
-		return null;
 	}
 }
