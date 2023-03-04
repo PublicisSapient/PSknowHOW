@@ -75,7 +75,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     ]
   }
   commentsList = [];
-  
+
 
   constructor(private service: SharedService, private http_service: HttpService) {
   }
@@ -180,10 +180,10 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     const reqObj = {
       node: 'nodeValue',
       projectBasicConfig: filterData.nodeId,
-      commentKpiWise: [
+      commentsKpiWise: [
         {
           kpiId: this.kpiData?.kpiId,
-          commentInfo: [
+          commentsInfo: [
             {
               commentBy: localStorage.getItem('user_name'),
               commentOn: new Date(),
@@ -194,7 +194,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
       ]
     }
     this.http_service.submitComment(reqObj).subscribe((response) => {
-      
+
     }, error => {
       console.log(error);
       // this.isFeedbackSubmitted = false;

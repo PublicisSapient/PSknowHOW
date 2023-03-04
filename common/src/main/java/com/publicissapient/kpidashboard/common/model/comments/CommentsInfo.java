@@ -1,8 +1,9 @@
-package com.publicissapient.kpidashboard.common.model.comment;
+package com.publicissapient.kpidashboard.common.model.comments;
 
+
+import org.springframework.data.annotation.Id;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 
 
 @Data
@@ -11,10 +12,9 @@ import org.springframework.data.annotation.Id;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentInfo {
+public class CommentsInfo {
 
-
-   @Id
+    @Id
     private Integer commentId;
 
     private  String commentBy;
@@ -22,7 +22,6 @@ public class CommentInfo {
     private String commentOn;
 
     private String comment;
-
 
 }
 

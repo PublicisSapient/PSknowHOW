@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.model.comment;
+package com.publicissapient.kpidashboard.common.model.comments;
 
 
 import lombok.*;
@@ -15,7 +15,7 @@ public class CommentSubmitDTO{
 
     private String node;
     private String projectBasicConfig;
-    private List<CommentKpiWise> commentKpiWise;
+    private List<CommentsKpiWise> commentsKpiWise;
 
 
 }

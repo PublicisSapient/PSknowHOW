@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.model.comment;
+package com.publicissapient.kpidashboard.common.model.comments;
 
 import lombok.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentKpiWise {
+public class CommentsKpiWise {
 
     private String kpiId;
-    private List<CommentInfo> commentInfo;
+    private List<CommentsInfo> commentsInfo;
 
 }

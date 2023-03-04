@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.model.comment;
+package com.publicissapient.kpidashboard.common.model.comments;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import lombok.*;
@@ -18,7 +18,5 @@ public class KPIComments extends BasicModel {
 
     private String node;
     private String projectBasicConfig;
-    private List<CommentKpiWise> commentKpiWise;
-
-
+    private List<CommentsKpiWise> commentsKpiWise;
 }

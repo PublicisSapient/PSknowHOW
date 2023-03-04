@@ -851,7 +851,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
     getComment(kpiID, projectId){
-        return this.http.get<any>(`${this.getCommentUrl}?projectBasicConfig=${projectId}&kpi=${kpiID}`);
+        return this.http.get<any>(`${this.getCommentUrl}?projectBasicConfig=${projectId}&kpiId=${kpiID}`);
     }
 
     submitComment(data): Observable<any> {
