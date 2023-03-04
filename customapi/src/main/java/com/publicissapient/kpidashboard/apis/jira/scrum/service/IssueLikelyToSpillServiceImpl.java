@@ -198,19 +198,27 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
 								KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping, issueWiseDelay);
+								if (null != jiraIssue.getStoryPoints()) {
+									storyPoint = storyPoint + jiraIssue.getStoryPoints();
+									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+								}
+								if (null != jiraIssue.getOriginalEstimateMinutes()) {
+									originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+									overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+								}
 							}
 						}else {
 							riskIssueCount = riskIssueCount + 1;
 							overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
 							KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping,issueWiseDelay);
-						}
-						if (null != jiraIssue.getStoryPoints()) {
-							storyPoint = storyPoint + jiraIssue.getStoryPoints();
-							overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
-						}
-						if (null != jiraIssue.getOriginalEstimateMinutes()) {
-							originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-							overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+							if (null != jiraIssue.getStoryPoints()) {
+								storyPoint = storyPoint + jiraIssue.getStoryPoints();
+								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+							}
+							if (null != jiraIssue.getOriginalEstimateMinutes()) {
+								originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+								overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+							}
 						}
 					}
 					List<IterationKpiData> data = new ArrayList<>();
