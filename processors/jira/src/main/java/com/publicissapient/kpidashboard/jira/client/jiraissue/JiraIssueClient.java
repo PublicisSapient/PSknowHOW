@@ -186,13 +186,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
-		Integer timeSpent = 0;
-		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
-			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
-		}
-		jiraIssue.setTimeSpentInMinutes(timeSpent);
-
+		setAggregateTimeEstimates(jiraIssue, fields);
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setUpdateDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -206,6 +200,33 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		// Created Date
 		jiraIssue.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 
+	}
+
+	/**
+	 * setting AggregatedTime Estimates
+	 * @param jiraIssue
+	 * @param fields
+	 */
+	private void setAggregateTimeEstimates(JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		Integer timeSpent = 0;
+		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
+		}
+		jiraIssue.setTimeSpentInMinutes(timeSpent);
+
+		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
+
+		}
+		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
+
+		}
 	}
 
 	/**
