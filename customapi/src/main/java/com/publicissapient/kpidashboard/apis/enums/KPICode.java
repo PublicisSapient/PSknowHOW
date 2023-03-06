@@ -256,6 +256,7 @@ public enum KPICode {
 	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
 	 */
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
+
 	/**
 	 * First time pass rate
 	 */
@@ -346,7 +347,12 @@ public enum KPICode {
 	/**
 	 * Issues Without Story Link
 	 */
-	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name());
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+
+	/**
+	 * Wastage
+	 */
+	WASTAGE("kpi131", KPISource.JIRA.name());
 
 	// @formatter:on
 

@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
@@ -61,7 +61,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
  */
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
     public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     @Autowired
     private CacheService cacheService;
@@ -166,9 +166,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
         iterationKpiModalVal.setPriority(iterationStatus.getPriority());
         iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
         iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-        Date date = DateUtil.dateTimeParser(iterationStatus.getDueDate(), DATE_FORMAT);
-        String dueDate = DateUtil.dateTimeFormatter(date, TIME_FORMAT);
-        iterationKpiModalVal.setDueDate(dueDate);
+        iterationKpiModalVal.setDueDate(DateUtil.stringToLocalDate(iterationStatus.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).toString());
         if (iterationStatus.getRemainingEstimateMinutes() != null)
             iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
         else
@@ -188,32 +186,45 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		if (estimationFlag) {
-			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-			}
-			if (null!=jiraIssue.getOriginalEstimateMinutes() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-				originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
-				iterationKpiModalValue.setIssueSize(originalEstimate+" hrs");
-			}
-		} else {
-			iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-			if(null!=jiraIssue.getOriginalEstimateMinutes()){
-				originalEstimate = jiraIssue.getOriginalEstimateMinutes()/60;
-				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate+" hrs"));
-			}
-			else
-				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate)+" hrs");
-		}
+		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, originalEstimate, iterationKpiModalValue);
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
 		}
+		if(jiraIssue.getRemainingEstimateMinutes() != null){
+			String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
+			iterationKpiModalValue.setRemainingEstimateMinutes(
+					StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+		}
+		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
 		loggedTime = jiraIssue.getTimeSpentInMinutes()/60;
 		iterationKpiModalValue.setTimeSpentInMinutes(String.valueOf(loggedTime+" hrs"));
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
+	private void populateBasedOnEstimationFlag(JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping,
+			int originalEstimate, IterationKpiModalValue iterationKpiModalValue) {
+		if (estimationFlag) {
+			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+			}
+			if (null != jiraIssue.getOriginalEstimateMinutes()
+					&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+				originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+				iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
+			}
+		} else {
+			iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+			if (null != jiraIssue.getOriginalEstimateMinutes()) {
+				originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate + " hrs"));
+			} else
+				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate) + " hrs");
+		}
 	}
 
 	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
@@ -233,4 +244,41 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
+	public void populateIterationDataForWorkCompleted(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+			Map<String, Object> actualCompletionData, long delay) {
+		int originalEstimate = 0;
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
+		}
+		// Original Estimate in days
+		if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			iterationKpiModalValue
+					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
+		}
+		if (jiraIssue.getDueDate() != null)
+			iterationKpiModalValue.setDueDate(jiraIssue.getDueDate().substring(0, jiraIssue.getDueDate().indexOf('T')));
+		if (actualCompletionData.get("actualCompleteDate") != null)
+			iterationKpiModalValue.setActualCompletionDate(actualCompletionData.get("actualCompleteDate").toString());
+		if (jiraIssue.getOriginalEstimateMinutes() != null && actualCompletionData.get("actualCompletionDays") != "-") {
+			iterationKpiModalValue.setDelay(String.valueOf(delay)+ "d");
+		} else {
+			iterationKpiModalValue.setDelay(" - ");
+		}
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
 }
