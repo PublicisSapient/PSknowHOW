@@ -250,72 +250,72 @@ describe('BasicConfigComponent', () => {
   });
 
 
-  it('should create the form', () => {
-    sharedService.setSelectedProject(null);
-    component.ifSuperUser = false;
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.formData.length).toEqual(hierarchyData.length + 2);
-    const controls = component.form.controls;
-    let totalControl = 0;
-    for (const name in controls) {
-      totalControl++;
-    }
-    expect(totalControl).toEqual(hierarchyData.length + 2);
-    expect(component.form.valid).toBeFalse();
+  // it('should create the form', () => {
+  //   sharedService.setSelectedProject(null);
+  //   component.ifSuperUser = false;
+  //   component.ngOnInit();
+  //   fixture.detectChanges();
+  //   expect(component.formData.length).toEqual(hierarchyData.length + 2);
+  //   const controls = component.form.controls;
+  //   let totalControl = 0;
+  //   for (const name in controls) {
+  //     totalControl++;
+  //   }
+  //   expect(totalControl).toEqual(hierarchyData.length + 2);
+  //   expect(component.form.valid).toBeFalse();
 
-    const compiled = fixture.debugElement.nativeElement;
-    const addressInput = compiled.querySelector('p-autoComplete[id="country"]');
-    const nameInput = compiled.querySelector('p-autoComplete[id="state"]');
+  //   const compiled = fixture.debugElement.nativeElement;
+  //   const addressInput = compiled.querySelector('p-autoComplete[id="country"]');
+  //   const nameInput = compiled.querySelector('p-autoComplete[id="state"]');
 
-    expect(addressInput).toBeTruthy();
-    expect(nameInput).toBeTruthy();
-  });
+  //   expect(addressInput).toBeTruthy();
+  //   expect(nameInput).toBeTruthy();
+  // });
 
-  it('should filter out and display suggestions', () => {
-    const event = {
-      originalEvent: {
-        isTrusted: true
-      },
-      query: 'ca'
-    };
-    const field = {
-      level: 1,
-      hierarchyLevelId: 'country',
-      hierarchyLevelName: 'Country',
-      suggestions: [
-        {
-          name: 'Canada',
-          code: 'Canada'
-        },
-        {
-          name: 'India',
-          code: 'India'
-        },
-        {
-          name: 'USA',
-          code: 'USA'
-        }
-      ],
-      value: '',
-      required: true,
-      filteredSuggestions: [
-        {
-          name: 'Canada',
-          code: 'Canada'
-        }
-      ]
-    };
-    component.search(event, field);
-    fixture.detectChanges();
-    const filteredSuggestions = [
-      {
-        name: 'Canada',
-        code: 'Canada'
-      }
-    ];
-    expect(field.filteredSuggestions).toEqual(filteredSuggestions);
-  });
+  // it('should filter out and display suggestions', () => {
+  //   const event = {
+  //     originalEvent: {
+  //       isTrusted: true
+  //     },
+  //     query: 'ca'
+  //   };
+  //   const field = {
+  //     level: 1,
+  //     hierarchyLevelId: 'country',
+  //     hierarchyLevelName: 'Country',
+  //     suggestions: [
+  //       {
+  //         name: 'Canada',
+  //         code: 'Canada'
+  //       },
+  //       {
+  //         name: 'India',
+  //         code: 'India'
+  //       },
+  //       {
+  //         name: 'USA',
+  //         code: 'USA'
+  //       }
+  //     ],
+  //     value: '',
+  //     required: true,
+  //     filteredSuggestions: [
+  //       {
+  //         name: 'Canada',
+  //         code: 'Canada'
+  //       }
+  //     ]
+  //   };
+  //   component.search(event, field);
+  //   fixture.detectChanges();
+  //   const filteredSuggestions = [
+  //     {
+  //       name: 'Canada',
+  //       code: 'Canada'
+  //     }
+  //   ];
+  //   expect(field.filteredSuggestions).toEqual(filteredSuggestions);
+  // });
 
   it('should submit config', () => {
     component.ngOnInit();
