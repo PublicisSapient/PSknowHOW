@@ -58,8 +58,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriority;
 	private String[] jiraIssueTypeNames;
 	private List<String> jiraIssueEpicType;
-	private String envImpacted;
 	private String storyFirstStatus;
+	private String envImpacted;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
 	@Builder.Default
@@ -125,6 +125,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTicketRejectedStatus;
 
 	private String jiraStatusMappingCustomField;
+
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
 

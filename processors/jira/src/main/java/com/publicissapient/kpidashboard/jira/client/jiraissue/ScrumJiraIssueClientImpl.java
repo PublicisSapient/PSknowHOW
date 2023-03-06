@@ -1238,8 +1238,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param fieldMapping
 	 *            Project field Mapping
 	 */
-	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
-			Issue issue, FieldMapping fieldMapping,Map<String, IssueField> fields) {
+    private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
+                                         Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
 		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
 		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
 
@@ -1258,7 +1258,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
-			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory,changeLogList, fieldMapping,jiraIssue,fields);
+            handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
 		}
 
 	}
@@ -1275,9 +1275,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param changeLogList
 	 *            Change Log list
 	 */
-	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-								 List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+    private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
+                                 List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
