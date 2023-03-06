@@ -1238,7 +1238,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (projectTraceLog != null) {
 				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
 						.getLastSavedEntryUpdatedDateByType();
-				clearEntryDateForAssigneeUpdates(projectBasicConfig, projectTraceLog, lastSavedEntryUpdatedDateByType);
 				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
 					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
 					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
@@ -1246,24 +1245,16 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 				}
 
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
+
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 			}
+
 		}
 
 		return lastUpdatedDateByIssueType;
-	}
-
-	/**
-	 * when assignee toggle off to on then we have to fetch data from start date
-	 * @param projectBasicConfig
-	 * @param projectTraceLog
-	 * @param lastSavedEntryUpdatedDateByType
-	 */
-	private void clearEntryDateForAssigneeUpdates(ProjectBasicConfig projectBasicConfig, ProcessorExecutionTraceLog projectTraceLog, Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastSavedEntryUpdatedDateByType.clear();
-		}
 	}
 
 	/**
@@ -1782,5 +1773,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
 		}
 		jiraIssue.setUrl(baseUrl);
+	}
+
+	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
 	}
 }
