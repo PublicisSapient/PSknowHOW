@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.HandleJiraHistory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -97,6 +98,9 @@ import io.atlassian.util.concurrent.Promise;
 
 @ExtendWith(SpringExtension.class)
 public class ScrumJiraIssueClientImplTest {
+
+	@Mock
+	private HandleJiraHistory handleJiraHistory;
 
 	List<ProjectBasicConfig> scrumProjectList = new ArrayList<>();
 	List<ProjectBasicConfig> kanbanProjectlist = new ArrayList<>();
