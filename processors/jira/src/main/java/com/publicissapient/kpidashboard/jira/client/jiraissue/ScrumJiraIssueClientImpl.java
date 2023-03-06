@@ -1686,7 +1686,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
 			if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-				if (fieldMapping.getJiraDueDateField().equalsIgnoreCase("Due Date") && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
 					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
 							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 				} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
