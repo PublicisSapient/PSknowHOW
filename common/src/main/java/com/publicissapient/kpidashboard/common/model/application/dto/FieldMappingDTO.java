@@ -54,6 +54,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiradefecttype;
 	private List<String> defectPriority;
 	private String[] jiraIssueTypeNames;
+	private String storyFirstStatus;
 	private String[] linkDefectToStoryField;
 	private String envImpacted;
 	private String rootCause;
@@ -125,7 +126,6 @@ public class FieldMappingDTO extends BasicModel {
 
 	private String jiraStatusMappingCustomField;
 
-
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
 
@@ -143,7 +143,6 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
-	private String storyFirstStatus;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;

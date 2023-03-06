@@ -33,7 +33,7 @@ public final class JiraConstants {
     public static final String PRIORITY = "priority";
     public static final String FIXVERSION = "fix version";
     public static final String DUEDATE = "duedate";
-    public static final String LABELS = "labels";
+    public static final String LABELS = "Labels";
     public static final String CUSTOM_FIELD = "CustomField";
     public static final String ISSUE_TYPE = "IssueType";
 	public static final String RCA_CAUSE_NONE = "None";

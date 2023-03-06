@@ -935,7 +935,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-			FieldMapping fieldMapping,Map<String, IssueField> fields) {
+			FieldMapping fieldMapping, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
 		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
@@ -946,7 +946,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueHistory.setDescription(jiraIssue.getName());
 		// This method is not setup method. write it to keep
 		// custom history
-		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping,fields);
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
@@ -1253,7 +1253,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
 		}
 		if (null == jiraIssueCustomHistory.getStoryID()) {
-			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping,fields);
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
@@ -1262,8 +1262,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 	}
-
-
 
 	/**
 	 * Adds Jira issue history
@@ -1278,8 +1276,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            Change Log list
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping,Map<String, IssueField> fields) {
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory,changeLogList, fieldMapping,jiraIssue,fields);
+								 List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
@@ -1289,7 +1287,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
-
 	}
 
 	/**
@@ -1638,9 +1635,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * * Set Details related to issues with Epic Issue type
 	 *
 	 * @param fieldMapping
-	 * 
+	 *
 	 * @param jiraIssue
-	 * 
+	 *
 	 * @param fields
 	 */
 	private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {

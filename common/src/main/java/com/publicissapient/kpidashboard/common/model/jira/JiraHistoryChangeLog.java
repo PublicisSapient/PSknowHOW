@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter

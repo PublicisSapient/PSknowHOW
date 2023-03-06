@@ -94,7 +94,7 @@ public class JiraIssueCustomHistory extends BasicModel {
 		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType=" + storyType
 				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId+", statusUpdationLog=" + statusUpdationLog +
+				+ ", projectComponentId=" + projectComponentId + ", statusUpdationLog=" + statusUpdationLog +
 				", assigneeUpdationLog=" + assigneeUpdationLog +
 				", priorityUpdationLog=" + priorityUpdationLog +
 				", fixVersionUpdationLog=" + fixVersionUpdationLog +

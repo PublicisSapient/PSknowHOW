@@ -59,6 +59,7 @@ public class FieldMapping extends BasicModel {
 	private String[] jiraIssueTypeNames;
 	private List<String> jiraIssueEpicType;
 	private String envImpacted;
+	private String storyFirstStatus;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
 	@Builder.Default
@@ -78,16 +79,11 @@ public class FieldMapping extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
-	private String storyFirstStatus;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
 	private String devicePlatform;
-
 	private String jiraStoryPointsCustomField;
-	private String jiraStatusMappingCustomField;
-
-
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
@@ -128,7 +124,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTicketWipStatus;
 	private List<String> jiraTicketRejectedStatus;
 
-
+	private String jiraStatusMappingCustomField;
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
 

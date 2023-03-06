@@ -37,134 +37,133 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class JiraIssueDataFactory {
-	private static final String FILE_PATH_JIRA_ISSUES = "/json/default/jira_issue.json";
-	private List<JiraIssue> jiraIssues;
-	private List<SprintWiseStory> sprintWiseStories;
-	private ObjectMapper mapper = null;
+    private static final String FILE_PATH_JIRA_ISSUES = "/json/default/jira_issue.json";
+    private List<JiraIssue> jiraIssues;
+    private List<SprintWiseStory> sprintWiseStories;
+    private ObjectMapper mapper = null;
 
-	private JiraIssueDataFactory() {
-	}
+    private JiraIssueDataFactory() {
+    }
 
-	public static JiraIssueDataFactory newInstance(String filePath) {
+    public static JiraIssueDataFactory newInstance(String filePath) {
 
-		JiraIssueDataFactory factory = new JiraIssueDataFactory();
-		factory.createObjectMapper();
-		factory.init(filePath);
-		return factory;
-	}
+        JiraIssueDataFactory factory = new JiraIssueDataFactory();
+        factory.createObjectMapper();
+        factory.init(filePath);
+        return factory;
+    }
 
-	public static JiraIssueDataFactory newInstance() {
+    public static JiraIssueDataFactory newInstance() {
 
-		return newInstance(null);
-	}
+        return newInstance(null);
+    }
 
-	private void init(String filePath) {
-		try {
+    private void init(String filePath) {
+        try {
 
-			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_JIRA_ISSUES : filePath;
+            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_JIRA_ISSUES : filePath;
 
-			jiraIssues = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<JiraIssue>>() {
-					});
-		} catch (IOException e) {
-			log.error("Error in reading kpi request from file = " + filePath, e);
-		}
-	}
+            jiraIssues = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+                    new TypeReference<List<JiraIssue>>() {
+                    });
+        } catch (IOException e) {
+            log.error("Error in reading kpi request from file = " + filePath, e);
+        }
+    }
 
-	private ObjectMapper createObjectMapper() {
+    private ObjectMapper createObjectMapper() {
 
-		if (mapper == null) {
-			mapper = new ObjectMapper();
-			mapper.registerModule(new JodaModule());
-			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		}
+        if (mapper == null) {
+            mapper = new ObjectMapper();
+            mapper.registerModule(new JodaModule());
+            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        }
 
-		return mapper;
-	}
+        return mapper;
+    }
 
-	public List<JiraIssue> getJiraIssues() {
-		return jiraIssues;
-	}
+    public List<JiraIssue> getJiraIssues() {
+        return jiraIssues;
+    }
 
-	public List<JiraIssue> getBugs() {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Bug"))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> getBugs() {
+        return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Bug"))
+                .collect(Collectors.toList());
+    }
 
-	public List<JiraIssue> getStories() {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Story"))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> getStories() {
+        return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals("Story"))
+                .collect(Collectors.toList());
+    }
 
-	public List<JiraIssue> findIssueByTypeName(String typeName) {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals(typeName))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> findIssueByTypeName(String typeName) {
+        return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getTypeName().equals(typeName))
+                .collect(Collectors.toList());
+    }
 
-	public List<JiraIssue> findIssueInTypeNames(List<String> typeName) {
-		return jiraIssues.stream().filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName()))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> findIssueInTypeNames(List<String> typeName) {
+        return jiraIssues.stream().filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName()))
+                .collect(Collectors.toList());
+    }
 
-	public JiraIssue findIssueById(String id) {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getId().toHexString().equals(id)).findFirst()
-				.orElse(null);
-	}
+    public JiraIssue findIssueById(String id) {
+        return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getId().toHexString().equals(id)).findFirst()
+                .orElse(null);
+    }
 
-	public List<JiraIssue> findIssueByStatus(String status) {
-		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getStatus().equals(status))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> findIssueByStatus(String status) {
+        return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
 
-	public List<JiraIssue> findIssueByNumberList(List<String> ids) {
-		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
-	}
+    public List<JiraIssue> findIssueByNumberList(List<String> ids) {
+        return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+    }
 
-	public List<JiraIssue> findIssueByStatusInTypeNames(String status, List<String> typeName) {
-		return jiraIssues.stream()
-				.filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName()) && jiraIssue.getState().equals(status))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> findIssueByStatusInTypeNames(String status, List<String> typeName) {
+        return jiraIssues.stream()
+                .filter(jiraIssue -> typeName.contains(jiraIssue.getTypeName()) && jiraIssue.getState().equals(status))
+                .collect(Collectors.toList());
+    }
 
-	public Set<String> getUniqueIssueTypes() {
-		Set<String> types = new HashSet<>();
-		jiraIssues.forEach(jiraIssue -> types.add(jiraIssue.getTypeName()));
-		return types;
-	}
+    public Set<String> getUniqueIssueTypes() {
+        Set<String> types = new HashSet<>();
+        jiraIssues.forEach(jiraIssue -> types.add(jiraIssue.getTypeName()));
+        return types;
+    }
 
-	public List<JiraIssue> findAutomatedTestCases() {
-		return jiraIssues.stream()
-				.filter(jiraIssue -> jiraIssue.getIsTestAutomated().equals("Yes"))
-				.collect(Collectors.toList());
-	}
+    public List<JiraIssue> findAutomatedTestCases() {
+        return jiraIssues.stream()
+                .filter(jiraIssue -> jiraIssue.getIsTestAutomated().equals("Yes"))
+                .collect(Collectors.toList());
+    }
 
-	public List<SprintWiseStory> getSprintWiseStories() {
+    public List<SprintWiseStory> getSprintWiseStories() {
 
-		sprintWiseStories = new ArrayList<>();
-		List<JiraIssue> stories = getStories();
+        sprintWiseStories = new ArrayList<>();
+        List<JiraIssue> stories = getStories();
 
-		Map<String, List<JiraIssue>> sprintWiseIssuesMap = stories.stream()
-				.collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getSprintID(),  Collectors.toList()));
+        Map<String, List<JiraIssue>> sprintWiseIssuesMap = stories.stream()
+                .collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getSprintID(), Collectors.toList()));
 
-		sprintWiseIssuesMap.forEach((sprintId, sprintStories) -> {
-			SprintWiseStory sprintWiseStory = new SprintWiseStory();
-			sprintWiseStory.setSprint(sprintId);
-			List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID).collect(Collectors.toList());
-			sprintWiseStory.setStoryList(storiesIdsOfSprint);
-			JiraIssue firstIssue = sprintStories.size() > 0 ? sprintStories.get(0) : null;
-			if (firstIssue != null){
-				sprintWiseStory.setSprintName(firstIssue.getSprintName());
-				sprintWiseStory.setSSprintBeginDate(firstIssue.getSprintBeginDate());
+        sprintWiseIssuesMap.forEach((sprintId, sprintStories) -> {
+            SprintWiseStory sprintWiseStory = new SprintWiseStory();
+            sprintWiseStory.setSprint(sprintId);
+            List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID).collect(Collectors.toList());
+            sprintWiseStory.setStoryList(storiesIdsOfSprint);
+            JiraIssue firstIssue = sprintStories.size() > 0 ? sprintStories.get(0) : null;
+            if (firstIssue != null) {
+                sprintWiseStory.setSprintName(firstIssue.getSprintName());
+                sprintWiseStory.setSSprintBeginDate(firstIssue.getSprintBeginDate());
 
-			}
-			sprintWiseStories.add(sprintWiseStory);
-		});
+            }
+            sprintWiseStories.add(sprintWiseStory);
+        });
 
 
-		return sprintWiseStories;
-	}
-
+        return sprintWiseStories;
+    }
 
 
 }

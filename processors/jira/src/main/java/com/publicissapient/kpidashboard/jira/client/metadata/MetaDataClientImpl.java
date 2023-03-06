@@ -266,13 +266,13 @@ public class MetaDataClientImpl implements MetadataClient {
 
 		List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 
-		/*if (CollectionUtils.isNotEmpty(firstStatusList)) {
+		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatus(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
-		}*/
+		}
 		fieldMapping.setIssueStatusExcluMissingWork(firstStatusList);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopment(workflowMap.get(CommonConstant.DEVELOPMENT));
