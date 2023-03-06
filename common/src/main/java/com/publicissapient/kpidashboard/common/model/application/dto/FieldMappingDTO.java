@@ -201,6 +201,7 @@ public class FieldMappingDTO extends BasicModel {
 	@Builder.Default
 	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateCustomField;
 
 
 	/**

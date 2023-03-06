@@ -196,6 +196,7 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateCustomField;
 
 	/**
 	 * Get jira issue type names string [ ].
