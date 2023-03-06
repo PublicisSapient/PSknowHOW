@@ -70,7 +70,7 @@
                         </div>
                         <div *ngSwitchDefault>
                             <span class="p-float-label w-50 p-mr-3">
-                                <p-autoComplete id="{{ field.hierarchyLevelId }}"
+                                <!-- <p-autoComplete id="{{ field.hierarchyLevelId }}"
                                     [formControlName]="field.hierarchyLevelId" [style]="{'width':'500px'}"
                                     [suggestions]="field.filteredSuggestions" (completeMethod)="search($event, field)"
                                     required="required" [dropdown]="true" field="name">
@@ -79,13 +79,17 @@
                                             <div>{{country.name}}</div>
                                         </div>
                                     </ng-template>
-                                </p-autoComplete>
+                                </p-autoComplete> -->
+                                <p-dropdown [options]="field.suggestions" optionLabel="name" optionDisabled="inactive"
+                                id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId" [style]="{'width':'500px'}"
+                                required="required"
+                                ></p-dropdown>
                                 <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelName
                                     }}</label>
                             </span>
-                            <span class="p-invalid"
+                            <!-- <span class="p-invalid"
                                 *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator"> ###, ~, ` and !
-                                are not allowed</span>
+                                are not allowed</span> -->
                         </div>
                     </div>
                 </div>
