@@ -1245,21 +1245,16 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 				}
 
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
+
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 			}
 
-			// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
-			setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
 		}
 
 		return lastUpdatedDateByIssueType;
-	}
-
-	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-		}
 	}
 
 	/**
@@ -1778,5 +1773,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
 		}
 		jiraIssue.setUrl(baseUrl);
+	}
+
+	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
 	}
 }

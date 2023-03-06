@@ -741,22 +741,16 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				} else {
 					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 				}
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
 
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 			}
 
-			// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
-			setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
 		}
 
 		return lastUpdatedDateByIssueType;
-	}
-
-	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-		}
 	}
 
 	private boolean isDataExist(boolean dataExist) {
@@ -1533,6 +1527,12 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
 			}
 			assigneeDetailsRepository.save(assigneeDetails);
+		}
+	}
+
+	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 		}
 	}
 
