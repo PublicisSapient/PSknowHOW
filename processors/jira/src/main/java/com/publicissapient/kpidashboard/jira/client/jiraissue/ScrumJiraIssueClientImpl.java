@@ -53,6 +53,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -629,7 +630,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// Set additional filters
 				setAdditionalFilters(jiraIssue, issue, projectConfig);
 
-				setStoryLinkWithDefect(issue, jiraIssue);
+				setStoryLinkWithDefect(issue, jiraIssue, fields);
 
 				// ADD QA identification field to feature
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
@@ -645,7 +646,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				setJiraAssigneeDetails(jiraIssue, assignee);
 
-				setEstimates(jiraIssue, issue);
+				setEstimates(jiraIssue, issue,fields,fieldMapping);
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
@@ -957,8 +958,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *
 	 * @param issue
 	 * @param jiraIssue
+	 * @param fields
 	 */
-	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue) {
+	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
@@ -970,9 +972,30 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
+
+			storyWithSubTaskDefect(issue, fields, defectStorySet);
+
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
 	}
+
+	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields, Set<String> defectStorySet) {
+		String parentKey;
+		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
+
+			try {
+				parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
+						.toString();
+				defectStorySet.add(parentKey);
+			} catch (JSONException e) {
+				log.error(
+						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
+						e);
+			}
+
+		}
+	}
+
 
 	/**
 	 * Finds one JiraIssue by issueId
@@ -1661,12 +1684,23 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	}
 
-	private void setEstimates(JiraIssue jiraIssue, Issue issue) {
+	private void setEstimates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+			FieldMapping fieldMapping) {
 		if (null != issue.getTimeTracking()) {
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
-			if(null != issue.getDueDate()){
-				jiraIssue.setDueDate(issue.getDueDate().toString());
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+				if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+				} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+						&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+					IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+					if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+						jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+					}
+				}
 			}
 		}
 	}

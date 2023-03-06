@@ -42,6 +42,7 @@ describe('IterationComponent', () => {
     let service: SharedService;
     let httpService: HttpService;
     let helperService: HelperService;
+    let excelService: ExcelService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
@@ -1995,6 +1996,7 @@ describe('IterationComponent', () => {
         service = TestBed.inject(SharedService);
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
+        excelService = TestBed.inject(ExcelService);
 
         spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
         httpMock = TestBed.inject(HttpTestingController);
@@ -2449,6 +2451,49 @@ describe('IterationComponent', () => {
         };
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
-    })
+    });
+
+    it('should convert to hours',()=>{
+        let result =component.convertToHoursIfTime(25,'hours');
+        expect(result).toEqual('25m');
+
+        result = component.convertToHoursIfTime(65,'hours');
+        expect(result).toEqual('1h 5m');
+
+        result = component.convertToHoursIfTime(60,'hours');
+        expect(result).toEqual('1h');
+    });
+
+    it('should convert to day',()=>{
+        let result =component.convertToHoursIfTime(25,'day');
+        expect(result.trim()).toEqual('25m');
+
+        result = component.convertToHoursIfTime(480,'day');
+        expect(result.trim()).toEqual('1d');
+
+        result = component.convertToHoursIfTime(0,'day');
+        expect(result.trim()).toEqual('0d');
+    });
+
+    it('should generate excel on click of export button',()=>{
+        component.modalDetails ={
+            header: 'Work Remaining / Issue Count/Original Estimate',
+            tableHeadings: [
+                "Issue Id",
+                "Issue Description",
+                "Issue Status",
+            ],
+            tableValues:[{
+                'Issue Id': 'DTS-22685',
+                'Issue URL': 'https://tools.publicis.sapient.com/jira/browse/DTS-22685',
+                'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
+                'Issue Status': 'Open',
+            }]
+        };
+
+        const spyGenerateExcel = spyOn(excelService,'generateExcel');
+        component.generateExcel();
+        expect(spyGenerateExcel).toHaveBeenCalled();
+    });
 
 });

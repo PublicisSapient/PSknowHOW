@@ -69,6 +69,7 @@ public class KanbanJiraIssue extends BasicModel {
 	private String count;
 	private List<String> labels;
 	private String createdDate;
+	private String dueDate;
 	// environmented impacted Eg. Development,QA,MTE,Beta,Production
 	private String envImpacted;
 	// build number
@@ -173,4 +174,6 @@ public class KanbanJiraIssue extends BasicModel {
 	private String qaName;
 	private String testCaseFolderName;
 	private boolean productionDefect;
+	private Integer aggregateTimeOriginalEstimateMinutes;
+	private Integer aggregateTimeRemainingEstimateMinutes;
 }

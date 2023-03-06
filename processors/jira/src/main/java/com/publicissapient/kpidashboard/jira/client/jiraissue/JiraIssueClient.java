@@ -35,9 +35,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONTokener;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
@@ -189,13 +186,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
-		Integer timeSpent = 0;
-		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
-			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
-		}
-		jiraIssue.setTimeSpentInMinutes(timeSpent);
-
+		setAggregateTimeEstimates(jiraIssue, fields);
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setUpdateDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -209,6 +200,33 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		// Created Date
 		jiraIssue.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 
+	}
+
+	/**
+	 * setting AggregatedTime Estimates
+	 * @param jiraIssue
+	 * @param fields
+	 */
+	private void setAggregateTimeEstimates(JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		Integer timeSpent = 0;
+		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
+		}
+		jiraIssue.setTimeSpentInMinutes(timeSpent);
+
+		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
+
+		}
+		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
+
+		}
 	}
 
 	/**
@@ -285,13 +303,14 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		} else {
 			List<String> assigneeKey = new ArrayList<>();
 			List<String> assigneeName = new ArrayList<>();
-			if ((user.getName() == null) || user.getName().isEmpty()) {
+			String assigneeUniqueId = getAssignee(user);
+			if ((assigneeUniqueId == null) || assigneeUniqueId.isEmpty()) {
 				assigneeKey = new ArrayList<>();
 				assigneeName = new ArrayList<>();
 			} else {
-				assigneeKey.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-				assigneeName.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-				jiraIssue.setAssigneeId(user.getName());
+				assigneeKey.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+				assigneeName.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+				jiraIssue.setAssigneeId(assigneeUniqueId);
 			}
 			jiraIssue.setOwnersShortName(assigneeName);
 			jiraIssue.setOwnersUsername(assigneeName);
@@ -308,6 +327,14 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		}
 	}
 
+	public String getAssignee(User user) {
+		String userId = "";
+		String query = user.getSelf().getQuery();
+		if (StringUtils.isNotEmpty(query) && (query.contains("accountId") || query.contains("username"))) {
+			userId = query.split("=")[1];
+		}
+		return userId;
+	}
 
 	/**
 	 * retrives value of customfield value object
@@ -332,48 +359,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			log.error("JIRA Processor | Error while parsing RCA Custom_Field", e);
 		}
 		return fieldValue.toString();
-	}
-
-
-	private boolean hasAtLeastOneCommonElement(Set<String> issueLabels, List<String> configuredLabels) {
-		if (org.apache.commons.collections4.CollectionUtils.isEmpty(issueLabels)) {
-			return false;
-		}
-		return configuredLabels.stream().anyMatch(issueLabels::contains);
-	}
-
-	private String processJson(String fieldMapping, Map<String, IssueField> fields, List<String> jiraTestValue) {
-		String automationFlag = NormalizedJira.NO_VALUE.getValue();
-		String fetchedValueFromJson = null;
-		try {
-			if (fields.get(fieldMapping) != null && fields.get(fieldMapping).getValue() != null) {
-				String data = fields.get(fieldMapping).getValue().toString();
-				Object json = new JSONTokener(data).nextValue();
-
-				if (json instanceof JSONObject) {
-					fetchedValueFromJson = ((JSONObject) fields.get(fieldMapping).getValue())
-							.getString(JiraConstants.VALUE);
-					if (jiraTestValue.contains(fetchedValueFromJson)) {
-						automationFlag = NormalizedJira.YES_VALUE.getValue();
-					}
-				} else if (json instanceof org.codehaus.jettison.json.JSONArray) {
-					JSONParser parser = new JSONParser();
-					org.json.simple.JSONObject jsonObject;
-					JSONArray array = (JSONArray) parser.parse(fields.get(fieldMapping).getValue().toString());
-					for (int i = 0; i < array.size(); i++) {
-						jsonObject = (org.json.simple.JSONObject) parser.parse(array.get(i).toString());
-						fetchedValueFromJson = jsonObject.get(JiraConstants.VALUE).toString();
-					}
-					if (jiraTestValue.contains(fetchedValueFromJson)) {
-						automationFlag = NormalizedJira.YES_VALUE.getValue();
-					}
-				}
-			}
-
-		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
-		}
-		return automationFlag;
 	}
 
 	protected Map<String, String> processMap(Map<String, String> labelMap, Map<String, String> customfieldMap) {

@@ -290,5 +290,5 @@ public class KPIExcelData {
     private Map<String, String> linkedDefectsStory;
 
     @JsonProperty("Size(story point/hours)")
-    private String storyPoint;
+        private String storyPoint;
 }
