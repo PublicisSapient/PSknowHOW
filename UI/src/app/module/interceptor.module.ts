@@ -87,6 +87,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     }
                 }),
                 catchError((err) => {
+                console.log("GS oops error tracking start---");
+                console.log(err);
+                console.log("GS oops error tracking end---");
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
