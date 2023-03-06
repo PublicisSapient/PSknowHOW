@@ -1140,7 +1140,7 @@
                       
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
-                        <label class="field-title">Select Due Date <span class="fa fa-info-circle"
+                        <label class="field-title">Due Date <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 This field is to track due date of issues tagged in the iteration
@@ -1175,6 +1175,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                    *ngIf="fieldstoShow?.includes('jiraDevDueDateCustomField') || fieldstoShow.length === 0">
+                    <label class="field-title">Dev Due Date <span class="fa fa-info-circle" aria-hidden="true"
+                            pTooltip='<span>
+                            Definition:
+                            This is dev completion due date
+                        </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                      <div class="p-inputgroup">
+                          <input type="text" pInputText id="jiraDevDueDateCustomField" formControlName="jiraDevDueDateCustomField"
+                              placeholder="Enter Dev Due Date" [style]="{'max-width':'initial','width':'60vw'}">
+                          <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(true, 'jiraDevDueDateCustomField', 'fields')"></button>
+                      </div>
+                  </div>
                   </div>
               </p-accordionTab>
 
