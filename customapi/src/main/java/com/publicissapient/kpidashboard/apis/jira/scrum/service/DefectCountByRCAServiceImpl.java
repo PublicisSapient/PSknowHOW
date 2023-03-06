@@ -65,7 +65,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
+			LOGGER.info("Defect count by RCA -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
@@ -134,89 +134,37 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
 				// filterDataList will consist of DataCountGroup which will be set for all priorities
 				List<DataCountGroup> filterDataList = new ArrayList<>();
-				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
-				Map<String, Integer> overallRCACountMap = new HashMap<>();
-				int overallRCACount = 0;
+				Map<String, List<DataCount>> mapOfPriorityAndDataCount = new HashMap<>();
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseRCAList.entrySet()) {
+					List<DataCount> dataCountList = new ArrayList<>();
 					String priority = entry.getKey();
 					Map<String, List<JiraIssue>> rcaData = entry.getValue();
-
-					DataCount priorityData = new DataCount();
-					priorityData.setData(priority);
-					priorityData.setValue(new ArrayList<>());
-
-					int priorityRCACount = 0;
-					Map<String, Integer> rcaCountMap = new HashMap<>();
-					// update and set the overall data
 					for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
 						String rcaName = rcaEntry.getKey();
 						List<JiraIssue> issues = rcaEntry.getValue();
-
-						priorityRCACount += issues.size();
-						rcaCountMap.put(rcaName, issues.size());
-						overallRCACount += issues.size();
-						overallRCACountMap.merge(rcaName, issues.size(), Integer::sum);
+						DataCount dataCount = new DataCount();
+						dataCount.setData(latestSprint.getProjectFilter().getName());
+						dataCount.setValue(issues.size());
+						dataCount.setSSprintID(latestSprint.getSprintFilter().getId());
+						dataCount.setSSprintName(latestSprint.getSprintFilter().getName());
+						dataCount.setKpiGroup(rcaName);
+						dataCount.setSProjectName(latestSprint.getProjectFilter().getName());
+						dataCountList.add(dataCount);
+						populateExcelDataObject(requestTrackerId, excelData, issues, latestSprint.getSprintFilter().getName());
 					}
-					DataCount priorityRCAData = new DataCount();
-					priorityRCAData.setData(String.valueOf(priorityRCACount));
-					priorityRCAData.setValue(rcaCountMap);
-					priorityRCAData.setSSprintID(latestSprint.getSprintFilter().getId());
-					priorityRCAData.setSSprintName(latestSprint.getSprintFilter().getName());
-					priorityRCAData.setKpiGroup("Priority");
-					priorityRCAData.setSProjectName(latestSprint.getProjectFilter().getName());
-					// dataCountList will store data for P1,P2,P3 and P4 priorities pertaining to child level structure
-					List<DataCount> dataCountList = (List<DataCount>) priorityData.getValue();
-
-					// add dataCount for middle level structure to store P1,P2,P3 and P4 Priorities, set dataCountList as value for child level structure
-					List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
-					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestSprint.getProjectFilter().getName());
-					middleOverallData.setValue(dataCountList);
-					middleTrendValueListForPriorities.add(middleOverallData);
-
-					DataCountGroup filterData = new DataCountGroup(priority, middleTrendValueListForPriorities);
-
-					filterDataList.add(filterData);
-					dataCountList.add(priorityRCAData);
-					priorityData.setValue(dataCountList);
-					dataCountListForAllPriorities.add(priorityRCAData);
+					mapOfPriorityAndDataCount.put(priority, dataCountList);
 				}
-				// logic to create "Overall" Priority which will contain aggregate of all the priorities such as P1, P2, P3 and P4
-				Map<String, Integer> overallRCACountMapAggregate = new HashMap<>();
-				for (DataCount dataCount : dataCountListForAllPriorities) {
-					Map<String, Integer> rcaCountMap = (Map<String, Integer>) dataCount.getValue();
-					rcaCountMap.forEach((rcaName, rcaCountValue) ->
-							overallRCACountMapAggregate.merge(rcaName, rcaCountValue, Integer::sum));
-				}
-				// trendValueListOverAll will consist of data only pertaining to "Overall" Priority Filter
-				List<DataCount> trendValueListOverAll = new ArrayList<>();
-				DataCount overallData = new DataCount();
-				int sumOfDefectsCount = overallRCACountMapAggregate.values().stream().mapToInt(Integer::intValue).sum();
-				overallData.setData(String.valueOf(sumOfDefectsCount));
-				overallData.setValue(overallRCACountMapAggregate);
-				overallData.setSSprintID(latestSprint.getSprintFilter().getId());
-				overallData.setSSprintName(latestSprint.getSprintFilter().getName());
-				overallData.setKpiGroup(OVERALL);
-				overallData.setSProjectName(latestSprint.getProjectFilter().getName());
-				trendValueListOverAll.add(overallData);
-				// add one more data count group and data count for middle level structure to store "Overall" Priority
-				List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
-				DataCount middleOverallData = new DataCount();
-				middleOverallData.setData(latestSprint.getProjectFilter().getName());
-				middleOverallData.setValue(trendValueListOverAll);
-				middleTrendValueListOverAll.add(middleOverallData);
-				populateExcelDataObject(requestTrackerId, excelData, allCompletedIssuesExcludeStory, latestSprint.getSprintFilter().getName());
+				mapOfPriorityAndDataCount.forEach((priority, dataCounts) ->
+				{
+					DataCountGroup dataCountGroup = new DataCountGroup(priority, dataCounts);
+					filterDataList.add(dataCountGroup);
+				});
 
-				// "Overall" dataCountGroup added to filterDataList and added in the final filterDataList
-				DataCountGroup filterDataOverall = new DataCountGroup(OVERALL, middleTrendValueListOverAll);
-				filterDataList.add(filterDataOverall);
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIECHART.getColumns());
-				kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIECHART.getColumns());
 				kpiElement.setExcelData(excelData);
 
 				sortListByKey(filterDataList);
-				// filterDataList will consist of dataCountGroup for all the available priorities such as P1, P2, P3, P4, Overall etc.
 				kpiElement.setTrendValueList(filterDataList);
 				LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId, overAllRCAIssueCount.get(0));
 			}

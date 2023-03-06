@@ -3337,12 +3337,12 @@ db.getCollection('kpi_master').insert(
       "calculateMaturity": false
     },
    {
-         "kpiId": "kpi131",
+         "kpiId": "kpi132",
          "kpiName": "Defects by Root Cause",
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
-         "defaultOrder": 10,
+         "defaultOrder": 12,
          "kpiCategory": "Iteration",
          "kpiSource": "Jira",
          "groupId": 8,
