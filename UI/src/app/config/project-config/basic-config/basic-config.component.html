@@ -70,20 +70,16 @@
                         </div>
                         <div *ngSwitchDefault>
                             <span class="p-float-label w-50 p-mr-3">
-                                <!-- <p-autoComplete id="{{ field.hierarchyLevelId }}"
+                                <p-autoComplete id="{{ field.hierarchyLevelId }}"
                                     [formControlName]="field.hierarchyLevelId" [style]="{'width':'500px'}"
                                     [suggestions]="field.filteredSuggestions" (completeMethod)="search($event, field)"
-                                    required="required" [dropdown]="true" field="name">
+                                    required="required" [dropdown]="true" field="name" [readonly]="true">
                                     <ng-template let-country pTemplate="item">
                                         <div class="country-item">
                                             <div>{{country.name}}</div>
                                         </div>
                                     </ng-template>
-                                </p-autoComplete> -->
-                                <p-dropdown [options]="field.suggestions" optionLabel="name" optionDisabled="inactive"
-                                id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId" [style]="{'width':'500px'}"
-                                required="required"
-                                ></p-dropdown>
+                                </p-autoComplete>
                                 <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelName
                                     }}</label>
                             </span>

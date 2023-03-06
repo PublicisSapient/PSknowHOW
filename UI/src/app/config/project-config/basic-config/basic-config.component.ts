@@ -66,7 +66,6 @@ export class BasicConfigComponent implements OnInit {
     // api call to get formData
     this.blocked = true;
     const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
-    formFieldData.map(control=>control['suggestions'].unshift({name: `Select ${control.hierarchyLevelName}`, code: `Select ${control.hierarchyLevelName}` , inactive: true}))
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
     this.formData.unshift(
@@ -100,18 +99,18 @@ export class BasicConfigComponent implements OnInit {
 
   }
 
-  // search(event, field) {
-  //   const filtered: any[] = [];
-  //   const query = event.query;
-  //   for (let i = 0; i < field.suggestions.length; i++) {
-  //     const country = field.suggestions[i];
-  //     if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-  //       filtered.push(country);
-  //     }
-  //   }
+  search(event, field) {
+    const filtered: any[] = [];
+    const query = event.query;
+    for (let i = 0; i < field.suggestions.length; i++) {
+      const country = field.suggestions[i];
+      if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+        filtered.push(country);
+      }
+    }
 
-  //   field.filteredSuggestions = filtered;
-  // }
+    field.filteredSuggestions = filtered;
+  }
 
   onSubmit() {
     const formValue = this.form.getRawValue();
