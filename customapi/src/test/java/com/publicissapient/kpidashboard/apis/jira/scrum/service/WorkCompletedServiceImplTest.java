@@ -30,8 +30,10 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
@@ -65,8 +67,10 @@ public class WorkCompletedServiceImplTest {
 	private WorkCompletedServiceImpl workCompletedServiceImpl;
 	@Mock
 	private SprintRepository sprintRepository;
-
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	private List<JiraIssue> storyList = new ArrayList<>();
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private SprintDetails sprintDetails = new SprintDetails();
@@ -91,6 +95,8 @@ public class WorkCompletedServiceImplTest {
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		jiraIssueCustomHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
 	}
 
 	private void setMockProjectConfig() {
@@ -116,11 +122,13 @@ public class WorkCompletedServiceImplTest {
 
 		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
-
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
+				.thenReturn(jiraIssueCustomHistoryList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(workCompletedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
 			KpiElement kpiElement = workCompletedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -147,6 +155,8 @@ public class WorkCompletedServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
+				.thenReturn(jiraIssueCustomHistoryList);
 		Map<String, Object> returnMap = workCompletedServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(returnMap);

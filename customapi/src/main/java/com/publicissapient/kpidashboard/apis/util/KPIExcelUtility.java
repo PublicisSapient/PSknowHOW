@@ -35,16 +35,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,11 +42,24 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
+import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -111,7 +114,8 @@ public class KPIExcelUtility {
     }
 
     public static void populateDefectDensityExcelData(String sprint, List<String> storyIds, List<JiraIssue> defects,
-                                                      List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
+                                                      List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData
+            , FieldMapping fieldMapping) {
         if (CollectionUtils.isNotEmpty(storyIds)) {
             storyIds.forEach(story -> {
                 Map<String, String> linkedDefects = new HashMap<>();
@@ -127,7 +131,14 @@ public class KPIExcelUtility {
                         Map<String, String> storyId = new HashMap<>();
                         storyId.put(story, checkEmptyURL(jiraIssue));
                         excelData.setStoryId(storyId);
-                        excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+                        if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                                fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                            excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
+                        } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                            Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+                            excelData.setStoryPoint(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
+                                    + "/" + originalEstimateInHours + " hrs");
+                        }
                     }
                 }
                 kpiExcelData.add(excelData);
@@ -450,7 +461,8 @@ public class KPIExcelUtility {
     }
 
     public static void populateSprintVelocity(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData) {
+                                              Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData,
+                                              FieldMapping fieldMapping) {
         if (CollectionUtils.isEmpty(issueDetailsSet)) {
             if (MapUtils.isNotEmpty(totalStoriesMap)) {
                 totalStoriesMap.forEach((storyId, jiraIssue) -> {
@@ -460,8 +472,15 @@ public class KPIExcelUtility {
                     storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                     excelData.setStoryId(storyDetails);
                     excelData.setIssueDesc(checkEmptyName(jiraIssue));
-                    excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
-
+                    if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                            fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                        excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                    } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                        Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+                        Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                        excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                                totalOriginalEstimate / 60 + " hrs");
+                    }
                     kpiExcelData.add(excelData);
                 });
             }
@@ -473,8 +492,16 @@ public class KPIExcelUtility {
                 storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
                 excelData.setStoryId(storyDetails);
                 excelData.setIssueDesc(checkEmptyName(issueDetails));
-                excelData.setStoryPoints(
-                        Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(
+                            Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                } else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
+                    Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+                    Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                    excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                            totalOriginalEstimate / 60 + " hrs");
+                }
                 kpiExcelData.add(excelData);
             }
         }
@@ -595,7 +622,8 @@ public class KPIExcelUtility {
      */
 
     public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
+                                                      List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData,
+                                                      FieldMapping fieldMapping) {
         if (MapUtils.isNotEmpty(totalStoriesMap)) {
             List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
                     .collect(Collectors.toList());
@@ -608,7 +636,12 @@ public class KPIExcelUtility {
                 storyDetails.put(storyId, checkEmptyURL(jiraIssue));
                 excelData.setStoryId(storyDetails);
                 excelData.setClosedStatus(present);
-                excelData.setStoryPoints(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+                } else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(jiraIssue.getOriginalEstimateMinutes() / 60 + " hrs");
+                }
 
                 kpiExcelData.add(excelData);
 
@@ -646,18 +679,24 @@ public class KPIExcelUtility {
         }
     }
 
-    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel) {
+    public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
+                                                     FieldMapping fieldMapping) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
-            issuesExcel.forEach((e) -> {
+            issuesExcel.forEach(e -> {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
-                excelData.setDate(e.getUpdateDate());
+                excelData.setDate(LocalDate.parse(e.getUpdateDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
-                excelData.setSizeInStoryPoints(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
+                }else if (null != e.getOriginalEstimateMinutes()) {
+                    excelData.setStoryPoint(e.getOriginalEstimateMinutes()/60+" hrs");
+                }
                 excelDataList.add(excelData);
             });
         }
@@ -1105,5 +1144,54 @@ public class KPIExcelUtility {
         excelData.setEstimatedCapacity(df2.format(capacity));
         kpiExcelData.add(excelData);
     }
+
+	public static void populateIterationKpiWithPCD(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+			Map<String, IterationPotentialDelay> issueWiseDelay) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+            iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+        }
+        if (null != jiraIssue.getOriginalEstimateMinutes()
+                && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+            iterationKpiModalValue.setIssueSize((String.valueOf(jiraIssue.getOriginalEstimateMinutes()/60)+" hrs"));
+        }
+		iterationKpiModalValue.setOriginalEstimateMinutes(
+                (jiraIssue.getOriginalEstimateMinutes() != null && jiraIssue.getOriginalEstimateMinutes() > 0)
+                        ? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
+                        : "0m");
+        if(jiraIssue.getRemainingEstimateMinutes()!=null){
+            String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
+            iterationKpiModalValue.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+            if(jiraIssue.getRemainingEstimateMinutes() > 0){
+                iterationKpiModalValue.setRemainingTimeInDays(remEstimate);
+            }
+        }
+        else{
+            iterationKpiModalValue.setRemainingTimeInDays("0m");
+        }
+		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
+            IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+            iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+
+		} else {
+			iterationKpiModalValue.setPotentialDelay("-");
+			iterationKpiModalValue.setPredictedCompletionDate("-");
+		}
+        iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+	}
 
 }

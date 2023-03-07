@@ -631,20 +631,42 @@ iAdjust = 1;
   }
 
   convertToHoursIfTime(val, unit) {
-    if (unit?.toLowerCase() == 'hours') {
-      const hours = (val / 60);
-      const rhours = Math.floor(hours);
-      const minutes = (hours - rhours) * 60;
-      const rminutes = Math.round(minutes);
-      if (rminutes == 0) {
-        val = rhours + 'h';
-      } else if (rhours == 0) {
-        val = rminutes + 'm';
+    const isLessThanZero = val < 0;
+    val = Math.abs(val);
+    const hours = (val / 60);
+    const rhours = Math.floor(hours);
+    const minutes = (hours - rhours) * 60;
+    const rminutes = Math.round(minutes);
+    if (unit?.toLowerCase() === 'hours') {
+      val = this.convertToHours(rminutes, rhours);
+    } else if (unit?.toLowerCase() === 'day') {
+      if (val !== 0) {
+        val = this.convertToDays(rminutes, rhours);
       } else {
-        val = rhours + 'h ' + rminutes + 'm';
+        val = '0d';
       }
     }
+    if(isLessThanZero){
+      val = '-'+ val;
+    }
     return val;
+  }
+
+  convertToHours(rminutes, rhours) {
+    if (rminutes === 0) {
+      return rhours + 'h';
+    } else if (rhours === 0) {
+      return rminutes + 'm';
+    } else {
+      return rhours + 'h ' + rminutes + 'm';
+    }
+  }
+
+  convertToDays(rminutes, rhours) {
+      const days = rhours / 8;
+      const rdays = Math.floor(days);
+      rhours = (days - rdays) * 8;
+      return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
   }
 
   handleArrowClick(kpi, label, tableValues) {
@@ -653,6 +675,25 @@ iAdjust = 1;
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+  }
+
+  generateExcel() {
+    const kpiData = {
+      headerNames: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      kpiData.headerNames.push({
+        header: colHeader,
+        key: colHeader,
+        width: 25
+      });
+    });
+    this.modalDetails['tableValues'].forEach(colData => {
+      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+    });
+
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
   drop(event: CdkDragDrop<string[]>) {

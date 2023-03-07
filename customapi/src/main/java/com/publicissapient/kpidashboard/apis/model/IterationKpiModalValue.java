@@ -51,14 +51,38 @@ public class IterationKpiModalValue implements Serializable {
 	private String issueStatus;
 	@JsonProperty("Issue Type")
 	private String issueType;
-	@JsonProperty("Size")
-	private Double issueSize;
+	@JsonProperty("Size(story point/hours)")
+	private String issueSize;
 	@JsonProperty("Remaining Hours")
 	private Integer remainingTime;
 	@JsonProperty("Logged Work")
 	private String timeSpentInMinutes;
 	@JsonProperty("Original Estimate")
 	private String originalEstimateMinutes;
+	@JsonProperty("Priority")
+	private String priority;
+	@JsonProperty("Due Date")
+	private String dueDate;
+	@JsonProperty("Delay")
+	private String delay;
+	@JsonProperty("Remaining Estimate")
+	private String remainingEstimateMinutes;
+	@JsonProperty("Blocked Time")
+	private String blockedTime;
+	@JsonProperty("Wait Time")
+	private String waitTime;
+	@JsonProperty("Total Wastage")
+	private String wastage;
+	@JsonProperty("Actual Completion date")
+	private String actualCompletionDate;
+	@JsonProperty("Remaining Days")
+	private String remainingTimeInDays;
+	@JsonProperty("Predicted Completion Date")
+	private String predictedCompletionDate;
+	@JsonProperty("Potential Delay(in days)")
+	private String potentialDelay;
+	@JsonProperty("Issue Priority")
+	private String issuePriority;
 
 
 }

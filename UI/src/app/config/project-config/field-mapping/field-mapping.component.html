@@ -46,25 +46,6 @@
 
                 <div class="p-p-0">
                     <div class="p-mb-3 p-d-flex p-align-center"
-                        *ngIf="fieldstoShow?.includes('storyFirstStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Story First Status <span class="fa fa-info-circle" aria-hidden="true"
-                                pTooltip='<span>
-                                                    Definition:
-                                                    Default status when a Story is opened.   <br>
-                                                    Example: Open<hr>
-                                                    KPI Impacted:
-                                                    Jira Processor History
-                                                    </span>' tooltipPosition="top" tooltipEvent="hover"
-                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="storyFirstStatus" formControlName="storyFirstStatus"
-                                placeholder="Enter Story Created Status"
-                                [style]="{'max-width':'initial','width':'60vw'}">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'storyFirstStatus', 'workflow')"></button>
-                        </div>
-                    </div>
-                    <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDefectCreatedStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Defect Created Status <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
@@ -85,13 +66,13 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraLiveStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Live Status - Cycle Time <span class="fa fa-info-circle"
+                        <label class="field-title">Live Status - Lead Time <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                     Definition:
                                                     Provide any status from workflow on which Live is considered. <br>
                                                     Example: Live<hr>
                                                     KPI Impacted:
-                                                    Cycle Time - DOD to Live
+                                                    Lead Time - DOD to Live
                                             </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -103,13 +84,13 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDor') || fieldstoShow.length === 0">
-                        <label class="field-title">DOR Status - Cycle Time <span class="fa fa-info-circle"
+                        <label class="field-title">DOR Status - Lead Time <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                 Definition:
                                                 Definition of Readiness. Provide any status from workflow on which DOR is considered. <br>
                                                 Example: In Sprint<hr>
                                                 KPI Impacted:
-                                                Cycle Time - Intake to DOR and DOR to DOD
+                                                Lead Time - Intake to DOR and DOR to DOD
                                             </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -207,7 +188,7 @@
                                                 Definition of Doneness. Provide any status from workflow on which DOD is considered. <br>
                                                 Example: In Testing <hr>
                                                 KPI Impacted:
-                                                QA Defect Density and Cycle Time - DOR to DOD and DOD to Live
+                                                QA Defect Density and Lead Time - DOR to DOD and DOD to Live
                                               </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -245,7 +226,7 @@
                                 aria-hidden="true" pTooltip='<span>
                                                 Definition:
                                                 Default status when a defect is dropped. <br>
-                                                Example: Open<hr>
+                                                Example: Cancelled, Dropped etc<hr>
                                                 KPI Impacted:
                                                 Jira Processor History
                                               </span>' tooltipPosition="top" tooltipEvent="hover"
@@ -311,6 +292,52 @@
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'jiraOnHoldStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraBlockedStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Wastage - Blocked Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included.
+                                                </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraBlockedStatus" formControlName="jiraBlockedStatus"
+                                placeholder="Enter Status to Identify 'Blocked' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraBlockedStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraWaitStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Wastage - Wait Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            The statuses wherein no activity takes place and signify that the issues needs to move to picked up by a team member like Ready for deployment, Ready for testing etc
+                                                </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraWaitStatus" formControlName="jiraWaitStatus"
+                                placeholder="Enter Status to Identify 'Wait' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraWaitStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraStatusForInProgress') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify In Progress
+                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>
+                                               </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="jiraStatusForInProgress" formControlName="jiraStatusForInProgress"
+                                placeholder="Enter Status to identify 'In Progress' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraStatusForInProgress', 'workflow')"></button>
                         </div>
                     </div>
                 </div>
@@ -507,13 +534,12 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraIntakeToDorIssueType') || fieldstoShow.length === 0">
-                        <label class="field-title">Cycle Time
-                            Issue Type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                        <label class="field-title">Lead time issue type <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                 Definition:
-                                The issue type which is to be considered while calculating cycle time KPIs, i.e. intake to DOR and DOR and DOD ... <br>
+                                The issue type which is to be considered while calculating lead time KPIs, i.e. intake to DOR and DOR and DOD ... <br>
                                 Example: Story, Change Request <hr>
                                 KPI Impacted:
-                                Cycle Time Kpi
+                                Lead Time Kpi
                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
                                 [escape]="false"></span></label>
                         <div class="p-inputgroup">
@@ -951,7 +977,7 @@
                                 <div class="p-inputgroup">
                                     <ng-container *ngFor="let estimationType of estimationCriteriaTypes">
                                         <p-radioButton placeholder="Select" formControlName="estimationCriteria"
-                                            value="{{estimationType.value}}" label="{{estimationType.value}}"
+                                            value="{{estimationType.value}}" label="{{estimationType.label}}"
                                             class="p-m-2">
                                         </p-radioButton>
                                     </ng-container>
@@ -1111,6 +1137,44 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
+                      
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
+                        <label class="field-title">Select Due Date <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
+                                Definition:
+                                This field is to track due date of issues tagged in the iteration
+                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false" tooltipPosition="top"></span></label>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let dueDateType of dueDateTypes">
+                                        <p-radioButton placeholder="Select" formControlName="jiraDueDateField"
+                                            value="{{dueDateType.value}}" label="{{dueDateType.value}}"
+                                            class="p-m-2">
+                                        </p-radioButton>
+                                    </ng-container>
+                                </div>
+                             </div>
+
+                            <div class="p-m-2"
+                                *ngIf="fieldMapping['jiraDueDateField'] && fieldMapping['jiraDueDateField'].value === 'Custom Field' && (fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0)">
+                                <label class="field-title">Due Date Custom Field <span
+                                        class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        This field is to track due date of issues tagged in the iteration
+                                  </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                        [escape]="false"></span></label>
+                                <div class="p-inputgroup p-mt-2">
+                                    <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
+                                        placeholder="Enter due date custom field" [style]="{'max-width':'initial','width':'60vw'}">
+                                    <button type="button" pButton pRipple icon="pi pi-search"
+                                        (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                   </div>
               </p-accordionTab>
 

@@ -73,7 +73,28 @@ public class CommonUtilsTest {
 				+ beginDate.getDayOfMonth();
 
 	}
-	
+
+	@Test
+	public void getDaysBetwDateTest() {
+		DateTime endDate = DateTime.now();
+		String separator = "-";
+		DateTime beginDate = endDate.minusDays(3);
+		Integer returnMap = CommonUtils.closedStoryAndPotentialDelays(beginDate, endDate);
+		String key = beginDate.getYear() + separator + beginDate.getMonthOfYear() + separator
+				+ beginDate.getDayOfMonth();
+
+	}
+
+	@Test
+	public void getDaysBetwDate2() {
+		DateTime endDate = DateTime.now();
+		String separator = "-";
+		DateTime beginDate = endDate.minusDays(3);
+		Integer returnMap = CommonUtils.openStoryDelay(beginDate, endDate, true);
+		String key = beginDate.getYear() + separator + beginDate.getMonthOfYear() + separator
+				+ beginDate.getDayOfMonth();
+
+	}
 	@Test
 	public void getDaysBetweenDateTestFalse() {
 		DateTime endDate = DateTime.now();

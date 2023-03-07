@@ -90,7 +90,7 @@
                                 Status from workflow on which ticket is considered as Triaged. <br>
                                 Example : In progress <hr>
                                 KPI Impacted :
-                                Cycle Time
+                                Lead Time
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
@@ -132,7 +132,7 @@
                                 Status from workflow on which ticket is considered as Resolved. <br>
                                 Example : Closed <hr>
                                 KPI Impacted :
-                                Total Ticket Count, WIP vs Closed, Cycle Time, Throughput
+                                Total Ticket Count, WIP vs Closed, Lead Time, Throughput
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
@@ -153,7 +153,7 @@
                                 Provide any status from workflow on which Live is considered. <br>
                                 Example: Live <hr>
                                 KPI Impacted :
-                                Cycle Time - Complete to Live
+                                Lead Time - Complete to Live
                               </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
@@ -253,17 +253,17 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('kanbanCycleTimeIssueType') || fieldstoShow.length === 0">
-                        <label class="field-title">kanban Cycle Time Issue Type <span class="fa fa-info-circle"
+                        <label class="field-title">Kanban Lead Time Issue Type <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                             KPI Impacted :
-                            Cycle time
+                            Lead time
                             </span>' tooltipPosition="top" tooltipEvent="hover" [escape]="false"
                                 tooltipStyleClass="tooltiptext"></span></label>
                         <div class="p-inputgroup">
                             <p-chips [inputStyle]="{'border-bottom-right-radius':'0'}"
                                 [style]="{'max-width':'initial','width':'60vw'}" inputId="kanbanCycleTimeIssueType"
                                 formControlName="kanbanCycleTimeIssueType"
-                                placeholder="Enter kanban Cycle Time Issue Type" addOnBlur="true">
+                                placeholder="Enter kanban Lead Time Issue Type" addOnBlur="true">
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'kanbanCycleTimeIssueType', 'Issue_Type')"></button>

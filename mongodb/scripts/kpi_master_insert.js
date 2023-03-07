@@ -335,14 +335,14 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the  development team in closing defects raised because of new feature development within the sprint",
+      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the development team in closing defects raised because of new functionalities within the iteration",
       "formula": [
         {
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in a sprint",
-            "Total no. of defects tagged to stories in a sprint"
+            "No. of defects tagged to stories in the iteration that are fixed",
+            "Total no. of defects tagged to stories in a iteration"
           ]
         }
       ],
@@ -1405,7 +1405,7 @@ db.getCollection('kpi_master').insert(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
+    "hideOverallFilter" : false,
     "maturityRange": ["-10","10-8","8-5","5-3","3-"]
   },
   {
@@ -1646,7 +1646,12 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+        },
+        {
+          "type": "paragraph",
+          "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
+
       ],
       "maturityLevels": [
         {
@@ -2990,22 +2995,48 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
+      "definition": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues/ Size of Work (in SP) and in terms of Remaining Hours required to complete pending work.",
       "details": [
         {
+           "type": "paragraph",
+           "value": "In addition, it also shows the potential delay because of all pending stories. Potential delay and predicted completion date can be seen for each issue as well"
+        },
+        {
+            "type": "paragraph",
+            "value": "For the KPI to reflect meaningful info, "
+        },
+        {
+            "type": "paragraph",
+            "value": "1. Update Due date on each issue"
+        },
+        {
+            "type": "paragraph",
+            "value": "2. Update remaining estimate on each issue"
+        },
+        {
+            "type": "paragraph",
+            "value": "3. Ensure issues are assigned to the correct person."
+        },
+        {
+            "type": "paragraph",
+            "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
+        },
+
+        {
           "type": "paragraph",
-          "value": "Work Remaining KPI gives a depiction of the pending work in an iteration from three available dimensions"
+          "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are not completed based on DOD in the iteration."
+          "value": "Issue count - Total no. of issues that are not completed."
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues not completed based on DOD in the iteration"
+          "value": "Story Points - Sum of story points of all issues not completed."
         },
         {
           "type": "paragraph",
-          "value": "Hours - Sum of remaining hours as mentioned in Jira of all issues not completed based on DOD in the iteration"
+          "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
         },
         {
           "type": "paragraph",
@@ -3038,16 +3069,40 @@ db.getCollection('kpi_master').insert(
     "kpiInfo": {
       "details": [
         {
-          "type": "paragraph",
-          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+            "type": "paragraph",
+            "value": "Work Completed KPI gives a depiction of completion status based on  no. of issues and size of work (in SP)."
+        },
+        {
+            "type": "paragraph",
+            "value": "In addition, it also lets the user know the day wise delay for each issue that has been completed. The calculation consider issues of each individual in an iteration and then considers original estimate."
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+          "value": "For the KPI to reflect meaningful info,"
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+          "value": " 1. Map all ‘In Progress status’ in mappings for your project."
+        },
+        {
+            "type": "paragraph",
+            "value": " 2. Ensure Original Estimate is added to all issues in a sprint."
+        },
+        {
+            "type": "paragraph",
+            "value": " 3. Assignees should be kept up to date in Jira."
+        },
+        {
+            "type": "paragraph",
+            "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues that are completed"
         },
         {
           "type": "paragraph",
@@ -3119,11 +3174,14 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potential not get completed. It also represents the corresponding size of work likely to spill."
+          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potentially not get completed. This prediction is based on the the Predicted Completion date i.e if Predicted completion completion date > Sprint end date for an issue, it is considered to be potential spill."
         },
         {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "type": "link",
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
         }
       ]
     },
@@ -3153,23 +3211,14 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of iteration."
+          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of an iteration. An issue is included as a possible closure based on the calculation of Predicted completion date."
         },
         {
-          "type": "paragraph",
-          "value": "An issues is included as a possible closure based on 2 criteria"
-        },
-        {
-          "type": "paragraph",
-          "value": "1. If the remaining hours of an issues is less than 8 hrs OR"
-        },
-        {
-          "type": "paragraph",
-          "value": "2. If an issue is in Testing status (as defined in KnowHOW)"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of KPI is Jira and KnowHOW"
+          "type": "link",
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
         }
       ]
     },
@@ -3259,6 +3308,35 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+      "kpiId": "kpi130",
+      "kpiName": "Iteration Status",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 11,
+      "kpiCategory": "Iteration",
+      "kpiSource": "Jira",
+      "groupId": 8,
+      "thresholdValue": "",
+      "kanban": false,
+      "kpiInfo": {
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "Iteration Status KPI gives a representation of delays in the story."
+          },
+          {
+            "type": "paragraph",
+            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+          }
+        ]
+      },
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "2_column",
+      "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",
@@ -3295,6 +3373,52 @@ db.getCollection('kpi_master').insert(
     "kpiFilter": "",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+     "kpiId": "kpi131",
+     "kpiName": "Wastage",
+     "maxValue": "",
+     "kpiUnit": "Hours",
+     "isDeleted": "False",
+     "defaultOrder": 12,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,
+     "chartType": null,
+     "kpiInfo": {
+       "details": [
+         {
+           "type": "paragraph",
+           "value": "Wastage KPI gives a depiction of total time an issue was not being worked upon in the iteration by anyone in the team after moving to in progress."
+         },
+         {
+           "type": "paragraph",
+           "value": "Blocked time - Total time when any issue type is waiting for input from internal team or external stakeholders."
+         },
+         {
+           "type": "paragraph",
+           "value": "Wait time : Total time when any issue is in statuses similar to Ready for testing, ready for deployment etc."
+         },
+         {
+           "type": "paragraph",
+           "value": "Wastage - Sum of Blocked time and Wait time hours as mentioned in Jira of all issues in the iteration which is either block or in wait"
+         },
+         {
+           "type": "paragraph",
+           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+         }
+       ]
+     },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isAdditionalFilterSupport": false,
+     "kpiFilter": "multiSelectDropDown",
+     "boxType": "3_column",
+     "calculateMaturity": false
   },
   {
     "kpiId": "kpi129",
