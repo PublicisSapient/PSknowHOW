@@ -563,8 +563,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       };
       this.service.iterationCongifData.next(iterationConfigData);
     }
-console.log(kpiId,this.kpiChartData[kpiId])
-
 
   }
 
@@ -581,8 +579,7 @@ console.log(kpiId,this.kpiChartData[kpiId])
         }
         this.allKpiArray.push(data[key]);
         const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-        const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
-      
+        const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;        
         if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
         
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
@@ -605,11 +602,9 @@ console.log(kpiId,this.kpiChartData[kpiId])
           if (formType?.toLowerCase() == 'radiobutton') {
               this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           } 
-          // else if (formType?.toLowerCase() == 'dropdown') {
-          //   console.log(this.kpiDropdowns)
-          //     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-          //     console.log(this.kpiSelectedFilterObj)
-          // } 
+          else if (formType?.toLowerCase() == 'dropdown') {
+              this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          } 
           else {
               this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           }
