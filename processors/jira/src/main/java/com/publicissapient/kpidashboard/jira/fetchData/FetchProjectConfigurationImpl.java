@@ -17,9 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +71,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     public List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
 //               "63bfa0d5b7617e260763ca21"
-               "63c04dc7b7617e260763ca4e");
+               "63c04dc7b7617e260763ca4e"
+//               "6405baf1e1692f27089f3b77"
+       );
     }
 
     private Map<String, ProjectConfFieldMapping> createProjectConfigMap(List<ProjectBasicConfig> projectConfigList,
@@ -99,12 +103,14 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
                 for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
                     issues = fetchIssuesBasedOnJQL.fetchIssues(entry);
                 }
-                log.info("Issues in this project"+issues);
-                System.out.println(issues);
-            } catch (InterruptedException e) {
+//                log.info("Issues in this project"+issues);
+            } catch (InterruptedException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }
+        );
         log.info("ProjectConfigMap: "+projectConfigMap);
         return projectConfigMap;
     }

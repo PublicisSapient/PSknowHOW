@@ -54,12 +54,14 @@ public class FetchProjectConfigurationImplTest {
     List<FieldMapping> fieldMappingList;
     List<ProjectBasicConfig> projectConfigsList;
     List<ProjectToolConfig> projectToolConfigs;
+    Optional<Connection> connection;
 
     @Before
     public void setup(){
         fieldMappingList=getMockFieldMapping();
         projectConfigsList=getMockProjectConfig();
         projectToolConfigs=getMockProjectToolConfig();
+        connection=getMockConnection();
     }
 
     @Test
@@ -67,7 +69,7 @@ public class FetchProjectConfigurationImplTest {
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(projectConfigRepository.findAll()).thenReturn(projectConfigsList);
         when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
-        when(connectionRepository.findById(any())).thenReturn(getMockConnection());
+        when(connectionRepository.findById(any())).thenReturn(connection);
         Assert.assertEquals(createProjectConfigMap(),fetchProjectConfiguration.fetchConfiguration());
     }
 
@@ -76,7 +78,7 @@ public class FetchProjectConfigurationImplTest {
         when(fieldMappingRepository.findAll()).thenReturn(Collections.<FieldMapping>emptyList());
         when(projectConfigRepository.findAll()).thenReturn(projectConfigsList);
         when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
-        when(connectionRepository.findById(any())).thenReturn(getMockConnection());
+        when(connectionRepository.findById(any())).thenReturn(connection);
         Assert.assertNotEquals(createProjectConfigMap(),fetchProjectConfiguration.fetchConfiguration());
     }
 
@@ -111,8 +113,8 @@ public class FetchProjectConfigurationImplTest {
         projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
         projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
         projectConfFieldMapping.setJira(getJiraToolConfig());
-        projectConfFieldMapping.setJiraToolConfigId(getMockProjectToolConfig().get(0).getId());
-        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
+        projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
+        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
         projectConfigMap.put(projectConfig.getProjectName(), projectConfFieldMapping);
         return projectConfigMap;
     }
@@ -124,8 +126,7 @@ public class FetchProjectConfigurationImplTest {
         } catch (IllegalAccessException | InvocationTargetException e){
 
         }
-        Optional<Connection> conn = getMockConnection();
-        toolObj.setConnection(conn);
+        toolObj.setConnection(connection);
         return toolObj;
     }
 

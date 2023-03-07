@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.MDC;
@@ -42,7 +43,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifie
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.metadata.MetaDataClientImpl;
 import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;

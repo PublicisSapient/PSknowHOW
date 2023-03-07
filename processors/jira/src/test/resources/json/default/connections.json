@@ -1,5 +1,25 @@
 [
 	{
+		"id" : "63f733a07af7ed784f088cd5",
+		"type" : "Jira",
+		"connectionName" : "MyCoonection",
+		"cloudEnv" : false,
+		"accessTokenEnabled" : false,
+		"baseUrl" : "https://tools.publicis.sapient.com/jira",
+		"username" : "purgupta2",
+		"password" : "lb+q4a0xRHbx6RS4CePjUBER5xAjjBKoDqskswvKu4vKzOTtmk0oxTUsvcwe5pZt",
+		"apiEndPoint" : "rest/api/2/",
+		"isOAuth" : false,
+		"offline" : false,
+		"createdAt" : "2023-02-23T15:06:32",
+		"createdBy" : "SUPERADMIN",
+		"connPrivate" : false,
+		"updatedBy" : "SUPERADMIN",
+		"connectionUsers" : [ "SUPERADMIN" ],
+		"vault" : false,
+		"_class" : "com.publicissapient.kpidashboard.common.model.connection.Connection"
+	},
+	{
 		"id" : "5fd99f7bc8b51a7b55aec836",
 		"type" : "Jira",
 		"connectionName" : "Tools-Atlassian Tools Support -Jira Connection",
