@@ -672,7 +672,6 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-console.log(event,kpi);
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
     
       for (const key in event) {
@@ -684,7 +683,6 @@ console.log(event,kpi);
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
     }
-console.log(this.kpiSelectedFilterObj[kpi?.kpiId])
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
  
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
