@@ -33,32 +33,29 @@ import { AnyARecord } from 'dns';
   templateUrl: './piechart.component.html',
   styleUrls: ['./piechart.component.css'],
 })
-export class PiechartComponent implements OnChanges,OnDestroy {
+export class PiechartComponent implements OnChanges, OnDestroy {
   @Input() data: any; // json data
   elem;
 
 
 
-  private svg: any;
-  private margin = 20;
-  private width = 400;
-  private height = 400;
+  svg: any;
+  margin = 20;
+  width = 450;
+  height = 190;
   // The radius of the pie chart is half the smallest side
-  private radius = Math.min(this.width, this.height) / 2 - this.margin;
-  private colors;
-
-  
-  private pieChartValuesArray = [];
+  radius = Math.min(this.width, this.height) / 2 - this.margin;
+  colors;
+  pieChartValuesArray = [];
 
 
 
-  constructor(private viewContainerRef: ViewContainerRef) { 
+  constructor(private viewContainerRef: ViewContainerRef) {
     this.elem = this.viewContainerRef.element.nativeElement;
   }
 
-  private createSvg(): void {
+  createSvg(): void {
     d3.select(this.elem).select('figure#pie').select('svg').remove();
-    console.log(this.elem);
     this.svg = d3
       .select('figure#pie')
       .append('svg')
@@ -67,40 +64,43 @@ export class PiechartComponent implements OnChanges,OnDestroy {
       .append('g')
       .attr(
         'transform',
-        'translate(' + this.width / 2 + ',' + this.height / 2 + ')',
+        'translate(' + 80 + ',' + this.height / 2 + ')',
       );
   }
   //d.Stars.toString()
-  private createColors(): void {
+  createColors(): void {
     this.colors = d3
-      .scaleOrdinal()
-      .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
-      .range(['#fafa6e',
-        '#c4ec74',
-        '#92dc7e',
-        '#64c987',
-        '#39b48e',
-        '#089f8f',
-        '#00898a',
-        '#08737f',
-        '#215d6e',
-        '#2a4858']);
+    .scaleOrdinal()
+    .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
+    .range(['#e42256',
+      '#ff8370',
+      '#00b1b0',
+      '#fec84d',
+      '#39b48e',
+      '#089f8f',
+      '#00898a',
+      '#08737f',
+      '#215d6e',
+      '#2a4858']);
   }
-  private drawChart(): void {
+  drawChart(): void {
     // Compute the position of each group on the pie:
     this.pieChartValuesArray = [];
+    const width = this.width;
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
-    console.log(this.data);
     const pieChartValues = this.data[0].value[0].value;
+    const colors = this.colors;
+    for (const property in pieChartValues) {
+      this.pieChartValuesArray.push({
+        ['title']: property,
+        ['value']: pieChartValues[property]
+      }
+      )
+    }
+    
+    const totalCount = d3.sum(this.pieChartValuesArray, function(d) { return d.value;});
+    const toPercent = d3.format("0.1%");
 
-for (const property in pieChartValues) {
-  this.pieChartValuesArray.push({
-    ['title'] : property,
-  	['value']: pieChartValues[property]
-  }
-         )
-}
-console.log(this.pieChartValuesArray)
     // Build the pie chart
     this.svg
       .selectAll('pieces')
@@ -108,44 +108,61 @@ console.log(this.pieChartValuesArray)
       .enter()
       .append('path')
       .attr('d', d3.arc().innerRadius(0).outerRadius(this.radius))
-      .attr('fill', (d: any, i: any) => this.colors(i))
-      .attr('stroke', '#2196f3')
+      .attr('fill', (d: any, i: any) => colors(i))
+      .attr('stroke', '#fff')
       .style('stroke-width', '1px');
 
     // Add labels
-    const labelLocation = d3.arc().innerRadius(100).outerRadius(this.radius);
+    const labelLocation = d3.arc().innerRadius(0).outerRadius(this.radius);
     this.svg
       .selectAll('pieces')
       .data(pie(this.pieChartValuesArray))
       .enter()
       .append('text')
-      .text((d: any) => `${d?.data?.title} (${d?.data.value})`)
+      .text((d: any) => `${toPercent(d?.data.value / totalCount)}`)
       .attr(
         'transform',
         (d: any) => 'translate(' + labelLocation.centroid(d) + ')',
       )
       .style('text-anchor', 'middle')
       .style('font-size', 14);
+
+    // again rebind for legend
+    var legendG = this.svg.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
+      .data(pie(this.pieChartValuesArray))
+      .enter().append("g")
+      .attr("transform", function (d, i) {
+        return "translate(" + (width - 250) + "," + (i * 15 + 20) + ")"; // place each legend on the right and bump each one down 15 pixels
+      })
+      .attr("class", "legend");
+
+    legendG.append("rect") // make a matching color rect
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", function (d, i) {
+        return colors(i);
+      });
+
+    legendG.append("text") // add the text
+      .text((d) => {console.log(d);return `${d?.data?.title} (${d?.data.value})`})
+      .style("font-size", 12)
+      .attr("y", 10)
+      .attr("x", 11);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
-    console.log(this.pieChartValuesArray);
     this.createSvg();
     this.createColors();
     this.drawChart();
   }
 
-  ngOnDestroy() {   
-         // this is used for removing svg already made when value is updated
+  ngOnDestroy() {
+    // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('figure#pie').select('svg').remove();
-   
+
     this.pieChartValuesArray = [];
   }
 
-  destroySVG(){
-    d3.select(this.elem).select('figure#pie').select('svg').remove();
-   
-    this.pieChartValuesArray = [];
-  }
+
 }

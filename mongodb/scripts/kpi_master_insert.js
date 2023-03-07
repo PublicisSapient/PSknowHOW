@@ -3308,7 +3308,7 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-      "kpiId": "kpi131",
+      "kpiId": "kpi130",
       "kpiName": "Iteration Status",
       "maxValue": "",
       "kpiUnit": "Count",
@@ -3337,12 +3337,12 @@ db.getCollection('kpi_master').insert(
       "calculateMaturity": false
     },
    {
-         "kpiId": "kpi131",
+         "kpiId": "kpi132",
          "kpiName": "Defects by Root Cause",
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
-         "defaultOrder": 10,
+         "defaultOrder": 13,
          "kpiCategory": "Iteration",
          "kpiSource": "Jira",
          "groupId": 8,

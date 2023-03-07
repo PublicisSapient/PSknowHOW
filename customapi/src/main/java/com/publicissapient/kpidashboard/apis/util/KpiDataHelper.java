@@ -570,4 +570,18 @@ public final class KpiDataHelper {
 		}
 	}
 
+	public static List<JiraIssue> filterCompletedIssues(Map<String, Object> resultMap, FieldMapping fieldMapping) {
+		List<String> defectStatuses = fieldMapping.getJiradefecttype();
+		if (org.apache.commons.collections.CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {
+			return ((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES)).stream()
+					.filter(issue -> defectStatuses.contains(issue.getTypeName())).collect(Collectors.toList());
+		}
+		return new ArrayList<>();
+	}
+
+	public static Map<String, Map<String, List<JiraIssue>>> getPriorityWiseRCAList(List<JiraIssue> allCompletedIssuesExcludeStory) {
+		return allCompletedIssuesExcludeStory.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getPriority,
+						Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
+	}
 }

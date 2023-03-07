@@ -239,7 +239,7 @@ public class KPIExcelUtility {
         }
     }
     public static void populateDefectRCARelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
-                                                      List<KPIExcelData> kpiExcelData, String kpiId) {
+                                                      List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
         if (CollectionUtils.isNotEmpty(jiraIssues)) {
             jiraIssues.stream().forEach(jiraIssue -> {
                 KPIExcelData excelData = new KPIExcelData();
@@ -250,7 +250,15 @@ public class KPIExcelUtility {
                 excelData.setIssueDesc(checkEmptyName(jiraIssue));
                 excelData.setIssueStatus(jiraIssue.getStatus());
                 excelData.setIssueType(jiraIssue.getTypeName());
-                excelData.setSizeInStoryPoints(String.valueOf(jiraIssue.getStoryPoints()));
+                if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(String.valueOf(jiraIssue.getStoryPoints()));
+                }
+                if (null != jiraIssue.getOriginalEstimateMinutes()
+                        && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                        && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+                    excelData.setStoryPoint((jiraIssue.getOriginalEstimateMinutes() / 60 +" hrs"));
+                }
                 excelData.setRootCause(jiraIssue.getRootCauseList());
                 excelData.setPriority(jiraIssue.getPriority());
                 kpiExcelData.add(excelData);
