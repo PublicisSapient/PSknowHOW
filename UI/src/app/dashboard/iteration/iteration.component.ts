@@ -205,28 +205,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
 
-
-  // Used for grouping all Hygiene kpi from master data and calling Jira kpi.(only for scrum).
-  /*groupHygieneKpi() {
-
-    // creating a set of unique group Ids
-    const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory === 'Iteration') {
-        groupIdSet.add(obj.groupId);
-      }
-    });
-    // sending requests after grouping the the KPIs according to group Id
-    groupIdSet.forEach((groupId) => {
-      if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, groupId);
-        this.postJiraKpi(this.kpiJira, 'jira');
-      }
-    });
-
-  }*/
-
-
   // post request of Jira(scrum) hygiene
   postJiraKpi(postData, source): void {
     postData.kpiList.forEach(element => {
@@ -253,84 +231,7 @@ export class IterationComponent implements OnInit, OnDestroy {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
           });
         }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi115 && !!this.jiraKpiData.kpi115.value && this.jiraKpiData.kpi115.value !== 'undefined' && this.jiraKpiData.kpi115.value !== undefined && this.jiraKpiData.kpi115.value.length > 1) {
-        //   const data = [{
-        //     data: this.jiraKpiData.kpi115.value[1].data,
-        //     count: this.jiraKpiData.kpi115.value[1].count,
-        //     totalCount: this.jiraKpiData.kpi115.value[0].count,
-        //     totalText: this.jiraKpiData.kpi115.value[0].data,
-        //     totalOptionalCount: this.jiraKpiData.kpi115.value[2]?.count,
-        //     totalOptionalText: this.jiraKpiData.kpi115.value[2]?.data
-        //   },
-        //   {
-        //     data: 'Stories With Worklog',
-        //     count: this.jiraKpiData.kpi115.value[0].count - this.jiraKpiData.kpi115.value[1].count,
-        //     totalCount: this.jiraKpiData.kpi115.value[0].count,
-        //     totalText: this.jiraKpiData.kpi115.value[0].data,
-        //     totalOptionalCount: this.jiraKpiData.kpi115.value[2]?.count,
-        //     totalOptionalText: this.jiraKpiData.kpi115.value[2]?.data
-        //   }];
-        //   this.jiraKpiData.kpi115.value = data;
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi76 && !!this.jiraKpiData.kpi76.value && this.jiraKpiData.kpi76.value !== 'undefined' && this.jiraKpiData.kpi76.value !== undefined && this.jiraKpiData.kpi76.value.length > 1) {
-        //   const totalStoryCount = this.jiraKpiData.kpi76.value[1]?.count;
-        //   this.jiraKpiData.kpi76.value[1].data = 'In Progress';
-        //   this.jiraKpiData.kpi76.value[1].count = this.jiraKpiData.kpi76.value[1]?.count - (this.jiraKpiData.kpi76.value[0]?.count + this.jiraKpiData.kpi76.value[2]?.count);
-        //   this.jiraKpiData.kpi76.value.forEach(data => {
-        //     data.totalCount = totalStoryCount;
-        //     data.totalText = 'Total Stories';
-        //   });
-        //   this.service.currentSelectedSprintSub.next(this.jiraKpiData?.kpi76?.trendValueList[0]?.value[0]?.sSprintID);
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi81 && !!this.jiraKpiData.kpi81.value && this.jiraKpiData.kpi81.value !== 'undefined' && this.jiraKpiData.kpi81.value !== undefined && this.jiraKpiData.kpi81.value.length > 1) {
-        //   const totalStoryCount = this.jiraKpiData.kpi81.value[0].count;
-        //   this.jiraKpiData.kpi81.value[0].data = 'Stories with Estimate';
-        //   this.jiraKpiData.kpi81.value[0].count = this.jiraKpiData.kpi81.value[0].count - this.jiraKpiData.kpi81.value[1].count;
-        //   this.jiraKpiData.kpi81.value.forEach(data => {
-        //     data.totalCount = totalStoryCount;
-        //     data.totalText = 'Total Stories';
-        //   });
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi75 && !!this.jiraKpiData.kpi75.value && this.jiraKpiData.kpi75.value !== 'undefined' && this.jiraKpiData.kpi75.value !== undefined && this.jiraKpiData.kpi75.value.length > 0) {
-        //   const colorValues = ['#44739f', '#AEDB76'];
-        //   this.jiraKpiData.kpi75.value.map((data, index) => {
-        //     data.backgroundColor = (parseFloat(data.value.replace('%', '')) <= 100) ? colorValues[index] : '#F06667';
-        //   });
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi78 && !!this.jiraKpiData.kpi78.value && this.jiraKpiData.kpi78.value !== 'undefined' && this.jiraKpiData.kpi78.value !== undefined && this.jiraKpiData.kpi78.value.length > 0) {
-        //   const dataArray = [];
-        //   this.jiraKpiData.kpi78.value.forEach(data => {
-        //     if (data.data.indexOf('%') < 0) {
-        //       dataArray.push(data);
-        //     }
-        //   });
-
-        //   this.jiraKpiData.kpi78.value = dataArray;
-        //   const colorValues = ['#44739f', '#AEDB76'];
-        //   this.jiraKpiData.kpi78.value.map((data, index) => {
-        //     data.backgroundColor = (parseFloat(data.value.replace('%', '')) <= 100 && parseFloat(data.value.replace('%', '')) >= 0) ? colorValues[index] : '#F06667';
-        //   });
-        // }
-
-        // if (this.jiraKpiData && this.jiraKpiData.kpi80 && this.jiraKpiData.kpi80.trendValueList && this.jiraKpiData.kpi80.trendValueList.length) {
-        //   if (this.jiraKpiData.kpi80.trendValueList[0] && this.jiraKpiData.kpi80.trendValueList[0].value) {
-        //     if (this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue) {
-        //       const dataArray = [];
-        //       let self = this;
-        //       Object.keys(this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue).forEach((key) => {
-        //         let valueObj = {};
-        //         valueObj[key] = self.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue[key];
-        //         dataArray.push(valueObj);
-        //       });
-        //       this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue = dataArray;
-        //       dataArray.forEach((data) => {
-        //         if (Object.keys(data)[0] === 'Total Defects') {
-        //           this.jiraKpiData.kpi80.maxValue = data['Total Defects'];
-        //         }
-        //       });
-        //     }
-        //   }
-        // }
+        
         this.kpiLoader = false;
       });
   }

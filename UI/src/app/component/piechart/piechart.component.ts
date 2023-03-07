@@ -113,19 +113,9 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .style('stroke-width', '1px');
 
     // Add labels
-    // const labelLocation = d3.arc().innerRadius(0).outerRadius(this.radius);
     this.svg
       .selectAll('pieces')
       .data(pie(this.pieChartValuesArray));
-      // .enter()
-      // .append('text')
-      // .text((d: any) => `${toPercent(d?.data.value / totalCount)}`)
-      // .attr(
-      //   'transform',
-      //   (d: any) => 'translate(' + labelLocation.centroid(d) + ')',
-      // )
-      // .style('text-anchor', 'middle')
-      // .style('font-size', 14);
 
     // again rebind for legend
     var legendG = this.svg.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
