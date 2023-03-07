@@ -3308,7 +3308,7 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-      "kpiId": "kpi131",
+      "kpiId": "kpi130",
       "kpiName": "Iteration Status",
       "maxValue": "",
       "kpiUnit": "Count",
@@ -3342,7 +3342,7 @@ db.getCollection('kpi_master').insert(
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
-         "defaultOrder": 12,
+         "defaultOrder": 13,
          "kpiCategory": "Iteration",
          "kpiSource": "Jira",
          "groupId": 8,
