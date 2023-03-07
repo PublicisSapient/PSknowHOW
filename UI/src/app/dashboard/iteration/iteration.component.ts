@@ -494,9 +494,6 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.getDropdownArray(data[key]?.kpiId);
         }
         else if(trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')){
-        
-
-       
           this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
           this.getDropdownArray(data[key]?.kpiId);
           const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
@@ -510,9 +507,6 @@ export class IterationComponent implements OnInit, OnDestroy {
               this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           }
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-        }
-        else{
-        
         }
 
         this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
