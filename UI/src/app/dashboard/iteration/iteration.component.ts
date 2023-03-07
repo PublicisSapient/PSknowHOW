@@ -377,9 +377,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
 
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
-        && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0
-        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')
-        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0) {
+        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
         const tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
@@ -399,8 +397,8 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
       } 
-      else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
-        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0)) {
+      else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))
+        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
