@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.joda.time.DateTime;
@@ -186,6 +188,16 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		if(CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())){
+			Map<String,String> storiesMap = new HashMap<>();
+			jiraIssue.getDefectStoryID().forEach(story->{
+				String storyURL = new StringBuilder(jiraIssue.getUrl().substring(0, jiraIssue.getUrl().
+						lastIndexOf("/")+1)).append(story).toString();
+				storiesMap.put(story,storyURL);
+			});
+			iterationKpiModalValue.setLinkedStories(storiesMap);
+		}
 		if (estimationFlag) {
 			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {

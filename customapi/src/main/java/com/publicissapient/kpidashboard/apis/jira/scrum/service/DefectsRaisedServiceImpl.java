@@ -32,6 +32,7 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.slf4j.Logger;
@@ -51,17 +52,13 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
+@Slf4j
 public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectsRaisedServiceImpl.class);
-
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-	public static final String UNCHECKED = "unchecked";
 	private static final String OVERALL = "Overall";
-
-	public static final String LINKED_DEFECTS = "Linked defects";
+	public static final String LINKED_DEFECTS = "Story Linked defects";
 	public static final String UNLINKED_DEFECTS = "Unlinked defects";
-	public static final String DEFECT_DENSITY = "Defect density";
+	public static final String DEFECT_DENSITY = "DIR/Defect density";
 	private static final String SEARCH_BY_STATUS = "Filter by Status";
 	private static final String STORY_LIST = "Storylist";
 
@@ -114,7 +111,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 
-			LOGGER.info("Defect raised -> Requested sprint : {}", leafNode.getName());
+			log.info("Defect raised -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
@@ -183,7 +180,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 					.filter(jiraIssue -> !jiraIssue.getDefectStoryID().isEmpty()).collect(Collectors.toList());
 
 			if (CollectionUtils.isNotEmpty(alldefects)) {
-				LOGGER.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId,
+				log.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId,
 						alldefects.size());
 
 				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = alldefects.stream().collect(
@@ -199,7 +196,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 										&& dateFormat.parse(jiraIssue.getCreatedDate())
 												.after(dateFormat.parse(startDate)));
 					} catch (ParseException e) {
-						LOGGER.error("There is some error occured in parsing  ", e);
+						log.error("There is some error occured in parsing  ", e);
 					}
 					return false;
 				}).collect(Collectors.toList());
@@ -246,9 +243,9 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 							IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(),
 									null, null, null, linkedModalValues);
+							data.add(ld);
 							data.add(dd);
 							data.add(ud);
-							data.add(ld);
 
 							IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, status, data);
 							iterationKpiValues.add(iterationKpiValue);
@@ -261,9 +258,9 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 						null, null, overAlllinkedmodalValues);
 				IterationKpiData overAllUD = new IterationKpiData(UNLINKED_DEFECTS, overAllUnlinkedDefects.get(0), null,
 						null, null, overAllUnlinkedmodalValues);
+				data.add(overAllLD);
 				data.add(overAllDD);
 				data.add(overAllUD);
-				data.add(overAllLD);
 				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
@@ -329,7 +326,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 				}
 			}
 		} catch (ParseException e) {
-			LOGGER.error("There is some error occured in parsing  ", e);
+			log.error("There is some error occured in parsing  ", e);
 		}
 	}
 }

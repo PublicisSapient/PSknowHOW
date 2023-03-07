@@ -157,7 +157,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),
 
     DEFECT_RAISED("kpi132",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Priority")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size", "Priority", "Linked Stories")),
 
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)")),
