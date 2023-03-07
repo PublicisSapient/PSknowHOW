@@ -532,18 +532,10 @@ export class IterationComponent implements OnInit, OnDestroy {
         const obj = {};
 
         for (let i = 0; i < trendValueList?.length; i++) {
-
-            //for(let key in this.colorObj){
-                //let kpiFilter = trendValueList[i]?.findIndex(x => this.colorObj[key]?.nodeName == x.data);
-                
-                //if(kpiFilter != -1){
-
-                    let ifExist = dropdownArr.findIndex(x=>x == trendValueList[i]?.filter);
-                    if(ifExist == -1){
-                      dropdownArr?.push(trendValueList[i]?.filter);
-                    }
-                //}
-            //}
+          let ifExist = dropdownArr.findIndex(x=>x == trendValueList[i]?.filter);
+          if(ifExist == -1){
+            dropdownArr?.push(trendValueList[i]?.filter);
+          }
         }
         const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
        
