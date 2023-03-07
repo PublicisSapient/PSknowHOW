@@ -602,9 +602,9 @@ export class IterationComponent implements OnInit, OnDestroy {
           if (formType?.toLowerCase() == 'radiobutton') {
               this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           } 
-          else if (formType?.toLowerCase() == 'dropdown') {
-              this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-          } 
+          // else if (formType?.toLowerCase() == 'dropdown') {
+          //     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          // } 
           else {
               this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           }

@@ -41,7 +41,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   svg: any;
   margin = 20;
-  width = 450;
+  width = 500;
   height = 190;
   // The radius of the pie chart is half the smallest side
   radius = Math.min(this.width, this.height) / 2 - this.margin;
@@ -113,26 +113,26 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .style('stroke-width', '1px');
 
     // Add labels
-    const labelLocation = d3.arc().innerRadius(0).outerRadius(this.radius);
+    // const labelLocation = d3.arc().innerRadius(0).outerRadius(this.radius);
     this.svg
       .selectAll('pieces')
-      .data(pie(this.pieChartValuesArray))
-      .enter()
-      .append('text')
-      .text((d: any) => `${toPercent(d?.data.value / totalCount)}`)
-      .attr(
-        'transform',
-        (d: any) => 'translate(' + labelLocation.centroid(d) + ')',
-      )
-      .style('text-anchor', 'middle')
-      .style('font-size', 14);
+      .data(pie(this.pieChartValuesArray));
+      // .enter()
+      // .append('text')
+      // .text((d: any) => `${toPercent(d?.data.value / totalCount)}`)
+      // .attr(
+      //   'transform',
+      //   (d: any) => 'translate(' + labelLocation.centroid(d) + ')',
+      // )
+      // .style('text-anchor', 'middle')
+      // .style('font-size', 14);
 
     // again rebind for legend
     var legendG = this.svg.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
       .data(pie(this.pieChartValuesArray))
       .enter().append("g")
       .attr("transform", function (d, i) {
-        return "translate(" + (width - 250) + "," + (i * 15 + 20) + ")"; // place each legend on the right and bump each one down 15 pixels
+        return "translate(" + (width - 400) + "," + (i * 15 - 60) + ")"; // place each legend on the right and bump each one down 15 pixels
       })
       .attr("class", "legend");
 
@@ -144,8 +144,9 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       });
 
     legendG.append("text") // add the text
-      .text((d) => {console.log(d);return `${d?.data?.title} (${d?.data.value})`})
+      .text((d) => {return `${d?.data?.title} (${d?.data.value}) - ${toPercent(d?.data.value / totalCount)}`})
       .style("font-size", 12)
+      .style('text-transform', 'capitalize')
       .attr("y", 10)
       .attr("x", 11);
   }
