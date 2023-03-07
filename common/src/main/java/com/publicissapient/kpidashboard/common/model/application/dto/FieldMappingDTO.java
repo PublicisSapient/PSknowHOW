@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
@@ -198,7 +199,7 @@ public class FieldMappingDTO extends BasicModel {
 
 	//for for JiraDueDate
 	@Builder.Default
-	private String jiraDueDateField="dueDate";
+	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 
 
