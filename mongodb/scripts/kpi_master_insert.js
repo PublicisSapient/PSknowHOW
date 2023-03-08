@@ -3233,7 +3233,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi120",
-    "kpiName": "Scope Change",
+    "kpiName": "Iteration Commitment",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
