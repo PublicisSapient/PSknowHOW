@@ -296,7 +296,7 @@ public enum KPICode {
 	/**
 	 * Scope Change
 	 */
-	SCOPE_CHANGE("kpi120", KPISource.JIRA.name()),
+	ITERATION_COMMITMENT("kpi120", KPISource.JIRA.name()),
 	
 	/**
 	 * Capacity 

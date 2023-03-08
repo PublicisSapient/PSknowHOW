@@ -156,7 +156,7 @@ public class ScopeChangeServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("SCOPE_CHANGE"));
+		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
 	}
 
 	@After
