@@ -162,8 +162,8 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>
-        <tr>
-          <td class="font-small"><a [href]="x['Issue URL']" class="text-blue" target="_blank">{{x['Issue Id']}}</a></td>
+        <tr [ngStyle]="{color: x['marker'] ? x['marker'] : 'initial'}">
+          <td class="font-small"><a [href]="x['Issue URL']" class="text-blue" target="_blank" [ngStyle]="{color: x['marker'] ? x['marker'] : '#079FFF'}">{{x['Issue Id']}}</a></td>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
             <td *ngIf="i!=0">
               {{x[item]}}
