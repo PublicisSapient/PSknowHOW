@@ -365,20 +365,26 @@ export class IterationComponent implements OnInit, OnDestroy {
     return aggregatedArr;
   }
 
+  createCombinations(arr1, arr2){
+    let arr = [];
+    for (let i = 0; i < arr1?.length; i++) {
+      for (let j = 0; j < arr2?.length; j++) {
+        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+      }
+    }
+    return arr;
+  }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
 
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        const tempArr = [];
+        let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]['filter1']?.length; i++) {
-          for (let j = 0; j < this.kpiSelectedFilterObj[kpiId]['filter2']?.length; j++) {
-            tempArr.push({ filter1: this.kpiSelectedFilterObj[kpiId]['filter1'][i], filter2: this.kpiSelectedFilterObj[kpiId]['filter2'][j] });
-          }
-        }
+        
+        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
 
         for (let i = 0; i < tempArr?.length; i++) {
           preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
@@ -418,8 +424,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }
     else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-      console.log(this.kpiSelectedFilterObj[kpiId]);
-      
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
