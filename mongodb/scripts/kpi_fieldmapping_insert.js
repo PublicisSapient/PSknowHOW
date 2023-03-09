@@ -388,7 +388,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
 	  {
         kpiId: 'kpi128',
-        kpiName: 'Work Completed',
+        kpiName: 'Overall Completion Status',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress']}
