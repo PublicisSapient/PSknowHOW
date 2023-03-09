@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ArrayList;
@@ -130,7 +131,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseRCAList =
 						getPriorityWiseRCAList(allCompletedDefects);
-				List<Integer> overAllRCAIssueCount = new ArrayList<>();
+				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
 				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
 				// filterDataList will consist of DataCountGroup which will be set for all priorities
 				List<DataCountGroup> filterDataList = new ArrayList<>();
