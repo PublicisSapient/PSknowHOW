@@ -652,6 +652,8 @@ describe('UploadComponent', () => {
     ]
   };
 
+  const fakeCapacityKanbanData = require('../../../test/resource/fakeCapacityData.json');
+
   beforeEach((() => {
     const routes: Routes = [
       { path: 'forget', component: UploadComponent },
@@ -1112,6 +1114,40 @@ describe('UploadComponent', () => {
     component.validateCertificate(event);
     expect(component.isUploadEnabled).toBe(false);
   })
+
+  it('testing Switch View for upload certificate tab', () => {
+    const event = {
+      originalEvent: {
+        isTrusted: true,
+      },
+      item: {
+        label: 'Upload certificate',
+        icon: 'pi pi-image',
+        expanded: true,
+      },
+    };
+    component.switchView(event);
+    fixture.detectChanges();
+    expect(component.selectedView).toBe('cert_upload');
+  });
+
+  it('should get capacity data for scrum project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+    
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeSuccessResponseCapacity));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityScrumData).toEqual(fakeSuccessResponseCapacity.data);
+  }));
+
+  xit('should get capacity data for kanban project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+    
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeCapacityKanbanData));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityKanbanData).toEqual(fakeCapacityKanbanData.data);
+  }));
 
 });
 
