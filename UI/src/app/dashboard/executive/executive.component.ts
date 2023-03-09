@@ -622,27 +622,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.loaderJenkins = false;
                 // move Overall to top of trendValueList
                 if (getData !== null) { // && getData[0] !== 'error') {
-                    // if (getData[0] && getData[0]['trendValueList'] && getData[0]['trendValueList'].length) {
-                    //     let modifiedTrendValueList = {};
-
-                    //     getData[0]['trendValueList'].forEach(element => {
-                    //         if (element && element.data) {
-                    //             if (element.data === 'Overall') {
-                    //                 modifiedTrendValueList['Select'] = element.value;
-                    //             } else {
-                    //                 modifiedTrendValueList[element.data] = element.value;
-                    //             }
-                    //         }
-                    //     });
-                    //     getData[0]['trendValueList'] = modifiedTrendValueList;
-
-                    //     // modify the maturityMap
-                    //     getData[0]['maturityMap']['Select'] = getData[0]['maturityMap']['Overall'];
-                    //     delete getData[0]['maturityMap']['Overall'];
-                    //     // modify the value array
-                    //     getData[0]['value']['Select'] = getData[0]['value']['Overall'];
-                    //     delete getData[0]['value']['Overall'];
-                    // }
                     this.jenkinsKpiData = getData;
                     this.createAllKpiArray(this.jenkinsKpiData);
                 }
@@ -655,7 +634,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.zypherKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 this.afterZypherKpiResponseReceived(getData);
-                // this.createAllKpiArray(this.zypherKpiData);
             });
     }
     // calling post request of Zypher(kanban)
@@ -690,20 +668,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
                     }
 
-                    /*if (localVariable && localVariable['kpi46'] && localVariable['kpi46'].value && localVariable['kpi46'].loggedTimeValueList) {
-                        localVariable['kpi46'].loggedTimeValueList.map(function (data) {
-                            data.data = data.data + '\'s LogTime';
-                        });
-                        localVariable['kpi46'].trendValueList = localVariable['kpi46'].trendValueList.concat(localVariable['kpi46'].loggedTimeValueList);
-                    }*/
 
                     this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
                     this.createAllKpiArray(localVariable);
-                    /*if(this.jiraKpiData.kpi83){
-                        this.processART(false);
-                    } else if (this.jiraKpiData.kpi36) {
-                      this.processRCA(false);
-                    }*/
                 } else {
                     this.jiraKpiData = getData;
                     postData.kpiList.forEach(element => {
@@ -748,9 +715,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
-                    // if (this.bitBucketKpiData && this.bitBucketKpiData.kpi65 && this.bitBucketKpiData.kpi65.value) {
-                    //     this.processNoOfCheckins(true);
-                    // }
                     this.createAllKpiArray(this.bitBucketKpiData);
                 } else {
                     this.bitBucketKpiData = getData;
@@ -766,13 +730,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.loaderJiraKanbanArray.push(element.kpiId);
         });
 
-        // if (this.jiraKpiRequest && this.jiraKpiRequest !== '') {
-        //     this.jiraKpiRequest.unsubscribe();
-        // }
-
         this.jiraKpiRequest = this.httpService.postKpiKanban(postData, source)
             .subscribe(getData => {
-                // this.loaderJira = false;
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     const localVariable = this.helperService.createKpiWiseId(getData);
@@ -904,9 +863,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
         if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
             return kpiData?.videoLink?.videoUrl;
-        } else {
-            // Show message that video is not available
-        }
+        } 
     }
 
     // Return boolean flag based on link is available and video is enabled
@@ -1127,10 +1084,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // let headerNames = ["KPI Name"];
         let headers = [{header: 'KPI Name', key: 'kpiName', width: 30}];
         for(let i = 0; i<trends.length; i++){
-            // firstRow.push(trends[i]['nodeName']);
-            // headerNames.push("Latest ("+trends[i]['nodeName'] +")");
-            // headerNames.push("Trend ("+trends[i]['nodeName'] +")");
-            // headerNames.push("Maturity ("+trends[i]['nodeName'] +")");
             let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
             colorCode = colorCode.slice(1);
             headers.push({header:"Latest ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_latest', width: 15});
@@ -1140,15 +1093,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             worksheet.getRow(1).getCell((i*3)+3).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
             worksheet.getRow(1).getCell((i*3)+4).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
         }
-        
-        // worksheet.getRow(1).values = [firstRow[0]];
-        // for(let i = 1; i<firstRow?.length; i++){
-        //     worksheet.mergeCells(1, i+1, 1, i+3);
-        //     worksheet.getCell(worksheet.getColumn(i+1)).value = firstRow[i+1];
-        //     // worksheet.getCell().value = firstRow[i+1];
-        // }
-        // worksheet.getRow(1).values = [...firstRow];
-        // worksheet.getRow(2).values = [...headerNames];
+    
         worksheet.columns = [...headers];
         
         for(let kpi of this.updatedConfigGlobalData){

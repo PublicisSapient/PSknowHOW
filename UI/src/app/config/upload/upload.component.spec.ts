@@ -1098,6 +1098,21 @@ describe('UploadComponent', () => {
     expect(component.isUploadEnabled).toBe(true);
   })
 
+  it('should validate certificate successfully', () => {
+    const blob: Blob = new Blob([""], { type: "application/x-x509-ca-cert", });
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      'files': [new File([blob], 'upload.cer', { type: "application/x-x509-ca-cert", })]
+    };
+    component.error = '';
+    component.message = '';
+    component.selectedFile = event.files[0];
+    component.validateCertificate(event);
+    expect(component.isUploadEnabled).toBe(false);
+  })
+
 });
 
 
