@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -125,11 +127,12 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				List<String> puntedIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
 				Set<String> addedIssues = sprintDetails.getAddedIssues();
-				List<String> completeAndIncompleteIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.COMPLETED_ISSUES);
-				completeAndIncompleteIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.NOT_COMPLETED_ISSUES));
-				completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
+				List<String> completeAndIncompleteIssues = Stream
+						.of(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+								CommonConstant.COMPLETED_ISSUES),
+								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+										CommonConstant.NOT_COMPLETED_ISSUES))
+						.flatMap(Collection::stream).collect(Collectors.toList());
 
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
@@ -146,13 +149,14 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									new HashSet<>(), issueList);
 					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
+					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
 				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(new ArrayList<>(completeAndIncompleteIssues),
-							basicProjectConfigId);
+					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
+							new ArrayList<>(completeAndIncompleteIssues), basicProjectConfigId);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									new HashSet<>(), issueList);
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
+									issueList);
 					resultListMap.put(EXCLUDE_ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -204,7 +208,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWiseInitialIssues, iterationKpiValues,
 					overAllInitialIssueCount, overAllInitialIssueSp, overAllInitialmodalValues, ITERATION_COMMITMENT,
-					fieldMapping, overAllOriginalEstimate);
+					fieldMapping, overAllOriginalEstimate, addedIssues);
 			IterationKpiData overAllInitialCount = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)
 					? new IterationKpiData(ITERATION_COMMITMENT, Double.valueOf(overAllInitialIssueCount.get(0)),
@@ -224,7 +228,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWiseAddedIssues, iterationKpiValues,
 					overAllAddedIssueCount, overAllAddedIssueSp, overAllAddmodalValues, SCOPE_ADDED,
-					fieldMapping, overAllOriginalEstimate);
+					fieldMapping, overAllOriginalEstimate, addedIssues);
 			IterationKpiData overAllAddedCount;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -246,7 +250,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWisePuntedIssues, iterationKpiValues,
 					overAllPunIssueCount, overAllPunIssueSp, overAllRemovedmodalValues, SCOPE_REMOVED,
-					fieldMapping, overAllOriginalEstimate);
+					fieldMapping, overAllOriginalEstimate, addedIssues);
 			IterationKpiData overAllPuntedCount;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -280,7 +284,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues,
 			List<IterationKpiValue> iterationKpiValues, List<Integer> overAllIssueCount, List<Double> overAllIssueSp,
 			List<IterationKpiModalValue> overAllmodalValues, String label,
-								FieldMapping fieldMapping, List<Double> overAllOriginalEstimate) {
+								FieldMapping fieldMapping, List<Double> overAllOriginalEstimate, List<JiraIssue> addedIssues) {
 		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 			statusWiseIssue.forEach((status, issues) -> {
 				issueTypes.add(issueType);
@@ -290,7 +294,10 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				double storyPoints = 0;
 				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null);
+					String marker = CollectionUtils.isNotEmpty(addedIssues) && addedIssues.contains(jiraIssue)
+							? CommonConstant.RED
+							: null;
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null, marker);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();

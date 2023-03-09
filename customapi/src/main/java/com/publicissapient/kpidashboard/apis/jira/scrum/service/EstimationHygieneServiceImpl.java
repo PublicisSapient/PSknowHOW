@@ -181,7 +181,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueWithoutEstimate++;
 						overAllWithoutEstimate.set(0, overAllWithoutEstimate.get(0) + 1);
 						// set modal values
-						populateIterationData(withoutEstmodalValues, overAllWithoutEstmodalValues, jiraIssue, false, null);
+						populateIterationData(withoutEstmodalValues, overAllWithoutEstmodalValues, jiraIssue, false, null, null);
 					}
 
 					if ((jiraIssue.getTimeSpentInMinutes() == null || jiraIssue.getTimeSpentInMinutes() == 0)
@@ -189,7 +189,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueMissingLog++;
 						overAllMissingLog.set(0, overAllMissingLog.get(0) + 1);
 						// set modal values
-						populateIterationData(missingmodalValues, overAllMissingModalValues, jiraIssue, false, null);
+						populateIterationData(missingmodalValues, overAllMissingModalValues, jiraIssue, false, null, null);
 					}
 
 				}
