@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1146,9 +1147,11 @@ public class KPIExcelUtility {
     }
 
 	public static void populateIterationKpiWithPCD(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, IterationPotentialDelay> issueWiseDelay) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+                                                   List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+                                                   Map<String, IterationPotentialDelay> issueWiseDelay, SprintDetails sprintDetails) {
+		String blankDueDate=Constant.DASH;
+		String markerValue=Constant.BLANK;
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
@@ -1170,25 +1173,30 @@ public class KPIExcelUtility {
         if(jiraIssue.getRemainingEstimateMinutes()!=null){
             String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
             iterationKpiModalValue.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
-            if(jiraIssue.getRemainingEstimateMinutes() > 0){
-                iterationKpiModalValue.setRemainingTimeInDays(remEstimate);
-            }
         }
         else{
-            iterationKpiModalValue.setRemainingTimeInDays("0m");
+            iterationKpiModalValue.setRemainingEstimateMinutes("0m");
         }
-		iterationKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
-				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
-				: "-");
-		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
+
+
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate()) ) {
+            blankDueDate=DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString();
+            if(DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).compareTo(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC))==2){
+                markerValue=Constant.AMBER;
+            }
             IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
             iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+            if(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate()).compareTo(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC))>0){
+                markerValue=Constant.RED;
+            }
 			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
 			iterationKpiModalValue.setPotentialDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
+        iterationKpiModalValue.setDueDate(blankDueDate);
+        iterationKpiModalValue.setMarker(markerValue);
         iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
