@@ -957,7 +957,7 @@ describe('UploadComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     if (component.isSuperAdmin) {
-      expect(component.items.length).toBe(3);
+      expect(component.items.length).toBe(4);
     } else {
       expect(component.items.length).toBe(2);
     }
@@ -1114,8 +1114,8 @@ describe('UploadComponent', () => {
     component.validateCertificate(event);
     expect(component.isUploadEnabled).toBe(false);
   })
-
-  it('testing Switch View for upload certificate tab', () => {
+  
+  it('should switch view for upload certificate tab', () => {
     const event = {
       originalEvent: {
         isTrusted: true,
@@ -1129,6 +1129,7 @@ describe('UploadComponent', () => {
     component.switchView(event);
     fixture.detectChanges();
     expect(component.selectedView).toBe('cert_upload');
+    expect(component.kanban).toBeFalse();
   });
 
   it('should get capacity data for scrum project', fakeAsync(() => {
