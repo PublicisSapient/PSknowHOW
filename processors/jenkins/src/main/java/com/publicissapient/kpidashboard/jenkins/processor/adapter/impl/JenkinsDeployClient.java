@@ -58,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JenkinsDeployClient implements JenkinsClient {
 
 	private final RestOperations restOperations;
-	private static final String DEPLOYMENT_URL = "job/%s/api/json?tree=builds[number,status,timestamp,id,result,duration,actions[parameters[name,value]]]";
+	private static final String DEPLOYMENT_URL = "/job/%s/api/json?tree=builds[number,status,timestamp,id,result,duration,actions[parameters[name,value]]]";
 
 	private static final String ID = "id";
 	private static final String ACTIONS = "actions";
