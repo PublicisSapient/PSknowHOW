@@ -3008,9 +3008,9 @@
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Work Completed",
+    "kpiName": "Overall Completion Status",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "Count",
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Iteration",
@@ -3023,15 +3023,43 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+          "value": "Overall Completion status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+          "value": "For the KPI to reflect meaningful info,"
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+          "value": "Map all ‘In Progress status’ in mappings for your project."
+        },
+        {
+          "type": "paragraph",
+          "value": "Ensure Original Estimate & Due Date is added to all issues in a sprint."
+        },
+        {
+          "type": "paragraph",
+          "value": "Assignees should be kept up to date in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Planned work is based on 'Due Date'."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues that are completed"
+        },
+        {
+          "type": "paragraph",
+          "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
         },
         {
           "type": "paragraph",

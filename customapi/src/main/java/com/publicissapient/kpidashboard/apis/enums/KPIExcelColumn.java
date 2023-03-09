@@ -147,8 +147,8 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
 
-    WORK_COMPLETED("kpi128",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay")),
+    OVERALL_COMPLETION_STATUS("kpi128",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay(in days)")),
 
     WORK_REMAINING("kpi119",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Days","Due Date","Predicted Completion Date","Potential Delay(in days)")),
