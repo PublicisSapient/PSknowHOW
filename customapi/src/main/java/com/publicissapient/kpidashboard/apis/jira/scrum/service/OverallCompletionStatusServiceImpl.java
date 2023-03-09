@@ -194,19 +194,38 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 						Double storyPointPlanned = 0.0;
 						Double originalEstimatePlanned = 0.0;
 						for (JiraIssue jiraIssue : issues) {
-							//Checking if dueDate is <= today date
-							if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
-									DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now().plusDays(1))){
-								issueCountPlanned = issueCountPlanned + 1;
-								overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
-								if (null != jiraIssue.getStoryPoints()) {
-									storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
-									overAllStoryPointsPlanned.set(0, overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
+							if(SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())){
+								//Checking if dueDate is <= today date for active sprint
+								if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
+										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now().plusDays(1))){
+									issueCountPlanned = issueCountPlanned + 1;
+									overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
+									if (null != jiraIssue.getStoryPoints()) {
+										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
+										overAllStoryPointsPlanned.set(0, overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
+									}
+									if (null != jiraIssue.getOriginalEstimateMinutes()) {
+										originalEstimatePlanned = originalEstimatePlanned + jiraIssue.getOriginalEstimateMinutes();
+										overAllOriginalEstimatePlanned.set(0,
+												overAllOriginalEstimatePlanned.get(0) + jiraIssue.getOriginalEstimateMinutes());
+									}
 								}
-								if (null != jiraIssue.getOriginalEstimateMinutes()) {
-									originalEstimatePlanned = originalEstimatePlanned + jiraIssue.getOriginalEstimateMinutes();
-									overAllOriginalEstimatePlanned.set(0,
-											overAllOriginalEstimatePlanned.get(0) + jiraIssue.getOriginalEstimateMinutes());
+							}else{
+								// Checking if dueDate is <= sprint End Date for closed sprint
+								if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
+										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).
+												isBefore(DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))){
+									issueCountPlanned = issueCountPlanned + 1;
+									overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
+									if (null != jiraIssue.getStoryPoints()) {
+										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
+										overAllStoryPointsPlanned.set(0, overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
+									}
+									if (null != jiraIssue.getOriginalEstimateMinutes()) {
+										originalEstimatePlanned = originalEstimatePlanned + jiraIssue.getOriginalEstimateMinutes();
+										overAllOriginalEstimatePlanned.set(0,
+												overAllOriginalEstimatePlanned.get(0) + jiraIssue.getOriginalEstimateMinutes());
+									}
 								}
 							}
 							// Calculating delay for only completed issues
@@ -287,7 +306,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	}
 
 	/**
-	 *  For creating IterationKPiData
+	 *  For Assigning IterationKPiData
 	 * @param label
 	 * @param fieldMapping
 	 * @param issueCount
