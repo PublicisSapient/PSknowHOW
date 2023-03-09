@@ -140,6 +140,31 @@ public class OverallCompletionStatusServiceImplTest {
 		}
 
 	}
+	@Test
+	public void testGetKpiDataProject_active() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		sprintDetails.setState(SprintDetails.SPRINT_STATE_ACTIVE);
+		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
+				.thenReturn(jiraIssueCustomHistoryList);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(overallCompletionStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		try {
+			KpiElement kpiElement = overallCompletionStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertNotNull((DataCount) kpiElement.getTrendValueList());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
 
 	@Test
 	public void testGetQualifierType() {
