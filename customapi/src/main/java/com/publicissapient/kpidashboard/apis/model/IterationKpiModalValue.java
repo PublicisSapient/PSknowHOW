@@ -83,7 +83,6 @@ public class IterationKpiModalValue implements Serializable {
 	private String potentialDelay;
 	@JsonProperty("Issue Priority")
 	private String issuePriority;
-	private String Marker;
 
 
 }

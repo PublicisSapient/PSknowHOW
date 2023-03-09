@@ -161,7 +161,6 @@ public final class CommonConstant {
 	public static final String HOURS = "Hours";
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
-	public static final String RED = "#FF0000";
 
 
 
