@@ -177,7 +177,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
     }
 
 	public void populateIterationData(List<IterationKpiModalValue> overAllmodalValues, List<IterationKpiModalValue>
-			modalValues, JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping, String marker) {
+			modalValues, JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping) {
 		int originalEstimate = 0;
 		int loggedTime = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -187,7 +187,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setMarker(marker);
 		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, originalEstimate, iterationKpiModalValue);
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
@@ -205,6 +204,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
+
 
 	private void populateBasedOnEstimationFlag(JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping,
 			int originalEstimate, IterationKpiModalValue iterationKpiModalValue) {

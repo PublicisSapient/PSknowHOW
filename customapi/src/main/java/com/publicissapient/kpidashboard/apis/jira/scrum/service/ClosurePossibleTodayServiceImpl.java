@@ -180,7 +180,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
 							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping, null);
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {

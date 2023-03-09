@@ -51,13 +51,13 @@
                                 <p class="text-data">
                                   <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value != -99 ?
                                     convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                                    <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
+                                    <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}" *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
                                       {{ x?.value != -99 ? x?.unit : ''}}
                                     </span>
                                   <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                     (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
-                                  <span *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
+                                  <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}" *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                     {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                   </span>
                                 </p>
