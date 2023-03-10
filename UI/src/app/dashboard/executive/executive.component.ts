@@ -766,44 +766,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
 
-
-    // on click of priority cycle time kanban this is called
-    changeCycleTimePriority() {
-        this.sumPriorityWise('openTriage');
-        this.sumPriorityWise('triageClosed');
-        this.sumPriorityWise('closedResolved');
-    }
-
-    // return sum of all seleted cycle time kanaban with prioritywise
-    sumPriorityWise(type) {
-        let sum = 0;
-        this.prioritySum[type] = 0;
-        if (this.jiraKpiData && this.jiraKpiData.kpi53 && this.jiraKpiData.kpi53.value && this.jiraKpiData.kpi53.value[type]) {
-            if (this.selectedPriorityFilter && this.selectedPriorityFilter.kpi53 && this.selectedPriorityFilter.kpi53.length !== 0) {
-                for (const index in this.jiraKpiData.kpi53.value[type]) {
-                    const obj = this.jiraKpiData.kpi53.value[type][index];
-                    for (const innerIndex in this.selectedPriorityFilter.kpi53) {
-                        const innerObj = this.selectedPriorityFilter.kpi53[innerIndex];
-                        if (obj.priority === innerObj.data) {
-                            sum += obj.data;
-                        }
-                    }
-                }
-            } else {
-                for (const index in this.jiraKpiData.kpi53.value[type]) {
-                    const obj = this.jiraKpiData.kpi53.value[type][index];
-                    if (obj.data) {
-                        sum += obj.data;
-                    }
-                }
-            }
-            this.prioritySum[type] = sum;
-            return sum;
-        } else {
-            return 0;
-        }
-    }
-
     // get color of cycle time kanban according to priority
     getPriorityColor(index) {
         const color = ['#1F77B4', '#FE7F0C', '#2BA02C', '##D62728', '#9467BD', '#8C554B', '#E376C2', '#7F7F7F', '#BDBD22', '#1ABECF'];

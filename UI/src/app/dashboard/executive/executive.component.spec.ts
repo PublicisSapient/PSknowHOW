@@ -1997,10 +1997,6 @@ describe('ExecutiveComponent', () => {
     httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
 
     component.selectedPriorityFilter.kpi53 = [{ data: 'P3 - Major' }];
-    component.changeCycleTimePriority();
-    component.getValuePrioritywise('openTriage', component.selectedPriorityFilter.kpi53.data);
-    component.getWidthPrioritywise('openTriage', component.selectedPriorityFilter.kpi53.data);
-
     component.getPriorityColor(0);
 
     expect(component.prioritySum['openTriage']).toBe(1);
