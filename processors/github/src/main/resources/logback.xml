@@ -26,7 +26,7 @@
   </appender>
  <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/github-processor-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>logs/ps-github-processor-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy
             class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>50MB</maxFileSize>
@@ -34,14 +34,14 @@
       <maxHistory>30</maxHistory>
     </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-         <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+         <!--<jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>-->
             <providers>
                 <contextName>
                     <fieldName>app</fieldName>
                 </contextName>
 
                 <timestamp>
-                    <fieldName>timestamp</fieldName>
+                    <fieldName>createdTime</fieldName>
                     <!-- TODO - should be long format -->
                     <timeZone>UTC</timeZone>
                 </timestamp>
@@ -76,7 +76,7 @@
                 </stackTrace>
 
                 <message>
-                    <fieldName>msg</fieldName>
+                    <fieldName>message</fieldName>
                 </message>
             </providers>
     </encoder>
