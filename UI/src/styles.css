@@ -1954,3 +1954,15 @@ p-dialog .p-button-cancel.p-button-secondary {
 .p-h-fit-content{
   height: fit-content;
 }
+
+.p-overlaypanel .p-overlaypanel-close {
+  background: black;
+  color: #ffffff;
+  width: 1rem;
+  height: 1rem;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+  border-radius: 0;
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+}

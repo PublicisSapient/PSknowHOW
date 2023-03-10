@@ -850,8 +850,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
-    getComment(kpiID, projectId){
-        return this.http.get<any>(`${this.getCommentUrl}?projectBasicConfig=${projectId}&kpiId=${kpiID}`);
+    getComment(selectedTab, selectedFilter, kpiId){
+        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='Iteration')?selectedFilter.nodeId:''}&sprintId=${(selectedTab==='Iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}`);
     }
 
     submitComment(data): Observable<any> {

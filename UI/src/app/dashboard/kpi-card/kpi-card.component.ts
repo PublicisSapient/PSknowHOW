@@ -29,53 +29,14 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
+  showCommentIcon = false;
   displayCommentsList: boolean;
   showAddComment: boolean = false;
   commentText = '';
   selectedFilters = [];
   selectedTabIndex = 0;
-  dummyData = {
-    "node": "nodevalue",
-    "projectBasicConfig": "projectId",
-    "commentKpiWise": [
-      {
-        "kpiId": "kpi14",
-        "commentInfo": [
-          {
-            "commentId": "1",
-            "commentBy": "pravin",
-            "commentOn": "22/02/2023 10:00",
-            "comment": "With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team With the trends of the KPIs on all dashboards that include (Speed, Quality, Value, Iteration and Backlog), users figure out some reasoning which they would like to save for narrating it to customers/stakeholders/leadership team"
-          },
-          {
-            "commentId": "2",
-            "commentBy": "patil",
-            "commentOn": "23/02/2023 17:00",
-            "comment": "Less data required"
-          }
-        ]
-      },
-      {
-        "kpiId": "105",
-        "commentInfo": [
-          {
-            "commentId": "1",
-            "commentBy": "tom",
-            "commentOn": "26/02/2023 20:00",
-            "comment": "More data required"
-          },
-          {
-            "docId": "2",
-            "commentBy": "hanks",
-            "commentOn": "27/02/2023 22:00",
-            "comment": "Less data required"
-          }
-        ]
-      }
-    ]
-  }
   commentsList = [];
-
+  
 
   constructor(private service: SharedService, private http_service: HttpService) {
   }
@@ -95,6 +56,14 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
             this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
+        }
+      }
+      const sharedObj = this.service.getFilterObject();
+      if (sharedObj) {
+        if (sharedObj.selectedTab === 'Iteration' || sharedObj.selectedTab === 'Backlog') {
+          this.showCommentIcon = true;
+        } else {
+          this.showCommentIcon = sharedObj.filterApplyData.selectedMap?.project.length > 0;
         }
       }
     }));
@@ -168,25 +137,32 @@ export class KpiCardComponent implements OnInit, OnDestroy {
 
   openComments(){
     this.selectedFilters = []
-    const sharedObj = this.service.getFilterObject()
+    const sharedObj = this.service.getFilterObject();
     for (let i = 0; i < sharedObj.filterApplyData.ids.length; i++) {
       this.selectedFilters.push(sharedObj.filterData.filter(data => {
         return data.nodeId === sharedObj.filterApplyData.ids[i]
+      })[0]);
+    }
+    if(this.service.getSelectedTab() === 'Backlog'){
+      const selFil = this.selectedFilters;
+      this.selectedFilters = [];
+      this.selectedFilters.push(sharedObj.filterData.filter(data => {
+        return data.nodeId === selFil[0].parentId[0];
       })[0]);
     }
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
     const reqObj = {
-      node: 'nodeValue',
-      projectBasicConfig: filterData.nodeId,
-      commentsKpiWise: [
+      node: this.service.getSelectedTab() !== 'Iteration'? filterData.nodeId: '',
+      level: filterData.level,
+      sprintId: this.service.getSelectedTab() === 'Iteration'? filterData.nodeId: '',
+      commentKpiWise: [
         {
           kpiId: this.kpiData?.kpiId,
-          commentsInfo: [
+          commentInfo: [
             {
               commentBy: localStorage.getItem('user_name'),
-              commentOn: new Date(),
               comment: this.commentText
             }
           ]
@@ -194,27 +170,29 @@ export class KpiCardComponent implements OnInit, OnDestroy {
       ]
     }
     this.http_service.submitComment(reqObj).subscribe((response) => {
-
+      this.commentText = '';
+      if (this.showAddComment) {
+        this.getComments();
+      }
     }, error => {
       console.log(error);
-      // this.isFeedbackSubmitted = false;
-      setTimeout(() => {
-        // this.formMessage = '';
-      }, 3000);
     });
   }
 
   viewAllHandler(){
-    console.log('kpiid', this.kpiData?.kpiId);
-
+    this.commentsList = [];
     this.displayCommentsList = true;
-    this.http_service.getComment(this.kpiData?.kpiId, this.selectedFilters[this.selectedTabIndex].nodeId)
-      .subscribe(response => {
+    this.getComments();
+  }
+
+  getComments(){
+    this.http_service.getComment(this.service.getSelectedTab(), this.selectedFilters[this.selectedTabIndex], this.kpiData?.kpiId)
+    .subscribe(response => {
+      if(response.data?.CommentsInfo){
         this.commentsList = response.data.CommentsInfo;
-      });
-    // this.commentsList = this.dummyData.commentKpiWise.filter(comment=>{
-    //   return comment.kpiId === this.kpiData?.kpiId
-    // })[0]?.commentInfo;
+      }
+      this.showAddComment = false;
+    });
   }
 
   commentTabChange(data){
