@@ -127,6 +127,7 @@ public class DefectCountByRCAServiceImplTest {
                     .thenReturn(kpiRequestTrackerId);
             when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
             when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+            when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
             KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
             assertNotNull(kpiElement);
