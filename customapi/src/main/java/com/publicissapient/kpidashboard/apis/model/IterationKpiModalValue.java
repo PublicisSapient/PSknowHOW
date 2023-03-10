@@ -86,6 +86,9 @@ public class IterationKpiModalValue implements Serializable {
 	private String issuePriority;
 
 	@JsonProperty("Linked Stories")
-	private Map<String,String> linkedStories;
+	private Map<String, String> linkedStories;
+
+	@JsonProperty("Linked Stories Size")
+	private String linkedStoriesSize;
 
 }
