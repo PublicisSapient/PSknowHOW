@@ -81,3 +81,8 @@
     overflow: unset;
 }
 
+.color-indicator{
+    width: 10px;
+    height: 5.5rem;
+}
+
