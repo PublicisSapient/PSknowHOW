@@ -2496,7 +2496,7 @@ describe('IterationComponent', () => {
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
-    xit('should getchartdata for kpi when trendValueList is an object', () => {
+    it('should getchartdata for kpi when trendValueList is an object', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: {
@@ -2544,20 +2544,16 @@ describe('IterationComponent', () => {
                     "unit": "",
                     "modalValues": []
                 },
-                {
-                    "label": "Issue with missing worklogs",
-                    "value": 32,
-                    "value1": 51,
-                    "unit": "",
-                    "modalValues": []
-                }
             ]
         }
+        const combo = [{
+            filter1: 'Overall',
+            filter2: 'Overall',
+        }]
         
-        spyOn(component, 'createCombinations');
-        spyOn(component, 'applyAggregationLogic');
+        spyOn(component, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
-        expect(component.kpiChartData['kpi124'].data.length).toEqual(res.data.length);
+        expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
 
     it('should calculate business days', () => {
