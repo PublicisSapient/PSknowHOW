@@ -83,6 +83,6 @@
 
 .color-indicator{
     width: 10px;
-    height: 5.5rem;
+    height: inherit;
 }
 
