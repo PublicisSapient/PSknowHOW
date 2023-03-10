@@ -72,7 +72,6 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
        return Arrays.asList(
 //               "63bfa0d5b7617e260763ca21"
                "63c04dc7b7617e260763ca4e"
-//               "6405baf1e1692f27089f3b77"
        );
     }
 
@@ -99,11 +98,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
                     .forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
             projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
             try {
-                List<Issue> issues=new ArrayList<>();
                 for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
-                    issues = fetchIssuesBasedOnJQL.fetchIssues(entry);
+                    fetchIssuesBasedOnJQL.fetchIssues(entry);
                 }
-//                log.info("Issues in this project"+issues);
             } catch (InterruptedException | FileNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (JSONException e) {

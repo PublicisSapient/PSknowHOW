@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import lombok.AllArgsConstructor;
@@ -44,6 +46,7 @@ import java.util.Set;
 @Document(collection = "jira_issue")
 public class JiraIssue extends BasicModel implements Cloneable {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId processorId;
     /*
      * Story data

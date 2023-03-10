@@ -167,4 +167,7 @@ public class JiraIssueDataFactory {
 				.orElse(null);
 	}
 
+	public List<JiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String configId) {
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getIssueId().equals(issueId)&&jiraIssue.getBasicProjectConfigId().equals(configId)).collect(Collectors.toList());
+	}
 }

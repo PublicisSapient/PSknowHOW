@@ -98,4 +98,5 @@ public class FieldMappingDataFactory {
 				fieldMapping -> fieldMapping.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
 				.findFirst().orElse(null);
 	}
+
 }

@@ -114,9 +114,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		Map<String, ProjectConfFieldMapping> projectConfMap= fetchProjectConfiguration.fetchConfiguration();
-		log.info("Map of project name and field mapping: ");
-		System.out.println(projectConfMap);
+		fetchProjectConfiguration.fetchConfiguration();
 		// change 2--
 		if (ObjectUtils.isNotEmpty(getExecutionLogContext())
 				&& (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {

@@ -35,7 +35,6 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +54,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -160,34 +158,20 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
         Set<SprintDetails> setForCacheClean = new HashSet<>();
 
-        List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
-
         for (int i = 0; hasMore; i += pageSize) {
-            Instant startProcessingJiraIssues = Instant.now();
             SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
                     userTimeZone, i, dataExist);
             issues = getIssuesFromResult(searchResult);
 
             if (CollectionUtils.isNotEmpty(issues)) {
-                transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false,jiraIssuesToSave);
-                template.convertAndSend(exchange,routingKey,jiraIssuesToSave);
+                List<JiraIssue> jiraIssues=transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
+                template.convertAndSend(exchange,routingKey,jiraIssues);
             }
 
-            if (issues.size() < pageSize) {
-                break;
-            }
+			if (issues.size() < pageSize) {
+				break;
+			}
         }
-
-//        List<Issue1> li1 = issues.stream().map(issue -> {
-//            System.out.println("Creation date:"+issue.getCreationDate());
-//            Issue1 issue1 = new Issue1(issue.getSummary(),issue.getSelf(),issue.getKey(),issue.getId(),issue.getProject(),issue.getIssueType(),issue.getStatus(),issue.getDescription(),issue.getPriority(),issue.getResolution(), (Collection<Attachment>) issue.getAttachments(), (Collection<IssueField>) issue.getFields(), issue.getReporter(),issue.getAssignee(),issue.getCreationDate(),issue.getUpdateDate(),issue.getDueDate(), (Collection<Version>) issue.getAffectedVersions(), (Collection<Version>) issue.getFixVersions(), (Collection<BasicComponent>) issue.getComponents(),issue.getTimeTracking(), (Collection<IssueField>) issue.getFields(), (Collection<Comment>) issue.getComments(),issue.getTransitionsUri(), (Collection<IssueLink>) issue.getIssueLinks(),issue.getVotes(), (Collection<Worklog>) issue.getWorklogs(),issue.getWatchers(),issue.getExpandos(), (Collection<Subtask>) issue.getSubtasks(), (Collection<ChangelogGroup>) issue.getChangelog(),issue.getOperations(),issue.getLabels());
-//            try {
-//                PropertyUtils.copyProperties(issue1, issue);
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
-//            return issue1;
-//        }).collect(Collectors.toList());
         return issues;
     }
     private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
@@ -240,20 +224,8 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                                   Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
                                   boolean dataExist) throws InterruptedException{
         ProjectConfFieldMapping projectConfig=entry.getValue();
-        List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
         SearchResult searchResult = null;
-        List<ProjectToolConfig> jiraDetails = toolRepository.findByToolNameAndBasicProjectConfigId(
-                ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId());
-        if (CollectionUtils.isNotEmpty(jiraDetails) && jiraDetails.get(0).getConnectionId() != null) {
-            Optional<Connection> jiraConn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
-            if (jiraConn.isPresent() && projectConfig.getJira().getConnection().isPresent()) {
-                projectConfig.setProjectToolConfig(jiraDetails.get(0));
-                boolean isOauth = jiraConn.get().getIsOAuth();
-                Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-                if (connectionOptional.isPresent()) {
-                    Connection conn = connectionOptional.get();
-                    client = getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
-                }}}
+        client=getClient(entry);
 
         if (client == null) {
             log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -306,6 +278,24 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         }
 
         return searchResult;
+    }
+
+    private ProcessorJiraRestClient getClient(Map.Entry<String, ProjectConfFieldMapping> entry){
+        ProjectConfFieldMapping projectConfig=entry.getValue();
+        List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
+        List<ProjectToolConfig> jiraDetails = toolRepository.findByToolNameAndBasicProjectConfigId(
+                ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId());
+        if (CollectionUtils.isNotEmpty(jiraDetails) && jiraDetails.get(0).getConnectionId() != null) {
+            Optional<Connection> jiraConn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
+            if (jiraConn.isPresent() && projectConfig.getJira().getConnection().isPresent()) {
+                projectConfig.setProjectToolConfig(jiraDetails.get(0));
+                boolean isOauth = jiraConn.get().getIsOAuth();
+                Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+                if (connectionOptional.isPresent()) {
+                    Connection conn = connectionOptional.get();
+                    client = getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
+                }}}
+        return client;
     }
 
     private List<ProjectBasicConfig> getSelectedProjects() {
@@ -396,52 +386,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
     }
 
-//    public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
-//            throws IOException {
-//        HttpURLConnection request = connection;
-//        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-//
-//        String username = null;
-//        String password = null;
-//
-//        if(connectionOptional.isPresent()) {
-//            Connection conn = connectionOptional.get();
-//            if (conn.isVault()) {
-//                ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
-//                if (toolCredential != null) {
-//                    username = toolCredential.getUsername();
-//                    password = toolCredential.getPassword();
-//                }
-//
-//            } else {
-//                username = connectionOptional.map(Connection::getUsername).orElse(null);
-//                password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-//            }
-//        }
-//        request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-//		request.connect();
-//        StringBuilder sb = new StringBuilder();
-//        try (InputStream in = (InputStream) request.getContent();
-//             BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
-//            int cp;
-//            while ((cp = inReader.read()) != -1) {
-//                sb.append((char) cp);
-//            }
-//        } catch (IOException ie) {
-//            log.error("Read exception when connecting to server {}", ie);
-//        }
-//        return sb.toString();
-//    }
-//
-//    private String decryptJiraPassword(String encryptedPassword) {
-//        return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
-//    }
-//
-//    private String encodeCredentialsToBase64(String username, String password) {
-//        String cred = username + ":" + password;
-//        return Base64.getEncoder().encodeToString(cred.getBytes());
-//    }
-
     private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList, Map.Entry<String, ProjectConfFieldMapping> entry, boolean isOauth, Connection conn) {
         ProcessorJiraRestClient client;
 
@@ -467,7 +411,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             jiraOAuthProperties.setPrivateKey(jiraCommon.decryptJiraPassword(conn.getPrivateKey()));
 
             // Generate and save accessToken
-            saveAccessToken(entry, projectConfigList);
+            saveAccessToken(entry);
             jiraOAuthProperties.setAccessToken(conn.getAccessToken());
 
             client = jiraRestClientFactory.getJiraOAuthClient(JiraInfo.builder()
@@ -487,8 +431,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return client;
     }
 
-    public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry,
-                                List<ProjectBasicConfig> projectConfigList) {
+    public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry) {
         Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
         if (connectionOptional.isPresent()) {
             Optional<String> checkNull = Optional

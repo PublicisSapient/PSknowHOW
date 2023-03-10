@@ -12,6 +12,6 @@ import java.util.Set;
 public interface TransformFetchedIssueToJiraIssue {
 
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard, List<JiraIssue> jiraIssuesToSave) throws JSONException,InterruptedException;
+                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard) throws JSONException,InterruptedException;
 
 }

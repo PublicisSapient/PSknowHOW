@@ -24,21 +24,24 @@ public class MessagingConfig {
     @Value("${rabbitmq.routing.key}")
     String routingKey;
     @Value("${rabbitmq.username}")
-    private String username;
+    String username;
     @Value("${rabbitmq.password}")
-    private String password;
+    String password;
     @Value("${rabbitmq.host}")
-    private String host;
+    String host;
     @Value("${rabbitmq.virtualhost}")
-    private String virtualHost;
+    String virtualHost;
     @Value("${rabbitmq.port}")
-    private int port;
+    int port;
 
-    private ObjectMapper mapper;
+    public static final String DLX_EXCHANGE_MESSAGES = "queue.dlx";
+    public static final String QUEUE_MESSAGES_DLQ = "deadQueue";
 
     @Bean
     public Queue queue() {
-        return new Queue(queue);
+        return QueueBuilder.durable(queue)
+                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE_MESSAGES)
+                .build();
     }
 
     @Bean
@@ -53,10 +56,10 @@ public class MessagingConfig {
 
     @Bean
     public MessageConverter converter() {
-        JodaModule module=new JodaModule();
-//        module.addSerializer(Issue1.class,new EscapedJsonSerializer());
         ObjectMapper mapper = JsonMapper.builder().addModule(new JodaModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
-        return new Jackson2JsonMessageConverter(mapper);
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter(mapper);
+        converter.setAlwaysConvertToInferredType(true);
+        return converter;
     }
 
     @Bean
@@ -83,86 +86,19 @@ public class MessagingConfig {
         return rabbitTemplate;
     }
 
-//    private ObjectMapper createObjectMapper() throws IOException {
-//
-//        String resultPath ="/issue.json";
-//        if (mapper == null) {
-//            mapper = new ObjectMapper();
-//            mapper.registerModule(new JavaTimeModule());
-//            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-//            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//            mapper.convertValue(issue, Map.class);
-//        }
-//
-//		return mapper;
-//    }
+    @Bean
+    FanoutExchange deadLetterExchange() {
+        return new FanoutExchange(DLX_EXCHANGE_MESSAGES);
+    }
 
-//    public class IssueFieldSerializer extends StdSerializer<IssueField> {
-//
-//        public IssueFieldSerializer() {
-//            this(null);
-//        }
-//
-//        public IssueFieldSerializer(Class<IssueField> t) {
-//            super(t);
-//        }
-//
-//        @Override
-//        public void serialize(
-//                IssueField issueField, JsonGenerator jgen, SerializerProvider provider)
-//                throws IOException, JsonProcessingException {
-//
-//            jgen.writeStartObject();
-//            jgen.writeStringField("id", issueField.getId());
-//            jgen.writeStringField("name", issueField.getName());
-//            jgen.writeStringField("type", issueField.getType());
-//            jgen.writeObjectField("value",null);
-//            jgen.writeEndObject();
-//        }
-//    }
-//class EscapedJsonSerializer extends StdSerializer<Object> {
-//    public EscapedJsonSerializer() {
-//        super((Class<Object>) null);
-//    }
-//
-//
-//    @Override
-//    public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-//        StringWriter str = new StringWriter();
-//        JsonGenerator tempGen = new JsonFactory().setCodec(gen.getCodec()).createGenerator(str);
-//        if (value instanceof Collection || value.getClass().isArray()) {
-//            tempGen.writeStartArray();
-//            if (value instanceof Collection) {
-//                for (Object it : (Collection) value) {
-//                    writeTree(gen, it, tempGen);
-//                }
-//            } else if (value.getClass().isArray()) {
-//                for (Object it : (Object[]) value) {
-//                    writeTree(gen, it, tempGen);
-//                }
-//            }
-//            tempGen.writeEndArray();
-//        } else {
-//            provider.defaultSerializeValue(value, tempGen);
-//        }
-//        tempGen.flush();
-//        gen.writeString(str.toString());
-//    }
-//
-//
-//    @Override
-//    public void serializeWithType(Object value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
-//        StringWriter str = new StringWriter();
-//        JsonGenerator tempGen = new JsonFactory().setCodec(gen.getCodec()).createGenerator(str);
-//        writeTree(gen, value, tempGen);
-//        tempGen.flush();
-//        gen.writeString(str.toString());
-//    }
-//
-//    private void writeTree(JsonGenerator gen, Object it, JsonGenerator tempGen) throws IOException {
-//        ObjectNode tree = ((ObjectMapper) gen.getCodec()).valueToTree(it);
-//        tree.set("@class", new TextNode(it.getClass().getName()));
-//        tempGen.writeTree(tree);
-//    }
-//}
+    @Bean
+    Queue deadLetterQueue() {
+        return QueueBuilder.durable(QUEUE_MESSAGES_DLQ).build();
+    }
+
+    @Bean
+    Binding deadLetterBinding() {
+        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange());
+    }
+
 }

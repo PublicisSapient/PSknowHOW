@@ -131,7 +131,9 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard, List<JiraIssue> jiraIssuesToSave) throws JSONException,InterruptedException {
+                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard) throws JSONException,InterruptedException {
+
+        List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
 
         if (null == currentPagedJiraRs) {
             log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -221,12 +223,10 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
 
                 if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                     jiraIssuesToSave.add(jiraIssue);
-//                    jiraIssueHistoryToSave.add(jiraIssueHistory);
                 }
             }
         }
 
-        Set<AccountHierarchy> accountHierarchies=accountHierarchy.creteAccountHierarchy(jiraIssuesToSave, projectConfig);
 
         if (!dataFromBoard) {
             processSprints(projectConfig, sprintDetailsSet);
@@ -684,7 +684,7 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
         if (issue.getResolution() != null) {
             jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
         }
-        setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
+        setEstimate(jiraIssue, fields, fieldMapping);
         Integer timeSpent = 0;
         if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
                 && fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
@@ -707,8 +707,7 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
 
     }
 
-    public void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping, // NOSONAR
-                            JiraProcessorConfig jiraProcessorConfig) {
+    public void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
 
         Double value = 0d;
         String valueString = "0";
@@ -1021,23 +1020,6 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
         return isRaisedByThirdParty;
     }
 
-//    private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-//                                     FieldMapping fieldMapping) {
-//
-//        jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
-//        jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
-//        jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
-//        jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
-//        jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
-//        jiraIssueHistory.setUrl(jiraIssue.getUrl());
-//        jiraIssueHistory.setDescription(jiraIssue.getName());
-//        // This method is not setup method. write it to keep
-//        // custom history
-//        processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
-//
-//        jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-//    }
-
     /**
      * Sets Story Link with Defect
      *
@@ -1231,15 +1213,6 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
 
     }
 
-    /*
-     * * Set Details related to issues with Epic Issue type
-     *
-     * @param fieldMapping
-     *
-     * @param jiraIssue
-     *
-     * @param fields
-     */
     private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
         if (fields.get(fieldMapping.getEpicJobSize()) != null
                 && fields.get(fieldMapping.getEpicJobSize()).getValue() != null) {
