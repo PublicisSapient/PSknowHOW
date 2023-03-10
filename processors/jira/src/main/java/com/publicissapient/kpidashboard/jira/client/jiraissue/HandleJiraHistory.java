@@ -60,32 +60,59 @@ public class HandleJiraHistory {
 			}
 		}
 
-		// Merging Fix Version object based on updation Time
+		// Merging Fix Version object based on updation Timestamp
 		if (jiraField.trim().equalsIgnoreCase(JiraConstants.FIXVERSION) && ObjectUtils.isNotEmpty(fieldHistoryLog)) {
-			List<JiraHistoryChangeLog> fieldHistoryLogTemp = new ArrayList<>(fieldHistoryLog);
-			JiraHistoryChangeLog prevHistoryChangeLog = fieldHistoryLog.get(0);
-			fieldHistoryLog.clear();
-			for (int i = 1; i < fieldHistoryLogTemp.size(); i++) {
-				if (prevHistoryChangeLog.getUpdatedOn().equals(fieldHistoryLogTemp.get(i).getUpdatedOn())) {
-					JiraHistoryChangeLog currHistoryChangeLog = fieldHistoryLogTemp.get(i);
-					currHistoryChangeLog.setChangedFrom(
-							concatStr(prevHistoryChangeLog.getChangedFrom(), currHistoryChangeLog.getChangedFrom()));
-					currHistoryChangeLog.setChangedTo(
-							concatStr(prevHistoryChangeLog.getChangedTo(), currHistoryChangeLog.getChangedTo()));
-					fieldHistoryLogTemp.set(i, currHistoryChangeLog);
-					prevHistoryChangeLog = currHistoryChangeLog;
-				} else {
-					fieldHistoryLog.add(prevHistoryChangeLog);
-					prevHistoryChangeLog = fieldHistoryLogTemp.get(i);
-				}
-			}
-			fieldHistoryLog.add(prevHistoryChangeLog);
-        }
+			return mergeObjectsBasedOnTimestamp(fieldHistoryLog);
+		}
 
 		return fieldHistoryLog;
 	}
 
-    private List<JiraHistoryChangeLog> getCustomFieldChangeLog(List<ChangelogGroup> changeLogList, String jiraField,
+	private List<JiraHistoryChangeLog> mergeObjectsBasedOnTimestamp(List<JiraHistoryChangeLog> fieldHistoryLog) {
+		List<JiraHistoryChangeLog> fieldHistoryLogTemp = new ArrayList<>(fieldHistoryLog);
+		List<JiraHistoryChangeLog> mergedFieldHistoryLog = new ArrayList<>();
+		JiraHistoryChangeLog prevHistoryChangeLog = fieldHistoryLog.get(0);
+		for (int i = 1; i < fieldHistoryLogTemp.size(); i++) {
+			if (prevHistoryChangeLog.getUpdatedOn().equals(fieldHistoryLogTemp.get(i).getUpdatedOn())) {
+				JiraHistoryChangeLog currHistoryChangeLog = fieldHistoryLogTemp.get(i);
+				currHistoryChangeLog.setChangedFrom(
+						concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedFrom(), currHistoryChangeLog.getChangedFrom()));
+				currHistoryChangeLog.setChangedTo(
+						concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedTo(), currHistoryChangeLog.getChangedTo()));
+				fieldHistoryLogTemp.set(i, currHistoryChangeLog);
+				prevHistoryChangeLog = currHistoryChangeLog;
+			} else {
+				mergedFieldHistoryLog.add(prevHistoryChangeLog);
+				prevHistoryChangeLog = fieldHistoryLogTemp.get(i);
+			}
+		}
+		mergedFieldHistoryLog.add(prevHistoryChangeLog);
+		return mergedFieldHistoryLog;
+
+	}
+
+	private void splitMultipleSprintstoLastSprint(List<JiraHistoryChangeLog> sprintChangeLog)
+	{
+		for (int i=0;i<sprintChangeLog.size();i++)
+		{
+			JiraHistoryChangeLog jiraHistoryChangeLog = sprintChangeLog.get(i);
+			jiraHistoryChangeLog.setChangedFrom(spiltStringAndfetchLastValue(jiraHistoryChangeLog.getChangedFrom()));
+			jiraHistoryChangeLog.setChangedTo(spiltStringAndfetchLastValue(jiraHistoryChangeLog.getChangedTo()));
+			sprintChangeLog.set(i,jiraHistoryChangeLog);
+		}
+	}
+
+	private String spiltStringAndfetchLastValue(String str)
+	{
+		if(str.contains(","))
+		{
+			String[] splitedStr = str.split(",");
+			return splitedStr[splitedStr.length-1].trim();
+		}
+		return str;
+	}
+
+	private List<JiraHistoryChangeLog> getCustomFieldChangeLog(List<ChangelogGroup> changeLogList, String jiraField,
 			String jiraCustomField, Map<String, IssueField> fields, JiraIssue jiraIssue) {
 
 		List<JiraHistoryChangeLog> fieldHistoryLog;
@@ -103,7 +130,7 @@ public class HandleJiraHistory {
 		return str != null ? str : "";
 	}
 
-	private String concatStr(String str1, String str2) {
+	private String concatStrUsingCommaSeparator(String str1, String str2) {
 		if (StringUtils.isEmpty(str1))
 			return str2;
 		if (StringUtils.isEmpty(str2))
@@ -187,6 +214,9 @@ public class HandleJiraHistory {
 				handleStr(fieldMapping.getJiraDueDateCustomField()), fields, jiraIssue);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList, JiraConstants.SPRINT,
 				handleStr(fieldMapping.getSprintName()), fields, jiraIssue);
+
+		splitMultipleSprintstoLastSprint(sprintChangeLog);
+
 		jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLog);
 		jiraIssueCustomHistory.setAssigneeUpdationLog(assigneeChangeLog);
 		jiraIssueCustomHistory.setPriorityUpdationLog(priorityChangeLog);
