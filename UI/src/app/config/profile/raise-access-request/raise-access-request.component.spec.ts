@@ -236,7 +236,7 @@ describe('RaiseRequestComponent', () => {
     expect(component.roleSelected).toBeTruthy();
   });
 
-  fit('should logout application', inject([Router], (router: Router) => {
+  it('should logout application', inject([Router], (router: Router) => {
     localStorage.setItem('auth_token', 'hsgdagd78a6d78asda');
     spyOn(httpService, 'logout').and.returnValue(of({}));
     spyOn(router, 'navigate').and.stub();
