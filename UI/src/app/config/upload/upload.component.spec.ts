@@ -352,305 +352,307 @@ describe('UploadComponent', () => {
     message: 'Capacity Data',
     success: true,
     data: [
-        {
-            id: '632c4e17e23ab66523bdbb22',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'SprintPrioritization_Bucket',
-            sprintState: 'FUTURE',
-            capacity: 3,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_2|12 Oct',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_3|26 Oct',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '633eaf5f17c562439124a872',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_1|28 Sep',
-            sprintState: 'ACTIVE',
-            capacity: 500,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_6|07 Sep',
-            sprintState: 'ACTIVE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '63327450dc7db01e674a5379',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_5|24 Aug',
-            sprintState: 'CLOSED',
-            capacity: 520,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '63327449dc7db01e674a5378',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_4|10 Aug',
-            sprintState: 'CLOSED',
-            capacity: 500,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_3|27 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Support|PI_10|ITR_2|13 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_2|13 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        }
-    ]
-};
-
-const fakeTestExecutionData = {
-  message: 'Test Execution Data',
-  success: true,
-  data: [
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'SprintPrioritization_Bucket',
-          sprintId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 3,
-          executedTestCase: 1,
-          passedTestCase: 1,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '632c4e17e23ab66523bdbb22',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'SprintPrioritization_Bucket',
+        sprintState: 'FUTURE',
+        capacity: 3,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_2|12 Oct',
-          sprintId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_2|12 Oct',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
-          sprintId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
-          sprintId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
-          sprintId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_3|26 Oct',
-          sprintId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_3|26 Oct',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_1|28 Sep',
-          sprintId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'ACTIVE',
-          totalTestCases: 10,
-          executedTestCase: 5,
-          passedTestCase: 5,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '633eaf5f17c562439124a872',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_1|28 Sep',
+        sprintState: 'ACTIVE',
+        capacity: 500,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_6|07 Sep',
-          sprintId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'ACTIVE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_6|07 Sep',
+        sprintState: 'ACTIVE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_5|24 Aug',
-          sprintId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 60,
-          executedTestCase: 50,
-          passedTestCase: 45,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '63327450dc7db01e674a5379',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_5|24 Aug',
+        sprintState: 'CLOSED',
+        capacity: 520,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_4|10 Aug',
-          sprintId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 50,
-          executedTestCase: 50,
-          passedTestCase: 50,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '63327449dc7db01e674a5378',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_4|10 Aug',
+        sprintState: 'CLOSED',
+        capacity: 500,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_3|27 Jul',
-          sprintId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_3|27 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Support|PI_10|ITR_2|13 Jul',
-          sprintId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Support|PI_10|ITR_2|13 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_2|13 Jul',
-          sprintId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_2|13 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       }
-  ]
-};
+    ]
+  };
+
+  const fakeTestExecutionData = {
+    message: 'Test Execution Data',
+    success: true,
+    data: [
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'SprintPrioritization_Bucket',
+        sprintId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 3,
+        executedTestCase: 1,
+        passedTestCase: 1,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_2|12 Oct',
+        sprintId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
+        sprintId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
+        sprintId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
+        sprintId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_3|26 Oct',
+        sprintId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_1|28 Sep',
+        sprintId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'ACTIVE',
+        totalTestCases: 10,
+        executedTestCase: 5,
+        passedTestCase: 5,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_6|07 Sep',
+        sprintId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'ACTIVE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_5|24 Aug',
+        sprintId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 60,
+        executedTestCase: 50,
+        passedTestCase: 45,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_4|10 Aug',
+        sprintId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 50,
+        executedTestCase: 50,
+        passedTestCase: 50,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_3|27 Jul',
+        sprintId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Support|PI_10|ITR_2|13 Jul',
+        sprintId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_2|13 Jul',
+        sprintId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      }
+    ]
+  };
+
+  const fakeCapacityKanbanData = require('../../../test/resource/fakeCapacityData.json');
 
   beforeEach((() => {
     const routes: Routes = [
@@ -920,18 +922,18 @@ const fakeTestExecutionData = {
   });
 
   it('get capacity of a selected project', () => {
-   const projectId = '63284960fdd20276d60e4df5';
-   component.getCapacityData(projectId);
-   fixture.detectChanges();
-   httpMock.match(baseUrl + '/api/capacity/'+ projectId)[0].flush(fakeCapacityData);
-   expect(component.capacityScrumData).toEqual(fakeCapacityData['data']);
+    const projectId = '63284960fdd20276d60e4df5';
+    component.getCapacityData(projectId);
+    fixture.detectChanges();
+    httpMock.match(baseUrl + '/api/capacity/' + projectId)[0].flush(fakeCapacityData);
+    expect(component.capacityScrumData).toEqual(fakeCapacityData['data']);
   });
 
   it('should get test execution data of a selected project', () => {
     const projectId = '63284960fdd20276d60e4df5';
     component.getTestExecutionData(projectId);
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/testexecution/'+ projectId)[0].flush(fakeTestExecutionData);
+    httpMock.match(baseUrl + '/api/testexecution/' + projectId)[0].flush(fakeTestExecutionData);
     expect(component.testExecutionScrumData).toEqual(fakeTestExecutionData['data']);
   });
 
@@ -955,7 +957,7 @@ const fakeTestExecutionData = {
     component.ngOnInit();
     fixture.detectChanges();
     if (component.isSuperAdmin) {
-      expect(component.items.length).toBe(3);
+      expect(component.items.length).toBe(4);
     } else {
       expect(component.items.length).toBe(2);
     }
@@ -984,7 +986,7 @@ const fakeTestExecutionData = {
       message: 'fetched successfully',
       success: true,
     };
-    spyOn(httpService,'getFilterData').and.returnValue(of(response));
+    spyOn(httpService, 'getFilterData').and.returnValue(of(response));
     component.getFilterDataOnLoad();
     fixture.detectChanges();
     expect(component.projectListArr.length).toBeGreaterThan(0)
@@ -997,30 +999,30 @@ const fakeTestExecutionData = {
     component.getFilterDataOnLoad();
     fixture.detectChanges();
     expect(component.resetProjectSelection).toHaveBeenCalled()
- 
+
   });
 
-  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'",()=>{
+  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'", () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
     component.popupForm.get('capacity').setValue('Enter Value')
-    spyOn(component,'enableDisableCapacitySubmitButton')
+    spyOn(component, 'enableDisableCapacitySubmitButton')
     component.enableDisableSubmitButton();
     fixture.detectChanges();
     expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled()
 
   })
 
-  it("enableDisableSubmitButton() when selectedView === 'upload_tep'",()=>{
+  it("enableDisableSubmitButton() when selectedView === 'upload_tep'", () => {
     component.selectedView = 'upload_tep'
-    spyOn(component,'enableDisableTestExecutionSubmitButton')
+    spyOn(component, 'enableDisableTestExecutionSubmitButton')
     component.enableDisableSubmitButton();
     fixture.detectChanges();
     expect(component.enableDisableTestExecutionSubmitButton).toHaveBeenCalled()
 
   })
 
-  it("enableDisableCapacitySubmitButton() for capacity",()=>{
+  it("enableDisableCapacitySubmitButton() for capacity", () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
     component.popupForm.get('capacity').setValue('Enter Value')
@@ -1030,20 +1032,123 @@ const fakeTestExecutionData = {
     expect(component.capacityErrorMessage).toBe('Please enter Capacity');
   })
 
-  it("enableDisableCapacitySubmitButton()",()=>{
+  it("enableDisableCapacitySubmitButton()", () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
     expect(component.isCapacitySaveDisabled).toBeTrue()
   })
 
-  it("should disable save capacity btn",()=>{
+  it("should disable save capacity btn", () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
     expect(component.isCapacitySaveDisabled).toBeTrue()
   })
 
+  xit('should fail on uploading certificate', fakeAsync(() => {
+    const errorRes = {
+      "message":"LDAP certificate not copied due to some error",
+      "success":false,
+      "data":"lladldap.hk.net.pem"
+    };
+    component.selectedFile = new File([""],
+      "lladldap.hk.net.pem",
+      {
+        type: "application/x-x509-ca-cert",
+        lastModified: 1678340841040
+      }
+    )
+    component.error = '';
+    component.message = '';
+    spyOn(httpService, 'uploadCertificate').and.returnValue(of(errorRes));
+    // spyOn(component, 'uploadCertificate');
+    component.uploadCertificate();
+    tick();
+    expect(component.error).toEqual(errorRes.message);
+  }));
 
+  it('should succeed on uploading certificate', fakeAsync(() => {
+    const successRes = {
+      "message":"LDAP certificate copied",
+      "success":true,
+      "data":"lladldap.hk.net.cer"
+    };
+    component.selectedFile = new File([""],
+      "lladldap.hk.net.cer",
+      {
+        type: "application/x-x509-ca-cert",
+        lastModified: 1678340841040
+      }
+    );
+    component.error = '';
+    component.message = '';
+    spyOn(httpService, 'uploadCertificate').and.returnValue(of(successRes));
+    // spyOn(component, 'uploadCertificate');
+    component.uploadCertificate();
+    tick();
+    expect(component.message).toEqual(successRes.message);
+  }));
 
+  it('should clear file uploaded', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "file": {}
+    };
+    component.selectedFile = null;
+    component.clear(event);
+    expect(component.isUploadEnabled).toBe(true);
+  })
+
+  it('should validate certificate successfully', () => {
+    const blob: Blob = new Blob([""], { type: "application/x-x509-ca-cert", });
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      'files': [new File([blob], 'upload.cer', { type: "application/x-x509-ca-cert", })]
+    };
+    component.error = '';
+    component.message = '';
+    component.selectedFile = event.files[0];
+    component.validateCertificate(event);
+    expect(component.isUploadEnabled).toBe(false);
+  })
+  
+  it('should switch view for upload certificate tab', () => {
+    const event = {
+      originalEvent: {
+        isTrusted: true,
+      },
+      item: {
+        label: 'Upload certificate',
+        icon: 'pi pi-image',
+        expanded: true,
+      },
+    };
+    component.switchView(event);
+    fixture.detectChanges();
+    expect(component.selectedView).toBe('cert_upload');
+    expect(component.kanban).toBeFalse();
+  });
+
+  it('should get capacity data for scrum project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+    
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeSuccessResponseCapacity));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityScrumData).toEqual(fakeSuccessResponseCapacity.data);
+  }));
+
+  xit('should get capacity data for kanban project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+    
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeCapacityKanbanData));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityKanbanData).toEqual(fakeCapacityKanbanData.data);
+  }));
 
 });
 
