@@ -1271,4 +1271,5 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
         jiraIssue.setUrl(baseUrl);
     }
 
+
 }
