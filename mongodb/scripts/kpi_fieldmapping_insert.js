@@ -367,7 +367,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi120',
-        kpiName: 'Scope Change',
+        kpiName: 'Iteration Commitment',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : { }

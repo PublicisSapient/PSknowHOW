@@ -275,7 +275,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				double storyPoints = 0;
 				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null);
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();
@@ -283,7 +283,8 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 					}
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-						overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+						overAllOriginalEstimate.set(0,
+								overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
 					}
 					overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 				}
@@ -316,11 +317,11 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<IterationKpiModalValue> overAllModalValues, String kpiLabel) {
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)), overAllIssueSp.get(0),
-					null, "", CommonConstant.SP, overAllModalValues);
+			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)), overAllIssueSp.get(0), null,
+					"", CommonConstant.SP, overAllModalValues);
 		} else {
 			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)),
-					overAllOriginalEstimate.get(0) / 60, null, "", CommonConstant.DAY, overAllModalValues);
+					overAllOriginalEstimate.get(0), null, "", CommonConstant.DAY, overAllModalValues);
 		}
 	}
 
