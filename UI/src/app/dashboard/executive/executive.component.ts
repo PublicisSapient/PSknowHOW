@@ -804,33 +804,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
     }
 
-    // to get the value of cycle time kanban according to priority
-    getValuePrioritywise(type, selectedPriority) {
-        let value = 0;
-        if (this.jiraKpiData && this.jiraKpiData.kpi53 && this.jiraKpiData.kpi53.value && this.jiraKpiData.kpi53.value[type]) {
-            for (let index = 0; index < this.jiraKpiData.kpi53.value[type].length; index++) {
-                const obj = this.jiraKpiData.kpi53.value[type][index];
-                if (obj.priority === selectedPriority) {
-                    value = obj.data;
-                    break;
-                }
-            }
-        }
-        return value;
-    }
-
-
-    // to get the width of cycle time kanban according to priority
-    getWidthPrioritywise(type, selectedPriority) {
-        const value = this.getValuePrioritywise(type, selectedPriority);
-        if (this.prioritySum[type] !== 0) {
-            return (value * 100) / this.prioritySum[type] + '%';
-        } else {
-            return '0%';
-        }
-
-    }
-
     // get color of cycle time kanban according to priority
     getPriorityColor(index) {
         const color = ['#1F77B4', '#FE7F0C', '#2BA02C', '##D62728', '#9467BD', '#8C554B', '#E376C2', '#7F7F7F', '#BDBD22', '#1ABECF'];
