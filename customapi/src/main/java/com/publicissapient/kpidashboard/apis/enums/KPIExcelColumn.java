@@ -59,6 +59,8 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
 
+    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority")),
+
     CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),
@@ -147,8 +149,8 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
 
-    WORK_COMPLETED("kpi128",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay")),
+    OVERALL_COMPLETION_STATUS("kpi128",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay(in days)")),
 
     WORK_REMAINING("kpi119",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate","Due Date","Predicted Completion Date","Overall Delay")),

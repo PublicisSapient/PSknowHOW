@@ -274,9 +274,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		if (actualCompletionData.get("actualCompleteDate") != null)
 			iterationKpiModalValue.setActualCompletionDate(actualCompletionData.get("actualCompleteDate").toString());
 		if (jiraIssue.getOriginalEstimateMinutes() != null && actualCompletionData.get("actualCompletionDays") != "-") {
-			iterationKpiModalValue.setDelay(String.valueOf(delay)+ "d");
+			iterationKpiModalValue.setDelayInDays(String.valueOf(delay)+ "d");
 		} else {
-			iterationKpiModalValue.setDelay(" - ");
+			iterationKpiModalValue.setDelayInDays(" - ");
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
