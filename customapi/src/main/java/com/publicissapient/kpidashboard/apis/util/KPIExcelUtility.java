@@ -1279,7 +1279,6 @@ public class KPIExcelUtility {
 		}
 		iterationKpiModalValue.setDueDate(blankDueDate);
 		iterationKpiModalValue.setMarker(markerValue);
-		iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
