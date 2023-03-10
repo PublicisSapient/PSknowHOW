@@ -3041,6 +3041,14 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issues finishing post issue due date are marked in RED"
         }
       ]
     },
