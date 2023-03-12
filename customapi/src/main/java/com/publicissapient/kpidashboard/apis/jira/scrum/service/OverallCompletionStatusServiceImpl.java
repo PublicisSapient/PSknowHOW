@@ -22,6 +22,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumnInfo;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.*;
@@ -68,6 +69,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	public static final String COMPLETED = "Completed";
 	public static final String PLANNED = "Planned";
 	public static final String ACTUAL = "Actual";
+	public static final String ACTUAL_START_DATE = "actualStartDate";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -195,9 +197,9 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 						Double originalEstimatePlanned = 0.0;
 						for (JiraIssue jiraIssue : issues) {
 							if(SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())){
-								//Checking if dueDate is <= today date for active sprint
+								//Checking if dueDate is < today date for active sprint
 								if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
-										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now().plusDays(1))){
+										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now())){
 									issueCountPlanned = issueCountPlanned + 1;
 									overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
 									if (null != jiraIssue.getStoryPoints()) {
@@ -301,6 +303,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.OVERALL_COMPLETION_STATUS.getColumns());
+			kpiElement.setExcelColumnInfo(KPIExcelColumnInfo.OVERALL_COMPLETION_STATUS.getColumnsInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
@@ -387,6 +390,10 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		} else {
 			resultList.put(ACTUAL_COMPLETION_DAYS, "-");
 		}
+		if(startDate != null)
+			resultList.put(ACTUAL_START_DATE,startDate);
+		else
+			resultList.put(ACTUAL_START_DATE,"-");
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
 	}
