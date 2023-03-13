@@ -151,9 +151,13 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
 
-    OVERALL_COMPLETION_STATUS("kpi128",
-            Arrays.asList(new KPIExcelColumnInfo("Issue Id",""),new KPIExcelColumnInfo("Issue Description","") ,new KPIExcelColumnInfo( "Issue Status",""),new KPIExcelColumnInfo("Issue Type",""),new KPIExcelColumnInfo("Size(story point/hours)",""),new KPIExcelColumnInfo("Original Estimate",""),new KPIExcelColumnInfo("Due Date",""),new KPIExcelColumnInfo("Actual Start Date",""),new KPIExcelColumnInfo("Actual Completion Date","")
-                    ,new KPIExcelColumnInfo("Delay(in days)","Delay is calculated based on difference between time taken to complete an issue that depends on the Actual Start date and Actual completion date (In Days) and the Original Estimate (In Days)"))),
+	OVERALL_COMPLETION_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
+			new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
+			new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
+			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Due Date", ""),
+			new KPIExcelColumnInfo("Actual Start Date", ""), new KPIExcelColumnInfo("Actual Completion Date", ""),
+			new KPIExcelColumnInfo("Delay(in days)",
+					"Delay is calculated based on difference between time taken to complete an issue that depends on the Actual Start date and Actual completion date (In Days) and the Original Estimate (In Days)"))),
 
     WORK_REMAINING("kpi119",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Days","Due Date","Predicted Completion Date","Potential Delay(in days)")),

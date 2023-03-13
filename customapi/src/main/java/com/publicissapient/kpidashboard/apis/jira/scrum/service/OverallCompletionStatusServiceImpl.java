@@ -18,6 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -35,17 +47,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -195,37 +196,43 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 						Double storyPointPlanned = 0.0;
 						Double originalEstimatePlanned = 0.0;
 						for (JiraIssue jiraIssue : issues) {
-							if(SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())){
-								//Checking if dueDate is < today date for active sprint
-								if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
-										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now())){
+							if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
+								// Checking if dueDate is < today date for active sprint
+								if (StringUtils.isNotEmpty(jiraIssue.getDueDate()) && DateUtil
+										.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isBefore(LocalDate.now())) {
 									issueCountPlanned = issueCountPlanned + 1;
-									overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
+									overAllIssueCountPlanned.set(0, overAllIssueCountPlanned.get(0) + 1);
 									if (null != jiraIssue.getStoryPoints()) {
 										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
-										overAllStoryPointsPlanned.set(0, overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
+										overAllStoryPointsPlanned.set(0,
+												overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
 									}
 									if (null != jiraIssue.getOriginalEstimateMinutes()) {
-										originalEstimatePlanned = originalEstimatePlanned + jiraIssue.getOriginalEstimateMinutes();
-										overAllOriginalEstimatePlanned.set(0,
-												overAllOriginalEstimatePlanned.get(0) + jiraIssue.getOriginalEstimateMinutes());
+										originalEstimatePlanned = originalEstimatePlanned
+												+ jiraIssue.getOriginalEstimateMinutes();
+										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
+												+ jiraIssue.getOriginalEstimateMinutes());
 									}
 								}
-							}else{
+							} else {
 								// Checking if dueDate is <= sprint End Date for closed sprint
-								if(StringUtils.isNotEmpty(jiraIssue.getDueDate()) &&
-										DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).
-												isBefore(DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))){
+								if (StringUtils.isNotEmpty(jiraIssue.getDueDate()) && DateUtil
+										.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isBefore(DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(),
+												DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
 									issueCountPlanned = issueCountPlanned + 1;
-									overAllIssueCountPlanned.set(0,overAllIssueCountPlanned.get(0) + 1);
+									overAllIssueCountPlanned.set(0, overAllIssueCountPlanned.get(0) + 1);
 									if (null != jiraIssue.getStoryPoints()) {
 										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
-										overAllStoryPointsPlanned.set(0, overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
+										overAllStoryPointsPlanned.set(0,
+												overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
 									}
 									if (null != jiraIssue.getOriginalEstimateMinutes()) {
-										originalEstimatePlanned = originalEstimatePlanned + jiraIssue.getOriginalEstimateMinutes();
-										overAllOriginalEstimatePlanned.set(0,
-												overAllOriginalEstimatePlanned.get(0) + jiraIssue.getOriginalEstimateMinutes());
+										originalEstimatePlanned = originalEstimatePlanned
+												+ jiraIssue.getOriginalEstimateMinutes();
+										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
+												+ jiraIssue.getOriginalEstimateMinutes());
 									}
 								}
 							}
@@ -316,17 +323,16 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	 * @param modalvalue
 	 * @return
 	 */
-	private IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount, Double storyPoint, Double originalEstimate,List<IterationKpiModalValue> modalvalue) {
+	private IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
+			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
 		IterationKpiData iterationKpiData;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label,
-					Double.valueOf(issueCount), storyPoint, LABEL_INFO, "",
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), storyPoint, LABEL_INFO, "",
 					CommonConstant.SP, modalvalue);
 		} else {
-			iterationKpiData = new IterationKpiData(label,
-					Double.valueOf(issueCount), originalEstimate, LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "",
-					CommonConstant.DAY, modalvalue);
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), originalEstimate,
+					LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
 	}
@@ -388,10 +394,10 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		} else {
 			resultList.put(ACTUAL_COMPLETION_DAYS, "-");
 		}
-		if(startDate != null)
-			resultList.put(ACTUAL_START_DATE,startDate);
+		if (startDate != null)
+			resultList.put(ACTUAL_START_DATE, startDate);
 		else
-			resultList.put(ACTUAL_START_DATE,"-");
+			resultList.put(ACTUAL_START_DATE, "-");
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
 	}
