@@ -26,7 +26,6 @@ import {
 } from '@angular/core';
 
 import * as d3 from 'd3';
-import { AnyARecord } from 'dns';
 
 @Component({
   selector: 'app-piechart',
@@ -70,18 +69,28 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   //d.Stars.toString()
   createColors(): void {
     this.colors = d3
-    .scaleOrdinal()
-    .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
-    .range(['#e42256',
-      '#ff8370',
-      '#00b1b0',
-      '#fec84d',
-      '#39b48e',
-      '#089f8f',
-      '#00898a',
-      '#08737f',
-      '#215d6e',
-      '#2a4858']);
+      .scaleOrdinal()
+      .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
+      .range(['#FFA193',
+        '#00B1B0',
+        '#FEC84D',
+        '#E42256',
+        '#7FBD7F',
+        '#B79CED',
+        '#5CA7CF',
+        '#994636',
+        '#E3D985',
+        '#0072bb',
+        'DC0073',
+        '944075',
+        '80A9A2',
+        'E07373',
+        '6C4F84',
+        'BC2C1A',
+        '50723C',
+        'F17552',
+        '445E93',
+        '885053']);
   }
   drawChart(): void {
     // Compute the position of each group on the pie:
@@ -97,32 +106,25 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       }
       )
     }
-    
-    const totalCount = d3.sum(this.pieChartValuesArray, function(d) { return d.value;});
+
+    const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");
 
     // Build the pie chart
     this.svg
-      .selectAll('pieces')
-      .data(pie(this.pieChartValuesArray))
-      .enter()
+    .selectAll('pieces')
+    .data(pie(this.pieChartValuesArray))
+    .enter()
       .append('path')
       .attr('d', d3.arc().innerRadius(0).outerRadius(this.radius))
       .attr('fill', (d: any, i: any) => colors(i))
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
-
-    // Add labels
-    this.svg
-      .selectAll('pieces')
-      .data(pie(this.pieChartValuesArray));
-
-    // again rebind for legend
     var legendG = this.svg.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
       .data(pie(this.pieChartValuesArray))
       .enter().append("g")
       .attr("transform", function (d, i) {
-        return "translate(" + (width - 400) + "," + (i * 15 - 60) + ")"; // place each legend on the right and bump each one down 15 pixels
+        return "translate(" + (width - 350) + "," + (i * 15 - 80) + ")"; // place each legend on the right and bump each one down 15 pixels
       })
       .attr("class", "legend");
 
@@ -134,11 +136,11 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       });
 
     legendG.append("text") // add the text
-      .text((d) => {return `${d?.data?.title} (${d?.data.value}) - ${toPercent(d?.data.value / totalCount)}`})
+      .text((d) => { return `${d?.data?.title} (${d?.data.value}) - ${toPercent(d?.data.value / totalCount)}` })
       .style("font-size", 12)
       .style('text-transform', 'capitalize')
       .attr("y", 10)
-      .attr("x", 11);
+      .attr("x", 15);
   }
 
   ngOnChanges(changes: SimpleChanges) {
