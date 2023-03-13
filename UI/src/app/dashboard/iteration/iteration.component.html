@@ -158,7 +158,10 @@
       <ng-template pTemplate="header">
         <tr>
           <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item}}</th>
+            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item?.kpiColumn ? item?.kpiColumn : item}} <span *ngIf="item?.columnInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+            pTooltip='<div class="inner-content">
+                {{item.columnInfo}}
+            </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>
@@ -166,7 +169,7 @@
           <td class="font-small"><a [href]="x['Issue URL']" class="text-blue" target="_blank">{{x['Issue Id']}}</a></td>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
             <td *ngIf="i!=0">
-              {{x[item]}}
+              {{item?.kpiColumn ? x[item.kpiColumn] : x[item]}}
             </td>
           </ng-container>
         </tr>
