@@ -159,6 +159,9 @@ public enum KPIExcelColumn {
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate")),
 
+    DEFECT_REOPEN_RATE("kpi134", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
+        "Closed Date", "Reopen Date", "Time taken to reopen")),
+
     INVALID("INVALID_KPI", Arrays.asList("Invalid"));
 
     // @formatter:on

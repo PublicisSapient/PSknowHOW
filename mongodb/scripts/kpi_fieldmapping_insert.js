@@ -426,5 +426,12 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Kpi Maturity',
         type: ['Other'],
         fieldNames : { }
+      },
+      {
+        kpiId: 'kpi134',
+        kpiName: 'Defect Reopen Rate',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { 'Workflow Status Mapping' : ['jiraTicketClosedStatus'] }
       }
 	  ]);

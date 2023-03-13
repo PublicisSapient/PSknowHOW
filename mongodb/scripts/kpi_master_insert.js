@@ -3498,5 +3498,25 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
+  },
+  {
+    "kpiId":"kpi134",
+    "kpiName":"Defect Reopen Rate",
+    "kpiUnit":"Hours",
+    "isDeleted":"False",
+    "defaultOrder":3,
+    "kpiCategory":"Backlog",
+    "kpiSource":"Jira",
+    "groupId":2,
+    "thresholdValue":"",
+    "kanban":false,
+    "kpiInfo": {
+      "definition":"Defect reopen rate measures number of defects reopened out of the total number of defects raised."
+    },
+    "isPositiveTrend":false,
+    "kpiFilter":"multiSelectDropDown",
+    "showTrend":false,
+    "isAdditionalFilterSupport":true,
+    "calculateMaturity":false
   }
 ]);

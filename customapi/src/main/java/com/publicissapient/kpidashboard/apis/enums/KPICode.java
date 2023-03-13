@@ -351,7 +351,12 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi131", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name()),
+
+	/**
+	 * Defect Reopen Rate
+	 */
+	DEFECT_REOPEN_RATE("kpi134", KPISource.JIRA.name());
 
 	// @formatter:on
 

@@ -55,4 +55,15 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
 
+	/**
+	 * find jira issue based on filter and date
+	 *
+	 * @param mapOfFilters
+	 * @param uniqueProjectMap
+	 * @return List<JiraIssueCustomHistory>
+	 *
+	 */
+	List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
+																														Map<String, Map<String, Object>> uniqueProjectMap);
+
 }

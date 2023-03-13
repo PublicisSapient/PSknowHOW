@@ -607,4 +607,37 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
+	/**
+	 * Find issues filtered by map of filters, type name and defectStoryIds
+	 *
+	 * @param mapOfFilters     filters
+	 * @param uniqueProjectMap project map filters
+	 * @return list of jira issues
+	 */
+	@Override
+	public List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
+																															 Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria);
+
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		Query query;
+		if (projectCriteriaList.isEmpty()) {
+			query = new Query(criteriaProjectLevelAdded);
+		} else {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			query = new Query(updatedCriteria);
+		}
+		return operations.find(query, JiraIssue.class);
+	}
+
 }

@@ -83,6 +83,14 @@ public class IterationKpiModalValue implements Serializable {
 	private String potentialDelay;
 	@JsonProperty("Issue Priority")
 	private String issuePriority;
+	// Added for Defect Reopen Rate - submohan1
+	@JsonProperty("Closed Date")
+	private String closedDate;
+	@JsonProperty("Reopen Date")
+	private String reopenDate;
+	@JsonProperty("Time taken to reopen")
+	private String durationToReopen;
+	// end for Defect Reopen Rate - submohan1
 
 
 }

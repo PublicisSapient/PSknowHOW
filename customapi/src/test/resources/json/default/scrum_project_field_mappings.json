@@ -184,6 +184,9 @@
       "In Investigation",
       "Open"
     ],
+    "jiraTicketClosedStatus": [
+      "Closed"
+    ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 
     "8"
