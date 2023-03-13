@@ -822,8 +822,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 *            JiraIssue instance
 	 * @param changeLogList
 	 *            List of Change log in jira
-	 * @param fieldMapping
-	 *            FieldMapping config
 	 */
 	private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
 			List<ChangelogGroup> changeLogList) {
@@ -839,12 +837,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 *
 	 * @param jiraIssueCustomHistory
 	 *            JiraIssueCustomHistory
-	 * @param jiraIssue
-	 *            jiraIssue
 	 * @param changeLogList
 	 *            Change Log list
-	 * @param fieldMapping
-	 *            List of JiraIssueCustomHistory
 	 */
 	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory,
 			List<ChangelogGroup> changeLogList) {
