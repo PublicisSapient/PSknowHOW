@@ -35,12 +35,17 @@ public class MessagingConfig {
     int port;
 
     public static final String DLX_EXCHANGE_MESSAGES = "queue.dlx";
-    public static final String QUEUE_MESSAGES_DLQ = "deadQueue";
+    public static final String QUEUE_MESSAGES_DLQ = "queue1.dead-letter";
+
+    public static final String QUEUE_PARKING_LOT =  "queue1.parking-lot";
+
+    public static final String EXCHANGE_PARKING_LOT ="queue_exchange.parking-lot";
 
     @Bean
     public Queue queue() {
         return QueueBuilder.durable(queue)
                 .withArgument("x-dead-letter-exchange", DLX_EXCHANGE_MESSAGES)
+//                .withArgument("x-retries-count", 5)
                 .build();
     }
 
@@ -93,12 +98,29 @@ public class MessagingConfig {
 
     @Bean
     Queue deadLetterQueue() {
-        return QueueBuilder.durable(QUEUE_MESSAGES_DLQ).build();
+        return QueueBuilder.durable(QUEUE_MESSAGES_DLQ)
+//                .ttl(10000)
+                .build();
     }
 
     @Bean
     Binding deadLetterBinding() {
         return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange());
+    }
+
+    @Bean
+    FanoutExchange parkingLotExchange() {
+        return new FanoutExchange(EXCHANGE_PARKING_LOT);
+    }
+
+    @Bean
+    Queue parkingLotQueue() {
+        return QueueBuilder.durable(QUEUE_PARKING_LOT).build();
+    }
+
+    @Bean
+    Binding parkingLotBinding() {
+        return BindingBuilder.bind(parkingLotQueue()).to(parkingLotExchange());
     }
 
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.publicissapient.kpidashboard.jira.config.MessagingConfig.*;
+
 @Service
 @Slf4j
 public class ConsumeDataFromQueue {
@@ -24,17 +26,19 @@ public class ConsumeDataFromQueue {
     private RabbitTemplate template;
 
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
-    public void consumeJiraIssue(List<JiraIssue> jiraIssues){
+    public void consumeJiraIssue(List<JiraIssue> jiraIssues) {
         jiraIssues.stream().forEach(jiraIssue -> log.info("jiraissue Data {}",jiraIssue));
     }
 
-    @RabbitListener(queues = "deadQueue")
+    @RabbitListener(queues = QUEUE_MESSAGES_DLQ)
     public void processFailedMessagesRetryHeaders(Message failedMessage) {
         Integer retriesCnt = (Integer) failedMessage.getMessageProperties()
                 .getHeaders().get(HEADER_X_RETRIES_COUNT);
         if (retriesCnt == null) retriesCnt = 1;
         if (retriesCnt > MAX_RETRIES_COUNT) {
             log.info("Discarding message");
+            template.send(EXCHANGE_PARKING_LOT,
+                    failedMessage.getMessageProperties().getReceivedRoutingKey(), failedMessage);
             return;
         }
         log.info("Retrying message for the {} time", retriesCnt);
@@ -43,5 +47,11 @@ public class ConsumeDataFromQueue {
         template.send(exchange,
                 failedMessage.getMessageProperties().getReceivedRoutingKey(), failedMessage);
     }
+
+//    @RabbitListener(queues = QUEUE_PARKING_LOT)
+//    public void processParkingLotQueue(Message failedMessage) {
+//        log.info("Received message in parking lot queue");
+//        // Save to DB or send a notification.
+//    }
 
 }
