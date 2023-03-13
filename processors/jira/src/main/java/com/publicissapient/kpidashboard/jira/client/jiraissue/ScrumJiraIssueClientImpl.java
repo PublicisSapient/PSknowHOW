@@ -648,7 +648,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				handleJiraHistory.setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping,fields);
+				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping,fields);
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
@@ -932,6 +932,23 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			}
 		}
 		return isRaisedByThirdParty;
+	}
+
+	public void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
+									FieldMapping fieldMapping, Map<String, IssueField> fields) {
+
+		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
+		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
+		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
+		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
+		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
+		jiraIssueHistory.setUrl(jiraIssue.getUrl());
+		jiraIssueHistory.setDescription(jiraIssue.getName());
+		// This method is not setup method. write it to keep
+		// custom history
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+
+		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
 
 
@@ -1223,7 +1240,73 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @param fieldMapping
 	 *            Project field Mapping
 	 */
+	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
+										 Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
+		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
 
+		for (ChangelogGroup changeLog : changeLogList) {
+			List<ChangelogItem> changeLogCollection = Lists.newArrayList(changeLog.getItems().iterator());
+			ChangelogGroup grp = new ChangelogGroup(changeLog.getAuthor(), changeLog.getCreated(), changeLogCollection);
+			modChangeLogList.add(grp);
+		}
+
+		if (null != jiraIssue.getDevicePlatform()) {
+			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
+		}
+		if (null == jiraIssueCustomHistory.getStoryID()) {
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
+		} else {
+			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
+				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
+			}
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+		}
+
+	}
+
+
+
+
+	/**
+	 * Adds Jira issue history
+	 *
+	 * @param jiraIssueCustomHistory
+	 *            JiraIssueCustomHistory
+	 * @param jiraIssue
+	 *            JiraIssue
+	 * @param issue
+	 *            Atlassian Issue
+	 * @param changeLogList
+	 *            Change Log list
+	 */
+	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
+								 List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
+		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
+
+		// estimate
+		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
+		jiraIssueCustomHistory.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
+		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
+			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
+		}
+	}
+
+	/**
+	 * Process change log and create array of status in Jira issue history
+	 *
+	 * @param jiraIssue
+	 *            JiraIssue
+	 * @param changeLogList
+	 *            ChangeLogList
+	 * @param issueCreatedDate
+	 *            Jira Issue creation date
+	 * @param fieldMapping
+	 *            Field Config Mapping
+	 * @return
+	 */
 	private List<JiraIssueSprint> getChangeLog(JiraIssue jiraIssue, List<ChangelogGroup> changeLogList, // NOPMD
 																										// //NOSONAR
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {

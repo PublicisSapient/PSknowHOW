@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,18 +88,18 @@ public class HandleJiraHistory {
 
 	}
 
-	private void splitMultipleSprintstoLastSprint(List<JiraHistoryChangeLog> sprintChangeLog)
+	private void splitMultipleSprintsAndStoreLastSprint(List<JiraHistoryChangeLog> sprintChangeLog)
 	{
 		for (int i=0;i<sprintChangeLog.size();i++)
 		{
 			JiraHistoryChangeLog jiraHistoryChangeLog = sprintChangeLog.get(i);
-			jiraHistoryChangeLog.setChangedFrom(spiltStringAndfetchLastValue(jiraHistoryChangeLog.getChangedFrom()));
-			jiraHistoryChangeLog.setChangedTo(spiltStringAndfetchLastValue(jiraHistoryChangeLog.getChangedTo()));
+			jiraHistoryChangeLog.setChangedFrom(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedFrom()));
+			jiraHistoryChangeLog.setChangedTo(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedTo()));
 			sprintChangeLog.set(i,jiraHistoryChangeLog);
 		}
 	}
 
-	private String spiltStringAndfetchLastValue(String str)
+	private String spiltStringAndFetchLastValue(String str)
 	{
 		if(str.contains(","))
 		{
@@ -140,63 +137,8 @@ public class HandleJiraHistory {
 
 	}
 
-	public void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-									 FieldMapping fieldMapping, Map<String, IssueField> fields) {
 
-		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
-		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
-		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
-		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
-		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
-		jiraIssueHistory.setUrl(jiraIssue.getUrl());
-		jiraIssueHistory.setDescription(jiraIssue.getName());
-		// This method is not setup method. write it to keep
-		// custom history
-		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
-
-		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-	}
-
-	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
-										 Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
-		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
-
-		for (ChangelogGroup changeLog : changeLogList) {
-			List<ChangelogItem> changeLogCollection = Lists.newArrayList(changeLog.getItems().iterator());
-			ChangelogGroup grp = new ChangelogGroup(changeLog.getAuthor(), changeLog.getCreated(), changeLogCollection);
-			modChangeLogList.add(grp);
-		}
-
-		if (null != jiraIssue.getDevicePlatform()) {
-			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
-		}
-		if (null == jiraIssueCustomHistory.getStoryID()) {
-			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
-		} else {
-			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
-				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
-			}
-			setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
-		}
-
-	}
-
-	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-								 List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
-		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
-
-		// estimate
-		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
-		jiraIssueCustomHistory.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
-		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
-			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
-		}
-	}
-
-	private void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
+	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, JiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		log.info("In setJiraIssueCustomHistoryUpdationLog");
@@ -215,7 +157,7 @@ public class HandleJiraHistory {
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList, JiraConstants.SPRINT,
 				handleStr(fieldMapping.getSprintName()), fields, jiraIssue);
 
-		splitMultipleSprintstoLastSprint(sprintChangeLog);
+		splitMultipleSprintsAndStoreLastSprint(sprintChangeLog);
 
 		jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLog);
 		jiraIssueCustomHistory.setAssigneeUpdationLog(assigneeChangeLog);

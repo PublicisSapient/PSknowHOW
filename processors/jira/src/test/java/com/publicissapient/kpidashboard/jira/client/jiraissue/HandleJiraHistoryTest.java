@@ -71,7 +71,7 @@ public class HandleJiraHistoryTest {
         changeLogList.add(changelogGroup);
         changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due Date", "10003", "2023-02-21 00:00:00.0", "15752", "2023-02-24 00:00:00.0")));
         changeLogList.add(changelogGroup);
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint", "10003", "KnowHOW | PI_12| ITR_4", "15752", "KnowHOW | PI_12| ITR_5")));
+        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint", "10003", "KnowHOW | PI_12| ITR_4, KnowHOW | PI_12| ITR_5", "15752", "KnowHOW | PI_12| ITR_5")));
         changeLogList.add(changelogGroup);
 
 
