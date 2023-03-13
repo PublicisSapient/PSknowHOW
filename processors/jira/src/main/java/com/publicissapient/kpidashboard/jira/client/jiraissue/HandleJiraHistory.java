@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -72,10 +71,10 @@ public class HandleJiraHistory {
 		for (int i = 1; i < fieldHistoryLogTemp.size(); i++) {
 			if (prevHistoryChangeLog.getUpdatedOn().equals(fieldHistoryLogTemp.get(i).getUpdatedOn())) {
 				JiraHistoryChangeLog currHistoryChangeLog = fieldHistoryLogTemp.get(i);
-				currHistoryChangeLog.setChangedFrom(
-						concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedFrom(), currHistoryChangeLog.getChangedFrom()));
-				currHistoryChangeLog.setChangedTo(
-						concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedTo(), currHistoryChangeLog.getChangedTo()));
+				currHistoryChangeLog.setChangedFrom(concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedFrom(),
+						currHistoryChangeLog.getChangedFrom()));
+				currHistoryChangeLog.setChangedTo(concatStrUsingCommaSeparator(prevHistoryChangeLog.getChangedTo(),
+						currHistoryChangeLog.getChangedTo()));
 				fieldHistoryLogTemp.set(i, currHistoryChangeLog);
 				prevHistoryChangeLog = currHistoryChangeLog;
 			} else {
@@ -88,23 +87,19 @@ public class HandleJiraHistory {
 
 	}
 
-	private void splitMultipleSprintsAndStoreLastSprint(List<JiraHistoryChangeLog> sprintChangeLog)
-	{
-		for (int i=0;i<sprintChangeLog.size();i++)
-		{
+	private void splitMultipleSprintsAndStoreLastSprint(List<JiraHistoryChangeLog> sprintChangeLog) {
+		for (int i = 0; i < sprintChangeLog.size(); i++) {
 			JiraHistoryChangeLog jiraHistoryChangeLog = sprintChangeLog.get(i);
 			jiraHistoryChangeLog.setChangedFrom(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedFrom()));
 			jiraHistoryChangeLog.setChangedTo(spiltStringAndFetchLastValue(jiraHistoryChangeLog.getChangedTo()));
-			sprintChangeLog.set(i,jiraHistoryChangeLog);
+			sprintChangeLog.set(i, jiraHistoryChangeLog);
 		}
 	}
 
-	private String spiltStringAndFetchLastValue(String str)
-	{
-		if(str.contains(","))
-		{
+	private String spiltStringAndFetchLastValue(String str) {
+		if (str.contains(",")) {
 			String[] splitedStr = str.split(",");
-			return splitedStr[splitedStr.length-1].trim();
+			return splitedStr[splitedStr.length - 1].trim();
 		}
 		return str;
 	}
@@ -136,7 +131,6 @@ public class HandleJiraHistory {
 		return str3.concat(str2);
 
 	}
-
 
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, JiraIssue jiraIssue,
