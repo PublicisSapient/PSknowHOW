@@ -672,7 +672,11 @@ iAdjust = 1;
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
-    this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
+    if (this.allKpiArray[idx]?.modalHeads) {
+      this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
+    } else if (this.allKpiArray[idx]?.excelColumnInfo) {
+      this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.excelColumnInfo;
+    }
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
   }
@@ -684,8 +688,8 @@ iAdjust = 1;
     };
     this.modalDetails['tableHeadings'].forEach(colHeader => {
       kpiData.headerNames.push({
-        header: colHeader,
-        key: colHeader,
+        header: colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader,
+        key: colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader,
         width: 25
       });
     });
