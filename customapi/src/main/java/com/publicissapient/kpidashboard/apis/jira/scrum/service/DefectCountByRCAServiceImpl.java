@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ArrayList;
@@ -135,6 +136,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
 				// filterDataList will consist of DataCountGroup which will be set for all priorities
 				List<DataCountGroup> filterDataList = new ArrayList<>();
+				List<DataCountGroup> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
 				Map<String, Integer> overallRCACountMap = new HashMap<>();
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseRCAList.entrySet()) {
@@ -205,9 +207,14 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
-
+					sortedFilterDataList.add(filterDataList.stream()
+							.filter(dataCountGroup -> dataCountGroup.getFilter().equalsIgnoreCase(OVERALL))
+							.findFirst().orElse(new DataCountGroup()));
+					filterDataList.removeIf(dataCountGroup -> dataCountGroup.getFilter().equalsIgnoreCase(OVERALL));
+					sortListByKey(filterDataList);
+					sortedFilterDataList.addAll(filterDataList);
 					// filterDataList will consist of dataCountGroup for all the available priorities such as P1, P2, P3, P4, Overall etc.
-					kpiElement.setTrendValueList(filterDataList);
+					kpiElement.setTrendValueList(sortedFilterDataList);
 					LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
 							overAllRCAIssueCount.get(0));
 				}
@@ -260,5 +267,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		return allCompletedIssuesExcludeStory.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getPriority,
 						Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
+	}
+
+	private void sortListByKey(List<DataCountGroup> list) {
+		list.sort(Comparator.comparing(DataCountGroup::getFilter));
 	}
 }
