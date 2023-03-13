@@ -9,19 +9,10 @@ import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
-import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -30,11 +21,8 @@ import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -45,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,7 +40,6 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -70,28 +56,10 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
     private JiraIssueRepository jiraIssueRepository;
 
     @Autowired
-    private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-    @Autowired
     private JiraProcessorRepository jiraProcessorRepository;
 
     @Autowired
-    private AccountHierarchyRepository accountHierarchyRepository;
-
-    @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
-
-    @Autowired
-    private SprintClient sprintClient;
-
-    @Autowired
-    private JiraRestClientFactory jiraRestClientFactory;
-
-    @Autowired
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-    @Autowired
-    private HierarchyLevelService hierarchyLevelService;
 
     @Autowired
     private AdditionalFilterHelper additionalFilterHelper;
@@ -100,21 +68,7 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
     private SprintRepository sprintRepository;
 
     @Autowired
-    private KanbanJiraIssueRepository kanbanJiraRepo;
-
-    @Autowired
-    private ToolCredentialProvider toolCredentialProvider;
-
-    @Autowired
-    private AesEncryptionService aesEncryptionService;
-
-    @Autowired
     private JiraCommon jiraCommon;
-
-    @Autowired
-    private CreateAccountHierarchy accountHierarchy;
-
-    protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
     private static final String CONTENTS = "contents";
     private static final String COMPLETED_ISSUES = "completedIssues";
@@ -304,11 +258,11 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
     private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig,
                                  String boardId, SprintDetails dbSprintDetails) {
         if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null) {
-            getSprintReportImpl(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails);
+            getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails);
         }
     }
 
-    public void getSprintReportImpl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
+    public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
                                 SprintDetails sprint, SprintDetails dbSprintDetails) {
         PSLogData sprintReportLog= new PSLogData();
         sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);

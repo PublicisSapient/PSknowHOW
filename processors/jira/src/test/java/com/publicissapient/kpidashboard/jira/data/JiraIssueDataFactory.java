@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -82,6 +83,10 @@ public class JiraIssueDataFactory {
 
 	public List<JiraIssue> getJiraIssues() {
 		return jiraIssues;
+	}
+
+	public List<AdditionalFilter> getAdditionalFilter(){
+		return jiraIssues.get(0).getAdditionalFilters();
 	}
 
 	public List<JiraIssue> getBugs() {

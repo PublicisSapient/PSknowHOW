@@ -15,23 +15,15 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.KanbanJiraIssueClientImpl;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.*;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
-import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -44,6 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -62,16 +55,7 @@ public class FetchIssuesBasedOnJQLImplTest {
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-    @Mock
     private JiraIssueRepository jiraIssueRepository;
-
-    @Mock
-    private ToolCredentialProvider toolCredentialProvider;
-
-    @Mock
-    private AesEncryptionService aesEncryptionService;
 
     @Mock
     private ConnectionRepository connectionRepository;
@@ -83,34 +67,16 @@ public class FetchIssuesBasedOnJQLImplTest {
     private ProjectBasicConfigRepository projectConfigRepository;
 
     @Mock
-    private JiraRestClientFactory jiraRestClientFactory;
-
-    @Mock
-    private JiraOAuthProperties jiraOAuthProperties;
-
-    @Mock
-    private JiraOAuthClient jiraOAuthClient;
-
-    @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
     @Mock
-    private KanbanJiraIssueRepository kanbanJiraRepo;
-
-    @Mock
     private JiraIssueClientFactory factory;
-
-    @Mock
-    private KanbanJiraIssueClientImpl kanbanJiraIssueClient;
 
     @Mock
     private ScrumJiraIssueClientImpl scrumJiraIssueClient;
 
     @Mock
     private FieldMappingRepository fieldMappingRepository;
-
-    @Mock
-    ProcessorJiraRestClient client;
 
     @Mock
     SearchRestClient searchRestClient;
@@ -179,24 +145,12 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
         when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
         when(jiraCommon.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
-//        ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-//        JiraInfo jiraInfo = JiraInfo.builder()
-//                .jiraConfigBaseUrl("https://tools.publicis.sapient.com/jira")
-//                .username("purgupta2")
-//                .password(projectConfFieldMapping.getJira().getConnection().get().getPassword())
-//                .jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
-//
-//        ProjectConfFieldMapping projectConfFieldMapping2 = ProjectConfFieldMapping.builder().build();
-//        JiraInfo jiraInfoOAuth = JiraInfo.builder().jiraConfigBaseUrl(jiraOAuthProperties.getJiraBaseURL())
-//                .jiraConfigAccessToken(jiraOAuthProperties.getAccessToken())
-//                .username(projectConfFieldMapping2.getJira().getConnection().get().getUsername())
-//                .password(projectConfFieldMapping2.getJira().getConnection().get().getPassword())
-//                .jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
+        ProcessorAsynchJiraRestClientFactory jiraRestClient = Mockito.mock(ProcessorAsynchJiraRestClientFactory.class);
+        PowerMockito.whenNew(ProcessorAsynchJiraRestClientFactory.class).withAnyArguments().thenReturn(jiraRestClient);
+        Mockito.when(jiraRestClient.createWithBasicHttpAuthentication(Mockito.any(URI.class),
+                Mockito.anyString(),Mockito.anyString(),Mockito.any(JiraProcessorConfig.class))).thenReturn(restClient);
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
-        when(jiraRestClientFactory.getJiraClient(any())).thenReturn(restClient);
-//        when(jiraRestClientFactory.getJiraClient(jiraInfo)).thenReturn(client);
-//        when(jiraRestClientFactory.getJiraClient(jiraInfoOAuth)).thenReturn(client);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
                 .thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);

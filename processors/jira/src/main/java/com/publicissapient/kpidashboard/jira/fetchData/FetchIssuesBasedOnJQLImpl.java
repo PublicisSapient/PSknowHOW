@@ -23,8 +23,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -35,6 +35,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,16 +45,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -65,6 +65,8 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Slf4j
 @Service
 public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchIssuesBasedOnJQLImpl.class);
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
@@ -89,9 +91,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     private ToolCredentialProvider toolCredentialProvider;
 
     @Autowired
-    private AesEncryptionService aesEncryptionService;
-
-    @Autowired
     private ConnectionRepository connectionRepository;
 
     @Autowired
@@ -99,9 +98,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
     @Autowired
     private ProjectBasicConfigRepository projectConfigRepository;
-
-    @Autowired
-    private JiraRestClientFactory jiraRestClientFactory;
 
     @Autowired
     private JiraOAuthProperties jiraOAuthProperties;
@@ -123,6 +119,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
     @Value("${rabbitmq.exchange.name}")
     String exchange;
+
     @Value("${rabbitmq.routing.key}")
     String routingKey;
 
@@ -333,7 +330,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                 URLConnection connection;
 
                 connection = url.openConnection();
-                userTimeZone = getUserTimeZone2(jiraCommon.getDataFromServer(projectConfig, (HttpURLConnection) connection));
+                userTimeZone = getUserTimeZone(jiraCommon.getDataFromServer(projectConfig, (HttpURLConnection) connection));
             }
         } catch (RestClientException rce) {
             log.error("Client exception when loading statuses", rce);
@@ -347,7 +344,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return userTimeZone;
     }
 
-    private String getUserTimeZone2(String timezoneObj) {
+    private String getUserTimeZone(String timezoneObj) {
         String userTimeZone = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(timezoneObj)) {
             try {
@@ -414,7 +411,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             saveAccessToken(entry);
             jiraOAuthProperties.setAccessToken(conn.getAccessToken());
 
-            client = jiraRestClientFactory.getJiraOAuthClient(JiraInfo.builder()
+            client = getJiraOAuthClient(JiraInfo.builder()
                     .jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
                     .password(password)
                     .jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
@@ -422,13 +419,130 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
         } else {
 
-            client = jiraRestClientFactory.getJiraClient(JiraInfo.builder()
+            client = getJiraClient(JiraInfo.builder()
                     .jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
                     .password(password).jiraConfigProxyUrl(null)
                     .jiraConfigProxyPort(null).build());
 
         }
         return client;
+    }
+
+    public ProcessorJiraRestClient getJiraClient(JiraInfo jiraInfo) {
+        String username = jiraInfo.getUsername();
+        String password = jiraInfo.getPassword();
+        String jiraConfigBaseUrl = jiraInfo.getJiraConfigBaseUrl();
+        String jiraConfigProxyUrl = jiraInfo.getJiraConfigProxyUrl();
+        String jiraConfigProxyPort = jiraInfo.getJiraConfigProxyPort();
+        ProcessorJiraRestClient client = null;
+        String proxyUri = null;
+        String proxyPort = null;
+
+        URI jiraUri = null;
+
+        try {
+            if (jiraConfigProxyUrl == null || jiraConfigProxyUrl.isEmpty() || (jiraConfigProxyPort == null)) {
+                jiraUri = new URI(jiraConfigBaseUrl);
+            } else {
+                proxyUri = jiraConfigProxyUrl;
+                proxyPort = jiraConfigProxyPort;
+
+                jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
+            }
+
+            InetAddress.getByName(jiraUri.getHost());// NOSONAR
+            client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
+                    password, jiraProcessorConfig);
+
+        } catch (UnknownHostException | URISyntaxException e) {
+            LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
+            LOGGER.debug("Exception", e);
+        }
+
+        return client;
+    }
+    
+    public ProcessorJiraRestClient getJiraOAuthClient(JiraInfo jiraInfo) {
+        String username = jiraInfo.getUsername();
+        String password = jiraInfo.getPassword();
+        String jiraConfigBaseUrl = jiraInfo.getJiraConfigBaseUrl();
+        String jiraConfigProxyUrl = jiraInfo.getJiraConfigProxyUrl();
+        String jiraConfigProxyPort = jiraInfo.getJiraConfigProxyPort();
+        ProcessorJiraRestClient client = null;
+        String proxyUri = null;
+        String proxyPort = null;
+
+        URI jiraUri = null;
+
+        try {
+            if (jiraConfigProxyUrl == null || jiraConfigProxyUrl.isEmpty() || (jiraConfigProxyPort == null)) {
+                jiraUri = new URI(jiraConfigBaseUrl);
+            } else {
+                proxyUri = jiraConfigProxyUrl;
+                proxyPort = jiraConfigProxyPort;
+
+                jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
+            }
+
+            InetAddress.getByName(jiraUri.getHost());// NOSONAR
+            client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
+
+        } catch (UnknownHostException | URISyntaxException e) {
+            LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
+
+            LOGGER.debug("Exception", e);
+        }
+
+        return client;
+    }
+
+    private URI createJiraConnection(String jiraBaseUri, String fullProxyUrl, String username, String password) {
+        final String uname = username;
+        final String pword = password;
+        Proxy proxy = null;
+        URLConnection connection = null;
+        try {
+            if (StringUtils.isNotEmpty(jiraBaseUri)) {
+                URL baseUrl = new URL(jiraBaseUri);
+                if (StringUtils.isNotEmpty(fullProxyUrl)) {
+                    URL proxyUrl = new URL(fullProxyUrl);
+                    URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(),
+                            proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+                    proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
+                    connection = baseUrl.openConnection(proxy);
+
+                    if (!StringUtils.isEmpty(username) && (!StringUtils.isEmpty(password))) {
+                        String creds = uname + ":" + pword;
+                        Authenticator.setDefault(new Authenticator() {
+                            @Override
+                            protected PasswordAuthentication getPasswordAuthentication() {
+                                return new PasswordAuthentication(uname, pword.toCharArray());
+                            }
+                        });
+                        connection.setRequestProperty("Proxy-Authorization",
+                                "Basic " + Base64.encodeBase64String((creds).getBytes()));
+                    }
+                } else {
+                    connection = baseUrl.openConnection();
+                }
+            } else {
+                LOGGER.error(
+                        "The response from Jira was blank or non existant - please check your property configurations");
+                return null;
+            }
+
+            return connection.getURL().toURI();
+
+        } catch (URISyntaxException | IOException e) {
+            try {
+                LOGGER.error(
+                        "There was a problem parsing or reading the proxy configuration settings during openning a Jira connection. Defaulting to a non-proxy URI.");
+                return new URI(jiraBaseUri);
+            } catch (URISyntaxException e1) {
+                LOGGER.error("Correction:  The Jira connection base URI cannot be read!");
+                return null;
+            }
+        }
     }
 
     public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry) {
