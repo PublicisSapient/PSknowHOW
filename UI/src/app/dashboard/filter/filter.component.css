@@ -827,7 +827,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
 .itemsDropdown {
   position: absolute;
   background: #fff;
-  z-index: 100;
+  z-index: 1001;
   top: 98%;
   left: 0;
 }
