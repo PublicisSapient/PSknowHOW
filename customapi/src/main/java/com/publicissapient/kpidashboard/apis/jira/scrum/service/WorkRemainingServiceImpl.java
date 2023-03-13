@@ -279,7 +279,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		sortedModalValue.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(modalValues).stream()
 				.filter(kpiModalValue -> StringUtils.isNotEmpty(kpiModalValue.getPredictedCompletionDate())
 						&& !kpiModalValue.getPredictedCompletionDate().equalsIgnoreCase("-"))
-				.sorted(Comparator.comparing(IterationKpiModalValue::getPredictedCompletionDate).reversed())
+				.sorted(Comparator.comparing(IterationKpiModalValue::getPredictedCompletionDate))
 				.collect(Collectors.toList()));
 		sortedModalValue.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(modalValues).stream()
 				.filter(kpiModalValue -> StringUtils.isEmpty(kpiModalValue.getPredictedCompletionDate())
