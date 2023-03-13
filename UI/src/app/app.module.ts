@@ -35,6 +35,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {AccordionModule} from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe } from '@angular/common';
+import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -165,7 +166,8 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         AccordionModule,
         DialogModule,
         FontAwesomeModule,
-        DragDropModule
+        DragDropModule,
+        MenuModule
     ],
     providers: [
         ExcelService,
