@@ -73,8 +73,6 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	private static final String ADDED_ISSUES = "addedIssues";
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
 	private static final String SCOPE_ADDED = "Scope added";
-	private static final String LABEL_INFO = "(Issue Count/Story Points)";
-	private static final String LABEL_INFO_FOR_ORIGINAL_ESTIMATE = "(Issue Count/Original Estimate)";
 	private static final String SCOPE_REMOVED = "Scope removed";
 	private static final String ITERATION_COMMITMENT = "Iteration Commitment";
 	private static final String OVERALL = "Overall";
@@ -290,14 +288,13 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				}
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData issueCounts;
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-						fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), storyPoints,
-							LABEL_INFO, "", modalValues);
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), storyPoints, null, "",
+							CommonConstant.SP, modalValues);
 				} else {
 					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),
-							overAllOriginalEstimate.get(0)/60,
-							LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "", modalValues);
+							overAllOriginalEstimate.get(0), null, "", CommonConstant.DAY, modalValues);
 				}
 				data.add(issueCounts);
 				IterationKpiValue matchingObject = iterationKpiValues.stream()
