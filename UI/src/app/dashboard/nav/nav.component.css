@@ -78,8 +78,8 @@
   -webkit-transform:rotate(270deg); /* Safari and Chrome */
   -o-transform:rotate(360deg); /* Opera */
   letter-spacing: 3px;
-  position: absolute;
-  top: 60px;
+  /* position: absolute;
+  top: 60px; */
   font-weight: bolder;
   font-size: 24px;
   text-transform: uppercase;
@@ -406,7 +406,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 0 -1px;
-  padding: 7px;
+  padding: 10px;
   font-weight: 300;
   text-align: center;
   font-size: 13px;
@@ -469,12 +469,13 @@
   text-orientation: upright;
 }
 
-.close-icon{
-  height: 30px;
-}
+
 @media only screen and (max-width: 1600px){
   .selected-board{
     height: 7rem;
+  }
+  .close-icon{
+    height: 30px;
   }
   .selected-wraper .selected-board .rotate{
     font-size: 1rem;
