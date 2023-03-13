@@ -188,6 +188,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
 		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, originalEstimate, iterationKpiModalValue);
+		if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate + " hrs"));
+		} else
+			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate) + " hrs");
+
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);
 		}
@@ -221,12 +227,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			}
 		} else {
 			iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-			if (null != jiraIssue.getOriginalEstimateMinutes()) {
-				originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
-				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate + " hrs"));
-			} else
-				iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate) + " hrs");
-		}
+			}
 	}
 
 	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
