@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.comments;
 
-
 import lombok.*;
 
 import java.util.List;
@@ -11,11 +10,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentSubmitDTO{
+public class CommentSubmitDTO {
 
-    private String node;
-    private String projectBasicConfig;
-    private List<CommentsKpiWise> commentsKpiWise;
-
+	private String node;
+	private String level;
+	private String sprintId;
+	private List<CommentsKpiWise> commentsKpiWise;
 
 }

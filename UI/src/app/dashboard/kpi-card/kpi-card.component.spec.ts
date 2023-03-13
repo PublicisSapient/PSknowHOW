@@ -173,15 +173,15 @@ describe('KpiCardComponent', () => {
 
   it('should submit comments', () => {
     const response = {
-      message: "Your Comment has been submitted successfully ",
+      message: "Your comment is submitted successfully.",
       success: true,
       data: {
         node: "DOTC_63b51633f33fd2360e9e72bd",
         level: "4",
         sprintId: "",
-        commentKpiWise: [{
+        commentsKpiWise: [{
           kpiId: "kpi14",
-          commentInfo: [{
+          commentsInfo: [{
             commentId: "6138f970-1243-4470-b8fb-781787e5713c",
             commentBy: "SUPERADMIN",
             commentOn: "2023-03-13 14:03:33",

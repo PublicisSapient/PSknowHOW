@@ -36,7 +36,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   selectedFilters = [];
   selectedTabIndex = 0;
   commentsList = [];
-  
+
 
   constructor(private service: SharedService, private http_service: HttpService) {
   }
@@ -157,10 +157,10 @@ export class KpiCardComponent implements OnInit, OnDestroy {
       node: this.service.getSelectedTab() !== 'Iteration'? filterData.nodeId: '',
       level: filterData.level,
       sprintId: this.service.getSelectedTab() === 'Iteration'? filterData.nodeId: '',
-      commentKpiWise: [
+      commentsKpiWise: [
         {
           kpiId: this.kpiData?.kpiId,
-          commentInfo: [
+          commentsInfo: [
             {
               commentBy: localStorage.getItem('user_name'),
               comment: this.commentText

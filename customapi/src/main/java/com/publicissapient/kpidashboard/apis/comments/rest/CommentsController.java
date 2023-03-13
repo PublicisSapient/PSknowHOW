@@ -8,49 +8,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.Objects;
-
 
 @RestController
 @RequestMapping("/comments")
 @Slf4j
 public class CommentsController {
 
-    @Autowired
-    private CommentsService commentsService;
+	@Autowired
+	private CommentsService commentsService;
 
-    /**
-     * This method will get the comments data based on the selected KPI and selected project/s.
-     * @param projectBasicConfig
-     * @param kpiId
-     * @return
-     */
-    @GetMapping("/getCommentsByKpiId")
-	public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestParam String projectBasicConfig, String kpiId) {
+	/**
+	 * This method will get the comments data based on the selected KPI and selected
+	 * project/s.
+	 * 
+	 * @param node
+	 * @param level
+	 * @param sprintId
+	 * @param kpiId
+	 * @return
+	 */
+	@GetMapping("/getCommentsByKpiId")
+	public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestParam String node, String level, String sprintId,
+			String kpiId) {
 
-		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(projectBasicConfig, kpiId);
+		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(node, level, sprintId, kpiId);
 		if (Objects.isNull(mappedCommentInfo) || mappedCommentInfo.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "Comment not found", mappedCommentInfo));
+					.body(new ServiceResponse(false, "Comment not found", mappedCommentInfo));
 		}
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "Found comments", mappedCommentInfo));
 
 	}
 
-    /**
-     * This method will submit the comment for the selected KPI and selected project.
-     * @param comment
-     * @return
-     */
-    @PostMapping("/submitComments")
-	public ResponseEntity<ServiceResponse> submitComments(@RequestBody CommentSubmitDTO comment) {
+	/**
+	 * This method will submit the comment for the selected KPI and selected
+	 * project.
+	 * 
+	 * @param comment
+	 * @return
+	 */
+	@PostMapping("/submitComments")
+	public ResponseEntity<ServiceResponse> submitComments(@Valid @RequestBody CommentSubmitDTO comment) {
 
 		boolean responseStatus = commentsService.submitComment(comment);
 		if (responseStatus) {
-			return ResponseEntity.status(HttpStatus.OK).body(
-					new ServiceResponse(responseStatus, "Your comment is submitted successfully.", comment));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(responseStatus, "Your comment is submitted successfully.", comment));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(responseStatus, "Issue occurred while saving the comment.", comment));

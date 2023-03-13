@@ -14,5 +14,4 @@ public class CommentsKpiWise {
 
     private String kpiId;
     private List<CommentsInfo> commentsInfo;
-
 }

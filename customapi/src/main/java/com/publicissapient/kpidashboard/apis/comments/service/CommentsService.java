@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface CommentsService {
 
-   boolean submitComment(CommentSubmitDTO comment);
+	boolean submitComment(CommentSubmitDTO comment);
 
-   Map<String, Object> findCommentByKPIId(String projectBasicConfig, String kpiId);
+	Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId);
 }
