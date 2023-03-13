@@ -179,7 +179,6 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
         when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
         when(jiraCommon.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
-//        when(jiraCommon.getDataFromServer(any(),any())).thenReturn("Indian/Maldives");
 //        ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 //        JiraInfo jiraInfo = JiraInfo.builder()
 //                .jiraConfigBaseUrl("https://tools.publicis.sapient.com/jira")
@@ -196,20 +195,10 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
         when(jiraRestClientFactory.getJiraClient(any())).thenReturn(restClient);
-//        InputStream in =[{"self":"https://tools.publicis.sapient.com/jira/rest/api/2/user?username=purgupta2","key":"JIRAUSER177497","name":"purgupta2","avatarUrls":{"48x48":"https://tools.publicis.sapient.com/jira/secure/useravatar?avatarId=10122","24x24":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=small&avatarId=10122","16x16":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=xsmall&avatarId=10122","32x32":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=medium&avatarId=10122"},"displayName":"Purushottam Gupta","active":true,"deleted":false,"timeZone":"Indian/Maldives","locale":"en_US"}];
-//        BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-//            int cp;
-//            while ((cp = inReader.read()) != -1) {
-//                sb.append((char) cp);
-//            }
-//        StringBuilder sb = new StringBuilder(){"self":"https://tools.publicis.sapient.com/jira/rest/api/2/user?username=purgupta2","key":"JIRAUSER177497","name":"purgupta2","avatarUrls":{"48x48":"https://tools.publicis.sapient.com/jira/secure/useravatar?avatarId=10122","24x24":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=small&avatarId=10122","16x16":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=xsmall&avatarId=10122","32x32":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=medium&avatarId=10122"},"displayName":"Purushottam Gupta","active":true,"deleted":false,"timeZone":"Indian/Maldives","locale":"en_US"};
-//        sb.append([{"self":"https://tools.publicis.sapient.com/jira/rest/api/2/user?username=purgupta2","key":"JIRAUSER177497","name":"purgupta2","avatarUrls":{"48x48":"https://tools.publicis.sapient.com/jira/secure/useravatar?avatarId=10122","24x24":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=small&avatarId=10122","16x16":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=xsmall&avatarId=10122","32x32":"https://tools.publicis.sapient.com/jira/secure/useravatar?size=medium&avatarId=10122"},"displayName":"Purushottam Gupta","active":true,"deleted":false,"timeZone":"Indian/Maldives","locale":"en_US"}]);
-//        when(jiraCommon.getDataFromServer(any(),any())).thenReturn();
 //        when(jiraRestClientFactory.getJiraClient(jiraInfo)).thenReturn(client);
 //        when(jiraRestClientFactory.getJiraClient(jiraInfoOAuth)).thenReturn(client);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
                 .thenReturn(promisedRs);
-//        SearchResult sr = Mockito.mock(SearchResult.class);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
         fetchIssuesBasedOnJQL.fetchIssues(entry);

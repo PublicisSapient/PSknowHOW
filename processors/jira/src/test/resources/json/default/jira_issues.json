@@ -50,7 +50,15 @@
     "projectKey" : "DTS",
     "resolution" : "Fixed or Completed",
     "affectedVersions" : [ ],
-    "additionalFilters" : [ ],
+    "additionalFilters" : [
+      {
+        "filterId" : "sqd",
+        "filterValues" : [{
+          "valueId": "1234455566",
+          "value": "Squad"
+        }]
+      }
+    ],
     "assigneeId" : "hargupta15",
     "assigneeName" : "Harsh Gupta",
     "jiraStatus" : "Closed",

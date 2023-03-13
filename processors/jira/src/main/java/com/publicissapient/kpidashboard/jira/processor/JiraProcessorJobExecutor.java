@@ -114,7 +114,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		long start = System.currentTimeMillis();
 		String uid = UUID.randomUUID().toString();
 		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		fetchProjectConfiguration.fetchConfiguration();
+//		fetchProjectConfiguration.fetchConfiguration();
 		// change 2--
 		if (ObjectUtils.isNotEmpty(getExecutionLogContext())
 				&& (StringUtils.isNotEmpty(getExecutionLogContext().getRequestId()))) {

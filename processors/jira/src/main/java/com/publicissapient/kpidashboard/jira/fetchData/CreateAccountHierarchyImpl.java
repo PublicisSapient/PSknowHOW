@@ -36,9 +36,6 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
     private HierarchyLevelService hierarchyLevelService;
 
     @Autowired
-    private AdditionalFilterHelper additionalFilterHelper;
-
-    @Autowired
     private AccountHierarchyRepository accountHierarchyRepository;
 
     @Override
@@ -78,6 +75,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
             }
 
         }
+        log.info("Created Account Hierarchy {}",setToSave);
 //        if (CollectionUtils.isNotEmpty(setToSave)) {
 //            accountHierarchyRepository.saveAll(setToSave);
 //        }
