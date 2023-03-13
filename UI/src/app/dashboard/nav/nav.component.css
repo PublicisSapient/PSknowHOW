@@ -42,6 +42,7 @@
 .selected-board{
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   height: 11rem;
   width: 3rem;
