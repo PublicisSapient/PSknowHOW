@@ -275,11 +275,17 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private List<IterationKpiModalValue> reverseSortModalValue(List<IterationKpiModalValue> modalValues) {
-		return org.apache.commons.collections4.CollectionUtils.emptyIfNull(modalValues).stream()
+		List<IterationKpiModalValue> sortedModalValue = new ArrayList<>();
+		sortedModalValue.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(modalValues).stream()
 				.filter(kpiModalValue -> StringUtils.isNotEmpty(kpiModalValue.getPredictedCompletionDate())
 						&& !kpiModalValue.getPredictedCompletionDate().equalsIgnoreCase("-"))
 				.sorted(Comparator.comparing(IterationKpiModalValue::getPredictedCompletionDate).reversed())
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
+		sortedModalValue.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(modalValues).stream()
+				.filter(kpiModalValue -> StringUtils.isEmpty(kpiModalValue.getPredictedCompletionDate())
+						|| kpiModalValue.getPredictedCompletionDate().equalsIgnoreCase("-"))
+				.collect(Collectors.toList()));
+		return sortedModalValue;
 
 	}
 
