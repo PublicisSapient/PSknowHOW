@@ -60,6 +60,7 @@ import { ViewNewUserAuthRequestComponent } from './profile/view-new-user-auth-re
 import { TabViewModule } from 'primeng/tabview';
 import { TypeofPipe } from './pipes/type-of.pipe';
 import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithCurrentDate';
+import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.component';
 
 @NgModule({
   imports: [
@@ -105,7 +106,8 @@ import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithC
     AdSettingsComponent,
     ViewNewUserAuthRequestComponent,
     TypeofPipe,
-    CompareStartEndWithCurrentDatePipe
+    CompareStartEndWithCurrentDatePipe,
+    ManageAssigneeComponent
     // FilterComponent
   ],
   providers: [MessageService, ConfirmationService]

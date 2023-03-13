@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.CACHE_TOOL_CONFIG_MAP;
 
-
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +31,7 @@ import com.publicissapient.kpidashboard.common.repository.application.BuildRepos
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author anisingh4
@@ -58,7 +57,6 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-
 	@Override
 	public String getToolCategory() {
 		return ProcessorType.BUILD.toString();
@@ -78,8 +76,8 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 			processorItemRepository.deleteByToolConfigId(tool.getId());
 
 			// delete processors trace logs
-			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(tool.getBasicProjectConfigId().toHexString(),
-					tool.getToolName());
+			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(
+					tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
 
 			cacheService.clearCache(CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);

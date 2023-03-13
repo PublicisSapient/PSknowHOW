@@ -51,6 +51,7 @@ import com.publicissapient.kpidashboard.teamcity.config.Constants;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -175,9 +176,6 @@ public class Teamcity2Client implements TeamcityClient {
 	/**
 	 * Provides the number of jobs first so that we don't get 500 internal server
 	 * logError when paging with index out of bounds.
-	 * 
-	 * @param instanceUrl
-	 *            the teamcity instance URL
 	 * @return the number of jobs
 	 */
 	private int getJobsCount(JSONObject jobs) {
@@ -351,8 +349,8 @@ public class Teamcity2Client implements TeamcityClient {
 	 * Provides Build Details.
 	 */
 	@Override
-	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer) {
-
+	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+								 ProjectBasicConfig proBasicConfig) {
 		return null;
 	}
 }

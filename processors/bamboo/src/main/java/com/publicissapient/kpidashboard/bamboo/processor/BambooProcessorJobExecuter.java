@@ -19,12 +19,15 @@
 package com.publicissapient.kpidashboard.bamboo.processor;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
@@ -59,6 +62,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -101,6 +105,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	@Autowired
 	private DeploymentRepository deploymentRepository;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * Initializes and calls the base parameterized constructor of
@@ -236,7 +242,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				if (!CollectionUtils.isEmpty(bambooJobList)) {
 					totalCount = bambooJobList.size();
 					processEachBambooJobOnJobType(bambooJobList, existingDeployJobs, activeBuildJobs, activeDeployJobs,
-							processorId);
+							processorId, proBasicConfig);
 				}
 			}
 			// Delete jobs that will be no longer collected because servers have
@@ -257,7 +263,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
-			List<Deployment> activeDeployJobs, ObjectId processorId) {
+			List<Deployment> activeDeployJobs, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
 			String jobType = bambooJobConfig.getJobType();
 			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLogBamboo(
@@ -271,10 +277,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				BambooClient bambooClient = bambooClientFactory.getBambooClient(jobType);
 				if (BUILD.equalsIgnoreCase(jobType)) {
 					newBuildCount = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog,
-							activeBuildJobs, newBuildCount, processorId);
+							activeBuildJobs, newBuildCount, processorId, proBasicConfig);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
-							activeDeployJobs, processorId);
+							activeDeployJobs, processorId, proBasicConfig);
 				}
 
 			} catch (MalformedURLException | ParseException rcp) {
@@ -311,11 +317,13 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private void processDeployJob(BambooClient bambooClient,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProcessorToolConnection bambooJobConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId)
+			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId,
+			ProjectBasicConfig proBasicConfig)
 			throws MalformedURLException, ParseException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
-				.getDeployJobsFromServer(bambooJobConfig);
-		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs);
+				.getDeployJobsFromServer(bambooJobConfig, proBasicConfig);
+
+		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs, proBasicConfig);
 		Set<Deployment> saveDeployments = new HashSet<>();
 		deployments.stream().forEach(deployment -> {
 			if (checkDeploymentConditionsNotNull(deployment)) {
@@ -355,11 +363,12 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 
 	private Set<Deployment> addNewBambooDeploysJobsToDb(
 			Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo,
-			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProjectBasicConfig proBasicConfig) {
 		Set<Deployment> finalDataToSave = new HashSet<>();
 		deployJobsFromBamboo.forEach((key, value) -> {
+
 			if (existingDeployJobs.containsKey(key)) {
-				finalDataToSave.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs));
+				finalDataToSave.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs, proBasicConfig));
 			} else {
 				// directly push all the values
 				finalDataToSave.addAll(value);
@@ -371,7 +380,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private Set<Deployment> checkForExistingEnvironmentRelease(Pair<ObjectId, String> key, Set<Deployment> value,
-			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs) {
+															   Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProjectBasicConfig proBasicConfig) {
 		Set<Deployment> deploy = new HashSet<>();
 		value.forEach(deployment -> {
 			List<Deployment> existingdeployments = existingDeployJobs.get(key);
@@ -384,6 +393,12 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			if (!present) {
 				deploy.add(deployment);
 			}
+			existingdeployments.forEach(deployments -> {
+				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null && deployment.getDeployedBy() != null) {
+					deployments.setDeployedBy(deployment.getDeployedBy());
+					deploy.add(deployments);
+				}
+			});
 		});
 
 		return deploy;
@@ -439,14 +454,15 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	 * @param activeBuildJobs
 	 * @param newBuildCount
 	 * @param processorId
+	 * @param proBasicConfig
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws ParseException
 	 */
 	private int processBuildJob(BambooClient bambooClient, ProcessorToolConnection bambooJobConfig,
 			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Build> activeBuildJobs, int newBuildCount,
-			ObjectId processorId) throws MalformedURLException, ParseException {
-		Map<ObjectId, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig);
+			ObjectId processorId, ProjectBasicConfig proBasicConfig) throws MalformedURLException, ParseException {
+		Map<ObjectId, Set<Build>> buildsByJobMap = bambooClient.getJobsFromServer(bambooJobConfig, proBasicConfig);
 		log.info("Fetched builds By Job map of size: {}", buildsByJobMap.size());
 		int updatedJobCount = addNewBuildsInfoToDb(bambooClient, activeBuildJobs, buildsByJobMap, bambooJobConfig,
 				processorId);
@@ -527,6 +543,12 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.BAMBOO);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
+			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+			);
+
 		return processorExecutionTraceLog;
 	}
 

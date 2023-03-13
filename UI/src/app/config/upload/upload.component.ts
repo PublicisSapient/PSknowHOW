@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -26,7 +26,8 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 declare let $: any;
 
 interface CapacitySubmissionReq {
@@ -43,6 +44,7 @@ interface CapacitySubmissionReq {
     sprintName?: string;
     executionDate?: string;
     kanban: boolean;
+    basicProjectConfigId?: string;
 }
 
 @Component({
@@ -51,7 +53,7 @@ interface CapacitySubmissionReq {
     styleUrls: ['./upload.component.css']
 })
 export class UploadComponent implements OnInit {
-
+    @ViewChild('manageAssignee') manageAssignee: ManageAssigneeComponent;
     error = '';
     message = '';
     uploadedFile: File;
@@ -125,7 +127,19 @@ export class UploadComponent implements OnInit {
     selectedSprintName: any;
     tableLoader = true;
     currentDate = new Date();
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService) {
+    isToggleEnableForSelectedProject =false;
+    displayAssignee = false;
+    projectJiraAssignees ={};
+    manageAssigneeList=[];
+    projectAssigneeRoles=[];
+    projectAssigneeRolesObj;
+    projectCapacityEditMode =false;
+    selectedSprint;
+    expandedRows={};
+    selectedSprintAssigneFormArray=[];
+    selectedSprintAssigneValidator=[];
+    jiraAssigneeLoader = false;
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
     }
 
     ngOnInit() {
@@ -225,7 +239,8 @@ export class UploadComponent implements OnInit {
             enableSearchFilter: true,
             classes: 'multi-select-custom-class'
         };
- this.selectedView = 'logo_upload';
+
+        this.selectedView = 'logo_upload';
 
         if (this.isSuperAdmin) {
             this.items.unshift(
@@ -472,6 +487,7 @@ export class UploadComponent implements OnInit {
 
     // called when user switches the "Scrum/Kanban" switch
     kanbanActivation(type) {
+        this.selectedSprintAssigneValidator=[];
         const scrumTarget = document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button');
         const kanbanTarget = document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button');
         if(type === 'scrum') {
@@ -520,7 +536,6 @@ export class UploadComponent implements OnInit {
 
         this.selectedFilterData.kanban = this.kanban;
         this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE', 'FUTURE'];
-        console.log(this.selectedFilterData);
         this.filter_kpiRequest = this.http_service.getFilterData(this.selectedFilterData)
             .subscribe(filterData => {
                 if (filterData[0] !== 'error') {
@@ -530,9 +545,7 @@ export class UploadComponent implements OnInit {
                         this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
-                        if (Object.keys(filterData).length !== 0) {
-                            // this.getMasterData();
-                        } else {
+                        if (Object.keys(filterData).length === 0) {
                             this.resetProjectSelection();
                             // show error message
                             this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
@@ -700,7 +713,8 @@ export class UploadComponent implements OnInit {
         this.reqObj = {
             projectNodeId: data?.projectNodeId,
             projectName: data?.projectName,
-            kanban: this.kanban
+            kanban: this.kanban,
+            basicProjectConfigId: data?.basicProjectConfigId
         };
         if (!this.kanban) {
             if(this.selectedView === 'upload_tep') {
@@ -709,7 +723,9 @@ export class UploadComponent implements OnInit {
                 this.reqObj['sprintNodeId'] = this.selectedSprintId;
             }
         } else {
-            this.selectedView === 'upload_tep' ? this.reqObj['executionDate'] = this.executionDate : '';
+            if(this.selectedView === 'upload_tep'){
+                this.reqObj['executionDate'] = this.executionDate;
+            }
         }
         if (this.selectedView === 'upload_tep') {
             this.popupForm = new UntypedFormGroup({
@@ -734,6 +750,13 @@ export class UploadComponent implements OnInit {
         }
         this.enableDisableSubmitButton();
     }
+
+    manageAssignees(selectedSprintData) {
+        this.selectedSprintDetails = selectedSprintData;
+        this.generateManageAssigneeData(selectedSprintData);
+        this.displayAssignee = true;
+    }
+
     submitTestExecution() {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
@@ -878,6 +901,7 @@ export class UploadComponent implements OnInit {
     }
     handleIterationFilters(level) {
         if (this.filterForm?.get('selectedProjectValue')?.value != '') {
+            this.isToggleEnableForSelectedProject =false;
             this.tableLoader = true;
             this.noData = false;
             this.selectedSprintDetails = {};
@@ -918,6 +942,190 @@ export class UploadComponent implements OnInit {
         }
         return uniqueArray;
     }
+
+    getCapacityJiraAssignee(projectId) {
+        if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
+            this.jiraAssigneeLoader = true;
+            this.http_service.getJiraProjectAssignee(projectId)
+                .subscribe(response => {
+                    this.jiraAssigneeLoader = false;
+                    if (response && response?.success && response?.data) {
+                        this.projectJiraAssignees = response['data'];
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error in fetching Project Assignee.' });
+                    }
+                });
+        }
+    }
+
+    generateManageAssigneeData(selectedSprintData) {
+        this.manageAssigneeList = [];
+        const projectAssignees = JSON.parse(JSON.stringify(this.projectJiraAssignees['assigneeDetailsList']));
+        const assigneeCapactiy = selectedSprintData['assigneeCapacity'];
+        assigneeCapactiy?.forEach(assignee => {
+            const selectedAssigneeIndex = projectAssignees.findIndex(jiraAssignee => assignee.userId === jiraAssignee.name);
+            if (selectedAssigneeIndex !== -1) {
+                this.manageAssigneeList.push({ ...projectAssignees[selectedAssigneeIndex], checked: true });
+                projectAssignees.splice(selectedAssigneeIndex, 1);
+            }
+        });
+        this.manageAssigneeList.push(...projectAssignees);
+    }
+
+    addRemoveAssignees() {
+        this.displayAssignee = false;
+        this.manageAssigneeList = this.manageAssigneeList.filter(assignee => assignee?.checked);
+        const assigneeCapacity = [];
+        this.manageAssigneeList?.forEach(assignee => {
+            const assigneePresentForSprint = this.selectedSprintDetails['assigneeCapacity']?.find(selectedAssignee => selectedAssignee.userId === assignee.name);
+            if (assigneePresentForSprint) {
+                assigneeCapacity.push(assigneePresentForSprint);
+            } else {
+                assigneeCapacity.push({
+                    userId: assignee.name,
+                    userName: assignee.displayName
+                });
+            }
+        });
+        const postData = { ...this.selectedSprintDetails };
+        delete postData['sprintState'];
+        postData['assigneeCapacity'] = assigneeCapacity;
+
+        this.http_service.saveOrUpdateAssignee(postData)
+            .subscribe(response => {
+                if (response && response?.success && response?.data) {
+                    this.getCapacityData(this.selectedSprintDetails['basicProjectConfigId']);
+                    const expandedRowsKey = this.kanban ? this.selectedSprintDetails.startDate : this.selectedSprintDetails.sprintNodeId;
+                    this.expandedRows = { [expandedRowsKey]: true };
+                    this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
+                }
+            });
+    }
+
+    getAssigneeRoles() {
+        if (!(this.projectAssigneeRoles.length > 0)) {
+            this.http_service.getAssigneeRoles()
+                .subscribe(response => {
+                    if (response && response?.success && response?.data) {
+                        this.projectAssigneeRolesObj = response.data;
+                        for (const key in response.data) {
+                            this.projectAssigneeRoles.push({ name: response.data[key], value: key });
+                        }
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Roles.' });
+                    }
+                });
+        }
+    }
+
+
+    checkifAssigneeToggleEnabled(capacityData) {
+        if (capacityData[0]['assigneeDetails']) {
+            this.isToggleEnableForSelectedProject = true;
+            this.getAssigneeRoles();
+            this.getCapacityJiraAssignee(capacityData[0]['basicProjectConfigId']);
+        }
+    }
+
+    calculateAvaliableCapacity(assignee, assigneeFormControls, fieldName) {
+        assignee[fieldName] = assigneeFormControls[fieldName]?.value;
+        if (fieldName === 'role') {
+            assigneeFormControls.plannedCapacity.enable();
+        } else {
+            if (assigneeFormControls.plannedCapacity.value > 0) {
+                assigneeFormControls.leaves.setValidators([Validators.max(assignee.plannedCapacity)]);
+                assigneeFormControls.leaves.enable();
+                assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
+            } else {
+                assigneeFormControls.leaves.setValue(0);
+                assigneeFormControls.leaves.disable();
+                assignee.leaves = 0;
+                assignee.availableCapacity = 0;
+            }
+            this.cdr.detectChanges();
+            const currentAssigneeExist = this.selectedSprintAssigneValidator.findIndex(selectedassignee => selectedassignee === assignee);
+            if (assigneeFormControls['leaves'].status === 'INVALID') {
+                if (currentAssigneeExist === -1 && assignee.leaves > assignee.plannedCapacity) {
+                    this.selectedSprintAssigneValidator.push(assignee);
+                }
+            } else {
+                if (currentAssigneeExist !== -1) {
+                    this.selectedSprintAssigneValidator.splice(currentAssigneeExist, 1);
+                }
+            }
+        }
+    }
+
+    onAssigneeModalOpen(){
+        this.manageAssignee.reset();
+    }
+
+    validateInput($event){
+        if($event.key === 'e' || $event.key === '-'){
+            $event.preventDefault();
+        }
+    }
+    calculateTotalCapacityForSprint(selectedSprint) {
+        let totalCapacity = 0;
+        selectedSprint.assigneeCapacity.forEach(assignee => {
+            totalCapacity += assignee?.availableCapacity ? assignee?.availableCapacity : 0;
+        });
+        return totalCapacity;
+    }
+
+    onSprintCapacityEdit(selectedSprint) {
+        this.projectCapacityEditMode = true;
+        this.selectedSprint = JSON.parse(JSON.stringify(selectedSprint));
+        this.selectedSprintAssigneFormArray = [];
+        selectedSprint.assigneeCapacity.forEach(assignee => {
+            this.selectedSprintAssigneFormArray.push(
+                {
+                    role: new FormControl(assignee.role),
+                    plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
+                    leaves: new FormControl({ value: assignee.leaves, disabled: !(assignee?.role && assignee?.plannedCapacity) }, [Validators.min(0), Validators.max(assignee.plannedCapacity)])
+                }
+            );
+        });
+    }
+
+    onSprintCapacitySave(selectedSprint) {
+        selectedSprint.capacity = this.calculateTotalCapacityForSprint(selectedSprint);
+        this.projectCapacityEditMode = false;
+        const postData = { ...selectedSprint };
+        delete postData['id'];
+        delete postData['projectName'];
+        delete postData['sprintState'];
+        this.http_service.saveOrUpdateAssignee(postData).subscribe(response => {
+            if (response && response?.success && response?.data) {
+                this.getCapacityData(selectedSprint['basicProjectConfigId']);
+                this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+            } else {
+                this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
+            }
+        });
+    }
+
+    onSprintCapacityCancel(selectedSprint) {
+        this.projectCapacityEditMode = false;
+        if (!this.kanban) {
+            const selectedSprintRowIndex = this.capacityScrumData.findIndex(sprint => sprint.sprintNodeId === selectedSprint.sprintNodeId);
+            this.capacityScrumData[selectedSprintRowIndex] = this.selectedSprint;
+        } else {
+            const selectedSprintRowIndex = this.capacityKanbanData.findIndex(sprint => (sprint.startDate === selectedSprint.startDate && sprint.endDate === selectedSprint.endDate));
+            this.capacityKanbanData[selectedSprintRowIndex] = this.selectedSprint;
+        }
+
+    }
+
+    onCapacitySprintRowSelection() {
+        if (this.projectCapacityEditMode) {
+            this.onSprintCapacityCancel(this.selectedSprint);
+            this.projectCapacityEditMode = false;
+        }
+    }
+
     getCapacityData(projectId){
         this.http_service.getCapacityData(projectId).subscribe((response)=> {
             if(response && response?.success && response?.data) {
@@ -925,6 +1133,7 @@ export class UploadComponent implements OnInit {
                     this.capacityKanbanData = response?.data;
                     if (this.capacityKanbanData?.length > 0) {
                         this.noData = false;
+                        this.checkifAssigneeToggleEnabled(this.capacityKanbanData);
                     } else {
                         this.noData = true;
                     }
@@ -932,6 +1141,7 @@ export class UploadComponent implements OnInit {
                     this.capacityScrumData = response?.data;
                     if (this.capacityScrumData?.length > 0) {
                         this.noData = false;
+                        this.checkifAssigneeToggleEnabled(this.capacityScrumData);
                     } else {
                         this.noData = true;
                     }

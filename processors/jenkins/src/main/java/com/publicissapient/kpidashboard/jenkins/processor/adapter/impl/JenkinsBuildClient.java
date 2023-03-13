@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -173,7 +174,8 @@ public class JenkinsBuildClient implements JenkinsClient {
 	}
 
 	@Override
-	public Map<ObjectId, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer) {
+	public Map<ObjectId, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer,
+			ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getBuildJobsFromServer");
 		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
@@ -185,7 +187,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 					+ ProcessorUtils.buildJobQueryString(jenkinsConfig, Constants.CHILD_JOBS_TREE));
 			ResponseEntity<String> responseEntity = doRestCall(url, jenkinsServer);
 			if (responseEntity != null && StringUtils.isNotEmpty(responseEntity.getBody())) {
-				processJobResponse(jenkinsServer, result, responseEntity.getBody());
+				processJobResponse(jenkinsServer, result, responseEntity.getBody(), proBasicConfig);
 			}
 
 		} catch (RestClientException rce) {
@@ -202,7 +204,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 	}
 
 	private void processJobResponse(ProcessorToolConnection jenkinsServer, Map<ObjectId, Set<Build>> result,
-			String returnJSON) {
+			String returnJSON, ProjectBasicConfig proBasicConfig) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject jsonJob = (JSONObject) parser.parse(returnJSON);
@@ -212,7 +214,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 
 			log.debug("Process jobName {}  jobURL {} ", jobName, jobURL);
 
-			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer);
+			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer, proBasicConfig);
 		} catch (ParseException e) {
 			log.error(String.format("Parsing jobs details on instance: %s", jenkinsServer.getUrl()), e);
 		}
@@ -222,18 +224,19 @@ public class JenkinsBuildClient implements JenkinsClient {
 	 * Provides Job details recursively.
 	 *
 	 * @param jsonJob
-	 *            the job detail in json
+	 * 		the job detail in json
 	 * @param jobName
-	 *            the job name
+	 * 		the job name
 	 * @param jobURL
-	 *            the job URL
+	 * 		the job URL
 	 * @param instanceUrl
-	 *            the jenkins instance URL
+	 * 		the jenkins instance URL
 	 * @param result
-	 *            the list of build
+	 * 		the list of build
+	 * @param proBasicConfig
 	 */
 	private void processJobDetailsRecursively(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl,
-			Map<ObjectId, Set<Build>> result, ProcessorToolConnection jenkinsServer) {
+			Map<ObjectId, Set<Build>> result, ProcessorToolConnection jenkinsServer, ProjectBasicConfig proBasicConfig) {
 		log.debug("recursiveGetJobDetails: jobName {} jobURL: {}", jobName, jobURL);
 
 		JSONArray jsonBuilds = ProcessorUtils.getJsonArray(jsonJob, Constants.BUILDS);
@@ -241,7 +244,7 @@ public class JenkinsBuildClient implements JenkinsClient {
 
 			Set<Build> builds = new LinkedHashSet<>();
 			for (Object build : jsonBuilds) {
-				createBuildDetailsObject(jenkinsServer, builds, build);
+				createBuildDetailsObject(jenkinsServer, builds, build, proBasicConfig);
 			}
 			// add the builds to the job
 			result.put(jenkinsServer.getId(), builds);
@@ -253,7 +256,8 @@ public class JenkinsBuildClient implements JenkinsClient {
 			final String url = ProcessorUtils.getString((JSONObject) childJob, Constants.URL);
 
 			JSONObject jsonSubJob = (JSONObject) childJob;
-			processJobDetailsRecursively(jsonSubJob, jobName + "/" + name, url, instanceUrl, result, jenkinsServer);
+			processJobDetailsRecursively(jsonSubJob, jobName + "/" + name, url, instanceUrl, result, jenkinsServer,
+					proBasicConfig);
 		}
 
 	}
@@ -262,8 +266,10 @@ public class JenkinsBuildClient implements JenkinsClient {
 	 * @param jenkinsServer
 	 * @param builds
 	 * @param build
+	 * @param proBasicConfig
 	 */
-	private void createBuildDetailsObject(ProcessorToolConnection jenkinsServer, Set<Build> builds, Object build) {
+	private void createBuildDetailsObject(ProcessorToolConnection jenkinsServer, Set<Build> builds, Object build,
+			ProjectBasicConfig proBasicConfig) {
 		JSONObject jsonBuild = (JSONObject) build;
 
 		// A basic Build object. This will be fleshed out later if this
@@ -285,7 +291,9 @@ public class JenkinsBuildClient implements JenkinsClient {
 				buildURL = buildURL.replace("localhost", hostIp);
 				log.debug("Adding build & Updated URL to map LocalHost for Docker: {}", buildURL);
 			}
-			jenkinsBuild.setStartedBy(ProcessorUtils.firstCulprit(jsonBuild));
+			if (proBasicConfig.isSaveAssigneeDetails()) {
+				jenkinsBuild.setStartedBy(ProcessorUtils.firstCulprit(jsonBuild));
+			}
 			jenkinsBuild.setBuildUrl(buildURL);
 			jenkinsBuild.setNumber(buildNumber);
 			jenkinsBuild.setStartTime((Long) jsonBuild.get(Constants.TIMESTAMP));
