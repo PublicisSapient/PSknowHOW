@@ -18,51 +18,22 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
-import java.util.Arrays;
-import java.util.List;
+import lombok.*;
+
+import java.io.Serializable;
 
 /**
  * For Excel Column Info
  */
-public enum KPIExcelColumnInfo {
-    OVERALL_COMPLETION_STATUS("kpi128",
-            Arrays.asList("","","","","","","","","",
-                    "Delay is calculated based on difference between time taken to complete an issue that depends on the Actual Start date and Actual completion date (In Days) and the Original Estimate (In Days)"));
-
-    private String kpiId;
-
-    private List<String> columnsInfo;
-
-    KPIExcelColumnInfo(String kpiID, List<String> columnsInfo) {
-        this.kpiId = kpiID;
-        this.setColumnsInfo(columnsInfo);
-    }
-
-    /**
-     * Gets kpi id.
-     *
-     * @return the kpi id
-     */
-    public String getKpiId() {
-        return kpiId;
-    }
-
-
-    /**
-     * Gets source.
-     *
-     * @return the source
-     */
-    public List<String> getColumnsInfo() {
-        return columnsInfo;
-    }
-
-    /**
-     * Sets source.
-     *
-     * @return the source
-     */
-    private void setColumnsInfo(List<String> columnsInfo) {
-        this.columnsInfo = columnsInfo;
-    }
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class KPIExcelColumnInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String kpiColumn;
+    private String columnInfo;
 }

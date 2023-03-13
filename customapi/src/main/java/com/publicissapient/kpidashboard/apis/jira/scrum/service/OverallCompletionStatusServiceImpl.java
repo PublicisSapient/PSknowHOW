@@ -22,7 +22,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumnInfo;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.*;
@@ -302,8 +301,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(KPIExcelColumn.OVERALL_COMPLETION_STATUS.getColumns());
-			kpiElement.setExcelColumnInfo(KPIExcelColumnInfo.OVERALL_COMPLETION_STATUS.getColumnsInfo());
+			kpiElement.setExcelColumnInfo(KPIExcelColumn.OVERALL_COMPLETION_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
