@@ -18,12 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * to order the headings of excel columns
@@ -178,20 +178,20 @@ public enum KPIExcelColumn {
 
     private List<KPIExcelColumnInfo> kpiExcelColumnInfo;
 
-    KPIExcelColumn(String kpiID, List<Object> columns) {
-        this.kpiId = kpiID;
-        if(columns.get(0) instanceof String){
-            this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
-        }else{
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
-            columns.forEach(o -> {
-                KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
-                kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
-            });
-            this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
-        }
-    }
+	KPIExcelColumn(String kpiID, List<Object> columns) {
+		this.kpiId = kpiID;
+		if (columns.get(0) instanceof String) {
+			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
+			columns.forEach(o -> {
+				KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
+				kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
+			});
+			this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
+		}
+	}
 
     /**
      * Gets kpi id.
