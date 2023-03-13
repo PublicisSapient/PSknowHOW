@@ -137,8 +137,8 @@ public enum KPIExcelColumn {
     ISSUES_LIKELY_TO_SPILL("kpi123",
             Arrays.asList("Issue Id", "Issue Type","Issue Description", "Issue Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Estimate","Predicted Completion Date")),
 
-    SCOPE_CHANGE("kpi120",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),
+    ITERATION_COMMITMENT("kpi120",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type" , "Size(story point/hours)","Priority", "Due Date" ,"Original Estimate", "Remaining Estimate" )),
 
     ESTIMATE_HYGINE("kpi124",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type")),

@@ -3245,7 +3245,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi120",
-    "kpiName": "Scope Change",
+    "kpiName": "Iteration Commitment",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
@@ -3260,11 +3260,11 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Scope change KPI highlights change in iteration scope since the start of iteration."
+          "value": "Iteration commitment illustrates the scope of work committed by the team at the beginning of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "It showcases added as well as removed issue count and the corresponding story points"
+          "value": "The KPI also shows the scope added and removed during the iteration. Scope is shown both in terms of issue count and size of work (Story points)"
         },
         {
           "type": "paragraph",
@@ -3278,7 +3278,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
