@@ -1,17 +1,27 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { of } from 'rxjs';
 
 import { KpiCardComponent } from './kpi-card.component';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
+import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 
 describe('KpiCardComponent', () => {
   let component: KpiCardComponent;
   let fixture: ComponentFixture<KpiCardComponent>;
   let sharedService: SharedService;
+  // let httpMock;
+  let http_service: HttpService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [ KpiCardComponent ],
-      providers: [SharedService]
+      providers: [SharedService, HttpService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
     .compileComponents();
   });
@@ -20,6 +30,8 @@ describe('KpiCardComponent', () => {
     fixture = TestBed.createComponent(KpiCardComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
+    http_service = TestBed.inject(HttpService);
+    // httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
 
@@ -136,4 +148,88 @@ describe('KpiCardComponent', () => {
     tick();
     expect(component.radioOption).toBe('default');
   }));
+
+  it('should get comments', () => {
+    const response = {
+      message: "Found comments",
+      success: true,
+      data: {
+        node: "DOTC_63b51633f33fd2360e9e72bd",
+        sprintId: "",
+        kpiId: "kpi118",
+        CommentsInfo: [{
+          commentId: "43514629-78a0-4a3c-bf87-82f89c036f04",
+          commentBy: "SUPERADMIN",
+          commentOn: "2023-03-13 13:23:34",
+          comment: "test1"
+        }]
+      }
+    }
+    spyOn(http_service, 'getComment').and.returnValue(of(response));
+    component.getComments();
+    fixture.detectChanges();
+    expect(component.commentsList).toEqual(response.data.CommentsInfo);
+  });
+
+  it('should submit comments', () => {
+    const response = {
+      message: "Your Comment has been submitted successfully ",
+      success: true,
+      data: {
+        node: "DOTC_63b51633f33fd2360e9e72bd",
+        level: "4",
+        sprintId: "",
+        commentKpiWise: [{
+          kpiId: "kpi14",
+          commentInfo: [{
+            commentId: "6138f970-1243-4470-b8fb-781787e5713c",
+            commentBy: "SUPERADMIN",
+            commentOn: "2023-03-13 14:03:33",
+            comment: "test 1"
+          }]
+        }]
+      }
+    }
+    spyOn(http_service, 'submitComment').and.returnValue(of(response));
+    component.submitComment({nodeId: '', level : ''});
+    fixture.detectChanges();
+    expect(component.commentText).toBe('');
+  });
+
+  it('should open comments', () => {
+    const sharedObj = {
+      "filterData": [
+          {
+              "nodeId": "DOTC_63b51633f33fd2360e9e72bd",
+              "nodeName": "DOTC",
+              "path": [
+                  "D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne"
+              ],
+              "labelName": "project",
+              "parentId": [
+                  "D3_hierarchyLevelThree"
+              ],
+              "level": 4,
+              "basicProjectConfigId": "63b51633f33fd2360e9e72bd"
+          }
+      ],
+      "filterApplyData": {
+          "ids": [
+              "DOTC_63b51633f33fd2360e9e72bd"
+          ],
+          "selectedMap": {
+              "project": [
+                  "DOTC_63b51633f33fd2360e9e72bd"
+              ],
+              "sprint": [],
+              "afOne": []
+          },
+          "level": 4
+      }
+  }
+  spyOn(sharedService, 'getFilterObject').and.returnValue(sharedObj);
+  component.openComments();
+  fixture.detectChanges();
+  expect(component.selectedFilters).toEqual(sharedObj.filterData);
+  });
 });
