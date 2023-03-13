@@ -174,4 +174,6 @@ public class KanbanJiraIssue extends BasicModel {
 	private String qaName;
 	private String testCaseFolderName;
 	private boolean productionDefect;
+	private Integer aggregateTimeOriginalEstimateMinutes;
+	private Integer aggregateTimeRemainingEstimateMinutes;
 }
