@@ -14,7 +14,7 @@ VERSION: "{{ VERSION }}"
 FROMVERSION: "{{ FROMVERSION }}"
 aws_secret_key: "{{aws_secret_key}}"
 aws_access_key: "{{aws_access_key}}"
-JAVA_OPTS: "-XX:+UseG1GC -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:G1HeapRegionSize=1m -Xss300k -XX:G1ReservePercent=15 -XX:MaxGCPauseMillis=300 -XX:ParallelGCThreads=4 -XX:ConcGCThreads=2 -XX:G1ConcRefinementThreads=5 -XX:InitiatingHeapOccupancyPercent=40 -XX:CompileThreshold=10000 -XX:CICompilerCount=2 -XX:+OptimizeStringConcat -XX:+ExplicitGCInvokesConcurrent -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:CompressedClassSpaceSize=128m -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:MaxDirectMemorySize=1024m -XX:+HeapDumpOnOutOfMemoryError -XX:NativeMemoryTracking=summary"
+JAVA_OPTS: "-XX:+HeapDumpOnOutOfMemoryError"
 
 CUSTOMAPI_IMAGE: "{{ select_docker_registry }}/speedy/customapi"
 CUSTOMAPI_MEMORY_LIMIT: "4096m"

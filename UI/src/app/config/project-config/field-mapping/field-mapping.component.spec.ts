@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FieldMappingComponent } from './field-mapping.component';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -40,7 +40,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { environment } from 'src/environments/environment';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { BadgeModule } from 'primeng/badge';
-import { of } from 'rxjs';
 
 const completeHierarchyData = {
   kanban: [
@@ -622,7 +621,7 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
   ]
 };
 const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
-const fakeKpiFieldMappingList = require('../../../../test/resource/fakeKPIFieldMappingList.json');
+
 describe('FieldMappingComponent', () => {
   let component: FieldMappingComponent;
   let fixture: ComponentFixture<FieldMappingComponent>;
@@ -865,11 +864,4 @@ describe('FieldMappingComponent', () => {
     httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
-
-  it('should get getKPIFieldMappingRelationships', fakeAsync(() => {
-    spyOn(httpService, 'getKPIFieldMappingRelationships').and.returnValue(of(fakeKpiFieldMappingList));
-    component.getKPIFieldMappingRelationships();
-    tick();
-    expect(component.kpiRelationShips.length).toEqual(fakeKpiFieldMappingList.kpiFieldMappingList.length);
-  }));
 });

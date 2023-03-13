@@ -6,9 +6,9 @@
     - vars/defaults.yml
     - vars/app-common.yml
   pre_tasks:
-    #- name: Install required Packages for CentOS
-     # include_tasks: centos.yml
-      #when: (ansible_facts['distribution'] == 'CentOS') or (ansible_facts['distribution'] == 'RedHat')
+    - name: Install required Packages for CentOS
+      include_tasks: centos.yml
+      when: (ansible_facts['distribution'] == 'CentOS') or (ansible_facts['distribution'] == 'RedHat')
       # ignore_errors: yes
       
     - name: Install required Packages for Ubuntu

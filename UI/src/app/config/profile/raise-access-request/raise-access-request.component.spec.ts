@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, inject, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ToastModule } from 'primeng/toast';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { RaiseAccessRequestComponent } from './raise-access-request.component';
@@ -28,8 +28,7 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { from, of } from 'rxjs';
-import { Router } from '@angular/router';
+import { from } from 'rxjs';
 
 describe('RaiseRequestComponent', () => {
   let component: RaiseAccessRequestComponent;
@@ -235,15 +234,5 @@ describe('RaiseRequestComponent', () => {
     // fixture.detectChanges();
     expect(component.roleSelected).toBeTruthy();
   });
-
-  it('should logout application', inject([Router], (router: Router) => {
-    localStorage.setItem('auth_token', 'hsgdagd78a6d78asda');
-    spyOn(httpService, 'logout').and.returnValue(of({}));
-    spyOn(router, 'navigate').and.stub();
-    fixture.detectChanges();
-    component.logout();
-    expect(localStorage.getItem('auth_token')).toBeFalsy();
-    expect(router.navigate).toHaveBeenCalledWith(['./authentication/login']);
-  }))
 
 });

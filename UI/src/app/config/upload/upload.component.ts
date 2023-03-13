@@ -993,15 +993,13 @@ export class UploadComponent implements OnInit {
         this.http_service.uploadCertificate(file).pipe(first())
         .subscribe(
           data => {
-            if (data['status'] && data['status'] === 417) {               
-              this.error = data['message'];
+            if (data['status'] && data['status'] === 417) {
+              this.error = data['statusText'];
             } else {
               this.message = data['message'];
             }
           },
-          error => {
-            this.error = error.error.message;
-          },
+          error => null,
           () => this.clear(null)
         );
         this.isUploadEnabled= true;

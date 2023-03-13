@@ -14,51 +14,46 @@
 .text-time {
     color: var(--color-red);
 }
-
-.text-data .unit {
+.text-data .unit{
     font-size: 1.4rem;
 }
-
-.btn-arrow-down {
+.btn-arrow-down{
     color: var(--color-black);
     width: .8rem;
     cursor: pointer;
 }
-
-.card-type-1 {
+.card-type-1{
     position: relative;
     width: 100%;
 }
 
-.text-blue {
+.text-blue{
     color: var(--color-secondary-blue);
     text-decoration: underline;
 }
 
-.p-w-50 {
+.p-w-50{
     width: 50%;
 }
 
 .p-flex-basis-auto {
     flex-basis: auto;
 }
-
-.kpi-content-container {
+.kpi-content-container{
     border-right: 1px solid #c0c0c0;
 }
-
-.kpi-sub-headings {
+.kpi-sub-headings{
     height: 40px;
 }
 
 
-:host::ng-deep .p-dialog {
+:host::ng-deep .p-dialog{
     width: auto !important;
     max-width: 90vw !important;
     min-width: 544px;
 }
 
-:host ::ng-deep.p-dialog-header-icons {
+:host ::ng-deep.p-dialog-header-icons{
     top: -8px;
     right: -8px;
     border-radius: 2px;
@@ -69,25 +64,20 @@
 
 :host ::ng-deep .p-dialog-header-close-icon {
     color: white;
-}
+  }
 
-.column-content-spacing {
+.column-content-spacing{
     margin: 0px 0px 4px 0px;
     display: inline-block;
 }
 
-.export-button {
+.export-button{
     position: absolute;
     right: 10px;
     top: 14px;
 }
 
-::ng-deep .p-overflow-hidden {
+::ng-deep .p-overflow-hidden{
     overflow: unset;
-}
-
-.color-indicator{
-    width: 10px;
-    height: inherit;
 }
 

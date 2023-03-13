@@ -3041,14 +3041,6 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-        },
-        {
-          "type": "paragraph",
-          "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
-        },
-        {
-          "type": "paragraph",
-          "value": "Issues finishing post issue due date are marked in RED"
         }
       ]
     },
@@ -3348,44 +3340,6 @@ db.getCollection('kpi_master').insert(
       "boxType": "2_column",
       "calculateMaturity": false
     },
-   {
-         "kpiId": "kpi132",
-         "kpiName": "Defects by Root Cause",
-         "maxValue": "",
-         "kpiUnit": "Count",
-         "isDeleted": "False",
-         "defaultOrder": 13,
-         "kpiCategory": "Iteration",
-         "kpiSource": "Jira",
-         "groupId": 8,
-         "thresholdValue": "",
-         "kanban": false,
-         "chartType": "pieChart",
-         "kpiInfo": {
-           "details": [
-             {
-               "type": "paragraph",
-               "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
-             },
-             {
-               "type": "paragraph",
-               "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-             },
-             {
-               "type": "paragraph",
-               "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-             }
-           ]
-         },
-         "xAxisLabel": "",
-         "yAxisLabel": "",
-         "isPositiveTrend": true,
-         "showTrend": false,
-         "isAdditionalFilterSupport": false,
-         "kpiFilter": "dropdown",
-         "boxType": "chart",
-         "calculateMaturity": false
-       },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
