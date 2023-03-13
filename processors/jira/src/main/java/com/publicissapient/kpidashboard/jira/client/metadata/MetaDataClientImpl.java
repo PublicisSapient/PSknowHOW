@@ -332,6 +332,8 @@ public class MetaDataClientImpl implements MetadataClient {
 				valuesToIdentifyMap.getOrDefault(CommonConstant.QA_ROOT_CAUSE, new ArrayList<>()));
 		fieldMapping.setJiraQADefectDensityIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+		fieldMapping.setJiraTicketClosedStatus(
+				workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 
 		if (projectConfig.isKanban()) {
 			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap);
@@ -352,8 +354,6 @@ public class MetaDataClientImpl implements MetadataClient {
 				workflowMap.getOrDefault(CommonConstant.TICKET_REOPEN_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraTicketTriagedStatus(
 				workflowMap.getOrDefault(CommonConstant.TICKET_TRIAGED_STATUS, new ArrayList<>()));
-		fieldMapping.setJiraTicketClosedStatus(
-				workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraTicketRejectedStatus(
 				workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraTicketResolvedStatus(

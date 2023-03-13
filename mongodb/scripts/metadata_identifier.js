@@ -111,6 +111,13 @@ db.getCollection('metadata_identifier').remove({});
                     {
                         "type" : "jiraStatusForInProgress",
                         "value" : ["In Analysis", "In Development", "In Progress"]
+                    },
+                    {
+                        "type" : "ticketClosedStatus",
+                        "value" : [
+                            "Closed",
+                            "CLOSED"
+                        ]
                     }
         			],
         			"valuestoidentify":[
