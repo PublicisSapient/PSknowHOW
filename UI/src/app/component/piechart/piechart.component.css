@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-.wrapper{
-    text-align: center;
-    /* margin-top: 20px; */
+ .wrapper{
+    /* text-align: center;
+    /* margin-top: 20px;
     width: 100%;
     height: 120px;
     top: 0;
@@ -27,5 +27,5 @@
     margin: auto;
     position: absolute;
     left: 0;
-    right: 0;
+    right: 0; */
 }

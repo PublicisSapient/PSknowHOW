@@ -19,11 +19,11 @@ describe('LandingPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LandingPageComponent ],
+      declarations: [LandingPageComponent],
       imports: [RouterTestingModule, HttpClientModule, HttpClientTestingModule],
       providers: [HttpService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -52,49 +52,64 @@ describe('LandingPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set landing Info',fakeAsync(()=>{
-    const response ={
-      data:'adLogin: false'
+  it('should set landing Info', fakeAsync(() => {
+    const response = {
+      data: 'adLogin: false'
     };
-    const spy=spyOn(httpService,'getLandingInfo').and.returnValue(of(response));
+    const spy = spyOn(httpService, 'getLandingInfo').and.returnValue(of(response));
     component.getImpInfo();
     tick();
     expect(component.landingInfo).toBe(response.data);
   }));
 
 
-  it('should set category Info',fakeAsync(()=>{
-    const response ={
+  it('should set category Info', fakeAsync(() => {
+    const response = {
       message: 'Found all feedback categories',
       success: true,
       data: [
-          'EMM',
-          'Additional KPI',
-          'Tool Integration',
-          'Admin',
-          'UI',
-          'Other'
+        'EMM',
+        'Additional KPI',
+        'Tool Integration',
+        'Admin',
+        'UI',
+        'Other'
       ]
-  };
-    const spy=spyOn(httpService,'getFeedbackCategory').and.returnValue(of(response));
+    };
+    const spy = spyOn(httpService, 'getFeedbackCategory').and.returnValue(of(response));
     component.getCategory();
     tick();
     expect(component.area).toEqual(response.data);
   }));
 
 
-  it('should set TotalUsers Count',fakeAsync(()=>{
-    const response ={
+  it('should set TotalUsers Count', fakeAsync(() => {
+    const response = {
       message: 'Found TotalUsers count',
       success: true,
       data: {
-        'Total Users':5,
-        'New Users Added in last 30 days':2
+        'Total Users': 5,
+        'New Users Added in last 30 days': 2
       }
-  };
-    const spy=spyOn(httpService,'getUsersCount').and.returnValue(of(response));
+    };
+    const spy = spyOn(httpService, 'getUsersCount').and.returnValue(of(response));
     component.getTotalUsersCount();
     tick();
     expect(component.totalUsers).toEqual(response.data['Total Users']);
   }));
+
+  it('should save feedback successfully', fakeAsync(() => {
+    const obj = {
+      "feedbackType": "feedback",
+      "category": "UI",
+      "feedback": "test",
+      "username": "SUPERADMIN"
+    };
+    const res = { "message": "Your request has been submitted", "success": true, "data": { "username": "SUPERADMIN", "feedback": "test", "category": "UI", "feedbackType": "feedback" } }
+    spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
+    component.save();
+    tick(3000);
+    expect(component.isFeedbackSubmitted).toBe(true);
+    expect(component.formMessage).toEqual('');
+  }))
 });

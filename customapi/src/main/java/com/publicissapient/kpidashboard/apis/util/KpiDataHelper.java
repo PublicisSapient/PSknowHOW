@@ -69,7 +69,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 @Slf4j
 public final class KpiDataHelper {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
-	private static final String CLOSED = "closed";
 
 	private KpiDataHelper() {
 	}
@@ -426,7 +425,7 @@ public final class KpiDataHelper {
 			LocalDate potentialClosedDate = getPotentialClosedDate(sprintDetails, pivotPCD, remainingEstimateTime);
 			int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
 			iterationPotentialDelayList.add(createIterationPotentialDelay(potentialClosedDate, potentialDelay,
-					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
+					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED), entry.getKey()));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
 		// when a story is expected to get completed, the subsequent story will be
@@ -446,7 +445,7 @@ public final class KpiDataHelper {
 	 */
 	private static LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD,
 			int estimatedTime) {
-		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
+		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
 				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
 	}
@@ -489,8 +488,8 @@ public final class KpiDataHelper {
 	private static LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate,
 			int remainingEstimateTime, LocalDate pivotPCDLocal) {
 		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))
-				&& (!sprintDetails.getState().equalsIgnoreCase(CLOSED)
-						|| (sprintDetails.getState().equalsIgnoreCase(CLOSED) && remainingEstimateTime != 0))) {
+				&& (!sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
+						|| (sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED) && remainingEstimateTime != 0))) {
 			pivotPCDLocal = potentialClosedDate;
 		}
 		return pivotPCDLocal;
@@ -526,7 +525,7 @@ public final class KpiDataHelper {
 		LocalDate pcd = null;
 		if (pivotPCD == null) {
 			// for the first calculation
-			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
 					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					: LocalDate.now();
 
