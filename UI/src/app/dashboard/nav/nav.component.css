@@ -67,7 +67,7 @@
  .open-btn {
   color: white;
   position: absolute;
-  bottom: 1.5rem;
+  bottom: 1.3rem;
   cursor: pointer;
 }
 
@@ -467,6 +467,10 @@
 .selected-value{
   writing-mode: vertical-rl;
   text-orientation: upright;
+}
+
+.close-icon{
+  height: 30px;
 }
 @media only screen and (max-width: 1600px){
   .selected-board{
