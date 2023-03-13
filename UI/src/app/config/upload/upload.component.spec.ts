@@ -1241,70 +1241,32 @@ describe('UploadComponent', () => {
 
 
 
-it('should add or remove users from managelist', () => {
-  component.manageAssigneeList = [
-    {
-      "name": "abikanna1",
-      "displayName": "Abinaya Kannan",
-      "checked": true
-    },
-    {
-      "name": "agnprase",
-      "displayName": "Agney Praseed",
-      "checked": true
-    },
-    {
-      "name": "anisingh4",
-      "displayName": "Anil Kumar Singh",
-      "checked": false
-    }
-  ];
-
-  component.selectedSprintDetails = {
-    "id": "63e1d151fba71c2bff281502",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_5",
-    "sprintState": "FUTURE",
-    "capacity": -1,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
+  it('should add or remove users from managelist', () => {
+    component.manageAssigneeList = [
       {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "BACKEND_DEVELOPER",
-        "plannedCapacity": 55.5,
-        "leaves": 0
+        "name": "abikanna1",
+        "displayName": "Abinaya Kannan",
+        "checked": true
       },
       {
-        "userId": "agnprase",
-        "userName": "Agney Praseed",
-        "role": "BACKEND_DEVELOPER",
-        "plannedCapacity": 15,
-        "leaves": 0
+        "name": "agnprase",
+        "displayName": "Agney Praseed",
+        "checked": true
       },
       {
-        "userId": "anisingh4",
-        "userName": "Anil Kumar Singh",
-        "role": "BACKEND_DEVELOPER",
-        "plannedCapacity": 20,
-        "leaves": 0
+        "name": "anisingh4",
+        "displayName": "Anil Kumar Singh",
+        "checked": false
       }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
+    ];
 
-  const response = {
-    "message": "Successfully added Capacity Data",
-    "success": true,
-    "data": {
+    component.selectedSprintDetails = {
       "id": "63e1d151fba71c2bff281502",
       "projectNodeId": "RS MAP_63db6583e1b2765622921512",
       "projectName": "RS MAP",
       "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
       "sprintName": "MAP|PI_12|ITR_5",
+      "sprintState": "FUTURE",
       "capacity": -1,
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
@@ -1321,215 +1283,231 @@ it('should add or remove users from managelist', () => {
           "role": "BACKEND_DEVELOPER",
           "plannedCapacity": 15,
           "leaves": 0
+        },
+        {
+          "userId": "anisingh4",
+          "userName": "Anil Kumar Singh",
+          "role": "BACKEND_DEVELOPER",
+          "plannedCapacity": 20,
+          "leaves": 0
         }
       ],
       "kanban": false,
       "assigneeDetails": true
-    }
-  };
+    };
 
-  spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
-  const getCapacityDataSpy = spyOn(component, 'getCapacityData');
-  component.addRemoveAssignees();
-  fixture.detectChanges();
-  expect(getCapacityDataSpy).toHaveBeenCalled();
-  expect(component.expandedRows).toBeTruthy();
-});
-
-it('should get assignee roles if already not available', () => {
-  component.projectAssigneeRoles = [];
-  const response = {
-    "message": "All Roles",
-    "success": true,
-    "data": {
-      "TESTER": "Tester",
-      "FRONTEND_DEVELOPER": "Frontend Developer",
-      "BACKEND_DEVELOPER": "Backend Developer"
-    }
-  };
-  spyOn(httpService, 'getAssigneeRoles').and.returnValue(of(response));
-  component.getAssigneeRoles();
-  fixture.detectChanges();
-  expect(component.projectAssigneeRoles.length).toEqual(3);
-});
-
-it('should check if assignee toggle enabled', () => {
-  const capacityData = [{
-    "projectNodeId": "Testproject124_63e4b169fba71c2bff2815ba",
-    "projectName": "Testproject124",
-    "sprintNodeId": "41411_Testproject124_63e4b169fba71c2bff2815ba",
-    "sprintName": "KnowHOW | PI_12| ITR_5",
-    "sprintState": "FUTURE",
-    "capacity": 0,
-    "basicProjectConfigId": "63e4b169fba71c2bff2815ba",
-    "kanban": false,
-    "assigneeDetails": true
-  }];
-  const getAssigneeRolesSpy = spyOn(component, 'getAssigneeRoles');
-  const getCapacityJiraAssignee = spyOn(component, 'getCapacityJiraAssignee');
-  component.checkifAssigneeToggleEnabled(capacityData);
-  expect(component.isToggleEnableForSelectedProject).toBeTruthy();
-  expect(getAssigneeRolesSpy).toHaveBeenCalled();
-  expect(getCapacityJiraAssignee).toHaveBeenCalledWith("63e4b169fba71c2bff2815ba");
-});
-
-it('should validate plannedCapacity and leaves field value and calculate available capacity', () => {
-  const assignee = {
-    "userId": "adiursac",
-    "userName": "Adina-Alexandra Ursache",
-    "leaves": 0
-  };
-  const assigneeFormControls = {
-    "role": new FormControl('TESTER'),
-    "plannedCapacity": new FormControl({ value: '', disabled: true }),
-    "leaves": new FormControl({ value: 0, disabled: true })
-
-  };
-
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'role');
-  fixture.detectChanges();
-  expect(assigneeFormControls.plannedCapacity.status).toEqual('VALID');
-
-  assigneeFormControls.plannedCapacity.setValue('40');
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
-  expect(assignee['availableCapacity']).toEqual(40);
-
-  assigneeFormControls.plannedCapacity.setValue('0');
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
-  expect(assignee['availableCapacity']).toEqual(0);
-
-  assigneeFormControls.plannedCapacity.setValue('40');
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
-  expect(assignee['availableCapacity']).toEqual(40);
-
-  component.selectedSprintAssigneValidator = [];
-  assigneeFormControls.plannedCapacity.setValue('40');
-  assigneeFormControls.leaves.setValue(41);
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
-  expect(component.selectedSprintAssigneValidator.length).toEqual(1);
-
-
-  assigneeFormControls.leaves.setValue(40);
-  component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
-  expect(component.selectedSprintAssigneValidator.length).toEqual(0);
-});
-
-it('should reset filter on manage Assignee table on modal open', () => {
-  component.manageAssignee = new ManageAssigneeComponent();
-  const manageAssigneeResetSpy = spyOn(component.manageAssignee, 'reset');
-  component.onAssigneeModalOpen();
-  expect(manageAssigneeResetSpy).toHaveBeenCalled();
-});
-
-it('should calculate total capacity for sprint', () => {
-  const selectedSprint = {
-    "id": "63e092edfba71c2bff2814b4",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_3",
-    "sprintState": "CLOSED",
-    "capacity": 71,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "TESTER",
-        "plannedCapacity": 40,
-        "leaves": 0,
-        "availableCapacity": 40
-      },
-      {
-        "userId": "agnprase",
-        "userName": "Agney Praseed",
-        "role": "FRONTEND_DEVELOPER",
-        "plannedCapacity": 34,
-        "leaves": 3,
-        "availableCapacity": 31
-      },
-      {
-        "userId": "adiursac",
-        "userName": "Adina-Alexandra Ursache",
-        "leaves": 0
+    const response = {
+      "message": "Successfully added Capacity Data",
+      "success": true,
+      "data": {
+        "id": "63e1d151fba71c2bff281502",
+        "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+        "projectName": "RS MAP",
+        "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
+        "sprintName": "MAP|PI_12|ITR_5",
+        "capacity": -1,
+        "basicProjectConfigId": "63db6583e1b2765622921512",
+        "assigneeCapacity": [
+          {
+            "userId": "abikanna1",
+            "userName": "Abinaya Kannan",
+            "role": "BACKEND_DEVELOPER",
+            "plannedCapacity": 55.5,
+            "leaves": 0
+          },
+          {
+            "userId": "agnprase",
+            "userName": "Agney Praseed",
+            "role": "BACKEND_DEVELOPER",
+            "plannedCapacity": 15,
+            "leaves": 0
+          }
+        ],
+        "kanban": false,
+        "assigneeDetails": true
       }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
-  expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(71);
+    };
 
-});
+    spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
+    const getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.addRemoveAssignees();
+    fixture.detectChanges();
+    expect(getCapacityDataSpy).toHaveBeenCalled();
+    expect(component.expandedRows).toBeTruthy();
+  });
 
-it('should initialize selectedSprintAssigneFormArray when edit is clicked on sprint', () => {
-  const selectedSprint = {
-    "id": "63e092edfba71c2bff2814b4",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_3",
-    "sprintState": "CLOSED",
-    "capacity": 71,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "TESTER",
-        "plannedCapacity": 40,
-        "leaves": 0,
-        "availableCapacity": 40
-      },
-      {
-        "userId": "agnprase",
-        "userName": "Agney Praseed",
-        "role": "FRONTEND_DEVELOPER",
-        "plannedCapacity": 34,
-        "leaves": 3,
-        "availableCapacity": 31
-      },
-      {
-        "userId": "adiursac",
-        "userName": "Adina-Alexandra Ursache",
-        "leaves": 0
+  it('should get assignee roles if already not available', () => {
+    component.projectAssigneeRoles = [];
+    const response = {
+      "message": "All Roles",
+      "success": true,
+      "data": {
+        "TESTER": "Tester",
+        "FRONTEND_DEVELOPER": "Frontend Developer",
+        "BACKEND_DEVELOPER": "Backend Developer"
       }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
-  component.onSprintCapacityEdit(selectedSprint);
-  expect(component.selectedSprintAssigneFormArray.length).toEqual(3);
-});
+    };
+    spyOn(httpService, 'getAssigneeRoles').and.returnValue(of(response));
+    component.getAssigneeRoles();
+    fixture.detectChanges();
+    expect(component.projectAssigneeRoles.length).toEqual(3);
+  });
 
-it('should save the sprint capacity details on click of save', () => {
-  const selectedSprint = {
-    "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-    "projectName": "TestProject123",
-    "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-    "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-    "sprintState": "CLOSED",
-    "capacity": 0,
-    "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "TESTER",
-        "plannedCapacity": 40,
-        "leaves": 0
-      }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
+  it('should check if assignee toggle enabled', () => {
+    const capacityData = [{
+      "projectNodeId": "Testproject124_63e4b169fba71c2bff2815ba",
+      "projectName": "Testproject124",
+      "sprintNodeId": "41411_Testproject124_63e4b169fba71c2bff2815ba",
+      "sprintName": "KnowHOW | PI_12| ITR_5",
+      "sprintState": "FUTURE",
+      "capacity": 0,
+      "basicProjectConfigId": "63e4b169fba71c2bff2815ba",
+      "kanban": false,
+      "assigneeDetails": true
+    }];
+    const getAssigneeRolesSpy = spyOn(component, 'getAssigneeRoles');
+    const getCapacityJiraAssignee = spyOn(component, 'getCapacityJiraAssignee');
+    component.checkifAssigneeToggleEnabled(capacityData);
+    expect(component.isToggleEnableForSelectedProject).toBeTruthy();
+    expect(getAssigneeRolesSpy).toHaveBeenCalled();
+    expect(getCapacityJiraAssignee).toHaveBeenCalledWith("63e4b169fba71c2bff2815ba");
+  });
 
-  const response = {
-    "message": "Successfully added Capacity Data",
-    "success": true,
-    "data": {
+  it('should validate plannedCapacity and leaves field value and calculate available capacity', () => {
+    const assignee = {
+      "userId": "adiursac",
+      "userName": "Adina-Alexandra Ursache",
+      "leaves": 0
+    };
+    const assigneeFormControls = {
+      "role": new FormControl('TESTER'),
+      "plannedCapacity": new FormControl({ value: '', disabled: true }),
+      "leaves": new FormControl({ value: 0, disabled: true })
+
+    };
+
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'role');
+    fixture.detectChanges();
+    expect(assigneeFormControls.plannedCapacity.status).toEqual('VALID');
+
+    assigneeFormControls.plannedCapacity.setValue('40');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(40);
+
+    assigneeFormControls.plannedCapacity.setValue('0');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(0);
+
+    assigneeFormControls.plannedCapacity.setValue('40');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(40);
+
+    component.selectedSprintAssigneValidator = [];
+    assigneeFormControls.plannedCapacity.setValue('40');
+    assigneeFormControls.leaves.setValue(41);
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    expect(component.selectedSprintAssigneValidator.length).toEqual(1);
+
+
+    assigneeFormControls.leaves.setValue(40);
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    expect(component.selectedSprintAssigneValidator.length).toEqual(0);
+  });
+
+  it('should reset filter on manage Assignee table on modal open', () => {
+    component.manageAssignee = new ManageAssigneeComponent();
+    const manageAssigneeResetSpy = spyOn(component.manageAssignee, 'reset');
+    component.onAssigneeModalOpen();
+    expect(manageAssigneeResetSpy).toHaveBeenCalled();
+  });
+
+  it('should calculate total capacity for sprint', () => {
+    const selectedSprint = {
+      "id": "63e092edfba71c2bff2814b4",
+      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+      "projectName": "RS MAP",
+      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
+      "sprintName": "MAP|PI_12|ITR_3",
+      "sprintState": "CLOSED",
+      "capacity": 71,
+      "basicProjectConfigId": "63db6583e1b2765622921512",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 0,
+          "availableCapacity": 40
+        },
+        {
+          "userId": "agnprase",
+          "userName": "Agney Praseed",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 34,
+          "leaves": 3,
+          "availableCapacity": 31
+        },
+        {
+          "userId": "adiursac",
+          "userName": "Adina-Alexandra Ursache",
+          "leaves": 0
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+    expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(71);
+
+  });
+
+  it('should initialize selectedSprintAssigneFormArray when edit is clicked on sprint', () => {
+    const selectedSprint = {
+      "id": "63e092edfba71c2bff2814b4",
+      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+      "projectName": "RS MAP",
+      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
+      "sprintName": "MAP|PI_12|ITR_3",
+      "sprintState": "CLOSED",
+      "capacity": 71,
+      "basicProjectConfigId": "63db6583e1b2765622921512",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 0,
+          "availableCapacity": 40
+        },
+        {
+          "userId": "agnprase",
+          "userName": "Agney Praseed",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 34,
+          "leaves": 3,
+          "availableCapacity": 31
+        },
+        {
+          "userId": "adiursac",
+          "userName": "Adina-Alexandra Ursache",
+          "leaves": 0
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+    component.onSprintCapacityEdit(selectedSprint);
+    expect(component.selectedSprintAssigneFormArray.length).toEqual(3);
+  });
+
+  it('should save the sprint capacity details on click of save', () => {
+    const selectedSprint = {
       "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
       "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
       "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
+      "sprintState": "CLOSED",
       "capacity": 0,
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
@@ -1543,158 +1521,180 @@ it('should save the sprint capacity details on click of save', () => {
       ],
       "kanban": false,
       "assigneeDetails": true
-    }
-  };
+    };
 
-  spyOn(httpService, "saveOrUpdateAssignee").and.returnValue(of(response));
-  let getCapacityDataSpy = spyOn(component, 'getCapacityData');
-  component.onSprintCapacitySave(selectedSprint);
-
-  fixture.detectChanges();
-  expect(getCapacityDataSpy).toHaveBeenCalled();
-});
-
-
-it('should reset  to old values when clicked on cancel btn on selected sprint', () => {
-  const selectedSprint = {
-    "id": "63e4c5b4fba71c2bff2815d8",
-    "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-    "projectName": "TestProject123",
-    "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-    "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-    "sprintState": "CLOSED",
-    "capacity": 28,
-    "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "TESTER",
-        "plannedCapacity": 40,
-        "leaves": 12,
-        "availableCapacity": 28
-      }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
-
-  component.capacityScrumData = [{
-    "id": "63e4c5b4fba71c2bff2815d8",
-    "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-    "projectName": "TestProject123",
-    "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-    "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-    "sprintState": "CLOSED",
-    "capacity": 28,
-    "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "TESTER",
-        "plannedCapacity": 40,
-        "leaves": 12,
-        "availableCapacity": 28
-      }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  }];
-
-  component.selectedSprint = {
-    "id": "63e4c5b4fba71c2bff2815d8",
-    "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-    "projectName": "TestProject123",
-    "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-    "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-    "sprintState": "CLOSED",
-    "capacity": 28,
-    "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "FRONTEND_DEVELOPER",
-        "plannedCapacity": 40,
-        "leaves": 12,
-        "availableCapacity": 28
-      }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
-
-  component.kanban = false;
-  component.onSprintCapacityCancel(selectedSprint);
-  expect(component.capacityScrumData[0]).toEqual(component.selectedSprint);
-
-});
-
-it('should set edit mode to false on sprint row selection', () => {
-  component.projectCapacityEditMode = true;
-  component.selectedSprint = {
-    "id": "63e4c5b4fba71c2bff2815d8",
-    "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-    "projectName": "TestProject123",
-    "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-    "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-    "sprintState": "CLOSED",
-    "capacity": 28,
-    "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "FRONTEND_DEVELOPER",
-        "plannedCapacity": 40,
-        "leaves": 12,
-        "availableCapacity": 28
-      }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-  };
-
-  const onSprintCapacityCancelSpy = spyOn(component, 'onSprintCapacityCancel');
-  component.onCapacitySprintRowSelection();
-  expect(component.projectCapacityEditMode).toBeFalse();
-  expect(onSprintCapacityCancelSpy).toHaveBeenCalled();
-});
-
-it('should set NoData to true on response for capacity data', () => {
-  spyOn(httpService, 'getCapacityData').and.returnValue(of({}));
-  component.getCapacityData('TestProject123_63d8bca4af279c1d507cb8b0');
-  fixture.detectChanges();
-  expect(component.tableLoader).toBeFalse();
-  expect(component.noData).toBeTrue();
-});
-
-it('should set capactiy Data for Kanban', () => {
-  const projectId = "testproj2_63d912d2af279c1d507cb93a";
-  component.kanban = true;
-  const response = {
-    "message": "Capacity Data",
-    "success": true,
-    "data": [
-      {
-        "projectNodeId": "testproj2_63d912d2af279c1d507cb93a",
-        "projectName": "testproj2",
+    const response = {
+      "message": "Successfully added Capacity Data",
+      "success": true,
+      "data": {
+        "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
         "capacity": 0,
-        "startDate": "2023-01-09",
-        "endDate": "2023-01-15",
-        "basicProjectConfigId": "63d912d2af279c1d507cb93a",
-        "kanban": true,
+        "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+        "assigneeCapacity": [
+          {
+            "userId": "abikanna1",
+            "userName": "Abinaya Kannan",
+            "role": "TESTER",
+            "plannedCapacity": 40,
+            "leaves": 0
+          }
+        ],
+        "kanban": false,
         "assigneeDetails": true
-      },
-    ]
-  }
-  spyOn(component, 'checkifAssigneeToggleEnabled');
-  spyOn(httpService, 'getCapacityData').and.returnValue(of(response));
-  component.getCapacityData(projectId);
-  fixture.detectChanges();
-  expect(component.capacityKanbanData.length).toEqual(1);
+      }
+    };
 
-})
+    spyOn(httpService, "saveOrUpdateAssignee").and.returnValue(of(response));
+    let getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.onSprintCapacitySave(selectedSprint);
+
+    fixture.detectChanges();
+    expect(getCapacityDataSpy).toHaveBeenCalled();
+  });
+
+
+  it('should reset  to old values when clicked on cancel btn on selected sprint', () => {
+    const selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.capacityScrumData = [{
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    }];
+
+    component.selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.kanban = false;
+    component.onSprintCapacityCancel(selectedSprint);
+    expect(component.capacityScrumData[0]).toEqual(component.selectedSprint);
+
+  });
+
+  it('should set edit mode to false on sprint row selection', () => {
+    component.projectCapacityEditMode = true;
+    component.selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    const onSprintCapacityCancelSpy = spyOn(component, 'onSprintCapacityCancel');
+    component.onCapacitySprintRowSelection();
+    expect(component.projectCapacityEditMode).toBeFalse();
+    expect(onSprintCapacityCancelSpy).toHaveBeenCalled();
+  });
+
+  it('should set NoData to true on response for capacity data', () => {
+    spyOn(httpService, 'getCapacityData').and.returnValue(of({}));
+    component.getCapacityData('TestProject123_63d8bca4af279c1d507cb8b0');
+    fixture.detectChanges();
+    expect(component.tableLoader).toBeFalse();
+    expect(component.noData).toBeTrue();
+  });
+
+  it('should set capactiy Data for Kanban', () => {
+    const projectId = "testproj2_63d912d2af279c1d507cb93a";
+    component.kanban = true;
+    const response = {
+      "message": "Capacity Data",
+      "success": true,
+      "data": [
+        {
+          "projectNodeId": "testproj2_63d912d2af279c1d507cb93a",
+          "projectName": "testproj2",
+          "capacity": 0,
+          "startDate": "2023-01-09",
+          "endDate": "2023-01-15",
+          "basicProjectConfigId": "63d912d2af279c1d507cb93a",
+          "kanban": true,
+          "assigneeDetails": true
+        },
+      ]
+    }
+    spyOn(component, 'checkifAssigneeToggleEnabled');
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(response));
+    component.getCapacityData(projectId);
+    fixture.detectChanges();
+    expect(component.capacityKanbanData.length).toEqual(1);
+
+  })
 
 });
