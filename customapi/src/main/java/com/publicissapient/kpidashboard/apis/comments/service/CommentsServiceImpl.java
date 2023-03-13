@@ -20,6 +20,10 @@ import org.springframework.stereotype.Service;
 
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 
+/**
+ * @author Mahesh
+ *
+ */
 @Service
 @Slf4j
 public class CommentsServiceImpl implements CommentsService {
@@ -108,7 +112,7 @@ public class CommentsServiceImpl implements CommentsService {
 					}
 				}
 			}
-			if (kpiIdMappedWithCommentsInfo.size() == Constant.PER_KPI_MAX_COMMENTS_COUNT) {
+			if (kpiIdMappedWithCommentsInfo.size() == Constant.HOW_MANY_COMMENTS_SHOW_ON_KPI_DASHBOARD_COUNT) {
 				break;
 			}
 		}
