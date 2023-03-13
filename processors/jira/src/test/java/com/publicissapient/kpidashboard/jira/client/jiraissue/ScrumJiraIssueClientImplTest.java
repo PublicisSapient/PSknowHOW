@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
@@ -32,6 +35,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -39,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -144,7 +147,7 @@ public class ScrumJiraIssueClientImplTest {
 
 
 	@Test
-	public void processesJiraIssues() throws InterruptedException {
+	public void processesJiraIssues() throws InterruptedException, URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
 		String[] srs = new String[2];
@@ -161,6 +164,7 @@ public class ScrumJiraIssueClientImplTest {
 		projectToolConfig.setBoards(boardList);
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		projectBasicConfig.setSaveAssigneeDetails(true);
 		JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
 		Set<String> stringSet = new HashSet<>();
 		stringSet.add("Bug");
@@ -174,9 +178,12 @@ public class ScrumJiraIssueClientImplTest {
 		List<ChangelogGroup> grouplist = new ArrayList<>();
 		grouplist.add(new ChangelogGroup(null, DateTime.now(), itemList));
 		BasicProject project = new BasicProject(null, "key", null, null);
+		Map<String, URI> userAvtar = new HashMap<>();
+		userAvtar.put("48x48" ,new URI("https://test.com/jira/secure/useravatar?avatarId=10122"));
+		User user1 = new User(new URI("https://test.com/jira/rest/api/2/user?username=testUser")  , "TestUser" , "User" , "llid" , true  ,new ExpandableProperty<>(0) , userAvtar , "");
 		Issue issue = new Issue("summary", null, "key", 121L, project,
 				new IssueType(null, 11L, "Defect", true, "Description", null),
-				new Status(null, null, "KnowHOW", null, null, null), "description", null, null, null, null, null,
+				new Status(null, null, "KnowHOW", null, null, null), "description", null, null, null, null, user1,
 				DateTime.now(), DateTime.now(), null, null, null, null, null, null, null, null, null, null, null, null,
 				null, null, grouplist, null, stringSet);
 		Iterable<Issue> iterable = Arrays.asList(issue);
@@ -198,7 +205,7 @@ public class ScrumJiraIssueClientImplTest {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
 		when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(new AssigneeDetails());
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
 		assertEquals(1,
 				scrumJiraIssueClient.processesJiraIssues(

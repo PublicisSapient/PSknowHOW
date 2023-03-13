@@ -31,6 +31,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.*;
 import static org.mockito.Mockito.*;
@@ -70,7 +72,7 @@ public class KanbanJiraIssueClientImplTest {
     private AssigneeDetailsRepository assigneeDetailsRepository;
 
     @Test
-    public void processesJiraIssuesTest() {
+    public void processesJiraIssuesTest() throws URISyntaxException {
         KanbanJiraIssue kanbanJiraIssue = getKanbanJiraIssue();
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
@@ -97,10 +99,14 @@ public class KanbanJiraIssueClientImplTest {
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
         stringSet.add("KnowHOW");
+        Map<String, URI> avatarMap = new HashMap<>();
+        avatarMap.put("48x48", new URI("value"));
+        User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
+                null);
         Issue issue = new Issue("summary", null, "key", 121L, null,
                 new IssueType(null, 11L, "Defect", true, "Description", null),
                 new Status(null,null,"KnowHOW",null,null,null), "description",
-                null, null,null,null,null, DateTime.now(), DateTime.now(),
+                null, null,null,null, user1, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
         Iterable<Issue> iterable = Arrays.asList(issue);

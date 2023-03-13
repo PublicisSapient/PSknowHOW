@@ -183,6 +183,26 @@ public class TeamcityProcessorJobExecutorTest {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
 		}
 	}
+
+	@Test
+	public void processForFetchAndVerifyBuildsNoAssignee() throws Exception {
+		when(teamcityConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
+		try {
+			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
+			buildMap.put(new ObjectId("6296661b307f0239477f1e9e") , builds);
+			when(teamcityClientFactory.getTeamcityClient(anyString())).thenReturn(teamcityClient);
+			when(teamcityClient.getInstanceJobs(any())).thenReturn(buildMap);
+			when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(null);
+			when(teamcityClient.getBuildDetails(any(), any(),
+					any(), any())).thenReturn(build2);
+			when(processorExecutionTraceLogRepository.
+					findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS, "624d5c9ed837fc14d40b3039"))
+					.thenReturn(optionalProcessorExecutionTraceLog);
+			jobExecutor.execute(processorWithOneServer());
+		} catch (RestClientException exception) {
+			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
+		}
+	}
 	private TeamcityProcessor processorWithOneServer() {
 		return TeamcityProcessor.buildProcessor();
 	}
