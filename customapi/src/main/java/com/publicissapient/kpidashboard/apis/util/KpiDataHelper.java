@@ -381,9 +381,15 @@ public final class KpiDataHelper {
 				filterJiraIssue.setPriority(sprintIssue.getPriority());
 				filterJiraIssue.setStatus(sprintIssue.getStatus());
 				filterJiraIssue.setTypeName(sprintIssue.getTypeName());
-				if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
+				if(null!=filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()){
+					filterJiraIssue.setRemainingEstimateMinutes((filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()));
+				}
+				else if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
 					Double remainingEst = (sprintIssue.getRemainingEstimate()) / 60;
 					filterJiraIssue.setRemainingEstimateMinutes(remainingEst.intValue());
+				}
+				if(null!=filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()){
+					filterJiraIssue.setOriginalEstimateMinutes((filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 				}
 				filteredIssues.add(filterJiraIssue);
 			}

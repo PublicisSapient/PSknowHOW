@@ -485,7 +485,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		List<KanbanIssueCustomHistory> kanbanIssueHistoryToDelete = Lists.newArrayList();
 		purgeIssuesList.forEach(issue -> {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-			String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 			KanbanJiraIssue kanbanJiraIssue = findOneKanbanIssueRepo(issueId,
 					projectConfig.getBasicProjectConfigId().toString());
 			KanbanIssueCustomHistory kanbanHistory = findOneKanbanIssueCustomHistory(issueId,
@@ -598,20 +597,19 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 			}
 		}
-
-
+		
 		// Saving back to MongoDB
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
 		saveKanbanAccountHierarchy(kanbanIssuesToSave, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
-		
+
 		return kanbanIssuesToSave;
 	}
 
 	private void setEstimates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase("Due Date") && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
 				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
@@ -713,7 +711,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		ObjectId basicProjectConfigId = projectConfig.getBasicProjectConfigId();
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
-		
+
 		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
 		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
 
@@ -734,7 +732,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			if (projectTraceLog != null) {
 				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
 						.getLastSavedEntryUpdatedDateByType();
-
 				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
 					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
 					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
@@ -747,17 +744,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 			}
-
 		}
 
 		return lastUpdatedDateByIssueType;
-	}
-
-	private boolean isDataExist(boolean dataExist) {
-		if (!dataExist) {
-			dataExist = true;
-		}
-		return dataExist;
 	}
 
 	/**
@@ -789,7 +778,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		if (null == jiraIssueCustomHistory.getStoryID()) {
 			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping);
 		} else {
-			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList, fieldMapping);
+			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList);
 		}
 
 	}
@@ -837,11 +826,11 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 *            FieldMapping config
 	 */
 	private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
+			List<ChangelogGroup> changeLogList) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
-		createKanbanIssueHistory(jiraIssueCustomHistory, jiraIssue, changeLogList, fieldMapping);
+		createKanbanIssueHistory(jiraIssueCustomHistory, changeLogList);
 		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
 	}
 
@@ -857,8 +846,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 * @param fieldMapping
 	 *            List of JiraIssueCustomHistory
 	 */
-	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
+	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory,
+			List<ChangelogGroup> changeLogList) {
 		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
 		for (ChangelogGroup history : changeLogList) {
 			for (ChangelogItem changelogItem : history.getItems()) {
@@ -891,9 +880,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue jiraIssue, List<ChangelogGroup> changeLogList,
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
-
 		// creating first entry of issue
 		if (null != issueCreatedDate) {
 			KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
@@ -903,14 +889,13 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		if (CollectionUtils.isNotEmpty(changeLogList)) {
 			for (ChangelogGroup history : changeLogList) {
-				historyDetails.addAll(getIssueHistory(jiraIssue, history, jiraStatusForDevelopment, jiraStatusForQa));
+				historyDetails.addAll(getIssueHistory(jiraIssue, history));
 			}
 		}
 		return historyDetails;
 	}
 
-	private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history,
-			List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
+	private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 		for (ChangelogItem changelogItem : history.getItems()) {
 			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
@@ -1238,15 +1223,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
-		Integer timeSpent = 0;
-		if (issue.getTimeTracking() != null && issue.getTimeTracking().getTimeSpentMinutes() != null) {
-			timeSpent = issue.getTimeTracking().getTimeSpentMinutes();
-		} else if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
-			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
-		}
-		jiraIssue.setTimeSpentInMinutes(timeSpent);
-
+		setAggregateTimeEstimates(jiraIssue,fields);
 		setEnvironmentImpacted(jiraIssue, fields, fieldMapping);
 
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
@@ -1308,7 +1285,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
-	 * 	          assignee details set from JiraIssue           
+	 * 	          assignee details set from JiraIssue
 	 */
 	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
 		if (user == null) {
@@ -1320,7 +1297,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			List<String> assigneeKey = new ArrayList<>();
 			List<String> assigneeName = new ArrayList<>();
 			String uniqueAssigneeId = getAssignee(user);
-			if (uniqueAssigneeId.isEmpty() || (uniqueAssigneeId == null)) {
+			if (StringUtils.isEmpty(uniqueAssigneeId)) {
 				assigneeKey = new ArrayList<>();
 				assigneeName = new ArrayList<>();
 			} else {
@@ -1505,9 +1482,30 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		kanbanJiraIssue.setUrl(baseUrl);
 	}
 
+	private void setAggregateTimeEstimates(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
+		Integer timeSpent = 0;
+		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
+		}
+		jiraIssue.setTimeSpentInMinutes(timeSpent);
+
+		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
+
+		}
+		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
+
+		}
+	}
 	/**
 	 * save assignee details if exist then update assignee list
-	 * 
+	 *
 	 * @param projectConfig
 	 * @param assigneeSetToSave
 	 * @param assigneeDetails

@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -193,7 +194,7 @@ public class FieldMapping extends BasicModel {
 
 	//for for JiraDueDate
 	@Builder.Default
-	private String jiraDueDateField="Due Date";
+	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 
 	/**
