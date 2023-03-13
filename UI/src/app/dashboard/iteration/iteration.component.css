@@ -85,3 +85,9 @@
 ::ng-deep .p-overflow-hidden {
     overflow: unset;
 }
+
+.color-indicator{
+    width: 10px;
+    height: inherit;
+}
+
