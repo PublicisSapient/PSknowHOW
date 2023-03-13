@@ -463,20 +463,18 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			IterationStatus iterationKpiModalValue;
 			JiraIssueCustomHistory issueHistoryObject = jiraHistoryMap.get(story.getNumber());
 			JiraIssue issueObject = jiraMap.get(story.getNumber());
-			String daysDiff = null;
 			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
 				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
 				String dueDate = issueObject.getDueDate();
 				if (StringUtils.isNotEmpty(dueDate) && StringUtils.isNotEmpty(closedDate)) {
 					// count the number of days excluding weekends
-					daysDiff = String
-							.valueOf(CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate), DateTime.parse(closedDate)));
-					if (Integer.valueOf(daysDiff) > 0) {
-						daysDiff = ("+" + daysDiff);
-						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
+					int daysDiff = CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate),
+							DateTime.parse(closedDate));
+					if (daysDiff > 0) {
+						iterationKpiModalValue = prepareStoryDetails(issueObject, "-" + daysDiff);
 						jiraBeforeTimeIssueList.add(iterationKpiModalValue);
 					} else {
-						iterationKpiModalValue = prepareStoryDetails(issueObject, daysDiff);
+						iterationKpiModalValue = prepareStoryDetails(issueObject, String.valueOf(daysDiff * -1));
 						jiraAfterTimeIssueList.add(iterationKpiModalValue);
 					}
 				}
@@ -488,7 +486,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			v.addAll(jiraDelayIssueList);
 			return v;
 		});
-		resultList.putIfAbsent(DELAY_DETAILS,jiraDelayIssueList);
+		resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
 		resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
 		resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
 		return resultList;
@@ -525,7 +523,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					&& StringUtils.isNotEmpty(issueObject.getDueDate())) {
 				iterationKpiModalValue = createIterationKpiModal(startDate, endDate, issueObject);
 				if ((iterationKpiModalValue.getIssueId() != null)) {
-					if (Integer.parseInt(iterationKpiModalValue.getDelay()) < 0) {
+					if (Integer.parseInt(iterationKpiModalValue.getDelay()) > 0) {
 						jiraNegativeDelayIssueList.add(iterationKpiModalValue);
 					} else {
 						jiraDelayIssueList.add(iterationKpiModalValue);
@@ -556,9 +554,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		 * sprintenddate
 		 */
 		if (todayDate.compareTo(storyDueDate) > 0) { // if current date > than story due date .i.e story
-													 // past the due date
+			// past the due date
 			if (todayDate.compareTo(sprintEndData) > 0) {// if curr date is > sprint end date .i.e closed
-														 // sprint case
+				// sprint case
 
 				// delayList =
 				// String.valueOf(potentialDelayOfStoriesPastDueDateClosedSprint(issueObject,
@@ -568,7 +566,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			} else {// if curr date is < sprint end date .i.e active sprint case, Story spillage
 				// case
 				if (storyDueDate.compareTo(sprintStartDate) < 0) { // spilled story and due date not changed
-																   // < sprint start date
+					// < sprint start date
 					iterationKpiModalValue = spilledIssues(startDate, issueObject);
 				} else {
 					// duedate passed but active sprint
@@ -576,7 +574,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				}
 			}
 		} else { // if current date is less than story due date, stories inside due date but not
-				 // closed, Active story case
+			// closed, Active story case
 			iterationKpiModalValue = potentialDelayOfStoriesInsideDueDate(endDate, dueDate, issueObject);
 		}
 		return iterationKpiModalValue;
@@ -596,10 +594,10 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
 			if (remainingEstimateTime > daysDiff) {
 				diffREDelays = String.valueOf(remainingEstimateTime - daysDiff);
-				diffREDelays = String.valueOf(Integer.valueOf(diffREDelays) * -1);
+				diffREDelays = String.valueOf(Integer.valueOf(diffREDelays));
 			} else {
 				daysDiff = daysDiff - remainingEstimateTime;
-				diffREDelays = "+" + (daysDiff);
+				diffREDelays = (daysDiff == 0) ? String.valueOf(daysDiff) : "-" + (daysDiff);
 			}
 			delayList = diffREDelays;
 			iterationStatus = prepareStoryDetails(issueObject, delayList);
@@ -623,7 +621,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			if (remainingEstimateTime > 0) {
 				delayDaysAlready = remainingEstimateTime + delayDaysAlready;
 			}
-			delayList = (delayList + (delayDaysAlready)) * (-1);
+			delayList = (delayList + (delayDaysAlready));
 			iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
 		}
 		return iterationStatus;
@@ -636,7 +634,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Integer delayList = 0;
 		Integer estimateTime = getRemainingEstimateTime(issueObject);
 		delayDaysAlready = CommonUtils.openStoryDelay(currDate, sprintStart, true);
-		delayList = (delayList + delayDaysAlready + estimateTime) * -1;
+		delayList = (delayList + delayDaysAlready + estimateTime);
 		return prepareStoryDetails(issueObject, String.valueOf(delayList));
 	}
 
@@ -659,7 +657,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		DateTime sprintEnd = DateTime.parse(endDate);
 		if (storyDueDate.compareTo(sprintEndData) < 0) {
 			Integer delayDaysAlready = CommonUtils.closedStoryAndPotentialDelays(sprintEnd, dueDate);
-			delayList = (delayList + delayDaysAlready) * -1;
+			delayList = (delayList + delayDaysAlready);
 			iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
 		}
 		return iterationStatus;

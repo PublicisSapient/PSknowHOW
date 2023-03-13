@@ -59,6 +59,8 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
 
+    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority")),
+
     CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),
@@ -151,7 +153,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Size(story point/hours)","Original Estimate","Due Date","Actual Completion date","Delay(in days)")),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Days","Due Date","Predicted Completion Date","Potential Delay(in days)")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate","Due Date","Predicted Completion Date","Overall Delay")),
 
     WASTAGE("kpi131",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),
