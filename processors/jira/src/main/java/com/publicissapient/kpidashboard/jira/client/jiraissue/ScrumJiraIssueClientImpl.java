@@ -939,7 +939,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return isRaisedByThirdParty;
 	}
 
-	public void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
+	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
 			FieldMapping fieldMapping, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
@@ -955,7 +955,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
-	
+
 	/**
 	 * Sets Story Link with Defect
 	 *
