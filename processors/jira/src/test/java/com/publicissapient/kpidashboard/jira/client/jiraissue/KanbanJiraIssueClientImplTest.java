@@ -20,6 +20,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -69,6 +70,9 @@ public class KanbanJiraIssueClientImplTest {
     private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
 
     @Mock
+    private AdditionalFilterHelper additionalFilterHelper;
+
+    @Mock
     private AssigneeDetailsRepository assigneeDetailsRepository;
 
     @Test
@@ -78,7 +82,7 @@ public class KanbanJiraIssueClientImplTest {
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
         srs[0]="KnowHOW";
-        srs[1]="KnowHOW1";
+        srs[1]="Defect";
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
@@ -99,11 +103,12 @@ public class KanbanJiraIssueClientImplTest {
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
         stringSet.add("KnowHOW");
+        BasicProject project = new BasicProject(null, "key", null, null);
         Map<String, URI> avatarMap = new HashMap<>();
         avatarMap.put("48x48", new URI("value"));
         User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
                 null);
-        Issue issue = new Issue("summary", null, "key", 121L, null,
+        Issue issue = new Issue("summary", null, "key", 121L, project,
                 new IssueType(null, 11L, "Defect", true, "Description", null),
                 new Status(null,null,"KnowHOW",null,null,null), "description",
                 null, null,null,null, user1, DateTime.now(), DateTime.now(),
@@ -116,7 +121,8 @@ public class KanbanJiraIssueClientImplTest {
         jiraProcessor.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
         List<HierarchyLevel> hierarchyLevelList = new ArrayList<>();
         HierarchyLevel hierarchyLevel = new HierarchyLevel();
-        hierarchyLevel.setHierarchyLevelId("121");
+        hierarchyLevel.setHierarchyLevelId("project");
+        hierarchyLevel.setHierarchyLevelName("Project");
         hierarchyLevelList.add(hierarchyLevel);
         List<KanbanAccountHierarchy> kanbanAccountHierarchies = new ArrayList<>();
         KanbanAccountHierarchy kanbanAccountHierarchy = new KanbanAccountHierarchy();
@@ -128,6 +134,8 @@ public class KanbanJiraIssueClientImplTest {
         when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
         when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
         when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchies);
+        when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(any(),
+                any())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
         when(kanbanJiraRepo.findTopByBasicProjectConfigId(Mockito.anyString())).thenReturn(getKanbanJiraIssue());
         when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(Arrays.asList(getKanbanJiraIssue()));
         when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(Mockito.anyString(), Mockito.anyString())).thenReturn(new AssigneeDetails());
@@ -161,7 +169,7 @@ public class KanbanJiraIssueClientImplTest {
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
         srs[0]="KnowHOW";
-        srs[1]="KnowHOW1";
+        srs[1]="Defect";
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));

@@ -172,7 +172,7 @@ public class KanbanJiraIssueClientImplTest {
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
 		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
-				Mockito.anyString(), Mockito.anyString())).thenReturn(new AssigneeDetails());
+				Mockito.anyString(), Mockito.anyString())).thenReturn(null);
 
 		projectConfFieldMapping.setProjectName("prName");
 		assertEquals(0, kanbanJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
