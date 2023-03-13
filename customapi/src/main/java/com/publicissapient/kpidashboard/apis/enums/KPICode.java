@@ -340,9 +340,9 @@ public enum KPICode {
 	INVALID("INVALID_KPI", "Invalid"),
 
 	/**
-	 * Work Completed
+	 * Overall Completion Status
 	 */
-	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
+	OVERALL_COMPLETION_STATUS("kpi128", KPISource.JIRA.name()),
 
 	/**
 	 * Issues Without Story Link

@@ -16,36 +16,28 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Table } from 'primeng/table';
 
-import java.util.List;
+@Component({
+  selector: 'app-manage-assignee',
+  templateUrl: './manage-assignee.component.html',
+  styleUrls: ['./manage-assignee.component.css']
+})
+export class ManageAssigneeComponent {
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+  @ViewChild('dt') table: Table;
+  @Input() assigneeList = [];
+  @Output() onAssigneeSave = new EventEmitter();
+  searchText = new FormControl('');
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+  onUserSelectionChange(event, assignee) {
+    assignee['checked'] = event.target.checked;
+  }
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-/**
- * The type Project release.
- */
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "project_assignee")
-public class ProjectAssignee extends BasicModel {
-
-	private String projectName;
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
-
+  reset() {
+    this.searchText.reset();
+    this.table.clear();
+  }
 }
