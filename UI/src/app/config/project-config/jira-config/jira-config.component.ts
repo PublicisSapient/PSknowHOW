@@ -101,6 +101,14 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
+  jiraTemplate = [
+    { id: '', templateName: 'Template Name' },
+    { id: '63f7179d52f4fe210a54ae79', templateName: 'DOJO SAFe Template1' },
+    { id: '63f7179d52f4fe210a54ae7a', templateName: 'DOJO SAFe Template2' },
+    { id: '63f71a2452f4fe210a54ae7b', templateName: 'DOJO Agile Template3' },
+    { id: '63f71a2452f4fe210a54ae7c', templateName: 'DOJO Agile Template4' },
+  ];
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -917,7 +925,19 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
-              }
+              },
+              {
+                type: 'basicDropdown',
+                label: 'JIRA Configuration Template',
+                label2: '',
+                id: 'jiraConfigTemp',
+                onChangeEventHandler: this.jiraMethodChange,
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: ``,
+                disabled: 'false',
+                show: true,
+              },
             ],
           };
         }

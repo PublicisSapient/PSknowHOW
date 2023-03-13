@@ -3,6 +3,7 @@ db.getCollection('metadata_identifier').remove({});
         		{
         			"tool": "Jira",
         			"isKanban" : false,
+        			"templateName" : "DOJO Agile Template (Default)",
         			"issues":[
         			{
         				"type":"story",
@@ -132,6 +133,7 @@ db.getCollection('metadata_identifier').remove({});
 	{
         	"tool" : "Jira",
 		    "isKanban" : true,
+		    "templateName" : "DOJO Agile Template (Default)",
 		    "issues" : [ 
 		        {
 		            "type" : "epic",
@@ -432,7 +434,8 @@ db.getCollection('metadata_identifier').remove({});
         },
 
         		{
-            "tool" : "Azure",
+            "tool" : "Jira",
+            "templateName" : "DOJO Safe Template",
             "isKanban" : false,
             "issues" : [
                 {
@@ -598,8 +601,9 @@ db.getCollection('metadata_identifier').remove({});
             ]
         },
                 {
-                    "tool" : "Azure",
-                    "isKanban" : true,
+                    "tool" : "Jira",
+                    "isKanban" : false,
+                    "templateName" : "DOJO Studio Template",
                     "issues" : [
                         {
                             "type" : "story",
