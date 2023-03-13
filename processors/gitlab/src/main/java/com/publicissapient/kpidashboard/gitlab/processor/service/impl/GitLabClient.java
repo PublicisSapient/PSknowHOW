@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.gitlab.config.GitLabConfig;
 import com.publicissapient.kpidashboard.gitlab.constants.GitLabConstants;
 import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,13 +98,13 @@ public class GitLabClient {
 	 * Fetch all commits.
 	 *
 	 * @param repo       the repo
-	 * @param firstRun   the first run
+	 * @param proBasicConfig   proBasicConfig
 	 * @param gitLabInfo tool and connections info
 	 * @return the list
 	 * 
 	 * @throws FetchingCommitException the exception
 	 */
-	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, boolean firstRun, ProcessorToolConnection gitLabInfo)
+	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, ProcessorToolConnection gitLabInfo, ProjectBasicConfig proBasicConfig)
 			throws FetchingCommitException {
 
 		String restUri = null;
@@ -124,7 +125,7 @@ public class GitLabClient {
 					hasMorePage = false; // NOSONAR
 					break;
 				}
-				initializeCommitDetails(gitLabInfo, commits, responseJson);
+				initializeCommitDetails(gitLabInfo, commits, responseJson, proBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -144,7 +145,7 @@ public class GitLabClient {
 	}
 
 	private void initializeCommitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			JSONArray jsonArray) {
+			JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			JSONObject commitObject = (JSONObject) jsonObj;
 			String scmRevisionNumber = getString(commitObject, GitLabConstants.RESP_ID_KEY);
@@ -161,13 +162,13 @@ public class GitLabClient {
 					parentList.add(parents.get(index).toString());
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList);
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
 
 		}
 	}
 
-	public List<MergeRequests> fetchAllMergeRequest(GitLabRepo repo, boolean firstRun,
-			ProcessorToolConnection gitLabInfo) throws FetchingCommitException {
+	public List<MergeRequests> fetchAllMergeRequest(GitLabRepo repo,
+													ProcessorToolConnection gitLabInfo, ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
@@ -187,7 +188,7 @@ public class GitLabClient {
 					hasMorePage = false; // NOSONAR
 					break;
 				}
-				initializeMergeRequestDetails(gitLabInfo, mergeRequests, responseJson);
+				initializeMergeRequestDetails(mergeRequests, responseJson, projectBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -206,8 +207,7 @@ public class GitLabClient {
 		return mergeRequests;
 	}
 
-	private void initializeMergeRequestDetails(ProcessorToolConnection gitLabInfo,
-			List<MergeRequests> mergeRequestList, JSONArray jsonArray) {
+	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray, ProjectBasicConfig projectBasicConfig) {
 		long closedDate = 0;
 		for (Object jsonObj : jsonArray) {
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -226,7 +226,6 @@ public class GitLabClient {
 			String repoSlug = "NA";
 			String projKey = getString(mergReqObj, GitLabConstants.RESP_PROJECT_ID);
 			JSONObject authorObj = (JSONObject) mergReqObj.get(GitLabConstants.RESP_AUTHOR_KEY);
-			//JSONObject userObj = (JSONObject) authorObj.get(GitLabConstants.RESP_USER_NAME);
 			String author = getString(authorObj, GitLabConstants.RESP_USER_NAME);
 			String scmRevisionNumber = getString(mergReqObj, GitLabConstants.RESP_ID_KEY);
 			JSONArray reviewers = (JSONArray) mergReqObj.get(GitLabConstants.RESP_REVIEWERS);
@@ -248,7 +247,9 @@ public class GitLabClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			mergeReq.setAuthor(author);
+			if (projectBasicConfig.isSaveAssigneeDetails()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
 			mergeRequestList.add(mergeReq);
@@ -269,14 +270,18 @@ public class GitLabClient {
 		}
 		return timestamp;
 	}
+	@SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList) {
+			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
+
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		gitLabCommit.setAuthor(author);
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			gitLabCommit.setAuthor(author);
+		}
 		gitLabCommit.setCommitLog(message);
 		gitLabCommit.setParentRevisionNumbers(parentList);
 		gitLabCommit.setCommitTimestamp(timestamp);

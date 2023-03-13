@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application;
 
-import java.util.List;
+import com.google.common.base.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,21 +26,26 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-/**
- * The type Project release.
- */
 @Data
-public class ProjectAssigneeDTO extends BasicModel {
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class AssigneeDetailsDTO {
+    private String name;
+    private String displayName;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof AssigneeDetailsDTO) {
+            AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;
+            return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName);
+        }
+        return false;
+    }
 
-	private String projectName;
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
 
 }

@@ -1740,7 +1740,8 @@ a:hover {
   padding: 0.3rem 1rem;
 }
 .test-execution-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child,
-.capcity-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child{
+.capcity-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child,
+.capcity-kanban-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child{
   text-align: left;
 }
 .custom-grid .p-datatable table {
