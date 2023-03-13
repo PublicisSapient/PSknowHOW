@@ -187,7 +187,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, originalEstimate, iterationKpiModalValue);
+		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, iterationKpiModalValue);
 		if (null != jiraIssue.getOriginalEstimateMinutes()) {
 			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
 			iterationKpiModalValue.setOriginalEstimateMinutes(String.valueOf(originalEstimate + " hrs"));
@@ -213,7 +213,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 
 	private void populateBasedOnEstimationFlag(JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping,
-			int originalEstimate, IterationKpiModalValue iterationKpiModalValue) {
+			IterationKpiModalValue iterationKpiModalValue) {
 		if (estimationFlag) {
 			if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -222,7 +222,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			if (null != jiraIssue.getOriginalEstimateMinutes()
 					&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-				originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+				int originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
 				iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
 			}
 		} else {
