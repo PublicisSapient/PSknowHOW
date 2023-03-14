@@ -20,19 +20,18 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.joda.time.DateTime;
@@ -48,7 +47,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have to
@@ -284,5 +282,19 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
+	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
+		String devCompleteDate = null;
+		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
+			for (JiraIssueSprint jiraIssueSprint : filterStorySprintDetails) {
+				if (fieldMapping.getJiraDevDoneStatus().contains(jiraIssueSprint.getFromStatus())
+						&& jiraIssueSprint.getActivityDate() != null)
+					devCompleteDate = LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+							DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString();
+			}
+		}
+		return devCompleteDate;
 	}
 }

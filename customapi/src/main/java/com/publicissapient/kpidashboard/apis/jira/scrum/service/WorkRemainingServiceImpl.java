@@ -220,8 +220,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 								.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 										.equals(jiraIssue.getNumber()))
 								.findFirst().orElse(new JiraIssueCustomHistory());
-						String devCompletionDate = getDevCompletionDate(issueCustomHistory, sprintDetails,
-								fieldMapping);
+						String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
 						KPIExcelUtility.populateWorkRemainingWithPCD(finalOverAllmodalValues, finalmodalValues,
 								jiraIssue, fieldMapping, issueWiseDelay, sprintDetails, devCompletionDate);
 						issueCount = issueCount + 1;
@@ -335,38 +334,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			finalDelay = potentialDelay + finalDelay;
 		}
 		return finalDelay;
-	}
-
-	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
-									   FieldMapping fieldMapping) {
-		List<String> devCompleteStatus = new ArrayList<>();
-		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
-		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0],
-				DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT));
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0],
-				DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT));
-
-		// filtering storySprintDetails lies in between sprintStart and sprintEnd
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
-					.filter(jiraIssueSprint -> DateUtil
-							.isWithinDateRange(
-									LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
-											DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)),
-									sprintStartDate, sprintEndDate))
-					.collect(Collectors.toList());
-		}
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
-			devCompleteStatus = fieldMapping.getJiraDevDoneStatus();
-		}
-		String devCompleteDate = null;
-		for (JiraIssueSprint jiraIssueSprint : filterStorySprintDetails) {
-			if (devCompleteStatus.contains(jiraIssueSprint.getFromStatus())) {
-				devCompleteDate = LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
-						DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString();
-			}
-		}
-		return devCompleteDate;
 	}
 
 	/**
