@@ -400,7 +400,7 @@ export class FilterComponent implements OnInit {
       version: this.httpService.currentVersion,
     };
     this.ga.setPageLoad(data);
-    this.navigateToSelectedTab();
+    // this.navigateToSelectedTab(); issue fixed as going on multiple routes just after login 
     this.getKpiOrderedList();
   }
 
@@ -905,19 +905,19 @@ export class FilterComponent implements OnInit {
         !boardDetails &&
         this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0
       ) {
-        boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][4];
+        boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
       this.service.setSelectedTab(
         boardDetails?.boardName,
         boardDetails?.boardId,
       );
-      this.router.navigateByUrl(
-        `/dashboard/${boardDetails?.boardName
-          .split(' ')
-          .join('-')
-          .toLowerCase()}/${boardDetails?.boardId}`,
-      );
+        this.router.navigateByUrl(
+          `/dashboard/${boardDetails?.boardName
+            .split(' ')
+            .join('-')
+            .toLowerCase()}/${boardDetails?.boardId}`,
+        );
     }
   }
 

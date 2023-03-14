@@ -49,7 +49,7 @@ const routes: Routes = [
   {
     path: 'dashboard', component: DashboardComponent,
     children: [
-      { path: '', redirectTo: 'mydashboard', pathMatch: 'full'},
+      { path: '', redirectTo: 'iteration', pathMatch: 'full'},
       { path: 'Help', component: LandingPageComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'iteration/:boardId', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },

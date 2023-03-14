@@ -251,9 +251,15 @@ export class NavComponent implements OnInit {
           this.kpiListData[this.selectedType][i].boardId,
       });
     }
-    this.service.changedMainDashboardValueSub.next(
-      this.kpiListData?.scrum[0]?.boardName,
-    );
+    // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
+    if (this.changedBoardName) {
+      this.service.changedMainDashboardValueSub.next(this.changedBoardName);
+    } else {
+      this.service.changedMainDashboardValueSub.next(
+        this.kpiListData?.scrum[0]?.boardName,
+      );
+    }
+
     this.processKpiConfigData();
   }
 
