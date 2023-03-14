@@ -189,15 +189,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		if(CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())){
-			Map<String,String> storiesMap = new HashMap<>();
-			jiraIssue.getDefectStoryID().forEach(story->{
-				String storyURL = new StringBuilder(jiraIssue.getUrl().substring(0, jiraIssue.getUrl().
-						lastIndexOf("/")+1)).append(story).toString();
-				storiesMap.put(story,storyURL);
-			});
-			iterationKpiModalValue.setLinkedStories(storiesMap);
-		}
 		populateBasedOnEstimationFlag(jiraIssue, estimationFlag, fieldMapping, originalEstimate, iterationKpiModalValue);
 		if(jiraIssue.getRemainingEstimateMinutes() != null) {
 			iterationKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes()/60);

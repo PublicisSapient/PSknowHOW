@@ -28,13 +28,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	private static final String OVERALL = "Overall";
 	public static final String LINKED_DEFECTS = "Story Linked defects";
 	public static final String UNLINKED_DEFECTS = "Unlinked defects";
@@ -110,7 +110,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_RAISED.name();
+		return KPICode.QUALITY_STATUS.name();
 	}
 
 	@Override
@@ -190,12 +190,15 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			List<JiraIssue> allStory = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			List<JiraIssue> allLinkedDefects = alldefects.stream()
-					.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())).collect(Collectors.toList());
 
-			if (CollectionUtils.isNotEmpty(alldefects)) {
-				log.info("Defect raised -> request id : {} total jira Issues : {}", requestTrackerId,
-						alldefects.size());
+			if (CollectionUtils.isNotEmpty(alldefects) && CollectionUtils.isNotEmpty(allStory)) {
+
+				List<JiraIssue> allLinkedDefects = alldefects.stream()
+						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID()))
+						.collect(Collectors.toList());
+
+				log.info("Defect raised -> request id : {} total linked defects : {}", requestTrackerId,
+						allLinkedDefects.size());
 
 				Map<String, Map<String, List<JiraIssue>>> priorityAndStatusWiseIssues = alldefects.stream().collect(
 						Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
@@ -215,12 +218,10 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 					return false;
 				}).collect(Collectors.toList());
 
-				double overAllDir;
-				double overAllDefectDensity;
+				double overAllDefectDensity = calculateDefectDensity(allStory, linkedDefectsCreatedInSprint,
+						fieldMapping);
 
-				 overAllDefectDensity = calculateDefectDensity(allStory, linkedDefectsCreatedInSprint);
-
-				 overAllDir = calculateDIR(allStory, linkedDefectsCreatedInSprint);
+				double overAllDir = calculateDIR(allStory, linkedDefectsCreatedInSprint);
 
 				List<Double> overAllLinkedDefects = Arrays.asList(0.0);
 				List<Double> overAllUnlinkedDefects = Arrays.asList(0.0);
@@ -245,9 +246,11 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 								createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, overAlllinkedmodalValues,
 										linkedModalValues, unLinkedModalValues, linkedDefect, unlinkedDefect, jiraIssue,
-										endDate, startDate, allStoryMap);
+										endDate, startDate, allStoryMap, fieldMapping);
 							}
-							double defectDensity = calculateDefectDensity(allStory, linkedDefect);
+							double defectDensity = calculateDefectDensity(allStory, linkedDefect, fieldMapping);
+
+							double dir = calculateDIR(allStory, linkedDefectsCreatedInSprint);
 
 							overAllLinkedDefects.set(0, overAllLinkedDefects.get(0) + linkedDefect.size());
 							overAllUnlinkedDefects.set(0, overAllUnlinkedDefects.get(0) + unlinkedDefect.size());
@@ -255,8 +258,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 							IterationKpiData ld = new IterationKpiData(LINKED_DEFECTS, (double) linkedDefect.size(),
 									null, null, null, linkedModalValues);
 
-							IterationKpiData dd = new IterationKpiData(DIR + "/" + DEFECT_DENSITY, defectDensity, null,
-									null, "", modalValues);
+							IterationKpiData dd = new IterationKpiData(DIR + "/" + DEFECT_DENSITY, dir, defectDensity,
+									null, "%" , "", modalValues);
 							IterationKpiData ud = new IterationKpiData(UNLINKED_DEFECTS, (double) unlinkedDefect.size(),
 									null, null, null, unLinkedModalValues);
 
@@ -283,7 +286,7 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setSprint(latestSprint.getName());
-				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_RAISED.getColumns());
+				kpiElement.setModalHeads(KPIExcelColumn.QUALITY_STATUS.getColumns());
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
@@ -294,28 +297,39 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	 * defects relative to a set of all user stories.
 	 */
 
-	private double calculateDefectDensity(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
+	private double calculateDefectDensity(List<JiraIssue> allStory, List<JiraIssue> linkedDefect,
+			FieldMapping fieldMapping) {
 
-		if (allStory == null || linkedDefect == null) {
+		if (CollectionUtils.isEmpty(linkedDefect)) {
 			return 0;
 		}
-		Set<String> listOfStory = linkedDefect.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+		Set<String> linkedStoriesSet = linkedDefect.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
 				.collect(Collectors.toSet());
 
-		double storyPoints = allStory.stream().filter(jiraIssue -> listOfStory.contains(jiraIssue.getNumber()))
-				.mapToDouble(jiraIssue -> {
-					if (jiraIssue.getStoryPoints() == null) {
-						return 0;
-					}
-					return jiraIssue.getStoryPoints();
-				}).sum();
+		List<JiraIssue> linkedStoriesJiraIssueList = allStory.stream()
+				.filter(jiraIssue -> linkedStoriesSet.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 
-		return (Math.round(100.0 * (storyPoints == 0 ? 0 : linkedDefect.size() / storyPoints)) / 100.0);
+		if (CollectionUtils.isEmpty(linkedStoriesJiraIssueList)) {
+			return 0;
+		}
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			double storyPointSum = linkedStoriesJiraIssueList.stream()
+					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
+					.mapToDouble(JiraIssue::getStoryPoints).sum();
+			return (Math.round(100.0 * (storyPointSum == 0 ? 0 : linkedDefect.size() / storyPointSum)) / 100.0);
+		} else {
+			int originalEstimateMinutesSum = linkedStoriesJiraIssueList.stream()
+					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+					.mapToInt(JiraIssue::getOriginalEstimateMinutes).sum();
+			double originalEstimateInDays = (double) originalEstimateMinutesSum / 480;
+			return Math.round(originalEstimateInDays == 0 ? 0 : linkedDefect.size() / originalEstimateInDays);
+		}
 	}
 
 	private double calculateDIR(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
 
-		if (CollectionUtils.isNotEmpty(allStory) || CollectionUtils.isNotEmpty(linkedDefect)) {
+		if (CollectionUtils.isEmpty(allStory) || CollectionUtils.isEmpty(linkedDefect)) {
 			return 0;
 		}
 		Set<String> listOfStory = linkedDefect.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
@@ -324,10 +338,10 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		List<JiraIssue> allLinkedStories = allStory.stream()
 				.filter(jiraIssue -> listOfStory.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 
-		if(CollectionUtils.isNotEmpty(allLinkedStories)){
-			return 0.0d;
+		if (CollectionUtils.isEmpty(allLinkedStories)) {
+			return 0;
 		}
-		return (double) linkedDefect.size() / allLinkedStories.size();
+		return Math.round(((double) linkedDefect.size() / allLinkedStories.size()) * 100);
 	}
 
 	/**
@@ -335,22 +349,32 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 	 * based on its creation date, and adds it to either a list of linked or
 	 * unlinked defects accordingly.
 	 */
+
 	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
 			List<IterationKpiModalValue> overAlllinkedmodalValues, List<IterationKpiModalValue> linkedModalValues,
 			List<IterationKpiModalValue> unLinkedModalValues, List<JiraIssue> linkedDefect,
 			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, String endDate, String startDate,
-			Map<String, JiraIssue> allStoriesMap) {
+			Map<String, JiraIssue> allStoriesMap, FieldMapping fieldMapping) {
 
 		try {
 			if (checkIssueCreatedInSprintDuration(jiraIssue, startDate, endDate)) {
 				if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
-					linkedDefect.add(jiraIssue);
-					populateIterationDataForDefectsLinkKPI(overAlllinkedmodalValues, linkedModalValues, jiraIssue, false, null,
-							allStoriesMap);
+					List<JiraIssue> linkedJiraIssueStoryList = new ArrayList<>();
+					jiraIssue.getDefectStoryID().forEach(
+							storyNumber -> allStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
+								linkedJiraIssueStoryList.add(linkedJiraIssueStory);
+								return linkedJiraIssueStory;
+							}));
+					if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
+						linkedDefect.add(jiraIssue);
+						populateIterationDataForDefectsLinkKPI(overAlllinkedmodalValues, linkedModalValues, jiraIssue,
+								true, fieldMapping, linkedJiraIssueStoryList);
+					}
+
 				} else {
 					unlinkedDefect.add(jiraIssue);
-					populateIterationDataForDefectsLinkKPI(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue, false,
-							null, allStoriesMap);
+					populateIterationDataForDefectsLinkKPI(overAllUnlinkedmodalValues, unLinkedModalValues, jiraIssue,
+							false, null, new ArrayList<>());
 				}
 			}
 		} catch (ParseException e) {
@@ -368,7 +392,8 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 
 	public void populateIterationDataForDefectsLinkKPI(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, boolean estimationFlag,
-			FieldMapping fieldMapping, Map<String, JiraIssue> allStoriesMap) {
+			FieldMapping fieldMapping, List<JiraIssue> linkedJiraIssueStoryList) {
+
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -376,22 +401,26 @@ public class DefectsRaisedServiceImpl extends JiraKPIService<Double, List<Object
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
-			AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
-			Map<String, String> linkedStoriesMap = new HashMap<>();
-			jiraIssue.getDefectStoryID().forEach(storyNumber -> {
-				String storyURL = new StringBuilder(
-						jiraIssue.getUrl().substring(0, jiraIssue.getUrl().lastIndexOf("/") + 1)).append(storyNumber)
-								.toString();
-				linkedStoriesMap.put(storyNumber, storyURL);
-				if (MapUtils.isNotEmpty(allStoriesMap) && allStoriesMap.get(storyNumber) != null
-						&& allStoriesMap.get(storyNumber).getStoryPoints() != null) {
-					storyPoint.updateAndGet(v -> v + allStoriesMap.get(storyNumber).getStoryPoints());
+		AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
+		Map<String, String> linkedStoriesMap = new HashMap<>();
+		linkedJiraIssueStoryList.forEach(linkedStory -> {
+			linkedStoriesMap.put(linkedStory.getNumber(), linkedStory.getUrl());
+			iterationKpiModalValue.setLinkedStoriesTest(linkedStory.getNumber());
+			if (estimationFlag) {
+				if (null != linkedStory.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					storyPoint.updateAndGet(v -> v + linkedStory.getStoryPoints());
 				}
-			});
-			iterationKpiModalValue.setLinkedStories(linkedStoriesMap);
-			iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
-		}
+				if (null != linkedStory.getOriginalEstimateMinutes()
+						&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+					storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
+				}
+			}
+			iterationKpiModalValue.setLinkedStoriesTest(linkedStory.getNumber());
+		});
+		iterationKpiModalValue.setLinkedStories(linkedStoriesMap);
+		iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}

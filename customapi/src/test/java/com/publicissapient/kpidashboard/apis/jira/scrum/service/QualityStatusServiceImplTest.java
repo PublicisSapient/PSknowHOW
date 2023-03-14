@@ -58,7 +58,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefectRaisedServiceImplTest {
+public class QualityStatusServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -68,7 +68,7 @@ public class DefectRaisedServiceImplTest {
 	private ConfigHelperService configHelperService;
 
 	@InjectMocks
-	private DefectsRaisedServiceImpl defectRaisedServiceImpl;
+	private QualityStatusServiceImpl qualityStatusServiceImpl;
 
 	@Mock
 	private SprintRepository sprintRepository;
@@ -83,7 +83,7 @@ public class DefectRaisedServiceImplTest {
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi132");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi133");
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -128,9 +128,9 @@ public class DefectRaisedServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(defectRaisedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(qualityStatusServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = defectRaisedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
@@ -141,47 +141,8 @@ public class DefectRaisedServiceImplTest {
 	}
 
 	@Test
-	public void testGetKpiData_CalculateDefectDensity() throws ApplicationException {
-
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
-
-		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(defectRaisedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		try {
-			KpiElement kpiElement = defectRaisedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			DataCount testDataList = (DataCount) kpiElement.getTrendValueList();
-			List<IterationKpiValue> testDataListValue = (List<IterationKpiValue>) testDataList.getValue();
-			double actualDefectDensityValue = testDataListValue.get(0).getData().get(0).getValue();
-			String actualDefectDensityLabel = testDataListValue.get(0).getData().get(0).getLabel();
-			double actualUnLinkedDefect = testDataListValue.get(0).getData().get(1).getValue();
-			String actualUnLinkedDefectLabel = testDataListValue.get(0).getData().get(1).getLabel();
-			double actualLinkedDefect = testDataListValue.get(0).getData().get(2).getValue();
-			String actualLinkedDefectLabel = testDataListValue.get(0).getData().get(2).getLabel();
-
-			assertEquals(0.4, actualDefectDensityValue, 0.1);
-			assertEquals(DefectsRaisedServiceImpl.DEFECT_DENSITY, actualDefectDensityLabel);
-			assertEquals(2, actualLinkedDefect, 0.1);
-			assertEquals(DefectsRaisedServiceImpl.LINKED_DEFECTS, actualLinkedDefectLabel);
-			assertEquals(0, actualUnLinkedDefect, 0.1);
-			assertEquals(DefectsRaisedServiceImpl.UNLINKED_DEFECTS, actualUnLinkedDefectLabel);
-
-		} catch (ApplicationException enfe) {
-
-		}
-
-	}
-
-	@Test
 	public void testGetQualifierType() {
-		assertThat(defectRaisedServiceImpl.getQualifierType(), equalTo("DEFECT_RAISED"));
+		assertThat(qualityStatusServiceImpl.getQualifierType(), equalTo("QUALITY_STATUS"));
 	}
 
 	@After

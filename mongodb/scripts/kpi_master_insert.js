@@ -3337,12 +3337,12 @@ db.getCollection('kpi_master').insert(
       "calculateMaturity": false
     },
   {
-    "kpiId": "kpi132",
-    "kpiName": "Defect Raised",
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
     "maxValue": "",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 12,
+    "defaultOrder": 13,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3352,7 +3352,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-    "definition": "Defect Raised gives the information about defects linked/unlinked with the story and Defect density",
+    "definition": "Quality Status gives the information about defects linked/unlinked with the story and Defect density",
      "formula": [
         {
           "lhs": "Defect Density",
@@ -3376,7 +3376,6 @@ db.getCollection('kpi_master').insert(
                    "type": "paragraph",
                    "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
                  }
-
                  ]
             },
      "xAxisLabel": "",

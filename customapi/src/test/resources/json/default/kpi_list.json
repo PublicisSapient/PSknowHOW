@@ -3561,8 +3561,8 @@
     "kpiFilter": "multiSelectDropDown"
   },
   {
-    "kpiId": "kpi132",
-    "kpiName": "Defect Raised",
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
     "maxValue": "",
     "kpiUnit": "",
     "isDeleted": "False",
@@ -3576,7 +3576,7 @@
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-      "definition": "Defect Raised gives the information about defects linked/unlinked with the story and Defect density",
+      "definition": "Quality Status gives the information about defects linked/unlinked with the story and Defect density",
       "formula": [
         {
           "lhs": "Defect Density",
