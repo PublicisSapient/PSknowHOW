@@ -18,17 +18,18 @@
 
 package com.publicissapient.kpidashboard.teamcity.processor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,9 @@ import com.publicissapient.kpidashboard.teamcity.factory.TeamcityClientFactory;
 import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.repository.TeamcityProcessorRepository;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -88,6 +92,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	private TeamcityClient teamcityClient;
 
@@ -186,11 +192,12 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					Map<ObjectId, Set<Build>> buildsByJob = teamcityClient.getInstanceJobs(teamcityServer);
 					log.info("Fetched jobs at : {}", startTime);
 
-					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId());
+					int updatedJobs = addNewBuilds(savedTotalBuilds, buildsByJob, teamcityServer , processor.getId(), proBasicConfig);
 					count += updatedJobs;
 					log.info("Finished : {}", System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 				} catch (RestClientException exception) {
@@ -219,42 +226,53 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.TEAMCITY);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.TEAMCITY, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+			processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+					existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+		);
 		return processorExecutionTraceLog;
 	}
 
 	/**
 	 * Iterates over fetched build jobs and adds new builds to the database.
 	 *
-	 * @param savedTotalBuilds
-	 *            the list of builds total for each projects
-	 * @param buildsByJob
-	 *            the build by job
-	 * @param teamcityServer
-	 *            the teamcity server
+	 * @param savedTotalBuilds           the list of builds total for each projects
+	 * @param buildsByJob                the build by job
+	 * @param teamcityServer             the teamcity server
+	 * @param proBasicConfig
 	 * @return adds new build
 	 */
 	private int addNewBuilds(List<Build> savedTotalBuilds, Map<ObjectId, Set<Build>> buildsByJob,
-			ProcessorToolConnection teamcityServer , ObjectId processorId) {
+							 ProcessorToolConnection teamcityServer, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
-			// process new builds in the order of their build numbers - this has
-			// implication to handling of commits in BuildEventListener
-			ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(teamcityServer.getId())));
-			builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
-			for (Build buildSummary : builds) {
-				if (isNewBuild(teamcityServer.getId(), buildSummary)) {
-					Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
-							teamcityServer);
-					if (build != null) {
-						build.setBuildJob(teamcityServer.getJobName());
-						build.setProcessorId(processorId);
-						build.setBasicProjectConfigId(teamcityServer.getBasicProjectConfigId());
-						build.setProjectToolConfigId(teamcityServer.getId());
-						count++;
-					}
+		// process new builds in the order of their build numbers - this has
+		// implication to handling of commits in BuildEventListener
+		ArrayList<Build> builds = new ArrayList<>(nullSafe(buildsByJob.get(teamcityServer.getId())));
+		builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
+		for (Build buildSummary : builds) {
+			Build buildData = buildRepository
+					.findByProjectToolConfigIdAndNumber(teamcityServer.getId(), buildSummary.getNumber());
+			if (buildData == null) {
+				Build build = teamcityClient.getBuildDetails(buildSummary.getBuildUrl(), teamcityServer.getUrl(),
+						teamcityServer, proBasicConfig);
+				if (build != null) {
+					build.setBuildJob(teamcityServer.getJobName());
+					build.setProcessorId(processorId);
+					build.setBasicProjectConfigId(teamcityServer.getBasicProjectConfigId());
+					build.setProjectToolConfigId(teamcityServer.getId());
+					count++;
+				}
+			} else {
+				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null && buildSummary.getStartedBy() != null) {
+					buildData.setStartedBy(buildSummary.getStartedBy());
+					buildsToSave.add(buildData);
 				}
 			}
+		}
 
 		if (CollectionUtils.isNotEmpty(buildsToSave)) {
 			savedTotalBuilds.addAll(buildsToSave);
@@ -275,18 +293,6 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		return builds == null ? new HashSet<>() : builds;
 	}
 
-	/**
-	 * Checks whether the build is new.
-	 * 
-	 * @param projectToolConfigId
-	 *            the Teamcity tool id
-	 * @param build
-	 *            the Teamcity build
-	 * @return boolean
-	 */
-	private boolean isNewBuild(ObjectId projectToolConfigId, Build build) {
-		return buildRepository.findByProjectToolConfigIdAndNumber(projectToolConfigId, build.getNumber()) == null;
-	}
 
 	private String decryptPassword(String encryptedValue) {
 		return aesEncryptionService.decrypt(encryptedValue, teamcityConfig.getAesEncryptionKey());
