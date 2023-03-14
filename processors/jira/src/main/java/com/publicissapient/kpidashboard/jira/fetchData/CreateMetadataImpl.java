@@ -22,10 +22,12 @@ import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -38,14 +40,20 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 
 @Slf4j
+@Service
 public class CreateMetadataImpl implements CreateMetadata {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMetadataImpl.class);
 
+    PSLogData psLogData = new PSLogData();
+
+    @Autowired
     private BoardMetadataRepository boardMetadataRepository;
 
+    @Autowired
     private FieldMappingRepository fieldMappingRepository;
 
+    @Autowired
     private MetadataIdentifierRepository metadataIdentifierRepository;
 
     private ProcessorJiraRestClient client;
@@ -53,16 +61,16 @@ public class CreateMetadataImpl implements CreateMetadata {
     @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
 
-    private PSLogData psLogData = new PSLogData();
-
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
     private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
     private static final String EXCEPTION = "Exception";
 
+
     @Override
-    public void collectMetadata(ProjectConfFieldMapping projectConfig) {
+    public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient clientIncoming) {
+        client=clientIncoming;
         if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
             psLogData.setAction(CommonConstant.METADATA);
             boolean isSuccess = processMetadata(projectConfig);
@@ -113,7 +121,7 @@ public class CreateMetadataImpl implements CreateMetadata {
                 isSuccess = true;
             }
 
-            boardMetadataRepository.save(boardMetadata);
+//            boardMetadataRepository.save(boardMetadata);
             psLogData.setMetaDataToDB("true");
             psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata, Instant.now()).toMillis()));
             log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -290,8 +298,10 @@ public class CreateMetadataImpl implements CreateMetadata {
      */
     private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
         log.info("Fetching and comparing  metadata identifier");
-        MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateID(), JiraConstants.JIRA,
-                projectConfig.isKanban());
+        MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(
+//                projectConfig.getProjectToolConfig().getMetadataTemplateID()
+                new ObjectId("63c702c0778b02d15e9e2b3e")
+                ,JiraConstants.JIRA, projectConfig.isKanban());
         List<Identifier> issueList = metadataIdentifier.getIssues();
         List<Identifier> customFieldList = metadataIdentifier.getCustomfield();
         Map<String, List<String>> valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()

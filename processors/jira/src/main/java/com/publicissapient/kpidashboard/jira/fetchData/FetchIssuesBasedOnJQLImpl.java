@@ -7,35 +7,22 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
-import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,12 +32,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
 
 import java.io.*;
 import java.net.*;
@@ -58,15 +43,12 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
 @Slf4j
 @Service
 public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FetchIssuesBasedOnJQLImpl.class);
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
@@ -88,24 +70,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     private ProcessorJiraRestClient client;
 
     @Autowired
-    private ToolCredentialProvider toolCredentialProvider;
-
-    @Autowired
-    private ConnectionRepository connectionRepository;
-
-    @Autowired
-    private ProjectToolConfigRepository toolRepository;
-
-    @Autowired
-    private ProjectBasicConfigRepository projectConfigRepository;
-
-    @Autowired
-    private JiraOAuthProperties jiraOAuthProperties;
-
-    @Autowired
-    private JiraOAuthClient jiraOAuthClient;
-
-    @Autowired
     private KanbanJiraIssueRepository kanbanJiraRepo;
 
     @Autowired
@@ -124,9 +88,11 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     String routingKey;
 
     @Override
-    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry) throws InterruptedException, JSONException {
+    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws InterruptedException, JSONException {
         List<Issue> issues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
+
+        client=clientIncoming;
 
         boolean dataExist=false;
         if (projectConfig.isKanban()) {
@@ -222,7 +188,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                                   boolean dataExist) throws InterruptedException{
         ProjectConfFieldMapping projectConfig=entry.getValue();
         SearchResult searchResult = null;
-        client=getClient(entry);
 
         if (client == null) {
             log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -277,42 +242,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return searchResult;
     }
 
-    private ProcessorJiraRestClient getClient(Map.Entry<String, ProjectConfFieldMapping> entry){
-        ProjectConfFieldMapping projectConfig=entry.getValue();
-        List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-        List<ProjectToolConfig> jiraDetails = toolRepository.findByToolNameAndBasicProjectConfigId(
-                ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId());
-        if (CollectionUtils.isNotEmpty(jiraDetails) && jiraDetails.get(0).getConnectionId() != null) {
-            Optional<Connection> jiraConn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
-            if (jiraConn.isPresent() && projectConfig.getJira().getConnection().isPresent()) {
-                projectConfig.setProjectToolConfig(jiraDetails.get(0));
-                boolean isOauth = jiraConn.get().getIsOAuth();
-                Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-                if (connectionOptional.isPresent()) {
-                    Connection conn = connectionOptional.get();
-                    client = getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
-                }}}
-        return client;
-    }
-
-    private List<ProjectBasicConfig> getSelectedProjects() {
-        List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
-
-        psLogData.setTotalConfiguredProject(String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
-        List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
-        if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
-            return allProjects;
-        }
-
-        return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-                        projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-                .collect(Collectors.toList());
-
-    }
-
-    public List<String> getProjectsBasicConfigIds() {
-        return Arrays.asList("63bfa0d5b7617e260763ca21");
-    }
 
     public int getPageSize() {
         return jiraProcessorConfig.getPageSize();
@@ -381,203 +310,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint
                 + (apiEndPoint.endsWith("/") ? "" : "/") + serverURL + jiraUserName);
 
-    }
-
-    private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList, Map.Entry<String, ProjectConfFieldMapping> entry, boolean isOauth, Connection conn) {
-        ProcessorJiraRestClient client;
-
-        String username = "";
-        String password = "";
-        if (conn.isVault()) {
-            ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
-            if(toolCredential != null){
-                username = toolCredential.getUsername();
-                password = toolCredential.getPassword();
-            }
-
-        } else {
-            username = conn.getUsername();
-            password = jiraCommon.decryptJiraPassword(conn.getPassword());
-        }
-
-
-        if (isOauth) {
-            // Sets Jira OAuth properties
-            jiraOAuthProperties.setJiraBaseURL(conn.getBaseUrl());
-            jiraOAuthProperties.setConsumerKey(conn.getConsumerKey());
-            jiraOAuthProperties.setPrivateKey(jiraCommon.decryptJiraPassword(conn.getPrivateKey()));
-
-            // Generate and save accessToken
-            saveAccessToken(entry);
-            jiraOAuthProperties.setAccessToken(conn.getAccessToken());
-
-            client = getJiraOAuthClient(JiraInfo.builder()
-                    .jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-                    .password(password)
-                    .jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
-                    .jiraConfigProxyPort(null).build());
-
-        } else {
-
-            client = getJiraClient(JiraInfo.builder()
-                    .jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-                    .password(password).jiraConfigProxyUrl(null)
-                    .jiraConfigProxyPort(null).build());
-
-        }
-        return client;
-    }
-
-    public ProcessorJiraRestClient getJiraClient(JiraInfo jiraInfo) {
-        String username = jiraInfo.getUsername();
-        String password = jiraInfo.getPassword();
-        String jiraConfigBaseUrl = jiraInfo.getJiraConfigBaseUrl();
-        String jiraConfigProxyUrl = jiraInfo.getJiraConfigProxyUrl();
-        String jiraConfigProxyPort = jiraInfo.getJiraConfigProxyPort();
-        ProcessorJiraRestClient client = null;
-        String proxyUri = null;
-        String proxyPort = null;
-
-        URI jiraUri = null;
-
-        try {
-            if (jiraConfigProxyUrl == null || jiraConfigProxyUrl.isEmpty() || (jiraConfigProxyPort == null)) {
-                jiraUri = new URI(jiraConfigBaseUrl);
-            } else {
-                proxyUri = jiraConfigProxyUrl;
-                proxyPort = jiraConfigProxyPort;
-
-                jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
-            }
-
-            InetAddress.getByName(jiraUri.getHost());// NOSONAR
-            client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-                    password, jiraProcessorConfig);
-
-        } catch (UnknownHostException | URISyntaxException e) {
-            LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
-            LOGGER.debug("Exception", e);
-        }
-
-        return client;
-    }
-    
-    public ProcessorJiraRestClient getJiraOAuthClient(JiraInfo jiraInfo) {
-        String username = jiraInfo.getUsername();
-        String password = jiraInfo.getPassword();
-        String jiraConfigBaseUrl = jiraInfo.getJiraConfigBaseUrl();
-        String jiraConfigProxyUrl = jiraInfo.getJiraConfigProxyUrl();
-        String jiraConfigProxyPort = jiraInfo.getJiraConfigProxyPort();
-        ProcessorJiraRestClient client = null;
-        String proxyUri = null;
-        String proxyPort = null;
-
-        URI jiraUri = null;
-
-        try {
-            if (jiraConfigProxyUrl == null || jiraConfigProxyUrl.isEmpty() || (jiraConfigProxyPort == null)) {
-                jiraUri = new URI(jiraConfigBaseUrl);
-            } else {
-                proxyUri = jiraConfigProxyUrl;
-                proxyPort = jiraConfigProxyPort;
-
-                jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
-            }
-
-            InetAddress.getByName(jiraUri.getHost());// NOSONAR
-            client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
-
-        } catch (UnknownHostException | URISyntaxException e) {
-            LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
-
-            LOGGER.debug("Exception", e);
-        }
-
-        return client;
-    }
-
-    private URI createJiraConnection(String jiraBaseUri, String fullProxyUrl, String username, String password) {
-        final String uname = username;
-        final String pword = password;
-        Proxy proxy = null;
-        URLConnection connection = null;
-        try {
-            if (StringUtils.isNotEmpty(jiraBaseUri)) {
-                URL baseUrl = new URL(jiraBaseUri);
-                if (StringUtils.isNotEmpty(fullProxyUrl)) {
-                    URL proxyUrl = new URL(fullProxyUrl);
-                    URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(), proxyUrl.getHost(),
-                            proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
-                    proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
-                    connection = baseUrl.openConnection(proxy);
-
-                    if (!StringUtils.isEmpty(username) && (!StringUtils.isEmpty(password))) {
-                        String creds = uname + ":" + pword;
-                        Authenticator.setDefault(new Authenticator() {
-                            @Override
-                            protected PasswordAuthentication getPasswordAuthentication() {
-                                return new PasswordAuthentication(uname, pword.toCharArray());
-                            }
-                        });
-                        connection.setRequestProperty("Proxy-Authorization",
-                                "Basic " + Base64.encodeBase64String((creds).getBytes()));
-                    }
-                } else {
-                    connection = baseUrl.openConnection();
-                }
-            } else {
-                LOGGER.error(
-                        "The response from Jira was blank or non existant - please check your property configurations");
-                return null;
-            }
-
-            return connection.getURL().toURI();
-
-        } catch (URISyntaxException | IOException e) {
-            try {
-                LOGGER.error(
-                        "There was a problem parsing or reading the proxy configuration settings during openning a Jira connection. Defaulting to a non-proxy URI.");
-                return new URI(jiraBaseUri);
-            } catch (URISyntaxException e1) {
-                LOGGER.error("Correction:  The Jira connection base URI cannot be read!");
-                return null;
-            }
-        }
-    }
-
-    public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry) {
-        Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
-        if (connectionOptional.isPresent()) {
-            Optional<String> checkNull = Optional
-                    .ofNullable(connectionOptional.get().getAccessToken());
-            if (!checkNull.isPresent() || checkNull.get().isEmpty()) {
-
-                JiraToolConfig jiraToolConfig = entry.getValue().getJira();
-                generateAndSaveAccessToken(jiraToolConfig);
-            }
-        }
-    }
-
-    private void generateAndSaveAccessToken(JiraToolConfig jiraToolConfig) {
-
-        Optional<Connection> connectionOptional = jiraToolConfig.getConnection();
-        if (connectionOptional.isPresent()) {
-            String username = connectionOptional.get().getUsername();
-            String plainTextPassword = jiraCommon.decryptJiraPassword(connectionOptional.get().getPassword());
-
-            String accessToken;
-            try {
-                accessToken = jiraOAuthClient.getAccessToken(username, plainTextPassword);
-                connectionOptional.get().setAccessToken(accessToken);
-                connectionRepository.save(connectionOptional.get());
-            } catch (FailingHttpStatusCodeException e) {
-                log.error("HTTP Status code error while generating accessToken", e);
-            } catch (MalformedURLException e) {
-                log.error("Malformed URL error while generating accessToken", e);
-            } catch (IOException e) {
-                log.error("Error while generating accessToken", e);
-            }
-        }
     }
 
 

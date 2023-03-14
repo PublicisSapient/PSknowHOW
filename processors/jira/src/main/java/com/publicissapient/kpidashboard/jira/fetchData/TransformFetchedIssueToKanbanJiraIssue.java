@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface TransformFetchedIssueToKanbanJiraIssue {
 
-    public List<KanbanJiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs,
+    List<KanbanJiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs,
                                                      ProjectConfFieldMapping projectConfig) throws JSONException;
 
 }

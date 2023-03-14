@@ -155,7 +155,7 @@ public class FetchIssuesBasedOnJQLImplTest {
                 .thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        fetchIssuesBasedOnJQL.fetchIssues(entry);
+        fetchIssuesBasedOnJQL.fetchIssues(entry, restClient);
 
     }
 

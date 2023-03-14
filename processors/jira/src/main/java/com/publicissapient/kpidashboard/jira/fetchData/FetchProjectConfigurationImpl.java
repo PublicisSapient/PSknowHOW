@@ -10,6 +10,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,14 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     @Autowired
     FetchIssuesBasedOnJQL fetchIssuesBasedOnJQL;
 
+    @Autowired
+    CreateMetadata createMetadata;
+
+    @Autowired
+    JiraClient jiraClient;
+
+    private ProcessorJiraRestClient client;
+
    @Override
     public Map<String, ProjectConfFieldMapping> fetchConfiguration(){
         List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
@@ -70,7 +79,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     public List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
 //               "63bfa0d5b7617e260763ca21"
-               "63c04dc7b7617e260763ca4e"
+//               "63c04dc7b7617e260763ca4e"
+               "64102db328f2534cd9d9b0e8"
        );
     }
 
@@ -98,7 +108,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
             projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
             try {
                 for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
-                    fetchIssuesBasedOnJQL.fetchIssues(entry);
+                    client = jiraClient.getClient(entry);
+                    createMetadata.collectMetadata(entry.getValue(),client);
+                    fetchIssuesBasedOnJQL.fetchIssues(entry,client);
                 }
             } catch (InterruptedException | FileNotFoundException e) {
                 throw new RuntimeException(e);

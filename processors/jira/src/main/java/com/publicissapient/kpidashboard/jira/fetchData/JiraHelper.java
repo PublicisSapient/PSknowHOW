@@ -9,7 +9,7 @@ import org.codehaus.jettison.json.JSONObject;
 import java.util.Map;
 
 @Slf4j
-public class JiraIssueClient2 {
+public class JiraHelper {
 
     protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 

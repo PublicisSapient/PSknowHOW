@@ -50,7 +50,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 //List<Issue> to List<JiraIssue>
 @Slf4j
 @Service
-public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 implements TransformFetchedIssueToJiraIssue{
+public class TransformFetchedIssueToJiraIssueImpl extends JiraHelper implements TransformFetchedIssueToJiraIssue{
 
     @Autowired
     private JiraIssueRepository jiraIssueRepository;
@@ -69,6 +69,9 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
 
     @Autowired
     private JiraCommon jiraCommon;
+
+    @Autowired
+    private CreateAccountHierarchy createAccountHierarchy;
 
     private static final String CONTENTS = "contents";
     private static final String COMPLETED_ISSUES = "completedIssues";
@@ -180,6 +183,8 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraIssueClient2 imple
                 }
             }
         }
+
+        createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
 
 
         if (!dataFromBoard) {
