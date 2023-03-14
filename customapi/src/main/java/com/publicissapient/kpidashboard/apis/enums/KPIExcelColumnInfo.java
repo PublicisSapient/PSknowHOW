@@ -16,31 +16,24 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
+package com.publicissapient.kpidashboard.apis.enums;
 
-import java.util.List;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeRoles;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import java.io.Serializable;
 
 /**
- * The type Project release.
+ * For Excel Column Info
  */
 @Data
-public class ProjectAssigneeDTO extends BasicModel {
-
-	private String projectName;
-	private ObjectId basicProjectConfigId;
-	private List<AssigneeRoles> assigneeRoles;
-
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class KPIExcelColumnInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String kpiColumn;
+    private String columnInfo;
 }

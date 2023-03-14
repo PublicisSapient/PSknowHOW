@@ -18,8 +18,10 @@
 
 package com.publicissapient.kpidashboard.github.processor;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,7 @@ import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorItemRepository;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,6 +102,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * 
@@ -216,7 +221,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					boolean firstTimeRun = (gitHubProcessorItem.getLastUpdatedCommit() == null);
 
 					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
-							firstTimeRun, tool);
+							firstTimeRun, tool, proBasicConfig);
+					updateAssigneeNameForCommits(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, commitDetailList);
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(gitHubProcessorItem, commit)).collect(Collectors.toList());
 					unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitHubProcessorItem.getId()));
@@ -227,7 +233,9 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					}
 
 					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
-							firstTimeRun, tool);
+							firstTimeRun, tool, proBasicConfig);
+
+					updateAssigneeForMerge(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, mergeRequestsList);
 					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
 							.filter(mergReq -> isNewMergeReq(gitHubProcessorItem, mergReq))
 							.collect(Collectors.toList());
@@ -240,11 +248,13 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					reposCount++;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (FetchingCommitException exception) {
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
+					processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(String.format("Error in processing %s", tool.getUrl()), exception);
 				}
@@ -272,6 +282,35 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		return executionStatus;
 	}
 
+	private void updateAssigneeNameForCommits(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<CommitDetails> commitDetailList) {
+		if (proBasicConfig.isSaveAssigneeDetails()
+				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+			List<CommitDetails> updateAuthor = new ArrayList<>();
+			commitDetailList.stream().forEach(commit -> {
+				CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
+						gitHubProcessorItem.getId(), commit.getRevisionNumber());
+				commitDetailsData.setAuthor(commit.getAuthor());
+				updateAuthor.add(commitDetailsData);
+			});
+			commitsRepo.saveAll(updateAuthor);
+
+		}
+	}
+
+	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<MergeRequests> mergeRequestsList) {
+		if (proBasicConfig.isSaveAssigneeDetails()
+				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+			List<MergeRequests> updateAuthor = new ArrayList<>();
+			mergeRequestsList.stream().forEach(mergeRequests -> {
+				MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
+						gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
+				mergeRequestData.setAuthor(mergeRequests.getAuthor());
+				updateAuthor.add(mergeRequestData);
+			});
+			mergReqRepo.saveAll(updateAuthor);
+		}
+	}
+
 	private GitHubProcessorItem getGitHubProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
 		List<GitHubProcessorItem> gitHubProcessorItemList = gitHubProcessorItemRepository
 				.findByProcessorIdAndToolConfigId(processorId, tool.getId());
@@ -289,6 +328,12 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUB);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+		);
 		return processorExecutionTraceLog;
 	}
 	/**
