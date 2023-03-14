@@ -3421,6 +3421,45 @@ db.getCollection('kpi_master').insert(
      "calculateMaturity": false
   },
   {
+       "kpiId": "kpi132",
+       "kpiName": "First Time Pass Rate",
+       "maxValue": "",
+       "kpiUnit": "Hours",
+       "isDeleted": "False",
+       "defaultOrder": 13,
+       "kpiCategory": "Iteration",
+       "kpiSource": "Jira",
+       "groupId": 8,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": null,
+       "kpiInfo": {
+         "details": [
+           {
+             "type": "paragraph",
+             "value": "--"
+           },
+           {
+             "type": "paragraph",
+             "value": "--"
+           },
+           {
+             "type": "paragraph",
+             "value": "--"
+           }
+
+         ]
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "3_column",
+       "calculateMaturity": false
+    },
+  {
     "kpiId": "kpi129",
     "kpiName": "Issues Without Story Link",
     "maxValue": "",

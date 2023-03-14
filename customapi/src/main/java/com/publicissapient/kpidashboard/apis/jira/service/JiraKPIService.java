@@ -33,6 +33,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.joda.time.DateTime;
@@ -280,5 +281,25 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
+	public void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
+														  List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
+														   List<JiraIssue> finalFirstTimePassStoryList) {
+
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+
+		if(CollectionUtils.isNotEmpty(finalFirstTimePassStoryList) && finalFirstTimePassStoryList.contains(jiraIssue)) {
+			iterationKpiModalValue.setFirstTimePass("Y");
+		}
+
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+
+
 	}
 }
