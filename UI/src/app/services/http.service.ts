@@ -131,6 +131,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
     private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
     private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
+    private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
+    private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
+    private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
 
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
@@ -337,14 +340,12 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** POST: Makes call to get data of Enginnering maturity  */
     getEnginneringMaturityData(data): Observable<object> {
-        return this.http.post<object>(this.enginneringMaturityUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.enginneringMaturityUrl, data);
     }
 
     /** POST: Makes call to get data of Enginnering maturity  */
     getEnginneringMaturityTableData(data): Observable<object> {
-        return this.http.post<object>(this.enginneringMaturityTableUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.enginneringMaturityTableUrl, data);
     }
 
     /** POST: Upload image file of dashboard configuration */
@@ -687,6 +688,18 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.post<any>(this.generateTokenUrl, postData);
     }
 
+    getJiraProjectAssignee(projectId){
+        return this.http.get<any>(this.getJiraProjectAssigneUrl +'/'+projectId);
+    }
+
+    getAssigneeRoles(){
+        return this.http.get<any>(this.getAssigneeRolesUrl);
+    }
+
+    saveOrUpdateAssignee(postData){
+        return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
+    }
+
     private handleError<T>(operation = 'operation', result?: T) {
 
         return (error: any): Observable<T> => {
@@ -737,8 +750,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** post feedback/idea */
     submitFeedbackData(data): Observable<any> {
-        return this.http.post<object>(this.submitFeedbackUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.submitFeedbackUrl, data);
     }
 
     /** get overall Summary */
@@ -858,7 +870,12 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.post<object>(this.submitCommentUrl, data);
     }
 
-        /** POST: Upload ldap certificate file */
+    /* Update project details  */
+      updateProjectDetails(updatedDetails,id){
+            return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
+        }
+
+    /** POST: Upload ldap certificate file */
     uploadCertificate(file): Observable<object> {
         const fileFormData = new FormData();
         fileFormData.append('file', file);

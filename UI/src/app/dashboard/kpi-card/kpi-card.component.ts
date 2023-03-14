@@ -50,6 +50,9 @@ export class KpiCardComponent implements OnInit, OnDestroy {
             this.filterOption = 'Overall';
           } else {
             this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            if(!this.filterOption){
+              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+            }
           }
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {

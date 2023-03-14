@@ -1,0 +1,490 @@
+{
+    "kpiFieldMappingList": [
+        {
+            "id": "63f9a9753ab813c508593837",
+            "kpiId": "kpi14",
+            "kpiName": "Defect Injection Rate",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraDod",
+                    "jiraDefectCreatedStatus",
+                    "jiraDefectDroppedStatus"
+                ],
+                "Issue Types Mapping": [
+                    "jiraDefectInjectionIssueType"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593838",
+            "kpiId": "kpi82",
+            "kpiName": "First Time Pass Rate",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "resolutionTypeForRejection",
+                    "jiraIssueDeliverdStatus"
+                ],
+                "Issue Types Mapping": [
+                    "jiraFTPRStoryIdentification"
+                ],
+                "Defects Mapping": [
+                    "defectPriority",
+                    "excludeRCAFromFTPR"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593839",
+            "kpiId": "kpi111",
+            "kpiName": "Defect Density",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraQADefectDensityIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDod"
+                ],
+                "Defects Mapping": [
+                    "jiraBugRaisedByQAIdentification"
+                ],
+                "Custom Fields Mapping": [
+                    "estimationCriteria",
+                    "storyPointToHourMapping"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383a",
+            "kpiId": "kpi35",
+            "kpiName": "Defect Seepage Rate",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraDefectSeepageIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDefectDroppedStatus"
+                ],
+                "Defects Mapping": [
+                    "jiraBugRaisedByIdentification"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383b",
+            "kpiId": "kpi34",
+            "kpiName": "Defect Removal Efficiency",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraDefectRemovalStatus"
+                ],
+                "Issue Types Mapping": [
+                    "jiraDefectRemovalIssueType"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383c",
+            "kpiId": "kpi37",
+            "kpiName": "Defect Rejection Rate",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraDefectRejectionStatus",
+                    "resolutionTypeForRejection"
+                ],
+                "Issue Types Mapping": [
+                    "jiraDefectRejectionlIssueType"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383d",
+            "kpiId": "kpi28",
+            "kpiName": "Defect Count By Priority",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraDefectCountlIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDefectDroppedStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383e",
+            "kpiId": "kpi36",
+            "kpiName": "Defect Count By RCA",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraDefectCountlIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDefectDroppedStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859383f",
+            "kpiId": "kpi126",
+            "kpiName": "Created vs Resolved defects",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraIssueDeliverdStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593847",
+            "kpiId": "kpi40",
+            "kpiName": "Story Count",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraStoryIdentification"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593848",
+            "kpiId": "kpi72",
+            "kpiName": "Commitment Reliability",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraSprintVelocityIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraIssueDeliverdStatus"
+                ],
+                "Custom Fields Mapping": [
+                    "estimationCriteria",
+                    "storyPointToHourMapping"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593849",
+            "kpiId": "kpi39",
+            "kpiName": "Sprint Velocity",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraSprintVelocityIssueType"
+                ],
+                "Custom Fields Mapping": [
+                    "estimationCriteria",
+                    "storyPointToHourMapping"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859384a",
+            "kpiId": "kpi46",
+            "kpiName": "Sprint Capacity Utilization",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraSprintCapacityIssueType"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859384b",
+            "kpiId": "kpi83",
+            "kpiName": "Average Resolution Time",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "resolutionTypeForRejection",
+                    "jiraIssueDeliverdStatus",
+                    "jiraStatusForDevelopment"
+                ],
+                "Issue Types Mapping": [
+                    "jiraIssueTypeNames"
+                ],
+                "Defects Mapping": [
+                    "jiradefecttype"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859384f",
+            "kpiId": "kpi3",
+            "kpiName": "Lead Time",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraIntakeToDorIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDor",
+                    "jiraDod",
+                    "jiraLiveStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593851",
+            "kpiId": "kpi73",
+            "kpiName": "Release Frequency",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {}
+        },
+        {
+            "id": "63f9a9753ab813c508593852",
+            "kpiId": "kpi113",
+            "kpiName": "Value delivered (Cost of Delay)",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Custom Fields Mapping": [
+                    "epicCostOfDelay"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593853",
+            "kpiId": "kpi5",
+            "kpiName": "Sprint Predictability",
+            "kpiSource": "Jira",
+            "type": [
+                "Scrum"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraSprintVelocityIssueType"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraIssueDeliverdStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593866",
+            "kpiId": "kpi121",
+            "kpiName": "Capacity",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraSprintCapacityIssueType"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593867",
+            "kpiId": "kpi119",
+            "kpiName": "Work Remaining",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraStatusForInProgress"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593868",
+            "kpiId": "kpi75",
+            "kpiName": "Estimate vs Actual",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {}
+        },
+        {
+            "id": "63f9a9753ab813c508593869",
+            "kpiId": "kpi123",
+            "kpiName": "Issues likely to Spill",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Custom Fields Mapping": [
+                    "workingHoursDayCPT"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859386a",
+            "kpiId": "kpi122",
+            "kpiName": "Closure Possible Today",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraStatusForQa",
+                    "jiraOnHoldStatus"
+                ],
+                "Custom Fields Mapping": [
+                    "workingHoursDayCPT"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859386b",
+            "kpiId": "kpi120",
+            "kpiName": "Scope Change",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {}
+        },
+        {
+            "id": "63f9a9753ab813c50859386c",
+            "kpiId": "kpi124",
+            "kpiName": "Estimation Hygiene",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "issueStatusExcluMissingWork"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c50859386d",
+            "kpiId": "kpi125",
+            "kpiName": "Daily Closures",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {}
+        },
+        {
+            "id": "63f9a9753ab813c50859386e",
+            "kpiId": "kpi128",
+            "kpiName": "Work Completed",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraStatusForInProgress"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593870",
+            "kpiId": "kpi80",
+            "kpiName": "Defects Without Story Link",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Issue Types Mapping": [
+                    "jiraStoryIdentification"
+                ],
+                "Workflow Status Mapping": [
+                    "jiraDefectDroppedStatus"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593871",
+            "kpiId": "kpi127",
+            "kpiName": "Production Defects Ageing",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraDod",
+                    "jiraLiveStatus",
+                    "jiraDefectDroppedStatus"
+                ],
+                "Defects Mapping": [
+                    "productionDefectIdentifier"
+                ]
+            }
+        },
+        {
+            "id": "63f9a9753ab813c508593872",
+            "kpiId": "kpi131",
+            "kpiName": "Wastage",
+            "kpiSource": "Jira",
+            "type": [
+                "Other"
+            ],
+            "fieldNames": {
+                "Workflow Status Mapping": [
+                    "jiraBlockedStatus",
+                    "jiraWaitStatus"
+                ]
+            }
+        }
+    ]
+}
