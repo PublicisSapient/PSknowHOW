@@ -69,7 +69,7 @@ public class CreateAccountHierarchyImplTest {
         when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
         when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(any(),any())).thenReturn(accountHierarchies);
-        createAccountHierarchy.creteAccountHierarchy(jiraIssues,createProjectConfig());
+        createAccountHierarchy.createAccountHierarchy(jiraIssues,createProjectConfig());
     }
 
     private List<HierarchyLevel> getMockHierarchyLevel() {

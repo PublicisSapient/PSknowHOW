@@ -37,7 +37,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
     private AccountHierarchyRepository accountHierarchyRepository;
 
     @Override
-    public Set<AccountHierarchy> creteAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig) {
+    public Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig) {
 
         List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
                 .getFullHierarchyLevels(projectConfig.isKanban());

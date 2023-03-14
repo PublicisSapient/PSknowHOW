@@ -11,6 +11,6 @@ import java.util.Set;
 @Service
 public interface CreateAccountHierarchy {
 
-    Set<AccountHierarchy> creteAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig);
+    Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig);
 
 }
