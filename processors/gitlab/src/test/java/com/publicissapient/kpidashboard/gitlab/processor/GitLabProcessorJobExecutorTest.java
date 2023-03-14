@@ -19,9 +19,12 @@
 package com.publicissapient.kpidashboard.gitlab.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -56,6 +59,10 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabProcessorRepository;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabRepoRepository;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class GitLabProcessorJobExecutorTest {
@@ -102,13 +109,18 @@ public class GitLabProcessorJobExecutorTest {
 
 	@InjectMocks
 	private GitLabProcessorJobExecutor gitBucketProcessorJobExecutor;
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
 
 	@BeforeEach
 	public void setUp() {
 		gitBucketProcessorJobExecutor = new GitLabProcessorJobExecutor(scheduler, gitLabProcessorRepository,
 				gitLabConfig, toolConfigRepository, connectionsRepository, gitLabRepository, gitLabClient,
 				processorItemRepository, commitRepository, processorToolConnectionService, mergReqRepo,
-				projectConfigRepository, processorExecutionTraceLogService);
+				projectConfigRepository, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 	}
 
 	@Test
@@ -130,6 +142,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
+		gitLabInfo.setId(new ObjectId("63ea43592181ac0bad9846db"));
 
 		List<GitLabRepo> gitLabRepos = new ArrayList<>();
 		GitLabRepo gitLabRepo = new GitLabRepo();
@@ -139,6 +152,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitLabRepo.setGitLabAccessToken("abc");
 		gitLabRepo.setGitLabProjectId("557");
 		gitLabRepo.setUserId("sgshj");
+		gitLabRepo.setToolConfigId(new ObjectId("63ea43592181ac0bad9846db"));
 		gitLabRepo.setProcessor(gitLabProcessor);
 		gitLabRepos.add(gitLabRepo);
 		List<CommitDetails> commitDetailList = new ArrayList<>();
@@ -147,6 +161,29 @@ public class GitLabProcessorJobExecutorTest {
 		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(gitLabRepository.findActiveRepos(PROCESSORID)).thenReturn(gitLabRepos);
+
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+
+		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
+		connectionDetail.setRepositoryName("release");
+		connectionDetail.setBranch("release/core-r4.4");
+		connectionDetail.setAccessToken("password");
+		connectionDetail.setUsername("User");
+		List<ProcessorToolConnection> connList = new ArrayList<>();
+		connList.add(connectionDetail);
+
+		Mockito.when(processorToolConnectionService.findByToolAndBasicProjectConfigId(ProcessorConstants.GITLAB, new ObjectId("61f22fbb16e55b7609b0a36b")))
+				.thenReturn(connList);
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUB);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("61f22fbb16e55b7609b0a36b");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
+
+		when(processorExecutionTraceLogRepository.
+				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITLAB, "61f22fbb16e55b7609b0a36b"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		Assert.assertEquals(1, commitDetailList.size());
 		gitBucketProcessorJobExecutor.execute(gitLabProcessor);
 	}
@@ -171,5 +208,13 @@ public class GitLabProcessorJobExecutorTest {
 		toolConfigs.add(toolConfig);
 		Assert.assertEquals(1, processorItems.size());
 		Whitebox.invokeMethod(gitBucketProcessorJobExecutor, "addProcessorItems", processor);
+	}
+	private List<ProjectBasicConfig> getProjectConfigList(){
+		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+		ProjectBasicConfig p = new ProjectBasicConfig();
+		p.setId(new ObjectId("61f22fbb16e55b7609b0a36b"));
+		p.setProjectName("projectName");
+		projectConfigList.add(p);
+		return projectConfigList;
 	}
 }

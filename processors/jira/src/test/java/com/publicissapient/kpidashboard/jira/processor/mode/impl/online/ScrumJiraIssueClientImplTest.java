@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -159,6 +160,8 @@ public class ScrumJiraIssueClientImplTest {
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -191,6 +194,7 @@ public class ScrumJiraIssueClientImplTest {
 //        projectConfig.setProjectId("63102");
 //        projectConfig.setProjectKey("TEST");
 		projectConfig.setProjectName("TestProject");
+		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -410,6 +414,9 @@ public class ScrumJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 
 		/*
 		 * BeanUtils.copyProperties(projectConfFieldMapping2, kanbanProjectlist.get(0));
