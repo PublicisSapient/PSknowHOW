@@ -14,6 +14,7 @@ db.getCollection('kpi_fieldmapping').insert(
 		kpiSource:'Jira',
         type: ['Scrum'],
         fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
+        },
 
       {
         kpiId: 'kpi111',
