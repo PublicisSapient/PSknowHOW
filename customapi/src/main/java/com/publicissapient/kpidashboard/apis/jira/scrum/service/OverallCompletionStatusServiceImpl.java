@@ -251,6 +251,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 								if (jiraIssue.getOriginalEstimateMinutes() != null)
 									originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
 
+								String devCompletionDate = getDevCompletionDate(issueCustomHistory, sprintDetails, fieldMapping);
 								// calling function for cal actual completion days
 								Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
 										sprintDetails, fieldMapping);
@@ -272,7 +273,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 											+ jiraIssue.getOriginalEstimateMinutes());
 								}
 								populateIterationDataForWorkCompleted(overAllmodalValues, modalValues, jiraIssue,
-										fieldMapping, actualCompletionData, jiraIssueDelay);
+										fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 							}
 						}
 						List<IterationKpiData> data = new ArrayList<>();
@@ -335,6 +336,43 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 					LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
+	}
+
+	/**
+	 * Method to get Development Completion Date based on field mapping
+	 *
+	 * @param issueCustomHistory
+	 * @param sprintDetail
+	 * @param fieldMapping
+	 * @return
+	 */
+	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
+			FieldMapping fieldMapping) {
+		List<String> devCompleteStatus = new ArrayList<>();
+		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+
+		// filtering storySprintDetails lies in between sprintStart and sprintEnd
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
+			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
+							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
+			devCompleteStatus = fieldMapping.getJiraDevDoneStatus();
+		}
+		String devCompleteDate = null;
+		for (JiraIssueSprint jiraIssueSprint : filterStorySprintDetails) {
+			if (devCompleteStatus.contains(jiraIssueSprint.getFromStatus())) {
+				devCompleteDate = LocalDate
+						.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER)
+						.toString();
+			}
+		}
+		return devCompleteDate;
 	}
 
 	/**

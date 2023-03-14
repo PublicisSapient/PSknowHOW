@@ -20,10 +20,14 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.*;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,11 +56,9 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 @Component
 public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -72,6 +74,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String POTENTIAL_DELAY = "Potential Delay";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
+	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -81,6 +84,9 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	@Autowired
 	private ConfigHelperService configHelperService;
+
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -126,8 +132,13 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);
+					List<JiraIssueCustomHistory> issueHistoryList = jiraIssueCustomHistoryRepository
+							.findByStoryIDInAndBasicProjectConfigIdIn(
+									issueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+									Collections.singletonList(basicProjectConfigId));
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
+					resultListMap.put(ISSUE_CUSTOM_HISTORY, issueHistoryList);
 				}
 			}
 		}
@@ -159,6 +170,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails= (SprintDetails) resultMap.get(SPRINT_DETAILS);
+		List<JiraIssueCustomHistory> allIssueHistories = (List<JiraIssueCustomHistory>) resultMap
+				.get(ISSUE_CUSTOM_HISTORY);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Work Remaining -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
@@ -186,7 +199,14 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					int remHours = 0;
 					int delay=0;
 					for (JiraIssue jiraIssue : issues) {
-						KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping,issueWiseDelay);
+						JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
+								.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+										.equals(jiraIssue.getNumber()))
+								.findFirst().orElse(new JiraIssueCustomHistory());
+						String devCompletionDate = getDevCompletionDate(issueCustomHistory, sprintDetails,
+								fieldMapping);
+						KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue,
+								fieldMapping, issueWiseDelay, devCompletionDate);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getRemainingEstimateMinutes()) {
@@ -276,6 +296,38 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			finalDelay=potentialDelay+finalDelay;
 		}
 		return finalDelay;
+	}
+
+	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
+									   FieldMapping fieldMapping) {
+		List<String> devCompleteStatus = new ArrayList<>();
+		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0],
+				DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT));
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0],
+				DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT));
+
+		// filtering storySprintDetails lies in between sprintStart and sprintEnd
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
+			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
+					.filter(jiraIssueSprint -> DateUtil
+							.isWithinDateRange(
+									LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+											DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)),
+									sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
+			devCompleteStatus = fieldMapping.getJiraDevDoneStatus();
+		}
+		String devCompleteDate = null;
+		for (JiraIssueSprint jiraIssueSprint : filterStorySprintDetails) {
+			if (devCompleteStatus.contains(jiraIssueSprint.getFromStatus())) {
+				devCompleteDate = LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+						DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString();
+			}
+		}
+		return devCompleteDate;
 	}
 
 	/**

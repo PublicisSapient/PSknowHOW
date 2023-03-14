@@ -249,7 +249,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public void populateIterationDataForWorkCompleted(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, Object> actualCompletionData, long delay) {
+			Map<String, Object> actualCompletionData, long delay, String devCompletionDate) {
 		int originalEstimate = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
@@ -257,7 +257,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setActualStartDate(actualCompletionData.get("actualStartDate").toString());
+		iterationKpiModalValue.setDevCompletionDate(devCompletionDate);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());

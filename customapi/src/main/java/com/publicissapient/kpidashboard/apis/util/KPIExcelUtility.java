@@ -1174,7 +1174,7 @@ public class KPIExcelUtility {
 
 	public static void populateIterationKpiWithPCD(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, IterationPotentialDelay> issueWiseDelay) {
+			Map<String, IterationPotentialDelay> issueWiseDelay, String devCompletionDate) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -1216,6 +1216,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPotentialDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
+        iterationKpiModalValue.setDevCompletionDate(devCompletionDate);
         iterationKpiModalValue.setIssuePriority(jiraIssue.getPriority());
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
