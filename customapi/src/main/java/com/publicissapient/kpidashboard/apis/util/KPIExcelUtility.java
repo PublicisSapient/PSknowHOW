@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -1221,4 +1222,39 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
+
+    public static void populateIterationDataForQualityStatus(List<IterationKpiModalValue> overAllmodalValues,
+            JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping,
+            List<JiraIssue> linkedJiraIssueStoryList) {
+
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+        iterationKpiModalValue.setDescription(jiraIssue.getName());
+        iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+        iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+        if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
+            AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
+            Map<String, String> linkedStoriesMap = new HashMap<>();
+            linkedJiraIssueStoryList.forEach(linkedStory -> {
+                linkedStoriesMap.put(linkedStory.getNumber(), linkedStory.getUrl());
+                if (estimationFlag) {
+                    if (null != linkedStory.getStoryPoints()
+                            && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                            && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                        storyPoint.updateAndGet(v -> v + linkedStory.getStoryPoints());
+                    }
+                    if (null != linkedStory.getOriginalEstimateMinutes()
+                            && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) && fieldMapping
+                            .getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+                        storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
+                    }
+                }
+            });
+            iterationKpiModalValue.setLinkedStories(linkedStoriesMap);
+            iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
+        }
+        overAllmodalValues.add(iterationKpiModalValue);
+    }
 }
