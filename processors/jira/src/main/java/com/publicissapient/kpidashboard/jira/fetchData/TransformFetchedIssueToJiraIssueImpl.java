@@ -50,7 +50,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 //List<Issue> to List<JiraIssue>
 @Slf4j
 @Service
-public class TransformFetchedIssueToJiraIssueImpl extends JiraHelper implements TransformFetchedIssueToJiraIssue{
+public class TransformFetchedIssueToJiraIssueImpl extends JiraCommon implements TransformFetchedIssueToJiraIssue{
 
     @Autowired
     private JiraIssueRepository jiraIssueRepository;
@@ -66,9 +66,6 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraHelper implements 
 
     @Autowired
     private SprintRepository sprintRepository;
-
-    @Autowired
-    private JiraCommon jiraCommon;
 
     @Autowired
     private CreateAccountHierarchy createAccountHierarchy;
@@ -281,7 +278,7 @@ public class TransformFetchedIssueToJiraIssueImpl extends JiraHelper implements 
                 sprintReportLog.setUrl(url.toString());
                 URLConnection connection;
                 connection = url.openConnection();
-                getReport(jiraCommon.getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig,
+                getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig,
                         dbSprintDetails, boardId);
                 sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
             }

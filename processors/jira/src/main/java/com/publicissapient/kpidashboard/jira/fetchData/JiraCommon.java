@@ -1,12 +1,16 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
+import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +21,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Service
 public class JiraCommon {
 
     @Autowired
@@ -76,6 +80,22 @@ public class JiraCommon {
     public String encodeCredentialsToBase64(String username, String password) {
         String cred = username + ":" + password;
         return Base64.getEncoder().encodeToString(cred.getBytes());
+    }
+
+    public String getFieldValue(String customFieldId, Map<String, IssueField> fields) {
+        Object fieldValue = fields.get(customFieldId).getValue();
+        try {
+            if (fieldValue instanceof Double) {
+                return fieldValue.toString();
+            } else if (fieldValue instanceof JSONObject) {
+                return ((JSONObject) fieldValue).getString(JiraConstants.VALUE);
+            } else if (fieldValue instanceof String) {
+                return fieldValue.toString();
+            }
+        } catch (JSONException e) {
+            log.error("JIRA Processor | Error while parsing RCA Custom_Field", e);
+        }
+        return fieldValue.toString();
     }
 
 }

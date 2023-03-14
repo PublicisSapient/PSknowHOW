@@ -30,7 +30,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraHelper implements TransformFetchedIssueToKanbanJiraIssue{
+public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon implements TransformFetchedIssueToKanbanJiraIssue{
 
     @Autowired
     private JiraProcessorRepository jiraProcessorRepository;
