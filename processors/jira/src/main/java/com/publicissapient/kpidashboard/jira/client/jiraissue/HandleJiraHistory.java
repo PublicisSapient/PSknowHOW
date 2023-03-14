@@ -181,10 +181,10 @@ public class HandleJiraHistory {
 			if (ObjectUtils.isNotEmpty(fields.get(fieldMapping.getSprintName()))) {
 				IssueField issueField = fields.get(fieldMapping.getSprintName());
 				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-					String[] sprint = JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split(",startDate")[0]
-							.split("=");
+					String[] sprint = JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("name=")[1]
+							.split(",");
 					if (sprint.length > 0) {
-						String initialSprintName = sprint[sprint.length - 1];
+						String initialSprintName = sprint[0];
 						createFirstEntryOfChangeLog(sprintChangeLog, issue, initialSprintName);
 					}
 				}
