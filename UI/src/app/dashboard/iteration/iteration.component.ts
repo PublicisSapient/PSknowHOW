@@ -119,7 +119,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noSprints = res;
       this.service.iterationCongifData.next({});
-      if(this.noSprints){
+      if (this.noSprints) {
         this.service.kpiListNewOrder.next([]);
       }
     }));
@@ -205,28 +205,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
 
-
-  // Used for grouping all Hygiene kpi from master data and calling Jira kpi.(only for scrum).
-  /*groupHygieneKpi() {
-
-    // creating a set of unique group Ids
-    const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory === 'Iteration') {
-        groupIdSet.add(obj.groupId);
-      }
-    });
-    // sending requests after grouping the the KPIs according to group Id
-    groupIdSet.forEach((groupId) => {
-      if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, groupId);
-        this.postJiraKpi(this.kpiJira, 'jira');
-      }
-    });
-
-  }*/
-
-
   // post request of Jira(scrum) hygiene
   postJiraKpi(postData, source): void {
     postData.kpiList.forEach(element => {
@@ -253,84 +231,7 @@ export class IterationComponent implements OnInit, OnDestroy {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
           });
         }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi115 && !!this.jiraKpiData.kpi115.value && this.jiraKpiData.kpi115.value !== 'undefined' && this.jiraKpiData.kpi115.value !== undefined && this.jiraKpiData.kpi115.value.length > 1) {
-        //   const data = [{
-        //     data: this.jiraKpiData.kpi115.value[1].data,
-        //     count: this.jiraKpiData.kpi115.value[1].count,
-        //     totalCount: this.jiraKpiData.kpi115.value[0].count,
-        //     totalText: this.jiraKpiData.kpi115.value[0].data,
-        //     totalOptionalCount: this.jiraKpiData.kpi115.value[2]?.count,
-        //     totalOptionalText: this.jiraKpiData.kpi115.value[2]?.data
-        //   },
-        //   {
-        //     data: 'Stories With Worklog',
-        //     count: this.jiraKpiData.kpi115.value[0].count - this.jiraKpiData.kpi115.value[1].count,
-        //     totalCount: this.jiraKpiData.kpi115.value[0].count,
-        //     totalText: this.jiraKpiData.kpi115.value[0].data,
-        //     totalOptionalCount: this.jiraKpiData.kpi115.value[2]?.count,
-        //     totalOptionalText: this.jiraKpiData.kpi115.value[2]?.data
-        //   }];
-        //   this.jiraKpiData.kpi115.value = data;
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi76 && !!this.jiraKpiData.kpi76.value && this.jiraKpiData.kpi76.value !== 'undefined' && this.jiraKpiData.kpi76.value !== undefined && this.jiraKpiData.kpi76.value.length > 1) {
-        //   const totalStoryCount = this.jiraKpiData.kpi76.value[1]?.count;
-        //   this.jiraKpiData.kpi76.value[1].data = 'In Progress';
-        //   this.jiraKpiData.kpi76.value[1].count = this.jiraKpiData.kpi76.value[1]?.count - (this.jiraKpiData.kpi76.value[0]?.count + this.jiraKpiData.kpi76.value[2]?.count);
-        //   this.jiraKpiData.kpi76.value.forEach(data => {
-        //     data.totalCount = totalStoryCount;
-        //     data.totalText = 'Total Stories';
-        //   });
-        //   this.service.currentSelectedSprintSub.next(this.jiraKpiData?.kpi76?.trendValueList[0]?.value[0]?.sSprintID);
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi81 && !!this.jiraKpiData.kpi81.value && this.jiraKpiData.kpi81.value !== 'undefined' && this.jiraKpiData.kpi81.value !== undefined && this.jiraKpiData.kpi81.value.length > 1) {
-        //   const totalStoryCount = this.jiraKpiData.kpi81.value[0].count;
-        //   this.jiraKpiData.kpi81.value[0].data = 'Stories with Estimate';
-        //   this.jiraKpiData.kpi81.value[0].count = this.jiraKpiData.kpi81.value[0].count - this.jiraKpiData.kpi81.value[1].count;
-        //   this.jiraKpiData.kpi81.value.forEach(data => {
-        //     data.totalCount = totalStoryCount;
-        //     data.totalText = 'Total Stories';
-        //   });
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi75 && !!this.jiraKpiData.kpi75.value && this.jiraKpiData.kpi75.value !== 'undefined' && this.jiraKpiData.kpi75.value !== undefined && this.jiraKpiData.kpi75.value.length > 0) {
-        //   const colorValues = ['#44739f', '#AEDB76'];
-        //   this.jiraKpiData.kpi75.value.map((data, index) => {
-        //     data.backgroundColor = (parseFloat(data.value.replace('%', '')) <= 100) ? colorValues[index] : '#F06667';
-        //   });
-        // }
-        // if (!!this.jiraKpiData && !!this.jiraKpiData.kpi78 && !!this.jiraKpiData.kpi78.value && this.jiraKpiData.kpi78.value !== 'undefined' && this.jiraKpiData.kpi78.value !== undefined && this.jiraKpiData.kpi78.value.length > 0) {
-        //   const dataArray = [];
-        //   this.jiraKpiData.kpi78.value.forEach(data => {
-        //     if (data.data.indexOf('%') < 0) {
-        //       dataArray.push(data);
-        //     }
-        //   });
 
-        //   this.jiraKpiData.kpi78.value = dataArray;
-        //   const colorValues = ['#44739f', '#AEDB76'];
-        //   this.jiraKpiData.kpi78.value.map((data, index) => {
-        //     data.backgroundColor = (parseFloat(data.value.replace('%', '')) <= 100 && parseFloat(data.value.replace('%', '')) >= 0) ? colorValues[index] : '#F06667';
-        //   });
-        // }
-
-        // if (this.jiraKpiData && this.jiraKpiData.kpi80 && this.jiraKpiData.kpi80.trendValueList && this.jiraKpiData.kpi80.trendValueList.length) {
-        //   if (this.jiraKpiData.kpi80.trendValueList[0] && this.jiraKpiData.kpi80.trendValueList[0].value) {
-        //     if (this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue) {
-        //       const dataArray = [];
-        //       let self = this;
-        //       Object.keys(this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue).forEach((key) => {
-        //         let valueObj = {};
-        //         valueObj[key] = self.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue[key];
-        //         dataArray.push(valueObj);
-        //       });
-        //       this.jiraKpiData.kpi80.trendValueList[0].value[0].howerValue = dataArray;
-        //       dataArray.forEach((data) => {
-        //         if (Object.keys(data)[0] === 'Total Defects') {
-        //           this.jiraKpiData.kpi80.maxValue = data['Total Defects'];
-        //         }
-        //       });
-        //     }
-        //   }
-        // }
         this.kpiLoader = false;
       });
   }
@@ -353,15 +254,15 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
-          this.colorObj = x;
-          if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-              this.trendBoxColorObj = { ...x };
-              for (const key in this.trendBoxColorObj) {
-                  const idx = key.lastIndexOf('_');
-                  const nodeName = key.slice(0, idx);
-                  this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-              }
+        this.colorObj = x;
+        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+          this.trendBoxColorObj = { ...x };
+          for (const key in this.trendBoxColorObj) {
+            const idx = key.lastIndexOf('_');
+            const nodeName = key.slice(0, idx);
+            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
           }
+        }
       }
     }));
 
@@ -373,13 +274,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
 
     });
-    // this.httpService.getTooltipData()
-    //   .subscribe(filterData => {
-    //     if (filterData[0] !== 'error') {
-    //       this.tooltip = filterData;
-    //       console.log(this.tooltip);
-    //     }
-    //   });
   }
 
   // unsubscribing all Kpi Request
@@ -390,7 +284,7 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   // download excel functionality
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false);
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
   }
 
   // Return video link if video link present
@@ -437,55 +331,60 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   applyAggregationLogic(arr) {
     const aggregatedArr = [JSON.parse(JSON.stringify(arr[0]))];
-      for(let i = 0;i<arr?.length;i++){
-        for(let j = 0; j<arr[i]?.data?.length; j++){
-          let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i]?.data[j]?.label);
-          if(idx == -1){
-            aggregatedArr[0]?.data?.push(arr[i]?.data[j]);
-          }
+    for (let i = 0; i < arr?.length; i++) {
+      for (let j = 0; j < arr[i]?.data?.length; j++) {
+        let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i]?.data[j]?.label);
+        if (idx == -1) {
+          aggregatedArr[0]?.data?.push(arr[i]?.data[j]);
         }
       }
+    }
 
-      aggregatedArr[0].data = aggregatedArr[0]?.data?.map(item => ({
-        ...item,
-        value: 0,
-        value1: item?.hasOwnProperty('value1') ? 0 : null,
-        modalValues: item?.hasOwnProperty('modalValues') ? [] : null
-      }));
-      
-      for (let i = 0; i < arr?.length; i++) {
-        for (let j = 0; j < arr[i]?.data?.length; j++) {
-          let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i].data[j]['label']);
-          
-          if(idx != -1){
-            aggregatedArr[0].data[idx]['value'] += arr[i].data[j]['value'];
-            if(aggregatedArr[0]?.data[idx]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[idx]?.value1 != null){
-              aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
-            }
-            if(aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null){
-              aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ... arr[i]?.data[j]['modalValues']];
-            }
+    aggregatedArr[0].data = aggregatedArr[0]?.data?.map(item => ({
+      ...item,
+      value: 0,
+      value1: item?.hasOwnProperty('value1') ? 0 : null,
+      modalValues: item?.hasOwnProperty('modalValues') ? [] : null
+    }));
+
+    for (let i = 0; i < arr?.length; i++) {
+      for (let j = 0; j < arr[i]?.data?.length; j++) {
+        let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i].data[j]['label']);
+
+        if (idx != -1) {
+          aggregatedArr[0].data[idx]['value'] += arr[i].data[j]['value'];
+          if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[idx]?.value1 != null) {
+            aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
+          }
+          if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null) {
+            aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ...arr[i]?.data[j]['modalValues']];
           }
         }
       }
+    }
     return aggregatedArr;
   }
 
-  getChartData(kpiId, idx) {
+  createCombinations(arr1, arr2){
+    let arr = [];
+    for (let i = 0; i < arr1?.length; i++) {
+      for (let j = 0; j < arr2?.length; j++) {
+        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+      }
+    }
+    return arr;
+  }
+  getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
-    if (trendValueList && Object.keys(trendValueList)?.length > 0) {
+    if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
+
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
-        && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0
-        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')
-        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0) {
-        const tempArr = [];
+        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+        let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]['filter1']?.length; i++) {
-          for (let j = 0; j < this.kpiSelectedFilterObj[kpiId]['filter2']?.length; j++) {
-            tempArr.push({ filter1: this.kpiSelectedFilterObj[kpiId]['filter1'][i], filter2: this.kpiSelectedFilterObj[kpiId]['filter2'][j] });
-          }
-        }
+        
+        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
 
         for (let i = 0; i < tempArr?.length; i++) {
           preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
@@ -496,8 +395,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
-        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0)) {
+      }
+      else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))
+        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
@@ -508,35 +408,59 @@ export class IterationComponent implements OnInit, OnDestroy {
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else {
+      }
+
+      else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
         if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
           this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
-        } else if(trendValueList?.length > 0){
+        } else if (trendValueList?.length > 0) {
           this.kpiChartData[kpiId] = [...trendValueList];
-        }  else {
+        } else {
           const obj = JSON.parse(JSON.stringify(trendValueList));
           this.kpiChartData[kpiId]?.push(obj);
         }
       }
-    }else{
+    }
+    else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+      if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
+        const tempArr = {};
+        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        }
+        this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+
+      } else {
+        if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
+          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+        } else if (this.kpiSelectedFilterObj[kpiId].filter1.length > 0) {
+          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId].filter1[0])[0]?.value
+        } else {
+          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
+        }
+      }
+
+    }
+    else {
       this.kpiChartData[kpiId] = [];
     }
 
     if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
-    if(kpiId === 'kpi121'){
-      const iterationConfigData ={
-        daysLeft :this.timeRemaining,
-        capacity:{
-          kpiInfo:this.updatedConfigGlobalData.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiInfo,
-          value:this.kpiChartData[kpiId][0]
+    if (kpiId === 'kpi121') {
+      const iterationConfigData = {
+        daysLeft: this.timeRemaining,
+        capacity: {
+          kpiInfo: this.updatedConfigGlobalData.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiInfo,
+          value: this.kpiChartData[kpiId][0]
         }
       };
       this.service.iterationCongifData.next(iterationConfigData);
     }
+
   }
 
   ifKpiExist(kpiId) {
@@ -547,31 +471,50 @@ export class IterationComponent implements OnInit, OnDestroy {
   createAllKpiArray(data) {
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
-        if (idx !== -1) {
-          this.allKpiArray.splice(idx, 1);
-        }
-        this.allKpiArray.push(data[key]);
-        const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-        const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
-        if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          const tempObj = {};
-          for (const key in filters) {
-            tempObj[key] = ['Overall'];
-          }
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+      if (idx !== -1) {
+        this.allKpiArray.splice(idx, 1);
+      }
+      this.allKpiArray.push(data[key]);
+      const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
+      const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+      if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
 
-          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-          this.getDropdownArray(data[key]?.kpiId);
+        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+        const tempObj = {};
+        for (const key in filters) {
+          tempObj[key] = ['Overall'];
         }
-        this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
+        this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+
+        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+        this.getDropdownArray(data[key]?.kpiId);
+      }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+        this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
+        this.getDropdownArray(data[key]?.kpiId);
+        const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
+        if (formType?.toLowerCase() == 'radiobutton') {
+          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+        }
+        // else if (formType?.toLowerCase() == 'dropdown') {
+        //     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+        // } 
+        else {
+          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+        }
+        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+      }
+
+      this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
+
   }
 
   getDropdownArray(kpiId) {
     const idx = this.ifKpiExist(kpiId);
     let filters = {};
     const dropdownArr = [];
+    let trendValueList = this.allKpiArray[idx]?.trendValueList;
 
     if (idx != -1) {
       filters = this.allKpiArray[idx]?.filters;
@@ -579,14 +522,41 @@ export class IterationComponent implements OnInit, OnDestroy {
         Object.keys(filters)?.forEach(x => {
           dropdownArr.push(filters[x]);
         });
+        this.kpiDropdowns[kpiId] = [...dropdownArr];
       }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+        const obj = {};
+
+        for (let i = 0; i < trendValueList?.length; i++) {
+          let ifExist = dropdownArr.findIndex(x => x == trendValueList[i]?.filter);
+          if (ifExist == -1) {
+            dropdownArr?.push(trendValueList[i]?.filter);
+          }
+        }
+        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+
+        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          const index = dropdownArr?.findIndex(x => x?.toLowerCase() == 'overall');
+
+          if (index > -1) {
+            dropdownArr?.splice(index, 1);
+          }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = dropdownArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
+
     }
-    this.kpiDropdowns[kpiId] = [...dropdownArr];
+
+
   }
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-    if (event && Object.keys(event)?.length !== 0) {
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+
       for (const key in event) {
         if (event[key]?.length == 0) {
           delete event[key];
@@ -596,23 +566,24 @@ export class IterationComponent implements OnInit, OnDestroy {
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
     }
-
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
+
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
   }
 
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
     if (dDate2 < dDate1) {
-return 0;
-} // error code if dates transposed
+      return 0;
+    } // error code if dates transposed
     let iWeekday1 = new Date(dDate1).getDay(); // day of week
     let iWeekday2 = new Date(dDate2).getDay();
     iWeekday1 = (iWeekday1 == 0) ? 7 : iWeekday1; // change Sunday from 0 to 7
     iWeekday2 = (iWeekday2 == 0) ? 7 : iWeekday2;
     if ((iWeekday1 > 5) && (iWeekday2 > 5)) {
-iAdjust = 1;
-} // adjustment if both days on weekend
+      iAdjust = 1;
+    } // adjustment if both days on weekend
     iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1; // only count weekdays
     iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
 
@@ -646,8 +617,8 @@ iAdjust = 1;
         val = '0d';
       }
     }
-    if(isLessThanZero){
-      val = '-'+ val;
+    if (isLessThanZero) {
+      val = '-' + val;
     }
     return val;
   }
@@ -663,10 +634,10 @@ iAdjust = 1;
   }
 
   convertToDays(rminutes, rhours) {
-      const days = rhours / 8;
-      const rdays = Math.floor(days);
-      rhours = (days - rdays) * 8;
-      return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
+    const days = rhours / 8;
+    const rdays = Math.floor(days);
+    rhours = (days - rdays) * 8;
+    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
   }
 
   handleArrowClick(kpi, label, tableValues) {
@@ -707,10 +678,10 @@ iAdjust = 1;
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
-      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length +disabledKpis.length + index + 3);
+      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
       const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
-      if(capacityKpi){
-        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis,...hiddenkpis]);
+      if (capacityKpi) {
+        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
       }
     }
   }

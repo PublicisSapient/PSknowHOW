@@ -354,305 +354,307 @@ describe('UploadComponent', () => {
     message: 'Capacity Data',
     success: true,
     data: [
-        {
-            id: '632c4e17e23ab66523bdbb22',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'SprintPrioritization_Bucket',
-            sprintState: 'FUTURE',
-            capacity: 3,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_2|12 Oct',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_3|26 Oct',
-            sprintState: 'FUTURE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '633eaf5f17c562439124a872',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_11|ITR_1|28 Sep',
-            sprintState: 'ACTIVE',
-            capacity: 500,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_6|07 Sep',
-            sprintState: 'ACTIVE',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '63327450dc7db01e674a5379',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_5|24 Aug',
-            sprintState: 'CLOSED',
-            capacity: 520,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            id: '63327449dc7db01e674a5378',
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_4|10 Aug',
-            sprintState: 'CLOSED',
-            capacity: 500,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_3|27 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Support|PI_10|ITR_2|13 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        },
-        {
-            projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-            projectName: 'DEMO_SONAR',
-            sprintNodeId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
-            sprintName: 'Tools|PI_10|ITR_2|13 Jul',
-            sprintState: 'CLOSED',
-            capacity: 0,
-            basicProjectConfigId: '63284960fdd20276d60e4df5',
-            kanban: false
-        }
-    ]
-};
-
-const fakeTestExecutionData = {
-  message: 'Test Execution Data',
-  success: true,
-  data: [
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'SprintPrioritization_Bucket',
-          sprintId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 3,
-          executedTestCase: 1,
-          passedTestCase: 1,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '632c4e17e23ab66523bdbb22',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'SprintPrioritization_Bucket',
+        sprintState: 'FUTURE',
+        capacity: 3,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_2|12 Oct',
-          sprintId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_2|12 Oct',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
-          sprintId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
-          sprintId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
-          sprintId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_3|26 Oct',
-          sprintId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'FUTURE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_3|26 Oct',
+        sprintState: 'FUTURE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_11|ITR_1|28 Sep',
-          sprintId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'ACTIVE',
-          totalTestCases: 10,
-          executedTestCase: 5,
-          passedTestCase: 5,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '633eaf5f17c562439124a872',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_11|ITR_1|28 Sep',
+        sprintState: 'ACTIVE',
+        capacity: 500,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_6|07 Sep',
-          sprintId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'ACTIVE',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_6|07 Sep',
+        sprintState: 'ACTIVE',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_5|24 Aug',
-          sprintId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 60,
-          executedTestCase: 50,
-          passedTestCase: 45,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '63327450dc7db01e674a5379',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_5|24 Aug',
+        sprintState: 'CLOSED',
+        capacity: 520,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_4|10 Aug',
-          sprintId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 50,
-          executedTestCase: 50,
-          passedTestCase: 50,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        id: '63327449dc7db01e674a5378',
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_4|10 Aug',
+        sprintState: 'CLOSED',
+        capacity: 500,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_3|27 Jul',
-          sprintId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_3|27 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Support|PI_10|ITR_2|13 Jul',
-          sprintId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Support|PI_10|ITR_2|13 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       },
       {
-          projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
-          projectName: 'DEMO_SONAR',
-          sprintName: 'Tools|PI_10|ITR_2|13 Jul',
-          sprintId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
-          sprintState: 'CLOSED',
-          totalTestCases: 0,
-          executedTestCase: 0,
-          passedTestCase: 0,
-          basicProjectConfigId: '63284960fdd20276d60e4df5',
-          kanban: false
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintNodeId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintName: 'Tools|PI_10|ITR_2|13 Jul',
+        sprintState: 'CLOSED',
+        capacity: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
       }
-  ]
-};
+    ]
+  };
+
+  const fakeTestExecutionData = {
+    message: 'Test Execution Data',
+    success: true,
+    data: [
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'SprintPrioritization_Bucket',
+        sprintId: '29732_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 3,
+        executedTestCase: 1,
+        passedTestCase: 1,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_2|12 Oct',
+        sprintId: '40249_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_5| 23 Nov',
+        sprintId: '40252_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_6| 07 Dec',
+        sprintId: '40253_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_4| 09 Nov',
+        sprintId: '40251_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_3|26 Oct',
+        sprintId: '40250_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'FUTURE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_11|ITR_1|28 Sep',
+        sprintId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'ACTIVE',
+        totalTestCases: 10,
+        executedTestCase: 5,
+        passedTestCase: 5,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_6|07 Sep',
+        sprintId: '38998_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'ACTIVE',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_5|24 Aug',
+        sprintId: '38997_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 60,
+        executedTestCase: 50,
+        passedTestCase: 45,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_4|10 Aug',
+        sprintId: '38996_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 50,
+        executedTestCase: 50,
+        passedTestCase: 50,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_3|27 Jul',
+        sprintId: '38995_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Support|PI_10|ITR_2|13 Jul',
+        sprintId: '39496_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      },
+      {
+        projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+        projectName: 'DEMO_SONAR',
+        sprintName: 'Tools|PI_10|ITR_2|13 Jul',
+        sprintId: '38994_DEMO_SONAR_63284960fdd20276d60e4df5',
+        sprintState: 'CLOSED',
+        totalTestCases: 0,
+        executedTestCase: 0,
+        passedTestCase: 0,
+        basicProjectConfigId: '63284960fdd20276d60e4df5',
+        kanban: false
+      }
+    ]
+  };
+
+  const fakeCapacityKanbanData = require('../../../test/resource/fakeCapacityData.json');
 
   beforeEach((() => {
     const routes: Routes = [
@@ -681,7 +683,7 @@ const fakeTestExecutionData = {
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
-    messageService =TestBed.inject(MessageService);
+    messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   }));
@@ -923,18 +925,18 @@ const fakeTestExecutionData = {
   });
 
   it('get capacity of a selected project', () => {
-   const projectId = '63284960fdd20276d60e4df5';
-   component.getCapacityData(projectId);
-   fixture.detectChanges();
-   httpMock.match(baseUrl + '/api/capacity/'+ projectId)[0].flush(fakeCapacityData);
-   expect(component.capacityScrumData).toEqual(fakeCapacityData['data']);
+    const projectId = '63284960fdd20276d60e4df5';
+    component.getCapacityData(projectId);
+    fixture.detectChanges();
+    httpMock.match(baseUrl + '/api/capacity/' + projectId)[0].flush(fakeCapacityData);
+    expect(component.capacityScrumData).toEqual(fakeCapacityData['data']);
   });
 
   it('should get test execution data of a selected project', () => {
     const projectId = '63284960fdd20276d60e4df5';
     component.getTestExecutionData(projectId);
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/testexecution/'+ projectId)[0].flush(fakeTestExecutionData);
+    httpMock.match(baseUrl + '/api/testexecution/' + projectId)[0].flush(fakeTestExecutionData);
     expect(component.testExecutionScrumData).toEqual(fakeTestExecutionData['data']);
   });
 
@@ -958,7 +960,7 @@ const fakeTestExecutionData = {
     component.ngOnInit();
     fixture.detectChanges();
     if (component.isSuperAdmin) {
-      expect(component.items.length).toBe(3);
+      expect(component.items.length).toBe(4);
     } else {
       expect(component.items.length).toBe(2);
     }
@@ -987,7 +989,7 @@ const fakeTestExecutionData = {
       message: 'fetched successfully',
       success: true,
     };
-    spyOn(httpService,'getFilterData').and.returnValue(of(response));
+    spyOn(httpService, 'getFilterData').and.returnValue(of(response));
     component.getFilterDataOnLoad();
     fixture.detectChanges();
     expect(component.projectListArr.length).toBeGreaterThan(0)
@@ -1000,30 +1002,30 @@ const fakeTestExecutionData = {
     component.getFilterDataOnLoad();
     fixture.detectChanges();
     expect(component.resetProjectSelection).toHaveBeenCalled()
- 
+
   });
 
-  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'",()=>{
+  it("enableDisableSubmitButton() when selectedView === 'upload_Sprint_Capacity'", () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
     component.popupForm.get('capacity').setValue('Enter Value')
-    spyOn(component,'enableDisableCapacitySubmitButton')
+    spyOn(component, 'enableDisableCapacitySubmitButton')
     component.enableDisableSubmitButton();
     fixture.detectChanges();
     expect(component.enableDisableCapacitySubmitButton).toHaveBeenCalled()
 
   });
 
-  it("enableDisableSubmitButton() when selectedView === 'upload_tep'",()=>{
+  it("enableDisableSubmitButton() when selectedView === 'upload_tep'", () => {
     component.selectedView = 'upload_tep'
-    spyOn(component,'enableDisableTestExecutionSubmitButton')
+    spyOn(component, 'enableDisableTestExecutionSubmitButton')
     component.enableDisableSubmitButton();
     fixture.detectChanges();
     expect(component.enableDisableTestExecutionSubmitButton).toHaveBeenCalled()
 
   });
 
-  it("enableDisableCapacitySubmitButton() for capacity",()=>{
+  it("enableDisableCapacitySubmitButton() for capacity", () => {
     component.selectedView = 'upload_Sprint_Capacity';
     component.setFormControlValues();
     component.popupForm.get('capacity').setValue('Enter Value')
@@ -1033,20 +1035,41 @@ const fakeTestExecutionData = {
     expect(component.capacityErrorMessage).toBe('Please enter Capacity');
   });
 
-  it("enableDisableCapacitySubmitButton()",()=>{
+  it("enableDisableCapacitySubmitButton()", () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
     expect(component.isCapacitySaveDisabled).toBeTrue()
   });
 
-  it("should disable save capacity btn",()=>{
+  it("should disable save capacity btn", () => {
     component.enableDisableCapacitySubmitButton();
     fixture.detectChanges();
     expect(component.isCapacitySaveDisabled).toBeTrue()
   });
 
-  it('should show assignee modal on manage User btn click',()=>{
-    const selectedSprint ={
+  xit('should fail on uploading certificate', fakeAsync(() => {
+    const errorRes = {
+      "message": "LDAP certificate not copied due to some error",
+      "success": false,
+      "data": "lladldap.hk.net.pem"
+    };
+    component.selectedFile = new File([""],
+      "lladldap.hk.net.pem",
+      {
+        type: "application/x-x509-ca-cert",
+        lastModified: 1678340841040
+      }
+    )
+    component.error = '';
+    component.message = '';
+    spyOn(httpService, 'uploadCertificate').and.returnValue(of(errorRes));
+    // spyOn(component, 'uploadCertificate');
+    component.uploadCertificate();
+    tick();
+    expect(component.error).toEqual(errorRes.message);
+  }));
+  it('should show assignee modal on manage User btn click', () => {
+    const selectedSprint = {
       "projectNodeId": "RS MAP_63db6583e1b2765622921512",
       "projectName": "RS MAP",
       "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
@@ -1057,537 +1080,621 @@ const fakeTestExecutionData = {
       "assigneeCapacity": [],
       "kanban": false,
       "assigneeDetails": true
-  };
-  spyOn(component,'generateManageAssigneeData');
-  component.manageAssignees(selectedSprint);
-  expect(component.displayAssignee).toBeTrue();
+    };
+    spyOn(component, 'generateManageAssigneeData');
+    component.manageAssignees(selectedSprint);
+    expect(component.displayAssignee).toBeTrue();
   });
 
-it('should get project Assignees for selected project on capacity',()=>{
-  component.projectJiraAssignees ={};
-  let response ={
-    "message": "Successfully fetched assignee list",
-    "success": true,
-    "data": {
+  it('should succeed on uploading certificate', fakeAsync(() => {
+    const successRes = {
+      "message": "LDAP certificate copied",
+      "success": true,
+      "data": "lladldap.hk.net.cer"
+    };
+    component.selectedFile = new File([""],
+      "lladldap.hk.net.cer",
+      {
+        type: "application/x-x509-ca-cert",
+        lastModified: 1678340841040
+      }
+    );
+    component.error = '';
+    component.message = '';
+    spyOn(httpService, 'uploadCertificate').and.returnValue(of(successRes));
+    // spyOn(component, 'uploadCertificate');
+    component.uploadCertificate();
+    tick();
+    expect(component.message).toEqual(successRes.message);
+  }));
+  it('should get project Assignees for selected project on capacity', () => {
+    component.projectJiraAssignees = {};
+    let response = {
+      "message": "Successfully fetched assignee list",
+      "success": true,
+      "data": {
         "projectName": "RS MAP",
         "basicProjectConfigId": "63db6583e1b2765622921512",
-        "assigneeDetailsList": [  {
+        "assigneeDetailsList": [{
           "name": "abikanna1",
           "displayName": "Abinaya Kannan"
-      }]
-    }
-};
-spyOn(httpService,'getJiraProjectAssignee').and.returnValue(of(response));
-  component.getCapacityJiraAssignee('63db6583e1b2765622921512');
-  fixture.detectChanges();
-  expect(component.projectJiraAssignees).toEqual(response.data);
-});
+        }]
+      }
+    };
+    spyOn(httpService, 'getJiraProjectAssignee').and.returnValue(of(response));
+    component.getCapacityJiraAssignee('63db6583e1b2765622921512');
+    fixture.detectChanges();
+    expect(component.projectJiraAssignees).toEqual(response.data);
+  });
 
-it('should show error message on get project Assignees api fail',()=>{
-  component.projectJiraAssignees ={};
-  const response ={};
-spyOn(httpService,'getJiraProjectAssignee').and.returnValue(of(response));
-const messageServiceSpy = spyOn(messageService,'add');
-  component.getCapacityJiraAssignee('63db6583e1b2765622921512');
-  fixture.detectChanges();
-  expect(messageServiceSpy).toHaveBeenCalled();
-});
-
-it('should generate manage Assignee list data with Selected user on top',()=>{
-  const selectedSprint ={
-    "id": "63e0a78bfba71c2bff2814bf",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41938_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_6",
-    "sprintState": "FUTURE",
-    "capacity": 41,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
-      {
-        "userId": "abikanna1",
-        "userName": "Abinaya Kannan",
-        "role": "BACKEND_DEVELOPER",
-        "plannedCapacity": 55.5,
-        "leaves": 0
-    }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-};
-
-  component.projectJiraAssignees = {
-    basicProjectConfigId: "63db6583e1b2765622921512",
-    projectName: "RS MAP",
-    assigneeDetailsList: [
-      {
-        "name": "adiursac",
-        "displayName": "Adina-Alexandra Ursache"
+  it('should clear file uploaded', () => {
+    const event = {
+      "originalEvent": {
+        "isTrusted": true
       },
+      "file": {}
+    };
+    component.selectedFile = null;
+    component.clear(event);
+    expect(component.isUploadEnabled).toBe(true);
+  })
+  it('should show error message on get project Assignees api fail', () => {
+    component.projectJiraAssignees = {};
+    const response = {};
+    spyOn(httpService, 'getJiraProjectAssignee').and.returnValue(of(response));
+    const messageServiceSpy = spyOn(messageService, 'add');
+    component.getCapacityJiraAssignee('63db6583e1b2765622921512');
+    fixture.detectChanges();
+    expect(messageServiceSpy).toHaveBeenCalled();
+  });
+
+  it('should validate certificate successfully', () => {
+    const blob: Blob = new Blob([""], { type: "application/x-x509-ca-cert", });
+    const event = {
+      "originalEvent": {
+        "isTrusted": true
+      },
+      'files': [new File([blob], 'upload.cer', { type: "application/x-x509-ca-cert", })]
+    };
+    component.error = '';
+    component.message = '';
+    component.selectedFile = event.files[0];
+    component.validateCertificate(event);
+    expect(component.isUploadEnabled).toBe(false);
+  })
+
+  it('should switch view for upload certificate tab', () => {
+    const event = {
+      originalEvent: {
+        isTrusted: true,
+      },
+      item: {
+        label: 'Upload certificate',
+        icon: 'pi pi-image',
+        expanded: true,
+      },
+    };
+    component.switchView(event);
+    fixture.detectChanges();
+    expect(component.selectedView).toBe('cert_upload');
+    expect(component.kanban).toBeFalse();
+  });
+  it('should generate manage Assignee list data with Selected user on top', () => {
+    const selectedSprint = {
+      "id": "63e0a78bfba71c2bff2814bf",
+      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+      "projectName": "RS MAP",
+      "sprintNodeId": "41938_RS MAP_63db6583e1b2765622921512",
+      "sprintName": "MAP|PI_12|ITR_6",
+      "sprintState": "FUTURE",
+      "capacity": 41,
+      "basicProjectConfigId": "63db6583e1b2765622921512",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "BACKEND_DEVELOPER",
+          "plannedCapacity": 55.5,
+          "leaves": 0
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.projectJiraAssignees = {
+      basicProjectConfigId: "63db6583e1b2765622921512",
+      projectName: "RS MAP",
+      assigneeDetailsList: [
+        {
+          "name": "adiursac",
+          "displayName": "Adina-Alexandra Ursache"
+        },
+        {
+          "name": "abikanna1",
+          "displayName": "Abinaya Kannan"
+        }
+      ]
+    };
+    component.generateManageAssigneeData(selectedSprint);
+    expect(component.manageAssigneeList[0].name).toEqual('abikanna1');
+  });
+
+  it('should get capacity data for scrum project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeSuccessResponseCapacity));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityScrumData).toEqual(fakeSuccessResponseCapacity.data);
+  }));
+
+  xit('should get capacity data for kanban project', fakeAsync(() => {
+    const projectId = '63f73d0b9a4cc37fbd9bff9c';
+
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(fakeCapacityKanbanData));
+    component.getCapacityData(projectId);
+    tick();
+    expect(component.capacityKanbanData).toEqual(fakeCapacityKanbanData.data);
+  }));
+
+
+
+
+  it('should add or remove users from managelist', () => {
+    component.manageAssigneeList = [
       {
         "name": "abikanna1",
-        "displayName": "Abinaya Kannan"
+        "displayName": "Abinaya Kannan",
+        "checked": true
+      },
+      {
+        "name": "agnprase",
+        "displayName": "Agney Praseed",
+        "checked": true
+      },
+      {
+        "name": "anisingh4",
+        "displayName": "Anil Kumar Singh",
+        "checked": false
       }
-    ]
-  };
-  component.generateManageAssigneeData(selectedSprint);
-  expect(component.manageAssigneeList[0].name).toEqual('abikanna1');
-});
+    ];
 
-it('should add or remove users from managelist',()=>{
-  component.manageAssigneeList =[
-    {
-      "name": "abikanna1",
-      "displayName": "Abinaya Kannan",
-      "checked": true
-  },
-  {
-    "name": "agnprase",
-    "displayName": "Agney Praseed",
-    "checked": true
-},
-{
-  "name": "anisingh4",
-  "displayName": "Anil Kumar Singh",
-  "checked":  false
-}
-  ];
-
-  component.selectedSprintDetails ={
-    "id": "63e1d151fba71c2bff281502",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_5",
-    "sprintState": "FUTURE",
-    "capacity": -1,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
-        {
-            "userId": "abikanna1",
-            "userName": "Abinaya Kannan",
-            "role": "BACKEND_DEVELOPER",
-            "plannedCapacity": 55.5,
-            "leaves": 0
-        },
-        {
-            "userId": "agnprase",
-            "userName": "Agney Praseed",
-            "role": "BACKEND_DEVELOPER",
-            "plannedCapacity": 15,
-            "leaves": 0
-        },
-        {
-            "userId": "anisingh4",
-            "userName": "Anil Kumar Singh",
-            "role": "BACKEND_DEVELOPER",
-            "plannedCapacity": 20,
-            "leaves": 0
-        }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-};
-
-const response ={
-  "message": "Successfully added Capacity Data",
-  "success": true,
-  "data": {
+    component.selectedSprintDetails = {
       "id": "63e1d151fba71c2bff281502",
       "projectNodeId": "RS MAP_63db6583e1b2765622921512",
       "projectName": "RS MAP",
       "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
       "sprintName": "MAP|PI_12|ITR_5",
+      "sprintState": "FUTURE",
       "capacity": -1,
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
-          {
-              "userId": "abikanna1",
-              "userName": "Abinaya Kannan",
-              "role": "BACKEND_DEVELOPER",
-              "plannedCapacity": 55.5,
-              "leaves": 0
-          },
-          {
-              "userId": "agnprase",
-              "userName": "Agney Praseed",
-              "role": "BACKEND_DEVELOPER",
-              "plannedCapacity": 15,
-              "leaves": 0
-          }
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "BACKEND_DEVELOPER",
+          "plannedCapacity": 55.5,
+          "leaves": 0
+        },
+        {
+          "userId": "agnprase",
+          "userName": "Agney Praseed",
+          "role": "BACKEND_DEVELOPER",
+          "plannedCapacity": 15,
+          "leaves": 0
+        },
+        {
+          "userId": "anisingh4",
+          "userName": "Anil Kumar Singh",
+          "role": "BACKEND_DEVELOPER",
+          "plannedCapacity": 20,
+          "leaves": 0
+        }
       ],
       "kanban": false,
       "assigneeDetails": true
-  }
-};
+    };
 
-spyOn(httpService,'saveOrUpdateAssignee').and.returnValue(of(response));
-const getCapacityDataSpy= spyOn(component,'getCapacityData');
-component.addRemoveAssignees();
-fixture.detectChanges();
-expect(getCapacityDataSpy).toHaveBeenCalled();
-expect(component.expandedRows).toBeTruthy();
-});
+    const response = {
+      "message": "Successfully added Capacity Data",
+      "success": true,
+      "data": {
+        "id": "63e1d151fba71c2bff281502",
+        "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+        "projectName": "RS MAP",
+        "sprintNodeId": "41937_RS MAP_63db6583e1b2765622921512",
+        "sprintName": "MAP|PI_12|ITR_5",
+        "capacity": -1,
+        "basicProjectConfigId": "63db6583e1b2765622921512",
+        "assigneeCapacity": [
+          {
+            "userId": "abikanna1",
+            "userName": "Abinaya Kannan",
+            "role": "BACKEND_DEVELOPER",
+            "plannedCapacity": 55.5,
+            "leaves": 0
+          },
+          {
+            "userId": "agnprase",
+            "userName": "Agney Praseed",
+            "role": "BACKEND_DEVELOPER",
+            "plannedCapacity": 15,
+            "leaves": 0
+          }
+        ],
+        "kanban": false,
+        "assigneeDetails": true
+      }
+    };
 
-it('should get assignee roles if already not available',()=>{
-  component.projectAssigneeRoles=[];
-  const response ={
-    "message": "All Roles",
-    "success": true,
-    "data": {
+    spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
+    const getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.addRemoveAssignees();
+    fixture.detectChanges();
+    expect(getCapacityDataSpy).toHaveBeenCalled();
+    expect(component.expandedRows).toBeTruthy();
+  });
+
+  it('should get assignee roles if already not available', () => {
+    component.projectAssigneeRoles = [];
+    const response = {
+      "message": "All Roles",
+      "success": true,
+      "data": {
         "TESTER": "Tester",
         "FRONTEND_DEVELOPER": "Frontend Developer",
         "BACKEND_DEVELOPER": "Backend Developer"
-    }
-};
-spyOn(httpService,'getAssigneeRoles').and.returnValue(of(response));
-component.getAssigneeRoles();
-fixture.detectChanges();
-expect(component.projectAssigneeRoles.length).toEqual(3);
-});
+      }
+    };
+    spyOn(httpService, 'getAssigneeRoles').and.returnValue(of(response));
+    component.getAssigneeRoles();
+    fixture.detectChanges();
+    expect(component.projectAssigneeRoles.length).toEqual(3);
+  });
 
-it('should check if assignee toggle enabled',()=>{
-  const capacityData =[{
-    "projectNodeId": "Testproject124_63e4b169fba71c2bff2815ba",
-    "projectName": "Testproject124",
-    "sprintNodeId": "41411_Testproject124_63e4b169fba71c2bff2815ba",
-    "sprintName": "KnowHOW | PI_12| ITR_5",
-    "sprintState": "FUTURE",
-    "capacity": 0,
-    "basicProjectConfigId": "63e4b169fba71c2bff2815ba",
-    "kanban": false,
-    "assigneeDetails": true
-}];
-const getAssigneeRolesSpy = spyOn(component,'getAssigneeRoles');
-const getCapacityJiraAssignee = spyOn(component,'getCapacityJiraAssignee');
-component.checkifAssigneeToggleEnabled(capacityData);
-expect(component.isToggleEnableForSelectedProject).toBeTruthy();
-expect(getAssigneeRolesSpy).toHaveBeenCalled();
-expect(getCapacityJiraAssignee).toHaveBeenCalledWith("63e4b169fba71c2bff2815ba");
-});
+  it('should check if assignee toggle enabled', () => {
+    const capacityData = [{
+      "projectNodeId": "Testproject124_63e4b169fba71c2bff2815ba",
+      "projectName": "Testproject124",
+      "sprintNodeId": "41411_Testproject124_63e4b169fba71c2bff2815ba",
+      "sprintName": "KnowHOW | PI_12| ITR_5",
+      "sprintState": "FUTURE",
+      "capacity": 0,
+      "basicProjectConfigId": "63e4b169fba71c2bff2815ba",
+      "kanban": false,
+      "assigneeDetails": true
+    }];
+    const getAssigneeRolesSpy = spyOn(component, 'getAssigneeRoles');
+    const getCapacityJiraAssignee = spyOn(component, 'getCapacityJiraAssignee');
+    component.checkifAssigneeToggleEnabled(capacityData);
+    expect(component.isToggleEnableForSelectedProject).toBeTruthy();
+    expect(getAssigneeRolesSpy).toHaveBeenCalled();
+    expect(getCapacityJiraAssignee).toHaveBeenCalledWith("63e4b169fba71c2bff2815ba");
+  });
 
-it('should validate plannedCapacity and leaves field value and calculate available capacity',()=>{
-  const assignee = {
-    "userId": "adiursac",
-    "userName": "Adina-Alexandra Ursache",
-    "leaves": 0
-};
-const assigneeFormControls ={
-  "role": new FormControl('TESTER'),
-  "plannedCapacity": new FormControl({value:'',disabled:true}),
-  "leaves":new FormControl({value:0,disabled:true})
+  it('should validate plannedCapacity and leaves field value and calculate available capacity', () => {
+    const assignee = {
+      "userId": "adiursac",
+      "userName": "Adina-Alexandra Ursache",
+      "leaves": 0
+    };
+    const assigneeFormControls = {
+      "role": new FormControl('TESTER'),
+      "plannedCapacity": new FormControl({ value: '', disabled: true }),
+      "leaves": new FormControl({ value: 0, disabled: true })
 
-};
+    };
 
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'role');
-fixture.detectChanges();
-expect(assigneeFormControls.plannedCapacity.status).toEqual('VALID');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'role');
+    fixture.detectChanges();
+    expect(assigneeFormControls.plannedCapacity.status).toEqual('VALID');
 
-assigneeFormControls.plannedCapacity.setValue('40');
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'plannedCapacity');
-expect(assignee['availableCapacity']).toEqual(40);
+    assigneeFormControls.plannedCapacity.setValue('40');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(40);
 
-assigneeFormControls.plannedCapacity.setValue('0');
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'plannedCapacity');
-expect(assignee['availableCapacity']).toEqual(0);
+    assigneeFormControls.plannedCapacity.setValue('0');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(0);
 
-assigneeFormControls.plannedCapacity.setValue('40');
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'plannedCapacity');
-expect(assignee['availableCapacity']).toEqual(40);
+    assigneeFormControls.plannedCapacity.setValue('40');
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'plannedCapacity');
+    expect(assignee['availableCapacity']).toEqual(40);
 
-component.selectedSprintAssigneValidator=[];
-assigneeFormControls.plannedCapacity.setValue('40');
-assigneeFormControls.leaves.setValue(41);
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'leaves');
-expect(component.selectedSprintAssigneValidator.length).toEqual(1);
+    component.selectedSprintAssigneValidator = [];
+    assigneeFormControls.plannedCapacity.setValue('40');
+    assigneeFormControls.leaves.setValue(41);
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    expect(component.selectedSprintAssigneValidator.length).toEqual(1);
 
 
-assigneeFormControls.leaves.setValue(40);
-component.calculateAvaliableCapacity(assignee,assigneeFormControls,'leaves');
-expect(component.selectedSprintAssigneValidator.length).toEqual(0);
-});
+    assigneeFormControls.leaves.setValue(40);
+    component.calculateAvaliableCapacity(assignee, assigneeFormControls, 'leaves');
+    expect(component.selectedSprintAssigneValidator.length).toEqual(0);
+  });
 
-it('should reset filter on manage Assignee table on modal open',()=>{
-  component.manageAssignee = new ManageAssigneeComponent();
-  const manageAssigneeResetSpy =spyOn(component.manageAssignee,'reset');
-  component.onAssigneeModalOpen();
-  expect(manageAssigneeResetSpy).toHaveBeenCalled();
-});
+  it('should reset filter on manage Assignee table on modal open', () => {
+    component.manageAssignee = new ManageAssigneeComponent();
+    const manageAssigneeResetSpy = spyOn(component.manageAssignee, 'reset');
+    component.onAssigneeModalOpen();
+    expect(manageAssigneeResetSpy).toHaveBeenCalled();
+  });
 
-it('should calculate total capacity for sprint',()=>{
-  const selectedSprint ={
-    "id": "63e092edfba71c2bff2814b4",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_3",
-    "sprintState": "CLOSED",
-    "capacity": 71,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
+  it('should calculate total capacity for sprint', () => {
+    const selectedSprint = {
+      "id": "63e092edfba71c2bff2814b4",
+      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+      "projectName": "RS MAP",
+      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
+      "sprintName": "MAP|PI_12|ITR_3",
+      "sprintState": "CLOSED",
+      "capacity": 71,
+      "basicProjectConfigId": "63db6583e1b2765622921512",
+      "assigneeCapacity": [
         {
-            "userId": "abikanna1",
-            "userName": "Abinaya Kannan",
-            "role": "TESTER",
-            "plannedCapacity": 40,
-            "leaves": 0,
-            "availableCapacity": 40
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 0,
+          "availableCapacity": 40
         },
         {
-            "userId": "agnprase",
-            "userName": "Agney Praseed",
-            "role": "FRONTEND_DEVELOPER",
-            "plannedCapacity": 34,
-            "leaves": 3,
-            "availableCapacity": 31
+          "userId": "agnprase",
+          "userName": "Agney Praseed",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 34,
+          "leaves": 3,
+          "availableCapacity": 31
         },
         {
-            "userId": "adiursac",
-            "userName": "Adina-Alexandra Ursache",
-            "leaves": 0
+          "userId": "adiursac",
+          "userName": "Adina-Alexandra Ursache",
+          "leaves": 0
         }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-};
-expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(71);
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+    expect(component.calculateTotalCapacityForSprint(selectedSprint)).toEqual(71);
 
-});
+  });
 
-it('should initialize selectedSprintAssigneFormArray when edit is clicked on sprint',()=>{
-  const selectedSprint ={
-    "id": "63e092edfba71c2bff2814b4",
-    "projectNodeId": "RS MAP_63db6583e1b2765622921512",
-    "projectName": "RS MAP",
-    "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
-    "sprintName": "MAP|PI_12|ITR_3",
-    "sprintState": "CLOSED",
-    "capacity": 71,
-    "basicProjectConfigId": "63db6583e1b2765622921512",
-    "assigneeCapacity": [
+  it('should initialize selectedSprintAssigneFormArray when edit is clicked on sprint', () => {
+    const selectedSprint = {
+      "id": "63e092edfba71c2bff2814b4",
+      "projectNodeId": "RS MAP_63db6583e1b2765622921512",
+      "projectName": "RS MAP",
+      "sprintNodeId": "41935_RS MAP_63db6583e1b2765622921512",
+      "sprintName": "MAP|PI_12|ITR_3",
+      "sprintState": "CLOSED",
+      "capacity": 71,
+      "basicProjectConfigId": "63db6583e1b2765622921512",
+      "assigneeCapacity": [
         {
-            "userId": "abikanna1",
-            "userName": "Abinaya Kannan",
-            "role": "TESTER",
-            "plannedCapacity": 40,
-            "leaves": 0,
-            "availableCapacity": 40
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 0,
+          "availableCapacity": 40
         },
         {
-            "userId": "agnprase",
-            "userName": "Agney Praseed",
-            "role": "FRONTEND_DEVELOPER",
-            "plannedCapacity": 34,
-            "leaves": 3,
-            "availableCapacity": 31
+          "userId": "agnprase",
+          "userName": "Agney Praseed",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 34,
+          "leaves": 3,
+          "availableCapacity": 31
         },
         {
-            "userId": "adiursac",
-            "userName": "Adina-Alexandra Ursache",
-            "leaves": 0
+          "userId": "adiursac",
+          "userName": "Adina-Alexandra Ursache",
+          "leaves": 0
         }
-    ],
-    "kanban": false,
-    "assigneeDetails": true
-};
-component.onSprintCapacityEdit(selectedSprint);
-expect(component.selectedSprintAssigneFormArray.length).toEqual(3);
-});
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+    component.onSprintCapacityEdit(selectedSprint);
+    expect(component.selectedSprintAssigneFormArray.length).toEqual(3);
+  });
 
-it('should save the sprint capacity details on click of save',()=>{
-const selectedSprint={
-  "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-  "projectName": "TestProject123",
-  "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-  "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-  "sprintState": "CLOSED",
-  "capacity": 0,
-  "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-  "assigneeCapacity": [
-      {
+  it('should save the sprint capacity details on click of save', () => {
+    const selectedSprint = {
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
+      "sprintState": "CLOSED",
+      "capacity": 0,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
           "userId": "abikanna1",
           "userName": "Abinaya Kannan",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 0
-      }
-  ],
-  "kanban": false,
-  "assigneeDetails": true
-};
-
-const response={
-  "message": "Successfully added Capacity Data",
-  "success": true,
-  "data": {
-      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
-      "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
-      "capacity": 0,
-      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-      "assigneeCapacity": [
-          {
-              "userId": "abikanna1",
-              "userName": "Abinaya Kannan",
-              "role": "TESTER",
-              "plannedCapacity": 40,
-              "leaves": 0
-          }
+        }
       ],
       "kanban": false,
       "assigneeDetails": true
-  }
-};
+    };
 
-spyOn(httpService,"saveOrUpdateAssignee").and.returnValue(of(response));
-let getCapacityDataSpy =spyOn(component,'getCapacityData');
-component.onSprintCapacitySave(selectedSprint);
-
-fixture.detectChanges();
-expect(getCapacityDataSpy).toHaveBeenCalled();
-});
-
-
-it('should reset  to old values when clicked on cancel btn on selected sprint',()=>{
-const selectedSprint ={
-  "id": "63e4c5b4fba71c2bff2815d8",
-  "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-  "projectName": "TestProject123",
-  "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-  "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-  "sprintState": "CLOSED",
-  "capacity": 28,
-  "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-  "assigneeCapacity": [
-      {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-      }
-  ],
-  "kanban": false,
-  "assigneeDetails": true
-};
-
-component.capacityScrumData=[{
-  "id": "63e4c5b4fba71c2bff2815d8",
-  "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-  "projectName": "TestProject123",
-  "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-  "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-  "sprintState": "CLOSED",
-  "capacity": 28,
-  "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-  "assigneeCapacity": [
-      {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
-          "role": "TESTER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-      }
-  ],
-  "kanban": false,
-  "assigneeDetails": true
-}];
-
-component.selectedSprint ={
-  "id": "63e4c5b4fba71c2bff2815d8",
-  "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-  "projectName": "TestProject123",
-  "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-  "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-  "sprintState": "CLOSED",
-  "capacity": 28,
-  "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-  "assigneeCapacity": [
-      {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-      }
-  ],
-  "kanban": false,
-  "assigneeDetails": true
-};
-
-component.kanban =false;
-component.onSprintCapacityCancel(selectedSprint);
-expect(component.capacityScrumData[0]).toEqual(component.selectedSprint);
-
-});
-
-it('should set edit mode to false on sprint row selection',()=>{
-component.projectCapacityEditMode= true;
-component.selectedSprint ={
-  "id": "63e4c5b4fba71c2bff2815d8",
-  "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
-  "projectName": "TestProject123",
-  "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
-  "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
-  "sprintState": "CLOSED",
-  "capacity": 28,
-  "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
-  "assigneeCapacity": [
-      {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
-          "role": "FRONTEND_DEVELOPER",
-          "plannedCapacity": 40,
-          "leaves": 12,
-          "availableCapacity": 28
-      }
-  ],
-  "kanban": false,
-  "assigneeDetails": true
-};
-
-const onSprintCapacityCancelSpy = spyOn(component,'onSprintCapacityCancel');
-component.onCapacitySprintRowSelection();
-expect(component.projectCapacityEditMode).toBeFalse();
-expect(onSprintCapacityCancelSpy).toHaveBeenCalled();
-});
-
-it('should set NoData to true on response for capacity data',()=>{
-  spyOn(httpService,'getCapacityData').and.returnValue(of({}));
-  component.getCapacityData('TestProject123_63d8bca4af279c1d507cb8b0');
-  fixture.detectChanges();
-  expect(component.tableLoader).toBeFalse();
-  expect(component.noData).toBeTrue();
-});
-
-it('should set capactiy Data for Kanban',()=>{
-  const projectId="testproj2_63d912d2af279c1d507cb93a";
-  component.kanban =true;
-  const response ={
-    "message": "Capacity Data",
-    "success": true,
-    "data": [
-      {
-        "projectNodeId": "testproj2_63d912d2af279c1d507cb93a",
-        "projectName": "testproj2",
+    const response = {
+      "message": "Successfully added Capacity Data",
+      "success": true,
+      "data": {
+        "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
         "capacity": 0,
-        "startDate": "2023-01-09",
-        "endDate": "2023-01-15",
-        "basicProjectConfigId": "63d912d2af279c1d507cb93a",
-        "kanban": true,
+        "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+        "assigneeCapacity": [
+          {
+            "userId": "abikanna1",
+            "userName": "Abinaya Kannan",
+            "role": "TESTER",
+            "plannedCapacity": 40,
+            "leaves": 0
+          }
+        ],
+        "kanban": false,
         "assigneeDetails": true
-    },
-    ]
-}
-  spyOn(component,'checkifAssigneeToggleEnabled');
-  spyOn(httpService,'getCapacityData').and.returnValue(of(response));
-  component.getCapacityData(projectId);
-  fixture.detectChanges();
-  expect(component.capacityKanbanData.length).toEqual(1);
+      }
+    };
 
-})
+    spyOn(httpService, "saveOrUpdateAssignee").and.returnValue(of(response));
+    let getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.onSprintCapacitySave(selectedSprint);
+
+    fixture.detectChanges();
+    expect(getCapacityDataSpy).toHaveBeenCalled();
+  });
+
+
+  it('should reset  to old values when clicked on cancel btn on selected sprint', () => {
+    const selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.capacityScrumData = [{
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    }];
+
+    component.selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.kanban = false;
+    component.onSprintCapacityCancel(selectedSprint);
+    expect(component.capacityScrumData[0]).toEqual(component.selectedSprint);
+
+  });
+
+  it('should set edit mode to false on sprint row selection', () => {
+    component.projectCapacityEditMode = true;
+    component.selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "abikanna1",
+          "userName": "Abinaya Kannan",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    const onSprintCapacityCancelSpy = spyOn(component, 'onSprintCapacityCancel');
+    component.onCapacitySprintRowSelection();
+    expect(component.projectCapacityEditMode).toBeFalse();
+    expect(onSprintCapacityCancelSpy).toHaveBeenCalled();
+  });
+
+  it('should set NoData to true on response for capacity data', () => {
+    spyOn(httpService, 'getCapacityData').and.returnValue(of({}));
+    component.getCapacityData('TestProject123_63d8bca4af279c1d507cb8b0');
+    fixture.detectChanges();
+    expect(component.tableLoader).toBeFalse();
+    expect(component.noData).toBeTrue();
+  });
+
+  it('should set capactiy Data for Kanban', () => {
+    const projectId = "testproj2_63d912d2af279c1d507cb93a";
+    component.kanban = true;
+    const response = {
+      "message": "Capacity Data",
+      "success": true,
+      "data": [
+        {
+          "projectNodeId": "testproj2_63d912d2af279c1d507cb93a",
+          "projectName": "testproj2",
+          "capacity": 0,
+          "startDate": "2023-01-09",
+          "endDate": "2023-01-15",
+          "basicProjectConfigId": "63d912d2af279c1d507cb93a",
+          "kanban": true,
+          "assigneeDetails": true
+        },
+      ]
+    }
+    spyOn(component, 'checkifAssigneeToggleEnabled');
+    spyOn(httpService, 'getCapacityData').and.returnValue(of(response));
+    component.getCapacityData(projectId);
+    fixture.detectChanges();
+    expect(component.capacityKanbanData.length).toEqual(1);
+
+  })
 
 });
