@@ -595,6 +595,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
+    console.log("tableValues", tableValues);
     const idx = this.ifKpiExist(kpi?.kpiId);
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
@@ -636,6 +637,24 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }
     return aggregatedArr;
   }
+  generateExcel() {
+      const kpiData = {
+        headerNames: [],
+        excelData: []
+      };
+      this.modalDetails['tableHeadings'].forEach(colHeader => {
+        kpiData.headerNames.push({
+          header: colHeader,
+          key: colHeader,
+          width: 25
+        });
+      });
+      this.modalDetails['tableValues'].forEach(colData => {
+        kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+      });
+
+      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+    }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());

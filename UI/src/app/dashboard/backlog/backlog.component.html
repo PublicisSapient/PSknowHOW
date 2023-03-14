@@ -87,7 +87,7 @@
                           </ng-container>
                         </div>
                       </ng-container>
-                      
+
                     </ng-container>
                   </app-kpi-card>
                 </div>
@@ -132,9 +132,13 @@
   </div>
 </ng-template>
 
-<p-dialog [header]="modalDetails['header']" [(visible)]="displayModal" [modal]="true" [draggable]="true"
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true"
   [resizable]="true">
-
+  <p-header>
+    {{modalDetails['header']}}
+    <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+            class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
+  </p-header>
   <div class="dialog-body p-mb-4">
     <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img">
       <ng-template pTemplate="header">
