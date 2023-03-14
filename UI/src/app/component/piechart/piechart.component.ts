@@ -81,16 +81,16 @@ export class PiechartComponent implements OnChanges, OnDestroy {
         '#994636',
         '#E3D985',
         '#0072bb',
-        'DC0073',
-        '944075',
-        '80A9A2',
-        'E07373',
-        '6C4F84',
-        'BC2C1A',
-        '50723C',
-        'F17552',
-        '445E93',
-        '885053']);
+        '#DC0073',
+        '#944075',
+        '#80A9A2',
+        '#E07373',
+        '#6C4F84',
+        '#BC2C1A',
+        '#50723C',
+        '#F17552',
+        '#445E93',
+        '#885053']);
   }
   drawChart(): void {
     // Compute the position of each group on the pie:
