@@ -1266,7 +1266,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 			//		fieldMapping);
 			//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
-			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields, issue);
 		}
 
 	}
@@ -1287,7 +1287,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
 		//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 		//		fieldMapping);
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
