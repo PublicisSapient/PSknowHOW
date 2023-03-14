@@ -51,7 +51,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'mydashboard', pathMatch: 'full'},
       { path: 'Help', component: LandingPageComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'mydashboard', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'iteration/:boardId', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'backlog/:boardId', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },

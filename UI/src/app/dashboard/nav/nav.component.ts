@@ -99,10 +99,13 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.service.selectedTabObs.subscribe(selectedTab => {
+      this.selectedTab = selectedTab;
+    });
     this.service.setSideNav(true);
     this.service.onTabRefresh.subscribe(tab=>{
       this.selectedTab=tab;
-    })
+    });
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;

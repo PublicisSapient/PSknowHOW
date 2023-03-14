@@ -40,6 +40,7 @@ export class SharedService implements OnInit {
   public onTypeRefresh;
   public globalDashConfigData;
   public selectedTab;
+  public selectedTabObs: any = new Subject();
   public selectedtype;
   public title = <any>{};
   public logoImage;
@@ -109,6 +110,7 @@ export class SharedService implements OnInit {
   setSelectedTab(selectedTab, boardId) {
     this.selectedTab = selectedTab;
     this.boardId = boardId;
+    this.selectedTabObs.next(selectedTab);
   }
 
   getSelectBoardId() {
