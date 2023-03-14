@@ -52,7 +52,7 @@ export class FilterComponent implements OnInit {
   filterRequestData = {};
   filterkeys = <any>[];
   selectedFilterData = <any>{};
-  selectedTab = 'mydashboard';
+  selectedTab;
   downloadJson = <any>{};
   disableDownloadBtn = <boolean>false;
   subscriptions: any[] = [];

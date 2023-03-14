@@ -32,7 +32,7 @@ import { TextEncryptionService } from '../../services/text.encryption.service';
   styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit {
-  selectedTab = 'mydashboard';
+  selectedTab;
   username: string;
   logoImage: any;
   currentversion: any;

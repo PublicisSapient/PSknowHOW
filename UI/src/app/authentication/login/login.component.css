@@ -99,6 +99,7 @@
     width: 100%;
     background: #f3f3f5 url('../../../assets/img/bg-login.jpg') no-repeat 100% 100%;
     background-size: 70%;
+    height: 100vh;
 }
 
 .login .login-intro {
