@@ -52,7 +52,8 @@ export class FooterComponent implements OnInit {
 
   styleObj():object{
     let marginLeft = this.isSide ? '16rem' : '5rem'; 
-    if(this.router.url.split('/').includes('Help') || this.router.url.split('/').includes('Config') || this.router.url.split('/').includes('login')){
+    const urlArray = this.router.url.split('/');
+    if(urlArray.includes('Help') || urlArray.includes('Config') || urlArray[urlArray.length-1].includes('login')){
       marginLeft = '0rem'
     }
     return {'margin-left': marginLeft}
