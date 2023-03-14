@@ -405,7 +405,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		Map<String, String> linkedStoriesMap = new HashMap<>();
 		linkedJiraIssueStoryList.forEach(linkedStory -> {
 			linkedStoriesMap.put(linkedStory.getNumber(), linkedStory.getUrl());
-			iterationKpiModalValue.setLinkedStoriesTest(linkedStory.getNumber());
 			if (estimationFlag) {
 				if (null != linkedStory.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -417,7 +416,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
 				}
 			}
-			iterationKpiModalValue.setLinkedStoriesTest(linkedStory.getNumber());
 		});
 		iterationKpiModalValue.setLinkedStories(linkedStoriesMap);
 		iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
