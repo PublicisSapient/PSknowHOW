@@ -595,7 +595,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
-    console.log("tableValues", tableValues);
     const idx = this.ifKpiExist(kpi?.kpiId);
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
