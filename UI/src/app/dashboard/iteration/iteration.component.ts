@@ -365,7 +365,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     return aggregatedArr;
   }
 
-  createCombinations(arr1, arr2){
+  createCombinations(arr1, arr2) {
     let arr = [];
     for (let i = 0; i < arr1?.length; i++) {
       for (let j = 0; j < arr2?.length; j++) {
@@ -383,7 +383,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        
+
         tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
 
         for (let i = 0; i < tempArr?.length; i++) {
@@ -443,7 +443,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
 
     }
-    else {
+    else if (trendValueList?.length > 0) {
+      this.kpiChartData[kpiId] = [...trendValueList];
+    } else {
+
       this.kpiChartData[kpiId] = [];
     }
 
