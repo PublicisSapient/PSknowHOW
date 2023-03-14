@@ -16,15 +16,35 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.rbac;
+package com.publicissapient.kpidashboard.common.constant;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectAssignee;
+public enum Role {
 
-public interface ProjectAssigneeRepository extends MongoRepository<ProjectAssignee, ObjectId> {
+	BACKEND_DEVELOPER("Backend Developer"), FRONTEND_DEVELOPER("Frontend Developer"), TESTER("Tester");
 
-	ProjectAssignee findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+	private String roleValue;
 
+	Role(String roleValue) {
+		this.setRoleValue(roleValue);
+	}
+
+	private void setRoleValue(String roleValue) {
+		this.roleValue = roleValue;
+	}
+
+	public String getRoleValue() {
+		return roleValue;
+	}
+
+	public static Role getRoleByValue(String value) {
+		return Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny().get();
+	}
+
+	public static Map<String, String> getAllRoles() {
+		return Arrays.stream(Role.values()).collect(Collectors.toMap(Role::name,Role::getRoleValue));
+	}
 }

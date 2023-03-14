@@ -37,6 +37,7 @@ import { TableModule } from 'primeng/table';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
 import { environment } from 'src/environments/environment';
+import {InputSwitchModule} from 'primeng/inputswitch';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;
@@ -210,7 +211,8 @@ describe('BasicConfigComponent', () => {
         MessageModule,
         ToastModule,
         TableModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        InputSwitchModule
       ],
       providers: [
         HttpService,
@@ -255,13 +257,13 @@ describe('BasicConfigComponent', () => {
     component.ifSuperUser = false;
     component.ngOnInit();
     fixture.detectChanges();
-    expect(component.formData.length).toEqual(hierarchyData.length + 2);
+    expect(component.formData.length).toEqual(hierarchyData.length + 3);
     const controls = component.form.controls;
     let totalControl = 0;
     for (const name in controls) {
       totalControl++;
     }
-    expect(totalControl).toEqual(hierarchyData.length + 2);
+    expect(totalControl).toEqual(hierarchyData.length + 3);
     expect(component.form.valid).toBeFalse();
 
     const compiled = fixture.debugElement.nativeElement;
