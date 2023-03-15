@@ -60,7 +60,7 @@ public class DefectReopenRateServiceImplTest {
   @InjectMocks
   DefectReopenRateServiceImpl defectReopenRateService;
 
-  List<String> testJiraNumberList = Arrays.asList("DTS-18868", "DTS-18869");
+  List<String> testJiraNumberList = Arrays.asList("DTS-18868", "DTS-17908");
   private KpiRequest kpiRequest;
   private KpiElement kpiElement;
   private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -91,15 +91,15 @@ public class DefectReopenRateServiceImplTest {
         .newInstance();
     accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
     totalJiraIssueList = JiraIssueDataFactory.newInstance().findIssueByNumberList(testJiraNumberList);
-    totalJiraIssueHistoryList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory()
-        .stream().filter(issueHistory -> issueHistory.getStoryID().equals("DTS-18869")).collect(Collectors.toList());
+    totalJiraIssueHistoryList = Arrays.asList(JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory()
+        .stream().filter(issueHistory -> issueHistory.getStoryID().equals("DTS-17908")).findFirst().get());
   }
 
   @Test
   public void testGetKpiData() throws ApplicationException {
     TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
         accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-    Mockito.doReturn(totalJiraIssueList).when(jiraIssueRepository).findIssuesByFilterAndProjectMapFilter(anyMap(), anyMap());
+    Mockito.doReturn(totalJiraIssueList).when(jiraIssueRepository).findIssuesByFilterAndProjectMapFilter(anyMap(), anyMap(), anyMap());
     Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository).findByFilterAndFromStatusMap(anyMap(), anyMap());
     try {
       KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest,
