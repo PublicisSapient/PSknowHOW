@@ -663,9 +663,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				setDueDates(jiraIssue, issue,fields,fieldMapping);
 
-				if(fieldMapping.getJiraDevDueDateCustomField()!=null)
-					jiraIssue.setDevDueDate(fieldMapping.getJiraDevDueDateCustomField());
-
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
