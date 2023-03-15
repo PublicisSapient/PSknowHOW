@@ -5,10 +5,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -23,6 +27,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
@@ -32,8 +37,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
@@ -75,6 +78,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Override
 	public CapacityMaster processCapacityData(CapacityMaster capacityMaster) {
 		boolean saved;
+
 		if (capacityMaster.isKanban()) {
 			saved = processKanbanTeamCapacityData(capacityMaster);
 		} else {
@@ -111,7 +115,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				sprintDetailsService.getSprintDetails(project.getId().toHexString()));
 		List<String> sprintIds = sprintDetails.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 		List<CapacityKpiData> capacityKpiDataList = capacityKpiDataRepository.findBySprintIDIn(sprintIds);
-
+		List<AssigneeCapacity> assigneeCapacityList=null;
 		for (SprintDetails sprint : sprintDetails) {
 			CapacityKpiData capacityKpiData = capacityKpiDataList.stream()
 					.filter(capacityData -> capacityData.getSprintID().equals(sprint.getSprintID())).findAny()
@@ -122,10 +126,17 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(capacityKpiData.getCapacityPerSprint());
+				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
+					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
+					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
+					//if in normal flow assignees found saving it for future
+					assigneeCapacityList= createAssigneeData(capacityKpiData.getAssigneeCapacity());
+				}
 			} else {
 				capacityMaster.setId(null);
 				capacityMaster.setCapacity(0D);
 			}
+			settingFutureAssigneeDetails(assigneeCapacityList, capacityMaster);
 			capacityMaster.setSprintName(sprint.getSprintName());
 			capacityMaster.setSprintState(sprint.getState());
 			capacityMaster.setSprintNodeId(sprint.getSprintID());
@@ -135,18 +146,26 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacityMasterList.add(capacityMaster);
 
 		}
-
+		//reversing the list to show future->active->closed
+		Collections.reverse(capacityMasterList);
 		return capacityMasterList;
 	}
 
 	private List<SprintDetails> filterSprints(List<SprintDetails> allSprints) {
 		List<SprintDetails> sprints = new ArrayList<>();
+		List<SprintDetails> closedSprints = new ArrayList<>();
 
-		List<SprintDetails> closedSprints = allSprints.stream()
+		List<SprintDetails> sortedClosedSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_CLOSED.equalsIgnoreCase(sprintDetails.getState()))
-				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime.parse(sprintDetails.getStartDate(),
-						DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))).reversed())
-				.limit(customApiConfig.getSprintCountForFilters()).collect(Collectors.toList());
+				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime
+						.parse(sprintDetails.getStartDate(), DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))))
+				.collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(sortedClosedSprints)) {
+			closedSprints = sortedClosedSprints.subList(
+					Math.max(sortedClosedSprints.size() - customApiConfig.getSprintCountForFilters(), 0),
+					sortedClosedSprints.size());
+		}
 
 		List<SprintDetails> activeSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState()))
@@ -156,14 +175,15 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_FUTURE.equalsIgnoreCase(sprintDetails.getState()))
 				.collect(Collectors.toList());
 
-		if (CollectionUtils.isNotEmpty(futureSprints)) {
-			sprints.addAll(futureSprints);
+		//creating list in normal order--closed(start time wise)->active->futures
+		if (CollectionUtils.isNotEmpty(closedSprints)) {
+			sprints.addAll(closedSprints);
 		}
 		if (CollectionUtils.isNotEmpty(activeSprints)) {
 			sprints.addAll(activeSprints);
 		}
-		if (CollectionUtils.isNotEmpty(closedSprints)) {
-			sprints.addAll(closedSprints);
+		if (CollectionUtils.isNotEmpty(futureSprints)) {
+			sprints.addAll(futureSprints);
 		}
 
 		return sprints;
@@ -171,6 +191,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	private List<CapacityMaster> getCapacityDataForKanban(ProjectBasicConfig project) {
 		List<CapacityMaster> capacityMasterList = new ArrayList<>();
+		List<AssigneeCapacity> assigneeCapacity=null;
 		List<KanbanCapacity> kanbanCapacitiesAll = kanbanCapacityRepository.findByBasicProjectConfigId(project.getId());
 		List<Week> weeksToShow = getWeeksToShow();
 
@@ -182,10 +203,16 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 						.filter(capacity -> week.getStartDate().equals(capacity.getStartDate())).findAny().orElse(null);
 				if (kanbanCapacity != null) {
 					capacityMasterKanban.setId(kanbanCapacity.getId());
-					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity());
+					//mutiplying by working days of week
+					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity()*5);
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
+					if(CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
+						kanbanCapacity.getAssigneeCapacity().stream().forEach(assignees -> assignees.setLeaves(Optional.ofNullable(assignees.getLeaves()).orElse(0D)));
+						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
+						assigneeCapacity= createAssigneeData(kanbanCapacity.getAssigneeCapacity());
+					}
 				} else {
 					capacityMasterKanban.setId(null);
 					capacityMasterKanban.setCapacity(0D);
@@ -201,7 +228,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMasterKanban.setStartDate(week.getStartDate().format(formatter));
 				capacityMasterKanban.setEndDate(week.getEndDate().format(formatter));
 			}
-
+			settingFutureAssigneeDetails(assigneeCapacity, capacityMasterKanban);
 			setProjectMeta(capacityMasterKanban, project);
 
 			capacityMasterList.add(capacityMasterKanban);
@@ -210,11 +237,33 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		return capacityMasterList;
 	}
 
+	private void settingFutureAssigneeDetails(List<AssigneeCapacity> assigneeCapacity,
+			CapacityMaster capacityMaster) {
+		if (assigneeCapacity != null && CollectionUtils.isEmpty(capacityMaster.getAssigneeCapacity())) {
+			capacityMaster.setAssigneeCapacity(assigneeCapacity);
+		}
+	}
+
+	private List<AssigneeCapacity> createAssigneeData(List<AssigneeCapacity> assigneeCapacity) {
+		List<AssigneeCapacity> newAssigneeList=new ArrayList<>();
+		assigneeCapacity.stream().forEach(assignee->{
+			AssigneeCapacity capacity= new AssigneeCapacity();
+			capacity.setUserId(assignee.getUserId());
+			capacity.setUserName(assignee.getUserName());
+			capacity.setRole(assignee.getRole());
+			capacity.setPlannedCapacity(assignee.getPlannedCapacity());
+			capacity.setLeaves(0.0d);
+			newAssigneeList.add(capacity);
+		});
+		return newAssigneeList;
+	}
+
 	private void setProjectMeta(CapacityMaster capacityMaster, ProjectBasicConfig project) {
 		capacityMaster.setProjectNodeId(project.getProjectName() + "_" + project.getId().toHexString());
 		capacityMaster.setProjectName(project.getProjectName());
 		capacityMaster.setBasicProjectConfigId(project.getId());
 		capacityMaster.setKanban(project.getIsKanban());
+		capacityMaster.setAssigneeDetails(project.isSaveAssigneeDetails());
 	}
 
 	private List<Week> getWeeksToShow() {
@@ -258,7 +307,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (CollectionUtils.isNotEmpty(dataList)) {
 				capacityData = dataList.get(0);
 				capacityData.setBasicProjectConfigId(capacityMaster.getBasicProjectConfigId());
-				capacityData.setCapacity(capacityMaster.getCapacity());
+				createKanbanAssigneeData(capacityData,capacityMaster);
 			} else {
 				capacityMaster.setStartDate(weekDate(capacityMaster.getStartDate(), false));
 				capacityMaster.setEndDate(weekDate(capacityMaster.getStartDate(), true));
@@ -288,7 +337,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (CollectionUtils.isNotEmpty(dataList)) {
 				capacityData = dataList.get(0);
 				capacityData.setBasicProjectConfigId(capacityMaster.getBasicProjectConfigId());
-				capacityData.setCapacityPerSprint(capacityMaster.getCapacity());
+				createScrumAssigneeData(capacityData,capacityMaster);
 			} else {
 				capacityData = createCapacityData(capacityMaster);
 			}
@@ -330,10 +379,49 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		data.setProjectId(capacityMaster.getProjectNodeId());
 		data.setProjectName(capacityMaster.getProjectName());
 		data.setSprintID(capacityMaster.getSprintNodeId());
-		data.setCapacityPerSprint(capacityMaster.getCapacity());
 		data.setBasicProjectConfigId(capacityMaster.getBasicProjectConfigId());
-
+		createScrumAssigneeData(data, capacityMaster);
 		return data;
+	}
+
+	/**
+	 * if assigneeDetails are present, then we will calculate all the available capacity and add it
+	 * else in normal cases for the projects where assignee toggle is of then normally the capacity is added
+	 * @param data
+	 * @param capacityMaster
+	 */
+	private void createScrumAssigneeData(CapacityKpiData data, CapacityMaster capacityMaster) {
+		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
+			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
+					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
+							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
+					.collect(Collectors.toList());
+
+			double sum = assigneeList.stream()
+					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
+			data.setAssigneeCapacity(assigneeList);
+			data.setCapacityPerSprint(sum);
+		} else {
+			data.setCapacityPerSprint(capacityMaster.getCapacity());
+		}
+
+	}
+
+	private void createKanbanAssigneeData(KanbanCapacity data, CapacityMaster capacityMaster) {
+		if (capacityMaster.isAssigneeDetails() && CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity())) {
+			List<AssigneeCapacity> assigneeList = capacityMaster.getAssigneeCapacity().stream()
+					.filter(assigneeRole -> StringUtils.isNotEmpty(assigneeRole.getUserId())
+							&& (StringUtils.isNotEmpty(assigneeRole.getUserName())))
+					.collect(Collectors.toList());
+			double sum = assigneeList.stream()
+					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
+			data.setAssigneeCapacity(assigneeList);
+			//we have to divide capacity by working days of week
+			data.setCapacity(sum/5);
+		} else {
+			data.setCapacity(capacityMaster.getCapacity()/5);
+		}
+
 	}
 
 	/**
@@ -348,7 +436,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		data.setProjectId(capacityMaster.getProjectNodeId());
 		data.setProjectName(capacityMaster.getProjectName());
 		data.setBasicProjectConfigId(capacityMaster.getBasicProjectConfigId());
-		data.setCapacity(capacityMaster.getCapacity());
+		createKanbanAssigneeData(data,capacityMaster);
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 		data.setStartDate(LocalDate.parse(capacityMaster.getStartDate(), dateTimeFormatter));
 		data.setEndDate(LocalDate.parse(capacityMaster.getEndDate(), dateTimeFormatter));
@@ -415,5 +503,5 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacityKpiDataRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 		}
 	}
-
+	
 }

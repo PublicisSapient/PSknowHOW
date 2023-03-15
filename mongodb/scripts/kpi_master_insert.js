@@ -3021,7 +3021,6 @@ db.getCollection('kpi_master').insert(
             "type": "paragraph",
             "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
         },
-
         {
           "type": "paragraph",
           "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
@@ -3037,6 +3036,14 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+           "type": "paragraph",
+           "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+           "type": "paragraph",
+           "value": "Issues finishing post issue due date are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3055,9 +3062,9 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Work Completed",
+    "kpiName": "Overall Completion Status",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "Count",
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Iteration",
@@ -3070,11 +3077,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
             "type": "paragraph",
-            "value": "Work Completed KPI gives a depiction of completion status based on  no. of issues and size of work (in SP)."
-        },
-        {
-            "type": "paragraph",
-            "value": "In addition, it also lets the user know the day wise delay for each issue that has been completed. The calculation consider issues of each individual in an iteration and then considers original estimate."
+            "value": "Overall Completion status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",
@@ -3082,19 +3085,23 @@ db.getCollection('kpi_master').insert(
         },
         {
           "type": "paragraph",
-          "value": " 1. Map all ‘In Progress status’ in mappings for your project."
+          "value": "Map all ‘In Progress status’ in mappings for your project."
         },
         {
             "type": "paragraph",
-            "value": " 2. Ensure Original Estimate is added to all issues in a sprint."
+            "value": "Ensure Original Estimate & Due Date is added to all issues in a sprint."
         },
         {
             "type": "paragraph",
-            "value": " 3. Assignees should be kept up to date in Jira."
+            "value": "Assignees should be kept up to date in Jira."
         },
         {
             "type": "paragraph",
             "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+        },
+        {
+            "type": "paragraph",
+            "value": "Planned work is based on 'Due Date'."
         },
         {
           "type": "paragraph",
@@ -3103,6 +3110,10 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Story Points - Sum of story points of all issues that are completed"
+        },
+        {
+          "type": "paragraph",
+          "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
         },
         {
           "type": "paragraph",
@@ -3233,7 +3244,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi120",
-    "kpiName": "Scope Change",
+    "kpiName": "Iteration Commitment",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
@@ -3248,11 +3259,11 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Scope change KPI highlights change in iteration scope since the start of iteration."
+          "value": "Iteration commitment illustrates the scope of work committed by the team at the beginning of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "It showcases added as well as removed issue count and the corresponding story points"
+          "value": "The KPI also shows the scope added and removed during the iteration. Scope is shown both in terms of issue count and size of work (Story points)"
         },
         {
           "type": "paragraph",
@@ -3266,7 +3277,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
@@ -3336,6 +3347,44 @@ db.getCollection('kpi_master').insert(
       "boxType": "2_column",
       "calculateMaturity": false
     },
+   {
+         "kpiId": "kpi132",
+         "kpiName": "Defects by Root Cause",
+         "maxValue": "",
+         "kpiUnit": "Count",
+         "isDeleted": "False",
+         "defaultOrder": 13,
+         "kpiCategory": "Iteration",
+         "kpiSource": "Jira",
+         "groupId": 8,
+         "thresholdValue": "",
+         "kanban": false,
+         "chartType": "pieChart",
+         "kpiInfo": {
+           "details": [
+             {
+               "type": "paragraph",
+               "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
+             },
+             {
+               "type": "paragraph",
+               "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
+             },
+             {
+               "type": "paragraph",
+               "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+             }
+           ]
+         },
+         "xAxisLabel": "",
+         "yAxisLabel": "",
+         "isPositiveTrend": true,
+         "showTrend": false,
+         "isAdditionalFilterSupport": false,
+         "kpiFilter": "dropdown",
+         "boxType": "chart",
+         "calculateMaturity": false
+       },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",

@@ -46,7 +46,7 @@ services:
       - dbname={{ MONGODB_APPLICATION_DATABASE }}
       - dbusername={{ MONGODB_APPLICATION_USER }}
       - dbpassword={{ MONGODB_APPLICATION_PASS }}
-      - JAVA_OPTS{{ JAVA_OPTS }}
+      - JAVA_OPTS={{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     networks:

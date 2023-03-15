@@ -51,13 +51,13 @@
                                 <p class="text-data">
                                   <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value != -99 ?
                                     convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                                    <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
+                                    <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}" *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
                                       {{ x?.value != -99 ? x?.unit : ''}}
                                     </span>
                                   <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                     (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
-                                  <span *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
+                                  <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}" *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                     {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                   </span>
                                 </p>
@@ -88,6 +88,7 @@
                                   [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                 </app-groupstackchart>
 
+                                <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                 <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                   [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
@@ -158,15 +159,25 @@
       <ng-template pTemplate="header">
         <tr>
           <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item}}</th>
+            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item?.kpiColumn ? item?.kpiColumn : item}} <span *ngIf="item?.columnInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+            pTooltip='<div class="inner-content">
+                {{item.columnInfo}}
+            </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>
         <tr>
-          <td class="font-small"><a [href]="x['Issue URL']" class="text-blue" target="_blank">{{x['Issue Id']}}</a></td>
+          <td class="font-small" style="padding: 0rem 0rem;height: 4.8rem;">
+            <ng-container>
+              <div style="display: flex;align-items: center;height: inherit;">
+                <div class="color-indicator" [ngStyle]="{'background-color': x['marker'] ? x['marker'] : ''}"></div>
+                <a [href]="x['Issue URL']" class="text-blue" style="margin-left: 3px;" target="_blank" >{{x['Issue Id']}}</a>
+              </div>
+            </ng-container>
+          </td>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
-            <td *ngIf="i!=0">
-              {{x[item]}}
+            <td *ngIf="i!=0" style="padding: 0rem 1rem;height: 4.8rem;">
+              {{item?.kpiColumn ? x[item.kpiColumn] : x[item]}}
             </td>
           </ng-container>
         </tr>

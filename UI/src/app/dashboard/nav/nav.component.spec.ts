@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync, tick } from '@angular/core/testing';
 import { NavComponent } from './nav.component';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
@@ -34,12 +34,14 @@ import { HttpTestingController, HttpClientTestingModule } from '@angular/common/
 import { environment } from 'src/environments/environment';
 import { DatePipe } from '../../../../node_modules/@angular/common';
 import { TextEncryptionService } from '../../services/text.encryption.service';
+import { of } from 'rxjs';
 
 describe('NavComponent', () => {
   let component: NavComponent;
   let   fixture: ComponentFixture<NavComponent>;
   let router;
   let httpMock;
+  let httpService;
   let service;
   let aesEncryption;
   const baseUrl = environment.baseUrl;  // Servers Env
@@ -70,6 +72,7 @@ describe('NavComponent', () => {
       ]
     })
       .compileComponents();
+      httpService = TestBed.inject(HttpService);
       service = TestBed.get(SharedService);
       httpMock = TestBed.get(HttpTestingController);
       fixture = TestBed.createComponent(NavComponent);
@@ -99,4 +102,33 @@ describe('NavComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render message', () => {
+    const res = [
+        {
+            "type": "User Access Request",
+            "count": 0
+        },
+        {
+            "type": "Project Access Request",
+            "count": 0
+        }
+    ];
+    const myFunctionSpy = spyOn(component, 'renderMessage').and.stub();
+    // const service = new MyService();
+    spyOn(httpService, 'getAccessRequestsNotifications');
+    component.renderMessage();
+    expect(myFunctionSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should edit dashboard name', fakeAsync(() => {
+    component.kpiListData = getDashConfData.data;
+    component.kpiListData.scrum[0].boardName = 'My KnowHOW1';
+    component.kpiListData.kanban[0].boardName = 'My KnowHOW1';
+    spyOn(component, 'assignUserNameForKpiData');
+    spyOn(httpService, 'updateUserBoardConfig').and.returnValue(of(getDashConfData));
+    component.editDashboardName();
+    tick();
+    expect(component.displayEditModal).toBe(false);
+  }))
 });

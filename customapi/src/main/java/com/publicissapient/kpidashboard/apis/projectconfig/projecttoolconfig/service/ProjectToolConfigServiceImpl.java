@@ -40,11 +40,9 @@ import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 import com.publicissapient.kpidashboard.common.model.application.Subproject;
-import com.publicissapient.kpidashboard.common.model.application.dto.ProjectAssigneeDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -75,7 +73,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-	private static final String SUCCESS_MSG ="Successfully fetched all records for projectToolConfig";
+	private static final String SUCCESS_MSG = "Successfully fetched all records for projectToolConfig";
 
 	/**
 	 * Fetch all ProjectToolConfig data.
@@ -98,8 +96,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	/**
 	 * Fetch a ProjectToolConfig by toolType. *
 	 * 
-	 * @param toolType 
-	 * 				as toolType
+	 * @param toolType
+	 *            as toolType
 	 * 
 	 * @return ServiceResponse with data object,message and status flag. Status flag
 	 *         is true, if data is found else false.
@@ -124,8 +122,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	/**
 	 * Create and save a connection in the database.
 	 * 
-	 * @param projectToolConfig 
-	 * 					as project_tool_configs
+	 * @param projectToolConfig
+	 *            as project_tool_configs
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
@@ -230,9 +228,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setOrganizationKey(projectToolConfig.getOrganizationKey());
 		projectTool.setJiraTestCaseType(projectToolConfig.getJiraTestCaseType());
 		projectTool.setTestAutomatedIdentification(projectToolConfig.getTestAutomatedIdentification());
-		projectTool.setTestAutomationCompletedIdentification(projectToolConfig.getTestAutomationCompletedIdentification());
+		projectTool
+				.setTestAutomationCompletedIdentification(projectToolConfig.getTestAutomationCompletedIdentification());
 		projectTool.setTestRegressionIdentification(projectToolConfig.getTestRegressionIdentification());
-		projectTool.setTestAutomationCompletedByCustomField(projectToolConfig.getTestAutomationCompletedByCustomField());
+		projectTool
+				.setTestAutomationCompletedByCustomField(projectToolConfig.getTestAutomationCompletedByCustomField());
 		projectTool.setTestRegressionByCustomField(projectToolConfig.getTestRegressionByCustomField());
 		projectTool.setJiraAutomatedTestValue(projectToolConfig.getJiraAutomatedTestValue());
 		projectTool.setJiraRegressionTestValue(projectToolConfig.getJiraRegressionTestValue());
@@ -250,16 +250,18 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	}
 
 	/**
-	 * make a copy of the list so the original list is not changed, and remove() is supported
+	 * make a copy of the list so the original list is not changed, and remove() is
+	 * supported
+	 * 
 	 * @param l1
 	 * @param l2
 	 * @return
 	 */
-	private static boolean compareTwoListOfObjects( List<?> l1, List<?> l2 ) {
-		
-		ArrayList<?> cp = new ArrayList<>( l1 );
-		for ( Object o : l2 ) {
-			if ( !cp.remove( o ) ) {
+	private static boolean compareTwoListOfObjects(List<?> l1, List<?> l2) {
+
+		ArrayList<?> cp = new ArrayList<>(l1);
+		for (Object o : l2) {
+			if (!cp.remove(o)) {
 				return false;
 			}
 		}
@@ -400,7 +402,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	private String checkConnectionName(ObjectId connectionId) {
 		Optional<Connection> optConnection = connectionRepository.findById(connectionId);
-		if(optConnection.isPresent()) {
+		if (optConnection.isPresent()) {
 			Connection connection = optConnection.get();
 			return connection.getConnectionName();
 		}
@@ -423,26 +425,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			log.error("basicConfigId = {}, toolConfigId = {} - not found", basicProjectConfigId, projectToolId);
 			throw new ToolNotFoundException("Tool not found");
 		}
-	}
-
-	@Override
-	public ServiceResponse getJiraProjects() {
-		List<ProjectAssigneeDTO> projectList = new ArrayList<>();
-		List<ProjectToolConfig> projectToolConfigList = toolRepository.findByToolName(ProcessorConstants.JIRA);
-		if (null != projectToolConfigList) {
-			for (ProjectToolConfig projectToolConfig : projectToolConfigList) {
-				ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository
-						.findById(projectToolConfig.getBasicProjectConfigId()).get();
-				ProjectAssigneeDTO projectAssignee = new ProjectAssigneeDTO();
-				projectAssignee.setBasicProjectConfigId(projectBasicConfig.getId());
-				projectAssignee.setProjectName(projectBasicConfig.getProjectName());
-				projectList.add(projectAssignee);
-			}
-			if (CollectionUtils.isNotEmpty(projectList)) {
-				return new ServiceResponse(true, "List of Projects", projectList);
-			}
-		}
-		return new ServiceResponse(false, "No Projects Found", null);
 	}
 
 }
