@@ -483,15 +483,18 @@
     height: 7rem;
   }
   .close-icon{
-    height: 30px;
+    height: 23px;
   }
   .selected-wraper .selected-board .rotate{
-    font-size: 1rem;
+    font-size: 0.7rem;
   }
   .icon-hamburger{
-    height: 30px;
+    height: 23px;
   }
   .selected-value{
-    font-size: 1rem;
+    font-size: 0.7rem;
+  }
+  .open-btn{
+    bottom: 0.8rem;
   }
 }
