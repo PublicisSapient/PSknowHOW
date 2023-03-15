@@ -15,7 +15,6 @@ do
     # Increment the counter
     counter=$((counter+1))
         echo "Imported $cert_file to $keystorefile as $alias."
-    echo "Restart customapi container after  $(echo -e "\033[32mCertificate was added to keystore\033[0m") message "
 done
 
 # Running Customapi jar file
