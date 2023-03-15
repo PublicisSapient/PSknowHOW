@@ -626,9 +626,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
 				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
 			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 			}
 		}
