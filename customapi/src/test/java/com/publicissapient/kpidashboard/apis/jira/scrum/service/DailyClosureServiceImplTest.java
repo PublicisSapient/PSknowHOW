@@ -48,8 +48,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -128,7 +132,6 @@ public class DailyClosureServiceImplTest {
         leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
         String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
         String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         when(sprintRepository.findBySprintID(Mockito.anyString())).thenReturn(sprintDetailsList.get(0));
         when(jiraIssueRepository
                 .findByNumberInAndBasicProjectConfigId(Mockito.anyList(), Mockito.anyString())).thenReturn(jiraIssues);
@@ -139,7 +142,7 @@ public class DailyClosureServiceImplTest {
         assertNotNull(defectDataListMap);
     }
 
-    @Test
+    /*@Test
     public void testGetDSR() throws ApplicationException {
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -156,5 +159,33 @@ public class DailyClosureServiceImplTest {
             assertNotNull(kpiElement);
         } catch (ApplicationException enfe) {
         }
+    }*/
+    @Test
+    public void testGetKpiDataProject() throws ApplicationException {
+
+        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+        when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetailsList.get(0));
+        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
+        String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+                .thenReturn(kpiRequestTrackerId);
+        when(dailyClosureService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        try {
+            KpiElement kpiElement = dailyClosureService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+                    treeAggregatorDetail);
+            assertNotNull( kpiElement.getTrendValueList());
+
+        } catch (ApplicationException enfe) {
+
+        }
+
     }
+    @Test
+    public void testGetQualifierType() {
+        assertThat(dailyClosureService.getQualifierType(), equalTo(KPICode.DAILY_CLOSURES.name()));
+    }
+
 }

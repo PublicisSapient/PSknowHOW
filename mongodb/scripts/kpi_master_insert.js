@@ -3397,7 +3397,7 @@ db.getCollection('kpi_master').insert(
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "stackedColumn",
+    "chartType": "GroupBarChart",
     "kpiInfo": {
       "details": [
         {
