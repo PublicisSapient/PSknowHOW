@@ -14,7 +14,8 @@ db.getCollection('kpi_fieldmapping').insert(
 		kpiSource:'Jira',
         type: ['Scrum'],
         fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
-      },
+        },
+
       {
         kpiId: 'kpi111',
         kpiName: 'Defect Density',
@@ -342,7 +343,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Work Remaining',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi75',
@@ -356,14 +357,14 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Issues likely to Spill',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Custom Fields Mapping' : ['workingHoursDayCPT'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi122',
         kpiName: 'Closure Possible Today',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForQa' , 'jiraOnHoldStatus'], 'Custom Fields Mapping' : ['workingHoursDayCPT']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi120',
