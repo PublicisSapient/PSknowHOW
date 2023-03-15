@@ -29,9 +29,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -175,23 +177,20 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, startDate, endDate, kpiRequest);
 
-		assert latestSprint != null;
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
-
-		List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
-				.orElse(Collections.emptyList());
-
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
+
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+
+			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+					.orElse(Collections.emptyList());
 			List<JiraIssue> allDefects = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			List<JiraIssue> allStory = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
-					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
+			Map<String, JiraIssue> allStoryMap = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
+					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toMap(
+					JiraIssue::getNumber, Function.identity()));
 
-			if (CollectionUtils.isNotEmpty(allDefects) && CollectionUtils.isNotEmpty(allStory)) {
-
-				Map<String, JiraIssue> allStoryMap = new HashMap<>();
-				allStory.stream().forEach(story -> allStoryMap.putIfAbsent(story.getNumber(), story));
+			if (CollectionUtils.isNotEmpty(allDefects) && MapUtils.isNotEmpty(allStoryMap)) {
 
 				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 				List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
@@ -207,9 +206,9 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							fieldMapping);
 				}
 				
-				double overAllDefectDensity = calculateDefectDensity(allStory, linkedDefectList, fieldMapping);
+				double overAllDefectDensity = calculateDefectDensity(new ArrayList<>(allStoryMap.values()), linkedDefectList, fieldMapping);
 
-				double overAllDir = calculateDIR(allStory, linkedDefectList);
+				double overAllDir = calculateDIR(new ArrayList<>(allStoryMap.values()), linkedDefectList);
 
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS,
@@ -280,7 +279,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 */
 	private double calculateDIR(List<JiraIssue> allStory, List<JiraIssue> linkedDefect) {
 
-		if (CollectionUtils.isEmpty(allStory) || CollectionUtils.isEmpty(linkedDefect)) {
+		if (CollectionUtils.isEmpty(linkedDefect)) {
 			return 0;
 		}
 		Set<String> listOfStory = linkedDefect.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
