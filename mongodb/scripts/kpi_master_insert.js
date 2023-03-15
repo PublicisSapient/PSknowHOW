@@ -3021,7 +3021,6 @@ db.getCollection('kpi_master').insert(
             "type": "paragraph",
             "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
         },
-
         {
           "type": "paragraph",
           "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
@@ -3037,6 +3036,14 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+           "type": "paragraph",
+           "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+           "type": "paragraph",
+           "value": "Issues finishing post issue due date are marked in RED"
         },
         {
           "type": "paragraph",
