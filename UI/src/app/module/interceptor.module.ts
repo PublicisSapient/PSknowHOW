@@ -110,15 +110,23 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
-                        if (httpErrorHandler !== 'local') {
-                            if (requestArea === 'internal') {
-                                if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                    if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
-                                    this.router.navigate(['./dashboard/Error']);
+                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
+                            this.service.clearAllCookies();
+                            console.log('Navigating to dashboard');
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
+                        }else{
+                            if (httpErrorHandler !== 'local') {
+                                if (requestArea === 'internal') {
+                                    if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
+                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        this.router.navigate(['./dashboard/Error']);
+                                        }
+                                        setTimeout(() => {
+                                            this.service.raiseError(err);
+                                        }, 0);
                                     }
-                                    setTimeout(() => {
-                                        this.service.raiseError(err);
-                                    }, 0);
                                 }
                             }
                         }
