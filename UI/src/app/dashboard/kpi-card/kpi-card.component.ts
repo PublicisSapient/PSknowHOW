@@ -138,11 +138,20 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   openComments(){
     this.selectedFilters = []
     const sharedObj = this.service.getFilterObject();
-    for (let i = 0; i < sharedObj.filterApplyData.ids.length; i++) {
-      this.selectedFilters.push(sharedObj.filterData.filter(data => {
-        return data.nodeId === sharedObj.filterApplyData.ids[i]
-      })[0]);
+    if(this.service.getSelectedTab() === 'Backlog' || this.service.getSelectedTab() === 'Iteration'){
+      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.sprint.length; i++) {
+        this.selectedFilters.push(sharedObj.filterData.filter(data => {
+          return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
+        })[0]);
+      }
+    } else{
+      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.project.length; i++) {
+        this.selectedFilters.push(sharedObj.filterData.filter(data => {
+          return data.nodeId === sharedObj.filterApplyData.selectedMap?.project[i]
+        })[0]);
+      }
     }
+
     if(this.service.getSelectedTab() === 'Backlog'){
       const selFil = this.selectedFilters;
       this.selectedFilters = [];
@@ -154,7 +163,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
     const reqObj = {
-      node: this.service.getSelectedTab() !== 'Iteration'? filterData.nodeId: '',
+      node: this.service.getSelectedTab() !== 'Iteration'? filterData.nodeId: filterData.parentId[0],
       level: filterData.level,
       sprintId: this.service.getSelectedTab() === 'Iteration'? filterData.nodeId: '',
       commentsKpiWise: [
