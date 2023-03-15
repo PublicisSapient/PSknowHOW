@@ -3422,7 +3422,7 @@ db.getCollection('kpi_master').insert(
                  {
                    "type": "paragraph",
                    "value": "4. Unlinked defects"
-                 }
+                 },
                  {
                    "type": "paragraph",
                    "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
