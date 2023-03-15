@@ -96,6 +96,7 @@
                                   [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                 </app-groupstackchart>
 
+
                                 <app-piechart *ngSwitchCase="'pieChart'"
                                   [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                 <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"

@@ -3021,7 +3021,6 @@ db.getCollection('kpi_master').insert(
             "type": "paragraph",
             "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
         },
-
         {
           "type": "paragraph",
           "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
@@ -3037,6 +3036,14 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+           "type": "paragraph",
+           "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+           "type": "paragraph",
+           "value": "Issues finishing post issue due date are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3394,36 +3401,38 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-    "definition": "Quality Status gives the information about defects linked/unlinked with the story and Defect density",
-     "formula": [
-        {
-          "lhs": "Defect Density",
-          "operator": "division",
-          "operands": [
-          "All defects added to the Sprint (post sprint start) and linked to stories",
-          "Storypoint of all linked stories"
-                   ]
-        }
-               ],
+    "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
        "details": [
                  {
                    "type": "paragraph",
-                   "value": " Defect density - DEFECT DENSITY measures the total number of defects against the size of a story"
+                   "value": "The KPI shows:"
                  },
                  {
                    "type": "paragraph",
-                   "value": "Story related defects - All defects added to the Sprint and linked to stories (post sprint start)"
+                   "value": "1. Linked defects to story"
                  },
                  {
                    "type": "paragraph",
-                   "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
+                   "value": "2. Defect Injection Rate"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "3. Defect Density"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "4. Unlinked defects"
+                 }
+                 {
+                   "type": "paragraph",
+                   "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
                  }
                  ]
             },
      "xAxisLabel": "",
      "yAxisLabel": "",
      "isPositiveTrend": true,
-     "kpiFilter": "multiSelectDropDown",
+     "kpiFilter": "",
      "showTrend": false,
      "boxType": "3_column"
    },
