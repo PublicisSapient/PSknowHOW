@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -81,6 +82,9 @@ public class WorkRemainingServiceImplTest {
 
 	@Mock
 	private FieldMappingRepository fieldMappingRepository;
+
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@InjectMocks
 	private WorkRemainingServiceImpl workRemainingServiceImpl;
