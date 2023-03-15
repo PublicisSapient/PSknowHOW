@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -10,11 +11,12 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.jira.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.jira.data.JiraIssueHistoryDataFactory;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,24 +36,20 @@ public class HandleJiraHistoryTest {
     private JiraIssueCustomHistory jiraIssueCustomHistory;
 
     @Mock
-    private JiraIssue jiraIssue;
-
-    @Mock
     private FieldMapping fieldMapping;
 
     private List<ChangelogGroup> changeLogList = new ArrayList<>();
 
     Map<String, IssueField> fields = new HashMap<>();
 
+
+    private Issue issue ;
+
     @Before
     public void setUp() throws URISyntaxException {
-        JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance("/json/default/jira_issue_custom_history.json");
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issue.json");
+
+        jiraIssueCustomHistory = new JiraIssueCustomHistory();
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory.newInstance("/json/default/field_mapping.json");
-
-
-        jiraIssueCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory().get(0);
-        jiraIssue = jiraIssueDataFactory.getJiraIssues().get(0);
         fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 
         ChangelogGroup changelogGroup;
@@ -69,7 +67,7 @@ public class HandleJiraHistoryTest {
         changeLogList.add(changelogGroup);
         changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "Labels", "10003", "L1", "15752", "L2")));
         changeLogList.add(changelogGroup);
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due Date", "10003", "2023-02-21 00:00:00.0", "15752", "2023-02-24 00:00:00.0")));
+        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due Date", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
         changeLogList.add(changelogGroup);
         changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint", "10003", "KnowHOW | PI_12| ITR_4, KnowHOW | PI_12| ITR_5", "15752", "KnowHOW | PI_12| ITR_5")));
         changeLogList.add(changelogGroup);
@@ -77,16 +75,26 @@ public class HandleJiraHistoryTest {
 
         fields.put("customfield_11528", new IssueField("", "Due Date", "", null));
         fields.put("customfield_12700", new IssueField("", "Sprint", "", null));
+
+        Map<String, URI> avatarUris = new HashMap<>();
+        avatarUris.put("48x48", URI.create(""));
+         issue = new Issue("summary", null, "key", 121L, null, null,
+                new Status(null, null, "Open", null, null, null), "description",
+                new Priority(null,null,"P4-Minor",null,null,null), null, null, null,
+                 new User(null,null,"Harsh Gupta","",false,new ExpandableProperty<>(Collections.singleton("")),avatarUris,"1"), DateTime.now(), DateTime.now(),
+                 DateTime.now(), null, new ArrayList<>(), null, null, null, null, null,
+                null, null, null, null, null, null, null, null, new HashSet<>());
     }
 
     @Test
     public void testSetJiraFieldChangeLog1() {
-        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+
+        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
         Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
-        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 2);
-        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 1);
+        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
+        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 2);
+        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 3);
+        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 2);
         Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
         Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 1);
 
@@ -95,30 +103,30 @@ public class HandleJiraHistoryTest {
     @Test
     public void testSetJiraFieldChangeLog2() {
         if (ObjectUtils.isNotEmpty(changeLogList)) changeLogList.clear();
-        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
         Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 0);
+        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
         Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 0);
+        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 1);
         Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 0);
     }
 
     @Test
     public void testJiraDueDateChangeLog() throws URISyntaxException {
-        fieldMapping.setJiraDueDateCustomField(null);
-        fieldMapping.setJiraDueDateField(null);
-        ChangelogGroup changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "dueDate", "10003", "2023-02-21 00:00:00.0", "15752", "2023-02-24 00:00:00.0")));
+        fieldMapping.setJiraDueDateCustomField("");
+        fieldMapping.setJiraDueDateField("Due Date");
+        ChangelogGroup changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "dueDate", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
         changeLogList.add(changelogGroup);
-        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields);
+        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
         Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
-        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 2);
-        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 1);
+        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
+        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 2);
+        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 3);
+        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 2);
         Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 1);
+        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 2);
     }
 
 }

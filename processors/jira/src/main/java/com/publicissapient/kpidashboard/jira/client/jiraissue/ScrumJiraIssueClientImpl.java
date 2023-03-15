@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -240,6 +241,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				if (issues.size() < pageSize) {
 					break;
 				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -332,6 +334,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					if (issues.size() < pageSize) {
 						break;
 					}
+					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				}
 				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
@@ -1127,7 +1130,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
-
 			} catch (ParseException | JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
@@ -1266,7 +1268,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 			//		fieldMapping);
 			//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
-			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields, issue);
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		}
 
 	}
@@ -1287,7 +1289,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
 		//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 		//		fieldMapping);
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, jiraIssue, fields, issue);
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
