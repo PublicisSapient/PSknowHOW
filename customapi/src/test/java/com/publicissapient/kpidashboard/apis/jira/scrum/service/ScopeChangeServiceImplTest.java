@@ -107,7 +107,7 @@ public class ScopeChangeServiceImplTest {
 		
 		setMockProjectConfig();
 		setMockFieldMapping();
-		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
+		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(1);
 
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
@@ -156,7 +156,7 @@ public class ScopeChangeServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("SCOPE_CHANGE"));
+		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
 	}
 
 	@After

@@ -47,16 +47,17 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public void save(ProcessorExecutionTraceLog processorExecutionTracelog) {
-		log.info("last execution time of {} for project {} is {}. status is {}",
+		log.info("last execution time of {} for project {} is {}. status is {} and lastSuccessfulRun is {} and LastEnableAssigneeToggleState is {} ",
 				processorExecutionTracelog.getProcessorName(), processorExecutionTracelog.getBasicProjectConfigId(),
-				processorExecutionTracelog.getExecutionEndedAt(), processorExecutionTracelog.isExecutionSuccess());
+				processorExecutionTracelog.getExecutionEndedAt(), processorExecutionTracelog.isExecutionSuccess(),
+				processorExecutionTracelog.getLastSuccessfulRun(),
+				processorExecutionTracelog.isLastEnableAssigneeToggleState());
 
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(processorExecutionTracelog.getProcessorName(),
 						processorExecutionTracelog.getBasicProjectConfigId());
 		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog -> {
 			processorExecutionTracelog.setId(existingProcessorExecutionTraceLog.getId());
-
 			if (MapUtils.isNotEmpty(existingProcessorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())
 					&& MapUtils.isEmpty(processorExecutionTracelog.getLastSavedEntryUpdatedDateByType())) {
 				processorExecutionTracelog.setLastSavedEntryUpdatedDateByType(

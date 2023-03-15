@@ -1,0 +1,116 @@
+package com.publicissapient.kpidashboard.apis.comments.rest;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
+import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
+import com.publicissapient.kpidashboard.common.model.comments.CommentsKpiWise;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CommentsControllerTest {
+
+	private MockMvc mockMvc;
+
+	@Mock
+	private CommentsService commentsService;
+	@InjectMocks
+	private CommentsController commentsController;
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	String node = "1";
+	String level = "level";
+	String sprintId = "10";
+	String kpiId = "kpi12";
+
+	@Before
+	public void before() {
+		mockMvc = MockMvcBuilders.standaloneSetup(commentsController).build();
+	}
+
+	@Test
+	public void submitCommentsTest() throws Exception {
+
+		CommentSubmitDTO comment = new CommentSubmitDTO();
+		comment.setNode(node);
+		comment.setLevel(level);
+		comment.setSprintId(sprintId);
+		List<CommentsKpiWise> commentsKpiWise = new ArrayList<>();
+		CommentsKpiWise commentKpiWise = new CommentsKpiWise();
+		commentKpiWise.setKpiId(kpiId);
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		commentInfo.setCommentBy("Mahesh");
+		commentInfo.setComment("More Data Required");
+		commentsInfo.add(commentInfo);
+		commentKpiWise.setCommentsInfo(commentsInfo);
+		commentsKpiWise.add(commentKpiWise);
+		comment.setCommentsKpiWise(commentsKpiWise);
+
+		when(commentsService.submitComment(comment)).thenReturn(true);
+		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
+				.content(mapper.writeValueAsString(comment)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+		verify(commentsService).submitComment(comment);
+
+	}
+
+	@Test
+	public void submitCommentsIssueTest() throws Exception {
+		CommentSubmitDTO comment = Mockito.mock(CommentSubmitDTO.class);
+		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
+				.content(mapper.writeValueAsString(comment)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+
+	}
+
+	@Test
+	public void getCommentsTest() throws Exception {
+
+		Map<String, Object> mappedCollection = new LinkedHashMap<>();
+		mappedCollection.put("node", node);
+		when(commentsService.findCommentByKPIId(node, level, sprintId, kpiId)).thenReturn(mappedCollection);
+		mockMvc.perform(get("/comments/getCommentsByKpiId?node=1&level=level&sprintId=10&kpiId=kpi12")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+	}
+
+	@Test
+	public void testComment_NotFound() throws Exception {
+		String expectedResponse = "{'message':'Comment not found','success':false}";
+
+		mockMvc.perform(get("/comments/getCommentsByKpiId?node=&level=level&sprintId=10&kpiId=kpi12")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
+
+	}
+
+	@After
+	public void cleanUp() {
+		mockMvc = null;
+	}
+}
