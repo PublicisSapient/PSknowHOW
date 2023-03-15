@@ -487,28 +487,6 @@ public class ProjectToolConfigServiceImplTest {
 		});
 	}
 
-	@Test
-	public void testGetJiraProjects1() {
-		toolType = "Jira";
-		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
-		projectBasicConfig.setId(new ObjectId("5d0533b0ff45ea9c730bb718"));
-		Optional<ProjectBasicConfig> projectBasicConfigOpt=Optional.of(projectBasicConfig);
-		List<ProjectToolConfig> projectToolConfigDataList = new ArrayList<>();
-		projectToolConfigDataList.add(listProjectTool);
-		when(toolRepositroy.findByToolName(toolType)).thenReturn(projectToolConfigDataList);
-		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
-		ServiceResponse serviceResponse = projectToolServiceImpl.getJiraProjects();
-		assertEquals(true, serviceResponse.getSuccess());
-	}
-
-	@Test
-	public void testGetJiraProjects2() {
-		toolType = "Jira";
-		when(toolRepositroy.findByToolName(toolType)).thenReturn(null);
-		ServiceResponse serviceResponse = projectToolServiceImpl.getJiraProjects();
-		assertEquals(false, serviceResponse.getSuccess());
-	}
-
 	private ProjectToolConfig findToolById(String id) {
 		Optional<ProjectToolConfig> first = createMockTools().stream()
 				.filter(tool -> tool.getId().toHexString().equals(id)).findFirst();

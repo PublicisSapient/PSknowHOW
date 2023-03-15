@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +50,7 @@ import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +65,8 @@ class AzurePipelineDeploymentClientTest {
 	private AzurePipelineDeploymentClient azurePipelineDeploymentClient;
 
 	private static final ProcessorToolConnection azurePipelineServer = new ProcessorToolConnection();
-
+	private static final ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	@BeforeEach
 	public void init() {
 		azurePipelineServer.setUrl("https://dev.azure.com/KnowHOW-demo/KnowHow");
@@ -74,6 +78,11 @@ class AzurePipelineDeploymentClientTest {
 		azurePipelineServer.setId(new ObjectId("629f47946000f87b2c5050b4"));
 		azurePipelineServer.setApiVersion("6.0");
 
+
+		proBasicConfig.setId(new ObjectId("629f47946000f87b2c5050b5"));
+		proBasicConfig.setSaveAssigneeDetails(true);
+		projectConfigList.add(proBasicConfig);
+
 	}
 
 	@Test
@@ -84,7 +93,7 @@ class AzurePipelineDeploymentClientTest {
             when(restOperationsFactory.getTypeInstance().exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
                     eq(String.class))).thenReturn(new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
 			Map<Deployment, Set<Deployment>> response = azurePipelineDeploymentClient
-					.getDeploymentJobs(azurePipelineServer, 0);
+					.getDeploymentJobs(azurePipelineServer, 0, proBasicConfig);
 			assertEquals(1, response.size());
 			Deployment deployment = response.values().stream().iterator().next().stream().iterator().next();
 			assertEquals("knowhow-release", deployment.getJobName());

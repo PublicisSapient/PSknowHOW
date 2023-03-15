@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.teamcity.config.Constants;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -321,16 +322,18 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * Provides Build Details.
 	 *
 	 * @param buildUrl
-	 *            the build URL
+	 * 		the build URL
 	 * @param instanceUrl
-	 *            the Teamcity instance URL
+	 * 		the Teamcity instance URL
 	 * @param teamcityServer
-	 *            the connection properties for Teamcity server
+	 * 		the connection properties for Teamcity server
+	 * @param proBasicConfig
 	 * @return the Build details
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
-	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer) {
+	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 		try {
 			String url = rebuildJobUrl(buildUrl, instanceUrl);
 			ResponseEntity<String> result = doRestCall(url, teamcityServer);
@@ -340,7 +343,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				return null;
 			}
 
-			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer);
+			return parseBuildDetailsResponse(resultJSON, buildUrl, teamcityServer, proBasicConfig);
 		} catch (UnsupportedEncodingException e) {
 			log.error(String.format("Unsupported Encoding Exception in getting build details. URL=%s", buildUrl), e);
 		} catch (URISyntaxException e) {
@@ -353,9 +356,12 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return null;
 	}
 
-	private Build createBuild(String buildUrl, ProcessorToolConnection teamcityServer, JSONObject buildJson) {
+	private Build createBuild(String buildUrl, ProcessorToolConnection teamcityServer, JSONObject buildJson,
+			ProjectBasicConfig proBasicConfig) {
 		Build build = new Build();
-		build.setStartedBy(ProcessorUtils.firstCulprit(buildJson));
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			build.setStartedBy(ProcessorUtils.firstCulprit(buildJson));
+		}
 		build.setBuildUrl(buildUrl);
 		build.setNumber(buildJson.get(NUMBER).toString());
 		build.setStartTime(ProcessorUtils.getCommitTimestamp(buildJson.get("startDate").toString()));
@@ -405,7 +411,8 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		return StringUtils.EMPTY;
 	}
 
-	private Build parseBuildDetailsResponse(String resultJSON, String buildUrl, ProcessorToolConnection teamcityServer) {
+	private Build parseBuildDetailsResponse(String resultJSON, String buildUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig) {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject buildJson = (JSONObject) parser.parse(resultJSON);
@@ -422,7 +429,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 			JSONObject latestBuildDetails = getBuildInfo(latestbuildUrl, teamcityServer.getUrl(), teamcityServer);
 
 			if(null != latestBuildDetails)
-				return createBuild(latestbuildUrl, teamcityServer, latestBuildDetails);
+				return createBuild(latestbuildUrl, teamcityServer, latestBuildDetails, proBasicConfig);
 		} catch (ParseException parseException) {
 			log.error(String.format("Error in parsing build response: %s", buildUrl), parseException);
 		}
