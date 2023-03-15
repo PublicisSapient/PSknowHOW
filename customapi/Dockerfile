@@ -9,7 +9,7 @@ VOLUME /app/properties
 VOLUME /app/offline_data
 VOLUME /app/certs
 
-ENV CONFIG_LOCATION="/app/properties/customapi.properties"
+ENV CONFIG_LOCATION="/app/properties/customapi.properties" certhostpath="/app/certs/" keytoolalias="myknowhow"
 ENV JAVA_OPTS=""
 
 ARG JAR_FILE
