@@ -162,7 +162,7 @@ public enum KPIExcelColumn {
 					"Delay is calculated based on difference between time taken to complete an issue that depends on the Actual Start date and Actual completion date (In Days) and the Original Estimate (In Days)"))),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Completion Date", "Due Date","Predicted Completion Date","Overall Delay")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date","Predicted Completion Date","Overall Delay")),
 
     WASTAGE("kpi131",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage")),

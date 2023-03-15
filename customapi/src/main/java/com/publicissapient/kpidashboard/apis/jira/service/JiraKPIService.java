@@ -22,10 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
@@ -291,15 +288,19 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
-		String devCompleteDate = null;
+		String devCompleteDate = Constant.DASH;
 		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
+		Collections.reverse(filterStorySprintDetails);
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
-			for (JiraIssueSprint jiraIssueSprint : filterStorySprintDetails) {
-				if (fieldMapping.getJiraDevDoneStatus().contains(jiraIssueSprint.getFromStatus())
-						&& jiraIssueSprint.getActivityDate() != null)
-					devCompleteDate = LocalDate.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
-							DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString();
-			}
+			devCompleteDate = filterStorySprintDetails.stream()
+					.filter(jiraIssueSprint -> fieldMapping.getJiraDevDoneStatus()
+							.contains(jiraIssueSprint.getFromStatus()) && jiraIssueSprint.getActivityDate() != null)
+					.findFirst()
+					.map(jiraIssueSprint -> LocalDate
+							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+									DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+							.toString())
+					.orElse(devCompleteDate);
 		}
 		return devCompleteDate;
 	}

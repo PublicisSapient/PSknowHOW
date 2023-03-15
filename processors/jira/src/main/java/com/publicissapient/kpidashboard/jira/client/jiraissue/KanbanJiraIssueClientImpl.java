@@ -586,6 +586,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave);
 				}
 				setEstimates(jiraIssue, issue,fields,fieldMapping);
+				if(fieldMapping.getJiraDevDueDateCustomField()!=null)
+					jiraIssue.setDevDueDate(fieldMapping.getJiraDevDueDateCustomField());
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
