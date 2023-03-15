@@ -138,6 +138,14 @@
   border-radius: 3px;
 }
 
+.nav-link.active .red-icon{
+  display: none;
+}
+
+.nav-link img{
+  height: 13px 
+}
+
 ::ng-deep .p-sidebar-left {
   background: #F0F0F0;
   top: 5rem !important;
