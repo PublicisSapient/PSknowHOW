@@ -145,10 +145,6 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
         when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
         when(jiraCommon.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
-        ProcessorAsynchJiraRestClientFactory jiraRestClient = Mockito.mock(ProcessorAsynchJiraRestClientFactory.class);
-        PowerMockito.whenNew(ProcessorAsynchJiraRestClientFactory.class).withAnyArguments().thenReturn(jiraRestClient);
-        Mockito.when(jiraRestClient.createWithBasicHttpAuthentication(Mockito.any(URI.class),
-                Mockito.anyString(),Mockito.anyString(),Mockito.any(JiraProcessorConfig.class))).thenReturn(restClient);
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))

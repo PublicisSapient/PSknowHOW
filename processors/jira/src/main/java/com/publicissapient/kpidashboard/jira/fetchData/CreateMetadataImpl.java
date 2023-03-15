@@ -3,7 +3,6 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -100,7 +99,10 @@ public class CreateMetadataImpl implements CreateMetadata {
             BoardMetadata boardMetadata = new BoardMetadata();
             boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
             boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-            boardMetadata.setMetadataTemplateID(projectConfig.getProjectToolConfig().getMetadataTemplateID());
+            boardMetadata.setMetadataTemplateID(
+//                    projectConfig.getProjectToolConfig().getMetadataTemplateID()
+                    new ObjectId("63c702c0778b02d15e9e2b3e")
+            );
             List<Metadata> fullMetaDataList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(fieldList)) {
                 fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -121,7 +123,7 @@ public class CreateMetadataImpl implements CreateMetadata {
                 isSuccess = true;
             }
 
-//            boardMetadataRepository.save(boardMetadata);
+            boardMetadataRepository.save(boardMetadata);
             psLogData.setMetaDataToDB("true");
             psLogData.setTimeTaken(String.valueOf(Duration.between(statProcessingMetadata, Instant.now()).toMillis()));
             log.info("Saving metadata into db", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -182,28 +184,6 @@ public class CreateMetadataImpl implements CreateMetadata {
                 Promise<Iterable<Status>> promisedRs = client.getMetadataClient().getStatuses();
 
                 Iterable<Status> fieldIt = promisedRs.claim();
-                if (fieldIt != null) {
-                    statusList = Lists.newArrayList(fieldIt.iterator());
-                }
-            } catch (RestClientException e) {
-                exceptionBlockProcess(e);
-            }
-        }
-
-        return statusList;
-    }
-
-
-    public List<IssuelinksType> getIssueLinkTypes() {
-        List<IssuelinksType> statusList = new ArrayList<>();
-
-        if (client == null) {
-            log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-        } else {
-            try {
-                Promise<Iterable<IssuelinksType>> promisedRs = client.getMetadataClient().getIssueLinkTypes();
-
-                Iterable<IssuelinksType> fieldIt = promisedRs.claim();
                 if (fieldIt != null) {
                     statusList = Lists.newArrayList(fieldIt.iterator());
                 }
