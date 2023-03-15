@@ -101,3 +101,8 @@
     box-shadow: 1px 1px #ced9d7;
 
   }
+
+  .color-indicator{
+      width: 10px;
+      height: inherit;
+  }
