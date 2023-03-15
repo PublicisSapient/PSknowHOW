@@ -585,9 +585,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 					setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave);
 				}
-				setEstimates(jiraIssue, issue,fields,fieldMapping);
-				if(fieldMapping.getJiraDevDueDateCustomField()!=null)
-					jiraIssue.setDevDueDate(fieldMapping.getJiraDevDueDateCustomField());
+				setDueDates(jiraIssue, issue,fields,fieldMapping);
+
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
@@ -609,9 +608,11 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return kanbanIssuesToSave;
 	}
 
-	private void setEstimates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+	private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
 				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
@@ -621,6 +622,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
 							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 				}
+			}
+		}
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+			IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 			}
 		}
 	}

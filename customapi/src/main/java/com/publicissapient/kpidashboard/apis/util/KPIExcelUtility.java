@@ -1278,7 +1278,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPotentialOverallDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
-        if(jiraIssue.getDevDueDate() == null)
+        if(jiraIssue.getDevDueDate() != null)
             iterationKpiModalValue.setDevDueDate(jiraIssue.getDevDueDate());
         else
             iterationKpiModalValue.setDevDueDate(Constant.DASH);
