@@ -22,7 +22,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
@@ -258,6 +261,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setActualStartDate(actualCompletionData.get("actualStartDate").toString());
 		iterationKpiModalValue.setDevCompletionDate(devCompletionDate);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -290,7 +294,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
 		String devCompleteDate = Constant.DASH;
 		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
-		Collections.reverse(filterStorySprintDetails);
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
 			devCompleteDate = filterStorySprintDetails.stream()
 					.filter(jiraIssueSprint -> fieldMapping.getJiraDevDoneStatus()
