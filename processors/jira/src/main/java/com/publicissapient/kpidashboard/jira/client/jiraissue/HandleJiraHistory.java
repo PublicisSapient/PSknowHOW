@@ -126,7 +126,6 @@ public class HandleJiraHistory {
 		if (StringUtils.isNotEmpty(jiraCustomField.trim())
 				&& ObjectUtils.isNotEmpty(fields.get(jiraCustomField.trim()))) {
 			String field = fields.get(jiraCustomField.trim()).getName();
-			log.info("In getCustomFieldChangeLog for custom field : " + field + " and fieldId : " + jiraCustomField);
 			return getJiraFieldChangeLog(changeLogList, field.trim(), convertToLocalDateTime);
 		}
 
@@ -150,7 +149,6 @@ public class HandleJiraHistory {
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields,
 			Issue issue) {
-		log.info("In setJiraIssueCustomHistoryUpdationLog");
 		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS, false);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE,
 				false);
