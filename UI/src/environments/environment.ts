@@ -22,7 +22,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:8081'
+  baseUrl: '//customapi:8080'
 };
 
 /*
