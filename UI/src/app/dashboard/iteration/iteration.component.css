@@ -111,3 +111,11 @@
     margin: 0;
     letter-spacing: -4px;
 }
+.first-cell{
+    height: 4.8rem;
+}
+.cell-indicator{
+    display: flex;
+    align-items: center;
+    height: 100%;
+}

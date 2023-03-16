@@ -40,8 +40,8 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   svg: any;
   margin = 20;
-  width = 500;
-  height = 190;
+  width = 450;
+  height = 225;
   // The radius of the pie chart is half the smallest side
   radius = Math.min(this.width, this.height) / 2 - this.margin;
   colors;
