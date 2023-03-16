@@ -87,7 +87,6 @@ public class HandleJiraHistory {
 					field = issueField.getName();
 			}
 			List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
-
 			if (CollectionUtils.isNotEmpty(changeLogList)) {
 				for (ChangelogGroup history : changeLogList) {
 					String finalField = field;
