@@ -217,6 +217,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           // getData = require('../../../test/resource/fakeIterationKpi.json');
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
+          localVariable['kpi125'] = this.formatFilterData(localVariable['kpi125']);
           for (const kpi in localVariable) {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
           }
@@ -245,6 +246,13 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
   }*/
 
+  formatFilterData(kpiData){
+    kpiData?.trendValueList?.forEach(filterData =>{
+        filterData['filter1'] = filterData['filter'];
+        delete filterData.filter;
+    }); 
+    return kpiData;
+  }
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
@@ -329,6 +337,17 @@ export class IterationComponent implements OnInit, OnDestroy {
     return count;
   }
 
+  applyAggregationForGroupBar(arr){
+    const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
+    for(let i=1;i<arr.length;i++){
+        for(let j=0;j<arr[i].value.length;j++){
+            aggregatedArr.value[j].value +=arr[i].value[j].value;
+
+            aggregatedArr.value[j].hoverValue = {...aggregatedArr.value[j].hoverValue,...arr[i].value[j].hoverValue}
+        }
+    }
+    return [aggregatedArr];
+  }
   applyAggregationLogic(arr) {
     const aggregatedArr = [JSON.parse(JSON.stringify(arr[0]))];
     for (let i = 0; i < arr?.length; i++) {
@@ -376,8 +395,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
-    if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
-
+    if (trendValueList && Object.keys(trendValueList)?.length > 0 && (!Array.isArray(trendValueList) || kpiId === 'kpi125')) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
         let tempArr = [];
@@ -401,10 +419,14 @@ export class IterationComponent implements OnInit, OnDestroy {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...trendValueList['value']?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            if (kpiId === 'kpi125') {
+                this.kpiChartData[kpiId] = this.applyAggregationForGroupBar(preAggregatedValues);
+            } else {
+                this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }

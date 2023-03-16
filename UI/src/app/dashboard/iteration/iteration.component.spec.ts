@@ -2564,4 +2564,43 @@ describe('IterationComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should apply aggregation for groupBarchart', () => {
+        const data = [
+            {
+                filter1: "Defect",
+                value: [{
+                    "data": "0",
+                    "value": 10,
+                    "hoverValue": {
+                        "Defect": 5,
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }]
+            },
+            {
+                filter1: "Change request",
+                value: [{
+                    "data": "0",
+                    "value": 11,
+                    "hoverValue": {
+                        "Change request": 5
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }
+                ]
+            }
+        ];
+        const result = component.applyAggregationForGroupBar(data);
+        expect(result[0]?.value[0].value).toEqual(21);
+    });
+
+
 });
