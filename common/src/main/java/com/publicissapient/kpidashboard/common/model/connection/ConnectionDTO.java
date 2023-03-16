@@ -49,6 +49,7 @@ public class ConnectionDTO {
 	private String baseUrl;
 	private String username;
 	private String password;
+	private String patOAuthToken;
 	private String apiEndPoint;
 	private String consumerKey;
 	private String privateKey;
@@ -67,7 +68,13 @@ public class ConnectionDTO {
 	private String updatedBy;
 	private List<String> connectionUser;
 	private boolean vault;//GS requirement
-
+	private boolean isBearerToken;
+	public boolean getIsBearerToken() {
+		return isBearerToken;
+	}
+	public void setIsBearerToken(boolean bearerToken) {
+		isBearerToken = bearerToken;
+	}
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
 	}

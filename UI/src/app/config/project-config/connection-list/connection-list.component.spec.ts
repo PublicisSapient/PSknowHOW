@@ -261,7 +261,7 @@ describe('ConnectionListComponent', () => {
 
 
   const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
-  
+
 
   const connectionLabelsFields = [
     {
@@ -275,8 +275,10 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
+        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
+        'Use bearer token',
         'Private Key',
         'Consumer Key',
         'Is Offline',
@@ -290,8 +292,10 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
+        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
+        'isBearerToken',
         'privateKey',
         'consumerKey',
         'offline',
@@ -566,8 +570,10 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
+        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
+        'Use bearer token',
         'Private Key',
         'Consumer Key',
         'Is Offline',
@@ -581,8 +587,10 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
+        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
+        'isBearerToken',
         'privateKey',
         'consumerKey',
         'offline',
@@ -872,6 +880,12 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
+      isBearerToken: [
+        {
+          field: 'patOAuthToken',
+          isEnabled: false
+        }
+        ],
       vault: [
         {
           field: 'password',
@@ -912,6 +926,10 @@ describe('ConnectionListComponent', () => {
           isEnabled: true,
         },
         {
+          field: 'patOAuthToken',
+          isEnabled: true,
+        },
+        {
           field: 'apiEndPoint',
           isEnabled: true,
         },
@@ -929,6 +947,7 @@ describe('ConnectionListComponent', () => {
         },
       ],
       isOAuth: [],
+      isBearerToken: [],
       vault: [
         {
           field: 'password',
@@ -1035,6 +1054,7 @@ describe('ConnectionListComponent', () => {
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
+      isBearerToken:false,
       offline: false,
       password: undefined,
       pat: undefined,
@@ -1138,6 +1158,7 @@ describe('ConnectionListComponent', () => {
         password: '',
         apiEndPoint: 'rest/api/2',
         isOAuth: false,
+        isBearerToken:false,
         offline: false,
         createdBy: 'SUPERADMIN',
         connPrivate: true,
@@ -1167,6 +1188,7 @@ describe('ConnectionListComponent', () => {
       username: 'tst-1',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
+      isBearerToken:false,
       offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
@@ -1565,7 +1587,7 @@ describe('ConnectionListComponent', () => {
     expect(component.emptyUrlInZephyr()).toBeFalse();
   })
 
- 
+
 
   it("should give success response, while testing for jira",()=>{
     component.testingConnection = true;

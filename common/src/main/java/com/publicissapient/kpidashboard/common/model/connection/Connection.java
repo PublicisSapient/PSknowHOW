@@ -50,6 +50,7 @@ public class Connection extends BasicModel{
 	private String baseUrl;
 	private String username;
 	private String password;
+	private String patOAuthToken;
 	private String apiEndPoint;
 	private String consumerKey;
 	private String privateKey;
@@ -70,6 +71,7 @@ public class Connection extends BasicModel{
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
+	private boolean isBearerToken;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;

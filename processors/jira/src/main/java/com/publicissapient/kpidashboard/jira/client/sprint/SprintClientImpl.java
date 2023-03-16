@@ -310,7 +310,12 @@ public class SprintClientImpl implements SprintClient {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		if(connectionOptional.get().getPatOAuthToken()!=null) {
+			request.setRequestProperty("Authorization", "Bearer " + connectionOptional.get().getPatOAuthToken()); // NOSONAR
+		}
+		else{
+			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		}
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
