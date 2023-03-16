@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div style="height: 100%;">
+<div class="h-100">
   <div class="navigation2 rows" *ngIf="!visibleSidebar">
     <div class="selected-wraper">
       <div class="selected-board" *ngIf="(selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration')">
@@ -24,7 +24,7 @@
       </div>
 
       <div class="selected-nav" [ngStyle]="{'margin-top':(selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration')?'6rem':'1rem' }">
-        <div class="selected-value" style=" writing-mode: vertical-rl;text-orientation: upright;">{{selectedTab}}</div>
+        <div class="selected-value">{{selectedTab}}</div>
       </div>
 
       <div class="open-btn">
@@ -64,7 +64,7 @@
                 (click)="selectTab(board.boardName,board.boardId)">
                 {{board.boardName}}
 
-                <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" style="height: 13px;"
+                <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" class="white-icon"
                   *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
                 <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" class="red-icon"
                   *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />

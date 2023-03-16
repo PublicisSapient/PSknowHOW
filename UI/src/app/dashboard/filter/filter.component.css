@@ -1049,3 +1049,37 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   width: 2rem;
   border-radius: 50%;
 }
+
+.noti-btn-wraper{
+  margin: 0rem 0.4rem;
+  position: relative
+}
+
+.back-btn-wraper{
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.back-btn-container{
+  color: var(--color-black);
+  display: flex;
+  font-size: 12px;
+  border: 1px solid var(--color-black);
+}
+
+.back-btn{
+  padding: 0.75rem;
+}
+
+.username-btn-wraper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-icon{
+  font-size: 1rem;
+  font-weight: bolder;
+  margin-left: 6px;
+}

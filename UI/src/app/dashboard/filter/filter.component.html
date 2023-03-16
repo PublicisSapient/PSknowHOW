@@ -205,7 +205,7 @@
 
             <!-- /show/hide kpi's ends -->
             <!-- Notification button start -->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn" style="margin: 0rem 0.4rem;position: relative"
+            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
                (click)="notification.toggle($event)" role="button">
                <img src="../../../assets/img/icon-bell.svg" alt="Bell" />
                <span *ngIf="requestCountMoreThanZero" class="noti-count">{{notificationList.length}}</span>
@@ -218,16 +218,16 @@
 
    </div>
   
-   <div style="display: flex;">
-      <div style="display: flex;justify-content: center;align-items: center">
-      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="btn-custom p-p-2 rounded p-mr-3 filter-btn cursor-pointer" style="padding-right: 8px;"  >
-         <a routerLink="mydashboard" routerLinkActive="active" (click)="navigateToSelectedTab()">BACK TO DASHBOARD</a>
+   <div class="p-d-flex">
+      <div class="back-btn-wraper">
+      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
+         <a routerLink="mydashboard" class="back-btn" routerLinkActive="active" (click)="navigateToSelectedTab()">BACK TO DASHBOARD</a>
       </div>
      </div>
-      <div style="display: flex;justify-content: center;align-items: center;padding-right: 7px;" role="button">
+      <div class="username-btn-wraper" role="button">
          <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
             {{username}}
-            <i class="pi pi-bars" style="font-size: 1rem;font-weight: bolder;margin-left: 6px;"></i>
+            <i class="pi pi-bars menu-icon"></i>
          </div>
          <p-menu #menu [popup]="true" [model]="items"></p-menu>
       </div>
