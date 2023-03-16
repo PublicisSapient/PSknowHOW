@@ -379,9 +379,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issueAtRisk = new IterationKpiData(NET_DELAYED_ISSUES,
-							Double.valueOf(delayNumberCount),null, null, DAYS, modalValues);
-					IterationKpiData issuecd = new IterationKpiData(ISSUES_CAUSING_DELAY, Double.valueOf(cdCount),
-							null, LABELINFO, "", null);
+							Double.valueOf(delayNumberCount), null, null, DAYS, modalValues);
+					IterationKpiData issuecd = new IterationKpiData(ISSUES_CAUSING_DELAY, Double.valueOf(cdCount), null,
+							LABELINFO, "", null);
 					IterationKpiData issuebt = new IterationKpiData(ISSUES_DONE_BEFORE_TIME, Double.valueOf(btCount),
 							null, LABELINFO, "", null);
 					data.add(issueAtRisk);
@@ -535,7 +535,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			v.addAll(jiraDelayIssueList);
 			return v;
 		});
-		resultList.putIfAbsent(DELAY_DETAILS,jiraDelayIssueList);
+		resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
 		resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
 		return resultListOpenIssues;
 	}

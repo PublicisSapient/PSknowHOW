@@ -291,10 +291,10 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		for (int i = 0; i < statusUpdationLogs.size(); i++) {
 			JiraHistoryChangeLog entry = statusUpdationLogs.get(i);
 
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList,
-					statusUpdationLogs, i, sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLogs,
-					i, sprintDetail, waitedTime);
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLogs, i,
+					sprintDetail, blockedTime);
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLogs, i,
+					sprintDetail, waitedTime);
 		}
 		return Arrays.asList(waitedTime, blockedTime);
 	}
@@ -310,8 +310,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry, List<String> fieldMappingStatus,
-			List<JiraHistoryChangeLog> statusUpdationLogs, int index, SprintDetails sprintDetails, int time) {
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
+			List<String> fieldMappingStatus, List<JiraHistoryChangeLog> statusUpdationLogs, int index,
+			SprintDetails sprintDetails, int time) {
 		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
 		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
 		DateTime entryActivityDate = DateTime.parse(entry.getUpdatedOn().toString());

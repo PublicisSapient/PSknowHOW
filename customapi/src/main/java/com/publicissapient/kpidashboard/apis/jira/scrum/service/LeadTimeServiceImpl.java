@@ -95,7 +95,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueType()).isPresent()) {
 
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
-						fieldMapping.getJiraIntakeToDorIssueType(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+						fieldMapping.getJiraIntakeToDorIssueType(),
+						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 			}
@@ -341,9 +342,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				CycleTime cycleTime = new CycleTime();
 				cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 				cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
-				jiraIssueCustomHistory.getStatusUpdationLog()
-						.forEach(sprintDetail -> updateCycleTimeValidationData(dor, dod, live, cycleTimeValidationData,
-								cycleTime, sprintDetail));
+				jiraIssueCustomHistory.getStatusUpdationLog().forEach(sprintDetail -> updateCycleTimeValidationData(dor,
+						dod, live, cycleTimeValidationData, cycleTime, sprintDetail));
 				setCycleTimeAsPerFilter(intakeDorTime, dorDodTime, dodLiveTime, intakeLiveTime, cycleTime);
 				cycleTimeList.add(cycleTimeValidationData);
 			}
@@ -407,7 +407,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            FeatureSprint
 	 */
 	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
-			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime, JiraHistoryChangeLog jiraIssueSprint) {
+			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			JiraHistoryChangeLog jiraIssueSprint) {
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(jiraIssueSprint.getChangedTo())) {
 			cycleTime.setReadyTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
 			cycleTimeValidationData.setDorDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));

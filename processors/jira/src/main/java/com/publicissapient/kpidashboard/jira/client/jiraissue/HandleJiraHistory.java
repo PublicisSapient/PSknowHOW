@@ -65,23 +65,21 @@ public class HandleJiraHistory {
 
 		return fieldHistoryLog;
 	}
-	
+
 	private String parseStringToLocalDateTime(String date) {
 		return StringUtils.isEmpty(date) ? ""
 				: LocalDateTime.parse(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(date)))
 						.toString();
 	}
-	
-	private List<JiraHistoryChangeLog> getDueDateChangeLog(List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields)
-	{
-		if(StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField()))
-		{
+
+	private List<JiraHistoryChangeLog> getDueDateChangeLog(List<ChangelogGroup> changeLogList,
+			FieldMapping fieldMapping, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
 			String field = "";
-			if(fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
 				field = JiraConstants.DUEDATE;
 			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField())))
-			{
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
 				if (ObjectUtils.isNotEmpty(issueField.getName()))
 					field = issueField.getName();
