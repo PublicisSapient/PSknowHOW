@@ -589,7 +589,6 @@ describe('ConnectionListComponent', () => {
         'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
-        'bearerToken',
         'privateKey',
         'consumerKey',
         'offline',
@@ -879,12 +878,6 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      bearerToken: [
-        {
-          field: 'patOAuthToken',
-          isEnabled: false
-        }
-        ],
       vault: [
         {
           field: 'password',
@@ -946,7 +939,6 @@ describe('ConnectionListComponent', () => {
         },
       ],
       isOAuth: [],
-      bearerToken: [],
       vault: [
         {
           field: 'password',
@@ -1053,7 +1045,6 @@ describe('ConnectionListComponent', () => {
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
-      bearerToken:false,
       offline: false,
       password: undefined,
       pat: undefined,
