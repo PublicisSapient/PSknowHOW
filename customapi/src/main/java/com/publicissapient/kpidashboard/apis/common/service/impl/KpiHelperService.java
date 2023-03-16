@@ -201,23 +201,23 @@ public class KpiHelperService { // NOPMD
 	 * @return difference of two date as days
 	 */
 	public double processStoryData(JiraIssueCustomHistory jiraIssueCustomHistory, String status1, String status2) {
-		int storyDataSize = jiraIssueCustomHistory.getStorySprintDetails().size();
+		int storyDataSize = jiraIssueCustomHistory.getStatusUpdationLog().size();
 		double daysDifference = -99d;
 		if (storyDataSize >= 2 && null != status1 && null != status2) {
-			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStorySprintDetails().get(0).getFromStatus())
+			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getChangedTo())
 					&& status1.equalsIgnoreCase(
-							jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getFromStatus())) {
+							jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getChangedTo())) {
 				DateTime closeDate = new DateTime(
-						jiraIssueCustomHistory.getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
+						jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(), DateTimeZone.UTC);
 				DateTime startDate = new DateTime(
-						jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getActivityDate(),
+						jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getUpdatedOn(),
 						DateTimeZone.UTC);
 				Duration duration = new Duration(startDate, closeDate);
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
 			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStorySprintDetails().get(0).getActivityDate(),
+			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(),
 					DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
@@ -256,9 +256,9 @@ public class KpiHelperService { // NOPMD
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
-			mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDod()));
-			mapOfProjectFiltersFH.put("storySprintDetails.defect.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo",
 					fieldMapping.getJiraDefectCreatedStatus());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),

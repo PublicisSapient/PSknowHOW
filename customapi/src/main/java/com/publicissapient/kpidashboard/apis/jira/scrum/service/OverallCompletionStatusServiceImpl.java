@@ -348,17 +348,17 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	private Map<String, Object> calActualCompletionDays(JiraIssueCustomHistory issueCustomHistory,
 			SprintDetails sprintDetail, FieldMapping fieldMapping) {
 		List<String> inProgressStatuses = new ArrayList<>();
-		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = new ArrayList<>();
 
 		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		Map<String, Object> resultList = new HashMap<>();
 
-		// filtering storySprintDetails lies in between sprintStart and sprintEnd
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
+		// filtering statusUpdationLog lies in between sprintStart and sprintEnd
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}
@@ -367,7 +367,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 				.collect(Collectors.toSet());
 
 		// sorting the story history on basis of activityDate
-		filterStorySprintDetails.sort(Comparator.comparing(JiraIssueSprint::getActivityDate));
+		filterStatusUpdationLog.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
 			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
@@ -376,15 +376,15 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		LocalDate startDate = null;
 		LocalDate endDate = null;
 		boolean isStartDateFound = false;
-		for (JiraIssueSprint storySprintDetail : filterStorySprintDetails) {
+		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLog) {
 			LocalDate activityLocalDate = LocalDate
-					.parse(storySprintDetail.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+					.parse(statusUpdationLog.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER);
 
-			if (inProgressStatuses.contains(storySprintDetail.getFromStatus()) && !isStartDateFound) {
+			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
 				startDate = activityLocalDate;
 				isStartDateFound = true;
 			}
-			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
+			if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
 				endDate = activityLocalDate;
 			}
 		}

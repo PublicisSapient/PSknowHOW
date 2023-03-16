@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -450,11 +451,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			return false;
 		} else {
 
-			List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
-			Collections.sort(storySprintDetails, Comparator.comparing(JiraIssueSprint::getActivityDate));
+			List<JiraHistoryChangeLog> statusUpdationLogs = jiraIssueCustomHistory.getStatusUpdationLog();
+			Collections.sort(statusUpdationLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
-			JiraIssueSprint latestClosedStatusDetail = storySprintDetails.stream()
-					.filter(statusHistory -> statusHistory.getFromStatus().equals(issue.getJiraStatus())).findFirst()
+			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLogs.stream()
+					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
 					.orElse(null);
 
 			if (latestClosedStatusDetail != null) {
@@ -462,10 +463,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = latestClosedStatusDetail.getActivityDate();
-				return storySprintDetails.stream()
-						.filter(statusHistory -> statusHistory.getActivityDate().isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getFromStatus()));
+				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
+				return statusUpdationLogs.stream()
+						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString()).isAfter(latestClosedStatusTime))
+						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
 			}
 			return false;
 		}

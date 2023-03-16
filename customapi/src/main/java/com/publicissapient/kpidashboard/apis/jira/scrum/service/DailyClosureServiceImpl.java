@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -177,18 +178,18 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			SprintDetails sprintDetails) {
 		Map<String, String> closedDateMap = new HashMap<>();
 		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
-			List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
+			List<JiraHistoryChangeLog> storySprintDetail = jiraIssueCustomHistory.getStatusUpdationLog();
 			SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream()
 					.filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
 			if (CollectionUtils.isNotEmpty(storySprintDetail)) {
 				for (int i = storySprintDetail.size() - 1; i >= 0; i--) {
-					if (storySprintDetail.get(i).getFromStatus().equalsIgnoreCase(sprintIssue.getStatus())) {
-						DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getActivityDate().toString());
+					if (storySprintDetail.get(i).getChangedTo().equalsIgnoreCase(sprintIssue.getStatus())) {
+						DateTime dateValue = DateTime.parse(storySprintDetail.get(i).getUpdatedOn().toString());
 						DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
 						DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
 						if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
 							closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
-									getFormattedDate(storySprintDetail.get(i).getActivityDate()));
+									storySprintDetail.get(i).getUpdatedOn().toString());
 							break;
 						}
 					}

@@ -666,9 +666,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	public String findClosedDate(JiraIssueCustomHistory issueHistoryObject, String startDate, String endDate,
 			String status) {
 		String date;
-		for (int i = 0; i < issueHistoryObject.getStorySprintDetails().size(); i++) {
-			if (issueHistoryObject.getStorySprintDetails().get(i).getFromStatus().equalsIgnoreCase(status)) {
-				date = issueHistoryObject.getStorySprintDetails().get(i).getActivityDate().toString();
+		for (int i = 0; i < issueHistoryObject.getStatusUpdationLog().size(); i++) {
+			if (issueHistoryObject.getStatusUpdationLog().get(i).getChangedTo().equalsIgnoreCase(status)) {
+				date = issueHistoryObject.getStatusUpdationLog().get(i).getUpdatedOn().toString();
 				DateTime closedDate = DateTime.parse(date);
 				DateTime startDateValue = DateTime.parse(startDate);
 				DateTime endDateValue = DateTime.parse(endDate);

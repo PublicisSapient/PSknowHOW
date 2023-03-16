@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
@@ -280,19 +281,19 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList) {
-		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+		List<JiraHistoryChangeLog> statusUpdationLogs = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			storySprintDetails = issueCustomHistory.getStorySprintDetails();
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			statusUpdationLogs = issueCustomHistory.getStatusUpdationLog();
 		}
 		int blockedTime = 0;
 		int waitedTime = 0;
-		for (int i = 0; i < storySprintDetails.size(); i++) {
-			JiraIssueSprint entry = storySprintDetails.get(i);
+		for (int i = 0; i < statusUpdationLogs.size(); i++) {
+			JiraHistoryChangeLog entry = statusUpdationLogs.get(i);
 
 			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList,
-					storySprintDetails, i, sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails,
+					statusUpdationLogs, i, sprintDetail, blockedTime);
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLogs,
 					i, sprintDetail, waitedTime);
 		}
 		return Arrays.asList(waitedTime, blockedTime);
@@ -303,27 +304,27 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * 
 	 * @param entry
 	 * @param fieldMappingStatus
-	 * @param storySprintDetails
+	 * @param statusUpdationLogs
 	 * @param index
 	 * @param sprintDetails
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraIssueSprint entry, List<String> fieldMappingStatus,
-			List<JiraIssueSprint> storySprintDetails, int index, SprintDetails sprintDetails, int time) {
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry, List<String> fieldMappingStatus,
+			List<JiraHistoryChangeLog> statusUpdationLogs, int index, SprintDetails sprintDetails, int time) {
 		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
 		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
-		DateTime entryActivityDate = entry.getActivityDate();
-		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
+		DateTime entryActivityDate = DateTime.parse(entry.getUpdatedOn().toString());
+		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
 			int minutes = 0;
 			// Checking for indexOutOfBound in storySprintDetails list
-			if (storySprintDetails.size() == index + 1) {
+			if (statusUpdationLogs.size() == index + 1) {
 				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
 						entryActivityDate);
 			} else {
 				// Find fetch the next element of storySprintDetails
-				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
-				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
+				JiraHistoryChangeLog nextEntry = statusUpdationLogs.get(index + 1);
+				DateTime nextEntryActivityDate = DateTime.parse(nextEntry.getUpdatedOn().toString());
 				// Checking if both alternate element are inside the sprint start and end date
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
