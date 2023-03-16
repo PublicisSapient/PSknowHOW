@@ -16,7 +16,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
@@ -36,7 +35,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -85,7 +83,7 @@ public class FetchIssuesBasedOnJQLImplTest {
     Promise<SearchResult> promisedRs;
 
     @Mock
-    JiraCommon jiraCommon;
+    JiraCommonService jiraCommonService;
 
     @Mock
     private ProcessorAsynchJiraRestClient restClient;
@@ -144,7 +142,7 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("user/search?query=");
         when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
         when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
-        when(jiraCommon.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
+        when(jiraCommonService.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))

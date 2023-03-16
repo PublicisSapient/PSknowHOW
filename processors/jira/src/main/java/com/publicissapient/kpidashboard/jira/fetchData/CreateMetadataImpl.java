@@ -279,8 +279,8 @@ public class CreateMetadataImpl implements CreateMetadata {
     private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
         log.info("Fetching and comparing  metadata identifier");
         MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(
-//                projectConfig.getProjectToolConfig().getMetadataTemplateID()
-                new ObjectId("63c702c0778b02d15e9e2b3e")
+                projectConfig.getProjectToolConfig().getMetadataTemplateID()
+//                new ObjectId("63c702c0778b02d15e9e2b3e")
                 ,JiraConstants.JIRA, projectConfig.isKanban());
         List<Identifier> issueList = metadataIdentifier.getIssues();
         List<Identifier> customFieldList = metadataIdentifier.getCustomfield();

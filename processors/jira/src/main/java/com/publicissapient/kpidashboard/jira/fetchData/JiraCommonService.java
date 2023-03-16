@@ -1,18 +1,16 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,11 +19,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Slf4j
-public class JiraCommon {
+@Component
+public class JiraCommonService {
+
+    //function common in all any file except kanban and scrum goes here
 
     @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
@@ -35,6 +36,14 @@ public class JiraCommon {
 
     @Autowired
     private AesEncryptionService aesEncryptionService;
+
+    public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
+        int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
+        if (cmp1 != 0) {
+            return cmp1;
+        }
+        return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
+    };
 
     public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
             throws IOException {
@@ -80,22 +89,6 @@ public class JiraCommon {
     public String encodeCredentialsToBase64(String username, String password) {
         String cred = username + ":" + password;
         return Base64.getEncoder().encodeToString(cred.getBytes());
-    }
-
-    public String getFieldValue(String customFieldId, Map<String, IssueField> fields) {
-        Object fieldValue = fields.get(customFieldId).getValue();
-        try {
-            if (fieldValue instanceof Double) {
-                return fieldValue.toString();
-            } else if (fieldValue instanceof JSONObject) {
-                return ((JSONObject) fieldValue).getString(JiraConstants.VALUE);
-            } else if (fieldValue instanceof String) {
-                return fieldValue.toString();
-            }
-        } catch (JSONException e) {
-            log.error("JIRA Processor | Error while parsing RCA Custom_Field", e);
-        }
-        return fieldValue.toString();
     }
 
 }

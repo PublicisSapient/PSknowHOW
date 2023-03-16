@@ -46,8 +46,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 
         HierarchyLevel sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
-        Map<Pair<String, String>, AccountHierarchy> existingHierarchy = JiraIssueClientUtil
-                .getAccountHierarchy(accountHierarchyRepository);
+        Map<Pair<String, String>, AccountHierarchy> existingHierarchy = getAccountHierarchy(accountHierarchyRepository);
 
         Set<AccountHierarchy> setToSave = new HashSet<>();
         for (JiraIssue jiraIssue : jiraIssueList) {
@@ -78,6 +77,13 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 //            accountHierarchyRepository.saveAll(setToSave);
 //        }
         return setToSave;
+    }
+
+    public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(AccountHierarchyRepository accountHierarchyRepository) {
+        List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
+        return accountHierarchyList.stream()
+                .collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
+
     }
 
     private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, AccountHierarchy accountHierarchy,
