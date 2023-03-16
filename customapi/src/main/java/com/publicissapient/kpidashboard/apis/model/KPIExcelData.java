@@ -292,7 +292,7 @@ public class KPIExcelData {
     @JsonProperty("Size(story point/hours)")
         private String storyPoint;
 
-    @JsonProperty("Due Date")
+    @JsonProperty("Planned Completion Date (Due Date)")
     private String dueDate;
 
     @JsonProperty("Remaining Estimate")

@@ -34,24 +34,13 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
@@ -720,23 +709,27 @@ public class KPIExcelUtility {
                 excelData.setDueDate((StringUtils.isNotEmpty(e.getDueDate()))
                         ? DateUtil.stringToLocalDate(e.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
                         : "-");
-                if(e.getRemainingEstimateMinutes() != null){
-                    String remEstimate = CommonUtils.convertIntoDays(e.getRemainingEstimateMinutes());
-                    excelData.setRemainingEstimateMinutes(
-                            StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
-                }
-                if (issueWiseDelay.containsKey(e.getNumber())) {
-                    IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
-                    excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-                    excelData.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+				if (e.getRemainingEstimateMinutes() != null) {
+					String remEstimate = CommonUtils.convertIntoDays(e.getRemainingEstimateMinutes());
+					excelData.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+				}
+				if (issueWiseDelay.containsKey(e.getNumber())) {
+					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
+					excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+					excelData.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
-                } else {
-                    excelData.setPotentialDelay("-");
-                    excelData.setPredictedCompletionDate("-");
-                }
-                if(completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList()).contains(e.getNumber())){
-                    excelData.setActualCompletionDate(LocalDate.parse(e.getUpdateDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
-                }
+				} else {
+					excelData.setPotentialDelay("-");
+					excelData.setPredictedCompletionDate("-");
+				}
+				if (completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList())
+						.contains(e.getNumber())) {
+					excelData.setActualCompletionDate(LocalDate
+							.parse(e.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+							.toString());
+				} else {
+					excelData.setActualCompletionDate("-");
+				}
                 excelDataList.add(excelData);
             });
         }

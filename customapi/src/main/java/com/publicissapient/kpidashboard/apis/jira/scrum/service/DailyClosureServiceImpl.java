@@ -280,10 +280,10 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			}
 			List<DataCountGroup> dataCountGroups = new ArrayList<>();
-			dataCountMap.forEach((issueType, sprintWiseDc) -> {
+			dataCountMap.forEach((issueType, typeWiseDc) -> {
 				DataCountGroup dataCountGroup = new DataCountGroup();
 				dataCountGroup.setFilter(issueType);
-				dataCountGroup.setValue(sprintWiseDc);
+				dataCountGroup.setValue(typeWiseDc);
 				dataCountGroups.add(dataCountGroup);
 			});
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
@@ -295,6 +295,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			kpiElement.setFilters(new IterationKpiFilters(filter1, null));
 
 		}
+		excelDataList = reverseSortExcelDataList(excelDataList);
 		kpiElement.setExcelData(excelDataList);
 		kpiElement.setExcelColumns(KPIExcelColumn.DAILY_CLOSURES.getColumns());
 	}
@@ -423,5 +424,18 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		dataCount.setValue(value);
 		return dataCount;
 	}
+	private List<KPIExcelData> reverseSortExcelDataList(List<KPIExcelData> excelDateList) {
+		List<KPIExcelData> sortedExcelData = new ArrayList<>();
+		sortedExcelData.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(excelDateList).stream()
+				.filter(k -> StringUtils.isNotEmpty(k.getDueDate())
+						&& !k.getDueDate().equalsIgnoreCase("-"))
+				.sorted(Comparator.comparing(KPIExcelData::getDueDate))
+				.collect(Collectors.toList()));
+		sortedExcelData.addAll(org.apache.commons.collections4.CollectionUtils.emptyIfNull(excelDateList).stream()
+				.filter(k -> StringUtils.isEmpty(k.getDueDate())
+						|| k.getDueDate().equalsIgnoreCase("-"))
+				.collect(Collectors.toList()));
+		return sortedExcelData;
 
+	}
 }

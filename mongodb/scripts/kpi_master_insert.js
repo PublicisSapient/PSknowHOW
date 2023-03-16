@@ -3402,15 +3402,11 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of no. of issues closed on a daily basis."
+          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
         }
       ]
     },

@@ -142,24 +142,6 @@ public class DailyClosureServiceImplTest {
         assertNotNull(defectDataListMap);
     }
 
-    /*@Test
-    public void testGetDSR() throws ApplicationException {
-        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-        Map<String, List<String>> maturityRangeMap = new HashMap<>();
-        maturityRangeMap.put("defectSeepageRate", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
-        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-                .thenReturn(kpiRequestTrackerId);
-        when(dailyClosureService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-        try {
-            KpiElement kpiElement = dailyClosureService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                    treeAggregatorDetail);
-            assertNotNull(kpiElement);
-        } catch (ApplicationException enfe) {
-        }
-    }*/
     @Test
     public void testGetKpiDataProject() throws ApplicationException {
 
