@@ -126,18 +126,11 @@
 #wrapper.toggled #page-content-wrapper {
   /* position: absolute; */
   /* margin-right: -250px; */
-  margin-left: 11rem;
-  width: 91%;
+  padding-left: 16rem;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
-}
-
-@media only screen and (max-width: 1600px){
-  #wrapper.toggled #page-content-wrapper {
-    width: 89%;
-  }
 }
 
 

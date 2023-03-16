@@ -46,7 +46,7 @@
                                     class="btn-arrow-down"
                                     (click)="handleArrowClick(kpi, x?.label, x?.modalValues)" />
                                 </h3>
-                                <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
+                                <p *ngIf="x?.labelInfo" class="p-m-0 kpi-formula">{{x?.labelInfo}}</p>
                                 </div>
                                 <p class="text-data">
                                   <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value != -99 ?

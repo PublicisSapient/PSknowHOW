@@ -18,10 +18,7 @@
  
 
  .nav-wraper {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: 1rem 0px !important;
+  text-align: center;
   width: 16rem;
 }
 
@@ -46,7 +43,7 @@
   flex-wrap: wrap;
   height: 11rem;
   width: 3rem;
-  margin: 1.5rem 0rem;
+  margin: 1rem 0rem;
   background: white;
   letter-spacing: 2px;
   border-radius: 3px;
@@ -480,19 +477,19 @@
 
 @media only screen and (max-width: 1600px){
   .selected-board{
-    height: 7rem;
+    height: 6rem;
   }
   .close-icon{
     height: 23px;
   }
   .selected-wraper .selected-board .rotate{
-    font-size: 0.7rem;
+    font-size: 0.9rem;
   }
   .icon-hamburger{
     height: 23px;
   }
   .selected-value{
-    font-size: 0.7rem;
+    font-size: 0.9rem;
   }
   .open-btn{
     bottom: 0.8rem;

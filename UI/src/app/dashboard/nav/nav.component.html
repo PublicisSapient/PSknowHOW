@@ -36,7 +36,7 @@
 
   <div class="nav-wraper" *ngIf="visibleSidebar">
     <!--Scrum/Kanban Switch starts-->
-    <div id="Filters" #filterDiv class="tabs">
+    <div id="Filters" #filterDiv class="tabs p-mb-3 p-mt-3">
       <div
         *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
         <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
@@ -53,7 +53,7 @@
     <div class="navigation rows ">
       <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
       <ng-container *ngIf="boardNameArr?.length>0">
-        <ul class="nav-menu p-d-flex p-pl-3 p-pr-3">
+        <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
           <ng-container *ngFor="let board of boardNameArr">
             <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
               *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
