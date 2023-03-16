@@ -39,8 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HandleJiraHistory {
 
-	private List<JiraHistoryChangeLog> getJiraFieldChangeLog(List<ChangelogGroup> changeLogList, String jiraField,
-			boolean convertToLocalDateTime) {
+	private List<JiraHistoryChangeLog> getJiraFieldChangeLog(List<ChangelogGroup> changeLogList, String jiraField) {
 
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
 
@@ -49,13 +48,8 @@ public class HandleJiraHistory {
 				history.getItems().forEach(item -> {
 					if (item.getField().trim().equalsIgnoreCase(jiraField.trim())) {
 						JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
-						if (convertToLocalDateTime) {
-							jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
-							jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
-						} else {
-							jiraHistoryChangeLog.setChangedFrom(handleStr(item.getFromString()));
-							jiraHistoryChangeLog.setChangedTo(handleStr(item.getToString()));
-						}
+						jiraHistoryChangeLog.setChangedFrom(handleStr(item.getFromString()));
+						jiraHistoryChangeLog.setChangedTo(handleStr(item.getToString()));
 						jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
 								.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
 						fieldHistoryLog.add(jiraHistoryChangeLog);
@@ -76,6 +70,42 @@ public class HandleJiraHistory {
 		return StringUtils.isEmpty(date) ? ""
 				: LocalDateTime.parse(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(date)))
 						.toString();
+	}
+	
+	private List<JiraHistoryChangeLog> getDueDateChangeLog(List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields)
+	{
+		if(StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField()))
+		{
+			String field = "";
+			if(fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
+				field = JiraConstants.DUEDATE;
+			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField())))
+			{
+				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getName()))
+					field = issueField.getName();
+			}
+			List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
+
+			if (CollectionUtils.isNotEmpty(changeLogList)) {
+				for (ChangelogGroup history : changeLogList) {
+					String finalField = field;
+					history.getItems().forEach(item -> {
+						if (item.getField().trim().equalsIgnoreCase(finalField)) {
+							JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+							jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
+							jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
+							jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
+									.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
+							fieldHistoryLog.add(jiraHistoryChangeLog);
+						}
+					});
+				}
+			}
+			return fieldHistoryLog;
+		}
+		return new ArrayList<>();
 	}
 
 	private List<JiraHistoryChangeLog> mergeObjectsBasedOnTimestamp(List<JiraHistoryChangeLog> fieldHistoryLog) {
@@ -121,12 +151,12 @@ public class HandleJiraHistory {
 	}
 
 	private List<JiraHistoryChangeLog> getCustomFieldChangeLog(List<ChangelogGroup> changeLogList,
-			String jiraCustomField, Map<String, IssueField> fields, boolean convertToLocalDateTime) {
+			String jiraCustomField, Map<String, IssueField> fields) {
 
 		if (StringUtils.isNotEmpty(jiraCustomField.trim())
 				&& ObjectUtils.isNotEmpty(fields.get(jiraCustomField.trim()))) {
 			String field = fields.get(jiraCustomField.trim()).getName();
-			return getJiraFieldChangeLog(changeLogList, field.trim(), convertToLocalDateTime);
+			return getJiraFieldChangeLog(changeLogList, field.trim());
 		}
 
 		return new ArrayList<>();
@@ -149,25 +179,14 @@ public class HandleJiraHistory {
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields,
 			Issue issue) {
-		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS, false);
-		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE,
-				false);
-		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY,
-				false);
-		List<JiraHistoryChangeLog> fixVersionChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FIXVERSION,
-				false);
-		List<JiraHistoryChangeLog> labelsChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.LABELS, false);
-		List<JiraHistoryChangeLog> dueDateChangeLog = null;
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
-				dueDateChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.DUEDATE, true);
-			else {
-				dueDateChangeLog = getCustomFieldChangeLog(changeLogList, fieldMapping.getJiraDueDateCustomField(),
-						fields, true);
-			}
-		}
+		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS);
+		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE);
+		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY);
+		List<JiraHistoryChangeLog> fixVersionChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FIXVERSION);
+		List<JiraHistoryChangeLog> labelsChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.LABELS);
+		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
-				handleStr(fieldMapping.getSprintName()), fields, false);
+				handleStr(fieldMapping.getSprintName()), fields);
 
 		createFirstEntryOfChangeLog(statusChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getStatus()) ? issue.getStatus().getName() : "");
