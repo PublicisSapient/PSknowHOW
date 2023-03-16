@@ -70,10 +70,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	private static final String OVERALL = "Overall";
-	public static final String LINKED_DEFECTS = "Story Linked defects";
-	public static final String UNLINKED_DEFECTS = "Unlinked defects";
+	public static final String LINKED_DEFECTS = "Story Linked Defects";
+	public static final String UNLINKED_DEFECTS = "Unlinked Defects";
 	public static final String DIR = "DIR";
-	public static final String DEFECT_DENSITY = "Defect density";
+	public static final String DEFECT_DENSITY = "Defect Density";
 	private static final String STORY_LIST = "Storylist";
 
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
