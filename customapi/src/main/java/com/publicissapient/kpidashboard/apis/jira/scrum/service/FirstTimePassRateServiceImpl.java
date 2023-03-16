@@ -475,6 +475,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
-		return calculateKpiValueForDouble(valueList, kpiId);
+		 return calculateKpiValueForDouble(valueList, kpiId);
 	}
 }
