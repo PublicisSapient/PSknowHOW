@@ -111,5 +111,12 @@ public class ProcessorToolConnection {
 	private String deploymentProjectId;
 	private String jobType;
 	private String parameterNameForEnvironment;
-	private boolean isBearerToken;
+	private boolean bearerToken;
+
+	public boolean getbearerToken() {
+		return bearerToken;
+	}
+	public void setbearerToken(boolean bearerToken) {
+		bearerToken = bearerToken;
+	}
 }

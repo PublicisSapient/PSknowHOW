@@ -68,13 +68,8 @@ public class ConnectionDTO {
 	private String updatedBy;
 	private List<String> connectionUser;
 	private boolean vault;//GS requirement
-	private boolean isBearerToken;
-	public boolean getIsBearerToken() {
-		return isBearerToken;
-	}
-	public void setIsBearerToken(boolean bearerToken) {
-		isBearerToken = bearerToken;
-	}
+	private boolean bearerToken; // Kurig requirement
+
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
 	}

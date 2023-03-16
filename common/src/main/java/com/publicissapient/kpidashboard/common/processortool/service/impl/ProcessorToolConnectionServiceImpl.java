@@ -132,7 +132,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setUsername(connection.getUsername());
 		processorToolConnection.setPassword(connection.getPassword());
 		processorToolConnection.setPatOAuthToken(connection.getPatOAuthToken());
-		processorToolConnection.setBearerToken(connection.isBearerToken());
+		processorToolConnection.setbearerToken(connection.isBearerToken());
 		processorToolConnection.setType(connection.getType());
 		processorToolConnection.setApiEndPoint(connection.getApiEndPoint());
 		processorToolConnection.setConsumerKey(connection.getConsumerKey());
@@ -175,7 +175,6 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setJiraCanBeAutomatedTestValue(toolConfig.getJiraCanBeAutomatedTestValue());
 		processorToolConnection.setTestCaseStatus(toolConfig.getTestCaseStatus());
 		processorToolConnection.setPatOAuthToken(connection.getPatOAuthToken());
-		processorToolConnection.setBearerToken(connection.isBearerToken());
 		return processorToolConnection;
 	}
 
