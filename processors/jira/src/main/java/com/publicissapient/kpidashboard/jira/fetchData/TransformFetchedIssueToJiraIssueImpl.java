@@ -7,6 +7,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
@@ -59,6 +60,9 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
     @Autowired
     private FetchSprintReportImpl fetchSprintReport;
+
+    @Autowired
+    private CreateJiraIssueHistoryImpl createJiraIssueHistory;
 
     private static final String CONTENTS = "contents";
     private static final String COMPLETED_ISSUES = "completedIssues";
@@ -165,6 +169,10 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
                 setEstimates(jiraIssue, issue);
 
+                JiraIssueCustomHistory jiraIssueHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig, issueNumber,jiraIssue, issue, fieldMapping, fields);
+
+                log.info("Jira issue History {}",jiraIssueHistory);
+
                 if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                     jiraIssuesToSave.add(jiraIssue);
                 }
@@ -172,7 +180,6 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         }
 
         createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
-
 
         if (!dataFromBoard) {
             fetchSprintReport.processSprints(projectConfig, sprintDetailsSet);
@@ -1113,7 +1120,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
                 // Now sort so we can use the most recent one
                 // yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
-                Collections.sort(sprints, JiraCommonService.SPRINT_COMPARATOR);
+                Collections.sort(sprints, JiraHelper.SPRINT_COMPARATOR);
                 setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
 
             } catch (ParseException | JSONException e) {
