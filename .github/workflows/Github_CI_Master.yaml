@@ -78,10 +78,12 @@ jobs:
         run: |
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
+          sudo npm cache clean --force
           sudo npm install
-          sudo npm install -g @angular/cli@6.0.8
+          sudo npm install -g @angular/cli@14.2.6
           #npm install --save-dev @angular-devkit/build-angular
-          sudo ng build --configuration=docker
+          sudo npm run build
+          
           sudo mkdir -p build
           sudo cp -r dist/dashboard/* build/
           sudo chmod -R 775 build
@@ -95,7 +97,7 @@ jobs:
         id: TestUI
         run: |
           cd UI
-          sudo npm install --save-dev @angular-devkit/build-angular
+          sudo npm install --save-dev @angular-devkit/build-angular@14.2.10
           sudo ng test --code-coverage
           #sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info
       - name: Scanning UI with Sonar Qube
