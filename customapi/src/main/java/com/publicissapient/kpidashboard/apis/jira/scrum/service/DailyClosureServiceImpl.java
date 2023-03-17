@@ -279,18 +279,21 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 						latestSprint.getId(), date.toString(), ISSUES_CLOSED);
 
 			}
-			List<DataCountGroup> dataCountGroups = new ArrayList<>();
+			List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 			dataCountMap.forEach((issueType, typeWiseDc) -> {
-				DataCountGroup dataCountGroup = new DataCountGroup();
-				dataCountGroup.setFilter(issueType);
-				dataCountGroup.setValue(typeWiseDc);
-				dataCountGroups.add(dataCountGroup);
+						IterationKpiValue iterationKpiValue = new IterationKpiValue();
+						iterationKpiValue.setFilter1(issueType);
+						iterationKpiValue.setDataCount(typeWiseDc);
+						iterationKpiValueList.add(iterationKpiValue);
 			});
+
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 				KPIExcelUtility.populateDailyClosureExcelData(excelDataList, allIssues, fieldMapping, issueWiseDelay,
 						allCompletedIssue);
 			}
-			kpiElement.setTrendValueList(dataCountGroups);
+			DataCount trendValue = new DataCount();
+			trendValue.setValue(iterationKpiValueList);
+			kpiElement.setTrendValueList(trendValue);
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeList);
 			kpiElement.setFilters(new IterationKpiFilters(filter1, null));
 

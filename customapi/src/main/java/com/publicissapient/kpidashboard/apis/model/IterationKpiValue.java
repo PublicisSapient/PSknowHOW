@@ -21,8 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;
 import java.io.Serializable;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,17 +32,27 @@ import lombok.ToString;
  * object used to bind iteration kpi's value
  */
 @Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class IterationKpiValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String filter1;
+
 	private String filter2;
 	private List<IterationKpiData> data;
-	
+	private List<DataCount> dataCount;
+
+	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
+		this.filter1 = filter1;
+		this.filter2 = filter2;
+		this.data = data;
+	}
+
+	public IterationKpiValue(String filter1, List<DataCount> dataCount) {
+		this.filter1 = filter1;
+		this.dataCount = dataCount;
+	}
 }
