@@ -2568,7 +2568,7 @@ describe('IterationComponent', () => {
         const data = [
             {
                 filter1: "Defect",
-                value: [{
+                dataCount: [{
                     "data": "0",
                     "value": 10,
                     "hoverValue": {
@@ -2583,7 +2583,7 @@ describe('IterationComponent', () => {
             },
             {
                 filter1: "Change request",
-                value: [{
+                dataCount: [{
                     "data": "0",
                     "value": 11,
                     "hoverValue": {
@@ -2599,7 +2599,7 @@ describe('IterationComponent', () => {
             }
         ];
         const result = component.applyAggregationForGroupBar(data);
-        expect(result[0]?.value[0].value).toEqual(21);
+        expect(result[0]?.dataCount[0].value).toEqual(21);
     });
 
 

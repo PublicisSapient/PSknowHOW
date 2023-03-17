@@ -50,9 +50,6 @@ export class GroupBarChartComponent implements OnChanges {
   draw() {
     const elem = this.elem;
     const self = this;
-    if (this.kpiId === 'kpi125') {
-      this.data = this.data[0].value;
-    }
     d3.select(elem).select('svg').remove();
     d3.select(elem).select('.tooltip').remove();
     d3.select(elem).select('.legend').remove();
@@ -65,8 +62,9 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
 
+    let data = this.data[0].value ? this.data[0].value : this.data[0].dataCount;
+    data = this.formatData(data);
 
-    const data = this.formatData(this.data);
     const subgroups = this.subGroups;
     const groups = d3.map(data, (d) => d.group);
 
@@ -192,9 +190,9 @@ export class GroupBarChartComponent implements OnChanges {
       .data(d => subgroups.map(key => ({ key, value: d[key], group: d[d.groupBy] , hoverValue:d[key+'HoverValue']})))
       .enter().append("rect")
       .attr("x", d => xSubgroup(d.key))
-      .attr("y", d=> y(d.value))
+      .attr("y", d=> y(0))
       .attr("width", barWidth)
-      .attr("height", d=> height - y(d.value) - spacingVariable)
+      .attr("height", d=> height - y(0) - spacingVariable)
       .attr("fill", d=> color(d.key))
       .on('mouseover', (event, d)=> {
         if (d.hoverValue) {
@@ -225,7 +223,12 @@ export class GroupBarChartComponent implements OnChanges {
           .duration(500)
           .style('display', 'none')
           .style('opacity', 0);
-      });
+      })
+      .transition()
+      .delay((d) => 200)
+      .duration(800)
+      .attr("y", d=> y(d.value))
+      .attr("height", d=> height - y(d.value) - spacingVariable);;
 
     const legendDiv = d3.select(this.elem).select('#groupstackchart').append('div');
     legendDiv.style('margin-top', '20px');
@@ -275,7 +278,7 @@ export class GroupBarChartComponent implements OnChanges {
       resultData[d[d.groupBy]] = { ...d, ...resultData[d[d.groupBy]], [d.subFilter]: d.value, group: d[d.groupBy], [d.subFilter+'HoverValue']:d.hoverValue};
     });
     const resultDataList = Object.values(resultData);
-    if(this.kpiId === 'kpi125'){
+    if(!isNaN(Date.parse(resultDataList[0]['group']))){
       return this.formatDateOnXAxis(resultDataList);
     }else{
       return resultDataList;
