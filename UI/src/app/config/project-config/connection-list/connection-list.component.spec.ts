@@ -570,10 +570,10 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
+        'Use bearer token',
         'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
-        'Use bearer token',
         'Private Key',
         'Consumer Key',
         'Is Offline',
@@ -587,10 +587,10 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
+        'isBearerToken',
         'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
-        'isBearerToken',
         'privateKey',
         'consumerKey',
         'offline',
@@ -1141,6 +1141,7 @@ describe('ConnectionListComponent', () => {
     component.basicConnectionForm.controls['privateKey'].setValue('test');
     component.basicConnectionForm.controls['consumerKey'].setValue('test');
     component.basicConnectionForm.controls['vault'].setValue(false);
+    component.basicConnectionForm.controls['isBearerToken'].setValue(false);
     component.isNewlyConfigAdded = true;
     component.saveConnection();
     fixture.detectChanges();
