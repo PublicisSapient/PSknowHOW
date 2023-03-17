@@ -167,7 +167,7 @@
   display: block;
   align-items: center;
   position: relative;
-  margin-bottom: 12px;
+  /* margin-bottom: 12px; */
   cursor: pointer;
   font-size: 14px;
   padding: 0 0 0 20px;
@@ -1082,4 +1082,12 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   font-size: 1rem;
   font-weight: bolder;
   margin-left: 6px;
+}
+
+.iteration-selected-project{
+  width: 210px;
+}
+
+.iteration-selected-spring{
+  width: 225px;
 }

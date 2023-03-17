@@ -134,7 +134,7 @@
             *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'backlog'"
             class="p-d-flex p-align-center">
             <!-- project -->
-            <div class="form-check filter-box p-col-lg trend-line-container abc">
+            <div class="form-check filter-box p-col-lg trend-line-container abc iteration-selected-project">
                <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
                   (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false"
                   class="p-pb-0">
@@ -144,7 +144,7 @@
             </div>
             <!-- sprint -->
 
-            <div class="form-check filter-box p-col-lg trend-line-container sprint-filter abc"
+            <div class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-spring"
                *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
                <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
                   (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false"
