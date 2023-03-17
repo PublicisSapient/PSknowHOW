@@ -1,0 +1,58 @@
+[
+  {
+    "_id" : "63c75acf525c8f070e717947",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_63ac5e2ea6ef9007615c392f",
+    "capacity" : "60",
+    "startDate" : "2023-01-09",
+    "endDate" : "2023-01-15",
+    "basicProjectConfigId" : "63ac5e2ea6ef9007615c392f",
+    "assigneeCapacity" : [
+      {
+        "userId" : "123",
+        "userName" : "ABC",
+        "role" : "TESTER",
+        "plannedCapacity" : "56",
+        "leaves" : "8",
+        "availableCapacity" : "4"
+      },
+      {
+        "userId" : "1234",
+        "userName" : "DEF",
+        "role" : "BACKEND_DEVELOPER",
+        "plannedCapacity" : "56",
+        "availableCapacity" : "56"
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity"
+  },
+  {
+    "_id" : "6335694e9a86a10a43ae4813",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "8",
+    "startDate" : "2022-12-19",
+    "endDate" : "2022-12-25",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  },
+
+  {
+    "_id" : "633569239a86a10a43ae4811",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "6",
+    "startDate" : "2023-01-16",
+    "endDate" : "2023-01-22",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  },
+
+  {
+    "_id" : "633569189a86a10a43ae4810",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "8",
+    "startDate" : "2023-01-23",
+    "endDate" : "2023-01-29",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  }
+]

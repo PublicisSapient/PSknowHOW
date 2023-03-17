@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -42,6 +40,7 @@ import com.atlassian.jira.rest.client.api.domain.User;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
@@ -49,6 +48,8 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class JiraIssueClient {// NOPMD //NOSONAR
@@ -186,13 +187,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
-		Integer timeSpent = 0;
-		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
-			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
-		}
-		jiraIssue.setTimeSpentInMinutes(timeSpent);
-
+		setAggregateTimeEstimates(jiraIssue, fields);
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setUpdateDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -206,6 +201,33 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		// Created Date
 		jiraIssue.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 
+	}
+
+	/**
+	 * setting AggregatedTime Estimates
+	 * @param jiraIssue
+	 * @param fields
+	 */
+	private void setAggregateTimeEstimates(JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		Integer timeSpent = 0;
+		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
+		}
+		jiraIssue.setTimeSpentInMinutes(timeSpent);
+
+		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
+
+		}
+		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
+
+		}
 	}
 
 	/**
@@ -272,8 +294,10 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	 *            JiraIssue Object to set Owner details
 	 * @param user
 	 *            Jira issue User Object
+	 * @param assigneeSetToSave
+	 * 	          assignee details set from JiraIssue
 	 */
-	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user) {
+	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -303,6 +327,10 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 				jiraIssue.setAssigneeName(user.getDisplayName());
 			}
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
+			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
+					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
+				assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+			}
 		}
 	}
 

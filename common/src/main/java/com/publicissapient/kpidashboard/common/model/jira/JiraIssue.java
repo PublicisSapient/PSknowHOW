@@ -224,6 +224,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private Integer originalEstimateMinutes;
     private Integer remainingEstimateMinutes;
     private boolean productionDefect;
+    private Integer aggregateTimeOriginalEstimateMinutes;
+    private Integer aggregateTimeRemainingEstimateMinutes;
     @Indexed
     private String updateDate;
 

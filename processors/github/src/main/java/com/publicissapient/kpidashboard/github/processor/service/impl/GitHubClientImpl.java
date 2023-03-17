@@ -56,6 +56,7 @@ import com.publicissapient.kpidashboard.github.customexception.FetchingCommitExc
 import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
 import com.publicissapient.kpidashboard.gitlab.util.GitHubURIBuilder;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,7 +110,7 @@ public class GitHubClientImpl implements GitHubClient {
 	 *             the exception
 	 */
 	public List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection githubToolConnection) throws FetchingCommitException {
+			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -126,7 +127,7 @@ public class GitHubClientImpl implements GitHubClient {
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
-				initializeCommitDetails(githubToolConnection, commits, responseJson);
+				initializeCommitDetails(githubToolConnection, commits, responseJson, proBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -148,7 +149,7 @@ public class GitHubClientImpl implements GitHubClient {
 	}
 
 	private void initializeCommitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			JSONArray jsonArray) {
+			JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			JSONObject commitObjectt = (JSONObject) jsonObj;
 			String scmRevisionNumber = getString(commitObjectt, GitHubConstants.RESP_ID_KEY);
@@ -168,14 +169,14 @@ public class GitHubClientImpl implements GitHubClient {
 					parentList.add(getString(parentObject, GitHubConstants.RESP_ID_KEY));
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList);
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
 
 		}
 	}
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection processorToolConnection) throws FetchingCommitException {
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
@@ -193,7 +194,7 @@ public class GitHubClientImpl implements GitHubClient {
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
-				initializeMergeRequestDetails(processorToolConnection, mergeRequests, responseJson);
+				initializeMergeRequestDetails(processorToolConnection, mergeRequests, responseJson, proBasicConfig);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -216,7 +217,7 @@ public class GitHubClientImpl implements GitHubClient {
 	}
 
 	private void initializeMergeRequestDetails(ProcessorToolConnection gitLabInfo, List<MergeRequests> mergeRequestList,
-			JSONArray jsonArray) {
+			JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -263,7 +264,9 @@ public class GitHubClientImpl implements GitHubClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
-			mergeReq.setAuthor(author);
+			if (proBasicConfig.isSaveAssigneeDetails()) {
+				mergeReq.setAuthor(author);
+			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
 			mergeRequestList.add(mergeReq);
@@ -283,15 +286,17 @@ public class GitHubClientImpl implements GitHubClient {
 		}
 		return timestamp;
 	}
-
+   @SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList) {
+			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-		gitLabCommit.setAuthor(author);
+	   if (proBasicConfig.isSaveAssigneeDetails()) {
+		   gitLabCommit.setAuthor(author);
+	   }
 		gitLabCommit.setCommitLog(message);
 		gitLabCommit.setParentRevisionNumbers(parentList);
 		gitLabCommit.setCommitTimestamp(timestamp);

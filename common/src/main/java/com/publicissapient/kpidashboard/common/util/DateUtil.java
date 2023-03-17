@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
@@ -177,5 +178,9 @@ public class DateUtil {
 			formattedDate= OffsetDateTime.parse(time).toLocalDate();
 		}
 		return formattedDate;
+	}
+
+	public static long convertStringToLong(String date) {
+		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}
 }
