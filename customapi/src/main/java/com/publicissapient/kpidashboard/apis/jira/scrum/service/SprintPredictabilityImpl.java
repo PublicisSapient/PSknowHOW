@@ -286,15 +286,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 									issueDetails.setUrl(jiraIssue.getUrl());
 									issueDetails.setDesc(jiraIssue.getName());
 									storyList.add(sprintIssue.getNumber());
-									if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-											fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-										effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints())
-												.orElse(0.0d));
-									} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-										Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
-										effectSumDouble
-												.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
-									}
+									setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
 									filterIssueDetailsSet.add(issueDetails);
 								}
 							}));
@@ -341,7 +333,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				});
 				SprintWiseStory sprintWiseStory = new SprintWiseStory();
 				sprintWiseStory.setSprint(currentNodeIdentifier.getKey().getValue());
-				// sprintWiseStory.setSprintName(jiraIssue.getSprintName());
 				sprintWiseStory.setBasicProjectConfigId(currentNodeIdentifier.getKey().getKey());
 				sprintWiseStory.setStoryList(storyList);
 				sprintWiseStory.setEffortSum(effectSumDouble.get());
@@ -485,6 +476,19 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
 						excelData, fieldMapping);
 			}
+		}
+	}
+
+	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
+									  JiraIssue jiraIssue) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints())
+					.orElse(0.0d));
+		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
+			effectSumDouble
+					.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
 		}
 	}
 }
