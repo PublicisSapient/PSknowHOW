@@ -227,10 +227,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 							Double.valueOf(issueCount), null, "", modalValues);
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						issueAtRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
+						issueAtRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint),
 								null, null, CommonConstant.SP, null);
 					} else {
-						issueAtRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
+						issueAtRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate),
 								null, null, CommonConstant.HOURS, null);
 					}
 					data.add(issueAtRisk);
@@ -246,10 +246,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			IterationKpiData overAlllRiskSp;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAlllRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
+				overAlllRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(overAllStoryPoints.get(0)),
 						null, null, CommonConstant.SP, null);
 			} else {
-				overAlllRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+				overAlllRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(overAllOriginalEstimate.get(0)),
 						null, null, CommonConstant.HOURS, null);
 			}
 			data.add(overAllIssuesAtRisk);
