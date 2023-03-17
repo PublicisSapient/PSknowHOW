@@ -5,9 +5,11 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -19,7 +21,13 @@ import java.util.*;
 @Component
 public class JiraHelper {
 
-    //funtion common for kanban and scrum goes here
+    public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
+        int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
+        if (cmp1 != 0) {
+            return cmp1;
+        }
+        return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
+    };
 
     public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
         Map<String, IssueField> rt = new HashMap<>();

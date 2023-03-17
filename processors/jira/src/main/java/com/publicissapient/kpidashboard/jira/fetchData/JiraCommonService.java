@@ -37,13 +37,6 @@ public class JiraCommonService {
     @Autowired
     private AesEncryptionService aesEncryptionService;
 
-    public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
-        int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
-        if (cmp1 != 0) {
-            return cmp1;
-        }
-        return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
-    };
 
     public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
             throws IOException {
