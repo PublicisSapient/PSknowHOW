@@ -3,7 +3,6 @@ db.getCollection('metadata_identifier').remove({});
         		{
         			"tool": "Jira",
         			"isKanban" : false,
-        			"templateName" : "DOJO Agile Template (Default)",
         			"issues":[
         			{
         				"type":"story",
@@ -133,300 +132,299 @@ db.getCollection('metadata_identifier').remove({});
 	{
         	"tool" : "Jira",
 		    "isKanban" : true,
-		    "templateName" : "DOJO Agile Template (Default)",
-		    "issues" : [ 
+		    "issues" : [
 		        {
 		            "type" : "epic",
-		            "value" : [ 
+		            "value" : [
 		                "Epic"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "issuetype",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "uatdefect",
-		            "value" : [ 
+		            "value" : [
 		                "UAT Defect"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketVelocityStatusIssue",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketThroughputIssue",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketWipClosedIssue",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketReopenIssue",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
 		                "DOJO Consulting Request"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "kanbanCycleTimeIssue",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "kanbanTechDebtIssueType",
-		            "value" : [ 
-		                "Support Request", 
-		                "Incident", 
-		                "Project Request", 
-		                "Member Account Request", 
-		                "DOJO Consulting Request", 
-		                "Ticket", 
-		                "Bug", 
-		                "Change Request", 
-		                "Tech Story", 
-		                "Question", 
-		                "Request", 
-		                "Issue", 
-		                "Defect", 
+		            "value" : [
+		                "Support Request",
+		                "Incident",
+		                "Project Request",
+		                "Member Account Request",
+		                "DOJO Consulting Request",
+		                "Ticket",
+		                "Bug",
+		                "Change Request",
+		                "Tech Story",
+		                "Question",
+		                "Request",
+		                "Issue",
+		                "Defect",
 		                "Story"
 		            ]
 		        }
 		    ],
-		    "customfield" : [ 
+		    "customfield" : [
 		        {
 		            "type" : "storypoint",
-		            "value" : [ 
+		            "value" : [
 		                "Story Points"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "rootcause",
-		            "value" : [ 
+		            "value" : [
 		                "Root Cause"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "techdebt",
-		            "value" : [ 
+		            "value" : [
 		                "Tech Debt"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "uat",
-		            "value" : [ 
+		            "value" : [
 		                "UAT"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "timeCriticality",
-		            "value" : [ 
+		            "value" : [
 		                "Time Criticality"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "wsjf",
-		            "value" : [ 
+		            "value" : [
 		                "WSJF"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "costOfDelay",
-		            "value" : [ 
+		            "value" : [
 		                "Cost of Delay"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "businessValue",
-		            "value" : [ 
+		            "value" : [
 		                "User-Business Value"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "riskReduction",
-		            "value" : [ 
+		            "value" : [
 		                "Risk Reduction-Opportunity Enablement Value"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "jobSize",
-		            "value" : [ 
+		            "value" : [
 		                "Job Size"
 		            ]
 		        }
 		    ],
-		    "workflow" : [ 
+		    "workflow" : [
 		        {
 		            "type" : "firststatus",
-		            "value" : [ 
+		            "value" : [
 		                "Open"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "rejection",
-		            "value" : [ 
-		                "Rejected", 
+		            "value" : [
+		                "Rejected",
 		                "Closed"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "delivered",
-		            "value" : [ 
-		                "Closed", 
-		                "Resolved", 
-		                "Ready for Delivery", 
+		            "value" : [
+		                "Closed",
+		                "Resolved",
+		                "Ready for Delivery",
 		                "Ready for Release"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketReopenStatus",
-		            "value" : [ 
+		            "value" : [
 		                "Reopened"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketResolvedStatus",
-		            "value" : [ 
-		                "Resolved", 
-		                "Closed", 
+		            "value" : [
+		                "Resolved",
+		                "Closed",
 		                "CLOSED"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketClosedStatus",
-		            "value" : [ 
-		                "Closed", 
+		            "value" : [
+		                "Closed",
 		                "CLOSED"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketWIPStatus",
-		            "value" : [ 
-		                "In Progress", 
+		            "value" : [
+		                "In Progress",
 		                "In Development"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketRejectedStatus",
-		            "value" : [ 
-		                "Dropped", 
+		            "value" : [
+		                "Dropped",
 		                "Rejected"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "ticketTriagedStatus",
-		            "value" : [ 
-		                "Assigned", 
-		                "REVIEWING", 
-		                "In Progress", 
-		                "OPEN", 
-		                "IN ANALYSIS", 
-		                "Approval for Implementation", 
-		                "ACCEPTED", 
+		            "value" : [
+		                "Assigned",
+		                "REVIEWING",
+		                "In Progress",
+		                "OPEN",
+		                "IN ANALYSIS",
+		                "Approval for Implementation",
+		                "ACCEPTED",
 		                "In Development"
 		            ]
 		        }
 		    ],
-		    "valuestoidentify" : [ 
+		    "valuestoidentify" : [
 		        {
 		            "type" : "rootCauseValue",
-		            "value" : [ 
+		            "value" : [
 		                "Coding"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "rejectionResolution",
-		            "value" : [ 
-		                "Invalid", 
-		                "Duplicate", 
+		            "value" : [
+		                "Invalid",
+		                "Duplicate",
 		                "Unrequired"
 		            ]
-		        }, 
+		        },
 		        {
 		            "type" : "qaRootCause",
-		            "value" : [ 
-		                "Coding", 
-		                "Configuration", 
-		                "Regression", 
+		            "value" : [
+		                "Coding",
+		                "Configuration",
+		                "Regression",
 		                "Data"
 		            ]
 		        }
@@ -434,8 +432,7 @@ db.getCollection('metadata_identifier').remove({});
         },
 
         		{
-            "tool" : "Jira",
-            "templateName" : "DOJO Safe Template",
+            "tool" : "Azure",
             "isKanban" : false,
             "issues" : [
                 {
@@ -601,9 +598,8 @@ db.getCollection('metadata_identifier').remove({});
             ]
         },
                 {
-                    "tool" : "Jira",
-                    "isKanban" : false,
-                    "templateName" : "DOJO Studio Template",
+                    "tool" : "Azure",
+                    "isKanban" : true,
                     "issues" : [
                         {
                             "type" : "story",

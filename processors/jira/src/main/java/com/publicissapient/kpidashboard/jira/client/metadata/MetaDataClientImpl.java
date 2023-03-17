@@ -107,7 +107,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			BoardMetadata boardMetadata = new BoardMetadata();
 			boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
 			boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-			boardMetadata.setMetadataTemplateID(projectConfig.getProjectToolConfig().getMetadataTemplateID());
 			List<Metadata> fullMetaDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(fieldList)) {
 				fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -217,7 +216,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	 */
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		log.info("Fetching and comparing  metadata identifier");
-		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateID(), JiraConstants.JIRA,
+		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByToolAndIsKanban(JiraConstants.JIRA,
 				projectConfig.isKanban());
 		List<Identifier> issueList = metadataIdentifier.getIssues();
 		List<Identifier> customFieldList = metadataIdentifier.getCustomfield();

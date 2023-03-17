@@ -101,14 +101,6 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
-  jiraTemplate = [
-    { id: '', templateName: 'Template Name' },
-    { id: '63f7179d52f4fe210a54ae79', templateName: 'DOJO SAFe Template1' },
-    { id: '63f7179d52f4fe210a54ae7a', templateName: 'DOJO SAFe Template2' },
-    { id: '63f71a2452f4fe210a54ae7b', templateName: 'DOJO Agile Template3' },
-    { id: '63f71a2452f4fe210a54ae7c', templateName: 'DOJO Agile Template4' },
-  ];
-
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -382,8 +374,8 @@ export class JiraConfigComponent implements OnInit {
       return this.jobType;
     } else if (id === 'deploymentProject') {
       return this.deploymentProjectList;
-    }else if(id === 'testAutomatedIdentification' 
-    || id === 'testAutomationCompletedIdentification' 
+    }else if(id === 'testAutomatedIdentification'
+    || id === 'testAutomationCompletedIdentification'
     || id === 'testRegressionIdentification'){
       return this.testCaseIdentification;
     }
@@ -924,18 +916,6 @@ export class JiraConfigComponent implements OnInit {
                 validators: [],
                 containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
-                show: true,
-              },
-              {
-                type: 'basicDropdown',
-                label: 'JIRA Configuration Template',
-                label2: '',
-                id: 'jiraConfigTemp',
-                onChangeEventHandler: this.jiraMethodChange,
-                validators: [],
-                containerClass: 'p-sm-6',
-                tooltip: ``,
-                disabled: 'false',
                 show: true,
               },
             ],
@@ -2101,7 +2081,7 @@ export class JiraConfigComponent implements OnInit {
   save() {
     this.submitted = true;
     // return if form is invalid
-    if (this.toolForm.invalid || !this.selectedConnection) { 
+    if (this.toolForm.invalid || !this.selectedConnection) {
       this.messenger.add({
         severity: 'error',
         summary: 'Please fill all fields and select a connection.',
@@ -2163,14 +2143,14 @@ export class JiraConfigComponent implements OnInit {
     let successAlert = '';
     if (this.urlParam === 'Jira') {
       successAlert = 'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
-    }    
+    }
     if (!this.isEdit) {
 
       for (const obj in submitData) {
         if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
-      } 
+      }
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {

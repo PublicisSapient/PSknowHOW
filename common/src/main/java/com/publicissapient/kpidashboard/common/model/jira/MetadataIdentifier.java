@@ -39,7 +39,6 @@ import lombok.Setter;
 public class MetadataIdentifier extends BasicModel {
 
 	private String tool;
-	private String templateName;
 	private Boolean isKanban;
 	private List<Identifier> issues;
 	private List<Identifier> customfield;
