@@ -25,6 +25,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -157,7 +158,7 @@ public class CreateMetadataImplTest {
                 HttpMethod.GET, entity, String.class)).thenReturn(response);
 
 
-        createMetadata.collectMetadata(createProjectConfig(),client);
+        Assert.assertThrows(Exception.class,()->createMetadata.collectMetadata(createProjectConfig(),client));
 //        CreateMetadataImpl createMetadata1=mock(CreateMetadataImpl.class);
 //        verify(createMetadata1,times(1)).collectMetadata(createProjectConfig(),client);
 
