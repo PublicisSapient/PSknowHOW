@@ -65,6 +65,7 @@ public class SprintPredictabilityImplTest {
 	private Map<String, Object> filterLevelMap;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMapForActualEstimation = new HashMap<>();
 	private Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
 
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
@@ -137,6 +138,9 @@ public class SprintPredictabilityImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		FieldMapping fieldMappingWithActualEstimation = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingWithActualEstimation.setEstimationCriteria("Actual Estimation");
+		fieldMappingMapForActualEstimation.put(fieldMapping.getBasicProjectConfigId(), fieldMappingWithActualEstimation);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
@@ -239,5 +243,31 @@ public class SprintPredictabilityImplTest {
 		String kpiName = KPICode.SPRINT_PREDICTABILITY.name();
 		String type = sprintPredictability.getQualifierType();
 		assertThat("KPI NAME: ", type, equalTo(kpiName));
+	}
+
+	@Test
+	public void testGetSprintPredictabilityForActualEstimation() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+				SprintDetails.SPRINT_STATE_CLOSED)).thenReturn(sprintDetailsList);
+
+		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
+				.thenReturn(sprintWiseStoryList);
+
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMapForActualEstimation);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintPredictability.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+		} catch (Exception exception) {
+		}
 	}
 }
