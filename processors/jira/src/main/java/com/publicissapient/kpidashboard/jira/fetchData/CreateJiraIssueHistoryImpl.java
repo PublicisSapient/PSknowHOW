@@ -43,7 +43,7 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
         return jiraIssueHistory;
     }
 
-    public JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
+    private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
         JiraIssueCustomHistory jiraIssueHistory;
         jiraIssueHistory=findOneJiraIssueHistory(issueId, projectConfig.getBasicProjectConfigId().toString());
         if(jiraIssueHistory==null){
@@ -65,7 +65,7 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
 
     }
 
-    public void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
+    private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
                                      FieldMapping fieldMapping, Map<String, IssueField> fields) {
 
         jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
@@ -102,9 +102,7 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
             if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
                 jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
             }
-            //List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-            //		fieldMapping);
-            //jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+
             setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
         }
 
@@ -112,11 +110,9 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
 
     private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
                                  List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-        //List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-        //		fieldMapping);
+
         setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
         jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-        //jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
         jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
         // estimate
