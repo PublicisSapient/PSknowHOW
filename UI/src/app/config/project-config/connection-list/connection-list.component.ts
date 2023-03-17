@@ -36,7 +36,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
        labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password','Password','Use bearer token', 'PAT (OAuth Token)', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private'],
-       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','password','isBearerToken','patOAuthToken', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate']
+       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','password','bearerToken','patOAuthToken', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate']
     },
     {
       connectionType: 'Azure',
@@ -121,7 +121,7 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: false
         }
         ],
-        isBearerToken: [
+        bearerToken: [
           {
             field: 'patOAuthToken',
             isEnabled: false
@@ -175,7 +175,7 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: true
         },
         {
-          field: 'isBearerToken',
+          field: 'bearerToken',
           isEnabled: true
         },
         {
@@ -188,7 +188,7 @@ export class ConnectionListComponent implements OnInit {
         }
       ],
       isOAuth: [],
-      isBearerToken: [],
+      bearerToken: [],
       vault: [
               {
                 field: 'password',
@@ -226,7 +226,7 @@ export class ConnectionListComponent implements OnInit {
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
         { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
-        {field: 'isBearerToken', header: 'isBearerToken', class: 'small-text'}
+        {field: 'bearerToken', header: 'bearerToken', class: 'small-text'}
       ]
     },
     {
@@ -730,10 +730,10 @@ export class ConnectionListComponent implements OnInit {
       }
     });
 
-    
-    if (!!this.basicConnectionForm.controls['isBearerToken'] && this.connection['isBearerToken'] === true) {
+
+    if (!!this.basicConnectionForm.controls['bearerToken'] && this.connection['bearerToken'] === true) {
       this.basicConnectionForm.controls['patOAuthToken'].enable();
-    } else if (!!this.basicConnectionForm.controls['isBearerToken'] && this.connection['isBearerToken'] === false) {
+    } else if (!!this.basicConnectionForm.controls['bearerToken'] && this.connection['bearerToken'] === false) {
       this.basicConnectionForm.controls['patOAuthToken'].disable();
     }
     if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === true) {
@@ -778,7 +778,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableSwitch(event, field, type?) {
-  
+
     if (field === 'offline') {
       /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
@@ -813,13 +813,13 @@ export class ConnectionListComponent implements OnInit {
       }
 
     }
-    if(field === 'isBearerToken') {
+    if(field === 'bearerToken') {
       if (event.checked) {
         this.basicConnectionForm.controls['patOAuthToken'].enable();
       } else {
         this.basicConnectionForm.controls['patOAuthToken'].disable();
       }
-    } 
+    }
     else {
       /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {

@@ -292,7 +292,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'isBearerToken',
+        'bearerToken',
         'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
@@ -880,7 +880,7 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      isBearerToken: [
+      bearerToken: [
         {
           field: 'patOAuthToken',
           isEnabled: false
@@ -947,7 +947,7 @@ describe('ConnectionListComponent', () => {
         },
       ],
       isOAuth: [],
-      isBearerToken: [],
+      bearerToken: [],
       vault: [
         {
           field: 'password',
@@ -1054,7 +1054,7 @@ describe('ConnectionListComponent', () => {
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
-      isBearerToken:false,
+      bearerToken:false,
       offline: false,
       password: undefined,
       pat: undefined,
@@ -1157,7 +1157,7 @@ describe('ConnectionListComponent', () => {
         baseUrl: ' https://test.com/jira',
         username: 'tst-1',
         password: '',
-        isBearerToken:false,
+        bearerToken:false,
         apiEndPoint: 'rest/api/2',
         isOAuth: false,
         offline: false,
@@ -1189,7 +1189,7 @@ describe('ConnectionListComponent', () => {
       username: 'tst-1',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
-      isBearerToken:false,
+      bearerToken:false,
       offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
