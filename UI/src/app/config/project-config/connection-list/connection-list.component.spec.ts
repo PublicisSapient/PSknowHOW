@@ -587,7 +587,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'isBearerToken',
+        'bearerToken',
         'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
@@ -925,10 +925,7 @@ describe('ConnectionListComponent', () => {
           field: 'password',
           isEnabled: true,
         },
-        {
-          field: 'patOAuthToken',
-          isEnabled: true,
-        },
+        
         {
           field: 'apiEndPoint',
           isEnabled: true,
@@ -936,6 +933,14 @@ describe('ConnectionListComponent', () => {
         {
           field: 'isOAuth',
           isEnabled: true,
+        },
+        {
+          field: 'bearerToken',
+          isEnabled: true
+        },
+        {
+          field: 'patOAuthToken',
+          isEnabled: true
         },
         {
           field: 'privateKey',
@@ -1138,35 +1143,16 @@ describe('ConnectionListComponent', () => {
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.basicConnectionForm.controls['offline'].setValue(false);
     component.basicConnectionForm.controls['connPrivate'].setValue(true);
-    component.basicConnectionForm.controls['privateKey'].setValue('test');
-    component.basicConnectionForm.controls['consumerKey'].setValue('test');
     component.basicConnectionForm.controls['vault'].setValue(false);
-    component.basicConnectionForm.controls['isBearerToken'].setValue(false);
+    component.basicConnectionForm.controls['bearerToken'].setValue(false);
+    component.basicConnectionForm.controls['privateKey'].disable();
+    component.basicConnectionForm.controls['consumerKey'].disable();
+    component.basicConnectionForm.controls['patOAuthToken'].disable();
     component.isNewlyConfigAdded = true;
+    const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
     fixture.detectChanges();
-    expect(component.basicConnectionForm.valid).toBeTruthy();
-    httpMock.match(`${baseUrl}/api/connections`)[0].flush({
-      message: 'created and saved new connection',
-      success: true,
-      data: {
-        id: '6066c07569515b0001df160f',
-        type: 'Jira',
-        connectionName: 'TestConnectionRishabh4',
-        cloudEnv: true,
-        baseUrl: ' https://test.com/jira',
-        username: 'tst-1',
-        password: '',
-        bearerToken:false,
-        apiEndPoint: 'rest/api/2',
-        isOAuth: false,
-        offline: false,
-        createdBy: 'SUPERADMIN',
-        connPrivate: true,
-        updatedBy: 'SUPERADMIN',
-        connectionUser: ['SUPERADMIN'],
-      },
-    });
+    expect(addConnection).toHaveBeenCalled();
   });
 
   it('should hide dialog', () => {

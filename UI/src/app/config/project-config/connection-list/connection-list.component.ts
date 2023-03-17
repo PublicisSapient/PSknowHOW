@@ -179,6 +179,10 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: true
         },
         {
+          field: 'patOAuthToken',
+          isEnabled: true
+        },
+        {
           field: 'privateKey',
           isEnabled: false
         },
@@ -801,27 +805,8 @@ export class ConnectionListComponent implements OnInit {
           }
         });
       }
-
-      if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
-        this.basicConnectionForm.controls['privateKey'].enable();
-        this.basicConnectionForm.controls['consumerKey'].enable();
-        // this.basicConnectionForm.controls['password'].disable();
-      } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
-        this.basicConnectionForm.controls['privateKey'].disable();
-        this.basicConnectionForm.controls['consumerKey'].disable();
-        // this.basicConnectionForm.controls['password'].enable();
-      }
-
-    }
-    if(field === 'bearerToken') {
-      if (event.checked) {
-        this.basicConnectionForm.controls['patOAuthToken'].enable();
-      } else {
-        this.basicConnectionForm.controls['patOAuthToken'].disable();
-      }
-    }
-    else {
-      /* Enable/Disable fields on the basis of flag selection at one time */
+    }      
+    /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
         this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
           if (event.checked) {
@@ -841,6 +826,15 @@ export class ConnectionListComponent implements OnInit {
           }
         });
       }
+    if(field === 'offline'){
+      if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
+        this.basicConnectionForm.controls['privateKey'].enable();
+        this.basicConnectionForm.controls['consumerKey'].enable();
+        // this.basicConnectionForm.controls['password'].disable();
+      } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
+        this.basicConnectionForm.controls['privateKey'].disable();
+        this.basicConnectionForm.controls['consumerKey'].disable();
+      }
     }
 
 
@@ -851,7 +845,14 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
       }
     }
-
+    console.log(this.basicConnectionForm.controls['privateKey'].value, this.basicConnectionForm.controls['privateKey'].status);
+    if(field === 'bearerToken') {
+      if (event.checked) {
+        this.basicConnectionForm.controls['patOAuthToken'].enable();
+      } else {
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+      }
+    }
     this.checkBitbucketValue(event.checked, field, type);
 
     this.checkZephyr();
