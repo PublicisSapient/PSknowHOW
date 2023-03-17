@@ -1224,7 +1224,8 @@ public class KPIExcelUtility {
 
 	public static void populateWorkRemainingWithPCD(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, IterationPotentialDelay> issueWiseDelay, SprintDetails sprintDetails) {
+			Map<String, IterationPotentialDelay> issueWiseDelay, SprintDetails sprintDetails,
+			String devCompletionDate) {
 		String blankDueDate = Constant.DASH;
 		String markerValue = Constant.BLANK;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -1277,6 +1278,11 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPotentialOverallDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
+		if (jiraIssue.getDevDueDate() != null)
+			iterationKpiModalValue.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
+		else
+			iterationKpiModalValue.setDevDueDate(Constant.DASH);
+        iterationKpiModalValue.setDevCompletionDate(devCompletionDate);
 		iterationKpiModalValue.setDueDate(blankDueDate);
 		iterationKpiModalValue.setMarker(markerValue);
 		modalValues.add(iterationKpiModalValue);
