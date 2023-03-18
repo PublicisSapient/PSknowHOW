@@ -3563,7 +3563,7 @@ db.getCollection('kpi_master').insert(
       "definition":"Defect reopen rate measures number of defects reopened out of the total number of defects raised."
     },
     "isPositiveTrend":false,
-    "kpiFilter":"multiSelectDropDown",
+    "kpiFilter":"dropdown",
     "showTrend":false,
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport":true,
