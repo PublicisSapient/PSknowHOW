@@ -422,6 +422,7 @@ export class FieldMappingComponent implements OnInit {
       jiraBlockedStatus:[],
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
+      jiraDevDoneStatus : [],
       jiraDefectClosedStatus: [[]],
       // issue type mapping
       jiraIssueTypeNames: [[]],

@@ -343,7 +343,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Work Remaining',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi75',
@@ -392,7 +392,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Overall Completion Status',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress']}
+        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus']}
       },
       {
         kpiId: 'kpi79',
