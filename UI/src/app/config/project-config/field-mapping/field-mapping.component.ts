@@ -454,6 +454,7 @@ export class FieldMappingComponent implements OnInit {
       workingHoursDayCPT: [''],
       jiraDueDateCustomField : [''],
       jiraDueDateField : [''],
+      jiraDevDueDateCustomField : [''],
       // defect mapping
       jiradefecttype: [[]],
 
