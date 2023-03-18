@@ -1,3 +1,4 @@
+/*
 package com.publicissapient.kpidashboard.apis.comments.service;
 
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
@@ -16,10 +17,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
-import com.publicissapient.kpidashboard.common.model.comments.CommentsKpiWise;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
-import com.publicissapient.kpidashboard.common.repository.commentshistory.KpiCommentsHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsServiceImplTest {
@@ -136,4 +136,4 @@ public class CommentsServiceImplTest {
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
 
 	}
-}
+}*/

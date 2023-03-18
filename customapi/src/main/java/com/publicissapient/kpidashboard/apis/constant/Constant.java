@@ -132,9 +132,8 @@ public final class Constant {
 	public static final String CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL = "additionalFilterHierLevel";
 	public static final String RESOLUTION_TYPE_FOR_REJECTION = "Resolution Type for Rejection";
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
-	public static final String KPI_COMMENT_ON_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	public static final Integer PER_KPI_MAX_COMMENTS_COUNT = 10;
-	public  static final Integer HOW_MANY_COMMENTS_SHOW_ON_KPI_DASHBOARD_COUNT=5;
+	public static final Integer PER_KPI_MAX_COMMENTS_COUNT = 5;
+	public  static final Integer HOW_MANY_COMMENTS_SHOW_ON_KPI_DASHBOARD_COUNT=4;
 
 	private Constant() {
 	}

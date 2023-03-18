@@ -1,6 +1,6 @@
 package com.publicissapient.kpidashboard.common.model.kpicommentshistory;
 
-import com.publicissapient.kpidashboard.common.model.comments.CommentsKpiWise;
+import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,5 +18,6 @@ public class KpiCommentsHistory extends BasicModel {
 	private String node;
 	private String level;
 	private String sprintId;
-	private List<CommentsKpiWise> commentsKpiWise;
+	private String kpiId;
+	private List<CommentsInfo> commentsInfo;
 }

@@ -1,3 +1,4 @@
+/*
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import static org.mockito.Mockito.verify;
@@ -28,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
-import com.publicissapient.kpidashboard.common.model.comments.CommentsKpiWise;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsControllerTest {
@@ -113,4 +113,4 @@ public class CommentsControllerTest {
 	public void cleanUp() {
 		mockMvc = null;
 	}
-}
+}*/

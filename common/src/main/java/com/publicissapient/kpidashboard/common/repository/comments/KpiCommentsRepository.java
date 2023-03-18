@@ -1,17 +1,16 @@
 package com.publicissapient.kpidashboard.common.repository.comments;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import java.util.List;
-
+/**
+ * @author mahesh Repository for {@link KPIComments}.
+ */
 @Repository
-public interface KpiCommentsRepository {
+public interface KpiCommentsRepository extends MongoRepository<KPIComments, String> {
 
-	List<KPIComments> findCommentsByFilter(String node, String level, String sprintId, String kpiId,
-			String sortCommentsResultByOrder);
-
-	void saveIntoCollection(KPIComments kpiComments);
-
-	boolean deleteKpiCommentsData(KPIComments oldCommentId);
+	@Query("{ 'node' : ?0, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3}")
+	KPIComments findCommentsByFilter(String node, String level, String sprintId, String kpiId);
 
 }
