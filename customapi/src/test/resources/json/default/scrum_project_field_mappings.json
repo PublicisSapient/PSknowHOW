@@ -184,7 +184,7 @@
       "In Investigation",
       "Open"
     ],
-    "jiraTicketClosedStatus": [
+    "jiraDefectClosedStatus": [
       "Closed"
     ],
     "estimationCriteria": "Story Point",

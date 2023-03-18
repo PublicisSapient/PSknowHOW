@@ -19,6 +19,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -46,7 +47,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -113,15 +116,16 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
     Map<String, List<JiraIssue>> priorityWiseTotalStory = totalDefects.stream().collect(Collectors.groupingBy(JiraIssue::getPriority));
     Map<String, Pair<DateTime, DateTime>> storyCloseReopenTime = new HashMap<>();
     List<IterationKpiModalValue> modalValues = new ArrayList<>();
+//    Set<String> st
     reopenJiraHistory.forEach(jiraIssueCustomHistory -> {
       List<String> closedStatusList = closedStatusMap.get(jiraIssueCustomHistory.getBasicProjectConfigId());
       JiraIssue jiraIssue = storyWisePriority.get(jiraIssueCustomHistory.getStoryID());
-      List<JiraIssueSprint> sprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
-      Optional<JiraIssueSprint> closedHistoryOptional = sprintDetails.stream().filter(sprintDetail -> closedStatusList
-          .contains(sprintDetail.getFromStatus())).findFirst();
+      List<JiraIssueSprint> issueHistoryList = jiraIssueCustomHistory.getStorySprintDetails();
+      Optional<JiraIssueSprint> closedHistoryOptional = issueHistoryList.stream().filter(issueHistory -> closedStatusList
+          .contains(issueHistory.getFromStatus())).findFirst();
       if (closedHistoryOptional.isPresent()) {
         JiraIssueSprint closedHistory = closedHistoryOptional.get();
-        Optional<JiraIssueSprint> reopenHistoryOptional = sprintDetails.stream().filter( sprintDetail -> sprintDetail
+        Optional<JiraIssueSprint> reopenHistoryOptional = issueHistoryList.stream().filter( sprintDetail -> sprintDetail
             .getActivityDate().isAfter(closedHistory.getActivityDate()) &&
             !closedStatusList.contains(sprintDetail.getFromStatus())).findFirst();
         if (reopenHistoryOptional.isPresent()) {
@@ -189,7 +193,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
   }
 
   private Double calculateAverage(List<IterationKpiModalValue> modalValues, Map<String, Pair<DateTime, DateTime>> storyCloseReopenTime) {
-
+    if (modalValues.isEmpty()) {
+      return 0d;
+    }
     Double totalDuration = modalValues.stream().map(modalValue -> diff(storyCloseReopenTime.get(modalValue.getIssueId())))
         .reduce(0d, Double::sum);
     return totalDuration / modalValues.size();
@@ -252,12 +258,10 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
       Map<String, Object> mapOfProjectFiltersNotin = new LinkedHashMap<>();
       basicProjectConfigIds.add(basicProjectConfigId);
       FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-      List<String> defectList = fieldMapping.getJiradefecttype();
-      if (defectList.isEmpty()) {
-        defectList = new ArrayList<>();
-        defectList.add(CommonConstant.BUG);
-      }
-      List<String> closedStatusList = (List<String>) CollectionUtils.emptyIfNull(fieldMapping.getJiraTicketClosedStatus());
+      List<String> defectTypeList = new ArrayList<>(fieldMapping.getJiradefecttype());
+      defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
+      List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+      List<String> closedStatusList = (List<String>) CollectionUtils.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
       mapOfProjectFiltersNotin.put(JiraFeature.STATUS.getFieldValueInFeature(),
           CommonUtils.convertToPatternList(closedStatusList));
       mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
@@ -275,19 +279,18 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
     basicProjectConfigIds.forEach(basicProjectConfigObjectId -> {
       Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
       FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
-      List<String> closedStatusList = (List<String>) CollectionUtils.emptyIfNull(fieldMapping.getJiraTicketClosedStatus());
+      List<String> closedStatusList = (List<String>) CollectionUtils.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
       closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
-      List<String> defectList = fieldMapping.getJiradefecttype();
-      if (defectList.isEmpty()) {
-        defectList = new ArrayList<>();
-        defectList.add(CommonConstant.BUG);
-      }
+      List<String> defectTypeList = new ArrayList<>(fieldMapping.getJiradefecttype());
+      defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
+      List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
       mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
           CommonUtils.convertToPatternList(defectList));
       mapOfProjectFilters.put("storySprintDetails.story.fromStatus", CommonUtils.convertToPatternList(closedStatusList));
       uniqueProjectMap.put(basicProjectConfigObjectId.toString(), mapOfProjectFilters);
     });
-
+    mapOfFiltersForHistory.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+            basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
     mapOfFiltersForHistory.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), notClosedJiraIssueNumbers);
     // we get all the data that are once closed and now in open state.
     List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository

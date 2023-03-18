@@ -113,7 +113,7 @@ db.getCollection('metadata_identifier').remove({});
                         "value" : ["In Analysis", "In Development", "In Progress"]
                     },
                     {
-                        "type" : "ticketClosedStatus",
+                        "type" : "jiraStatusForClosed",
                         "value" : [
                             "Closed",
                             "CLOSED"

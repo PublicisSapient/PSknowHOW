@@ -3565,6 +3565,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend":false,
     "kpiFilter":"multiSelectDropDown",
     "showTrend":false,
+    "aggregationCriteria": "average",
     "isAdditionalFilterSupport":true,
     "calculateMaturity":false
   }

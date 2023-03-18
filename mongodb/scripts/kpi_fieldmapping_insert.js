@@ -433,6 +433,6 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Reopen Rate',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraTicketClosedStatus'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraDefectClosedStatus'] }
       }
 	  ]);
