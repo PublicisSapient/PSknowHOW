@@ -210,7 +210,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
-
+    this.kpiLoader = true;
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -656,21 +656,28 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   generateExcel() {
-    const kpiData = {
-      headerNames: [],
+    let tableData = {
+      columns: [...this.modalDetails['tableHeadings']],
       excelData: []
     };
-    this.modalDetails['tableHeadings'].forEach(colHeader => {
-      kpiData.headerNames.push({
-        header: colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader,
-        key: colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader,
-        width: 25
-      });
-    });
     this.modalDetails['tableValues'].forEach(colData => {
-      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+      let obj = {};
+      for(let key in colData){
+        if(this.typeOf(colData[key])){
+          obj[key] = [];
+          for(let y in colData[key]){
+            obj[key].push({text: y, hyperlink: colData[key][y]})
+          }
+        }else if(key == 'Issue Id'){
+          obj['Issue Id'] = {};
+          obj['Issue Id'][colData[key]] = colData['Issue URL'];
+        }else{
+          obj[key] = colData[key]
+        }
+      }
+      tableData.excelData.push(obj);
     });
-
+    let kpiData = this.excelService.generateExcelModalData(tableData);
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
@@ -687,5 +694,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
       }
     }
+  }
+
+  typeOf(value) {
+    return typeof value === 'object' && value !== null;
   }
 }
