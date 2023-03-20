@@ -87,8 +87,6 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
 
-
-
 		LOGGER.debug("CommentSubmitDTO info {}", comment);
 		List<CommentsInfo> commentsInfo = comment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
@@ -139,26 +137,20 @@ public class CommentsServiceImpl implements CommentsService {
 	private void reMappingOfKpiComments(KPIComments kpiComment,List<CommentsInfo> newCommentsInfo){
 		List<CommentsInfo> commentsInfo = kpiComment.getCommentsInfo();
 		int commentsInfoSize = commentsInfo.size();
-		KPIComments backupKpiComment;
 
 		if(commentsInfoSize < Constant.PER_KPI_MAX_COMMENTS_COUNT) {
 			newCommentsInfo.addAll(commentsInfo);
 			kpiComment.setCommentsInfo(newCommentsInfo);
-			backupKpiComment = kpiComment;
-			kpiCommentsRepository.delete(kpiComment);
-			kpiCommentsRepository.save(backupKpiComment);
-
-			LOGGER.debug("Saved comments info into kpi_comment Collection {}", backupKpiComment);
+			kpiCommentsRepository.save(kpiComment);
+			LOGGER.debug("rearrange Saved comments info into kpi_comment Collection {}", kpiComment);
 
 		} else {    //commentsInfoSize >= Constant.PER_KPI_MAX_COMMENTS_COUNT
 			commentsInfo.remove(commentsInfoSize - 1);
 			newCommentsInfo.addAll(commentsInfo);
 			kpiComment.setCommentsInfo(newCommentsInfo);
-			backupKpiComment = kpiComment;
-			kpiCommentsRepository.delete(kpiComment);
-			kpiCommentsRepository.save(backupKpiComment);
+			kpiCommentsRepository.save(kpiComment);
 
-			LOGGER.debug("Saved comments into kpi_comment Collection {}", backupKpiComment);
+			LOGGER.debug("rearrange Saved comments into kpi_comment Collection {}", kpiComment);
 		}
 	}
 
@@ -167,11 +159,8 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> commentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 		newCommentsInfoHistory.addAll(commentsInfoHistory);
 		kpiCommentsHistory.setCommentsInfo(newCommentsInfoHistory);
-		KpiCommentsHistory kpiCommentsHistoryBackup = kpiCommentsHistory;
-
-		kpiCommentsHistoryRepository.delete(kpiCommentsHistory);
-		kpiCommentsHistoryRepository.save(kpiCommentsHistoryBackup);
-		LOGGER.debug("Saved comments info {}", kpiCommentsHistoryBackup);
+		kpiCommentsHistoryRepository.save(kpiCommentsHistory);
+		LOGGER.debug("rearrange saved comments info into kpi comment history collection {}", kpiCommentsHistory);
 
 	}
 
