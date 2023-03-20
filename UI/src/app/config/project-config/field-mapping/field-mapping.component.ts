@@ -422,6 +422,7 @@ export class FieldMappingComponent implements OnInit {
       jiraBlockedStatus:[],
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
+      jiraDevDoneStatus : [],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -452,6 +453,7 @@ export class FieldMappingComponent implements OnInit {
       workingHoursDayCPT: [''],
       jiraDueDateCustomField : [''],
       jiraDueDateField : [''],
+      jiraDevDueDateCustomField : [''],
       // defect mapping
       jiradefecttype: [[]],
 
