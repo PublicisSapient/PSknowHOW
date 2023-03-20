@@ -252,6 +252,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 								if (jiraIssue.getOriginalEstimateMinutes() != null)
 									originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
 
+								String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
 								// calling function for cal actual completion days
 								Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
 										sprintDetails, fieldMapping);
@@ -273,7 +274,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 											+ jiraIssue.getOriginalEstimateMinutes());
 								}
 								populateIterationDataForWorkCompleted(overAllmodalValues, modalValues, jiraIssue,
-										fieldMapping, actualCompletionData, jiraIssueDelay);
+										fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 							}
 						}
 						List<IterationKpiData> data = new ArrayList<>();

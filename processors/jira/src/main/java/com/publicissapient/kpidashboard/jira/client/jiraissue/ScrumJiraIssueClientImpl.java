@@ -665,7 +665,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
 
-				setEstimates(jiraIssue, issue,fields,fieldMapping);
+				setEstimates(jiraIssue, issue);
+
+				setDueDates(jiraIssue, issue,fields,fieldMapping);
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
@@ -1741,26 +1743,40 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	}
 
-	private void setEstimates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
-			FieldMapping fieldMapping) {
+	private void setEstimates(JiraIssue jiraIssue, Issue issue) {
 		if (null != issue.getTimeTracking()) {
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
-			if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-				if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
-					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+		}
+	}
+	
+	
+	private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+			FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
 							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-				} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-						&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
-					IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
-					if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-						jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-					}
 				}
 			}
 		}
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+			}
+		}
 	}
+	
 
 	/**
 	 * setting Url to jiraIssue
