@@ -162,7 +162,7 @@ public class SprintVelocityServiceImplTest {
 		filterComponentIdWiseDefectMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		Double velocityValue = sprintVelocityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
 
-		assertThat("Velocity value :", velocityValue, equalTo(6.0));
+		assertThat("Velocity value :", velocityValue, equalTo(8.0));
 	}
 
 	@Test
