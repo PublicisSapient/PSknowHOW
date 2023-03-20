@@ -1135,7 +1135,7 @@ describe('FilterComponent', () => {
       expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
     }))
 
-    it("should notification lis not null if response is comming",()=>{
+    it("should notification list not null if response is comming",()=>{
       const fakeResponce = {
         message: 'Data came successfully',
         success: true,

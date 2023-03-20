@@ -102,23 +102,6 @@ describe('NavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should render message', () => {
-  //   const res = [
-  //       {
-  //           "type": "User Access Request",
-  //           "count": 0
-  //       },
-  //       {
-  //           "type": "Project Access Request",
-  //           "count": 0
-  //       }
-  //   ];
-  //   const myFunctionSpy = spyOn(component, 'renderMessage').and.stub();
-  //   // const service = new MyService();
-  //   spyOn(httpService, 'getAccessRequestsNotifications');
-  //   component.renderMessage();
-  //   expect(myFunctionSpy).toHaveBeenCalledTimes(1);
-  // });
 
   it('should edit dashboard name', fakeAsync(() => {
     component.kpiListData = getDashConfData.data;

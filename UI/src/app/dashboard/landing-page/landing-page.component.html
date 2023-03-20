@@ -24,70 +24,7 @@
       </div>
     </div>
   
-    <!-- <div class="col-sm-6 p-pt-4">
-      <h4>Overall Account Summary</h4>
-      <div class="bg-white landing-card account-summary p-d-flex p-flex-direction-column" *ngIf="!isProducer">
-        <p-accordion>
-          <p-accordionTab [header]="'Total Projects: ' + totalProjects" [selected]="true">
-            <div class="p-d-flex align-items-center pb-3">
-              <p-inputSwitch [(ngModel)]="checked" (onChange)="handleChange($event)">
-              </p-inputSwitch>
-              <p class="p-p-2 p-ml-2 p-mb-0 bg-yellow p-d-flex p-align-center">New projects added in the last 30 days
-                <strong class="font-big p-ml-2" *ngIf="totalProjects30Days > 0">{{totalProjects30Days}}</strong>
-              </p>
-            </div>
-            <p-table [columns]="tableHeadingArr" [value]="summaryItems">
-              <ng-template pTemplate="header" let-columns>
-                <tr>
-                  <th *ngFor="let col of columns" class="p-2 word-break bg-grey">
-                    {{col | uppercase}}
-                  </th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-rowData let-columns="columns">
-                <tr>
-                  <td *ngFor="let col of columns" class="p-2">
-                    {{rowData[col] || 0}}
-                  </td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="footer">
-                <tr>
-                  <td *ngFor="let col of totalsArray" class="p-2 bg-grey">
-                    {{col.total}}
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </p-accordionTab>
-          <p-accordionTab [header]="'Total Users: ' + totalUsers" [selected]="true">
-            <p class="p-p-2 p-d-flex p-align-center bg-yellow">New users added in the last 30 days <strong
-                class="font-big p-ml-2">{{newUsers}}</strong></p>
-          </p-accordionTab>
-        </p-accordion>
-      </div>
-      <div class="bg-white landing-card account-summary p-d-flex p-jc-center p-align-center" *ngIf="isProducer">
-        <div class="p-d-flex p-jc-center p-align-center">
-          <div class="p-text-center p-mr-5">
-            <h3>Projects</h3>
-            <div class="bg-blue p-4 p-d-flex p-align-center custom-br-top p-mb-1">
-              <h3 class="p-m-0 text-white">Total - {{totalProjects}}</h3>
-            </div>
-            <div class="bg-yellow p-4 p-d-flex p-align-center custom-br-bottom"><strong class="font-big">New in last 30
-                days- <span class="font-bigger">{{totalProjects30Days}}</span></strong></div>
-          </div>
-          <div class="p-text-center">
-            <h3>Users</h3>
-            <div class="bg-blue p-4 p-d-flex p-align-center custom-br-top p-mb-1">
-              <h3 class="p-m-0 text-white">Total - {{totalUsers}}</h3>
-            </div>
-            <div class="bg-yellow p-4 p-d-flex p-align-center custom-br-bottom"><strong class="font-big">New in last 30
-                days- <span class="font-bigger">{{newUsers}}</span></strong></div>
-          </div>
-  
-        </div>
-      </div>
-    </div> -->
+    
   
     <div class="p-sm-6 p-pt-4 feedback-sect">
       <h4>Your Voice</h4>
