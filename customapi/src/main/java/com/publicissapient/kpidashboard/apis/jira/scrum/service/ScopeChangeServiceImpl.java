@@ -290,7 +290,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				IterationKpiData issueCounts;
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoints), null, "",
+					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),roundingOff(storyPoints), null, "",
 							CommonConstant.SP, modalValues);
 				} else {
 					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),
