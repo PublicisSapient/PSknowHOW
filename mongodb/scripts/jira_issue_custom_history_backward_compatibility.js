@@ -15,7 +15,7 @@ jiraIssueHistorys.forEach(function(historyObject){
         var storyID = historyObject.storyID;
         storySprintDetails.forEach(function(obj){
             var changedTo = obj.fromStatus;
-            var updatedOn = convertingJodaDatetimeToLocalDateTime(obj);
+            var updatedOn = obj.activityDate;
             changedLogs.push({"changedFrom":prevChangedTo,changedTo,updatedOn});
             prevChangedTo=changedTo;
         });
@@ -23,7 +23,7 @@ jiraIssueHistorys.forEach(function(historyObject){
          var result = db.jira_issue_custom_history.updateOne({"storyID": storyID},
         				{
                            $set: {
-                                'statusChangeLog':changedLogs
+                                'statusUpdationLog':changedLogs
                                   },
                            $unset: {
                              	"storySprintDetails":""
