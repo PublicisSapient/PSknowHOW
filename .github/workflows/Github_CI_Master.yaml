@@ -21,6 +21,7 @@ on:
     branches: [ master ]
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
+  sonartoken: ${{secrets.SONARQUBE_TOKEN}}
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -171,6 +172,7 @@ jobs:
                ./SonarDelay.sh ./processors/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
                
       # - name: Checking code Quality using SonarQube for Customapi
       #   if: steps.processors.outputs.processors == 'true' ||  steps.customapi.outputs.customapi == 'true'
