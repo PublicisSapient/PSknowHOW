@@ -203,7 +203,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Predictability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi55',
