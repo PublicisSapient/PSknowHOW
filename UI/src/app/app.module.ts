@@ -35,6 +35,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {AccordionModule} from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe } from '@angular/common';
+import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -167,7 +168,8 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         AccordionModule,
         DialogModule,
         FontAwesomeModule,
-        DragDropModule
+        DragDropModule,
+        MenuModule
     ],
     providers: [
         ExcelService,
