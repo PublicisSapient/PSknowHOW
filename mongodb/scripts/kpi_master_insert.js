@@ -3386,6 +3386,57 @@ db.getCollection('kpi_master').insert(
          "calculateMaturity": false
        },
   {
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 13,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+    "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
+       "details": [
+                 {
+                   "type": "paragraph",
+                   "value": "The KPI shows:"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "1. Linked defects to story"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "2. Defect Injection Rate"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "3. Defect Density"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "4. Unlinked defects"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+                 }
+                 ]
+            },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "kpiFilter": "",
+     "showTrend": false,
+     "boxType": "3_column"
+   },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",
