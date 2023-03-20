@@ -89,6 +89,10 @@ public class IterationKpiModalValue implements Serializable {
 	private String delayInDays;
 	@JsonProperty("Actual Start Date")
 	private String actualStartDate;
+	@JsonProperty("Dev Completion Date")
+	private String devCompletionDate;
+	@JsonProperty("Dev Due Date")
+	private String devDueDate;
 	private String marker;
 	@JsonProperty("First Time Pass")
 	private String firstTimePass;

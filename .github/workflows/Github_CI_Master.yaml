@@ -40,31 +40,6 @@ jobs:
         with:
           time: '5s'
       - uses: actions/checkout@v2
-        #  - name: Get changed files using defaults
-        #id: changed_files
-        #uses: tj-actions/changed-files@v3.3
-      
-        #- name: Get changed files using a comma separator
-        #id: changed_files_comma
-        #uses: tj-actions/changed-files@v3.3
-        #with:
-        #  separator: ","
-       
-        #- name: List all added files
-        #run: |
-        #  for file in "${{ steps.changed_files.outputs.added_files }}"; do
-        #   echo "$file was added"
-        # done
-          
-        #- name: Run step when a file changes in a PR relative to the default branch
-        #if: contains(steps.changed_files.outputs.modified_all, 'UI')
-        #run: |
-        #   echo "Your file UI has been modified."
-
-        #- name: Run step when a file is deleted in a PR relative to the default branch
-        #if: contains(steps.changed_files.outputs.deleted_files, 'test.txt')
-        #run: |
-        #   echo "Your test.txt has been deleted."
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -78,10 +53,12 @@ jobs:
         run: |
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
+          sudo npm cache clean --force
           sudo npm install
-          sudo npm install -g @angular/cli@6.0.8
+          sudo npm install -g @angular/cli@14.2.6
           #npm install --save-dev @angular-devkit/build-angular
-          sudo ng build --configuration=docker
+          sudo npm run build
+          
           sudo mkdir -p build
           sudo cp -r dist/dashboard/* build/
           sudo chmod -R 775 build
@@ -95,7 +72,7 @@ jobs:
         id: TestUI
         run: |
           cd UI
-          sudo npm install --save-dev @angular-devkit/build-angular
+          sudo npm install --save-dev @angular-devkit/build-angular@14.2.10
           sudo ng test --code-coverage
           #sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info
       - name: Scanning UI with Sonar Qube
