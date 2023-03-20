@@ -665,9 +665,13 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   generateExcel() {
     let tableData = {
-      columns: [...this.modalDetails['tableHeadings']],
+      columns: [],
       excelData: []
     };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      tableData.columns.push(colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader);
+    });
+
     this.modalDetails['tableValues'].forEach(colData => {
       let obj = {};
       for(let key in colData){
