@@ -141,7 +141,8 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   openComments(){
     this.selectedFilters = []
     const sharedObj = this.service.getFilterObject();
-    if(this.service.getSelectedTab() === 'Backlog' || this.service.getSelectedTab() === 'Iteration'){
+    const selectedTab = this.service.getSelectedTab();
+    if(selectedTab === 'Backlog' || selectedTab === 'Iteration'){
       for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.sprint.length; i++) {
         this.selectedFilters.push(sharedObj.filterData.filter(data => {
           return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
@@ -155,7 +156,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
       }
     }
 
-    if(this.service.getSelectedTab() === 'Backlog'){
+    if(selectedTab === 'Backlog'){
       const selFil = this.selectedFilters;
       this.selectedFilters = [];
       this.selectedFilters.push(sharedObj.filterData.filter(data => {
@@ -165,19 +166,16 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
+    
     const reqObj = {
-      node: this.service.getSelectedTab() !== 'Iteration'? filterData.nodeId: filterData.parentId[0],
+      node: this.service.getSelectedTab() !== 'Iteration' ? filterData.nodeId : filterData.parentId[0],
       level: filterData.level,
-      sprintId: this.service.getSelectedTab() === 'Iteration'? filterData.nodeId: '',
-      commentsKpiWise: [
+      sprintId: this.service.getSelectedTab() === 'Iteration' ? filterData.nodeId : '',
+      kpiId: this.kpiData?.kpiId,
+      commentsInfo: [
         {
-          kpiId: this.kpiData?.kpiId,
-          commentsInfo: [
-            {
-              commentBy: localStorage.getItem('user_name'),
-              comment: this.commentText
-            }
-          ]
+          commentBy: localStorage.getItem('user_name'),
+          comment: this.commentText
         }
       ]
     }

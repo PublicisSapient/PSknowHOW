@@ -221,13 +221,19 @@ describe('KpiCardComponent', () => {
               "project": [
                   "DOTC_63b51633f33fd2360e9e72bd"
               ],
-              "sprint": [],
+              "sprint": ["DOTC_63b51633f33fd2360e9e72bd"],
               "afOne": []
           },
           "level": 4
       }
   }
+  const testData = sharedObj.filterData[1];
   spyOn(sharedService, 'getFilterObject').and.returnValue(sharedObj);
+  component.openComments();
+  fixture.detectChanges();
+  expect(component.selectedFilters).toEqual(sharedObj.filterData);
+
+  spyOn(sharedService, 'getSelectedTab').and.returnValue('Iteration');
   component.openComments();
   fixture.detectChanges();
   expect(component.selectedFilters).toEqual(sharedObj.filterData);
