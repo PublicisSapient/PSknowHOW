@@ -99,10 +99,9 @@ public class CreateMetadataImpl implements CreateMetadata {
             BoardMetadata boardMetadata = new BoardMetadata();
             boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
             boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-            boardMetadata.setMetadataTemplateID(
+//            boardMetadata.setMetadataTemplateID(
 //                    projectConfig.getProjectToolConfig().getMetadataTemplateID()
-                    new ObjectId("64131d79532738dfa9402c92")
-            );
+//            );
             List<Metadata> fullMetaDataList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(fieldList)) {
                 fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -280,7 +279,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         log.info("Fetching and comparing  metadata identifier");
         MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(
 //                projectConfig.getProjectToolConfig().getMetadataTemplateID()
-                new ObjectId("64131d79532738dfa9402c92")
+                new ObjectId("63c702c0778b02d15e9e2b3e")
                 ,JiraConstants.JIRA, projectConfig.isKanban());
         List<Identifier> issueList = metadataIdentifier.getIssues();
         List<Identifier> customFieldList = metadataIdentifier.getCustomfield();

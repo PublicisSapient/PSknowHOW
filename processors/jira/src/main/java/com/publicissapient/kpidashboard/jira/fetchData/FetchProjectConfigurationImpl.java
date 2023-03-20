@@ -120,7 +120,6 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
             }
         }
         );
-        log.info("ProjectConfigMap: "+projectConfigMap);
         return projectConfigMap;
     }
 

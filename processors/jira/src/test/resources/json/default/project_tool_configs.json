@@ -8,7 +8,13 @@
     "createdAt": "2020-12-16T06:49:25",
     "updatedAt": "2020-12-16T10:31:26",
     "queryEnabled": true,
-    "boardQuery": "project in (\"DTS\") and component in (KnowHOW) and type in (\"Story\", \"Defect\", \"Enabler Story\", \"Change request\", \"Epic\")"
+    "boardQuery": "project in (\"DTS\") and component in (KnowHOW) and type in (\"Story\", \"Defect\", \"Enabler Story\", \"Change request\", \"Epic\")",
+    "boards": [
+      {
+        "boardId": "1111",
+        "boardName": "test board"
+      }
+    ]
   },
   {
     "id" : "63c04df3b7617e260763ca50",

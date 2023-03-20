@@ -207,7 +207,7 @@ public class CreateMetadataImplTest {
                 valuestoidentify3);
 
         List<Identifier> issuelinkIdentifer = new ArrayList<>();
-        return new MetadataIdentifier(tool, "DOJO Agile Template (Default)", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+        return new MetadataIdentifier(tool, isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
                 issuelinkIdentifer, valuestoidentifyIdentifer);
 
     }

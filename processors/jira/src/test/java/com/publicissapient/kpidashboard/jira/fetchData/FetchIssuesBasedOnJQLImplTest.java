@@ -16,6 +16,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
@@ -87,6 +88,9 @@ public class FetchIssuesBasedOnJQLImplTest {
 
     @Mock
     private ProcessorAsynchJiraRestClient restClient;
+
+    @Mock
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
     @InjectMocks
     private FetchIssuesBasedOnJQLImpl fetchIssuesBasedOnJQL;
@@ -196,6 +200,7 @@ public class FetchIssuesBasedOnJQLImplTest {
         projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
         projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
         projectConfFieldMapping.setJira(getJiraToolConfig());
+        projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
         projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
         projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
         projectConfigMap.put(projectConfig.getProjectName(), projectConfFieldMapping);
