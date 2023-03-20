@@ -8,7 +8,7 @@ import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
+import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 
 
+
 /**
  * @author Mahesh
  *
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Service;
 public class CommentsServiceImpl implements CommentsService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
+
+	public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
 
@@ -84,11 +87,13 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
 
+
+
 		LOGGER.debug("CommentSubmitDTO info {}", comment);
 		List<CommentsInfo> commentsInfo = comment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			for (CommentsInfo commentInfo : commentsInfo) {
-				commentInfo.setCommentOn(DateUtil.dateTimeFormatter(new Date(), DateUtil.TIME_FORMAT));
+				commentInfo.setCommentOn(dateTimeFormatter(new Date(), TIME_FORMAT));
 				commentInfo.setCommentId(UUID.randomUUID().toString());
 			}
 		}
@@ -96,12 +101,12 @@ public class CommentsServiceImpl implements CommentsService {
 		KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
 		KpiCommentsHistory kpiCommentsHistory =modelMapper.map(comment, KpiCommentsHistory.class);
 
-		boolean result = doRepositoryOperation(kpiComments,kpiCommentsHistory);
+		boolean result = filterCommentsInfo(kpiComments,kpiCommentsHistory);
 
 	return result;
 	}
 
-	private boolean doRepositoryOperation(KPIComments kpiComments,KpiCommentsHistory kpiCommentsHistory) {
+	private boolean filterCommentsInfo(KPIComments kpiComments,KpiCommentsHistory kpiCommentsHistory) {
 
 		String node = kpiComments.getNode();
 		String level = kpiComments.getLevel();
@@ -118,8 +123,8 @@ public class CommentsServiceImpl implements CommentsService {
 				kpiCommentsRepository.save(kpiComments);
 				kpiCommentsHistoryRepository.save(kpiCommentsHistory);
 			} else {
-					reArrangeKpiComments(matchedKpiComments, newCommentsInfo);
-				    reArrangeKpiCommentsHistory(matchedKpiCommentsHistory,newCommentsInfoHistory);
+					reMappingOfKpiComments(matchedKpiComments, newCommentsInfo);
+				    reMappingOfKpiCommentsHistory(matchedKpiCommentsHistory,newCommentsInfoHistory);
 			}
 		return true;
 		} catch (Exception e) {
@@ -131,7 +136,7 @@ public class CommentsServiceImpl implements CommentsService {
 
 
 
-	private void reArrangeKpiComments(KPIComments kpiComment,List<CommentsInfo> newCommentsInfo){
+	private void reMappingOfKpiComments(KPIComments kpiComment,List<CommentsInfo> newCommentsInfo){
 		List<CommentsInfo> commentsInfo = kpiComment.getCommentsInfo();
 		int commentsInfoSize = commentsInfo.size();
 		KPIComments backupKpiComment;
@@ -157,7 +162,7 @@ public class CommentsServiceImpl implements CommentsService {
 		}
 	}
 
-	private void reArrangeKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory,List<CommentsInfo> newCommentsInfoHistory){
+	private void reMappingOfKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory,List<CommentsInfo> newCommentsInfoHistory){
 
 		List<CommentsInfo> commentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 		newCommentsInfoHistory.addAll(commentsInfoHistory);
