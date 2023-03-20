@@ -15,22 +15,21 @@ jiraIssueHistorys.forEach(function(historyObject){
         var storyID = historyObject.storyID;
         storySprintDetails.forEach(function(obj){
             var changedTo = obj.fromStatus;
-            var updatedOn = obj.activityDate;
+            var updatedOn = convertingJodaDatetimeToLocalDateTime(obj);
             changedLogs.push({"changedFrom":prevChangedTo,changedTo,updatedOn});
             prevChangedTo=changedTo;
         });
 
          var result = db.jira_issue_custom_history.updateOne({"storyID": storyID},
         				{
-        $set: {
-            'statusChangeLog':changedLogs
-        },
-        $unset: {
-            	"storySprintDetails":""
-        }
-    });
+                           $set: {
+                                'statusChangeLog':changedLogs
+                                  },
+                           $unset: {
+                             	"storySprintDetails":""
+                          }
+                    });
         print(result);
-
     }
 
 });
