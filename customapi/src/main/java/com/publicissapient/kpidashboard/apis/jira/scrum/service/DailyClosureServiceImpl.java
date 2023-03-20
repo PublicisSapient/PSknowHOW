@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -283,7 +282,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			dataCountMap.forEach((issueType, typeWiseDc) -> {
 						IterationKpiValue iterationKpiValue = new IterationKpiValue();
 						iterationKpiValue.setFilter1(issueType);
-						iterationKpiValue.setDataCount(typeWiseDc);
+						iterationKpiValue.setValue(typeWiseDc);
 						iterationKpiValueList.add(iterationKpiValue);
 			});
 
@@ -291,9 +290,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				KPIExcelUtility.populateDailyClosureExcelData(excelDataList, allIssues, fieldMapping, issueWiseDelay,
 						allCompletedIssue);
 			}
-			DataCount trendValue = new DataCount();
-			trendValue.setValue(iterationKpiValueList);
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setTrendValueList(iterationKpiValueList);
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeList);
 			kpiElement.setFilters(new IterationKpiFilters(filter1, null));
 

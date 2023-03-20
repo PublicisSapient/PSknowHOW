@@ -43,7 +43,7 @@ public class IterationKpiValue implements Serializable {
 
 	private String filter2;
 	private List<IterationKpiData> data;
-	private List<DataCount> dataCount;
+	private List<DataCount> value;
 
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
 		this.filter1 = filter1;
@@ -51,8 +51,8 @@ public class IterationKpiValue implements Serializable {
 		this.data = data;
 	}
 
-	public IterationKpiValue(String filter1, List<DataCount> dataCount) {
+	public IterationKpiValue(String filter1, List<DataCount> value) {
 		this.filter1 = filter1;
-		this.dataCount = dataCount;
+		this.value = value;
 	}
 }
