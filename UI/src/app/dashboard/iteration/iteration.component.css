@@ -1,12 +1,12 @@
 .text-data {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     color: var(--color-secondary-blue);
     margin: 0;
 }
 
 .text-label {
     color: var(--color-cyan-blue);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin: 0 0.5rem 0 0.75rem;
     white-space: nowrap;
 }
@@ -106,7 +106,7 @@
       width: 10px;
       height: inherit;
   }
-.noSpace{
+  .noSpace{
     padding: 0;
     margin: 0;
     letter-spacing: -4px;
@@ -118,4 +118,7 @@
     display: flex;
     align-items: center;
     height: 100%;
+}
+.kpi-formula{
+    font-size: .9rem;
 }

@@ -73,6 +73,7 @@ public class DataCount implements Serializable {
 	private List<String> sprintIds;
 	private List<String> sprintNames;
 	private List<String> projectNames;
+	private String groupBy;
 	private String maturity;
 	private transient Object maturityValue;
 	private transient Object lineValue;
