@@ -599,6 +599,7 @@ export class FilterComponent implements OnInit {
       this.selectedTab?.toLowerCase() == 'iteration' ||
       this.selectedTab?.toLowerCase() == 'backlog'
     ) {
+      this.projectIndex = 0;
       this.handleIterationFilters('project', 1);
     } else {
       this.applyChanges();
