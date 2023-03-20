@@ -64,8 +64,6 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String ACTUAL_COMPLETION_DAYS = "actualCompletionDays";
 	public static final String ACTUAL_COMPLETE_DATE = "actualCompleteDate";
-	private static final String LABEL_INFO = "(Issue Count/Story Points)";
-	private static final String LABEL_INFO_FOR_ORIGINAL_ESTIMATE = "(Issue Count/Original Estimate)";
 	public static final String COMPLETED = "Completed";
 	public static final String PLANNED = "Planned";
 	public static final String ACTUAL = "Actual";
@@ -329,11 +327,11 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		IterationKpiData iterationKpiData;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), LABEL_INFO, "",
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), storyPoint, null, "",
 					CommonConstant.SP, modalvalue);
 		} else {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
-					LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "", CommonConstant.DAY, modalvalue);
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), originalEstimate,
+					null, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
 	}
