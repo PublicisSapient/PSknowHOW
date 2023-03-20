@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
+
 import java.util.Arrays;
 
 /**
@@ -345,6 +346,11 @@ public enum KPICode {
 	OVERALL_COMPLETION_STATUS("kpi128", KPISource.JIRA.name()),
 
 	/**
+	 * Quality Status
+	 */
+	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
+
+	/**
 	 * Issues Without Story Link
 	 */
 	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
@@ -360,6 +366,7 @@ public enum KPICode {
 	FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name());
 
 	// @formatter:on
+
 
 	private String kpiId;
 
