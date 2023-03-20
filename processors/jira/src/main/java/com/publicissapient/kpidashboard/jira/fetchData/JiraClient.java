@@ -21,7 +21,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +56,7 @@ public class JiraClient {
     private JiraOAuthClient jiraOAuthClient;
 
     @Autowired
-    private JiraCommon jiraCommon;
+    private JiraCommonService jiraCommonService;
 
     private ProcessorJiraRestClient client;
 
@@ -93,7 +92,7 @@ public class JiraClient {
 
         } else {
             username = conn.getUsername();
-            password = jiraCommon.decryptJiraPassword(conn.getPassword());
+            password = jiraCommonService.decryptJiraPassword(conn.getPassword());
         }
 
 
@@ -101,7 +100,7 @@ public class JiraClient {
             // Sets Jira OAuth properties
             jiraOAuthProperties.setJiraBaseURL(conn.getBaseUrl());
             jiraOAuthProperties.setConsumerKey(conn.getConsumerKey());
-            jiraOAuthProperties.setPrivateKey(jiraCommon.decryptJiraPassword(conn.getPrivateKey()));
+            jiraOAuthProperties.setPrivateKey(jiraCommonService.decryptJiraPassword(conn.getPrivateKey()));
 
             // Generate and save accessToken
             saveAccessToken(entry);
@@ -259,7 +258,7 @@ public class JiraClient {
         Optional<Connection> connectionOptional = jiraToolConfig.getConnection();
         if (connectionOptional.isPresent()) {
             String username = connectionOptional.get().getUsername();
-            String plainTextPassword = jiraCommon.decryptJiraPassword(connectionOptional.get().getPassword());
+            String plainTextPassword = jiraCommonService.decryptJiraPassword(connectionOptional.get().getPassword());
 
             String accessToken;
             try {

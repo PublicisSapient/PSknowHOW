@@ -35,7 +35,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
@@ -138,6 +141,9 @@ public class KanbanJiraIssueClientImplTest {
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
@@ -165,6 +171,8 @@ public class KanbanJiraIssueClientImplTest {
 				kanbanProjectlist.get(0).getId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
+				Mockito.anyString(), Mockito.anyString())).thenReturn(null);
 
 		projectConfFieldMapping.setProjectName("prName");
 		assertEquals(0, kanbanJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
@@ -175,6 +183,7 @@ public class KanbanJiraIssueClientImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
+		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -379,6 +388,9 @@ public class KanbanJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 		ProjectToolConfig jiraConfig = new ProjectToolConfig();
 		BoardDetails board = new BoardDetails();
 		board.setBoardId("1111");

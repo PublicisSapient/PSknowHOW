@@ -28,9 +28,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.publicissapient.kpidashboard.jira.fetchData.JiraHelper.*;
+
 @Service
 @Slf4j
-public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon implements TransformFetchedIssueToKanbanJiraIssue{
+public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetchedIssueToKanbanJiraIssue{
 
     @Autowired
     private JiraProcessorRepository jiraProcessorRepository;
@@ -70,12 +72,12 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon imple
             if (null == fieldMapping) {
                 return kanbanIssuesToSave;
             }
-            Set<String> issueTypeNames = JiraIssueClientUtil.getIssueTypeNames(fieldMapping);
+            Set<String> issueTypeNames = getIssueTypeNames(fieldMapping);
             String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
             KanbanJiraIssue jiraIssue = getKanbanJiraIssue(projectConfig, issueId);
 //            KanbanIssueCustomHistory jiraIssueHistory = getKanbanIssueCustomHistory(projectConfig, issue);
 
-            Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
+            Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 
             IssueType issueType = issue.getIssueType();
             User assignee = issue.getAssignee();
@@ -99,7 +101,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon imple
                 jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
                 // Label
-                jiraIssue.setLabels(JiraIssueClientUtil.getLabelsList(issue));
+                jiraIssue.setLabels(getLabelsList(issue));
                 processJiraIssueData(jiraIssue, issue, fields, fieldMapping, jiraProcessorConfig);
 
                 // Set project specific details
@@ -114,7 +116,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon imple
                 setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 
                 // Affected Version
-                jiraIssue.setAffectedVersions(JiraIssueClientUtil.getAffectedVersions(issue));
+                jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 
                 setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
 
@@ -132,6 +134,14 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl extends JiraCommon imple
         }
 
         return kanbanIssuesToSave;
+    }
+
+    public static Set<String> getIssueTypeNames(FieldMapping fieldMapping){
+        Set<String> issueTypeNames = new HashSet<>();
+        for (String issueTypeName : fieldMapping.getJiraIssueTypeNames()) {
+            issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
+        }
+        return issueTypeNames;
     }
 
     private void setAdditionalFilters(KanbanJiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azurerepo.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,9 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class AzureRepoProcessorJobExecutorTest {
@@ -136,12 +140,18 @@ public class AzureRepoProcessorJobExecutorTest {
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		azureRepoProcessorJobExecutor = new AzureRepoProcessorJobExecutor(taskScheduler, azureRepoProcessorRepo,
 				azureRepoConfig, toolConfigRepository, azureRepoRepository, azureRepoClient, processorItemRepository,
 				commitsRepo, connectionsRepository, processorToolConnectionService, projectConfigRepository,
-				mergReqRepo, processorExecutionTraceLogService);
+				mergReqRepo, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 		Mockito.when(azurerepoRestOperations.getTypeInstance()).thenReturn(new RestTemplate());
 		basicAzureRepoClient = new BasicAzureRepoClient(azureRepoConfig, azurerepoRestOperations, aesEncryptionService);
 
@@ -189,10 +199,19 @@ public class AzureRepoProcessorJobExecutorTest {
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("60b7dbb489c5974a407e923b"));
 		projectConfigList.add(basicConfig);
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZUREREPO);
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
+		processorExecutionTraceLog.setBasicProjectConfigId("60b7dbb489c5974a407e923b");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 		
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		
 		Mockito.when(azureRepoRepository.findActiveRepos(processorId)).thenReturn(azurerepoRepos);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, "60b7dbb489c5974a407e923b"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		
 		boolean actualexecutionstatus = azureRepoProcessorJobExecutor.execute(azurerepoProcessor);
 		

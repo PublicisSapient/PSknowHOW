@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.*;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -79,7 +78,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     private TransformFetchedIssueToJiraIssue transformFetchedIssue;
 
     @Autowired
-    private JiraCommon jiraCommon;
+    private JiraCommonService jiraCommonService;
 
     @Value("${rabbitmq.exchange.name}")
     String exchange;
@@ -259,7 +258,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                 URLConnection connection;
 
                 connection = url.openConnection();
-                userTimeZone = getUserTimeZone(jiraCommon.getDataFromServer(projectConfig, (HttpURLConnection) connection));
+                userTimeZone = getUserTimeZone(jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection));
             }
         } catch (RestClientException rce) {
             log.error("Client exception when loading statuses", rce);
