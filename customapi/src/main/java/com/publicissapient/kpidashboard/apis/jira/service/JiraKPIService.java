@@ -33,6 +33,7 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
@@ -293,14 +294,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
 		String devCompleteDate = Constant.DASH;
-		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
+		List<JiraHistoryChangeLog> filterStorySprintDetails = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
 			devCompleteDate = filterStorySprintDetails.stream()
 					.filter(jiraIssueSprint -> fieldMapping.getJiraDevDoneStatus()
-							.contains(jiraIssueSprint.getFromStatus()) && jiraIssueSprint.getActivityDate() != null)
+							.contains(jiraIssueSprint.getChangedTo()) && jiraIssueSprint.getUpdatedOn() != null)
 					.findFirst()
 					.map(jiraIssueSprint -> LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("\\.")[0],
 									DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
 							.toString())
 					.orElse(devCompleteDate);

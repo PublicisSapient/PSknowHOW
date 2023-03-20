@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -250,8 +252,19 @@ public class HandleJiraHistory {
 	}
 
 	private void createFixVersionHistory(List<JiraHistoryChangeLog> fixVersionChangeLog, Issue issue,
-			String currentFixVersionPresentInIssue) {
-		final String[] lastLogChangeToValue = { currentFixVersionPresentInIssue };
+			String currentFixVersion) {
+
+		if(!fixVersionChangeLog.isEmpty())
+		{
+			String lastChangedTo = fixVersionChangeLog.get(fixVersionChangeLog.size()-1).getChangedTo();
+			String[] lastChangedToList = lastChangedTo.split(",");
+			String[] currentFixVersionList = currentFixVersion.split(",");
+			Set<String> set = new HashSet<>();
+			for(String fixVersion:lastChangedToList) set.add(fixVersion);
+			for(String fixVersion:currentFixVersionList) set.add(fixVersion);
+			currentFixVersion = StringUtils.join(set,",");
+		}
+		final String[] lastLogChangeToValue = { currentFixVersion };
 		Lists.reverse(fixVersionChangeLog).forEach(currChangeLog -> {
 			String currLogChangeToValue = currChangeLog.getChangedTo();
 			String currLogChangeFromValue = currChangeLog.getChangedFrom();

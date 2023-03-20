@@ -4,7 +4,7 @@ function hasStorySprintDetails(historyObject){
     return historyObject.storySprintDetails && historyObject.storySprintDetails.length !== 0;
 }
 
-var jiraIssueHistorys = db.jira_issue_custom_history.find({})
+var jiraIssueHistorys = db.jira_issue_custom_history.find({"storySprintDetails":{$exists: true, $not: {$size: 0}}})
 
 jiraIssueHistorys.forEach(function(historyObject){
     if(hasStorySprintDetails(historyObject))
@@ -46,9 +46,9 @@ db.jira_issue_custom_history.find({"storySprintDetails":{$exists: true, $not: {$
 */
 
 /*
-Query to fetch count of object with StatusChangeLog
+Query to fetch count of object with statusUpdationLog
 
-db.jira_issue_custom_history.find({"statusChangeLog":{$exists: true, $not: {$size: 0}}})
+db.jira_issue_custom_history.find({"statusUpdationLog":{$exists: true, $not: {$size: 0}}})
    .projection({})
    .sort({_id:-1})
    .count()
