@@ -362,6 +362,14 @@ export class IterationComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    aggregatedArr[0]?.data?.forEach((item) => {
+      item['value'] = item['value']?.toFixed(2);
+      if(item.value1){
+        item['value1'] = item['value1']?.toFixed(2);
+      }
+    });
+    
     return aggregatedArr;
   }
 
