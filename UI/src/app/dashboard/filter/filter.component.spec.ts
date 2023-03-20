@@ -755,7 +755,7 @@ describe('FilterComponent', () => {
       selectedProjectValue: new UntypedFormControl('DEMO_SONAR_63284960fdd20276d60e4df5'),
       selectedSprintValue: new UntypedFormControl('')
     });
-    component.trendLineValueList = [];
+    component.trendLineValueList = [{nodeId:'DEMO_SONAR_63284960fdd20276d60e4df5', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
     component.additionalFiltersDdn = [];
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
