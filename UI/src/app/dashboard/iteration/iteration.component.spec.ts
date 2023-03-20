@@ -2568,7 +2568,7 @@ describe('IterationComponent', () => {
         const data = [
             {
                 filter1: "Defect",
-                dataCount: [{
+                value: [{
                     "data": "0",
                     "value": 10,
                     "hoverValue": {
@@ -2583,7 +2583,7 @@ describe('IterationComponent', () => {
             },
             {
                 filter1: "Change request",
-                dataCount: [{
+                value: [{
                     "data": "0",
                     "value": 11,
                     "hoverValue": {
@@ -2598,9 +2598,17 @@ describe('IterationComponent', () => {
                 ]
             }
         ];
-        const result = component.applyAggregationForGroupBar(data);
-        expect(result[0]?.dataCount[0].value).toEqual(21);
+        const result = component.applyAggregationForChart(data);
+        expect(result[0]?.value[0].value).toEqual(21);
     });
 
-
+    it('should get chart type',()=>{
+        component.updatedConfigGlobalData=[
+            {kpiId:'kpi125',
+        kpiDetail:{
+            chartType: 'GroupBarChart'
+        }}
+        ];
+        expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
+    });
 });

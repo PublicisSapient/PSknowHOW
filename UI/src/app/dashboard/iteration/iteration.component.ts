@@ -329,13 +329,13 @@ export class IterationComponent implements OnInit, OnDestroy {
     return count;
   }
 
-  applyAggregationForGroupBar(arr){
+  applyAggregationForChart(arr){
     const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
     for(let i=1;i<arr.length;i++){
-        for(let j=0;j<arr[i].dataCount.length;j++){
-            aggregatedArr.dataCount[j].value +=arr[i].dataCount[j].value;
+        for(let j=0;j<arr[i].value.length;j++){
+            aggregatedArr.value[j].value +=arr[i].value[j].value;
 
-            aggregatedArr.dataCount[j].hoverValue = {...aggregatedArr.dataCount[j].hoverValue,...arr[i].dataCount[j].hoverValue};
+            aggregatedArr.value[j].hoverValue = {...aggregatedArr.value[j].hoverValue,...arr[i].value[j].hoverValue};
         }
     }
     return [aggregatedArr];
@@ -413,11 +413,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i] || x['filter'] == filters[i])];
         }
         if (preAggregatedValues?.length > 1) {
-            if (kpiId === 'kpi125') {
-                this.kpiChartData[kpiId] = this.applyAggregationForGroupBar(preAggregatedValues);
-            } else {
-                this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-            }
+          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
@@ -456,10 +452,30 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
 
     }
+    else if(trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')){
+      if(this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')){
+        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'] || this.kpiSelectedFilterObj[kpiId]['filter'];
+        let preAggregatedValues = [];
+        for (let i = 0; i < filters?.length; i++) {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i] || x['filter'] == filters[i])];
+        }
+        if (preAggregatedValues?.length > 1) {
+            if (this.getKpiChartType(kpiId) === 'GroupBarChart') {
+                this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
+            } else {
+                this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
+        } else {
+          this.kpiChartData[kpiId] = [...preAggregatedValues];
+        }
+      }else{
+
+        this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+      }
+    }
     else if (trendValueList?.length > 0) {
       this.kpiChartData[kpiId] = [...trendValueList];
     } else {
-
       this.kpiChartData[kpiId] = [];
     }
 
@@ -477,6 +493,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.service.iterationCongifData.next(iterationConfigData);
     }
 
+  }
+
+  getKpiChartType(kpiId){
+    return this.updatedConfigGlobalData.filter(kpiDetails => kpiDetails.kpiId === kpiId)[0]?.kpiDetail?.chartType;
   }
 
   ifKpiExist(kpiId) {
@@ -523,7 +543,6 @@ export class IterationComponent implements OnInit, OnDestroy {
 
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
-
   }
 
   getDropdownArray(kpiId) {
