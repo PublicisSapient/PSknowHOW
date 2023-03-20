@@ -288,8 +288,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
-														  List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
-														   List<JiraIssue> finalFirstTimePassStoryList) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
+			List<JiraIssue> finalFirstTimePassStoryList) {
 
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
@@ -297,13 +297,17 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
 
-		if(CollectionUtils.isNotEmpty(finalFirstTimePassStoryList) && finalFirstTimePassStoryList.contains(jiraIssue)) {
+		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
+				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
 			iterationKpiModalValue.setFirstTimePass("Y");
 		}
 
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 
+	}
 
+	public static double roundingOff(double value) {
+		return (double) Math.round(value * 100) / 100;
 	}
 }

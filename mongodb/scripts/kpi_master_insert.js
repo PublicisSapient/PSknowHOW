@@ -3470,12 +3470,12 @@ db.getCollection('kpi_master').insert(
      "calculateMaturity": false
   },
   {
-       "kpiId": "kpi132",
+       "kpiId": "kpi133",
        "kpiName": "First Time Pass Rate",
        "maxValue": "",
        "kpiUnit": "Hours",
        "isDeleted": "False",
-       "defaultOrder": 13,
+       "defaultOrder": 14,
        "kpiCategory": "Iteration",
        "kpiSource": "Jira",
        "groupId": 8,
@@ -3483,21 +3483,20 @@ db.getCollection('kpi_master').insert(
        "kanban": false,
        "chartType": null,
        "kpiInfo": {
-         "details": [
-           {
-             "type": "paragraph",
-             "value": "--"
-           },
-           {
-             "type": "paragraph",
-             "value": "--"
-           },
-           {
-             "type": "paragraph",
-             "value": "--"
-           }
-
-         ]
+               "details": [
+                {
+                    "type": "paragraph",
+                     "value": "FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
+                },
+                {
+                     "type": "paragraph",
+                     "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+                },
+                {
+                   "type": "paragraph",
+                   "value": "First time pass rate (FTPR) = No. of issues closed in a sprint which do not have a return transition or any defects tagged / Total no. of issues closed in the sprint"
+                }
+               ]
        },
        "xAxisLabel": "",
        "yAxisLabel": "",

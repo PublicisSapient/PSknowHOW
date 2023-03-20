@@ -172,7 +172,7 @@ public enum KPIExcelColumn {
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
-    FIRST_TIME_PASS_RATE_ITERATION("kpi132", Arrays.asList("Story ID", "Issue Description", "Priority", "First Time Pass"));
+    FIRST_TIME_PASS_RATE_ITERATION("kpi133", Arrays.asList("Issue Id", "Issue Description", "Priority", "First Time Pass"));
 
     // @formatter:on
 
