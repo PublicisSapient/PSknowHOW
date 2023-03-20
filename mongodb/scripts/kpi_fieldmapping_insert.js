@@ -14,7 +14,8 @@ db.getCollection('kpi_fieldmapping').insert(
 		kpiSource:'Jira',
         type: ['Scrum'],
         fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
-      },
+        },
+
       {
         kpiId: 'kpi111',
         kpiName: 'Defect Density',
@@ -202,7 +203,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Predictability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi55',
@@ -342,7 +343,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Work Remaining',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi75',
@@ -356,18 +357,18 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Issues likely to Spill',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Custom Fields Mapping' : ['workingHoursDayCPT'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi122',
         kpiName: 'Closure Possible Today',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForQa' , 'jiraOnHoldStatus'], 'Custom Fields Mapping' : ['workingHoursDayCPT']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress'], 'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi120',
-        kpiName: 'Scope Change',
+        kpiName: 'Iteration Commitment',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : { }
@@ -388,10 +389,10 @@ db.getCollection('kpi_fieldmapping').insert(
       },
 	  {
         kpiId: 'kpi128',
-        kpiName: 'Work Completed',
+        kpiName: 'Overall Completion Status',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress']}
+        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus']}
       },
       {
         kpiId: 'kpi79',

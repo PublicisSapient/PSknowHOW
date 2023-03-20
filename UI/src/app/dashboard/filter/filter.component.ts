@@ -111,6 +111,7 @@ export class FilterComponent implements OnInit {
     kpisNewOrder=[];
     isTooltip = false;
     projectIndex: number = 0;
+    selectedProjectData ={};
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private elemRef: ElementRef, private getAuthorizationService: GetAuthorizationService, public router: Router, private ga: GoogleAnalyticsService, private messageService: MessageService, private helperService: HelperService) {
         this.service.setSelectedType('Scrum');
         this.selectedTab = (this.service.getSelectedTab() || 'mydashboard');
@@ -849,7 +850,9 @@ export class FilterComponent implements OnInit {
                 this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
                 this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
                 this.filterForm?.get('selectedProjectValue').setValue(this.trendLineValueList[0]['nodeId']);
-                this.selectedTab?.toLowerCase() != 'backlog' ? this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId) : '';
+                if(this.selectedTab?.toLowerCase() != 'backlog'){
+                    this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId);
+                }
             } else {
                 this.filterForm?.get('selectedProjectValue').setValue('');
             }
@@ -900,8 +903,8 @@ export class FilterComponent implements OnInit {
             if (level?.toLowerCase() == 'project') {
                 const selectedProject = this.filterForm?.get('selectedProjectValue')?.value;
                 this.filterForm?.get('selectedSprintValue')?.setValue('');
-                const selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-                this.getProcessorsTraceLogsForProject(selectedProjectData?.basicProjectConfigId);
+                this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
+                this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
                 this.filteredAddFilters['sprint'] = [];
                 if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
                     this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter(x => x['parentId']?.includes(selectedProject))];
@@ -1004,7 +1007,9 @@ export class FilterComponent implements OnInit {
         this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
             .subscribe(response => {
                 if (response.success) {
-                    this.processorsTracelogs = response.data;
+                    if(this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
+                        this.processorsTracelogs = response.data;
+                    }
                     this.showExecutionDate();
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });

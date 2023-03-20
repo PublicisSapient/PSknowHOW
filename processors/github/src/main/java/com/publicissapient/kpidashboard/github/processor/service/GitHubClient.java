@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.github.processor.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -45,7 +46,7 @@ public interface GitHubClient {
 	 *             the exception
 	 */
 	List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstTimeRun,
-			ProcessorToolConnection processorToolConnection) throws FetchingCommitException;
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 	/**
 	 * @param gitHubProcessorItem
@@ -59,6 +60,6 @@ public interface GitHubClient {
 	 *             the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstTimeRun,
-			ProcessorToolConnection processorToolConnection) throws FetchingCommitException;
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
 
 }

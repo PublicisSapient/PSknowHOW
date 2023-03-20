@@ -61,6 +61,7 @@ import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,13 +97,14 @@ public class BambooClientBuildImpl implements BambooClient {
 	/**
 	 * fetch jobs based on job key and branch key
 	 *
-	 * @param bambooServer {@link ProcessorToolConnection}
+	 * @param bambooServer
+	 *        {@link ProcessorToolConnection}
+	 * @param proBasicConfig
 	 * @return
 	 * @throws ParseException
 	 */
 	@Override
-	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
-			throws ParseException {
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException {
 		Map<ObjectId, Set<Build>> bambooJobs = new LinkedHashMap<>();
 		try {
 			final String planKey = bambooServer.getJobName();
@@ -233,8 +235,7 @@ public class BambooClientBuildImpl implements BambooClient {
 	}
 
 	@Override
-	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer)
-			throws ParseException, MalformedURLException {
+	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}
 

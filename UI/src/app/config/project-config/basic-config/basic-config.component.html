@@ -68,6 +68,21 @@
                                     are not allowed</span>
                             </div>
                         </div>
+                        <div *ngSwitchCase="'boolean'" class="p-mb-3">
+                            <ng-container *ngIf="ifSuperUser === true || isProjectAdmin === true">
+                                <p-inputSwitch name="{{field.hierarchyLevelId}}" id="{{field.hierarchyLevelId}}"
+                                    [formControlName]="field.hierarchyLevelId">
+                                </p-inputSwitch>
+                                <label for="{{field.hierarchyLevelId}}">
+                                    {{field.label1}}
+                                    </label>
+                                    <br>
+                                <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true" for="{{field.hierarchyLevelId}}"></span>
+                                <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #333;">
+                                    {{field.label2}}
+                                </span>
+                            </ng-container>
+                        </div>
                         <div *ngSwitchDefault>
                             <span class="p-float-label w-50 p-mr-3">
                                 <p-autoComplete id="{{ field.hierarchyLevelId }}"
