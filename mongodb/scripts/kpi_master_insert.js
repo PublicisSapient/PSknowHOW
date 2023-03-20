@@ -3470,7 +3470,7 @@ db.getCollection('kpi_master').insert(
      "calculateMaturity": false
   },
   {
-       "kpiId": "kpi133",
+       "kpiId": "kpi135",
        "kpiName": "First Time Pass Rate",
        "maxValue": "",
        "kpiUnit": "Hours",

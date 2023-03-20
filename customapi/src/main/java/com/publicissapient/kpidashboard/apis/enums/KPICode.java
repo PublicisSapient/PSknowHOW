@@ -357,7 +357,7 @@ public enum KPICode {
 	/**
 	 * First time pass rate
 	 */
-	FIRST_TIME_PASS_RATE_ITERATION("kpi133", KPISource.JIRA.name());
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name());
 
 	// @formatter:on
 
