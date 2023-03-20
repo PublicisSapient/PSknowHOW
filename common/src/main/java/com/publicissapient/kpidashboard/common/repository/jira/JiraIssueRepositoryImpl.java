@@ -614,6 +614,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 * @param uniqueProjectMap project map filters
 	 * @return list of jira issues
 	 */
+	@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
 		Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {

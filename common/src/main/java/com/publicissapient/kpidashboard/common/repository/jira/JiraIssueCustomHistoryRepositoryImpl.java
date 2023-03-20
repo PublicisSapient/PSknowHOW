@@ -186,6 +186,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 																																		 Map<String, Map<String, Object>> uniqueProjectMap) {
