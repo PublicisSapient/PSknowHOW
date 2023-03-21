@@ -84,7 +84,6 @@
   }
   
   ::ng-deep .legend_item {
-    padding: 10px 0px 10px 10px;
     margin-right: 10px;
   }
   
@@ -147,4 +146,3 @@
     position: absolute;
     bottom: 0;
   }
-  

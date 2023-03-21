@@ -327,10 +327,10 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		IterationKpiData iterationKpiData;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), storyPoint, null, "",
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
 					CommonConstant.SP, modalvalue);
 		} else {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), originalEstimate,
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
 					null, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
