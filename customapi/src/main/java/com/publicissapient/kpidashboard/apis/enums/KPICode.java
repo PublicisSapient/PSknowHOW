@@ -343,7 +343,12 @@ public enum KPICode {
 	/**
 	 * Issues Without Story Link
 	 */
-	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name());
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+	
+	/**
+	 * Backlog readiness efficiency
+	 */
+	BACKLOG_READINESS_EFFICIENCY("kpi130", KPISource.JIRA.name());
 
 	// @formatter:on
 

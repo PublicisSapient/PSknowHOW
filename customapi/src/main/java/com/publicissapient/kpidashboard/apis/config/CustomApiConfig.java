@@ -182,6 +182,8 @@ public class CustomApiConfig {// NOPMD
 	@Value(("${testExecution.kanban.numberOfFutureDays}"))
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
+	@Value(("${backlog.sprint.count}"))
+	private int sprintCountForBackLogStrength;
 
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
@@ -879,4 +881,9 @@ public class CustomApiConfig {// NOPMD
 	public void setNumberOfFutureDaysForKanbanTestExecution(int numberOfFutureDaysForKanbanTestExecution) {
 		this.numberOfFutureDaysForKanbanTestExecution = numberOfFutureDaysForKanbanTestExecution;
 	}
+
+	public int getSprintCountForBackLogStrength() {
+		return sprintCountForBackLogStrength;
+	}
+	
 }

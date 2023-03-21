@@ -181,6 +181,9 @@ public class FieldMapping extends BasicModel {
 
 	//field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
+	
+	//field for identifying ready for development status
+	private String readyForDevelopmentStatus;
 
 	/**
 	 * Get jira issue type names string [ ].

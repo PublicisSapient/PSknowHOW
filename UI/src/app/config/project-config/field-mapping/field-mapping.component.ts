@@ -398,6 +398,7 @@ export class FieldMappingComponent implements OnInit {
   initializeFields() {
     this.fieldMappingFormObj = {
       // workflow status mapping
+      readyForDevelopmentStatus: [''],
       storyFirstStatus: [''],
       jiraDefectCreatedStatus: [''],
       jiraDefectDroppedStatus: [[]],

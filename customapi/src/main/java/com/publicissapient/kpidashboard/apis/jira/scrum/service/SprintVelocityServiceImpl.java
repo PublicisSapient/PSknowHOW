@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -73,6 +74,9 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private KpiHelperService kpiHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	
+	@Autowired
+	private SprintVelocityServiceHelper velocityServiceHelper;
 
 	/**
 	 * Gets Qualifier Type
@@ -184,43 +188,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintVelocityStoryMap.get(SPRINT_WISE_SPRINTDETAILS);
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.forEach(sd -> {
-				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
-				if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-					sd.getCompletedIssues().stream().forEach(sprintIssue -> {
-						allJiraIssue.stream().forEach(jiraIssue -> {
-							if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
-								IssueDetails issueDetails = new IssueDetails();
-								issueDetails.setSprintIssue(sprintIssue);
-								issueDetails.setUrl(jiraIssue.getUrl());
-								issueDetails.setDesc(jiraIssue.getName());
-								filterIssueDetailsSet.add(issueDetails);
-							}
-						});
-						Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
-								sd.getSprintID());
-						currentSprintLeafVelocityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
-					});
-				}
-			});
-		} else {
-			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-				// start : for azure board sprint details collections empty so that we have to
-				// prepare data from jira issue
-				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-				projectWiseJiraIssues.forEach((basicProjectConfigId, projectWiseIssuesList) -> {
-					Map<String, List<JiraIssue>> sprintWiseJiraIssues = projectWiseIssuesList.stream()
-							.filter(jiraIssue -> Objects.nonNull(jiraIssue.getSprintID()))
-							.collect(Collectors.groupingBy(JiraIssue::getSprintID));
-					sprintWiseJiraIssues.forEach((sprintId, sprintWiseIssuesList) -> sprintWiseIssues
-							.put(Pair.of(basicProjectConfigId, sprintId), sprintWiseIssuesList));
-				});
-			}
-			// end : for azure board sprint details collections empty so that we have to
-			// prepare data from jira issue.
-		}
+		velocityServiceHelper.getSprintForProject(allJiraIssue, sprintWiseIssues, sprintDetails, currentSprintLeafVelocityMap);
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
@@ -230,7 +198,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 
-			double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
+			double sprintVelocityForCurrentLeaf = velocityServiceHelper.calculateSprintVelocityValue(currentSprintLeafVelocityMap,
 					currentNodeIdentifier, sprintWiseIssues);
 			populateExcelDataObject(requestTrackerId, excelData, sprintWiseIssues, currentSprintLeafVelocityMap, node);
 			setSprintWiseLogger(node.getSprintFilter().getName(),
@@ -252,26 +220,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns());
 	}
 
-	private double calculateSprintVelocityValue(
-			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
-			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintJiraIssues) {
-		double sprintVelocityForCurrentLeaf = 0.0d;
-		if (CollectionUtils.isNotEmpty(sprintJiraIssues.get(currentNodeIdentifier))) {
-			List<JiraIssue> jiraIssueList = sprintJiraIssues.get(currentNodeIdentifier);
-			sprintVelocityForCurrentLeaf = jiraIssueList.stream().mapToDouble(ji -> Double.valueOf(ji.getEstimate()))
-					.sum();
-		} else {
-			if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
-				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
-				for (IssueDetails issueDetails : issueDetailsSet) {
-					sprintVelocityForCurrentLeaf = sprintVelocityForCurrentLeaf + Optional
-							.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0d).doubleValue();
-				}
-			}
-
-		}
-		return sprintVelocityForCurrentLeaf;
-	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues,

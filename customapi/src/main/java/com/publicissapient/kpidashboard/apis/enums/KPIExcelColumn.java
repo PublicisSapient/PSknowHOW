@@ -152,7 +152,10 @@ public enum KPIExcelColumn {
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size")),
 
-    INVALID("INVALID_KPI", Arrays.asList("Invalid"));
+    INVALID("INVALID_KPI", Arrays.asList("Invalid")),
+	
+	BACKLOG_READINESS_EFFICIENCY("kpi130",
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size"));
 
     // @formatter:on
 
