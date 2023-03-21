@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +111,8 @@ public class JiraToolConfigServiceImpl {
 		boolean isLast = false;
 		do {
 			try {
-				String url = String.format(baseUrl + RESOURCE_JIRA_BOARD_ENDPOINT, boardRequestDTO.getProjectKey(),
-						nextPageIndex, boardRequestDTO.getBoardType());
+				String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_JIRA_BOARD_ENDPOINT).toString(),
+						boardRequestDTO.getProjectKey(), nextPageIndex, boardRequestDTO.getBoardType());
 
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
@@ -148,19 +150,24 @@ public class JiraToolConfigServiceImpl {
 	private HttpEntity<?> getHttpEntity(Connection connection) {
 		String username = "";
 		String password = "";
-
-		if (connection.isVault()) {
-			ToolCredential credential = toolCredentialProvider
-					.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
-			if (credential != null) {
+		HttpHeaders headers = new HttpHeaders();
+		if (connection.isVault()){
+			ToolCredential credential = toolCredentialProvider.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
+			if (credential != null){
 				username = credential.getUsername();
 				password = credential.getPassword();
 			}
 		} else {
 			username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			password = connection.getPassword() == null ? null : restAPIUtils.decryptPassword(connection.getPassword());
+			password = connection.getPassword() == null ? null
+					: restAPIUtils.decryptPassword(connection.getPassword());
 		}
-		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
+
+		if(connection.getPatOAuthToken()!=null){
+			headers = restAPIUtils.getHeadersForPAT(connection.getPatOAuthToken());
+		}else {
+			headers = restAPIUtils.getHeaders(username, password);
+		}
 		return new HttpEntity<>(headers);
 
 	}
