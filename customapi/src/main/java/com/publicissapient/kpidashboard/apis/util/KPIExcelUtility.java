@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -536,7 +537,7 @@ public class KPIExcelUtility {
     }
 
     public static void populateSprintPredictability(String sprint, Set<IssueDetails> issueDetailsSet,
-                                                    List<KPIExcelData> kpiExcelData) {
+                                                    List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
         if (CollectionUtils.isNotEmpty(issueDetailsSet)) {
             for (IssueDetails issueDetails : issueDetailsSet) {
                 KPIExcelData excelData = new KPIExcelData();
@@ -545,8 +546,16 @@ public class KPIExcelUtility {
                 storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
                 excelData.setStoryId(storyDetails);
                 excelData.setIssueDesc(checkEmptyName(issueDetails));
-                excelData.setStoryPoints(
-                        Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+                        fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                    excelData.setStoryPoint(
+                            Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+                } else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
+                    Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+                    Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+                    excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/" +
+                            totalOriginalEstimate / 60 + " hrs");
+                }
                 kpiExcelData.add(excelData);
             }
         }
@@ -708,23 +717,47 @@ public class KPIExcelUtility {
     }
 
     public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
-                                                     FieldMapping fieldMapping) {
+                                                     FieldMapping fieldMapping,Map<String, IterationPotentialDelay> issueWiseDelay, List<JiraIssue> completedIssue) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
             issuesExcel.forEach(e -> {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
-                excelData.setDate(LocalDate.parse(e.getUpdateDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
+                excelData.setIssueStatus(e.getStatus());
                 if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
                 }else if (null != e.getOriginalEstimateMinutes()) {
                     excelData.setStoryPoint(e.getOriginalEstimateMinutes()/60+" hrs");
                 }
+                excelData.setDueDate((StringUtils.isNotEmpty(e.getDueDate()))
+                        ? DateUtil.stringToLocalDate(e.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+                        : "-");
+				if (e.getRemainingEstimateMinutes() != null) {
+					String remEstimate = CommonUtils.convertIntoDays(e.getRemainingEstimateMinutes());
+					excelData.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+				}
+				if (issueWiseDelay.containsKey(e.getNumber())) {
+					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
+					excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+					excelData.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+
+				} else {
+					excelData.setPotentialDelay("-");
+					excelData.setPredictedCompletionDate("-");
+				}
+				if (completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList())
+						.contains(e.getNumber())) {
+					excelData.setActualCompletionDate(LocalDate
+							.parse(e.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+							.toString());
+				} else {
+					excelData.setActualCompletionDate("-");
+				}
                 excelDataList.add(excelData);
             });
         }
@@ -1289,4 +1322,39 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
+
+    public static void populateIterationDataForQualityStatus(List<IterationKpiModalValue> overAllmodalValues,
+            JiraIssue jiraIssue, boolean estimationFlag, FieldMapping fieldMapping,
+            List<JiraIssue> linkedJiraIssueStoryList) {
+
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+        iterationKpiModalValue.setDescription(jiraIssue.getName());
+        iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+        iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+        if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
+            AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
+            Map<String, String> linkedStoriesMap = new HashMap<>();
+            linkedJiraIssueStoryList.forEach(linkedStory -> {
+                linkedStoriesMap.put(linkedStory.getNumber(), linkedStory.getUrl());
+                if (estimationFlag) {
+                    if (null != linkedStory.getStoryPoints()
+                            && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+                            && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+                        storyPoint.updateAndGet(v -> v + linkedStory.getStoryPoints());
+                    }
+                    if (null != linkedStory.getOriginalEstimateMinutes()
+                            && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) && fieldMapping
+                            .getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+                        storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
+                    }
+                }
+            });
+            iterationKpiModalValue.setLinkedStories(linkedStoriesMap);
+            iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
+        }
+        overAllmodalValues.add(iterationKpiModalValue);
+    }
 }

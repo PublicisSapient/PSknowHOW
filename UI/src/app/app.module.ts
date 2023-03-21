@@ -35,6 +35,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {AccordionModule} from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe } from '@angular/common';
+import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -98,6 +99,7 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 
 /******************************************************/
 
@@ -137,7 +139,8 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         GroupedColumnPlusLineChartComponent,
         BacklogComponent,
         TableComponent,
-        ExportExcelComponent
+        ExportExcelComponent,
+        GroupBarChartComponent
     ],
     imports: [
         DropdownModule,
@@ -165,7 +168,8 @@ import { ExportExcelComponent } from './component/export-excel/export-excel.comp
         AccordionModule,
         DialogModule,
         FontAwesomeModule,
-        DragDropModule
+        DragDropModule,
+        MenuModule
     ],
     providers: [
         ExcelService,
