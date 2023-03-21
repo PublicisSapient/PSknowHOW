@@ -1,4 +1,3 @@
-/*
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import static org.mockito.Mockito.verify;
@@ -59,17 +58,13 @@ public class CommentsControllerTest {
 		comment.setNode(node);
 		comment.setLevel(level);
 		comment.setSprintId(sprintId);
-		List<CommentsKpiWise> commentsKpiWise = new ArrayList<>();
-		CommentsKpiWise commentKpiWise = new CommentsKpiWise();
-		commentKpiWise.setKpiId(kpiId);
+		comment.setKpiId(kpiId);
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
 		CommentsInfo commentInfo = new CommentsInfo();
 		commentInfo.setCommentBy("Mahesh");
 		commentInfo.setComment("More Data Required");
 		commentsInfo.add(commentInfo);
-		commentKpiWise.setCommentsInfo(commentsInfo);
-		commentsKpiWise.add(commentKpiWise);
-		comment.setCommentsKpiWise(commentsKpiWise);
+        comment.setCommentsInfo(commentsInfo);
 
 		when(commentsService.submitComment(comment)).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
@@ -113,4 +108,5 @@ public class CommentsControllerTest {
 	public void cleanUp() {
 		mockMvc = null;
 	}
-}*/
+}
+
