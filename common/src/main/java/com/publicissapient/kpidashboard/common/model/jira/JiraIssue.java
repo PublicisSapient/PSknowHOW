@@ -228,6 +228,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private Integer aggregateTimeRemainingEstimateMinutes;
     @Indexed
     private String updateDate;
+    private String devDueDate;
 
 	@Override public Object clone() throws CloneNotSupportedException {
 		return super.clone();

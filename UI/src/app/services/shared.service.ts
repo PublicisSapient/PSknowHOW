@@ -40,6 +40,7 @@ export class SharedService implements OnInit {
   public onTypeRefresh;
   public globalDashConfigData;
   public selectedTab;
+  public selectedTabObs: any = new Subject();
   public selectedtype;
   public title = <any>{};
   public logoImage;
@@ -83,6 +84,7 @@ export class SharedService implements OnInit {
   public xLabelValue: any;
   selectedLevel:object={};
   selectedTrends:Array<object> = [];
+  public isSideNav;
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.onTabRefresh = new EventEmitter();
@@ -93,6 +95,7 @@ export class SharedService implements OnInit {
     this.passEventToNav = new EventEmitter();
     this.activateKanban = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
+    this.isSideNav = new EventEmitter();
   }
 
 
@@ -107,6 +110,7 @@ export class SharedService implements OnInit {
   setSelectedTab(selectedTab, boardId) {
     this.selectedTab = selectedTab;
     this.boardId = boardId;
+    this.selectedTabObs.next(selectedTab);
   }
 
   getSelectBoardId() {
@@ -301,6 +305,12 @@ export class SharedService implements OnInit {
   }
   getSelectedTrends(){
     return this.selectedTrends;
+  }
+
+
+  // calls when sidenav refresh
+  setSideNav(flag) {
+    this.isSideNav.emit(flag);
   }
 }
 

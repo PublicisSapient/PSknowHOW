@@ -1,134 +1,68 @@
-<div class="mar-b-10">
-  <div class="col-12 bg-white pt-2 pb-2">
-    <h3 class="p-m-0 p-pt-2 p-pb-2 ">Welcome to KnowHOW</h3>
-  </div>
-</div>
-<div class="p-grid mar-b-10">
-  <div class="p-sm-6 p-pt-4">
-    <h4>Important Information</h4>
-    <div class="bg-white landing-card p-pl-3 p-pr-3 p-pb-3 landing-page">
-      <p-tabView>
-        <ng-container *ngIf="landingInfo && landingInfo.length > 0; else loader">
-          <p-tabPanel *ngFor="let tab of landingInfo" [header]="tab.name">
-            <div [innerHTML]="tab.content"></div>
-          </p-tabPanel>
-        </ng-container>
-        <ng-template #loader>
-          <div class="overlay d-flex align-items-center h-100">
-            <div class="loading-img"></div>
-          </div>
-        </ng-template>
-      </p-tabView>
-
+<div class="p-m-2">
+  <div class="mar-b-10">
+    <div class="col-12 bg-white pt-2 pb-2">
+      <h3 class="p-m-0 p-pt-2 p-pb-2 ">Welcome to KnowHOW</h3>
     </div>
   </div>
-
-  <!-- <div class="col-sm-6 p-pt-4">
-    <h4>Overall Account Summary</h4>
-    <div class="bg-white landing-card account-summary p-d-flex p-flex-direction-column" *ngIf="!isProducer">
-      <p-accordion>
-        <p-accordionTab [header]="'Total Projects: ' + totalProjects" [selected]="true">
-          <div class="p-d-flex align-items-center pb-3">
-            <p-inputSwitch [(ngModel)]="checked" (onChange)="handleChange($event)">
-            </p-inputSwitch>
-            <p class="p-p-2 p-ml-2 p-mb-0 bg-yellow p-d-flex p-align-center">New projects added in the last 30 days
-              <strong class="font-big p-ml-2" *ngIf="totalProjects30Days > 0">{{totalProjects30Days}}</strong>
-            </p>
-          </div>
-          <p-table [columns]="tableHeadingArr" [value]="summaryItems">
-            <ng-template pTemplate="header" let-columns>
-              <tr>
-                <th *ngFor="let col of columns" class="p-2 word-break bg-grey">
-                  {{col | uppercase}}
-                </th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-columns="columns">
-              <tr>
-                <td *ngFor="let col of columns" class="p-2">
-                  {{rowData[col] || 0}}
-                </td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="footer">
-              <tr>
-                <td *ngFor="let col of totalsArray" class="p-2 bg-grey">
-                  {{col.total}}
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-accordionTab>
-        <p-accordionTab [header]="'Total Users: ' + totalUsers" [selected]="true">
-          <p class="p-p-2 p-d-flex p-align-center bg-yellow">New users added in the last 30 days <strong
-              class="font-big p-ml-2">{{newUsers}}</strong></p>
-        </p-accordionTab>
-      </p-accordion>
-    </div>
-    <div class="bg-white landing-card account-summary p-d-flex p-jc-center p-align-center" *ngIf="isProducer">
-      <div class="p-d-flex p-jc-center p-align-center">
-        <div class="p-text-center p-mr-5">
-          <h3>Projects</h3>
-          <div class="bg-blue p-4 p-d-flex p-align-center custom-br-top p-mb-1">
-            <h3 class="p-m-0 text-white">Total - {{totalProjects}}</h3>
-          </div>
-          <div class="bg-yellow p-4 p-d-flex p-align-center custom-br-bottom"><strong class="font-big">New in last 30
-              days- <span class="font-bigger">{{totalProjects30Days}}</span></strong></div>
-        </div>
-        <div class="p-text-center">
-          <h3>Users</h3>
-          <div class="bg-blue p-4 p-d-flex p-align-center custom-br-top p-mb-1">
-            <h3 class="p-m-0 text-white">Total - {{totalUsers}}</h3>
-          </div>
-          <div class="bg-yellow p-4 p-d-flex p-align-center custom-br-bottom"><strong class="font-big">New in last 30
-              days- <span class="font-bigger">{{newUsers}}</span></strong></div>
-        </div>
-
+  <div class="p-grid mar-b-10">
+    <div class="p-sm-6 p-pt-4">
+      <h4>Important Information</h4>
+      <div class="bg-white landing-card p-pl-3 p-pr-3 p-pb-3 landing-page">
+        <p-tabView>
+          <ng-container *ngIf="landingInfo && landingInfo.length > 0; else loader">
+            <p-tabPanel *ngFor="let tab of landingInfo" [header]="tab.name">
+              <div [innerHTML]="tab.content"></div>
+            </p-tabPanel>
+          </ng-container>
+          <ng-template #loader>
+            <div class="overlay d-flex align-items-center h-100">
+              <div class="loading-img"></div>
+            </div>
+          </ng-template>
+        </p-tabView>
+  
       </div>
     </div>
-  </div> -->
-
-  <div class="p-sm-6 p-pt-4 feedback-sect">
-    <h4>Your Voice</h4>
-    <form [formGroup]="voiceForm" autocomplete="off">
-      <div class="bg-white landing-card p-p-3">
-        <div class="p-grid p-jc-between">
-          <div class="p-sm-8 p-pl-0">
-            <p>Select your option</p>
-            <div class="p-d-flex">
-              <p-radioButton value="feedback" label="Feedback" formControlName="feedbackType"></p-radioButton>
-              <p-radioButton value="idea" label="New Idea" formControlName="feedbackType" class="p-ml-4">
-              </p-radioButton>
+  
+    
+  
+    <div class="p-sm-6 p-pt-4 feedback-sect">
+      <h4>Your Voice</h4>
+      <form [formGroup]="voiceForm" autocomplete="off">
+        <div class="bg-white landing-card p-p-3">
+          <div class="p-grid p-jc-between">
+            <div class="p-sm-8 p-pl-0">
+              <p>Select your option</p>
+              <div class="p-d-flex">
+                <p-radioButton value="feedback" label="Feedback" formControlName="feedbackType"></p-radioButton>
+                <p-radioButton value="idea" label="New Idea" formControlName="feedbackType" class="p-ml-4">
+                </p-radioButton>
+              </div>
+            </div>
+            <div class="p-sm-4 p-pr-0">
+              <p class="p-mb-0">Area</p>
+              <p-dropdown [options]="area" formControlName="category" placeholder="Select"></p-dropdown>
             </div>
           </div>
-          <div class="p-sm-4 p-pr-0">
-            <p class="p-mb-0">Area</p>
-            <p-dropdown [options]="area" formControlName="category" placeholder="Select"></p-dropdown>
+          <div class="pt-2">
+            <p>Comment</p>
+            <textarea [rows]="5" class="p-w-100" formControlName="feedback" pInputTextarea></textarea>
+            <div class="text-danger" *ngIf="!voiceForm.controls.feedback?.valid && (voiceForm.controls.feedback?.dirty
+            ||voiceForm.controls.feedback?.touched)">
+              Feedback can be of max 600 characters
+            </div>
+          </div>
+          <div class="p-text-right p-d-flex p-jc-end p-align-center">
+            <p class="p-mb-0 p-pr-3"
+              [ngClass]="{'alert-success': isFeedbackSubmitted, 'alert-error': !isFeedbackSubmitted}">{{formMessage}}
+            </p>
+            
+            <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised"
+              label="Submit" (click)="save()" [disabled]="voiceForm.invalid"></button>
           </div>
         </div>
-        <div class="pt-2">
-          <p>Comment</p>
-          <textarea [rows]="5" class="p-w-100" formControlName="feedback" pInputTextarea></textarea>
-          <div class="text-danger" *ngIf="!voiceForm.controls.feedback?.valid && (voiceForm.controls.feedback?.dirty
-          ||voiceForm.controls.feedback?.touched)">
-            Feedback can be of max 600 characters
-          </div>
-        </div>
-        <div class="p-text-right p-d-flex p-jc-end p-align-center">
-          <p class="p-mb-0 p-pr-3"
-            [ngClass]="{'alert-success': isFeedbackSubmitted, 'alert-error': !isFeedbackSubmitted}">{{formMessage}}
-          </p>
-          
-          <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised"
-            label="Submit" (click)="save()" [disabled]="voiceForm.invalid"></button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
+  
   </div>
-
-  <!-- <div class="col-sm-6 p-pt-4">
-    <h4>EMM Updates</h4>
-    <div class="bg-white landing-card"></div>
-  </div> -->
-
 </div>
