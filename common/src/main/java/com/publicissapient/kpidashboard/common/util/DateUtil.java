@@ -180,8 +180,6 @@ public class DateUtil {
 		return formattedDate;
 	}
 
-
-
 	public static long convertStringToLong(String date) {
 		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}

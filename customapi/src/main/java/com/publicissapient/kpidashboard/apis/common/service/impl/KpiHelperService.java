@@ -405,8 +405,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * Fetch sprint velocity data from db map. based upon kpi request and leaf node
-	 * list
+	 * Fetch sprint velocity data from db map. based upon kpi request and leaf
+	 * node list
 	 *
 	 * @param leafNodeList
 	 *            the leaf node list
@@ -563,8 +563,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * Fetch ticket velocity data from db based upon leaf node list within range of
-	 * start date and end date.
+	 * Fetch ticket velocity data from db based upon leaf node list within range
+	 * of start date and end date.
 	 *
 	 * @param leafNodeList
 	 *            the leaf node list
@@ -654,8 +654,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * fetching jira from jiraKanbanhistory for last 15 months and also returning
-	 * fieldmapping for closed and open tickets from jira mapping
+	 * fetching jira from jiraKanbanhistory for last 15 months and also
+	 * returning fieldmapping for closed and open tickets from jira mapping
 	 *
 	 * @param leafNodeList
 	 * @param startDate
@@ -740,10 +740,10 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * returning all non-closed tickets from history data project wise the list will
-	 * contain the reopen tickets within the range or outside the range if the
-	 * current status of that ticket is not close the list will not contain those
-	 * tickets which were closed before the filtered range
+	 * returning all non-closed tickets from history data project wise the list
+	 * will contain the reopen tickets within the range or outside the range if
+	 * the current status of that ticket is not close the list will not contain
+	 * those tickets which were closed before the filtered rang
 	 *
 	 *
 	 * @param resultListMap
@@ -806,8 +806,8 @@ public class KpiHelperService { // NOPMD
 			KanbanIssueHistory issueStatusHistory = statusHistoryDetailsList.get(i);
 			/*
 			 * to check the recent status from history details in case of reopen
-			 * nonClosedStatusList will have more status before closed status under that
-			 * scenario the ticket will be counted
+			 * nonClosedStatusList will have more status before closed status
+			 * under that scenario the ticket will be counted
 			 */
 
 			if (!jiraClosedStatusList.contains(issueStatusHistory.getStatus())) {
