@@ -257,23 +257,28 @@ public class HandleJiraHistory {
 		if(!fixVersionChangeLog.isEmpty())
 		{
 			String lastChangedTo = fixVersionChangeLog.get(fixVersionChangeLog.size()-1).getChangedTo();
-			String[] lastChangedToList = lastChangedTo.split(",");
-			String[] currentFixVersionList = currentFixVersion.split(",");
-			Set<String> set = new HashSet<>();
-			for(String fixVersion:lastChangedToList) set.add(fixVersion);
-			for(String fixVersion:currentFixVersionList) set.add(fixVersion);
-			currentFixVersion = StringUtils.join(set,",");
+			currentFixVersion = createChangedToForFixVersion(currentFixVersion, lastChangedTo);
 		}
 		final String[] lastLogChangeToValue = { currentFixVersion };
 		Lists.reverse(fixVersionChangeLog).forEach(currChangeLog -> {
 			String currLogChangeToValue = currChangeLog.getChangedTo();
 			String currLogChangeFromValue = currChangeLog.getChangedFrom();
 			String differences = getNonCommonFixVersion(currLogChangeToValue, lastLogChangeToValue[0]);
-			currChangeLog.setChangedTo(lastLogChangeToValue[0]);
+			currChangeLog.setChangedTo(createChangedToForFixVersion(currChangeLog.getChangedTo(),lastLogChangeToValue[0]));
 			currChangeLog.setChangedFrom(concatStrUsingCommaSeparator(currLogChangeFromValue, differences));
 			lastLogChangeToValue[0] = currChangeLog.getChangedFrom();
 		});
 		createFirstEntryOfChangeLog(fixVersionChangeLog, issue, lastLogChangeToValue[0]);
+
+	}
+
+	private String createChangedToForFixVersion(String currentFixVersion, String lastChangedTo) {
+		String[] lastChangedToList = lastChangedTo.split(",");
+		String[] currentFixVersionList = currentFixVersion.split(",");
+		Set<String> set = new HashSet<>();
+		for(String fixVersion:lastChangedToList) set.add(fixVersion);
+		for(String fixVersion:currentFixVersionList) set.add(fixVersion);
+		return StringUtils.join(set,",");
 	}
 
 	private String getNonCommonFixVersion(String currLogChangeToValue, String lastLogChangeToValue) {
