@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -40,13 +39,13 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +64,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final String WAITING_TIME = "Waiting Time";
 	private static final String WASTAGE = "Wastage";
 	private static final String HOURS = "Hours";
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -313,9 +311,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
 			List<String> fieldMappingStatus, List<JiraHistoryChangeLog> statusUpdationLogs, int index,
 			SprintDetails sprintDetails, int time) {
-		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
-		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
-		DateTime entryActivityDate = DateTime.parse(entry.getUpdatedOn().toString());
+		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
 			int minutes = 0;
 			// Checking for indexOutOfBound in storySprintDetails list
@@ -325,7 +323,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			} else {
 				// Find fetch the next element of storySprintDetails
 				JiraHistoryChangeLog nextEntry = statusUpdationLogs.get(index + 1);
-				DateTime nextEntryActivityDate = DateTime.parse(nextEntry.getUpdatedOn().toString());
+				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
 				// Checking if both alternate element are inside the sprint start and end date
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
@@ -342,23 +340,23 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	// Calculate the time for entries which lies between sprint start and end date
 	// or one of them is inside sprint start end date
-	private int minutesForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
-			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
+	private int minutesForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
+												 LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
 		int minutes;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = Minutes.minutesBetween(entryActivityDate, nextEntryActivityDate).getMinutes()
-						- minusMinutesInWeekEndDays(entryActivityDate, nextEntryActivityDate);
+				minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, nextEntryActivityDate)
+										- minusMinutesInWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, nextEntryActivityDate).getMinutes()
+				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, nextEntryActivityDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, nextEntryActivityDate);
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate).getMinutes()
+				minutes = (int) ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate).getMinutes()
+				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
@@ -366,38 +364,38 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	// Calculate the time for last entry of storySprintDetails
-	private int minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
-			DateTime sprintEndDate, DateTime entryActivityDate) {
+	private int minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
+			LocalDateTime sprintEndDate, LocalDateTime entryActivityDate) {
 		int minutes = 0;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					minutes = Minutes.minutesBetween(entryActivityDate, DateTime.now()).getMinutes()
-							- minusMinutesInWeekEndDays(entryActivityDate, DateTime.now());
+					minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, LocalDateTime.now())
+												- minusMinutesInWeekEndDays(entryActivityDate, LocalDateTime.now()));
 				} else {
-					minutes = Minutes.minutesBetween(entryActivityDate, sprintEndDate).getMinutes()
-							- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
+					minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
+												- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate));
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-				DateTime currDate = DateTime.now();
-				minutes = Minutes.minutesBetween(sprintStartDate, currDate).getMinutes()
-						- minusMinutesInWeekEndDays(sprintStartDate, currDate);
+				LocalDateTime currDate = LocalDateTime.now();
+				minutes = (int) (ChronoUnit.MINUTES.between(sprintStartDate, currDate)
+										- minusMinutesInWeekEndDays(sprintStartDate, currDate));
 			} else {
-				minutes = Minutes.minutesBetween(sprintStartDate, sprintEndDate).getMinutes()
+				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
 		return minutes;
 	}
 
-	public boolean isWeekEnd(DateTime dateTime) {
-		int dayOfWeek = dateTime.getDayOfWeek();
+	public boolean isWeekEnd(LocalDateTime localDateTime) {
+		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
 		return dayOfWeek == 6 || dayOfWeek == 7;
 	}
 
-	public int saturdaySundayCount(DateTime d1, DateTime d2) {
+	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
 		int countWeekEnd = 0;
 		while (!d1.isAfter(d2)) {
 			if (isWeekEnd(d1)) {
@@ -408,7 +406,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return countWeekEnd;
 	}
 
-	public int minusMinutesInWeekEndDays(DateTime d1, DateTime d2) {
+	public int minusMinutesInWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
 		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
 		if (countOfWeekEndDays != 0) {
 			return countOfWeekEndDays * 24 * 60;

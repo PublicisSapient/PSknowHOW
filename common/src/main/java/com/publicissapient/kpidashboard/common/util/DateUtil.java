@@ -180,7 +180,21 @@ public class DateUtil {
 		return formattedDate;
 	}
 
+
+
 	public static long convertStringToLong(String date) {
 		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
+	}
+
+	public static LocalDateTime convertingStringToLocalDateTime(String time, String format){
+		LocalDateTime formattedDate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try{
+			formattedDate=LocalDateTime.parse(time, formatter);
+		}
+		catch (DateTimeParseException dateTimeParseException){
+			formattedDate= OffsetDateTime.parse(time).toLocalDateTime();
+		}
+		return formattedDate;
 	}
 }
