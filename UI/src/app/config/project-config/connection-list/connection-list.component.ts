@@ -656,7 +656,6 @@ export class ConnectionListComponent implements OnInit {
   }
 
   editConnection(connection) {
-    console.log('edit connection:',connection);
     this.connection = { ...connection };
     this.connectionDialog = true;
     this.isNewlyConfigAdded = false;
@@ -836,16 +835,16 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['consumerKey'].disable();
       }
     }
-
+    
 
     if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
       if (event.checked) {
-        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
+        this.basicConnectionForm.controls['accessTokenEnabled'].setValue(true);
       } else {
-        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
+        this.basicConnectionForm.controls['accessTokenEnabled'].setValue(false);
       }
     }
-    console.log(this.basicConnectionForm.controls['privateKey'].value, this.basicConnectionForm.controls['privateKey'].status);
+    
     if(field === 'bearerToken') {
       if (event.checked) {
         this.basicConnectionForm.controls['patOAuthToken'].enable();
