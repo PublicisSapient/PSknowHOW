@@ -19,9 +19,6 @@ import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-
-
-
 /**
  * @author Mahesh
  *
@@ -33,6 +30,7 @@ public class CommentsServiceImpl implements CommentsService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
 
 	public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
 
@@ -40,8 +38,12 @@ public class CommentsServiceImpl implements CommentsService {
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 
 	/**
-	 * This method will find the comment details for selected KpiId or for selected
-	 * Sprint for the project and returns mapped data.
+	 * This method will find the comment details for selected KpiId by filtering the comments based on the organization level and maximum comments count.
+	 * @param node
+	 * @param level
+	 * @param sprintId
+	 * @param kpiId
+	 * @return
 	 */
 	@Override
 	public Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId) {
@@ -49,7 +51,7 @@ public class CommentsServiceImpl implements CommentsService {
 		KPIComments kpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
-		if (null!=kpiComments) {
+		if (null != kpiComments) {
 			LOGGER.info("Received all matching comment from DB, comments size: {}", kpiComments);
 			List<CommentsInfo> finalCommentsInfo = commentMappingOperation(kpiComments);
 			mappedCollection.put("node", node);
@@ -63,8 +65,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	/**
-	 * This method will map the comments with selected KpiId for the project and
-	 * returns the list of commentsInfo.
+	 * This method will filter the comments with selected KpiId on the basis of maximum comments count to be shown on the dashboard.
+	 * @param kpiComments
+	 * @return
 	 */
 	private List<CommentsInfo> commentMappingOperation(KPIComments kpiComments) {
 
@@ -77,12 +80,12 @@ public class CommentsServiceImpl implements CommentsService {
 				break;
 			}
 		}
-
 		return kpiIdMappedWithCommentsInfo;
 	}
 	/**
-	 * This method will save the comments for selected Kpi in both kpi_comments and
-	 * kpi_comments_history collections.
+	 * This method will save the comments for selected KpiId in both kpi_comments and kpi_comments_history collections.
+	 * @param comment
+	 * @return
 	 */
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
@@ -97,14 +100,18 @@ public class CommentsServiceImpl implements CommentsService {
 		}
 		final ModelMapper modelMapper = new ModelMapper();
 		KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
-		KpiCommentsHistory kpiCommentsHistory =modelMapper.map(comment, KpiCommentsHistory.class);
+		KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
 
-		boolean result = filterCommentsInfo(kpiComments,kpiCommentsHistory);
-
-	return result;
+		return filterCommentsInfo(kpiComments, kpiCommentsHistory);
 	}
 
-	private boolean filterCommentsInfo(KPIComments kpiComments,KpiCommentsHistory kpiCommentsHistory) {
+	/**
+	 * This method will save the comments in the collections and re-map the comments list on the basis of KPI max comments count to be stored in DB.
+	 * @param kpiComments
+	 * @param kpiCommentsHistory
+	 * @return
+	 */
+	private boolean filterCommentsInfo(KPIComments kpiComments, KpiCommentsHistory kpiCommentsHistory) {
 
 		String node = kpiComments.getNode();
 		String level = kpiComments.getLevel();
@@ -117,7 +124,7 @@ public class CommentsServiceImpl implements CommentsService {
 			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId);
 
-			if (null == matchedKpiComments) {
+			if (Objects.isNull(matchedKpiComments)) {
 				kpiCommentsRepository.save(kpiComments);
 				kpiCommentsHistoryRepository.save(kpiCommentsHistory);
 			} else {
@@ -132,37 +139,49 @@ public class CommentsServiceImpl implements CommentsService {
 	return false;
 	}
 
+	/**
+	 * This method will re-map the comments on the basis of KPI max comments count to be stored in DB for the matched KPI comment.
+	 * If commentsInfoSize is greater or equal to the PER_KPI_MAX_COMMENTS_COUNT then oldest comment will be removed from DB from kpi_comments collection.
+	 * Note, kpi_comments_history collection will store all the comments for a selected KPI in DB irrespective of the KPI max comments count.
+	 * @param matchedKpiComment
+	 * @param newCommentsInfo
+	 */
+	private void reMappingOfKpiComments(KPIComments matchedKpiComment, List<CommentsInfo> newCommentsInfo) {
+		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
+		if (CollectionUtils.isNotEmpty(commentsInfo)) {
+			int commentsInfoSize = commentsInfo.size();
 
+			if (commentsInfoSize < Constant.PER_KPI_MAX_COMMENTS_COUNT) {
+				newCommentsInfo.addAll(commentsInfo);
+				matchedKpiComment.setCommentsInfo(newCommentsInfo);
+				kpiCommentsRepository.save(matchedKpiComment);
+				LOGGER.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
+						matchedKpiComment);
 
-	private void reMappingOfKpiComments(KPIComments kpiComment,List<CommentsInfo> newCommentsInfo){
-		List<CommentsInfo> commentsInfo = kpiComment.getCommentsInfo();
-		int commentsInfoSize = commentsInfo.size();
-
-		if(commentsInfoSize < Constant.PER_KPI_MAX_COMMENTS_COUNT) {
-			newCommentsInfo.addAll(commentsInfo);
-			kpiComment.setCommentsInfo(newCommentsInfo);
-			kpiCommentsRepository.save(kpiComment);
-			LOGGER.debug("rearrange Saved comments info into kpi_comment Collection {}", kpiComment);
-
-		} else {    //commentsInfoSize >= Constant.PER_KPI_MAX_COMMENTS_COUNT
-			commentsInfo.remove(commentsInfoSize - 1);
-			newCommentsInfo.addAll(commentsInfo);
-			kpiComment.setCommentsInfo(newCommentsInfo);
-			kpiCommentsRepository.save(kpiComment);
-
-			LOGGER.debug("rearrange Saved comments into kpi_comment Collection {}", kpiComment);
+			} else {
+				commentsInfo.remove(commentsInfoSize - 1);
+				newCommentsInfo.addAll(commentsInfo);
+				matchedKpiComment.setCommentsInfo(newCommentsInfo);
+				kpiCommentsRepository.save(matchedKpiComment);
+				LOGGER.debug(
+						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
+						matchedKpiComment);
+			}
 		}
 	}
 
-	private void reMappingOfKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory,List<CommentsInfo> newCommentsInfoHistory){
+	/**
+	 * This method will re-map the KPI comments for the kpi_comments_history collection.
+	 * @param kpiCommentsHistory
+	 * @param newCommentsInfoHistory
+	 */
+	private void reMappingOfKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory, List<CommentsInfo> newCommentsInfoHistory) {
 
 		List<CommentsInfo> commentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 		newCommentsInfoHistory.addAll(commentsInfoHistory);
 		kpiCommentsHistory.setCommentsInfo(newCommentsInfoHistory);
 		kpiCommentsHistoryRepository.save(kpiCommentsHistory);
-		LOGGER.debug("rearrange saved comments info into kpi comment history collection {}", kpiCommentsHistory);
-
+		LOGGER.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
+				kpiCommentsHistory);
 	}
-
-
 }

@@ -64,7 +64,7 @@ public class CommentsControllerTest {
 		commentInfo.setCommentBy("Mahesh");
 		commentInfo.setComment("More Data Required");
 		commentsInfo.add(commentInfo);
-        comment.setCommentsInfo(commentsInfo);
+		comment.setCommentsInfo(commentsInfo);
 
 		when(commentsService.submitComment(comment)).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.post("/comments/submitComments")
@@ -109,4 +109,3 @@ public class CommentsControllerTest {
 		mockMvc = null;
 	}
 }
-

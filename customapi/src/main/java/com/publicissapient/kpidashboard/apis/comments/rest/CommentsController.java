@@ -26,9 +26,8 @@ public class CommentsController {
 	private CommentsService commentsService;
 
 	/**
-	 * This method will get the comments data based on the selected KPI and selected
-	 * project/s.
-	 * 
+	 * This method will get the comments data based on the selected project from the organization level. This feature will work for both, Scrum and Kanban KPIs.
+	 *
 	 * @param node
 	 * @param level
 	 * @param sprintId
@@ -50,8 +49,7 @@ public class CommentsController {
 	}
 
 	/**
-	 * This method will submit the comment for the selected KPI and selected
-	 * project.
+	 * This method will save the comment for a selected project from the organization level. Only one comment can submit at a time for the project & selected KPI.
 	 * 
 	 * @param comment
 	 * @return
