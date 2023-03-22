@@ -187,14 +187,7 @@ public class DateUtil {
 	}
 
 	public static LocalDateTime convertingStringToLocalDateTime(String time, String format){
-		LocalDateTime formattedDate;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-		try{
-			formattedDate=LocalDateTime.parse(time, formatter);
-		}
-		catch (DateTimeParseException dateTimeParseException){
-			formattedDate= OffsetDateTime.parse(time).toLocalDateTime();
-		}
-		return formattedDate;
+		Instant timestamp = Instant.parse(time);
+		return  timestamp.atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 }
