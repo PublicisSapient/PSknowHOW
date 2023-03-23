@@ -743,7 +743,7 @@ public class KpiHelperService { // NOPMD
 	 * returning all non-closed tickets from history data project wise the list
 	 * will contain the reopen tickets within the range or outside the range if
 	 * the current status of that ticket is not close the list will not contain
-	 * those tickets which were closed before the filtered rang
+	 * those tickets which were closed before the filtered range
 	 *
 	 *
 	 * @param resultListMap
@@ -826,10 +826,10 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * checking if from history details for a particular story contains the closed
-	 * status type from fieldmapping or (the activity status is more than the
-	 * selected start time of filter) and (that status be the latest status from
-	 * history details) then wil return true
+	 * checking if from history details for a particular story contains the
+	 * closed status type from fieldmapping or (the activity status is more than
+	 * the selected start time of filter) and (that status be the latest status
+	 * from history details) then wil return true
 	 *
 	 * @param historyStatus
 	 * @param jiraClosedStatusList
@@ -881,15 +881,17 @@ public class KpiHelperService { // NOPMD
 						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
 								DATE_TIME_FORMATTER);
 						/*
-						 * check if ticket's latest activity was before the filter's start time then
-						 * will consider that ticket and latest status in selected filter range
-						 * cumulative way otherwise will move into the loop
+						 * check if ticket's latest activity was before the
+						 * filter's start time then will consider that ticket
+						 * and latest status in selected filter range cumulative
+						 * way otherwise will move into the loop
 						 */
 						if (activityLocalDate.isEqual(startLocalDateTemp)
 								|| activityLocalDate.isAfter(startLocalDateTemp)) {
 							if (status == null) {
 								/*
-								 * when no change in status happened after the creation date of ticket
+								 * when no change in status happened after the
+								 * creation date of ticket
 								 */
 								status = currentStatus;
 								startLocalDateTemp = activityLocalDate;
@@ -897,8 +899,10 @@ public class KpiHelperService { // NOPMD
 										issueCustomHistory.getStoryID(), jiraHistoryStatusAndDateWiseIssueMap);
 							} else {
 								/*
-								 * if within a ticket some history details are before the filter range and
-								 * others are within the filter range and status change happened on the same day
+								 * if within a ticket some history details are
+								 * before the filter range and others are within
+								 * the filter range and status change happened
+								 * on the same day
 								 */
 								if (startLocalDateTemp.isEqual(activityLocalDate)) {
 									status = currentStatus;
@@ -933,9 +937,10 @@ public class KpiHelperService { // NOPMD
 
 					LocalDate endDate = LocalDate.now();
 					/**
-					 * when all activity dates are less than the filter range or when the last
-					 * status's activity date between the fiilter range loop will run from last
-					 * activity date till today's date for cumulative sum
+					 * when all activity dates are less than the filter range or
+					 * when the last status's activity date between the fiilter
+					 * range loop will run from last activity date till today's
+					 * date for cumulative sum
 					 */
 					if (dateLessThanStartDate || startLocalDateTemp.isBefore(endDate)) {
 						for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate.isBefore(endDate)
@@ -953,9 +958,9 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * will create a map of Map<field,Map<Date,List of issues>> field could be rca,
-	 * priority or status for each status at passed time what all tickets to be
-	 * considered
+	 * will create a map of Map<field,Map<Date,List of issues>> field could be
+	 * rca, priority or status for each status at passed time what all tickets
+	 * to be considered
 	 *
 	 * @param startDate
 	 * @param fieldValue
@@ -980,8 +985,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * depending upon the startdate passed, we need to create story list for that
-	 * particular field field can be status/rca/priority
+	 * depending upon the startdate passed, we need to create story list for
+	 * that particular field field can be status/rca/priority
 	 *
 	 * @param startDate
 	 * @param storyId
@@ -1044,15 +1049,17 @@ public class KpiHelperService { // NOPMD
 						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
 								DATE_TIME_FORMATTER);
 						/*
-						 * check if ticket's latest activity was before the filter's start time then
-						 * will consider that ticket and latest status in selected filter range
-						 * cumulative way otherwise will move into the loop
+						 * check if ticket's latest activity was before the
+						 * filter's start time then will consider that ticket
+						 * and latest status in selected filter range cumulative
+						 * way otherwise will move into the loop
 						 */
 						if ((activityLocalDate.isEqual(startLocalDateTemp)
 								|| activityLocalDate.isAfter(startLocalDateTemp))) {
 							if (status == null) {
 								/*
-								 * when no change in status happened after the creation date of ticket
+								 * when no change in status happened after the
+								 * creation date of ticket
 								 */
 								status = currentStatus;
 								startLocalDateTemp = activityLocalDate;
@@ -1061,8 +1068,10 @@ public class KpiHelperService { // NOPMD
 										jiraClosedStatusList, fieldValues, startLocalDateTemp);
 							} else {
 								/*
-								 * if within a ticket some history details are before the filter range and
-								 * others are within the filter range and status change happened on the same day
+								 * if within a ticket some history details are
+								 * before the filter range and others are within
+								 * the filter range and status change happened
+								 * on the same day
 								 */
 								if (startLocalDateTemp.isEqual(activityLocalDate)) {
 									status = currentStatus;
@@ -1071,9 +1080,12 @@ public class KpiHelperService { // NOPMD
 											jiraClosedStatusList, fieldValues, startLocalDateTemp);
 								} else {
 									/*
-									 * if within a ticket some history details are before the filter range and
-									 * others are within the filter range and status change happened on the
-									 * different day or the status remain consistent for some days
+									 * if within a ticket some history details
+									 * are before the filter range and others
+									 * are within the filter range and status
+									 * change happened on the different day or
+									 * the status remain consistent for some
+									 * days
 									 */
 									for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate
 											.isBefore(activityLocalDate)
@@ -1099,9 +1111,10 @@ public class KpiHelperService { // NOPMD
 
 					LocalDate endDate = LocalDate.now();
 					/**
-					 * when all activity dates are less than the filter range or when the last
-					 * status's activity date between the fiilter range loop will run from last
-					 * activity date till today's date for cumulative sum
+					 * when all activity dates are less than the filter range or
+					 * when the last status's activity date between the fiilter
+					 * range loop will run from last activity date till today's
+					 * date for cumulative sum
 					 */
 					if (!jiraClosedStatusList.contains(status)
 							&& (dateLessThanStartDate || startLocalDateTemp.isBefore(endDate))) {
@@ -1156,8 +1169,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * prepare data for excel for cumulative kpi of Kanban on the basis of field.
-	 * field can be RCA/priority/status field values as per field of jira
+	 * prepare data for excel for cumulative kpi of Kanban on the basis of
+	 * field. field can be RCA/priority/status field values as per field of jira
 	 *
 	 * @param jiraHistoryFieldAndDateWiseIssueMap
 	 * @param fieldName
@@ -1196,8 +1209,8 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * prepare excel data only Today Cumulative data so that only latest data values
-	 * of field(status/rca/priority)
+	 * prepare excel data only Today Cumulative data so that only latest data
+	 * values of field(status/rca/priority)
 	 *
 	 * @param jiraHistoryFieldAndDateWiseIssueMap
 	 * @param fieldValues
