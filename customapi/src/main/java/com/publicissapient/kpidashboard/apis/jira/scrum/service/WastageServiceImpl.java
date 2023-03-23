@@ -315,7 +315,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
-			int minutes = 0;
+			long minutes = 0;
 			// Checking for indexOutOfBound in storySprintDetails list
 			if (statusUpdationLogs.size() == index + 1) {
 				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
@@ -340,23 +340,23 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	// Calculate the time for entries which lies between sprint start and end date
 	// or one of them is inside sprint start end date
-	private int minutesForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
+	private long minutesForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
 												 LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
-		int minutes;
+		long minutes;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, nextEntryActivityDate)
+				minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, nextEntryActivityDate)
 										- minusMinutesInWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, nextEntryActivityDate)
+				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, nextEntryActivityDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, nextEntryActivityDate);
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes = (int) ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
+				minutes =  ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
 			} else {
-				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
+				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
@@ -364,26 +364,26 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	// Calculate the time for last entry of storySprintDetails
-	private int minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
+	private long minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
 			LocalDateTime sprintEndDate, LocalDateTime entryActivityDate) {
-		int minutes = 0;
+		long minutes = 0;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, LocalDateTime.now())
+					minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, LocalDateTime.now())
 												- minusMinutesInWeekEndDays(entryActivityDate, LocalDateTime.now()));
 				} else {
-					minutes = (int) (ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
+					minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
 												- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate));
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				LocalDateTime currDate = LocalDateTime.now();
-				minutes = (int) (ChronoUnit.MINUTES.between(sprintStartDate, currDate)
+				minutes =  (ChronoUnit.MINUTES.between(sprintStartDate, currDate)
 										- minusMinutesInWeekEndDays(sprintStartDate, currDate));
 			} else {
-				minutes = (int) ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
+				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
 						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}

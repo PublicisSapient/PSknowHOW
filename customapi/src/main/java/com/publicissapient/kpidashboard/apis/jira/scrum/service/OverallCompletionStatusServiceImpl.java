@@ -367,7 +367,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
 			filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}
@@ -386,7 +386,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		LocalDate endDate = null;
 		boolean isStartDateFound = false;
 		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLog) {
-			LocalDate activityLocalDate = LocalDate.parse(statusUpdationLog.getUpdatedOn().toString().split("\\.")[0],
+			LocalDate activityLocalDate = LocalDate.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
 					DATE_TIME_FORMATTER);
 
 			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
