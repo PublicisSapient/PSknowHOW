@@ -47,6 +47,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
@@ -98,9 +99,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			Filters filters = Filters.getFilter(k);
 			if (filters == Filters.SPRINT) {
 				getAverageSprintCapacity(v, trendValue, kpiRequest);
-			}
-
-			if (Filters.SPRINT == filters) {
 				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
 			}
 		});
@@ -242,20 +240,20 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		AtomicLong difference = new AtomicLong(0);
 		if (jiraCustomHistory.isPresent()) {
 
-			jiraCustomHistory.get().getStorySprintDetails().stream()
-					.filter(sprintDetails -> sprintDetails.getStatus().equals(status)).findFirst()
-					.ifPresentOrElse(s -> {
-						DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
-						DateTime changedDate = new DateTime(s.getActivityDate(), DateTimeZone.UTC);
-						difference.set(difference.get() + new Duration(changedDate, createdDate).getStandardDays());
+			Optional<JiraIssueSprint> sprint = jiraCustomHistory.get().getStorySprintDetails().stream()
+					.filter(sprintDetails -> sprintDetails.getStatus().equals(status)).findFirst();
+			if (sprint.isPresent()) {
+				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
+				DateTime changedDate = new DateTime(sprint.get().getActivityDate(), DateTimeZone.UTC);
+				difference.set(difference.get() + new Duration(changedDate, createdDate).getStandardDays());
 
-					}, () -> {
-						DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
-						DateTime changedDate = new DateTime(
-								jiraCustomHistory.get().getStorySprintDetails().get(0).getActivityDate(),
-								DateTimeZone.UTC);
-						difference.set(difference.get() + new Duration(changedDate, createdDate).getStandardDays());
-					});
+			} else {
+				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
+				DateTime changedDate = new DateTime(
+						jiraCustomHistory.get().getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
+				difference.set(difference.get() + new Duration(changedDate, createdDate).getStandardDays());
+			}
+			;
 
 		}
 		return difference;
