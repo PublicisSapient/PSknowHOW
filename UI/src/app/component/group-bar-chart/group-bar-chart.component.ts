@@ -62,21 +62,21 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
 
-    let data = this.data[0].value ? this.data[0].value : this.data[0].dataCount;
+    let data = this.data[0].value;
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
     const groups = d3.map(data, (d) => d.group);
 
     const currentDayIndex = this.currentDayIndex;
-    const barWidth = 20;
-    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 1);
+    const barWidth = 18;
+    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 3);
     const spacingVariable = 50;
     const height = 190;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
-    const xTick = 20;
+    const xTick = barWidth;
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
@@ -111,10 +111,10 @@ export class GroupBarChartComponent implements OnChanges {
 
     const xSubgroup = d3.scaleBand()
       .domain(subgroups)
-      .range([0, 60])
+      .range([0, subgroups.length * barWidth])
       .paddingInner(0);
 
-    const colorList = ['#4472C4', '#00B1B0', '#88DBDA'];
+    const colorList = ['#4472C4', '#DDE8B9', '#00B1B0'];
     const color = d3.scaleOrdinal()
       .domain(subgroups)
       .range(colorList);
@@ -269,7 +269,6 @@ export class GroupBarChartComponent implements OnChanges {
   }
 
   formatData(data) {
-    console.log(data);
     const resultData = {};
     data.forEach((d) => {
       if (!this.subGroups.includes(d.subFilter)) {

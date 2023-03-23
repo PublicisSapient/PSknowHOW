@@ -136,7 +136,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-    if (this.updatedConfigGlobalData?.length === 0) {
+    if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
       this.noKpis = false;
