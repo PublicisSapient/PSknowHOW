@@ -120,7 +120,7 @@ export class FilterComponent implements OnInit {
   username: string;
   isGuest = false;
   logoImage: any;
-  requestCountMoreThanZero : boolean = false;
+  totalRequestCount : number = 0;
   selectedProjectData ={};
   constructor(
     private service: SharedService,
@@ -401,7 +401,7 @@ export class FilterComponent implements OnInit {
       version: this.httpService.currentVersion,
     };
     this.ga.setPageLoad(data);
-    // this.navigateToSelectedTab(); issue fixed as going on multiple routes just after login 
+    this.navigateToSelectedTab();
     this.getKpiOrderedList();
   }
 
@@ -891,9 +891,14 @@ export class FilterComponent implements OnInit {
   navigateToSelectedTab() {
     if (
       this.selectedTab !== 'Config' &&
-      this.selectedTab !== 'Maturity' &&
       Object.keys(this.kpiListData)?.length > 0
     ) {
+      if(this.selectedTab === 'Maturity'){
+        this.router.navigateByUrl(
+          `/dashboard/Maturity`,
+        );
+        return;
+      }
       let boardDetails =
         this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find(
           (board) =>
@@ -1520,15 +1525,14 @@ export class FilterComponent implements OnInit {
   }
 
   getNotification() {
+    this.totalRequestCount  = 0 ;
     this.httpService
       .getAccessRequestsNotifications()
       .subscribe((response: NotificationResponseDTO) => {
         if (response && response.success) {
           if (response.data?.length) {
             this.notificationList = [...response.data].map((obj) => {
-              if(obj.count > 0 ){
-                this.requestCountMoreThanZero = true;
-              }
+                this.totalRequestCount = this.totalRequestCount + obj.count;              
               return {
                 label: obj.type + ' : ' + obj.count,
                 icon: '',
@@ -1605,4 +1609,10 @@ export class FilterComponent implements OnInit {
           }
         });
     }
+   
+  /** when user clicks on Back to dashboard or logo*/
+   navigateToDashboard(){
+    this.getNotification();
+    this.navigateToSelectedTab()
+   }
 }
