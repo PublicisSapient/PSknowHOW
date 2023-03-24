@@ -2611,4 +2611,34 @@ describe('IterationComponent', () => {
         ];
         expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
     });
+
+    it('should evalvate the aggregated expression',()=>{
+        let aggregatedArr = [
+            {
+                "label": "First Time Pass Stories",
+                "value": "8.00",
+                "value1": null,
+                "modalValues": null
+            },
+            {
+                "label": "Total Stories",
+                "value": "9.00",
+                "modalValues": [],
+                "value1": null
+            },
+            {
+                "label": "First Time Pass Rate %",
+                "value": 88.89,
+                "expressions": [
+                    "First Time Pass Stories",
+                    "Total Stories",
+                    "percentage"
+                ],
+                "value1": null,
+                "modalValues": null
+            }
+        ];
+        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        expect(aggregatedArr[2].value).toEqual(88.89);
+    })
 });
