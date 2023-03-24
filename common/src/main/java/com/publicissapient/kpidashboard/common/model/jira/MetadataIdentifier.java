@@ -40,6 +40,7 @@ public class MetadataIdentifier extends BasicModel {
 
 	private String tool;
 	private String templateName;
+	private String templateCode;
 	private Boolean isKanban;
 	private List<Identifier> issues;
 	private List<Identifier> customfield;

@@ -43,6 +43,7 @@ public class BoardMetadata extends BasicModel {
 	private ObjectId projectBasicConfigId;
 	private ObjectId projectToolConfigId;
 	private ObjectId metadataTemplateID;
+	private String metadataTemplateName;
 	private List<Metadata> metadata;
 	
 

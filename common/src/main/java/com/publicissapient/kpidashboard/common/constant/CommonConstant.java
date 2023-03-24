@@ -65,6 +65,7 @@ public final class CommonConstant {
 	public static final String UAT_DEFECT = "uatdefect";
 	
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
+	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
 	public static final String TICKET_RESOLVED_STATUS = "ticketResolvedStatus";
 	public static final String TICKET_REOPEN_STATUS = "ticketReopenStatus";
 	public static final String TICKET_TRIAGED_STATUS = "ticketTriagedStatus";
