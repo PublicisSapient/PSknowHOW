@@ -25,7 +25,7 @@
                                 </div>
                                 <div class="p-d-flex p-justify-end p-align-center">
                                     <button class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
-                                        (click)="submitComment(filter)" [disabled]="commentText === ''">Submit</button>
+                                        (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
                                 </div>
                             </p-tabPanel>
                         </p-tabView>
@@ -46,7 +46,7 @@
                             <div *ngIf="showAddComment" class="p-d-flex p-justify-end p-align-center">
                                 <button class="p-element p-ripple p-button-sm p-button-secondary p-button"
                                     (click)="showAddComment = false">Cancel</button>
-                                <button class="p-element p-ripple p-button-sm p-button-success p-button" (click)="submitComment(filter)" [disabled]="commentText === ''">Submit</button>
+                                <button class="p-element p-ripple p-button-sm p-button-success p-button" (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
                             </div>
                             <textarea class="comment" [(ngModel)]="commentText" maxlength="500"></textarea>
                         </div>
