@@ -101,7 +101,7 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
-  jiraTemplate : any;
+  jiraTemplate : any[];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -180,7 +180,6 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-      this.getJiraTemplate()
   }
 
   getPlansForBamboo(connectionId) {
@@ -1979,7 +1978,6 @@ export class JiraConfigComponent implements OnInit {
       }
     });
     this.toolForm = new UntypedFormGroup(group);
-
     if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
@@ -2138,6 +2136,7 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
+      submitData['metadataTemplateID'] = submitData['metadataTemplateID'].id;
     }
 
     if (this.urlParam === 'AzurePipeline') {
@@ -2366,8 +2365,13 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate(){
+    const isKanban = this.selectedProject.Type.toLowerCase() === 'kanban' ? true : false;
     this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
-      this.jiraTemplate = resp.filter(temp=>temp.tool.toLowerCase() === 'jira');
+      this.jiraTemplate = resp.filter(temp=>temp.tool.toLowerCase() === 'jira' && temp.kanban === isKanban);
+      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
+        const selectedTemplate = this.jiraTemplate.find(tem=>tem.id === this.selectedToolConfig['metadataTemplateID'])
+        this.toolForm.get('metadataTemplateID').setValue(selectedTemplate);
+      }
     })
   }
 }
