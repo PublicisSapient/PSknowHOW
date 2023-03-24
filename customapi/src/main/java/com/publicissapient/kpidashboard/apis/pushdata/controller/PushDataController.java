@@ -64,7 +64,6 @@ public class PushDataController {
 	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
-
 		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
 		final ModelMapper modelMapper = new ModelMapper();
 		PushBuildDeploy buildDeploy = modelMapper.map(pushBuildDeployDTO, PushBuildDeploy.class);

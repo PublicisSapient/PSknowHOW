@@ -19,12 +19,15 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
@@ -56,6 +59,9 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private PushDataTraceLogService pushDataTraceLogService;
 
 	final ModelMapper modelMapper = new ModelMapper();
 
@@ -113,20 +119,25 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 	@Override
 	public ExposeApiToken validateToken(HttpServletRequest request) {
 		String token = request.getHeader(TOKEN_KEY);
+		PushDataTraceLog instance = PushDataTraceLog.getInstance();
+		instance.setRequestTime(LocalDateTime.now().toString());
 		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
 		if (exposeApiToken == null) {
 			throw new PushDataException("Generate Token Push Data via KnowHow tool configuration screen",
 					HttpStatus.UNAUTHORIZED);
 		}
+		checkProjectAccessPermission(exposeApiToken,instance);
 		checkExpiryToken(exposeApiToken);
-		checkProjectAccessPermission(exposeApiToken);
 		exposeApiToken
 				.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
 		exposeApiToken.setUpdatedAt(LocalDate.now());
 		return exposeApiToken;
 	}
 
-	private void checkProjectAccessPermission(ExposeApiToken exposeApiToken) {
+	private void checkProjectAccessPermission(ExposeApiToken exposeApiToken, PushDataTraceLog traceLog) {
+		traceLog.setProjectName(exposeApiToken.getProjectName());
+		traceLog.setBasicProjectConfigId(exposeApiToken.getBasicProjectConfigId());
+		traceLog.setUserName(exposeApiToken.getUserName());
 		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(),
 				exposeApiToken.getUserName())) {
 			throw new PushDataException("Permission Denied", HttpStatus.UNAUTHORIZED);

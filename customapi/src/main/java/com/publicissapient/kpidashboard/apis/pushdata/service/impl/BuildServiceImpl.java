@@ -20,13 +20,13 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -37,11 +37,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Service
 @Slf4j
@@ -59,10 +61,11 @@ public class BuildServiceImpl {
 	 * @param buildsList
 	 * @param buildList
 	 * @param buildErrorList
+	 * @param pushDataDetails
 	 * @return
 	 */
 	public int checkandCreateBuilds(ObjectId basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
-			List<PushErrorData> buildErrorList) {
+									List<PushErrorData> buildErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(buildsList)) {
 			buildsList.forEach(pushBuild -> {
@@ -80,11 +83,25 @@ public class BuildServiceImpl {
 					buildList.add(createBuild(basicProjectConfigId, pushBuild,
 							checkExisitingJob(pushBuild, basicProjectConfigId)));
 				}
+				pushDataDetails.add(createTraceLog(pushErrorData));
 				buildErrorList.add(pushErrorData);
 			});
 		}
 		return failedRecords.get();
 
+	}
+
+	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
+		PushDataDetail pushDataDetail=new PushDataDetail();
+		pushDataDetail.setTool("build");
+		pushDataDetail.setJobName(pushErrorData.getJobName());
+		pushDataDetail.setNumber(pushErrorData.getNumber());
+		List<String> errors=new ArrayList<>();
+		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
+			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));
+		}
+		pushDataDetail.setErrors(errors);
+		return pushDataDetail;
 	}
 
 	/**

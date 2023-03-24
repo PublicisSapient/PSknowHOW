@@ -18,10 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.util;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.repository.PushDataTraceLogRepository;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.impl.PushDataTraceLogServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PushDataException extends RuntimeException {
 	private static final long serialVersionUID = -664077740219817001L;
 
@@ -40,6 +47,15 @@ public class PushDataException extends RuntimeException {
 	public PushDataException(String unauthorizedAccessException, HttpStatus code) {
 		super(unauthorizedAccessException);
 		this.code = code;
+		setTraceLog(unauthorizedAccessException, code);
+	}
+
+	private void setTraceLog(String unauthorizedAccessException, HttpStatus code) {
+		PushDataTraceLog instance = PushDataTraceLog.getInstance();
+		instance.setErrorMessage(unauthorizedAccessException);
+		instance.setResponseCode(String.valueOf(code.value()));
+		instance.setResponseStatus(code.getReasonPhrase());
+		new PushDataTraceLogServiceImpl().save(instance);
 	}
 
 	public PushDataResponse getPushBuildDeployResponse() {
@@ -57,6 +73,7 @@ public class PushDataException extends RuntimeException {
 	public PushDataException(String str, PushDataResponse pushDataResponse) {
 		super(str);
 		setPushBuildDeployResponse(pushDataResponse);
+		setTraceLog(str, HttpStatus.BAD_REQUEST);
 	}
 
 	/**

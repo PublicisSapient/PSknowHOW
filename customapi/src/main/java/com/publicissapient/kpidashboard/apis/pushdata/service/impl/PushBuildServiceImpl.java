@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,6 +52,9 @@ public class PushBuildServiceImpl implements PushBaseService {
 	private DeployServiceImpl deployService;
 
 	@Autowired
+	private PushDataTraceLogService pushDataTraceLogService;
+
+	@Autowired
 	private CacheService cacheService;
 
 	@Autowired
@@ -74,10 +80,11 @@ public class PushBuildServiceImpl implements PushBaseService {
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> buildErrorList = new ArrayList<>();
 		List<PushErrorData> deployErrorList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails= new ArrayList<>();
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectConfigId, buildDeploy.getBuilds(), buildList,
-				buildErrorList);
+				buildErrorList,pushDataDetails);
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectConfigId, buildDeploy.getDeployments(),
-				deploymentList, deployErrorList);
+				deploymentList, deployErrorList,pushDataDetails);
 		pushDataResponse.setBuilds(buildErrorList);
 		pushDataResponse.setDeploy(deployErrorList);
 		pushDataResponse.setTotalFailedRecords(buildFailedRecords + deployFailedRecords);
@@ -98,10 +105,15 @@ public class PushBuildServiceImpl implements PushBaseService {
 	 */
 	private void totalSaveRecords(PushDataResponse pushDataResponse, List<Build> buildList,
 			List<Deployment> deploymentList) {
+		PushDataTraceLog instance = PushDataTraceLog.getInstance();
+		instance.setTotalRecord(pushDataResponse.getTotalRecords());
+		instance.setTotalFailedRecord(pushDataResponse.getTotalFailedRecords());
 		if (pushDataResponse.getTotalRecords() != pushDataResponse.getTotalSavedRecords()) {
 			pushDataResponse.setTotalSavedRecords(0);
+			instance.setTotalSavedRecord(0);
 			throw new PushDataException("Errors in particular below ids", pushDataResponse);
 		}
+		pushDataTraceLogService.save(instance);
 		buildService.saveBuilds(buildList);
 		deployService.saveDeployments(deploymentList);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);

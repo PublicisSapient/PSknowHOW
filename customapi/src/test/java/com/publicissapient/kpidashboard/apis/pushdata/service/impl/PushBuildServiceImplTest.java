@@ -28,9 +28,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.BuildServiceImpl;
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.DeployServiceImpl;
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.PushBuildServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,8 +80,8 @@ public class PushBuildServiceImplTest {
 	@Test
 	public void unsucessfullInsert() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
-		when(buildService.checkandCreateBuilds(any(), anyList(), anyList(), anyList())).thenReturn(2);
-		when(deployService.checkandCreateDeployment(any(), anyList(), anyList(), anyList())).thenReturn(1);
+		when(buildService.checkandCreateBuilds(any(), anyList(), anyList(), anyList(), anyList())).thenReturn(2);
+		when(deployService.checkandCreateDeployment(any(), anyList(), anyList(), anyList(), anyList())).thenReturn(1);
 		Assert.assertThrows(PushDataException.class, () -> {
 			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
 		});
