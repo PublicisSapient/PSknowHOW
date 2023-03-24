@@ -66,6 +66,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	private static final String SPRINT_DETAILS = "sprint details";
 
 	private static final String SPRINT_HISTORY = "sprint history";
+	public static final String PERCENTAGE = "percentage";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -338,6 +339,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				List<JiraIssue> finalFirstTimePassStoryList = priorityWiseTotalFTPSIssues.get(priority).stream()
 						.collect(Collectors.toList());
 				List<IterationKpiModalValue> modalValues = new ArrayList<>();
+				List<String> expressions = new ArrayList<>();
 				int priorityWiseFTPS = 0;
 				int priorityWiseTotalStory = 0;
 				for (JiraIssue jiraIssue : issues) {
@@ -357,6 +359,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				}
 
 				List<IterationKpiData> data = new ArrayList<>();
+				expressions.add(FIRST_TIME_PASS_STORIES);
+				expressions.add(TOTAL_STORIES);
+				expressions.add(PERCENTAGE);
 
 				IterationKpiData ftprStories = new IterationKpiData(FIRST_TIME_PASS_STORIES, (double) priorityWiseFTPS,
 						null, null, null, null);
@@ -365,7 +370,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 						null, null, modalValues);
 
 				IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE + " %",
-						calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, null, null);
+						calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, null, null, expressions);
 
 				data.add(ftprStories);
 				data.add(stories);
