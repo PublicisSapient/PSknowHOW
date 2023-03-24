@@ -5,8 +5,10 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.*;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,7 @@ import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsServiceImplTest {
@@ -32,15 +35,31 @@ public class CommentsServiceImplTest {
 	@Mock
 	KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 
-	String node = "1";
-	String level = "level";
-	String sprintId = "10";
-	String kpiId = "kpi12";
-	String commentBy = "Mahesh";
-	String comment = "More data required";
+	@Mock
+	private CustomApiConfig customApiConfig;
 
-	static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	String date = dateTimeFormatter(new Date(), TIME_FORMAT);
+
+	String node;
+	String level;
+	String sprintId;
+	String kpiId;
+	String commentBy;
+	String comment;
+
+	String TIME_FORMAT;
+	String date;
+
+	@Before
+	public void before() {
+		node = "1";
+		level = "level";
+		sprintId ="10";
+		kpiId = "kpi12";
+		commentBy = "Mahesh";
+		comment = "More data required";
+		TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+		date = dateTimeFormatter(new Date(), TIME_FORMAT);
+	}
 
 	@Test
 	public void submitCommentTest_saveComments() {
@@ -138,6 +157,9 @@ public class CommentsServiceImplTest {
 
 		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
 		kpiCommentsHistory.setCommentsInfo(commentsInfo);
+
+		when(customApiConfig.getKpiCommentsMaxStoreCount())
+				.thenReturn(2);
 		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
 				.thenReturn(kpiCommentsHistory);
 
@@ -207,7 +229,7 @@ public class CommentsServiceImplTest {
 		mappedCollection.put("kpiId", kpiId);
 		mappedCollection.put("CommentsInfo", commentsInfo);
 		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComment);
-
+     Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
 		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
 				kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);

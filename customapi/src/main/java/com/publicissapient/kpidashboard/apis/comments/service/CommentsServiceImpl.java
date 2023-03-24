@@ -1,7 +1,7 @@
 package com.publicissapient.kpidashboard.apis.comments.service;
 
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
@@ -37,6 +37,8 @@ public class CommentsServiceImpl implements CommentsService {
 	@Autowired
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
 	/**
 	 * This method will find the comment details for selected KpiId by filtering the comments based on the organization level and maximum comments count.
 	 * @param node
@@ -74,9 +76,10 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> kpiIdMappedWithCommentsInfo = new ArrayList<>();
 		List<CommentsInfo> commentsInfo = kpiComments.getCommentsInfo();
 
+	int	limitCommentsShownOnKpiDashboardCount=customApiConfig.getLimitCommentsShownOnKpiDashboardCount();
 		for (CommentsInfo commentInfo : commentsInfo) {
 			kpiIdMappedWithCommentsInfo.add(commentInfo);
-			if (kpiIdMappedWithCommentsInfo.size() == Constant.HOW_MANY_COMMENTS_SHOW_ON_KPI_DASHBOARD_COUNT) {
+			if (kpiIdMappedWithCommentsInfo.size() == limitCommentsShownOnKpiDashboardCount) {
 				break;
 			}
 		}
@@ -97,12 +100,19 @@ public class CommentsServiceImpl implements CommentsService {
 				commentInfo.setCommentOn(dateTimeFormatter(new Date(), TIME_FORMAT));
 				commentInfo.setCommentId(UUID.randomUUID().toString());
 			}
-		}
-		final ModelMapper modelMapper = new ModelMapper();
-		KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
-		KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
 
-		return filterCommentsInfo(kpiComments, kpiCommentsHistory);
+			final ModelMapper modelMapper = new ModelMapper();
+			KPIComments kpiComments = modelMapper.map(comment, KPIComments.class);
+			KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
+
+			return filterCommentsInfo(kpiComments, kpiCommentsHistory);
+		}
+		else {
+			LOGGER.info("No information about commentsInfo");
+			return false;
+
+		}
+
 	}
 
 	/**
@@ -150,8 +160,8 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			int commentsInfoSize = commentsInfo.size();
-
-			if (commentsInfoSize < Constant.PER_KPI_MAX_COMMENTS_COUNT) {
+			int perKpiMaxCommentsCount=customApiConfig.getKpiCommentsMaxStoreCount();
+			if (commentsInfoSize < perKpiMaxCommentsCount) {
 				newCommentsInfo.addAll(commentsInfo);
 				matchedKpiComment.setCommentsInfo(newCommentsInfo);
 				kpiCommentsRepository.save(matchedKpiComment);

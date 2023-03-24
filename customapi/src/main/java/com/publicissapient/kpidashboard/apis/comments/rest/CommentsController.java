@@ -4,6 +4,7 @@ import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
-import java.util.Objects;
+
 
 /**
  * @author Mahesh
@@ -39,7 +40,7 @@ public class CommentsController {
 			String kpiId) {
 
 		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(node, level, sprintId, kpiId);
-		if (Objects.isNull(mappedCommentInfo) || mappedCommentInfo.isEmpty()) {
+		if (MapUtils.isEmpty(mappedCommentInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Comment not found", mappedCommentInfo));
 		}

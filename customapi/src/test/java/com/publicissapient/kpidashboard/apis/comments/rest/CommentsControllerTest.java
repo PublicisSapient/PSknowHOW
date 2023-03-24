@@ -41,13 +41,17 @@ public class CommentsControllerTest {
 
 	ObjectMapper mapper = new ObjectMapper();
 
-	String node = "1";
-	String level = "level";
-	String sprintId = "10";
-	String kpiId = "kpi12";
+	String node;
+	String level;
+	String sprintId;
+	String kpiId;
 
 	@Before
 	public void before() {
+		node = "1";
+		level = "2";
+		sprintId ="10";
+		kpiId = "kpi12";
 		mockMvc = MockMvcBuilders.standaloneSetup(commentsController).build();
 	}
 
@@ -89,7 +93,7 @@ public class CommentsControllerTest {
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		mappedCollection.put("node", node);
 		when(commentsService.findCommentByKPIId(node, level, sprintId, kpiId)).thenReturn(mappedCollection);
-		mockMvc.perform(get("/comments/getCommentsByKpiId?node=1&level=level&sprintId=10&kpiId=kpi12")
+		mockMvc.perform(get("/comments/getCommentsByKpiId?node=1&level=2&sprintId=10&kpiId=kpi12")
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
 	}

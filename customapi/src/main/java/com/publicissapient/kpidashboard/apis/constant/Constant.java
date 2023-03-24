@@ -135,8 +135,6 @@ public final class Constant {
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
 	public static final String RED = "#FF0000";
 	public static final String AMBER = "#FFBF00";
-	public static final Integer PER_KPI_MAX_COMMENTS_COUNT = 5;
-	public  static final Integer HOW_MANY_COMMENTS_SHOW_ON_KPI_DASHBOARD_COUNT=4;
 
 
 	private Constant() {
