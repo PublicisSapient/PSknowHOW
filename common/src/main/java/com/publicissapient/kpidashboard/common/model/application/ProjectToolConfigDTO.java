@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.jira.TemplateDetails;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
@@ -97,5 +98,7 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private ObjectId metadataTemplateID;
+	private String metadataTemplateName;
+	//private List<TemplateDetails> metadataTemplate;
 
 }

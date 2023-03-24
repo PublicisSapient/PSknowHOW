@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MetaDataIdentifierService {
 
-    List<MetadataIdentifierDTO> getTemplateNamesAndID();
+    List<MetadataIdentifierDTO> getTemplateDetails();
 
     List<MetadataIdentifier> getMetaDataList() ;
 }
