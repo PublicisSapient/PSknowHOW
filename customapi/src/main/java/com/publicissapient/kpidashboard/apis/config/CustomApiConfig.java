@@ -189,7 +189,7 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kpi.comments.max.store.count}")
 	private int kpiCommentsMaxStoreCount;
 
-	@Value("${limit.comments.shown.on.kpi-dashboard.count}")
+	@Value("${limit.comments.shown.on.kpi.dashboard.count}")
 	private int limitCommentsShownOnKpiDashboardCount;
 
 	private int jiraXaxisMonthCount;
