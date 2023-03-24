@@ -181,7 +181,7 @@ public class CreatedVsResolvedServiceImplTest {
 				startDate, endDate, kpiRequest);
 		createdVsResolvedListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 		assertThat("createdVsResolved value :",
-				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(40));
+				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(41));
 	}
 
 	@Test

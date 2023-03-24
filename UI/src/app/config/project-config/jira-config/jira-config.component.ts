@@ -382,8 +382,8 @@ export class JiraConfigComponent implements OnInit {
       return this.jobType;
     } else if (id === 'deploymentProject') {
       return this.deploymentProjectList;
-    }else if(id === 'testAutomatedIdentification' 
-    || id === 'testAutomationCompletedIdentification' 
+    }else if(id === 'testAutomatedIdentification'
+    || id === 'testAutomationCompletedIdentification'
     || id === 'testRegressionIdentification'){
       return this.testCaseIdentification;
     }
@@ -862,6 +862,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+            { field: 'patOAuthToken', header: 'PAT OAuth Token', class: 'long-text' },
           ];
 
           this.formTemplate = {
@@ -2101,7 +2102,7 @@ export class JiraConfigComponent implements OnInit {
   save() {
     this.submitted = true;
     // return if form is invalid
-    if (this.toolForm.invalid || !this.selectedConnection) { 
+    if (this.toolForm.invalid || !this.selectedConnection) {
       this.messenger.add({
         severity: 'error',
         summary: 'Please fill all fields and select a connection.',
@@ -2163,14 +2164,14 @@ export class JiraConfigComponent implements OnInit {
     let successAlert = '';
     if (this.urlParam === 'Jira') {
       successAlert = 'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
-    }    
+    }
     if (!this.isEdit) {
 
       for (const obj in submitData) {
         if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
-      } 
+      }
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {
