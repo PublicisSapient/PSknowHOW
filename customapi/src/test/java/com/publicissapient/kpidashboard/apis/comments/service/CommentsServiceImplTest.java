@@ -5,11 +5,13 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.*;
 
+import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
@@ -41,7 +43,7 @@ public class CommentsServiceImplTest {
 	String date = dateTimeFormatter(new Date(), TIME_FORMAT);
 
 	@Test
-	public void submitCommentTest() {
+	public void submitCommentTest_saveComments() {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
@@ -57,9 +59,121 @@ public class CommentsServiceImplTest {
 		commentInfo.setCommentId(UUID.randomUUID().toString());
 		commentDTO.setCommentsInfo(commentsInfo);
 
-		KPIComments kpiComment = new KPIComments();
+		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
+		Assert.assertTrue(commentSubmitted);
+	}
 
-		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(null);
+	@Test
+	public void submitCommentTest_saveWhenCommentsAlreadyExists() {
+		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
+		commentDTO.setNode(node);
+		commentDTO.setLevel(level);
+		commentDTO.setSprintId(sprintId);
+		commentDTO.setKpiId(kpiId);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		commentInfo.setCommentOn(date);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentDTO.setCommentsInfo(commentsInfo);
+
+		KPIComments kpiComments = new KPIComments();
+		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComments);
+
+		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
+		kpiCommentsHistory.setCommentsInfo(commentsInfo);
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+				.thenReturn(kpiCommentsHistory);
+
+		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
+		Assert.assertTrue(commentSubmitted);
+	}
+
+	@Test
+	public void submitCommentTest_exceptionWhileSavingComments() {
+		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
+		commentDTO.setNode(node);
+		commentDTO.setLevel(level);
+		commentDTO.setSprintId(sprintId);
+		commentDTO.setKpiId(kpiId);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		commentInfo.setCommentOn(date);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentDTO.setCommentsInfo(commentsInfo);
+
+		when(kpiCommentsRepository.save(Mockito.any())).thenThrow(NullPointerException.class);
+
+		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
+		Assert.assertFalse(commentSubmitted);
+	}
+
+	@Test
+	public void submitCommentTest_saveWhenCommentsAlreadyExists_commentsAreLessThanConfigMaxComments() {
+		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
+		commentDTO.setNode(node);
+		commentDTO.setLevel(level);
+		commentDTO.setSprintId(sprintId);
+		commentDTO.setKpiId(kpiId);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		commentInfo.setCommentOn(date);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentDTO.setCommentsInfo(commentsInfo);
+
+		KPIComments kpiComments = new KPIComments();
+		kpiComments.setCommentsInfo(commentsInfo);
+		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComments);
+
+		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
+		kpiCommentsHistory.setCommentsInfo(commentsInfo);
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+				.thenReturn(kpiCommentsHistory);
+
+		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
+		Assert.assertTrue(commentSubmitted);
+	}
+
+	@Test
+	public void submitCommentTest_saveWhenCommentsAlreadyExists_commentsAreMoreThanConfigMaxComments() {
+		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
+		commentDTO.setNode(node);
+		commentDTO.setLevel(level);
+		commentDTO.setSprintId(sprintId);
+		commentDTO.setKpiId(kpiId);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentInfo.setCommentOn(date);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentDTO.setCommentsInfo(commentsInfo);
+
+		KPIComments kpiComments = new KPIComments();
+		kpiComments.setCommentsInfo(commentsInfo);
+		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComments);
+
+		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
+		kpiCommentsHistory.setCommentsInfo(commentsInfo);
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+				.thenReturn(kpiCommentsHistory);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
 		Assert.assertTrue(commentSubmitted);
@@ -81,6 +195,9 @@ public class CommentsServiceImplTest {
 		commentInfo.setCommentOn(date);
 		commentInfo.setComment(comment);
 		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
 		kpiComment.setCommentsInfo(commentsInfo);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
@@ -94,6 +211,5 @@ public class CommentsServiceImplTest {
 		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
 				kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
-
 	}
 }
