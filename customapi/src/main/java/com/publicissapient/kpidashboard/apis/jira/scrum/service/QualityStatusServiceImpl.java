@@ -178,19 +178,20 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, startDate, endDate, kpiRequest);
 
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
-
+			List<JiraIssue> totalJiraIssues = (List<JiraIssue>) resultMap.get(STORY_LIST);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 					.orElse(Collections.emptyList());
-			List<JiraIssue> allDefects = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
-					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			Map<String, JiraIssue> allStoryMap = ((List<JiraIssue>) resultMap.get(STORY_LIST)).stream()
-					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toMap(
+			Map<String, JiraIssue> totalStoriesMap =  totalJiraIssues.stream().collect(Collectors.toMap(
 					JiraIssue::getNumber, Function.identity()));
+			List<JiraIssue> allDefects = totalJiraIssues.stream()
+					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
+			List<JiraIssue> allStory = totalJiraIssues.stream()
+					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 
-			if (CollectionUtils.isNotEmpty(allDefects) && MapUtils.isNotEmpty(allStoryMap)) {
+			if (CollectionUtils.isNotEmpty(allDefects) && CollectionUtils.isNotEmpty(allStory)) {
 
 				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 				List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
@@ -202,13 +203,13 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 				for (JiraIssue jiraIssue : allDefects) {
 					createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, overAlllinkedmodalValues,
-							linkedDefectList, unlinkedDefectList, jiraIssue, endDate, startDate, allStoryMap,
-							fieldMapping);
+							linkedDefectList, unlinkedDefectList, jiraIssue, endDate, startDate, totalStoriesMap,
+							fieldMapping );
 				}
 				
-				double overAllDefectDensity = calculateDefectDensity(new ArrayList<>(allStoryMap.values()), linkedDefectList, fieldMapping);
+				double overAllDefectDensity = calculateDefectDensity(allStory, linkedDefectList, fieldMapping);
 
-				double overAllDir = calculateDIR(new ArrayList<>(allStoryMap.values()), linkedDefectList);
+				double overAllDir = calculateDIR(allStory, linkedDefectList);
 
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS,
@@ -303,17 +304,13 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
 			List<IterationKpiModalValue> overAlllinkedmodalValues, List<JiraIssue> linkedDefect,
 			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, String endDate, String startDate,
-			Map<String, JiraIssue> allStoriesMap, FieldMapping fieldMapping) {
-
+			Map<String, JiraIssue> totalStoriesMap, FieldMapping fieldMapping ) {
 		try {
 			if (checkIssueCreatedInSprintDuration(jiraIssue, startDate, endDate)) {
 				if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
 					List<JiraIssue> linkedJiraIssueStoryList = new ArrayList<>();
-					jiraIssue.getDefectStoryID().forEach(
-							storyNumber -> allStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
-								linkedJiraIssueStoryList.add(linkedJiraIssueStory);
-								return linkedJiraIssueStory;
-							}));
+					filtersLinkedStories(overAllUnlinkedmodalValues, unlinkedDefect, jiraIssue, totalStoriesMap, fieldMapping,
+							linkedJiraIssueStoryList);
 					if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
 						linkedDefect.add(jiraIssue);
 						KPIExcelUtility.populateIterationDataForQualityStatus(overAlllinkedmodalValues, jiraIssue, true, fieldMapping,
@@ -329,6 +326,33 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		} catch (ParseException e) {
 			log.error("There is some error occured in parsing  ", e);
 		}
+	}
+
+	/**
+	 * if any defects is linked to stories then only consider to linked story and
+	 * if any defects is linked to defect then consider unlinked
+	 * fix for DTS-23222
+	 * @param overAllUnlinkedmodalValues
+	 * @param unlinkedDefect
+	 * @param jiraIssue
+	 * @param totalStoriesMap
+	 * @param fieldMapping
+	 * @param linkedJiraIssueStoryList
+	 */
+	private void filtersLinkedStories(List<IterationKpiModalValue> overAllUnlinkedmodalValues, List<JiraIssue> unlinkedDefect,
+			JiraIssue jiraIssue, Map<String, JiraIssue> totalStoriesMap, FieldMapping fieldMapping,
+			List<JiraIssue> linkedJiraIssueStoryList) {
+		jiraIssue.getDefectStoryID()
+				.forEach(storyNumber -> totalStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
+					if (fieldMapping.getJiradefecttype().contains(linkedJiraIssueStory.getTypeName())) {
+						unlinkedDefect.add(jiraIssue);
+						KPIExcelUtility.populateIterationDataForQualityStatus(overAllUnlinkedmodalValues, jiraIssue,
+								false, null, new ArrayList<>());
+					} else {
+						linkedJiraIssueStoryList.add(linkedJiraIssueStory);
+					}
+					return linkedJiraIssueStory;
+				}));
 	}
 
 	/**
