@@ -135,6 +135,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.getConnectionList(this.urlParam?.toLowerCase() == 'jiratest' ? 'Jira' : this.urlParam);
         this.initializeFields(this.urlParam);
+        this.getJiraTemplate();
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
       }
@@ -925,7 +926,7 @@ export class JiraConfigComponent implements OnInit {
                 type: 'basicDropdown',
                 label: 'JIRA Configuration Template',
                 label2: '',
-                id: 'jiraConfigTemp',
+                id: 'metadataTemplateID',
                 onChangeEventHandler: this.jiraMethodChange,
                 validators: [],
                 containerClass: 'p-sm-6',
