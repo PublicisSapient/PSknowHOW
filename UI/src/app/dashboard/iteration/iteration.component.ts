@@ -394,6 +394,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
+    /**if trendValueList is an object */
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
@@ -439,8 +440,8 @@ export class IterationComponent implements OnInit, OnDestroy {
         }
       }
     }
+    /**if trendValueList is an array */
     else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-      
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'];
         let preAggregatedValues = [];
@@ -534,7 +535,8 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         else if (filters && Object.keys(filters)?.length > 0) {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
