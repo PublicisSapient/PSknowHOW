@@ -308,6 +308,15 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return devCompleteDate;
 	}
 
+	/**
+	 * to maintain values upto 2 places of decimal
+	 * @param value
+	 * @return
+	 */
+	public double roundingOff(double value){
+		return (double)Math.round(value*100)/100;
+	}
+
 	public void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,
 			List<JiraIssue> finalFirstTimePassStoryList) {
@@ -328,7 +337,4 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	}
 
-	public static double roundingOff(double value) {
-		return (double) Math.round(value * 100) / 100;
-	}
 }

@@ -1476,8 +1476,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 */
 	private void setURL(String ticketNumber, KanbanJiraIssue kanbanJiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		Boolean cloudEnv = connectionOptional.isPresent()?connectionOptional.map(Connection::isCloudEnv).get():Boolean.FALSE;
+		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
 		baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
 		if (cloudEnv) {
 			baseUrl = baseUrl.equals("") ? "" : baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
