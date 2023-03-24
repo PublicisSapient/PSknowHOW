@@ -60,8 +60,7 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#horizontalSVG').select('svg').remove();
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
-    d3.select(elem).select('#xCaptionContainer').select('text').remove();
-
+    d3.select(elem).select('#xCaptionContainer').select('text').remove();  
     let data = this.data[0].value ? this.data[0].value : this.data[0].dataCount;
     data = this.formatData(data);
 
@@ -269,7 +268,6 @@ export class GroupBarChartComponent implements OnChanges {
   }
 
   formatData(data) {
-    console.log(data);
     const resultData = {};
     data.forEach((d) => {
       if (!this.subGroups.includes(d.subFilter)) {
