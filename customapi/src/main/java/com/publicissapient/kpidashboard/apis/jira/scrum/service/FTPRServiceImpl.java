@@ -184,7 +184,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		return totalStoryList;
 	}
 
-	private static double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
+	private double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
 		return roundingOff((priorityWiseFTPS * 100) / priorityWiseTotalStory);
 	}
 
