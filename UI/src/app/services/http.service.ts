@@ -134,6 +134,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
 
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
+
+    private jiraTemplateUrl = this.baseUrl +'/api/templates';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -869,5 +871,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         const fileFormData = new FormData();
         fileFormData.append('file', file);
         return this.http.post<object>(this.uploadCert, fileFormData);
+    }
+
+    getJiraTemplate(projectId) {
+        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)     
     }
 }

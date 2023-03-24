@@ -101,6 +101,8 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
+  jiraTemplate : any;
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -177,7 +179,7 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-
+      this.getJiraTemplate()
   }
 
   getPlansForBamboo(connectionId) {
@@ -918,7 +920,19 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
-              }
+              },
+              {
+                type: 'basicDropdown',
+                label: 'JIRA Configuration Template',
+                label2: '',
+                id: 'jiraConfigTemp',
+                onChangeEventHandler: this.jiraMethodChange,
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: ``,
+                disabled: 'false',
+                show: true,
+              },
             ],
           };
         }
@@ -2348,5 +2362,11 @@ export class JiraConfigComponent implements OnInit {
       this.hideFormElements(['testRegressionByCustomField']);
       this.showFormElements(['jiraRegressionTestValue']);
     }
+  }
+
+  getJiraTemplate(){
+    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+      this.jiraTemplate = resp.filter(temp=>temp.tool.toLowerCase() === 'jira');
+    })
   }
 }
