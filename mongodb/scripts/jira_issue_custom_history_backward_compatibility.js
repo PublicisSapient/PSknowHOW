@@ -46,36 +46,3 @@ jiraIssueHistorys.forEach(function(historyObject) {
 });
 
 print("End : backward compatibility script for jira issue custom history");
-
-
-
-var oldHistoryObjectCount = db.jira_issue_custom_history.find({
-        "storySprintDetails": {
-            $exists: true,
-            $not: {
-                $size: 0
-            }
-        }
-    })
-    .projection({})
-    .sort({
-        _id: -1
-    })
-    .count()
-
-var newHistoryObjectCount = db.jira_issue_custom_history.find({
-        "statusUpdationLog": {
-            $exists: true,
-            $not: {
-                $size: 0
-            }
-        }
-    })
-    .projection({})
-    .sort({
-        _id: -1
-    })
-    .count()
-
-print("Object Modified Successfully :" + newHistoryObjectCount);
-print("Object Not Modified :" + oldHistoryObjectCount);
