@@ -380,8 +380,37 @@ export class IterationComponent implements OnInit, OnDestroy {
         item['value1'] = item['value1']?.toFixed(2);
       }
     });
-    
+
+    const evalvateExpression = aggregatedArr[0]['data'].filter(el => el.hasOwnProperty('expressions'));
+    if(evalvateExpression.length > 0){
+      evalvateExpression.forEach(item =>{
+        this.evalvateExpression(item, aggregatedArr[0]['data'],arr);
+      });
+    }
     return aggregatedArr;
+  }
+
+  evalvateExpression(element, aggregatedArr, filteredArr) {
+
+    const tempArr = [];
+    const operandsArr = element['expressions'];
+
+    operandsArr.forEach(op => {
+      if (op === 'percentage') {
+        const op2 = tempArr.pop();
+        const op1 = tempArr.pop();
+        tempArr.push(+((op1 / op2) * 100).toFixed(2));
+      } else if (op === 'average') {
+        const op2 = tempArr.pop();
+        const op1 = tempArr.pop();
+        tempArr.push(+(op1 / op2).toFixed(2));
+      } else {
+        const opValue = aggregatedArr.find(x => x.label === op)?.value;
+        tempArr.push(opValue);
+      }
+    });
+
+    element.value = tempArr[0];
   }
 
   createCombinations(arr1, arr2) {
