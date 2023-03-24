@@ -101,13 +101,7 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
-  jiraTemplate = [
-    { id: '', templateName: 'Template Name' },
-    { id: '63f7179d52f4fe210a54ae79', templateName: 'DOJO SAFe Template1' },
-    { id: '63f7179d52f4fe210a54ae7a', templateName: 'DOJO SAFe Template2' },
-    { id: '63f71a2452f4fe210a54ae7b', templateName: 'DOJO Agile Template3' },
-    { id: '63f71a2452f4fe210a54ae7c', templateName: 'DOJO Agile Template4' },
-  ];
+  jiraTemplate : any;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -185,7 +179,7 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-
+      this.getJiraTemplate()
   }
 
   getPlansForBamboo(connectionId) {
@@ -2368,5 +2362,11 @@ export class JiraConfigComponent implements OnInit {
       this.hideFormElements(['testRegressionByCustomField']);
       this.showFormElements(['jiraRegressionTestValue']);
     }
+  }
+
+  getJiraTemplate(){
+    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+      this.jiraTemplate = resp.filter(temp=>temp.tool.toLowerCase() === 'jira');
+    })
   }
 }
