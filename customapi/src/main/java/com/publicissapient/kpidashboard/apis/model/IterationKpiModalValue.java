@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -73,7 +74,7 @@ public class IterationKpiModalValue implements Serializable {
 	private String waitTime;
 	@JsonProperty("Total Wastage")
 	private String wastage;
-	@JsonProperty("Actual Completion date")
+	@JsonProperty("Actual Completion Date")
 	private String actualCompletionDate;
 	@JsonProperty("Remaining Days")
 	private String remainingTimeInDays;
@@ -81,8 +82,22 @@ public class IterationKpiModalValue implements Serializable {
 	private String predictedCompletionDate;
 	@JsonProperty("Potential Delay(in days)")
 	private String potentialDelay;
+	@JsonProperty("Overall Delay")
+	private String potentialOverallDelay;
 	@JsonProperty("Issue Priority")
 	private String issuePriority;
-
+	@JsonProperty("Linked Stories")
+	private Map<String, String> linkedStories;
+	@JsonProperty("Linked Stories Size")
+	private String linkedStoriesSize;
+	@JsonProperty("Delay(in days)")
+	private String delayInDays;
+	@JsonProperty("Actual Start Date")
+	private String actualStartDate;
+	@JsonProperty("Dev Completion Date")
+	private String devCompletionDate;
+	@JsonProperty("Dev Due Date")
+	private String devDueDate;
+	private String marker;
 
 }

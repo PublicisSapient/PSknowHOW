@@ -151,10 +151,4 @@ public class ProjectToolConfigController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
-
-	@RequestMapping(value = "/jiraProjectList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> getJiraProjectList() {
-		ServiceResponse serviceResponse = toolService.getJiraProjects();
-		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-	}
 }

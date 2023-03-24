@@ -188,14 +188,15 @@ public final class KpiDataHelper {
 		List<String> addFilterCategoryList = new ArrayList<>(addFilterCat.keySet());
 		Map<String, Map<String, List<KanbanCapacity>>> projectAndDateWiseCapacityMap = new HashMap<>();
 		if (Constant.DATE.equals(subGroupCategory) || addFilterCategoryList.contains(subGroupCategory)) {
-			Map<String, List<KanbanCapacity>> projectWiseCapacityMap =  ticketList.stream()
-						.collect(Collectors.groupingBy(ticket->ticket.getBasicProjectConfigId().toString(), Collectors.toList()));
-
+			Map<String, List<KanbanCapacity>> projectWiseCapacityMap = ticketList.stream().collect(
+					Collectors.groupingBy(ticket -> ticket.getBasicProjectConfigId().toString(), Collectors.toList()));
 			projectWiseCapacityMap.forEach((project, capacityList) -> {
 				Map<String, List<KanbanCapacity>> dateWiseCapacityMap = new HashMap<>();
 				capacityList.forEach(kanbanCapacity -> {
 					for (LocalDate date = kanbanCapacity.getStartDate(); (date.isBefore(kanbanCapacity.getEndDate())
-							|| date.isEqual(kanbanCapacity.getEndDate())); date = date.plusDays(1)) {
+							|| date.isEqual(kanbanCapacity.getEndDate()))
+							&& !(date.getDayOfWeek().equals(DayOfWeek.SUNDAY)
+									|| date.getDayOfWeek().equals(DayOfWeek.SATURDAY)); date = date.plusDays(1)) {
 						String formattedDate = date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 						dateWiseCapacityMap.putIfAbsent(formattedDate, new ArrayList<>());
 						dateWiseCapacityMap.get(formattedDate).add(kanbanCapacity);
@@ -380,9 +381,15 @@ public final class KpiDataHelper {
 				filterJiraIssue.setPriority(sprintIssue.getPriority());
 				filterJiraIssue.setStatus(sprintIssue.getStatus());
 				filterJiraIssue.setTypeName(sprintIssue.getTypeName());
-				if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
+				if(null!=filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()){
+					filterJiraIssue.setRemainingEstimateMinutes((filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()));
+				}
+				else if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
 					Double remainingEst = (sprintIssue.getRemainingEstimate()) / 60;
 					filterJiraIssue.setRemainingEstimateMinutes(remainingEst.intValue());
+				}
+				if(null!=filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()){
+					filterJiraIssue.setOriginalEstimateMinutes((filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 				}
 				filteredIssues.add(filterJiraIssue);
 			}

@@ -25,6 +25,7 @@ import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
  * Client for fetching job and build information from Teamcity.
@@ -44,10 +45,15 @@ public interface TeamcityClient {
     /**
      * Fetch full populated build information for a build.
      *
-     * @param buildUrl the url of the build
-     * @param instanceUrl the url of Teamcity server
-     * @param teamcityServer the teamcity server
+     * @param buildUrl
+     * 		the url of the build
+     * @param instanceUrl
+     * 		the url of Teamcity server
+     * @param teamcityServer
+     * 		the teamcity server
+     * @param proBasicConfig
      * @return a Build instance or null
      */
-    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer);
+    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+            ProjectBasicConfig proBasicConfig);
 }

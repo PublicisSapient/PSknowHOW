@@ -448,6 +448,13 @@
         "estimate" : "0.0"
       },
       {
+        "number" : "DTS-18475",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
         "number" : "DTS-19003",
         "priority" : "P4 - Minor",
         "status" : "In Investigation",
@@ -702,7 +709,7 @@
     ],
     "puntedIssues" : [
       {
-        "number" : "DTS-17135",
+        "number" : "DTS-19485",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "Open",
@@ -739,6 +746,14 @@
       "DTS-19036"
     ],
     "totalIssues" : [
+      {
+        "number" : "DTS-19485",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "remainingEstimate" : "28800"
+      },
       {
         "number" : "DTS-16627",
         "originBoardId" : "11856",
