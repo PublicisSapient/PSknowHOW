@@ -160,8 +160,8 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			int commentsInfoSize = commentsInfo.size();
-			int perKpiMaxCommentsCount=customApiConfig.getKpiCommentsMaxStoreCount();
-			if (commentsInfoSize < perKpiMaxCommentsCount) {
+			int perKpiMaxCommentsStoreCount=customApiConfig.getKpiCommentsMaxStoreCount();
+			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
 				newCommentsInfo.addAll(commentsInfo);
 				matchedKpiComment.setCommentsInfo(newCommentsInfo);
 				kpiCommentsRepository.save(matchedKpiComment);
