@@ -35,6 +35,7 @@ import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import {DropdownModule} from 'primeng/dropdown';
 
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
@@ -72,7 +73,8 @@ describe('JiraConfigComponent', () => {
     createdAt: '2020-11-27T04:55:21',
     updatedAt: '2020-11-27T04:55:21',
     queryEnabled: true,
-    boardQuery: ''
+    boardQuery: '',
+    metadataTemplateID : "641d986af8d42d02b0c2558f"
   }];
   const fakeBranchListForProject = require('../../../../test/resource/fakeBranchListForProject.json')
   const fakeProject = {
@@ -125,6 +127,7 @@ describe('JiraConfigComponent', () => {
         InputSwitchModule,
         ChipsModule,
         AutoCompleteModule,
+        DropdownModule,
         ToastModule,
         TableModule,
         TooltipModule,
@@ -185,6 +188,14 @@ describe('JiraConfigComponent', () => {
   it('should save form', () => {
     component.ngOnInit();
     component.toolForm.controls['projectKey'].setValue('1212');
+    component.toolForm.controls['metadataTemplateID'].setValue({
+      id:"641d986af8d42d02b0c2558f",
+      kanban:true,
+      templateCode: "1",
+      templateName:"DOJO Agile Template",
+      tool: "Jira"
+    });
+   
     component.queryEnabled =true;
     component.toolForm.controls['boardQuery'].setValue(`Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`);
     component.isEdit = false;
@@ -733,6 +744,37 @@ describe('JiraConfigComponent', () => {
     component.bambooPlanList = [];
     component.jobTypeChangeHandler(value,elementId);
     expect(component.hideFormElements).toHaveBeenCalled();
+  })
+
+  it("should get template list and filter based on kanban",()=>{
+    const templateList = [ {
+      id: "641cc51bd830154a05d77370",
+      tool: "Jira",
+      templateName: "DOJO Studio Template",
+      templateCode: "6",
+      kanban: false
+  },
+  {
+      id: "641cc51bd830154a05d77371",
+      tool: "Jira",
+      templateName: "Standard Template",
+      templateCode: "7",
+      kanban: false
+  },
+  {
+      id: "641cc51bd830154a05d77372",
+      tool: "Jira",
+      templateName: "Standard Template",
+      templateCode: "8",
+      kanban: true
+  },]
+  component.selectedProject = {
+    id : "641cc51bd830154a05d77370",
+    Type : "kanban"
+  }
+    spyOn(httpService,'getJiraTemplate').and.returnValue(of(templateList))
+    component.getJiraTemplate()
+    expect(component.jiraTemplate.length).toBe(1);
   })
 
 });
