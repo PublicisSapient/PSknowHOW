@@ -18,9 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
 
 public interface PushDataTraceLogService {
 
-   void save(PushDataTraceLog pushDataTraceLog);
+	void save(PushDataTraceLog pushDataTraceLog);
+
+	List<PushDataTraceLogDTO> getByProjectConfigId(ObjectId basicProjectConfigId);
+
+	void setTraceLog(String unauthorizedAccessException, Object object);
+
 }

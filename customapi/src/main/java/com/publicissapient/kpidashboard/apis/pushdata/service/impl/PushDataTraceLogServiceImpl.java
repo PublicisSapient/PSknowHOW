@@ -18,13 +18,22 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.repository.PushDataTraceLogRepository;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
+import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 
 @Service
 public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
@@ -37,4 +46,38 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 		pushDataTraceLogRepository.save(pushDataTraceLog);
 		PushDataTraceLog.destroy();
 	}
+
+	@Override
+	public List<PushDataTraceLogDTO> getByProjectConfigId(ObjectId basicProjectConfigId) {
+		List<PushDataTraceLog> byBasicProjectConfigId = pushDataTraceLogRepository
+				.findByBasicProjectConfigId(basicProjectConfigId);
+		List<PushDataTraceLogDTO> pushDataTraceLogDTO = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(byBasicProjectConfigId)) {
+			ModelMapper modelMapper = new ModelMapper();
+			byBasicProjectConfigId.stream().forEach(pushDataTraceLog -> pushDataTraceLogDTO
+					.add(modelMapper.map(pushDataTraceLog, PushDataTraceLogDTO.class)));
+			return pushDataTraceLogDTO;
+		}
+		return null;
+	}
+
+	@Override
+	public void setTraceLog(String unauthorizedAccessException, Object object) {
+		PushDataTraceLog instance = PushDataTraceLog.getInstance();
+		instance.setErrorMessage(unauthorizedAccessException);
+		if (object instanceof HttpStatus) {
+			HttpStatus code = (HttpStatus) object;
+			instance.setResponseCode(String.valueOf(code.value()));
+			instance.setResponseStatus(code.getReasonPhrase());
+			save(instance);
+			throw new PushDataException(unauthorizedAccessException, code);
+		} else {
+			instance.setResponseCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+			instance.setResponseStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+			save(instance);
+			throw new PushDataException(unauthorizedAccessException, (PushDataResponse) object);
+		}
+
+	}
+	
 }

@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
@@ -66,7 +67,7 @@ public class DeployServiceImpl {
 	 * @param pushDataDetails
      * @return
 	 */
-	public int checkandCreateDeployment(ObjectId basicProjectConfigId, List<PushDeploy> deployList,
+	public int checkandCreateDeployment(ObjectId basicProjectConfigId, Set<PushDeploy> deployList,
                                         List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
@@ -97,7 +98,7 @@ public class DeployServiceImpl {
 		PushDataDetail pushDataDetail=new PushDataDetail();
 		pushDataDetail.setTool("deploy");
 		pushDataDetail.setJobName(pushErrorData.getJobName());
-		pushDataDetail.setNumber(pushErrorData.getNumber());
+		pushDataDetail.setJobNumber(pushErrorData.getNumber());
 		List<String> errors=new ArrayList<>();
 		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
 			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));

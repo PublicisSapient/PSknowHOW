@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class BuildServiceImpl {
 	 * @param pushDataDetails
 	 * @return
 	 */
-	public int checkandCreateBuilds(ObjectId basicProjectConfigId, List<PushBuild> buildsList, List<Build> buildList,
+	public int checkandCreateBuilds(ObjectId basicProjectConfigId, Set<PushBuild> buildsList, List<Build> buildList,
 									List<PushErrorData> buildErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(buildsList)) {
@@ -95,7 +96,7 @@ public class BuildServiceImpl {
 		PushDataDetail pushDataDetail=new PushDataDetail();
 		pushDataDetail.setTool("build");
 		pushDataDetail.setJobName(pushErrorData.getJobName());
-		pushDataDetail.setNumber(pushErrorData.getNumber());
+		pushDataDetail.setJobNumber(pushErrorData.getNumber());
 		List<String> errors=new ArrayList<>();
 		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
 			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));

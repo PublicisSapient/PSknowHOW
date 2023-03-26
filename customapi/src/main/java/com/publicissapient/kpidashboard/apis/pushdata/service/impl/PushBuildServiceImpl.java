@@ -20,9 +20,6 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -33,9 +30,12 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -91,27 +91,28 @@ public class PushBuildServiceImpl implements PushBaseService {
 		pushDataResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
 		log.info(
 				"Total Records for " + projectConfigId + " to be Saved are " + pushDataResponse.getTotalSavedRecords());
-		totalSaveRecords(pushDataResponse, buildList, deploymentList);
+		totalSaveRecords(pushDataResponse, buildList, deploymentList,pushDataDetails);
 		return pushDataResponse;
 
 	}
 
 	/**
 	 * partial correct data will not be saved to respective dba
-	 * 
 	 * @param pushDataResponse
 	 * @param buildList
 	 * @param deploymentList
+	 * @param pushDataDetails
 	 */
 	private void totalSaveRecords(PushDataResponse pushDataResponse, List<Build> buildList,
-			List<Deployment> deploymentList) {
+			List<Deployment> deploymentList, List<PushDataDetail> pushDataDetails) {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
 		instance.setTotalRecord(pushDataResponse.getTotalRecords());
 		instance.setTotalFailedRecord(pushDataResponse.getTotalFailedRecords());
 		if (pushDataResponse.getTotalRecords() != pushDataResponse.getTotalSavedRecords()) {
 			pushDataResponse.setTotalSavedRecords(0);
 			instance.setTotalSavedRecord(0);
-			throw new PushDataException("Errors in particular below ids", pushDataResponse);
+			instance.setPushDataDetails(pushDataDetails);
+			pushDataTraceLogService.setTraceLog("Errors in particular below ids", pushDataResponse);
 		}
 		pushDataTraceLogService.save(instance);
 		buildService.saveBuilds(buildList);

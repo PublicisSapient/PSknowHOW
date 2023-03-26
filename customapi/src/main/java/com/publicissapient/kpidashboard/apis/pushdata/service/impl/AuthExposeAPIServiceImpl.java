@@ -24,10 +24,6 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
-import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
@@ -37,12 +33,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenRequestDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenResponseDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenRepository;
-import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.common.util.Encryption;
 import com.publicissapient.kpidashboard.common.util.EncryptionException;
 
@@ -123,7 +122,7 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 		instance.setRequestTime(LocalDateTime.now().toString());
 		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
 		if (exposeApiToken == null) {
-			throw new PushDataException("Generate Token Push Data via KnowHow tool configuration screen",
+			pushDataTraceLogService.setTraceLog("Generate Token Push Data via KnowHow tool configuration screen",
 					HttpStatus.UNAUTHORIZED);
 		}
 		checkProjectAccessPermission(exposeApiToken,instance);
@@ -140,13 +139,13 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 		traceLog.setUserName(exposeApiToken.getUserName());
 		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(),
 				exposeApiToken.getUserName())) {
-			throw new PushDataException("Permission Denied", HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setTraceLog("Permission Denied", HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	private void checkExpiryToken(ExposeApiToken exposeApiToken) {
 		if (exposeApiToken.getExpiryDate().isBefore(LocalDate.now())) {
-			throw new PushDataException("Token Expired, Please Generate New Token", HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setTraceLog("Token Expired, Please Generate New Token", HttpStatus.UNAUTHORIZED);
 		}
 	}
 

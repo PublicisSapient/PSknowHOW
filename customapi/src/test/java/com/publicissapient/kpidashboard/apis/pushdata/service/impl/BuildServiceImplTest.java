@@ -83,7 +83,7 @@ public class BuildServiceImplTest {
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList, pushDataDetails);
 		Assert.assertEquals(0, buildFailedRecords);
-		Assert.assertEquals(3, buildList.size());
+		Assert.assertEquals(2, buildList.size());
 	}
 
 	@Test
@@ -142,9 +142,9 @@ public class BuildServiceImplTest {
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
 				buildList, errorDataList, pushDataDetails);
-		Assert.assertEquals(3, buildFailedRecords);
+		Assert.assertEquals(2, buildFailedRecords);
 		Assert.assertEquals(0, buildList.size());
-		Assert.assertEquals(3,
+		Assert.assertEquals(2,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());

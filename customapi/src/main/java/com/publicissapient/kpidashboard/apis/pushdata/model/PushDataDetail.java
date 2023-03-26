@@ -26,6 +26,6 @@ import lombok.Data;
 public class PushDataDetail {
 	private String tool;
 	private String jobName;
-	private String number;
+	private String jobNumber;
 	List<String> errors;
 }

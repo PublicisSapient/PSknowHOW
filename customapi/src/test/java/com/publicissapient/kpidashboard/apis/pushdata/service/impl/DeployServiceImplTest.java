@@ -136,9 +136,9 @@ public class DeployServiceImplTest {
 		List<PushErrorData> errorDataList = new ArrayList<>();
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
 				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList, pushDataDetails);
-		Assert.assertEquals(2, deployFailedRecords);
+		Assert.assertEquals(1, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
-		Assert.assertEquals(2,
+		Assert.assertEquals(1,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());
