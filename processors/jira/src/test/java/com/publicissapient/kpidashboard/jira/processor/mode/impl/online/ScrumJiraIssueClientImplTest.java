@@ -262,7 +262,7 @@ public class ScrumJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatus(Arrays.asList("Dropped"));
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -339,7 +339,7 @@ public class ScrumJiraIssueClientImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatus(Arrays.asList("Dropped"));
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
