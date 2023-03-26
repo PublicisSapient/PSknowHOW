@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.TemplateDetails;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;

@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.TemplateDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -98,7 +97,5 @@ public class ProjectToolConfig extends BasicModel {
 
 	//template ID
 	private ObjectId metadataTemplateID;
-	private String metadataTemplateName;
-//	private List<TemplateDetails> metadataTemplate;
 
 }
