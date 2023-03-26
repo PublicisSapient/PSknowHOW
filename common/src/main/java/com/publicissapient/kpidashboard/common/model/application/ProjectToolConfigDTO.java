@@ -98,7 +98,4 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private ObjectId metadataTemplateID;
-	private String metadataTemplateName;
-	//private List<TemplateDetails> metadataTemplate;
-
 }

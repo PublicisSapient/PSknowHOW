@@ -238,6 +238,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setJiraRegressionTestValue(projectToolConfig.getJiraRegressionTestValue());
 		projectTool.setJiraCanBeAutomatedTestValue(projectToolConfig.getJiraCanBeAutomatedTestValue());
 		projectTool.setTestCaseStatus(projectToolConfig.getTestCaseStatus());
+		projectTool.setMetadataTemplateID(projectToolConfig.getMetadataTemplateID());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -370,6 +371,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setQueryEnabled(e.isQueryEnabled());
 			projectConfToolDto.setBoardQuery(e.getBoardQuery());
 			projectConfToolDto.setBoards(e.getBoards());
+			projectConfToolDto.setMetadataTemplateID(e.getMetadataTemplateID());
 			projectConfToolDto.setRegressionAutomationLabels(e.getRegressionAutomationLabels());
 			projectConfToolDto.setTestAutomationStatusLabel(e.getTestAutomationStatusLabel());
 			projectConfToolDto.setAutomatedTestValue(e.getAutomatedTestValue());

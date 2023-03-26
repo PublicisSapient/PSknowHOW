@@ -330,14 +330,6 @@ db.getCollection('metadata_identifier').remove({});
 			"value" : [  "Dropped", "Rejected" ]
 		},
 		{
-			"type" : "firststatus",
-			"value" : [ "Open" ]
-		},
-		{
-			"type" : "jiraLiveStatus",
-			"value" : [ "Closed" ]
-		},
-		{
 			"type" : "delivered",
 			"value" : [ "Closed" ]
 		},
@@ -397,14 +389,6 @@ db.getCollection('metadata_identifier').remove({});
 			"value" : [  "Dropped", "Rejected" ]
 		},
 		{
-			"type" : "firststatus",
-			"value" : [ "Open" ]
-		},
-		{
-			"type" : "jiraLiveStatus",
-			"value" : [ "Closed" ]
-		},
-		{
 			"type" : "delivered",
 			"value" : [ "Closed" ]
 		},
@@ -453,7 +437,7 @@ db.getCollection('metadata_identifier').remove({});
 	"workflow" : [
 		{
 			"type" : "dor",
-			"value" : [ "Ready for Sprint Planning", "In Progress" ]
+			"value" : [ "Open" ]
 		},
 		{
 			"type" : "dod",
@@ -462,14 +446,6 @@ db.getCollection('metadata_identifier').remove({});
 		{
 			"type" : "rejectionResolution",
 			"value" : [  "Dropped", "Rejected" ]
-		},
-		{
-			"type" : "firststatus",
-			"value" : [ "Open" ]
-		},
-		{
-			"type" : "jiraLiveStatus",
-			"value" : [ "Closed" ]
 		},
 		{
 			"type" : "delivered",

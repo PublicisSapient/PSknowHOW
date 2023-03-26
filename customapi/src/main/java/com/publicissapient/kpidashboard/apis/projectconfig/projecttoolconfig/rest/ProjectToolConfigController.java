@@ -92,8 +92,6 @@ public class ProjectToolConfigController {
 		projectToolConfig.setId(null);
 		projectToolConfig.setBasicProjectConfigId(new ObjectId(basicProjectConfigId));
 		projectToolConfig.setMetadataTemplateID(projectToolDTO.getMetadataTemplateID());
-		projectToolConfig.setMetadataTemplateName(projectToolDTO.getMetadataTemplateName());
-		//projectToolConfig.setMetadataTemplate(projectToolDTO.getMetadataTemplate());
 		log.info("created and saved new projectToolConfigDTO");
 		return ResponseEntity.status(HttpStatus.OK).body(toolService.saveProjectToolDetails(projectToolConfig));
 	}
