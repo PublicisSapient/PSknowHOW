@@ -167,7 +167,7 @@ public final class CommonConstant {
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
 
-
+	public static final String REJECTED = "Rejected";
 
 
 
