@@ -4,7 +4,6 @@ import { environment } from '../environments/environment';
 
 addEventListener('message', ({ data }) => {
   let response = `worker response to ${data} and ${environment.baseUrl}`;
-  console.log('In app.worker');
 
   const xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
