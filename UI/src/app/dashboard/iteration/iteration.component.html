@@ -95,6 +95,12 @@
                                   [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
                                   [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                 </app-groupstackchart>
+                                <app-group-bar-chart *ngSwitchCase="'GroupBarChart'"
+                                [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
+                              </app-group-bar-chart>
 
 
                                 <app-piechart *ngSwitchCase="'pieChart'"

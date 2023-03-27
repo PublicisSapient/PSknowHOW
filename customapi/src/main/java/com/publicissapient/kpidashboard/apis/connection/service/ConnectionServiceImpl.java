@@ -478,7 +478,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 		existingConnection.setConnectionName(connection.getConnectionName());
 		existingConnection.setConsumerKey(connection.getConsumerKey());
-		existingConnection.setIsOAuth(connection.getIsOAuth());
 		if (StringUtils.isNotEmpty(connection.getPassword())) {
 			existingConnection.setPassword(connection.getPassword());
 		}
@@ -499,6 +498,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setConnPrivate(connection.isConnPrivate());
 		existingConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
+		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
+		existingConnection.setBearerToken(connection.isBearerToken());
 	}
 
 	private void saveConnection(Connection conn) {
