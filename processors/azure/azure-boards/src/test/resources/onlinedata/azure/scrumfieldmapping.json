@@ -48,7 +48,7 @@
 	"jiraTechDebtValue": [
 		"TECH_DEBT"
 	],
-	"jiraDefectRejectionStatus": ["Rejection"],
+	"jiraDefectRejectionStatus": "Rejection",
 	"jiraBugRaisedByIdentification": "CustomField",
 	"jiraBugRaisedByValue": [
 		"Client Testing (UAT)"

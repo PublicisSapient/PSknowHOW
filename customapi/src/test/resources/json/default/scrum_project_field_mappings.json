@@ -57,7 +57,7 @@
     "jiraTechDebtIdentification": "",
     "jiraTechDebtCustomField": "",
     "jiraTechDebtValue": [],
-    "jiraDefectRejectionStatus": ["Closed"],
+    "jiraDefectRejectionStatus": "Closed",
     "jiraBugRaisedByIdentification": "",
     "jiraBugRaisedByValue": [],
     "jiraDefectSeepageIssueType": [

@@ -53,7 +53,7 @@
     "jiraTechDebtIdentification": "",
     "jiraTechDebtCustomField": "",
     "jiraTechDebtValue": [],
-    "jiraDefectRejectionStatus": ["Closed"],
+    "jiraDefectRejectionStatus": "Closed",
     "jiraBugRaisedByIdentification": "Labels",
     "jiraBugRaisedByValue": [
       "Prod_Defect ",

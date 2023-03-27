@@ -1243,8 +1243,8 @@ public class KpiHelperService { // NOPMD
 		if (CollectionUtils.isNotEmpty(fieldMapping.getResolutionTypeForRejection())) {
 			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, fieldMapping.getResolutionTypeForRejection());
 		}
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDefectRejectionStatus())) {
-			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, fieldMapping.getJiraDefectRejectionStatus());
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDefectRejectionStatus())) {
+			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
 		}
 		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
 	}

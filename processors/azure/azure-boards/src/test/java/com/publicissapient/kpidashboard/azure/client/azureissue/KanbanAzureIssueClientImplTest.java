@@ -219,7 +219,7 @@ public class KanbanAzureIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus(Arrays.asList("Dropped"));
+		fieldMapping.setJiraDefectRejectionStatus("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -296,7 +296,7 @@ public class KanbanAzureIssueClientImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus(Arrays.asList("Dropped"));
+		fieldMapping.setJiraDefectRejectionStatus("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();

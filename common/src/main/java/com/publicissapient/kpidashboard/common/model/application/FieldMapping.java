@@ -72,7 +72,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraTechDebtIdentification;
 	private String jiraTechDebtCustomField;
 	private List<String> jiraTechDebtValue;
-	private List<String> jiraDefectRejectionStatus;
+	private String jiraDefectRejectionStatus;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
 	private List<String> jiraDefectSeepageIssueType;
