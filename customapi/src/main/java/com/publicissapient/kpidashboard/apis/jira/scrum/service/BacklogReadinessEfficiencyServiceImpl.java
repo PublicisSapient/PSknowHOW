@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,6 @@ import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceH
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -66,9 +66,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String STORYPOINTS = "Story Point";
 	private static final String OVERALL = "Overall";
-	private static final String SP = "SP";
+	private static final DecimalFormat decfor = new DecimalFormat("0.00");
 
 	@Autowired
 	private BacklogService backlogService;
@@ -98,8 +97,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (filters == Filters.SPRINT) {
-				getAverageSprintCapacity(v, trendValue, kpiRequest);
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
+
+				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest,
+						getAverageSprintCapacity(v, kpiRequest));
 			}
 		});
 		return kpiElement;
@@ -135,10 +135,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
+	 * @param avgVelocity
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+			KpiRequest kpiRequest, Double avgVelocity) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -162,9 +163,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
-			List<IterationKpiValue> iterationKpiValues = trendValue.getValue() != null
-					? (List<IterationKpiValue>) trendValue.getValue()
-					: new ArrayList<>();
+			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllIssueCount = Arrays.asList(0);
 			List<Double> overAllStoryPoints = Arrays.asList(0.0);
 			AtomicLong overAllCycleTime = new AtomicLong(0);
@@ -173,7 +172,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				priorityWiseIssue.forEach((priority, issues) -> {
 					issueTypes.add(issueType);
 					priorities.add(priority);
-					List<IterationKpiModalValue> modalValues = new ArrayList<>();
 					int issueCount = 0;
 					Double storyPoint = 0.0;
 					long cycleTime = 0;
@@ -190,13 +188,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						}
 					}
 					List<IterationKpiData> data = new ArrayList<>();
-					IterationKpiData issuesForDevelopment = new IterationKpiData(ISSUES, Double.valueOf(issueCount),
-							Double.valueOf(issueCount), null, "", modalValues);
-					IterationKpiData averageCycleTime = new IterationKpiData("Cycle time",
-							cycleTime / Double.valueOf(issueCount), null, null, "", modalValues);
-					IterationKpiData storyPoints = new IterationKpiData(STORYPOINTS, storyPoint, null, null, SP, null);
+					IterationKpiData issuesForDevelopment = new IterationKpiData("Ready Backlog",
+							Double.valueOf(issueCount), storyPoint, null, "SP", null);
+					IterationKpiData averageCycleTime = new IterationKpiData("Readiness Cycle time",
+							cycleTime / Double.valueOf(issueCount), null, null, "days", null);
 					data.add(issuesForDevelopment);
-					data.add(storyPoints);
 					data.add(averageCycleTime);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
 					iterationKpiValues.add(iterationKpiValue);
@@ -205,17 +201,19 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			});
 			List<IterationKpiData> data = new ArrayList<>();
 
-			IterationKpiData overAllIssues = new IterationKpiData(ISSUES, Double.valueOf(overAllIssueCount.get(0)),
-					null, null, "", null);
-			IterationKpiData overSp = new IterationKpiData(STORYPOINTS, overAllStoryPoints.get(0), null, null, SP,
-					null);
-			IterationKpiValue iterationKpiValue = iterationKpiValues.get(0);
-			IterationKpiData backLogStrength = new IterationKpiData("Backlog Strength",
-					overAllStoryPoints.get(0) / iterationKpiValue.getData().get(0).getValue(), null, null, "", null);
-			IterationKpiData averageOverAllCycleTime = new IterationKpiData("Cycle time",
-					overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0)), null, null, "", null);
+			IterationKpiData overAllIssues = new IterationKpiData("Ready Backlog",
+					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0),
+					null, "SP", null);
+			double strength = Math.round(overAllStoryPoints.get(0) / avgVelocity);
+			IterationKpiData backLogStrength = new IterationKpiData("Backlog Strength", strength, null, null,
+					"Sprint", null);
+			// IterationKpiData averageOverAllCycleTime = new IterationKpiData("Avg.
+			// Readiness Cycle time",
+			// overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0)), null,
+			// null, "days", null);
+			IterationKpiData averageOverAllCycleTime = new IterationKpiData("Readiness Cycle time", 10.0, null,
+					null, "days", null);
 			data.add(overAllIssues);
-			data.add(overSp);
 			data.add(backLogStrength);
 			data.add(averageOverAllCycleTime);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
@@ -259,7 +257,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		return difference;
 	}
 
-	private void getAverageSprintCapacity(List<Node> sprintLeafNodeList, DataCount trendValue, KpiRequest kpiRequest) {
+	private Double getAverageSprintCapacity(List<Node> sprintLeafNodeList, KpiRequest kpiRequest) {
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		Collections.reverse(sprintLeafNodeList);
@@ -286,15 +284,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssues);
 			storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
 		});
-		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-		List<IterationKpiData> data = new ArrayList<>();
-		IterationKpiData overAllSprintVelocity = new IterationKpiData(ISSUES,
-				Double.valueOf(storyPoint.get() / customApiConfig.getSprintCountForBackLogStrength()), null, null, "",
-				null);
-		data.add(overAllSprintVelocity);
-		IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-		iterationKpiValues.add(overAllIterationKpiValue);
-		trendValue.setValue(iterationKpiValues);
+		return Double.valueOf(storyPoint.get() / customApiConfig.getSprintCountForBackLogStrength());
 	}
 
 }

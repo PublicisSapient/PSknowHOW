@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+
 @Service
 public class SprintVelocityServiceHelper {
 
@@ -80,4 +81,5 @@ public class SprintVelocityServiceHelper {
 		}
 		return sprintVelocityForCurrentLeaf;
 	}
+
 }
