@@ -40,7 +40,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   svg: any;
   margin = 50;
-  width = '100%';
+  width = 480;
   height = 298;
   // The radius of the pie chart is half the smallest side
   radius =  this.height / 2 - this.margin;
@@ -70,7 +70,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   createColors(): void {
     this.colors = d3
       .scaleOrdinal()
-      .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
+      .domain(this.pieChartValuesArray.map((d) => d?.value?.toString()))
       .range(['#FFA193',
         '#00B1B0',
         '#FEC84D',
@@ -95,9 +95,9 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   drawChart(): void {
     // Compute the position of each group on the pie:
     this.pieChartValuesArray = [];
-    const width = this.width;
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
-    const pieChartValues = this.data[0]?.value[0]?.value;
+    
+    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
@@ -109,10 +109,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
     const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");
-    var foWidth = 300;
-    var anchor = {'w': width/3, 'h': this.height/3};
-    var t = 50, k = 15;
-    var tip = {'w': (3/4 * t), 'h': k};
     // Build the pie chart
     this.svg
     .selectAll('pieces')
@@ -124,60 +120,37 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
     
-      var fo = this.svg.append('foreignObject')
-      .attr({
-          'x': anchor.w - tip.w,
-          'y': anchor.h + tip.h,
-          'width': foWidth,
-          'class': 'svg-tooltip'
-      });
-  var div = fo.append('xhtml:div')
-      .append('div')
-      .attr({
-          'class': 'tooltip'
-      });
-  div.append('p')
-      .attr('class', 'lead')
-      .html('Holmes was certainly not a difficult man to live with.');
-  div.append('p')
-      .html('He was quiet in his ways, and his habits were regular. It was rare for him to be up after ten at night, and he had invariably breakfasted and gone out before I rose in the morning.');
-  var foHeight = div[0][0].getBoundingClientRect().height;
-  fo.attr({
-      'height': foHeight
-  });
-  this.svg.insert('polygon', '.svg-tooltip')
-      .attr({
-          'points': "0,0 0," + foHeight + " " + foWidth + "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w + "," + (-tip.h) + " " + (t/2) + ",0",
-          'height': foHeight + tip.h,
-          'width': foWidth,
-          'fill': '#D8D8D8', 
-          'opacity': 0.75,
-          'transform': 'translate(' + (anchor.w - tip.w) + ',' + (anchor.h + tip.h) + ')'
-      });
-    this.svg.append(fo);
-    // var legendContainer = d3.select(".legend-container").append("foreignObject").attr('class', 'legend-container');
+      const foreignObject = this.svg.append("foreignObject")
+            .attr("width", 200)
+            .attr("height", this.height - (2 * this.margin))
+            .attr('overflow-y', 'auto')
+            .attr("transform", `translate(150,${-(this.height/2 - this.margin)})`)
+            .append("xhtml:div")
+            .attr("id","main-div")
+            .style('border', '1px solid #707070')
+            .append('table')
+            .style('width', '100%')
+            .style('border-collapse', 'collapse')
+            .attr('class', 'legend-table');
+      
+    foreignObject
+    .append('thead')
+    .html('<th style="padding-top:3px; padding-bottom:3px;">Legend Title</th><th>Value</th>')
+    .style('border-bottom', '1px solid #707070')
+    .style('text-align', 'left');
+    
+    const tbody = foreignObject
+    .data(this.pieChartValuesArray)
+    .append('tbody');
 
-    // var legendG = this.svg.appendChild(foreignObject); // note appending it to mySvg and not svg to make positioning easier
-    //   .data(pie(this.pieChartValuesArray))
-    //   .enter().append("g")
-    //   .attr("transform", function (d, i) {
-    //     return "translate(" + 150 + "," + (i * 15 - 80) + ")"; // place each legend on the right and bump each one down 15 pixels
-    //   })
-    //   .attr("class", "legend");
+    this.pieChartValuesArray.forEach((x, i) => {
+      tbody.append('tr')
+      .style('border-bottom', '1px solid #707070')
+      .style('padding-top', '2px')
+      .html(`<td style="padding-top:3px; padding-bottom:3px;"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td style="padding-top:3px; padding-bottom:3px;">${toPercent(x?.value / totalCount)}</td>`)
+    })
+    
 
-    // legendG.append("rect") // make a matching color rect
-    //   .attr("width", 10)
-    //   .attr("height", 10)
-    //   .attr("fill", function (d, i) {
-    //     return colors(i);
-    //   });
-
-    // legendG.append("text") // add the text
-    //   .text((d) => { return `${d?.data?.title} (${d?.data.value}) - ${toPercent(d?.data.value / totalCount)}` })
-    //   .style("font-size", 12)
-    //   .style('text-transform', 'capitalize')
-    //   .attr("y", 10)
-    //   .attr("x", 15);
   }
 
   ngOnChanges(changes: SimpleChanges) {
