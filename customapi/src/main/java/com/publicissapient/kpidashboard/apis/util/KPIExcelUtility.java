@@ -717,23 +717,47 @@ public class KPIExcelUtility {
     }
 
     public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
-                                                     FieldMapping fieldMapping) {
+                                                     FieldMapping fieldMapping,Map<String, IterationPotentialDelay> issueWiseDelay, List<JiraIssue> completedIssue) {
 
         if (CollectionUtils.isNotEmpty(issuesExcel)) {
             issuesExcel.forEach(e -> {
                 KPIExcelData excelData = new KPIExcelData();
                 Map<String, String> epicLink = new HashMap<>();
                 epicLink.put(e.getNumber(), checkEmptyURL(e));
-                excelData.setDate(LocalDate.parse(e.getUpdateDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
                 excelData.setIssueType(e.getTypeName());
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
+                excelData.setIssueStatus(e.getStatus());
                 if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
                 }else if (null != e.getOriginalEstimateMinutes()) {
                     excelData.setStoryPoint(e.getOriginalEstimateMinutes()/60+" hrs");
                 }
+                excelData.setDueDate((StringUtils.isNotEmpty(e.getDueDate()))
+                        ? DateUtil.stringToLocalDate(e.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+                        : "-");
+				if (e.getRemainingEstimateMinutes() != null) {
+					String remEstimate = CommonUtils.convertIntoDays(e.getRemainingEstimateMinutes());
+					excelData.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+				}
+				if (issueWiseDelay.containsKey(e.getNumber())) {
+					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
+					excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+					excelData.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+
+				} else {
+					excelData.setPotentialDelay("-");
+					excelData.setPredictedCompletionDate("-");
+				}
+				if (completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList())
+						.contains(e.getNumber())) {
+					excelData.setActualCompletionDate(LocalDate
+							.parse(e.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+							.toString());
+				} else {
+					excelData.setActualCompletionDate("-");
+				}
                 excelDataList.add(excelData);
             });
         }

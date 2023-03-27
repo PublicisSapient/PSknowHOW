@@ -285,10 +285,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		IterationKpiData issueCounts;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			issueCounts = new IterationKpiData(storyPointLabel, Double.valueOf(issueCount), storyPoint, null, "",
+			issueCounts = new IterationKpiData(storyPointLabel, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
 					CommonConstant.SP, modalValues);
 		} else {
-			issueCounts = new IterationKpiData(originalEstimateLabel, Double.valueOf(issueCount), originalEstimate,
+			issueCounts = new IterationKpiData(originalEstimateLabel, Double.valueOf(issueCount), roundingOff(originalEstimate),
 					null, "", CommonConstant.DAY, modalValues);
 		}
 		return issueCounts;
