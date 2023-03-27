@@ -231,7 +231,7 @@ public class OfflineDataProcessorImplTest {
         jiraType = new ArrayList<>();
         jiraType.add("TECH_DEBT");
         fieldMapping.setJiraTechDebtValue(jiraType);
-        fieldMapping.setJiraDefectRejectionStatus(Arrays.asList("Dropped"));
+        fieldMapping.setJiraDefectRejectionStatus(Arrays.asList(new String[]{"Dropped"}));
         fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
         jiraType = new ArrayList<>();
