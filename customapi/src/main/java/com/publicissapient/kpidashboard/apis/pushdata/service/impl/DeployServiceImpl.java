@@ -20,14 +20,17 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.PushDataValidationServiceImpl;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -62,10 +65,11 @@ public class DeployServiceImpl {
 	 * @param deployList
 	 * @param deploymentList
 	 * @param deployErrorList
-	 * @return
+	 * @param pushDataDetails
+     * @return
 	 */
-	public int checkandCreateDeployment(ObjectId basicProjectConfigId, List<PushDeploy> deployList,
-			List<Deployment> deploymentList, List<PushErrorData> deployErrorList) {
+	public int checkandCreateDeployment(ObjectId basicProjectConfigId, Set<PushDeploy> deployList,
+										List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
 			deployList.forEach(pushDeploy -> {
@@ -83,11 +87,25 @@ public class DeployServiceImpl {
 					deploymentList.add(createDeployment(basicProjectConfigId, pushDeploy,
 							checkExisitingJob(pushDeploy, basicProjectConfigId)));
 				}
+				pushDataDetails.add(createTraceLog(pushErrorData));
 				deployErrorList.add(pushErrorData);
 			});
 		}
 		return failedRecords.get();
 
+	}
+
+	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
+		PushDataDetail pushDataDetail=new PushDataDetail();
+		pushDataDetail.setTool("deploy");
+		pushDataDetail.setJobName(pushErrorData.getJobName());
+		pushDataDetail.setJobNumber(pushErrorData.getNumber());
+		List<String> errors=new ArrayList<>();
+		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
+			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));
+		}
+		pushDataDetail.setErrors(errors);
+		return pushDataDetail;
 	}
 
 	/**
