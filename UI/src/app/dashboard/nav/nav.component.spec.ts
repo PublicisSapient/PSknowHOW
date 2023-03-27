@@ -112,7 +112,7 @@ describe('NavComponent', () => {
     component.editDashboardName();
     tick();
     expect(component.displayEditModal).toBe(false);
-  }))
+  }));
 
   it("should Edit dash board name and disabled model if successfully response came",()=>{
     const fakeRespose = {
