@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -59,6 +60,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectReopenRateServiceImpl.class);
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Defect Reopen Rate";
+	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopen/Total Defects";
 	private static final String AVERAGE_TIME_REOPEN = "Average Time to Reopen";
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
@@ -232,7 +234,13 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Double overAllReopenRate = totalDefects != 0 ? (double) reopenIssueList.size() / totalDefects : 0;
 		BigDecimal bdOverallRate = BigDecimal.valueOf(overAllReopenRate * 100).setScale(2, RoundingMode.HALF_DOWN);
 		Double averageTimeToReopen = calculateAverage(reopenIssueList, storyCloseReopenTime);
-		return populateKpiValue(kpiLabel, bdOverallRate.doubleValue(), averageTimeToReopen, reopenIssueList);
+		IterationKpiData reopenRateKpi = IterationKpiData.builder().label(DEFECT_REOPEN_RATE)
+				.value(bdOverallRate.doubleValue()).unit("%").modalValues(reopenIssueList).build();
+		IterationKpiData averageKpi = IterationKpiData.builder().label(AVERAGE_TIME_REOPEN)
+				.value(averageTimeToReopen).unit("d").build();
+		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_TOTAL_DEFECTS)
+				.value(Double.valueOf(reopenIssueList.size())).value1(Double.valueOf(totalDefects)).build();
+		return new IterationKpiValue(kpiLabel, null, Arrays.asList(reopenedByTotalKpi, reopenRateKpi, averageKpi));
 	}
 
 	/**
@@ -259,25 +267,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		// reopentime - closedTime convert to minutes
 		return (double) TimeUnit.DAYS.convert(
 				closeReopenTime.getRight().getMillis() - closeReopenTime.getLeft().getMillis(), TimeUnit.MILLISECONDS);
-	}
-
-	/**
-	 * @param kpiValueLable
-	 * @param overallRate
-	 * @param average
-	 * @param modalValues
-	 * @return IterationKpiValue
-	 */
-	private IterationKpiValue populateKpiValue(String kpiValueLable, double overallRate, double average,
-			List<IterationKpiModalValue> modalValues) {
-		List<IterationKpiData> kpiDataList = new ArrayList<>();
-		IterationKpiData overallReopenRate = IterationKpiData.builder().label(DEFECT_REOPEN_RATE).value(overallRate)
-				.unit("%").modalValues(modalValues).build();
-		IterationKpiData overallAverage = IterationKpiData.builder().label(AVERAGE_TIME_REOPEN).value(average).unit("d")
-				.build();
-		kpiDataList.add(overallReopenRate);
-		kpiDataList.add(overallAverage);
-		return new IterationKpiValue(kpiValueLable, null, kpiDataList);
 	}
 
 	/**
