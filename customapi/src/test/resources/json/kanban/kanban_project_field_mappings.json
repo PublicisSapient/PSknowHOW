@@ -8,7 +8,7 @@
     "storyFirstStatus" : "Open",
     "rootCause" : "customfield_19121",
     "jiraDefectCreatedStatus" : "Open",
-    "jiraDefectRejectionStatus" : "Rejected",
+    "jiraDefectRejectionStatus" : ["Rejected"],
     "jiraDefectSeepageIssueType" : [ ],
     "jiraDefectRemovalStatus" : [ "Closed", "Ready for Delivery" ],
     "jiraDefectRemovalIssueType" : [ ],
