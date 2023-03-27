@@ -89,12 +89,12 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Override
     public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws InterruptedException, JSONException {
 
-        List<Issue> issues = new ArrayList<>();
+        List<Issue> totalIssues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
 
         PSLogData psLogData = new PSLogData();
         psLogData.setProjectName(projectConfig.getProjectName());
-        psLogData.setKanban("false");
+        int total = 0;
 
         client=clientIncoming;
 
@@ -103,9 +103,11 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             if (projectConfig.isKanban()) {
                 dataExist = (kanbanJiraRepo
                         .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+                psLogData.setKanban("true");
             } else {
                 dataExist = (jiraIssueRepository
                         .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+                psLogData.setKanban("false");
             }
 
 
@@ -128,7 +130,12 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             for (int i = 0; hasMore; i += pageSize) {
                 SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
                         userTimeZone, i, dataExist);
-                issues = JiraHelper.getIssuesFromResult(searchResult);
+                List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
+                totalIssues.addAll(issues);
+                if (total == 0) {
+                    total = JiraHelper.getTotal(searchResult);
+                    psLogData.setTotalFetchedIssues(String.valueOf(total));
+                }
 
                 if (CollectionUtils.isNotEmpty(issues)) {
                     List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
@@ -142,7 +149,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         } catch (InterruptedException e) {
         log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
         }
-        return issues;
+        return totalIssues;
     }
 
     private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
