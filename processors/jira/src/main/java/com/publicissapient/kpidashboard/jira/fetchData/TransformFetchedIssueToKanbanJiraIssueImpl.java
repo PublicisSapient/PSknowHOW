@@ -136,7 +136,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return kanbanIssuesToSave;
     }
 
-    public static Set<String> getIssueTypeNames(FieldMapping fieldMapping){
+    private static Set<String> getIssueTypeNames(FieldMapping fieldMapping){
         Set<String> issueTypeNames = new HashSet<>();
         for (String issueTypeName : fieldMapping.getJiraIssueTypeNames()) {
             issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
@@ -175,14 +175,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return jiraIssue;
     }
 
-    /**
-     * @param issue
-     * @param jiraIssue
-     * @param fieldMapping
-     * @param fields
-     * @param epic
-     * @param issueEpics
-     */
     private void setJiraIssuuefields(Issue issue, KanbanJiraIssue jiraIssue, FieldMapping fieldMapping,
                                      Map<String, IssueField> fields, IssueField epic, Map<String, String> issueEpics) {
         // Priority
@@ -216,18 +208,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return null;
     }
 
-    /**
-     * set RCA root cause values
-     *
-     * @param fieldMapping
-     *            fieldMapping provided by the User
-     * @param issue
-     *            issue
-     * @param jiraIssue
-     *            JiraIssue instance
-     * @param fields
-     *            Map of Issue Fields
-     */
     private void setRCA(FieldMapping fieldMapping, Issue issue, KanbanJiraIssue jiraIssue,
                         Map<String, IssueField> fields) {
         List<String> rcaList = new ArrayList<>();
@@ -246,13 +226,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         jiraIssue.setRootCauseList(rcaList);
     }
 
-    /**
-     * if root cause getting json then story as list of string
-     *
-     * @param fieldMapping
-     * @param fields
-     * @return List<String>
-     */
     private List<String> getRootCauses(FieldMapping fieldMapping, Map<String, IssueField> fields) {
         List<String> rootCauses = new ArrayList<>();
 
@@ -290,10 +263,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return rootCauses;
     }
 
-    /**
-     * @param rcaCause
-     * @return String
-     */
     private String rcaCauseStringToSave(String rcaCause) {
 
         if (rcaCause == null) {
@@ -309,17 +278,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return rcaCauseResult.toLowerCase();
     }
 
-    /**
-     * Sets Device Platform
-     *
-     * @param fieldMapping
-     *            fieldMapping provided by the User
-     * @param jiraIssue
-     *            JiraIssue instance
-     * @param fields
-     *            Map of Issue Fields
-     */
-    public void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,
+    private void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,
                                   Map<String, IssueField> fields) {
 
         try {
@@ -335,23 +294,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         }
     }
 
-    /**
-     * Process Jira issue Data
-     *
-     * @param jiraIssue
-     *            JiraIssue instance
-     * @param issue
-     *            Atlassian Issue
-     * @param fields
-     *            Map of Issue Fields
-     * @param fieldMapping
-     *            fieldMapping provided by the User
-     * @param jiraProcessorConfig
-     *            Jira processor Configuration
-     * @throws JSONException
-     *             Error while parsing JSON
-     */
-    public void processJiraIssueData(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+    private void processJiraIssueData(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
                                      FieldMapping fieldMapping, JiraProcessorConfig jiraProcessorConfig) throws JSONException {
 
         String status = issue.getStatus().getName();
@@ -399,21 +342,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
 
     }
 
-    /**
-     * Sets Issue Tech Story Type after identifying s whether a story is tech
-     * story or simple Jira issue. There can be possible 3 ways to identify a
-     * tech story 1. Specific 'label' is maintained 2. 'Issue type' itself is a
-     * 'Tech Story' 3. A separate 'custom field' is maintained
-     *
-     * @param fieldMapping
-     *            fieldMapping provided by the User
-     * @param issue
-     *            Atlassian Issue
-     * @param jiraIssue
-     *            JiraIssue instance
-     * @param fields
-     *            Map of Issue Fields
-     */
     public void setIssueTechStoryType(FieldMapping fieldMapping, Issue issue, KanbanJiraIssue jiraIssue,
                                       Map<String, IssueField> fields) {
         if (Optional.ofNullable(fieldMapping.getJiraTechDebtIdentification()).isPresent()) {

@@ -88,54 +88,63 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
     @Override
     public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws InterruptedException, JSONException {
+
         List<Issue> issues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
 
+        PSLogData psLogData = new PSLogData();
+        psLogData.setProjectName(projectConfig.getProjectName());
+        psLogData.setKanban("false");
+
         client=clientIncoming;
 
-        boolean dataExist=false;
-        if (projectConfig.isKanban()) {
-            dataExist = (kanbanJiraRepo
-                    .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-        }
-        else {
-            dataExist = (jiraIssueRepository
-                    .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-        }
-
-
-        Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-                projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
-
-        Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
-
-        maxChangeDatesByIssueType.forEach((k, v) -> {
-            long extraMinutes = jiraProcessorConfig.getMinsToReduce();
-            maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
-        });
-
-        int pageSize = getPageSize();
-        boolean hasMore = true;
-        String userTimeZone = getUserTimeZone(projectConfig);
-
-        Set<SprintDetails> setForCacheClean = new HashSet<>();
-
-        for (int i = 0; hasMore; i += pageSize) {
-            SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
-                    userTimeZone, i, dataExist);
-            issues = getIssuesFromResult(searchResult);
-
-            if (CollectionUtils.isNotEmpty(issues)) {
-                List<JiraIssue> jiraIssues=transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
-                template.convertAndSend(exchange,routingKey,jiraIssues);
+        try {
+            boolean dataExist = false;
+            if (projectConfig.isKanban()) {
+                dataExist = (kanbanJiraRepo
+                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+            } else {
+                dataExist = (jiraIssueRepository
+                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
             }
 
-			if (issues.size() < pageSize) {
-				break;
-			}
+
+            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
+                    projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+
+            Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
+
+            maxChangeDatesByIssueType.forEach((k, v) -> {
+                long extraMinutes = jiraProcessorConfig.getMinsToReduce();
+                maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
+            });
+
+            int pageSize = jiraCommonService.getPageSize();
+            boolean hasMore = true;
+            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
+
+            Set<SprintDetails> setForCacheClean = new HashSet<>();
+
+            for (int i = 0; hasMore; i += pageSize) {
+                SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
+                        userTimeZone, i, dataExist);
+                issues = JiraHelper.getIssuesFromResult(searchResult);
+
+                if (CollectionUtils.isNotEmpty(issues)) {
+                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
+                    template.convertAndSend(exchange, routingKey, jiraIssues);
+                }
+
+                if (issues.size() < pageSize) {
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+        log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
         }
         return issues;
     }
+
     private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
                                                                       FieldMapping fieldMapping) {
 
@@ -175,14 +184,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return lastUpdatedDateByIssueType;
     }
 
-    private List<Issue> getIssuesFromResult(SearchResult searchResult) {
-        if (searchResult != null) {
-            return Lists.newArrayList(searchResult.getIssues());
-        }
-        return new ArrayList<>();
-    }
-
-    public SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
+    private SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
                                   Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
                                   boolean dataExist) throws InterruptedException{
         ProjectConfFieldMapping projectConfig=entry.getValue();
@@ -223,7 +225,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
                     psLogData.setAction(CommonConstant.FETCHING_ISSUE);
                     log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-                                    Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+                                    Math.min(pageStart + jiraCommonService.getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
                             kv(CommonConstant.PSLOGDATA, psLogData));
                 }
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
@@ -240,76 +242,5 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
         return searchResult;
     }
-
-
-    public int getPageSize() {
-        return jiraProcessorConfig.getPageSize();
-    }
-
-    public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
-        String userTimeZone = StringUtils.EMPTY;
-        try {
-            JiraToolConfig jiraToolConfig = projectConfig.getJira();
-
-            if (null != jiraToolConfig) {
-                Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-                String username = connectionOptional.map(Connection::getUsername).orElse(null);
-                URL url = getUrl(projectConfig, username);
-                URLConnection connection;
-
-                connection = url.openConnection();
-                userTimeZone = getUserTimeZone(jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection));
-            }
-        } catch (RestClientException rce) {
-            log.error("Client exception when loading statuses", rce);
-            throw rce;
-        } catch (MalformedURLException mfe) {
-            log.error("Malformed url for loading statuses", mfe);
-        } catch (IOException ioe) {
-            log.error("IOException", ioe);
-        }
-
-        return userTimeZone;
-    }
-
-    private String getUserTimeZone(String timezoneObj) {
-        String userTimeZone = StringUtils.EMPTY;
-        if (StringUtils.isNotBlank(timezoneObj)) {
-            try {
-                Object obj = new JSONParser().parse(timezoneObj);
-                JSONArray userInfoList = new JSONArray();
-                userInfoList.add(obj);
-                for (Object userInfo : userInfoList) {
-                    JSONArray jsonUserInfo = (JSONArray) userInfo;
-                    for (Object timeZone : jsonUserInfo) {
-                        JSONObject timeZoneObj = (JSONObject) timeZone;
-                        userTimeZone = (String) timeZoneObj.get("timeZone");
-                    }
-                }
-
-            } catch (ParseException pe) {
-                log.error("Parser exception when parsing statuses", pe);
-            }
-        }
-        return userTimeZone;
-    }
-
-    private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
-
-        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-        String serverURL = jiraProcessorConfig.getJiraServerGetUserApi();
-        if (isCloudEnv) {
-            serverURL = jiraProcessorConfig.getJiraCloudGetUserApi();
-        }
-
-        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-        String apiEndPoint = connectionOptional.map(Connection::getApiEndPoint).orElse("");
-
-        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint
-                + (apiEndPoint.endsWith("/") ? "" : "/") + serverURL + jiraUserName);
-
-    }
-
 
 }

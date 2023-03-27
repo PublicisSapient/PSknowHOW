@@ -260,7 +260,7 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
 
     }
 
-    public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
+    private void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
                                                      List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields,
                                                      Issue issue) {
         List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS);

@@ -1,9 +1,6 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
@@ -89,6 +86,13 @@ public class JiraHelper {
             });
         }
         return changeLogList;
+    }
+
+    static List<Issue> getIssuesFromResult(SearchResult searchResult) {
+        if (searchResult != null) {
+            return Lists.newArrayList(searchResult.getIssues());
+        }
+        return new ArrayList<>();
     }
 
 }

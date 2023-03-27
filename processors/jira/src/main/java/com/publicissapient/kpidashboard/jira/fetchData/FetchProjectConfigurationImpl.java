@@ -76,12 +76,12 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
         return createProjectConfigMap(projectBasicConfigs,fieldMappingList);
     }
 
-    public List<String> getProjectsBasicConfigIds() {
+    private List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
 //               "63bfa0d5b7617e260763ca21"
 //               "63c04dc7b7617e260763ca4e"
 //               "64102db328f2534cd9d9b0e8"
-               "641350b3280939593b19b941"
+               "641350b3280939593b19b941" //project name:tester
        );
     }
 

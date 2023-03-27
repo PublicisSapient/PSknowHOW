@@ -4,23 +4,26 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
-import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +43,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 @Slf4j
 @Service
-public class FetchSprintReportImpl {
+public class FetchSprintReportImpl implements FetchSprintReport  {
 
     @Autowired
     private JiraProcessorRepository jiraProcessorRepository;
@@ -67,8 +70,22 @@ public class FetchSprintReportImpl {
 
     private static final String TYPEID = "typeId";
 
+    private PSLogData psLogData = new PSLogData();
 
-    public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) throws InterruptedException {
+    private static final String ID = "id";
+
+    private static final String STATE = "state";
+    private static final String NAME = "name";
+    private static final String STARTDATE = "startDate";
+    private static final String ENDDATE = "endDate";
+    private static final String COMPLETEDATE = "completeDate";
+    private static final String ACTIVATEDDATE = "activatedDate";
+    private static final String GOAL = "goal";
+
+
+    @Override
+    public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) throws InterruptedException {
+        List<SprintDetails> sprintToSave = new ArrayList<>();
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
         if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
             List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -76,7 +93,6 @@ public class FetchSprintReportImpl {
             List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
             Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
                     .collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
-            List<SprintDetails> sprintToSave = new ArrayList<>();
             PSLogData sprintLogData = new PSLogData();
             for (SprintDetails sprint : sprintDetailsSet) {
                 boolean fetchReport = false;
@@ -111,7 +127,7 @@ public class FetchSprintReportImpl {
                     sprintToSave.add(sprint);
                 }
             }
-            sprintRepository.saveAll(sprintToSave);
+//            sprintRepository.saveAll(sprintToSave);
             sprintLogData.setAction(CommonConstant.SPRINT_DATA);
             sprintLogData
                     .setSprintListSaved(
@@ -129,6 +145,7 @@ public class FetchSprintReportImpl {
             sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
             log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
         }
+        return sprintToSave;
     }
 
     private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig,
@@ -138,7 +155,7 @@ public class FetchSprintReportImpl {
         }
     }
 
-    public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
+    private void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
                                 SprintDetails sprint, SprintDetails dbSprintDetails) {
         PSLogData sprintReportLog= new PSLogData();
         sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);
@@ -434,6 +451,125 @@ public class FetchSprintReportImpl {
         String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
         return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 
+    }
+
+    @Override
+    public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig)
+            throws InterruptedException {
+        List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+        List<SprintDetails> sprintDetailsBasedOnBoard=new ArrayList<>();
+        for (BoardDetails boardDetails : boardDetailsList) {
+            List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
+            if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
+                Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
+                sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet));
+            }
+        }
+        return sprintDetailsBasedOnBoard;
+    }
+
+    private Set<SprintDetails> limitSprint(List<SprintDetails> sprintDetailsList) {
+        Set<SprintDetails> sd = sprintDetailsList.stream()
+                .filter(sprintDetails -> sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
+                .sorted((sprint1, sprint2) -> sprint2.getStartDate().compareTo(sprint1.getStartDate()))
+                .limit(jiraProcessorConfig.getSprintReportCountToBeFetched()).collect(Collectors.toSet());
+        sd.addAll(sprintDetailsList.stream()
+                .filter(sprintDetails -> !sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
+                .collect(Collectors.toSet()));
+        return sd;
+    }
+
+    private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+        List<SprintDetails> sprintDetailsList = new ArrayList<>();
+        psLogData.setBoardId(boardId);
+        psLogData.setAction(CommonConstant.SPRINT_DATA);
+        try {
+            JiraToolConfig jiraToolConfig = projectConfig.getJira();
+            if (null != jiraToolConfig) {
+                boolean isLast = false;
+                int startIndex = 0;
+                Instant start = Instant.now();
+                do {
+                    URL url = getSprintUrl(projectConfig, boardId, startIndex);
+                    psLogData.setUrl(url.toString());
+                    URLConnection connection;
+                    connection = url.openConnection();
+                    String jsonResponse = jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection);
+                    isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
+                    startIndex = sprintDetailsList.size();
+                } while (!isLast);
+                psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+                log.info("Fetch Sprint for Board", kv(CommonConstant.PSLOGDATA, psLogData));
+            }
+        } catch (RestClientException rce) {
+            log.error("Client exception when fetching sprints for board", rce, kv(CommonConstant.PSLOGDATA, psLogData));
+            throw rce;
+        } catch (MalformedURLException mfe) {
+            log.error("Malformed url for loading sprint sprints for board", mfe,
+                    kv(CommonConstant.PSLOGDATA, psLogData));
+        } catch (IOException ioe) {
+            log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
+        }
+        return sprintDetailsList;
+    }
+
+    private boolean populateSprintDetailsList(String sprintReportObj, List<SprintDetails> sprintDetailsSet,
+                                              ProjectConfFieldMapping projectConfig, String boardId) {
+        boolean isLast = true;
+        if (StringUtils.isNotBlank(sprintReportObj)) {
+            JSONArray valuesJson = new JSONArray();
+            try {
+                JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
+                if (null != obj) {
+                    valuesJson = (JSONArray) obj.get("values");
+                }
+                setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
+                isLast = Boolean.valueOf(obj.get("isLast").toString());
+            } catch (ParseException pe) {
+                log.error("Parser exception when parsing statuses", pe);
+            }
+        }
+        return isLast;
+    }
+
+    private void setSprintDetails(JSONArray valuesJson, List<SprintDetails> sprintDetailsSet,
+                                  ProjectConfFieldMapping projectConfig, String boardId) {
+        valuesJson.forEach(values -> {
+            JSONObject sprintJson = (JSONObject) values;
+            if (null != sprintJson) {
+                SprintDetails sprintDetails = new SprintDetails();
+                sprintDetails.setSprintName(sprintJson.get(NAME).toString());
+                List<String> boardList = new ArrayList<>();
+                boardList.add(boardId);
+                sprintDetails.setOriginBoardId(boardList);
+                sprintDetails.setOriginalSprintId(sprintJson.get(ID).toString());
+                sprintDetails.setState(sprintJson.get(STATE).toString().toUpperCase());
+                String sprintId = sprintDetails.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
+                        + projectConfig.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
+                        + projectConfig.getBasicProjectConfigId();
+                sprintDetails.setSprintID(sprintId);
+                sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null
+                        : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(STARTDATE).toString()));
+                sprintDetails.setEndDate(sprintJson.get(ENDDATE) == null ? null
+                        : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ENDDATE).toString()));
+                sprintDetails.setCompleteDate(sprintJson.get(COMPLETEDATE) == null ? null
+                        : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(COMPLETEDATE).toString()));
+                sprintDetails.setActivatedDate(sprintJson.get(ACTIVATEDDATE) == null ? null
+                        : JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ACTIVATEDDATE).toString()));
+                sprintDetails.setGoal(sprintJson.get(GOAL) == null ? null : sprintJson.get(GOAL).toString());
+                sprintDetailsSet.add(sprintDetails);
+            }
+        });
+    }
+
+    private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
+            throws MalformedURLException {
+
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        String serverURL = jiraProcessorConfig.getJiraSprintByBoardUrlApi();
+        serverURL = serverURL.replace("{startAtIndex}", String.valueOf(startIndex)).replace("{boardId}", boardId);
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
     }
 
 

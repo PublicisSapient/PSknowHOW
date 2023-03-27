@@ -17,6 +17,7 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
@@ -29,6 +30,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,9 +112,10 @@ public class FetchIssuesBasedOnJQLImplTest {
 
     List<Issue> issues=new ArrayList<>();
 
-    private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-
     SearchResult searchResult;
+
+    @Mock
+    private ProcessorJiraRestClient client;
 
 
     @Before
@@ -133,27 +136,27 @@ public class FetchIssuesBasedOnJQLImplTest {
     }
 
     @Test
-    public void fetchIssues() throws InterruptedException, JSONException, IOException, Exception {
+    public void fetchIssues() throws Exception {
         when(factory.getJiraIssueDataClient(any())).thenReturn(scrumJiraIssueClient);
         when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
         when(processorExecutionTraceLogRepository.findAll()).thenReturn(tracelogs);
         when(toolRepository.findByToolNameAndBasicProjectConfigId(any(),any())).thenReturn(projectToolConfigs);
         when(connectionRepository.findById(any())).thenReturn(connection);
         when(projectConfigRepository.findAll()).thenReturn(projectConfigsList);
-        when(jiraProcessorConfig.getPageSize()).thenReturn(30);
+        when(jiraCommonService.getPageSize()).thenReturn(30);
+        when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
         when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("user/search?query=");
         when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
-        when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
-        when(jiraCommonService.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
         when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
         when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
+        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
                 .thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        fetchIssuesBasedOnJQL.fetchIssues(entry, restClient);
+        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client).size());
 
     }
 

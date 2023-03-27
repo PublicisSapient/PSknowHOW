@@ -85,7 +85,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         }
     }
 
-    public boolean processMetadata(ProjectConfFieldMapping projectConfig) {
+    private boolean processMetadata(ProjectConfFieldMapping projectConfig) {
         boolean isSuccess = false;
         log.info("Fetching metadata start for project name : {}", projectConfig.getProjectName());
         Instant statProcessingMetadata = Instant.now();
@@ -130,7 +130,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         return isSuccess;
     }
 
-    public List<Field> getField() {
+    private List<Field> getField() {
         List<Field> fieldList = new ArrayList<>();
 
         if (client == null) {
@@ -151,7 +151,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         return fieldList;
     }
 
-    public List<IssueType> getIssueType() {
+    private List<IssueType> getIssueType() {
         List<IssueType> issueTypeList = new ArrayList<>();
 
         if (client == null) {
@@ -173,7 +173,7 @@ public class CreateMetadataImpl implements CreateMetadata {
     }
 
 
-    public List<Status> getStatus() {
+    private List<Status> getStatus() {
         List<Status> statusList = new ArrayList<>();
 
         if (client == null) {
@@ -220,15 +220,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         return metadataList;
     }
 
-    /**
-     * Map Issue Types
-     *
-     * @param issueTypeList
-     *            issueType List
-     * @param type
-     *            Type
-     * @return List of metadata
-     */
+
     private List<Metadata> mapIssueTypes(List<IssueType> issueTypeList, String type) {
         List<Metadata> metadataList = new ArrayList<>();
         List<MetadataValue> issueyTypeValue = new ArrayList<>();
@@ -245,13 +237,6 @@ public class CreateMetadataImpl implements CreateMetadata {
         return metadataList;
     }
 
-    /**
-     * Map of workflows
-     *
-     * @param statusList
-     * @param type
-     * @return List of workdlow metadata
-     */
     private List<Metadata> mapWorkFlow(List<Status> statusList, String type) {
         List<Metadata> metadataList = new ArrayList<>();
         List<MetadataValue> statusValue = new ArrayList<>();
@@ -268,13 +253,6 @@ public class CreateMetadataImpl implements CreateMetadata {
         return metadataList;
     }
 
-    /**
-     * Map field mapping.
-     *
-     * @param boardMetadata
-     *            the board metadata
-     * @return the field mapping
-     */
     private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
         log.info("Fetching and comparing  metadata identifier");
         MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(
@@ -568,7 +546,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         return issueList;
     }
 
-    public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
+    private boolean cacheRestClient(String cacheEndPoint, String cacheName) {
         boolean cleaned = false;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
