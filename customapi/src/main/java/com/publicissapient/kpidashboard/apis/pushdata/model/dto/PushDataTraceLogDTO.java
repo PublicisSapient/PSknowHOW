@@ -61,7 +61,7 @@ public class PushDataTraceLogDTO extends BasicModel {
 	private int totalSavedRecord;
 	@JsonProperty("Total Failed Records")
 	private int totalFailedRecord;
-	@JsonProperty("Error Message")
+	@JsonProperty("Message")
 	private String errorMessage;
 	@JsonProperty("Push Details Info")
 	private List<PushDataDetail> pushDataDetails;

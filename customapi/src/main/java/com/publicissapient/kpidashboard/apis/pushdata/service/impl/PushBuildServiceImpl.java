@@ -18,7 +18,10 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,9 +37,10 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
-import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -108,12 +112,13 @@ public class PushBuildServiceImpl implements PushBaseService {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
 		instance.setTotalRecord(pushDataResponse.getTotalRecords());
 		instance.setTotalFailedRecord(pushDataResponse.getTotalFailedRecords());
-		if (pushDataResponse.getTotalRecords() != pushDataResponse.getTotalSavedRecords()) {
+		if (pushDataResponse.getTotalFailedRecords() > 0 ) {
 			pushDataResponse.setTotalSavedRecords(0);
 			instance.setTotalSavedRecord(0);
 			instance.setPushDataDetails(pushDataDetails);
-			pushDataTraceLogService.setTraceLog("Errors in particular below ids", pushDataResponse);
+			pushDataTraceLogService.setExceptionTraceLog("Errors in particular below ids", pushDataResponse);
 		}
+		instance.setTotalSavedRecord(pushDataResponse.getTotalSavedRecords());
 		pushDataTraceLogService.save(instance);
 		buildService.saveBuilds(buildList);
 		deployService.saveDeployments(deploymentList);
@@ -131,9 +136,12 @@ public class PushBuildServiceImpl implements PushBaseService {
 				&& buildDeploy.getDeployments().size() > customApiConfig.getPushDataLimit())
 				|| (CollectionUtils.isNotEmpty(buildDeploy.getBuilds())
 						&& buildDeploy.getBuilds().size() > customApiConfig.getPushDataLimit())) {
-			throw new PushDataException("Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit()
-					+ ", input-builds are " + buildDeploy.getBuilds().size() + " and input-deployments are "
-					+ buildDeploy.getDeployments().size());
+			Set<PushDeploy> pushDeploys = Optional.ofNullable(buildDeploy.getDeployments()).orElse(new HashSet<>());
+			Set<PushBuild> pushBuilds = Optional.ofNullable(buildDeploy.getBuilds()).orElse(new HashSet<>());
+			pushDataTraceLogService.setExceptionTraceLog(
+					"Maximum Limit of build/deployment is " + customApiConfig.getPushDataLimit() + ", input-builds are "
+							+ pushBuilds.size() + " and input-deployments are " + pushDeploys.size(),
+					null);
 		}
 		return (CollectionUtils.isNotEmpty(buildDeploy.getDeployments()) ? buildDeploy.getDeployments().size() : 0)
 				+ (CollectionUtils.isNotEmpty(buildDeploy.getBuilds()) ? buildDeploy.getBuilds().size() : 0);

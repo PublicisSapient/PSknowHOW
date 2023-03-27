@@ -122,7 +122,7 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 		instance.setRequestTime(LocalDateTime.now().toString());
 		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
 		if (exposeApiToken == null) {
-			pushDataTraceLogService.setTraceLog("Generate Token Push Data via KnowHow tool configuration screen",
+			pushDataTraceLogService.setExceptionTraceLog("Generate Token Push Data via KnowHow tool configuration screen",
 					HttpStatus.UNAUTHORIZED);
 		}
 		checkProjectAccessPermission(exposeApiToken,instance);
@@ -139,13 +139,13 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 		traceLog.setUserName(exposeApiToken.getUserName());
 		if (!projectAccessManager.hasProjectEditPermission(exposeApiToken.getBasicProjectConfigId(),
 				exposeApiToken.getUserName())) {
-			pushDataTraceLogService.setTraceLog("Permission Denied", HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setExceptionTraceLog("Permission Denied", HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	private void checkExpiryToken(ExposeApiToken exposeApiToken) {
 		if (exposeApiToken.getExpiryDate().isBefore(LocalDate.now())) {
-			pushDataTraceLogService.setTraceLog("Token Expired, Please Generate New Token", HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setExceptionTraceLog("Token Expired, Please Generate New Token", HttpStatus.UNAUTHORIZED);
 		}
 	}
 

@@ -126,7 +126,7 @@ public class AuthExposeAPIServiceImplTest {
 	public void validateTokenPushDataWithInValidToken() {
 		when(httpServletRequest.getHeader("Api-Key")).thenReturn("invalid_token");
 		when(exposeApiTokenRepository.findByApiToken("invalid_token")).thenReturn(null);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setTraceLog(anyString(),any(Object.class));
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),any(Object.class));
 		authExposeAPIService.validateToken(httpServletRequest);
 
 	}

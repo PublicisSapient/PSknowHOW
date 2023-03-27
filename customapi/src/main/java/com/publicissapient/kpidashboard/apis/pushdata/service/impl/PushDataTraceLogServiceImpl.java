@@ -19,7 +19,9 @@
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -53,6 +55,7 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 				.findByBasicProjectConfigId(basicProjectConfigId);
 		List<PushDataTraceLogDTO> pushDataTraceLogDTO = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(byBasicProjectConfigId)) {
+			byBasicProjectConfigId=byBasicProjectConfigId.stream().sorted(Comparator.comparing(PushDataTraceLog::getRequestTime).reversed()).collect(Collectors.toList());
 			ModelMapper modelMapper = new ModelMapper();
 			byBasicProjectConfigId.stream().forEach(pushDataTraceLog -> pushDataTraceLogDTO
 					.add(modelMapper.map(pushDataTraceLog, PushDataTraceLogDTO.class)));
@@ -62,7 +65,7 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 	}
 
 	@Override
-	public void setTraceLog(String unauthorizedAccessException, Object object) {
+	public void setExceptionTraceLog(String unauthorizedAccessException, Object object) {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
 		instance.setErrorMessage(unauthorizedAccessException);
 		if (object instanceof HttpStatus) {

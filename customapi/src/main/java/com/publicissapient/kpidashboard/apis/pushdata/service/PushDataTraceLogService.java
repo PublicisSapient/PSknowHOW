@@ -31,6 +31,6 @@ public interface PushDataTraceLogService {
 
 	List<PushDataTraceLogDTO> getByProjectConfigId(ObjectId basicProjectConfigId);
 
-	void setTraceLog(String unauthorizedAccessException, Object object);
+	void setExceptionTraceLog(String unauthorizedAccessException, Object object);
 
 }

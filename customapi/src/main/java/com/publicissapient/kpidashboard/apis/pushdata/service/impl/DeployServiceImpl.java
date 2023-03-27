@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class DeployServiceImpl {
      * @return
 	 */
 	public int checkandCreateDeployment(ObjectId basicProjectConfigId, Set<PushDeploy> deployList,
-                                        List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
+										List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
 			deployList.forEach(pushDeploy -> {

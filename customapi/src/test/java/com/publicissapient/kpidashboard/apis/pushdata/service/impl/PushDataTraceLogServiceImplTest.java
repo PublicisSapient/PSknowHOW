@@ -77,15 +77,15 @@ public class PushDataTraceLogServiceImplTest {
 	@Test
 	public void setTraceLog() {
 		Assert.assertThrows(PushDataException.class, () -> {
-			pushDataTraceLogService.setTraceLog("", HttpStatus.BAD_REQUEST);
-			pushDataTraceLogService.setTraceLog("", new PushDataResponse());
+			pushDataTraceLogService.setExceptionTraceLog("", HttpStatus.BAD_REQUEST);
+			pushDataTraceLogService.setExceptionTraceLog("", new PushDataResponse());
 		});
 	}
 
 	@Test
 	public void setTraceLogPushData() {
 		Assert.assertThrows(PushDataException.class, () -> {
-			pushDataTraceLogService.setTraceLog("", new PushDataResponse());
+			pushDataTraceLogService.setExceptionTraceLog("", new PushDataResponse());
 		});
 	}
 
