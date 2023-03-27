@@ -336,7 +336,7 @@ public class OnlineDataProcessorImplTest {
 
 		}
 
-		when(metadataIdentifierRepository.findByToolAndIsKanban(any(), any())).thenReturn(metadataIdentifier);
+		when(metadataIdentifierRepository.findByIdAndToolAndIsKanban(any(), any(), any())).thenReturn(metadataIdentifier);
 
 		when(projectRestClient.getProject("TEST")).thenReturn(projectPromise);
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
@@ -1207,6 +1207,7 @@ public class OnlineDataProcessorImplTest {
 	private MetadataIdentifier createMetaDataIdentifier() {
 		String tool = "Jira";
 		Boolean isKanban = Boolean.FALSE;
+		String templateName = "DOJO Safe Template";
 
 		Identifier issue1 = createIdentifier("story",
 				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request"));
@@ -1252,7 +1253,7 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool,"","", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+		return new MetadataIdentifier(tool,templateName,"", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
 				issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}
