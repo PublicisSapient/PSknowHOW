@@ -180,7 +180,9 @@ export class NavComponent implements OnInit {
     if (typeof Worker !== 'undefined') {
       // Create a new
       this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
+      console.log(this.worker);
       this.worker.onmessage = ({ data }) => {
+        console.log('worker on message');
         this.ga.setProjectList(data);
         this.stopWorker();
       };
@@ -193,6 +195,7 @@ export class NavComponent implements OnInit {
   }
 
   stopWorker() {
+    console.log('stop worker called');
     this.worker.terminate();
     this.worker = undefined;
   }
