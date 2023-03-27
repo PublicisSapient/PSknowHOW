@@ -1,9 +1,9 @@
 package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 
 @Slf4j
@@ -69,10 +70,10 @@ public class PushDataFactory {
 	}
 
 	public List<PushBuild> getBuild(PushBuildDeploy pushBuildDeploy) {
-		return pushBuildDeploy.getBuilds();
+		return new ArrayList<>(pushBuildDeploy.getBuilds());
 	}
 
 	public List<PushDeploy> getDeployments(PushBuildDeploy pushBuildDeploy) {
-		return pushBuildDeploy.getDeployments();
+		return new ArrayList<>(pushBuildDeploy.getDeployments());
 	}
 }

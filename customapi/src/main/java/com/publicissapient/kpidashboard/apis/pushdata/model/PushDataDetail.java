@@ -16,28 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
+package com.publicissapient.kpidashboard.apis.pushdata.model;
 
-import java.util.Set;
+import java.util.List;
 
-import javax.validation.Valid;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class PushBuildDeployDTO {
-	@Valid
-	Set<PushBuild> builds;
-	@Valid
-	Set<PushDeploy> deployments;
+public class PushDataDetail {
+	private String tool;
+	private String jobName;
+	private String jobNumber;
+	List<String> errors;
 }

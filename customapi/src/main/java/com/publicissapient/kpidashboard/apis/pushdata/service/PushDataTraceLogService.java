@@ -16,28 +16,21 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
+package com.publicissapient.kpidashboard.apis.pushdata.service;
 
-import java.util.Set;
+import java.util.List;
 
-import javax.validation.Valid;
+import org.bson.types.ObjectId;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
 
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class PushBuildDeployDTO {
-	@Valid
-	Set<PushBuild> builds;
-	@Valid
-	Set<PushDeploy> deployments;
+public interface PushDataTraceLogService {
+
+	void save(PushDataTraceLog pushDataTraceLog);
+
+	List<PushDataTraceLogDTO> getByProjectConfigId(ObjectId basicProjectConfigId);
+
+	void setExceptionTraceLog(String unauthorizedAccessException, Object object);
+
 }
