@@ -3,8 +3,8 @@ db.getCollection('metadata_identifier').remove({});
 
 				{
 	"tool" : "Jira",
-	"templateName" : "DOJO Agile Template"
-	"templateCode" : "1"
+	"templateName" : "DOJO Agile Template",
+	"templateCode" : "1",
 	"isKanban" : true,
 	"issues" : [
 		{
@@ -98,8 +98,8 @@ db.getCollection('metadata_identifier').remove({});
 {
 
 	"tool" : "Jira",
-	"templateName" : "DOJO Safe Template"
-	"templateCode" : "2"
+	"templateName" : "DOJO Safe Template",
+	"templateCode" : "2",
 	"isKanban" : true,
 	"issues" : [
 		{
@@ -194,8 +194,8 @@ db.getCollection('metadata_identifier').remove({});
 {
 	"_id" : ObjectId("6401e4e64dbcd3e2922628b7"),
 	"tool" : "Jira",
-	"templateName" : "DOJO Studio Template"
-	"templateCode" : "3"
+	"templateName" : "DOJO Studio Template",
+	"templateCode" : "3",
 	"isKanban" : true,
 	"issues" : [
 		{
@@ -287,8 +287,8 @@ db.getCollection('metadata_identifier').remove({});
 },
 {
 	"tool" : "Jira",
-	"templateName" : "DOJO Agile Template"
-	"templateCode" : "4"
+	"templateName" : "DOJO Agile Template",
+	"templateCode" : "4",
 	"isKanban" : false,
 	"issues" : [
 		{
@@ -346,8 +346,8 @@ db.getCollection('metadata_identifier').remove({});
 
 {
 	"tool" : "Jira",
-	"templateName" : "DOJO Safe Template"
-	"templateCode" : "5"
+	"templateName" : "DOJO Safe Template",
+	"templateCode" : "5",
 	"isKanban" : false,
 	"issues" : [
 		{
@@ -405,8 +405,8 @@ db.getCollection('metadata_identifier').remove({});
 
 {
 	"tool" : "Jira",
-	"templateName" : "DOJO Studio Template"
-	"templateCode" : "6"
+	"templateName" : "DOJO Studio Template",
+	"templateCode" : "6",
 	"isKanban" : false,
 	"issues" : [
 		{
@@ -464,8 +464,8 @@ db.getCollection('metadata_identifier').remove({});
 
 				{
         			"tool": "Jira",
-					"templateName" : "Standard Template"
-	                "templateCode" : "7"
+					"templateName" : "Standard Template",
+	                "templateCode" : "7",
         			"isKanban" : false,
         			"issues":[
         			{
@@ -595,8 +595,8 @@ db.getCollection('metadata_identifier').remove({});
 
 	{
         	"tool" : "Jira",
-			"templateName" : "Standard Template"
-	         "templateCode" : "8"
+			"templateName" : "Standard Template",
+	         "templateCode" : "8",
 		    "isKanban" : true,
 		    "issues" : [
 		        {
