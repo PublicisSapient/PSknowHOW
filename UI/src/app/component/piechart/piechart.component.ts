@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
- import {
+import {
   Component,
   Input,
   OnChanges,
@@ -43,7 +43,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   width = 480;
   height = 298;
   // The radius of the pie chart is half the smallest side
-  radius =  this.height / 2 - this.margin;
+  radius = this.height / 2 - this.margin;
   colors;
   pieChartValuesArray = [];
 
@@ -96,7 +96,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     // Compute the position of each group on the pie:
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
-    
+
     const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
@@ -111,45 +111,45 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     const toPercent = d3.format("0.1%");
     // Build the pie chart
     this.svg
-    .selectAll('pieces')
-    .data(pie(this.pieChartValuesArray))
-    .enter()
+      .selectAll('pieces')
+      .data(pie(this.pieChartValuesArray))
+      .enter()
       .append('path')
       .attr('d', d3.arc().innerRadius(0).outerRadius(this.radius))
       .attr('fill', (d: any, i: any) => colors(i))
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
-    
-      const foreignObject = this.svg.append("foreignObject")
-            .attr("width", 200)
-            .attr("height", this.height - (2 * this.margin))
-            .attr('overflow-y', 'auto')
-            .attr("transform", `translate(150,${-(this.height/2 - this.margin)})`)
-            .append("xhtml:div")
-            .attr("id","main-div")
-            .style('border', '1px solid #707070')
-            .append('table')
-            .style('width', '100%')
-            .style('border-collapse', 'collapse')
-            .attr('class', 'legend-table');
-      
+
+    const foreignObject = this.svg.append("foreignObject")
+      .attr("width", 220)
+      .attr("height", this.height - (2 * this.margin))
+      .style('overflow-y', 'auto')
+      .attr("transform", `translate(140,${-(this.height / 2 - this.margin)})`)
+      .append("xhtml:div")
+      .attr("id", "main-div")
+      .style('border', '1px solid #dedede')
+      .append('table')
+      .style('width', '100%')
+      .style('border-collapse', 'collapse')
+      .attr('class', 'legend-table');
+
     foreignObject
-    .append('thead')
-    .html('<th style="padding-top:3px; padding-bottom:3px;">Legend Title</th><th>Value</th>')
-    .style('border-bottom', '1px solid #707070')
-    .style('text-align', 'left');
-    
+      .append('thead')
+      .html('<th style="padding-top:3px; padding-bottom:3px;">Legend Title</th><th>Count</th><th style="text-align:right">%</th>')
+      .style('border-bottom', '1px solid #dedede')
+      .style('text-align', 'left');
+
     const tbody = foreignObject
-    .data(this.pieChartValuesArray)
-    .append('tbody');
+      .data(this.pieChartValuesArray)
+      .append('tbody');
 
     this.pieChartValuesArray.forEach((x, i) => {
       tbody.append('tr')
-      .style('border-bottom', '1px solid #707070')
-      .style('padding-top', '2px')
-      .html(`<td style="padding-top:3px; padding-bottom:3px;"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td style="padding-top:3px; padding-bottom:3px;">${toPercent(x?.value / totalCount)}</td>`)
+        .style('border-bottom', '1px solid #dedede')
+        .style('padding-top', '2px')
+        .html(`<td style="padding-top:3px; padding-bottom:3px;"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td>${x?.value}</td><td style="padding-top:3px; padding-bottom:3px;text-align:right;">${toPercent(x?.value / totalCount)}</td>`)
     })
-    
+
 
   }
 
