@@ -1321,7 +1321,9 @@ export class FilterComponent implements OnInit {
         )?.value;
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-        this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
+        if(this.selectedProjectData){
+          this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
+        }
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
           this.filteredAddFilters['sprint'] = [
