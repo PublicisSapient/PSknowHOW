@@ -22,7 +22,7 @@ import java.time.LocalDate;
 
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.pushdata.service.impl.AuthExposeAPIServiceImpl;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -41,6 +41,9 @@ import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenR
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,6 +63,9 @@ public class AuthExposeAPIServiceImplTest {
 
 	@Mock
 	private CustomApiConfig customApiConfig;
+
+	@Mock
+	private PushDataTraceLogService pushDataTraceLogService;
 
 	private ExposeApiToken exposeApiTokenDbExist;
 
@@ -120,7 +126,7 @@ public class AuthExposeAPIServiceImplTest {
 	public void validateTokenPushDataWithInValidToken() {
 		when(httpServletRequest.getHeader("Api-Key")).thenReturn("invalid_token");
 		when(exposeApiTokenRepository.findByApiToken("invalid_token")).thenReturn(null);
-
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),any(Object.class));
 		authExposeAPIService.validateToken(httpServletRequest);
 
 	}

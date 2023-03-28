@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.model;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,6 +35,6 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 @Getter
 @Setter
 public class PushBuildDeploy {
-	List<PushBuild> builds;
-	List<PushDeploy> deployments;
+	Set<PushBuild> builds;
+	Set<PushDeploy> deployments;
 }
