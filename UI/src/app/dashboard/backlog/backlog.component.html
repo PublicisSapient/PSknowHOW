@@ -19,7 +19,7 @@
                       *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                       <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                         <ng-container *ngFor="let x of item.data; let i = index">
-                          <div *ngIf="x?.value > 0" class="p-3 p-text-center"
+                          <div class="p-3 p-text-center"
                             [ngClass]="{'p-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
                             <h3 class="text-label">{{x?.label}}
                               <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
@@ -28,10 +28,15 @@
                             </h3>
                             <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
                             <p class="text-data">
+                              <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
+                                {{x?.value != -99 ? checkSprint(x?.value) : '-'}}
+                              </span>
+                              <ng-template #otherFields>
                               <span
                                 [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
                                 != -99 ?
                                 convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                              </ng-template>
                               <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
                                 [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                 x?.value1}}</span>

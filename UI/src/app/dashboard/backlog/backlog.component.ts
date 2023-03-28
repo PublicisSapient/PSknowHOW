@@ -593,6 +593,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return val;
   }
 
+  checkSprint(value){
+    return Math.floor(value) < value ? `>${Math.round(value)}` : value;
+  }
+
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
