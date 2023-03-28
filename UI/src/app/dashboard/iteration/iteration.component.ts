@@ -644,7 +644,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     return (iDateDiff + 1); // add 1 because dates are inclusive
   }
 
-  convertToHoursIfTime(val, unit) {
+  convertToHoursIfTime(val, unit, kpiId?) {
     const isLessThanZero = val < 0;
     val = Math.abs(val);
     const hours = (val / 60);
@@ -660,7 +660,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         val = '0d';
       }
     }
-    if (isLessThanZero) {
+    if (isLessThanZero && kpiId != 'kpi128') {
       val = '-' + val;
     }
     return val;
