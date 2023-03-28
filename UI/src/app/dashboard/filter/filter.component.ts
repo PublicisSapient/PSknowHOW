@@ -90,6 +90,7 @@ export class FilterComponent implements OnInit {
   showDropdown: object = {};
   selectedDateFilter = '';
   beginningDate;
+  selectedProjectValueOnIteration : string;
 
   @ViewChild('toggleButton') toggleButton: ElementRef;
   @ViewChild('drpmenu') drpmenu: ElementRef;
@@ -656,6 +657,10 @@ export class FilterComponent implements OnInit {
   }
 
   onSelectedTrendValueChange($event) {
+  const selectedValue  = this.filterForm.get('selectedTrendValue').value;
+    if(selectedValue && selectedValue.length > 0 && !this.kanban ){
+      this.selectedProjectValueOnIteration = selectedValue[0];
+    }
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.patchValue({
         [additionalFilter['hierarchyLevelId']]: null,
@@ -1206,68 +1211,47 @@ export class FilterComponent implements OnInit {
     ) {
       // for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) { 
         for (let i = 0; i < this.hierarchyLevels?.length; i++) {  
-      const arrList = this.filterData?.filter(
-          (x) =>
-            x.labelName?.toLowerCase() ==
-            this.hierarchyLevels[i]?.hierarchyLevelId?.toLowerCase(),
-        );
+      const arrList = this.filterData?.filter((x) =>x.labelName?.toLowerCase() == this.hierarchyLevels[i]?.hierarchyLevelId?.toLowerCase());
         if (arrList?.length == 1) {
-          this.filterForm
-            ?.get('selectedLevel')
-            ?.setValue(this.hierarchyLevels[i]?.hierarchyLevelId);
+          this.filterForm?.get('selectedLevel')?.setValue(this.hierarchyLevels[i]?.hierarchyLevelId);
           this.trendLineValueList = [...arrList];
           break;
         } else {
-          this.filterForm
-            ?.get('selectedLevel')
-            ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
+          this.filterForm?.get('selectedLevel')?.setValue(this.hierarchyLevels[this.hierarchyLevels.length-1]?.hierarchyLevelId);
           this.trendLineValueList = [...arrList];
         }
       }
       if (this.trendLineValueList?.length == 0) {
-        this.filterForm
-          ?.get('selectedLevel')
-          ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
-        const arrList = this.filterData?.filter(
-          (x) =>
-            x.labelName?.toLowerCase() ==
-            this.hierarchyLevels[0]?.hierarchyLevelId?.toLowerCase(),
-        );
+        this.filterForm?.get('selectedLevel')?.setValue(this.hierarchyLevels[this.hierarchyLevels.length-1]?.hierarchyLevelId);
+        const arrList = this.filterData?.filter((x) =>x.labelName?.toLowerCase() == this.hierarchyLevels[0]?.hierarchyLevelId?.toLowerCase());
         this.trendLineValueList = [...arrList];
       }
 
       if (this.trendLineValueList?.length > 0) {
-        this.trendLineValueList = this.sortAlphabetically(
-          this.trendLineValueList,
-        );
-        this.trendLineValueList = this.makeUniqueArrayList(
-          this.trendLineValueList,
-        );
-        this.filterForm
-          ?.get('selectedTrendValue')
-          .setValue([this.trendLineValueList[0]['nodeId']]);
+        this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+        this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+        this.filterForm?.get('selectedTrendValue').setValue([this.trendLineValueList[0]['nodeId']]);
       } else {
         this.filterForm?.get('selectedTrendValue').setValue([]);
       }
+      if(!this.kanban){
+        this.filterForm?.get('selectedTrendValue')?.setValue([this.selectedProjectValueOnIteration]);
+      }
     } else {
       this.filterForm?.get('selectedLevel').setValue('project');
-      this.trendLineValueList = this.filterData?.filter(
-        (x) => x.labelName?.toLowerCase() == 'project',
-      );
+      this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == 'project');
 
       if (this.trendLineValueList?.length > 0) {
-        this.trendLineValueList = this.sortAlphabetically(
-          this.trendLineValueList,
-        );
-        this.trendLineValueList = this.makeUniqueArrayList(
-          this.trendLineValueList,
-        );
+        this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+        this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
         this.filterForm?.get('selectedProjectValue').setValue(this.trendLineValueList[0]['nodeId']);
+        this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
           if(this.selectedTab?.toLowerCase() != 'backlog'){
             this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId)
           }
       } else {
         this.filterForm?.get('selectedProjectValue').setValue('');
+        this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
       }
     }
   }
@@ -1321,43 +1305,26 @@ export class FilterComponent implements OnInit {
       let closedSprints = [];
       this.service.setNoSprints(false);
       if (level?.toLowerCase() == 'project') {
-        const selectedProject = this.filterForm?.get(
-          'selectedProjectValue',
-        )?.value;
+        const selectedProject = this.filterForm?.get('selectedProjectValue')?.value;
+         this.selectedProjectValueOnIteration = selectedProject;
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
-          this.filteredAddFilters['sprint'] = [
-            ...this.additionalFiltersDdn['sprint']?.filter((x) =>
-              x['parentId']?.includes(selectedProject),
-            ),
-          ];
+          this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
         }
 
-        activeSprints = [
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['sprintState']?.toLowerCase() == 'active',
-          ),
-        ];
-        closedSprints = [
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['sprintState']?.toLowerCase() == 'closed',
-          ),
-        ];
+        activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
+        closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
 
         if (activeSprints?.length > 0) {
           selectedSprint = { ...activeSprints[0] };
         } else if (closedSprints?.length > 0) {
           selectedSprint = closedSprints[0];
           for (let i = 0; i < closedSprints?.length; i++) {
-            const sprintEndDateTS1 = new Date(
-              closedSprints[i]['sprintEndDate'],
-            ).getTime();
-            const sprintEndDateTS2 = new Date(
-              selectedSprint['sprintEndDate'],
-            ).getTime();
+            const sprintEndDateTS1 = new Date(closedSprints[i]['sprintEndDate']).getTime();
+            const sprintEndDateTS2 = new Date(selectedSprint['sprintEndDate']).getTime();
             if (sprintEndDateTS1 > sprintEndDateTS2) {
               selectedSprint = closedSprints[i];
             }
@@ -1366,40 +1333,27 @@ export class FilterComponent implements OnInit {
           this.selectedFilterArray = [];
           this.service.setNoSprints(true);
         }
-        this.filterForm
-          .get('selectedSprintValue')
-          .setValue(selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(selectedSprint['nodeId']);
       }
       if (level?.toLowerCase() == 'sprint') {
         const val = this.filterForm.get('selectedSprintValue').value;
-        selectedSprint = {
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['nodeId'] == val,
-          )[0],
-        };
+        selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
       }
       if (selectedSprint && Object.keys(selectedSprint)?.length > 0) {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(selectedSprint);
         this.createFilterApplyData();
-        this.service.select(
-          this.masterData,
-          this.filterData,
-          this.filterApplyData,
-          this.selectedTab,
-        );
+        this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
       } else {
         if (type == 1) {
           if (this.projectIndex < this.trendLineValueList?.length) {
-            this.filterForm
-              ?.get('selectedProjectValue')
-              ?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+            this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+              this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
             this.handleIterationFilters('project', 1);
           } else {
             this.projectIndex = 0;
-            this.filterForm
-              ?.get('selectedProjectValue')
-              ?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+            this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+              this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
           }
         }
       }
