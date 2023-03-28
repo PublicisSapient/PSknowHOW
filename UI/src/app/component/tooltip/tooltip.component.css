@@ -21,6 +21,11 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.tooltip-wrapper-card{
+    max-height: 120px;
+}
+
 ::ng-deep .tooltip-wrapper::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -42,6 +47,11 @@
     line-height: 1.5;
     font-weight: normal;
     font-family: 'FuturaNext_Medium', sans-serif;
+}
+
+.link{
+    color: #079FFF;
+    word-wrap: break-word;
 }
 ul.kpi-info-list {
     list-style: none;

@@ -27,19 +27,21 @@ import { Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService,Confirmation } from 'primeng/api';
 import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
 import { TextEncryptionService } from '../../services/text.encryption.service';
 import { of } from 'rxjs';
+import { compileComponentFromMetadata } from '@angular/compiler';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
   let httpService;
   let httpMock;
   let aesEncryption;
+  let confirmationService;
   const baseUrl = environment.baseUrl;  // Servers Env
   // var store = {};
   // var ls = function () {
@@ -196,6 +198,7 @@ describe('AdvancedSettingsComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
+    confirmationService = TestBed.inject(ConfirmationService);
     fixture.detectChanges();
     aesEncryption = TestBed.inject(TextEncryptionService);
     localStorage.setItem('projectsAccess', '[{"role":"ROLE_PROJECT_VIEWER","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"},{"hierarchyLevel":{"level":2,"hierarchyLevelId":"business","hierarchyLevelName":"Business Name"},"value":"Leve2"},{"hierarchyLevel":{"level":3,"hierarchyLevelId":"account","hierarchyLevelName":"Account Name"},"value":"Level3"},{"hierarchyLevel":{"level":4,"hierarchyLevelId":"subaccount","hierarchyLevelName":"Subaccount"},"value":"Level4"}]}]},{"role":"ROLE_PROJECT_ADMIN","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"},{"hierarchyLevel":{"level":2,"hierarchyLevelId":"business","hierarchyLevelName":"Business Name"},"value":"Org2"},{"hierarchyLevel":{"level":3,"hierarchyLevelId":"account","hierarchyLevelName":"Account Name"},"value":"Level3"},{"hierarchyLevel":{"level":4,"hierarchyLevelId":"subaccount","hierarchyLevelName":"Subaccount"},"value":"Level4"}]}]}]');
@@ -336,5 +339,57 @@ describe('AdvancedSettingsComponent', () => {
     expect(component.getToolDetailsForProcessor('Jira').length).toBeGreaterThan(0);
   });
 
-  
+  it("should NA if processor response not came",()=>{
+    component.showProcessorLastState('Jira')
+    const respo = component.showProcessorLastState('Jira')
+    expect(respo).toBe("NA")
+  })
+
+  it("should success if processor response is success",()=>{
+    component.processorsTracelogs = [{
+      processorName : 'Jira',
+      executionSuccess : true
+    }]
+    const respo = component.showProcessorLastState('Jira')
+    expect(respo).toBe("Success")
+  })
+
+  it("should fail if processor response is fail",()=>{
+    component.processorsTracelogs = [{
+      processorName : 'Jira',
+      executionSuccess : false
+    }]
+    const respo = component.showProcessorLastState('Jira')
+    expect(respo).toBe("Failure")
+  })
+
+  it('should delete processor on delete confirmation Yes', () => {
+    const mockConfirm: any = spyOn<any>(
+      confirmationService,
+      'confirm',
+    ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+
+    component.deleteProcessorData({ processorName: 'Jira' });
+    expect(mockConfirm).toHaveBeenCalled();
+  });
+
+  it('should not delete processor on delete confirmation NO', () => {
+    const mockReject: any = spyOn<any>(
+      confirmationService,
+      'confirm',
+    ).and.callFake((confirmation: Confirmation) => confirmation.reject());
+    component.deleteProcessorData({ processorName: 'Jira' });
+    expect(mockReject).toHaveBeenCalled();
+  });
+
+  it("should return execution date of processor",()=>{
+
+    component.processorsTracelogs = [{
+      processorName : 'Jira',
+      executionSuccess : false,
+      executionEndedAt : '2023-01-04T06:02:20'
+    }]
+    const resp = component.showExecutionDate('Jira')
+    expect(resp).not.toBe("NA")
+  })  
 });

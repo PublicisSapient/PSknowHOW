@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
@@ -189,6 +190,22 @@ public class FieldMappingDTO extends BasicModel {
 	
 	//field for identifying ready for development status
 	private String readyForDevelopmentStatus;
+
+	//field for Wasting - wait status
+	private List<String> jiraWaitStatus;
+
+	//field for Wasting - block status
+	private List<String> jiraBlockedStatus;
+
+	//field for In Progress status
+	private List<String> jiraStatusForInProgress;
+
+	//for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField= CommonConstant.DUE_DATE;
+	private String jiraDueDateCustomField;
+	private String jiraDevDueDateCustomField;
+	private List<String> jiraDevDoneStatus;
 
 	/**
 	 * Get jira issue type names string [ ].

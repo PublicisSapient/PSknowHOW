@@ -8,7 +8,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,18 +23,23 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
-import com.publicissapient.kpidashboard.bamboo.model.BambooProcessorItem;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +55,8 @@ public class BambooClientDeployImpl implements BambooClient {
 	private RestTemplate restClient;
 
 	@Override
-	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException, MalformedURLException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deploySetMap = new HashMap<>();
 		String deploymentProjectId = bambooServer.getDeploymentProjectId();
@@ -53,19 +64,19 @@ public class BambooClientDeployImpl implements BambooClient {
 		String environemntUrl = BambooClient.appendToURL(bambooServer.getUrl() + ENVIRONMENT_SUFFIX);
 		HttpEntity<String> httpAuth = generateAuthentication(bambooServer);
 		String deployInformation = connectBamboo(url, bambooServer, httpAuth);
-		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer);
+		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer, proBasicConfig);
 		deploySetMap.put(Pair.of(bambooServer.getId(), bambooServer.getDeploymentProjectId()), environments);
 		return deploySetMap;
 	}
 
 	private Set<Deployment> getEnvironments(String deployInformation, String environemntUrl,
-			HttpEntity<String> httpAuth, ProcessorToolConnection bambooServer) throws ParseException {
+			HttpEntity<String> httpAuth, ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException {
 		Set<Deployment> deployments = new HashSet<>();
 		Map<String, String> environments = parseJsonToFetchEnv(deployInformation);
 		for (Map.Entry<String, String> env : environments.entrySet()) {
 			String environemntInformation = connectBamboo(
 					String.format(new StringBuilder(environemntUrl).toString(), env.getKey()), bambooServer, httpAuth);
-			Set<Deployment> deploymentSet = getEnvironmentInformation(environemntInformation);
+			Set<Deployment> deploymentSet = getEnvironmentInformation(environemntInformation, proBasicConfig);
 			deploymentSet.forEach(deployment -> {
 				deployment.setBasicProjectConfigId(bambooServer.getBasicProjectConfigId());
 				deployment.setProjectToolConfigId(bambooServer.getId());
@@ -86,7 +97,7 @@ public class BambooClientDeployImpl implements BambooClient {
 		return jsonObj == null ? null : jsonObj.toString();
 	}
 
-	private Set<Deployment> getEnvironmentInformation(String environemntInformation) throws ParseException {
+	private Set<Deployment> getEnvironmentInformation(String environemntInformation, ProjectBasicConfig proBasicConfig) throws ParseException {
 		JSONParser respParser = new JSONParser();
 		Set<Deployment> deploymentSet = new HashSet<>();
 		JSONArray results = (JSONArray) ((JSONObject) respParser.parse(environemntInformation)).get("results");
@@ -102,7 +113,9 @@ public class BambooClientDeployImpl implements BambooClient {
 											convertToString(resultObject, "deploymentState").toLowerCase()));
 					JSONObject deploymentVersion = (JSONObject) (resultObject).get("deploymentVersion");
 					deployment.setNumber(convertToString(resultObject, "id"));
-					deployment.setDeployedBy(convertToString(deploymentVersion, "creatorUserName"));
+					if (proBasicConfig.isSaveAssigneeDetails()) {
+						deployment.setDeployedBy(convertToString(deploymentVersion, "creatorUserName"));
+					}
 					settingTime(resultObject, deployment);
 					deploymentSet.add(deployment);
 				} catch (DateTimeParseException | NumberFormatException ex) {
@@ -190,7 +203,8 @@ public class BambooClientDeployImpl implements BambooClient {
 	}
 
 	@Override
-	public Map<BambooProcessorItem, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer)
+	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer,
+			ProjectBasicConfig proBasicConfig)
 			throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}

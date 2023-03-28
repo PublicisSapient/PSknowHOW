@@ -26,10 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +71,10 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	public static final String UNCHECKED = "unchecked";
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
+	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
 	private static final String SCOPE_ADDED = "Scope added";
-	private static final String LABEL_INFO = "(Issue Count/Story Points)";
 	private static final String SCOPE_REMOVED = "Scope removed";
+	private static final String ITERATION_COMMITMENT = "Iteration Commitment";
 	private static final String OVERALL = "Overall";
 
 	@Autowired
@@ -76,6 +82,9 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 
 	@Autowired
 	private SprintRepository sprintRepository;
+
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -93,7 +102,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.SCOPE_CHANGE.name();
+		return KPICode.ITERATION_COMMITMENT.name();
 	}
 
 	@Override
@@ -116,6 +125,13 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				List<String> puntedIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
 				Set<String> addedIssues = sprintDetails.getAddedIssues();
+				List<String> completeAndIncompleteIssues = Stream
+						.of(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+								CommonConstant.COMPLETED_ISSUES),
+								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+										CommonConstant.NOT_COMPLETED_ISSUES))
+						.flatMap(Collection::stream).collect(Collectors.toList());
+
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
 							basicProjectConfigId);
@@ -131,6 +147,15 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									new HashSet<>(), issueList);
 					resultListMap.put(ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
+					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
+				}
+				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
+					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
+							new ArrayList<>(completeAndIncompleteIssues), basicProjectConfigId);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
+									issueList);
+					resultListMap.put(EXCLUDE_ADDED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
 		}
@@ -156,30 +181,52 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> puntedIssues = (List<JiraIssue>) resultMap.get(PUNTED_ISSUES);
 		List<JiraIssue> addedIssues = (List<JiraIssue>) resultMap.get(ADDED_ISSUES);
+		List<JiraIssue> initialIssues = (List<JiraIssue>) resultMap.get(EXCLUDE_ADDED_ISSUES);
 		Set<String> issueTypes = new HashSet<>();
 		Set<String> statuses = new HashSet<>();
 		List<IterationKpiModalValue> overAllAddmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllRemovedmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> overAllInitialmodalValues = new ArrayList<>();
 
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<IterationKpiData> data = new ArrayList<>();
+
+		if(CollectionUtils.isNotEmpty(initialIssues)) {
+			LOGGER.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId, initialIssues.size());
+			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseInitialIssues = initialIssues.stream().collect(
+					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
+			List<Integer> overAllInitialIssueCount = Arrays.asList(0);
+			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
+			setScopeChange(issueTypes, statuses, typeAndStatusWiseInitialIssues, iterationKpiValues,
+					overAllInitialIssueCount, overAllInitialIssueSp, overAllInitialmodalValues, ITERATION_COMMITMENT,
+					fieldMapping, overAllOriginalEstimate);
+			IterationKpiData overAllInitialCount = setIterationKpiData(fieldMapping, overAllInitialIssueCount,
+					overAllInitialIssueSp, overAllOriginalEstimate, overAllInitialmodalValues, ITERATION_COMMITMENT);
+			data.add(overAllInitialCount);
+		}
+
 		if (CollectionUtils.isNotEmpty(addedIssues)) {
 			LOGGER.info("Scope Change -> request id : {} added jira Issues : {}", requestTrackerId, addedIssues.size());
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseAddedIssues = addedIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<Integer> overAllAddedIssueCount = Arrays.asList(0);
 			List<Double> overAllAddedIssueSp = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWiseAddedIssues, iterationKpiValues,
-					overAllAddedIssueCount, overAllAddedIssueSp, overAllAddmodalValues, SCOPE_ADDED);
-			IterationKpiData overAllAddedCount = new IterationKpiData(SCOPE_ADDED,
-					Double.valueOf(overAllAddedIssueCount.get(0)), overAllAddedIssueSp.get(0), LABEL_INFO, "",
-					overAllAddmodalValues);
+					overAllAddedIssueCount, overAllAddedIssueSp, overAllAddmodalValues, SCOPE_ADDED,
+					fieldMapping, overAllOriginalEstimate);
+			IterationKpiData overAllAddedCount = setIterationKpiData(fieldMapping, overAllAddedIssueCount,
+					overAllAddedIssueSp, overAllOriginalEstimate, overAllAddmodalValues, SCOPE_ADDED);
 			data.add(overAllAddedCount);
 		}
+
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
 			LOGGER.info("Scope Change -> request id : {} punted jira Issues : {}", requestTrackerId,
 					puntedIssues.size());
@@ -187,11 +234,12 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<Integer> overAllPunIssueCount = Arrays.asList(0);
 			List<Double> overAllPunIssueSp = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWisePuntedIssues, iterationKpiValues,
-					overAllPunIssueCount, overAllPunIssueSp, overAllRemovedmodalValues, SCOPE_REMOVED);
-			IterationKpiData overAllPuntedCount = new IterationKpiData(SCOPE_REMOVED,
-					Double.valueOf(overAllPunIssueCount.get(0)), overAllPunIssueSp.get(0), LABEL_INFO, "",
-					overAllRemovedmodalValues);
+					overAllPunIssueCount, overAllPunIssueSp, overAllRemovedmodalValues, SCOPE_REMOVED,
+					fieldMapping, overAllOriginalEstimate);
+			IterationKpiData overAllPuntedCount = setIterationKpiData(fieldMapping, overAllPunIssueCount,
+					overAllPunIssueSp, overAllOriginalEstimate, overAllRemovedmodalValues, SCOPE_REMOVED);
 			data.add(overAllPuntedCount);
 		}
 
@@ -206,7 +254,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(KPIExcelColumn.SCOPE_CHANGE.getColumns());
+			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_COMMITMENT.getColumns());
 		}
 		kpiElement.setTrendValueList(trendValue);
 	}
@@ -214,26 +262,40 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	private void setScopeChange(Set<String> issueTypes, Set<String> statuses,
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues,
 			List<IterationKpiValue> iterationKpiValues, List<Integer> overAllIssueCount, List<Double> overAllIssueSp,
-			List<IterationKpiModalValue> overAllmodalValues, String label) {
-		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) -> {
+			List<IterationKpiModalValue> overAllmodalValues, String label,
+								FieldMapping fieldMapping, List<Double> overAllOriginalEstimate) {
+		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 			statusWiseIssue.forEach((status, issues) -> {
 				issueTypes.add(issueType);
 				statuses.add(status);
 				List<IterationKpiModalValue> modalValues = new ArrayList<>();
 				int issueCount = 0;
 				double storyPoints = 0;
+				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationData(overAllmodalValues, modalValues, jiraIssue);
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();
 						overAllIssueSp.set(0, overAllIssueSp.get(0) + jiraIssue.getStoryPoints());
 					}
+					if (null != jiraIssue.getOriginalEstimateMinutes()) {
+						originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+						overAllOriginalEstimate.set(0,
+								overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+					}
 					overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 				}
 				List<IterationKpiData> data = new ArrayList<>();
-				IterationKpiData issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), storyPoints,
-						LABEL_INFO, "", modalValues);
+				IterationKpiData issueCounts;
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),roundingOff(storyPoints), null, "",
+							CommonConstant.SP, modalValues);
+				} else {
+					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),
+							roundingOff(originalEstimate), null, "", CommonConstant.DAY, modalValues);
+				}
 				data.add(issueCounts);
 				IterationKpiValue matchingObject = iterationKpiValues.stream()
 						.filter(p -> p.getFilter1().equals(issueType) && p.getFilter2().equals(status)).findAny()
@@ -244,9 +306,20 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				} else {
 					matchingObject.getData().addAll(data);
 				}
-			});
+			}));
+	}
 
-		});
+	private IterationKpiData setIterationKpiData(FieldMapping fieldMapping, List<Integer> overAllIssueCount,
+			List<Double> overAllIssueSp, List<Double> overAllOriginalEstimate,
+			List<IterationKpiModalValue> overAllModalValues, String kpiLabel) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)), roundingOff(overAllIssueSp.get(0)), null,
+					"", CommonConstant.SP, overAllModalValues);
+		} else {
+			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)),
+					roundingOff(overAllOriginalEstimate.get(0)), null, "", CommonConstant.DAY, overAllModalValues);
+		}
 	}
 
 }

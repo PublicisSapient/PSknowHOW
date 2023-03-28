@@ -19,18 +19,14 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import org.apache.commons.collections4.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,18 +36,17 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-
-import lombok.extern.slf4j.Slf4j;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author anisingh4
@@ -126,7 +121,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
-		Optional<ProjectBasicConfig> projectBasicConfig ;
+		Optional<ProjectBasicConfig> projectBasicConfig;
 		ProjectToolConfig projectToolConfig = toolConfigRepository.findById(projectToolConfigId);
 		if (null != projectToolConfig && null != projectToolConfig.getBasicProjectConfigId()) {
 			projectBasicConfig = projectBasicConfigRepository.findById(projectToolConfig.getBasicProjectConfigId());
@@ -149,16 +144,16 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	@Override
 	public ProjectBasicConfig getBasicProjectConfigById(ObjectId basicProjectConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig = Optional.empty();
-		ProjectBasicConfig projectBasicConfigObj=null;
+		ProjectBasicConfig projectBasicConfigObj = null;
 		if (null != basicProjectConfigId) {
 			projectBasicConfig = projectBasicConfigRepository.findById(basicProjectConfigId);
 		}
-		if(projectBasicConfig.isPresent()) {
-			projectBasicConfigObj=projectBasicConfig.get();
+		if (projectBasicConfig.isPresent()) {
+			projectBasicConfigObj = projectBasicConfig.get();
 		}
 		return projectBasicConfigObj;
 	}
-	
+
 	private void clearCache() {
 		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
@@ -178,7 +173,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", "jiraStoryPointsCustomField",
 				"rootCause", "jiraIssueTypeNames", "storyFirstStatus", "epicCostOfDelay", "epicRiskReduction",
-				"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize" , "additionalFilterConfig,readyForDevelopmentStatus");
+				"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize", "additionalFilterConfig",
+				"readyForDevelopmentStatus", "jiraDueDateField", "jiraDueDateCustomField;");
 
 		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameList);
 
@@ -198,7 +194,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getProductionDefectIdentifier())) {
-			List<String> productionDefectFieldList = Arrays.asList("productionDefectCustomField", "productionDefectValue");
+			List<String> productionDefectFieldList = Arrays.asList("productionDefectCustomField",
+					"productionDefectValue");
 			isUpdated = checkFieldsForUpdation(unsaved, saved, productionDefectFieldList);
 		}
 
@@ -286,7 +283,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * Checks if fields are updated and then unset changeDate in jira collections.
+	 * Checks if fields are updated and then unset changeDate in jira
+	 * collections.
 	 * 
 	 * @param basicProjectConfigId
 	 * @param fieldMapping
@@ -294,11 +292,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	private void updateJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
 			FieldMapping existingFieldMapping) {
-		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository.findById(basicProjectConfigId);
-		if(projectBasicConfigOpt.isPresent()) {
-			ProjectBasicConfig projectBasicConfig=projectBasicConfigOpt.get();
-			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping)) ||
-					(projectBasicConfig.getIsKanban() && isKanbanMappingUpdated(fieldMapping, existingFieldMapping))) {
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
+				.findById(basicProjectConfigId);
+		if (projectBasicConfigOpt.isPresent()) {
+			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping))
+					|| (projectBasicConfig.getIsKanban()
+							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping))) {
 				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
 						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
 								basicProjectConfigId.toHexString());

@@ -244,7 +244,8 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 			globalSonarViolationsHowerMap.add(sonarViolationsHowerMap);
 
-			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(a -> (Integer) a).mapToLong(val -> val)
+			Long sonarViolations = sonarViolationsHowerMap.values().stream()
+					.map(Integer.class::cast).mapToLong(val -> val)
 					.sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());

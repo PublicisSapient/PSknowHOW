@@ -24,13 +24,18 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.application.Week;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 /**
  * @author narsingh9
@@ -48,6 +53,10 @@ public class DateUtil {
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
 	public static final String TIME_FORMAT_WITH_SEC_DATE = "yyyy-MM-dd'T'HH:mm:ssX";
+
+	public static final String ZERO_TIME_ZONE_FORMAT = "T00:00:00.000Z";
+
+
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -147,6 +156,31 @@ public class DateUtil {
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
-		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+		return convertMillisToLocalDateTime(milliSeconds).toString();
+	}
+
+	public static LocalDateTime convertMillisToLocalDateTime(long milliSeconds) {
+		return Instant.ofEpochMilli(milliSeconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static DateTime stringToDateTime(String date, String formater) {
+		 return DateTimeFormat.forPattern(formater)
+				  .parseDateTime(date);
+	}
+
+	public static LocalDate stringToLocalDate(String time, String format){
+		LocalDate formattedDate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try{
+			formattedDate=LocalDate.parse(time, formatter);
+		}
+		catch (DateTimeParseException dateTimeParseException){
+			formattedDate= OffsetDateTime.parse(time).toLocalDate();
+		}
+		return formattedDate;
+	}
+
+	public static long convertStringToLong(String date) {
+		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}
 }

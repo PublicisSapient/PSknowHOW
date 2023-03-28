@@ -4,14 +4,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -65,21 +67,38 @@ public class SprintVelocityServiceHelper {
 
 	public double calculateSprintVelocityValue(
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
-			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintJiraIssues) {
+			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintJiraIssues,
+			FieldMapping fieldMapping) {
 		double sprintVelocityForCurrentLeaf = 0.0d;
 		if (CollectionUtils.isNotEmpty(sprintJiraIssues.get(currentNodeIdentifier))) {
 			List<JiraIssue> jiraIssueList = sprintJiraIssues.get(currentNodeIdentifier);
-			sprintVelocityForCurrentLeaf = jiraIssueList.stream().mapToDouble(ji -> Double.valueOf(ji.getEstimate()))
-					.sum();
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				sprintVelocityForCurrentLeaf = jiraIssueList.stream().mapToDouble(ji -> Double.valueOf(ji.getEstimate()))
+						.sum();
+			} else {
+				double totalOriginalEstimate = jiraIssueList.stream().filter(jiraIssue ->
+								Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+				sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
+			}
 		} else {
 			if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
-				for (IssueDetails issueDetails : issueDetailsSet) {
-					sprintVelocityForCurrentLeaf = sprintVelocityForCurrentLeaf + Optional
-							.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0d).doubleValue();
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+						fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					sprintVelocityForCurrentLeaf = issueDetailsSet.stream().filter(issueDetails ->
+									Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
+				} else {
+					double totalOriginalEstimate = issueDetailsSet.stream().filter(issueDetails ->
+									Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
+					double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+					sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
 				}
 			}
-
 		}
 		return sprintVelocityForCurrentLeaf;
 	}

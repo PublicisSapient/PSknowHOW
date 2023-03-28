@@ -21,9 +21,11 @@ package com.publicissapient.kpidashboard.teamcity.processor.adapter;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
  * Client for fetching job and build information from Teamcity.
@@ -38,15 +40,20 @@ public interface TeamcityClient {
      * @param teamcityServer the URL for the Teamcity instance
      * @return a summary of every build for each job on the instance
      */
-    Map<TeamcityJob, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer);
+    Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer);
 
     /**
      * Fetch full populated build information for a build.
      *
-     * @param buildUrl the url of the build
-     * @param instanceUrl the url of Teamcity server
-     * @param teamcityServer the teamcity server
+     * @param buildUrl
+     * 		the url of the build
+     * @param instanceUrl
+     * 		the url of Teamcity server
+     * @param teamcityServer
+     * 		the teamcity server
+     * @param proBasicConfig
      * @return a Build instance or null
      */
-    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer);
+    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+            ProjectBasicConfig proBasicConfig);
 }

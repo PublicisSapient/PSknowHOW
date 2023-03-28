@@ -69,6 +69,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private String count;
     private List<String> labels;
     private String createdDate;
+    private String dueDate;
     // environmented impacted Eg. Development,QA,MTE,Beta,Production
     private String envImpacted;
     // build number
@@ -223,8 +224,11 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private Integer originalEstimateMinutes;
     private Integer remainingEstimateMinutes;
     private boolean productionDefect;
+    private Integer aggregateTimeOriginalEstimateMinutes;
+    private Integer aggregateTimeRemainingEstimateMinutes;
     @Indexed
     private String updateDate;
+    private String devDueDate;
 
 	@Override public Object clone() throws CloneNotSupportedException {
 		return super.clone();

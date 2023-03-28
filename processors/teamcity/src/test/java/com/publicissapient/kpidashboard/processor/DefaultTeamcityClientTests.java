@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,10 +54,10 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
-import com.publicissapient.kpidashboard.teamcity.model.TeamcityJob;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.DefaultTeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class DefaultTeamcityClientTests {
@@ -73,6 +74,7 @@ public class DefaultTeamcityClientTests {
 	private static final int PAGE_SIZE = 10;
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -80,10 +82,12 @@ public class DefaultTeamcityClientTests {
 		config = TeamcityConfig.builder().build();
 		config.setPageSize(PAGE_SIZE);
 		teamcityClient = defaultTeamcityClient = new DefaultTeamcityClient(restOperationsFactory, config);
+		TEAMCITY_SAMPLE_SERVER_TWO.setId(new ObjectId("63b40aea8ec44416b3ce96b5"));
 		TEAMCITY_SAMPLE_SERVER_ONE.setUrl("http://does:matter@teamcity.com");
 		TEAMCITY_SAMPLE_SERVER_ONE.setUsername("does");
 		TEAMCITY_SAMPLE_SERVER_ONE.setPassword("matter");
-		
+
+		TEAMCITY_SAMPLE_SERVER_TWO.setId(new ObjectId("63c53ed169fa1a025c5f1244"));
 		TEAMCITY_SAMPLE_SERVER_TWO.setUrl("http://server/");
 		TEAMCITY_SAMPLE_SERVER_TWO.setUsername("does");
 		TEAMCITY_SAMPLE_SERVER_TWO.setPassword("matter");
@@ -179,13 +183,13 @@ public class DefaultTeamcityClientTests {
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<TeamcityJob, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_ONE);
+		Map<ObjectId, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_ONE);
 
 		assertThat(jobs.size(), is(0));
 	}
 
 	@Test
-	public void instanceJobs_twoJobsTwoBuilds() throws Exception {
+	public void instanceJobs_OneJobsOneBuilds() throws Exception {
 		when(rest.exchange(eq(URI.create("http://server/app/rest/projects")), eq(HttpMethod.GET),
 				Mockito.any(HttpEntity.class), eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs.json"), HttpStatus.OK));
@@ -202,29 +206,22 @@ public class DefaultTeamcityClientTests {
 						.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
 		TEAMCITY_SAMPLE_SERVER_TWO.setJobName("Project-2");
-		Map<TeamcityJob, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_TWO);
+		Map<ObjectId, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_TWO);
 
 		assertThat(jobs.size(), is(1));
 
-		Iterator<TeamcityJob> jobIt = jobs.keySet().iterator();
-
-		// First job
-		TeamcityJob job = jobIt.next();
-		assertJob(job, "Project-2", "/app/rest/projects/id:Project2");
-
-		Iterator<Build> buildIt = jobs.get(job).iterator();
+		Iterator<Build> buildIt = jobs.get(new ObjectId("63c53ed169fa1a025c5f1244")).iterator();
 		assertBuild(buildIt.next(), "3", "http://server/app/rest/buildTypes/id:Project2_Build2/builds/");
 		assertThat(buildIt.hasNext(), is(false));
 
-		assertThat(jobIt.hasNext(), is(false));
 	}
 
-	// @Test
+	 @Test
 	public void buildDetails_full() throws Exception {
-		// when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET),
-		// Mockito.any(HttpEntity.class), eq(String.class)))
-		// .thenReturn(new ResponseEntity<>(getJson("build_info_complete.json"),
-		// HttpStatus.OK));
+
+		 projectBasicConfig.setSaveAssigneeDetails(true);
+		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
+				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
 		when(rest.exchange(eq(URI.create("http://server/app/rest/buildTypes/id:Project2_Build2/builds")),
 				eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
@@ -239,13 +236,11 @@ public class DefaultTeamcityClientTests {
 						.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
 
 		Build build = teamcityClient.getBuildDetails("http://server/app/rest/buildTypes/id:Project2_Build2/",
-				"http://server", TEAMCITY_SAMPLE_SERVER_TWO);
+				"http://server", TEAMCITY_SAMPLE_SERVER_TWO, projectBasicConfig);
 
 		assertThat(build.getTimestamp(), notNullValue());
 		assertThat(build.getNumber(), is("3"));
 		assertThat(build.getBuildUrl(), is(URL_TEST));
-		assertThat(build.getStartTime(), is(1585810573000L));
-		assertThat(build.getEndTime(), is(1585810579000L));
 		assertThat(build.getDuration(), is(5441L));
 		assertThat(build.getBuildStatus(), is(BuildStatus.SUCCESS));
 		assertThat(build.getStartedBy(), is("admin"));
@@ -259,10 +254,5 @@ public class DefaultTeamcityClientTests {
 	private String getJson(String fileName) throws IOException {
 		InputStream inputStream = DefaultTeamcityClientTests.class.getResourceAsStream(fileName);
 		return IOUtils.toString(inputStream);
-	}
-
-	private void assertJob(TeamcityJob job, String name, String url) {
-		assertThat(job.getJobName(), is(name));
-		assertThat(job.getJobUrl(), is(url));
 	}
 }

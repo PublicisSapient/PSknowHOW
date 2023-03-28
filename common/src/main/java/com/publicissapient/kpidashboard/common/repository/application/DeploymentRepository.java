@@ -9,7 +9,6 @@ import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import java.util.List;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Repository for {@link Deployment} data.
@@ -25,5 +24,9 @@ public interface DeploymentRepository extends MongoRepository<Deployment, Object
 	List<Deployment> findByProcessorIdIn(Collection<ObjectId> ids);
 
 	List<Deployment> findByProjectToolConfigIdAndJobName(ObjectId projectToolConfigId, String jobName );
+
+	Deployment findByNumberAndJobNameAndBasicProjectConfigId(String number, String jobName, ObjectId basicProjectConfigId);
+
+	Deployment findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
 
 }

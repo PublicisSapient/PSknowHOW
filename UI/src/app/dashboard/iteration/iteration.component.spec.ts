@@ -42,6 +42,7 @@ describe('IterationComponent', () => {
     let service: SharedService;
     let httpService: HttpService;
     let helperService: HelperService;
+    let excelService: ExcelService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
@@ -150,8 +151,8 @@ describe('IterationComponent', () => {
             "data": [
                 {
                     "label": "Issues at Risk",
-                    "value": 6,
-                    "value1": 14,
+                    "value": '6.00',
+                    "value1": '14.00',
                     "unit": "",
                     "modalValues": [
                         {
@@ -212,7 +213,7 @@ describe('IterationComponent', () => {
                 },
                 {
                     "label": "Story Point",
-                    "value": 19,
+                    "value": '19.00',
                     "unit": "SP",
                     "value1": null,
                     "modalValues": null
@@ -1995,6 +1996,7 @@ describe('IterationComponent', () => {
         service = TestBed.inject(SharedService);
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
+        excelService = TestBed.inject(ExcelService);
 
         spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
         httpMock = TestBed.inject(HttpTestingController);
@@ -2449,6 +2451,164 @@ describe('IterationComponent', () => {
         };
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
+    });
+
+    it('should convert to hours',()=>{
+        let result =component.convertToHoursIfTime(25,'hours');
+        expect(result).toEqual('25m');
+
+        result = component.convertToHoursIfTime(65,'hours');
+        expect(result).toEqual('1h 5m');
+
+        result = component.convertToHoursIfTime(60,'hours');
+        expect(result).toEqual('1h');
+    });
+
+    it('should convert to day',()=>{
+        let result =component.convertToHoursIfTime(25,'day');
+        expect(result.trim()).toEqual('25m');
+
+        result = component.convertToHoursIfTime(480,'day');
+        expect(result.trim()).toEqual('1d');
+
+        result = component.convertToHoursIfTime(0,'day');
+        expect(result.trim()).toEqual('0d');
+    });
+
+    it('should generate excel on click of export button',()=>{
+        component.modalDetails ={
+            header: 'Work Remaining / Issue Count/Original Estimate',
+            tableHeadings: [
+                "Issue Id",
+                "Issue Description",
+                "Issue Status",
+            ],
+            tableValues:[{
+                'Issue Id': 'DTS-22685',
+                'Issue URL': 'https://tools.publicis.sapient.com/jira/browse/DTS-22685',
+                'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
+                'Issue Status': 'Open',
+            }]
+        };
+
+        const spyGenerateExcel = spyOn(excelService,'generateExcel');
+        component.generateExcel();
+        expect(spyGenerateExcel).toHaveBeenCalled();
+    });
+
+    it('should getchartdata for kpi when trendValueList is an object', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {   
+                        filter1:"Overall",
+                        filter2: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "https://tools.publicis.sapient.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                    "Issue Status": "Open",
+                                    "Issue Type": "Change request",
+                                    "Size(story point/hours)": "0.0",
+                                    "Logged Work": "0 hrs",
+                                    "Original Estimate": "0 hrs",
+                                    "Due Date": "-"
+                                }
+                            ]
+                        }]
+                    }
+                ]
+                
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            'filter1': ['Overall'],
+            'filter2': ['Overall']
+        }
+        const res = {
+            "filter1": "Overall",
+            "filter2": "Overall",
+            "data": [
+                {
+                    "label": "Issue without estimates",
+                    "value": 21,
+                    "value1": 51,
+                    "unit": "",
+                    "modalValues": []
+                },
+            ]
+        }
+        const combo = [{
+            filter1: 'Overall',
+            filter2: 'Overall',
+        }]
+        
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
 
+    it('should calculate business days', () => {
+        const today = new Date().toISOString().split('T')[0];
+        const endDate = new Date('2023-02-27T13:36:00.0000000').toISOString().split('T')[0];
+        const spy = spyOn(component, 'calcBusinessDays').and.returnValue(of(0))
+        component.calcBusinessDays(today, endDate);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should apply aggregation for groupBarchart', () => {
+        const data = [
+            {
+                filter1: "Defect",
+                value: [{
+                    "data": "0",
+                    "value": 10,
+                    "hoverValue": {
+                        "Defect": 5,
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }]
+            },
+            {
+                filter1: "Change request",
+                value: [{
+                    "data": "0",
+                    "value": 11,
+                    "hoverValue": {
+                        "Change request": 5
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }
+                ]
+            }
+        ];
+        const result = component.applyAggregationForChart(data);
+        expect(result[0]?.value[0].value).toEqual(21);
+    });
+
+    it('should get chart type',()=>{
+        component.updatedConfigGlobalData=[
+            {kpiId:'kpi125',
+        kpiDetail:{
+            chartType: 'GroupBarChart'
+        }}
+        ];
+        expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
+    });
 });

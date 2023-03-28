@@ -18,28 +18,7 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.processor.adapter.impl;
 
-import com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineJob;
-import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
-import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestOperations;
+import static com.publicissapient.kpidashboard.common.util.DateUtil.TIME_FORMAT;
 
 import java.net.URI;
 import java.time.Instant;
@@ -52,7 +31,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.publicissapient.kpidashboard.common.util.DateUtil.TIME_FORMAT;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestOperations;
+
+import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
+import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -73,10 +76,10 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	 */
 	@Autowired
 	RestOperationsFactory<RestOperations> restOperationsFactory;
-	
+
 	@Override
 	public Map<Deployment, Set<Deployment>> getDeploymentJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfDeployment) {
+			long lastStartTimeOfDeployment, ProjectBasicConfig proBasicConfig) {
 		log.debug("Enter getInstanceJobs");
 		Map<Deployment, Set<Deployment>> result = new LinkedHashMap<>();
 
@@ -95,7 +98,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);
-			processResponse(azurePipelineServer, result, responseEntity.getBody());
+			processResponse(azurePipelineServer, result, responseEntity.getBody(), proBasicConfig);
 
 		} catch (RestClientException exception) {
 			log.error("client exception loading jobs details", exception);
@@ -105,13 +108,12 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<Deployment, Set<Deployment>> result,
-			String body) {
+			String body, ProjectBasicConfig proBasicConfig) {
 
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject resObject = (JSONObject) parser.parse(body);
 			JSONArray deployments = AzurePipelineUtils.getJsonArray(resObject, "value");
-
 
 			for (Object deployObject : deployments) {
 				Deployment deploymentJob = new Deployment();
@@ -126,7 +128,9 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 				deploymentJob.setProjectToolConfigId(azurePipelineServer.getId());
 				deploymentJob.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				deploymentJob.setCreatedAt(String.valueOf(System.currentTimeMillis()));
-				deploymentJob.setDeployedBy(AzurePipelineUtils.getString(jsonDeployedBy, "displayName"));
+				if (proBasicConfig.isSaveAssigneeDetails()) {
+					deploymentJob.setDeployedBy(AzurePipelineUtils.getString(jsonDeployedBy, "displayName"));
+				}
 				deploymentJob.setDeploymentStatus(getDeploymentStatus(jsonDeploy));
 				deploymentJob.setNumber(String.valueOf(jsonDeploy.get("id")));
 				deploymentJob.setJobId(azurePipelineServer.getJobName());
@@ -172,8 +176,8 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 	}
 
 	@Override
-	public Map<AzurePipelineJob, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
-			long lastStartTimeOfJobs) {
+	public Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection azurePipelineServer,
+			long lastStartTimeOfJobs, ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 

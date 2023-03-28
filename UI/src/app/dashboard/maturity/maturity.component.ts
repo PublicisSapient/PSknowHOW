@@ -58,8 +58,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
     checkinsPerDay = <any>[];
     gaugemap = {};
     defectCount = <any>[];
-    loaderJenkins = false;
     jiraGroups = 0;
+    loaderJenkins = false;
+    loaderJira = false;
     loaderSonar = false;
     loaderZypher = false;
     loaderBitBucket = false;
@@ -80,22 +81,30 @@ export class MaturityComponent implements OnInit, OnDestroy {
     noKpi = false;
     noOfJiraGroups = 0;
     loader= false;
-
+    showNoDataMsg:boolean = false;
+    noDataForFilter = false;
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
 
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
         }));
+
+        this.subscription.push(this.service.setNoData.subscribe(data =>{
+            this.noDataForFilter = data;
+            this.receiveSharedData(this.service.getFilterObject());
+        }));
+
         this.selectedtype = this.service.getSelectedType();
 
         this.subscription.push(this.service.onTypeRefresh.pipe(distinctUntilChanged(),mergeMap(selectedtype =>{
-            this.jiraGroups = 0;
             this.noOfJiraGroups=0;
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
             this.loaderJenkins = false;
+            this.loaderJira =false;
             this.selectedtype = selectedtype;
+            this.showNoDataMsg =false;
             return this.service.passDataToDashboard;
         })).pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             if (this.router.url === '/dashboard/Maturity') {
@@ -112,26 +121,34 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
     receiveSharedData($event) {
         this.loader =true;
+        this.jiraGroups = 0;
+        this.showNoDataMsg = false;
         if (this.service.getSelectedTab() === 'Maturity') {
-            this.masterData = $event.masterData;
-            this.filterData = $event.filterData;
-            this.filterApplyData = $event.filterApplyData;
+            this.masterData = $event?.masterData;
+            this.filterData = $event?.filterData;
+            this.filterApplyData = $event?.filterApplyData;
             this.loaderMaturity = true;
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList'].filter(kpi => kpi.calculateMaturity).map(kpi => kpi.kpiId);
-            // this.drawAreaChart(null, null);
-            // this.chart(null);
-            if (this.selectedtype.toLowerCase() === 'scrum') {
-                this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-                this.groupZypherKpi(kpiIdsForCurrentBoard);
-                this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-                this.groupSonarKpi(kpiIdsForCurrentBoard);
-                this.groupJiraKpi(kpiIdsForCurrentBoard);
-            } else {
-                this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
-                this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
+            const isKanban = this.selectedtype.toLowerCase() === 'kanban';
+            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === isKanban).map(kpi => kpi.kpiId);
+            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0){
+                // this.drawAreaChart(null, null);
+                // this.chart(null);
+                if (this.selectedtype.toLowerCase() === 'scrum') {
+                    this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+                    this.groupZypherKpi(kpiIdsForCurrentBoard);
+                    this.groupBitBucketKpi(kpiIdsForCurrentBoard);
+                    this.groupSonarKpi(kpiIdsForCurrentBoard);
+                    this.groupJiraKpi(kpiIdsForCurrentBoard);
+                } else {
+                    this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
+                    this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
+                }
+            }else{
+                this.loader = false;
+                this.showNoDataMsg = true;
             }
         }
     }
@@ -148,6 +165,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
         if (this.service.getFilterObject()) {
             this.receiveSharedData(this.service.getFilterObject());
+        }else{
+            this.showNoDataMsg = true;
         }
     }
 
@@ -188,13 +207,13 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 groupIdSet.add(obj.groupId);
             }
         });
+        this.noOfJiraGroups =groupIdSet.size;
 
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
                 if (this.kpiJira?.kpiList?.length > 0) {
-                    this.noOfJiraGroups++;
                     this.postJiraKpi(this.kpiJira, 'jira');
                 }
             }
@@ -220,12 +239,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
             }
         });
 
+        this.noOfJiraGroups =groupIdSet.size;
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
                 if (this.kpiJira?.kpiList?.length > 0) {
-                    this.noOfJiraGroups++;
                     this.postJiraKpi(this.kpiJira, 'jira');
                 }
             }
@@ -340,6 +359,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         });
     }
     postJiraKpi(postData, source): void {
+        this.loaderJira =true;
         this.jiraKpiRequest = this.selectedtype.toLowerCase() === 'scrum' ? this.httpService.postKpi(postData, source) : this.httpService.postKpiKanban(postData, source);
         this.jiraKpiRequest.subscribe(getData => {
             // this.jiraGroups = false;
@@ -354,13 +374,13 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.maturityValue[this.jiraKpiData[obj].kpiId] = this.jiraKpiData[obj];
                 }
                 this.jiraKpiData = newObject;
-
-                //call handle tab change only after all jira kpis are fetched
-                if (this.jiraGroups === this.noOfJiraGroups) {
-                    this.jiraGroups = 0;
-                    this.noOfJiraGroups = 0;
-                    this.handleTabChange(0);
-                }
+            }
+               //call handle tab change only after all jira kpis are fetched
+               if (this.jiraGroups === this.noOfJiraGroups) {
+                this.jiraGroups = 0;
+                this.noOfJiraGroups = 0;
+                this.loaderJira = false;
+                this.handleTabChange(0);
             }
         });
     }

@@ -83,6 +83,7 @@ export class FieldMappingComponent implements OnInit {
       dynamicDownload: null as HTMLElement
     }
   };
+ dueDateTypes: any = [];
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
     private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService) { }
@@ -122,14 +123,20 @@ export class FieldMappingComponent implements OnInit {
         value: 'Story Point'
       },
       {
-        label: 'Actual Estimation',
+        label: 'Actual (Original Estimation)',
         value: 'Actual Estimation'
-      },
-      {
-        label: 'Buffered Estimation',
-        value: 'Buffered Estimation'
       }
     ];
+    this.dueDateTypes =[
+       {
+        label: 'Custom Field',
+        value: 'Custom Field'
+      },
+      {
+        label: 'Due Date',
+        value: 'Due Date'
+      }
+    ]
     this.defectIdentification = [
       {
         label: 'CustomField',
@@ -413,6 +420,10 @@ export class FieldMappingComponent implements OnInit {
       resolutionTypeForRejection: [],
       jiraStatusForDevelopment: [[]],
       jiraStatusForQa: [[]],
+      jiraBlockedStatus:[],
+      jiraWaitStatus:[],
+      jiraStatusForInProgress: [],
+      jiraDevDoneStatus : [],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -441,6 +452,9 @@ export class FieldMappingComponent implements OnInit {
       epicTimeCriticality: [''],
       epicJobSize: [''],
       workingHoursDayCPT: [''],
+      jiraDueDateCustomField : [''],
+      jiraDueDateField : [''],
+      jiraDevDueDateCustomField : [''],
       // defect mapping
       jiradefecttype: [[]],
 

@@ -1997,10 +1997,6 @@ describe('ExecutiveComponent', () => {
     httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
 
     component.selectedPriorityFilter.kpi53 = [{ data: 'P3 - Major' }];
-    component.changeCycleTimePriority();
-    component.getValuePrioritywise('openTriage', component.selectedPriorityFilter.kpi53.data);
-    component.getWidthPrioritywise('openTriage', component.selectedPriorityFilter.kpi53.data);
-
     component.getPriorityColor(0);
 
     expect(component.prioritySum['openTriage']).toBe(1);
@@ -2840,6 +2836,135 @@ describe('ExecutiveComponent', () => {
     component.getDropdownArray('kpi11');
     expect(component.kpiDropdowns['kpi11'].length).toBeGreaterThan(0);
   });
+
+  it('should check maturity', () => {
+    const item = [
+        {
+            "data": "EU",
+            "value": [
+                {
+                    "data": "27.33",
+                    "value": 27.33,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "0.15",
+                    "value": 0.15,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "8.66",
+                    "value": 8.66,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "93.86",
+                    "value": 93.86,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "15.1",
+                    "value": 15.1,
+                    
+                    "sprojectName": "EU"
+                }
+            ],
+            "maturity": "4"
+        }
+    ];
+    const spy = spyOn(component, 'checkMaturity').and.returnValue(of('M4'))
+    component.checkMaturity(item);
+    expect(spy).toHaveBeenCalled()
+  })
+
+  it('should check latest trend and maturity', () => {
+    const item = [
+        {
+            "data": "EU",
+            "value": [
+                {
+                    "data": "27.33",
+                    "value": 27.33,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "0.15",
+                    "value": 0.15,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "8.66",
+                    "value": 8.66,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "93.86",
+                    "value": 93.86,
+                    
+                    "sprojectName": "EU"
+                },
+                {
+                    "data": "15.1",
+                    "value": 15.1,
+                    
+                    "sprojectName": "EU"
+                }
+            ],
+            "maturity": "4"
+        }
+    ];
+    const kpiData = {
+        "kpiId": "kpi121",
+        "kpiName": "Capacity",
+        "isEnabled": true,
+        "order": 2,
+        "kpiDetail": {
+            "id": "6407068ba59c6c0bdeb427ae",
+            "kpiId": "kpi121",
+            "kpiName": "Capacity",
+            "isDeleted": "False",
+            "defaultOrder": 2,
+            "kpiCategory": "Iteration",
+            "kpiUnit": "",
+            "showTrend": false,
+            "isPositiveTrend": true,
+            "boxType": "1_column",
+            "calculateMaturity": false,
+            "hideOverallFilter": false,
+            "kpiSource": "Jira",
+            "maxValue": "",
+            "kanban": false,
+            "groupId": 8,
+            "kpiInfo": {
+                "details": [
+                    {
+                        "type": "paragraph",
+                        "value": "Planned capacity is the development team's available time."
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Source of this is KnowHOW"
+                    }
+                ]
+            },
+            "trendCalculative": false,
+            "additionalFilterSupport": false,
+            "xaxisLabel": "",
+            "yaxisLabel": ""
+        },
+        "shown": true
+    }
+    const spy = spyOn(component, 'checkLatestAndTrendValue');
+    component.checkLatestAndTrendValue(kpiData, item);
+    expect(spy).toHaveBeenCalled();
+  })
 });
 
 

@@ -147,15 +147,16 @@
         "priority" : "P4 - Minor",
         "status" : "In Analysis",
         "typeName" : "Story",
-        "estimate" : "36000.0",
+        "remainingEstimate" : "28800",
         "storyPoints" : 1
       },
       {
         "number" : "DTS-17768",
         "priority" : "P4 - Minor",
-        "status" : "More info",
+        "status" : "Open",
         "typeName" : "Defect",
-        "estimate" : "0.0"
+        "storyPoints": 1,
+        "remainingEstimate": 28800
       },
       {
         "number" : "DTS-17918",
@@ -195,10 +196,11 @@
       {
         "number" : "DTS-18780",
         "priority" : "P4 - Minor",
-        "status" : "On Hold",
+        "status" : "Open",
         "typeName" : "Story",
         "estimate" : "0.0",
-        "storyPoints" : 1
+        "storyPoints": 1,
+        "remainingEstimate": 28800
       },
       {
         "number" : "DTS-18903",
@@ -383,15 +385,16 @@
         "priority" : "P4 - Minor",
         "status" : "In Analysis",
         "typeName" : "Story",
-        "estimate" : "36000.0",
+        "remainingEstimate" : "28800",
         "storyPoints" : 1
       },
       {
         "number" : "DTS-17768",
         "priority" : "P4 - Minor",
-        "status" : "More info",
+        "status" : "Open",
         "typeName" : "Defect",
-        "estimate" : "0.0"
+        "storyPoints": 1,
+        "remainingEstimate": 28800
       },
       {
         "number" : "DTS-17918",
@@ -434,12 +437,20 @@
         "status" : "On Hold",
         "typeName" : "Story",
         "estimate" : "0.0",
-        "storyPoints" : 1
+        "storyPoints": 1,
+        "remainingEstimate": 28800
       },
       {
         "number" : "DTS-18903",
         "priority" : "P3 - Major",
         "status" : "Ready for Testing",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
+        "number" : "DTS-18475",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
         "typeName" : "Defect",
         "estimate" : "0.0"
       },
@@ -698,7 +709,7 @@
     ],
     "puntedIssues" : [
       {
-        "number" : "DTS-17135",
+        "number" : "DTS-19485",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "Open",
@@ -735,6 +746,14 @@
       "DTS-19036"
     ],
     "totalIssues" : [
+      {
+        "number" : "DTS-19485",
+        "originBoardId" : "11856",
+        "priority" : "P4 - Minor",
+        "status" : "Open",
+        "typeName" : "Story",
+        "remainingEstimate" : "28800"
+      },
       {
         "number" : "DTS-16627",
         "originBoardId" : "11856",

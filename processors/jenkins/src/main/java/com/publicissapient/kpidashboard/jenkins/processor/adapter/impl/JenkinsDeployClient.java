@@ -18,19 +18,17 @@
 
 package com.publicissapient.kpidashboard.jenkins.processor.adapter.impl;
 
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import com.publicissapient.kpidashboard.jenkins.config.Constants;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsJob;
-import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
-import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
-import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -42,21 +40,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+import com.publicissapient.kpidashboard.jenkins.config.Constants;
+import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
+import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
+import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class JenkinsDeployClient implements JenkinsClient {
 
 	private final RestOperations restOperations;
-	private static final String DEPLOYMENT_URL = "job/%s/api/json?tree=builds[number,status,timestamp,id,result,duration,actions[parameters[name,value]]]";
+	private static final String DEPLOYMENT_URL = "/job/%s/api/json?tree=builds[number,status,timestamp,id,result,duration,actions[parameters[name,value]]]";
 
 	private static final String ID = "id";
 	private static final String ACTIONS = "actions";
@@ -200,7 +203,8 @@ public class JenkinsDeployClient implements JenkinsClient {
 	}
 
 	@Override
-	public Map<JenkinsJob, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer) {
+	public Map<ObjectId, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection jenkinsServer,
+			ProjectBasicConfig proBasicConfig) {
 		return new HashMap<>();
 	}
 

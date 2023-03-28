@@ -340,17 +340,15 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			Map<String, Map<String, Set<String>>> jiraHistoryPriorityAndDateWiseIssueMap, Node node,
 			Set<String> projectWisePriorityList, Set<KanbanIssueCustomHistory> kanbanJiraIssues,
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-			if (MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
-				String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
-				String date = getRange(
-						KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
-						kpiRequest);
-				KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
-						jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData,
-						date, KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
-			}
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
+			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String date = getRange(
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+					kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(dateProjectKey,
+					jiraHistoryPriorityAndDateWiseIssueMap, projectWisePriorityList, kanbanJiraIssues, excelData, date,
+					KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 		}
 	}
 

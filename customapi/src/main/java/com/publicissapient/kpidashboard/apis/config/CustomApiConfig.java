@@ -72,18 +72,18 @@ public class CustomApiConfig {// NOPMD
 	// forgot password email subject
 	@Value("${forgotPassword.emailSubject}")
 	private String emailSubject;
-	//  forgot password server host only for server where nginex is not
+	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.serverPort}")
 	private String serverPort;
-	//  forgot password server host only for server where nginex is not
+	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.uiHost}")
 	private String uiHost;
-	//  forgot password UI port only for server where nginex is not setup
+	// forgot password UI port only for server where nginex is not setup
 	@Value("${forgotPassword.uiPort}")
 	private String uiPort;
-	//  detailed logger property toggle
+	// detailed logger property toggle
 	private String applicationDetailedLogger;
 	// white list of origin values to be allowed under CORS
 	private List<String> corsFilterValidOrigin;
@@ -158,17 +158,24 @@ public class CustomApiConfig {// NOPMD
 	private String feedbackEmailSubject;
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
+
+	@Value("${certhostpath}")
+	private String hostPath;
+
 	private int sonarWeekCount;
 	private int jenkinsWeekCount;
 	private int authCookieDuration;
 	private boolean authCookieHttpOnly;
 	private boolean authCookieSecured;
 	private String authCookieSameSite;
-	private int hierarchySelectionCount; // get hierachySelection Count, by default 3
+	private int hierarchySelectionCount; // get hierachySelection Count, by
+										 // default 3
 	@Value("${dateRangeFilter.types}")
-	private List<String> dateRangeFilterTypes; // get type of date for Kanban Date Filter
+	private List<String> dateRangeFilterTypes; // get type of date for Kanban
+											   // Date Filter
 	@Value("${dateRangeFilter.counts}")
-	private List<Integer> dateRangeFilterCounts; // get counts of date type for Kanban Date Filter
+	private List<Integer> dateRangeFilterCounts; // get counts of date type for
+												 // Kanban Date Filter
 
 	@Value("${capacity.kanban.numberOfPastWeeks}")
 	private int numberOfPastWeeksForKanbanCapacity;
@@ -184,6 +191,27 @@ public class CustomApiConfig {// NOPMD
 	private int jiraXaxisMonthCount;
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
+
+	private int pushDataLimit;// limit of data allowed to push through api
+
+	private int exposeAPITokenExpiryDays; // expose api token expiry after days
+										  // limit
+
+	public int getPushDataLimit() {
+		return pushDataLimit;
+	}
+
+	public void setPushDataLimit(int pushDataLimit) {
+		this.pushDataLimit = pushDataLimit;
+	}
+
+	public int getExposeAPITokenExpiryDays() {
+		return exposeAPITokenExpiryDays;
+	}
+
+	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
+		this.exposeAPITokenExpiryDays = exposeAPITokenExpiryDays;
+	}
 
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
@@ -359,7 +387,6 @@ public class CustomApiConfig {// NOPMD
 	public void setTotalDefectCountAgingXAxisRange(List<String> totalDefectCountAgingXAxisRange) {
 		this.totalDefectCountAgingXAxisRange = totalDefectCountAgingXAxisRange;
 	}
-
 
 	/**
 	 * get percentileValue
@@ -885,5 +912,13 @@ public class CustomApiConfig {// NOPMD
 	public int getSprintCountForBackLogStrength() {
 		return sprintCountForBackLogStrength;
 	}
-	
+
+	public String getHostPath() {
+		return hostPath;
+	}
+
+	public void setHostPath(String hostPath) {
+		this.hostPath = hostPath;
+	}
+
 }

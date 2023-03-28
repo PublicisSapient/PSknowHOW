@@ -166,7 +166,7 @@ public class SprintVelocityServiceImplTest {
 		filterComponentIdWiseDefectMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		Double velocityValue = sprintVelocityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
 
-		assertThat("Velocity value :", velocityValue, equalTo(6.0));
+		assertThat("Velocity value :", velocityValue, equalTo(8.0));
 	}
 
 	@Test
@@ -216,6 +216,7 @@ public class SprintVelocityServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -247,7 +248,7 @@ public class SprintVelocityServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

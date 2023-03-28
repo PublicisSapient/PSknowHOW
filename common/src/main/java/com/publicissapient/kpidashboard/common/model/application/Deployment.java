@@ -36,6 +36,7 @@ public class Deployment extends BasicModel {
 	private String deployedBy;
 	private String number;
 	private String createdAt;
+	private String updatedTime;
 
 	@Override
 	public boolean equals(Object o) {

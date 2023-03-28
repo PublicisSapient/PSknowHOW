@@ -54,7 +54,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
-    // this.kanbanActivated = false;
     this.service.setSelectedType('Scrum');
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
@@ -193,10 +192,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
    // post request of Jira(scrum) hygiene
    postJiraKpi(postData, source): void {
+     this.kpiLoader = true;
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
-
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -351,7 +350,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
     }
 
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
@@ -528,7 +526,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
                     optionsArr?.push(trendValueList[i]?.filter);
                 }
             }
-            obj['filterType'] = 'Select a filter',
+            obj['filterType'] = 'Select a filter';
             obj['options'] = optionsArr;
             this.kpiDropdowns[kpiId] = [];
             this.kpiDropdowns[kpiId].push(obj);

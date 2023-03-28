@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -81,6 +82,9 @@ public class WorkRemainingServiceImplTest {
 
 	@Mock
 	private FieldMappingRepository fieldMappingRepository;
+
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@InjectMocks
 	private WorkRemainingServiceImpl workRemainingServiceImpl;
@@ -143,6 +147,7 @@ public class WorkRemainingServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(workRemainingServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
 			KpiElement kpiElement = workRemainingServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

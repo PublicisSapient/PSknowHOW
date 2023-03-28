@@ -107,7 +107,7 @@ public class ScopeChangeServiceImplTest {
 		
 		setMockProjectConfig();
 		setMockFieldMapping();
-		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
+		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(1);
 
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
@@ -139,6 +139,7 @@ public class ScopeChangeServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChangeServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -155,7 +156,7 @@ public class ScopeChangeServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("SCOPE_CHANGE"));
+		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
 	}
 
 	@After

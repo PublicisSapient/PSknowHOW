@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
+
 import java.util.Arrays;
 
 /**
@@ -256,6 +257,7 @@ public enum KPICode {
 	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
 	 */
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
+
 	/**
 	 * First time pass rate
 	 */
@@ -289,11 +291,14 @@ public enum KPICode {
 	 * Work Remaining
 	 */
 	WORK_REMAINING("kpi119", KPISource.JIRA.name()),
-	
+
+	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
-	SCOPE_CHANGE("kpi120", KPISource.JIRA.name()),
+	ITERATION_COMMITMENT("kpi120", KPISource.JIRA.name()),
 	
 	/**
 	 * Capacity 
@@ -336,9 +341,14 @@ public enum KPICode {
 	INVALID("INVALID_KPI", "Invalid"),
 
 	/**
-	 * Work Completed
+	 * Overall Completion Status
 	 */
-	WORK_COMPLETED("kpi128", KPISource.JIRA.name()),
+	OVERALL_COMPLETION_STATUS("kpi128", KPISource.JIRA.name()),
+
+	/**
+	 * Quality Status
+	 */
+	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
 
 	/**
 	 * Issues Without Story Link
@@ -348,9 +358,15 @@ public enum KPICode {
 	/**
 	 * Backlog readiness efficiency
 	 */
-	BACKLOG_READINESS_EFFICIENCY("kpi130", KPISource.JIRA.name());
+	BACKLOG_READINESS_EFFICIENCY("kpi138", KPISource.JIRA.name()),
+
+	/**
+	 * Wastage
+	 */
+	WASTAGE("kpi131", KPISource.JIRA.name());
 
 	// @formatter:on
+
 
 	private String kpiId;
 

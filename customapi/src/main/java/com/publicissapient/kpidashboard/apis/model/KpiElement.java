@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;//NOPMD
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumnInfo;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.KpiInfo;
@@ -104,6 +105,8 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<KPIExcelData> excelData;
 	@JsonIgnore
 	private transient List<String> excelColumns;
+	// For Excel column Info
+	private List<KPIExcelColumnInfo> excelColumnInfo;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -153,6 +156,14 @@ public class KpiElement implements Serializable { // NOPMD
 	public void setExcelColumns(List<String> excelColumns) {
 		this.excelColumns = excelColumns;
 	}
+	public List<KPIExcelColumnInfo> getExcelColumnInfo() {
+		return excelColumnInfo;
+	}
+
+	public void setExcelColumnInfo(List<KPIExcelColumnInfo> excelColumnInfo) {
+		this.excelColumnInfo = excelColumnInfo;
+	}
+
 
 	public Integer getGroupId() {
 		return groupId;
