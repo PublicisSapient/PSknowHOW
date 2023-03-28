@@ -190,9 +190,12 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issuesForDevelopment = new IterationKpiData("Ready Backlog",
 							Double.valueOf(issueCount), storyPoint, null, "SP", null);
+					IterationKpiData backLogStrength = new IterationKpiData("Backlog Strength", 99.0, null, null,
+							"Sprint", null);
 					IterationKpiData averageCycleTime = new IterationKpiData("Readiness Cycle time",
 							cycleTime / Double.valueOf(issueCount), null, null, "days", null);
 					data.add(issuesForDevelopment);
+					data.add(backLogStrength);
 					data.add(averageCycleTime);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
 					iterationKpiValues.add(iterationKpiValue);
@@ -258,9 +261,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	}
 
 	private Double getAverageSprintCapacity(List<Node> sprintLeafNodeList, KpiRequest kpiRequest) {
+	
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		Collections.reverse(sprintLeafNodeList);
+		
 		List<Node> sprintForStregthCalculation = sprintLeafNodeList.stream()
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 

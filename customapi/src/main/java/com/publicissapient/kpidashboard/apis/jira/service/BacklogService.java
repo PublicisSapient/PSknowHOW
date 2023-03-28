@@ -39,7 +39,7 @@ public class BacklogService {
 		if (Optional.ofNullable(fieldMapping.getReadyForDevelopmentStatus()).isPresent()) {
 			statusList.add(fieldMapping.getReadyForDevelopmentStatus());
 		}
-		mapOfFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(), statusList);//coomonutil
+		mapOfFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(), statusList);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		

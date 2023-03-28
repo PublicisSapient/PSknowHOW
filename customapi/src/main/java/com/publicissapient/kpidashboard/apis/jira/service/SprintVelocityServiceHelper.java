@@ -44,7 +44,8 @@ public class SprintVelocityServiceHelper {
 			});
 		} else {
 			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-				// start : for azure board sprint details collections empty so that we have to
+				// start : for azure board sprint details collections empty so
+				// that we have to
 				// prepare data from jira issue
 				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
 						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
@@ -56,11 +57,12 @@ public class SprintVelocityServiceHelper {
 							.put(Pair.of(basicProjectConfigId, sprintId), sprintWiseIssuesList));
 				});
 			}
-			// end : for azure board sprint details collections empty so that we have to
+			// end : for azure board sprint details collections empty so that we
+			// have to
 			// prepare data from jira issue.
 		}
 	}
-	
+
 	public double calculateSprintVelocityValue(
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
 			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintJiraIssues) {
