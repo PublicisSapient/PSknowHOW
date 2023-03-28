@@ -423,6 +423,13 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { 'Workflow Status Mapping' : ['jiraBlockedStatus', 'jiraWaitStatus'] }
       },
       {
+        kpiId: 'kpi133',
+        kpiName: 'Quality Status',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { 'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
         kpiId: 'kpi989',
         kpiName: 'Kpi Maturity',
         type: ['Other'],

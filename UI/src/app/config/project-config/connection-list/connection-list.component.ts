@@ -226,7 +226,6 @@ export class ConnectionListComponent implements OnInit {
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'offline', header: 'Is Offline?', class: 'small-text' },
         { field: 'apiEndPoint', header: 'API Endpoint', class: 'long-text' },
-        { field: 'patOAuthToken', header: 'PAT OAuth Token', class: 'long-text' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
         { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
@@ -804,7 +803,7 @@ export class ConnectionListComponent implements OnInit {
           }
         });
       }
-    }      
+    }
     /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
         this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
@@ -835,7 +834,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['consumerKey'].disable();
       }
     }
-    
+
 
     if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
       if (event.checked) {
