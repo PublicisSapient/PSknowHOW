@@ -97,7 +97,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
 
-    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
+    const pieChartValues = this.data[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({

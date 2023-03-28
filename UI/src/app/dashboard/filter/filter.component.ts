@@ -1462,7 +1462,7 @@ export class FilterComponent implements OnInit {
       .getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe((response) => {
         if (response.success) {
-          if(this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
+          if(this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
             this.processorsTracelogs = response.data;
         }
           this.showExecutionDate();
