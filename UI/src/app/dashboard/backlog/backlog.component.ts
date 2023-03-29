@@ -592,7 +592,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   checkSprint(value){
-    return Math.floor(value) < value ? `>${Math.round(value)}` : value;
+    return Math.floor(value) < value ? `>${Math.round(value)}` : `=${value}`;
   }
 
   handleArrowClick(kpi, label, tableValues) {

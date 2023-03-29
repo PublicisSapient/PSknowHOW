@@ -28,20 +28,20 @@
                             </h3>
                             <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
                             <p class="text-data">
-                              <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
-                                {{x?.value != -99 ? checkSprint(x?.value) : '-'}}
-                              </span>
+                                <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
+                                  {{x?.value > 0 ? checkSprint(x?.value) : '-'}}
+                                </span>
                               <ng-template #otherFields>
                               <span
                                 [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
-                                != -99 ?
+                                > 0 ?
                                 convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
                               </ng-template>
-                              <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
+                              <span *ngIf="x?.value1 && x?.value1 > 0 && x?.value1 != undefined"
                                 [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                 x?.value1}}</span>
-                              <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                {{ x?.value != -99 ? x?.unit : ''}}
+                              <span *ngIf="x?.value > 0 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                {{ x?.value > 0 ? x?.unit : ''}}
                               </span>
                             </p>
                           </div>
