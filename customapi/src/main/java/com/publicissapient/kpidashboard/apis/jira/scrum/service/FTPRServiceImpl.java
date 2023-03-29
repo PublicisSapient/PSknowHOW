@@ -30,8 +30,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -56,7 +54,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	public static final String UNCHECKED = "unchecked";
 	public static final String DEFECT = "Defect";
 	private static final Logger LOGGER = LoggerFactory.getLogger(FTPRServiceImpl.class);
-	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
+
 	private static final String ISSUES = "issues";
 
 	private static final String FIRST_TIME_PASS_STORIES = "First Time Pass Stories";
@@ -149,10 +147,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	}
 
 	private static List<JiraIssue> excludeLinkedDefectStories(List<JiraIssue> totalStoryList,
-			List<JiraIssue> firstTimePassStoryList, List<JiraIssue> totalDeffects) {
-		if (CollectionUtils.isNotEmpty(totalDeffects)) {
-			Set<String> listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
-					.collect(Collectors.toSet());
+															  List<JiraIssue> firstTimePassStoryList, Set<String> listOfStory) {
+		if (CollectionUtils.isNotEmpty(listOfStory)) {
+			
 			firstTimePassStoryList = totalStoryList.stream()
 					.filter(jiraIssue -> !listOfStory.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 		}
@@ -165,14 +162,6 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			totalStoryList = allIssues.stream().filter(
 					jiraIssue -> fieldMapping.getJiraFTPRStoryIdentification().contains(jiraIssue.getTypeName()))
 					.collect(Collectors.toList());
-
-			// Consider stories based on issue delivered status
-			if (CollectionUtils.isNotEmpty(totalStoryList)
-					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueDeliverdStatus())) {
-				totalStoryList = totalStoryList.stream().filter(
-						jiraIssue -> fieldMapping.getJiraIssueDeliverdStatus().contains(jiraIssue.getJiraStatus()))
-						.collect(Collectors.toList());
-			}
 
 			// exclude the issue from total stories based on defect rejection status
 			if (Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatus()).isPresent()) {
@@ -283,6 +272,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					allIssues.size());
 			List<JiraIssue> totalStoryList = null;
 			List<JiraIssue> firstTimePassStoryList = null;
+			Set<String> listOfStory = new HashSet<>();
 
 			// Total stories from issues completed collection in a sprint
 			totalStoryList = getTotalStoryList(fieldMapping, allIssues, totalStoryList);
@@ -290,11 +280,14 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			List<JiraIssue> totalDeffects = allIssues.stream()
 					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase(DEFECT)).collect(Collectors.toList());
 
+			if (CollectionUtils.isNotEmpty(totalDeffects)) {
+				 listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+						.collect(Collectors.toSet());
+			}
 			// exclude stories from FTPR with linked defect
-			firstTimePassStoryList = excludeLinkedDefectStories(totalStoryList, firstTimePassStoryList, totalDeffects);
+			firstTimePassStoryList = excludeLinkedDefectStories(totalStoryList, firstTimePassStoryList, listOfStory);
 
-			// filter the issues from first time pass stories based on resolution type for
-			// rejection
+			// filter the issues from first time pass stories based on resolution type for rejection
 			firstTimePassStoryList = ftprBasedOnResolutionTypeForRejection(fieldMapping, firstTimePassStoryList);
 
 			// exclude stories from FTPR with return transaction
@@ -336,6 +329,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				String priority = entry.getKey();
 				List<JiraIssue> issues = entry.getValue();
 				priorities.add(priority);
+				if (priorityWiseTotalFTPSIssues.containsKey(priority)) {
+
 				List<JiraIssue> finalFirstTimePassStoryList = priorityWiseTotalFTPSIssues.get(priority).stream()
 						.collect(Collectors.toList());
 				List<IterationKpiModalValue> modalValues = new ArrayList<>();
@@ -354,7 +349,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					}
 
 					populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
-							finalFirstTimePassStoryList);
+							finalFirstTimePassStoryList, listOfStory, totalDeffects);
 
 				}
 
@@ -377,7 +372,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				data.add(ftprPercentage);
 				IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, null, data);
 				iterationKpiValues.add(iterationKpiValue);
-
+			}
 			}
 
 			List<IterationKpiData> data = new ArrayList<>();
@@ -397,11 +392,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
-			// Create kpi level filters
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+
 			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.FIRST_TIME_PASS_RATE_ITERATION.getColumns());
 			kpiElement.setTrendValueList(trendValue);
