@@ -424,6 +424,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
+    /**if trendValueList is an object */
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
@@ -496,6 +497,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i] || x['filter'] == filters[i])];
         }
+
         if (preAggregatedValues?.length > 1) {
             if (this.getKpiChartType(kpiId) === 'GroupBarChart') {
                 this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
@@ -571,7 +573,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         }
         // else if (formType?.toLowerCase() == 'dropdown') {
         //     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-        // } 
+        // }
         else {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
         }
