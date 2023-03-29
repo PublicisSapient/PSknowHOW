@@ -333,9 +333,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.noTabAccess = false;
                     // call kpi request according to tab selected
                     if (this.masterData && Object.keys(this.masterData).length) {
+                        this.processKpiConfigData();
                         if (this.selectedtype === 'Kanban') {
                             this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => item.boardId === this.boardId)[0]?.kpis;
-                            this.processKpiConfigData();
                             this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
@@ -833,7 +833,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data.localeCompare(b.data));
+            objArray?.sort((a, b) => a.data?.localeCompare(b.data));
         }
         return objArray;
     }
