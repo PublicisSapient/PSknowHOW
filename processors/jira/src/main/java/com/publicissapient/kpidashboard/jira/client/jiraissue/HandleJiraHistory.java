@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,19 +17,16 @@ import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
@@ -86,25 +82,29 @@ public class HandleJiraHistory {
 				if (ObjectUtils.isNotEmpty(issueField.getName()))
 					field = issueField.getName();
 			}
-			List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
-			if (CollectionUtils.isNotEmpty(changeLogList)) {
-				for (ChangelogGroup history : changeLogList) {
-					String finalField = field;
-					history.getItems().forEach(item -> {
-						if (item.getField().trim().equalsIgnoreCase(finalField)) {
-							JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
-							jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
-							jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
-							jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
-									.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
-							fieldHistoryLog.add(jiraHistoryChangeLog);
-						}
-					});
-				}
-			}
-			return fieldHistoryLog;
+			return createDueDateChangeLogs(changeLogList, field);
 		}
 		return new ArrayList<>();
+	}
+
+	private List<JiraHistoryChangeLog> createDueDateChangeLogs(List<ChangelogGroup> changeLogList, String field) {
+		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(changeLogList)) {
+			for (ChangelogGroup history : changeLogList) {
+				String finalField = field;
+				history.getItems().forEach(item -> {
+					if (item.getField().trim().equalsIgnoreCase(finalField)) {
+						JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+						jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
+						jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
+						jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
+								.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
+						fieldHistoryLog.add(jiraHistoryChangeLog);
+					}
+				});
+			}
+		}
+		return fieldHistoryLog;
 	}
 
 	private List<JiraHistoryChangeLog> mergeObjectsBasedOnTimestamp(List<JiraHistoryChangeLog> fieldHistoryLog) {
