@@ -135,7 +135,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
     foreignObject
       .append('thead')
-      .html('<th style="padding-top:3px; padding-bottom:3px;">Legend Title</th><th>Count</th><th style="text-align:right">%</th>')
+      .html('<th class="p-p-1 font-small">Legend Title</th><th class="p-p-1 font-small">Count</th><th class="p-p-1 font-small p-text-right">%</th>')
       .style('border-bottom', '1px solid #dedede')
       .style('text-align', 'left');
 
@@ -147,7 +147,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       tbody.append('tr')
         .style('border-bottom', '1px solid #dedede')
         .style('padding-top', '2px')
-        .html(`<td style="padding-top:3px; padding-bottom:3px;"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td>${x?.value}</td><td style="padding-top:3px; padding-bottom:3px;text-align:right;">${toPercent(x?.value / totalCount)}</td>`)
+        .html(`<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td class="p-p-1 font-small">${x?.value}</td><td class="p-p-1 font-small p-text-right">${toPercent(x?.value / totalCount)}</td>`)
     })
 
 
