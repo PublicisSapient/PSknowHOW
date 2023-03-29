@@ -19,6 +19,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -28,7 +29,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -134,9 +134,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 						getPriorityWiseRCAList(allCompletedDefects);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
 				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
-				// filterDataList will consist of DataCountGroup which will be set for all priorities
-				List<DataCountGroup> filterDataList = new ArrayList<>();
-				List<DataCountGroup> sortedFilterDataList = new ArrayList<>();
+				// filterDataList will consist of IterationKpiValue which will be set for all priorities
+				List<IterationKpiValue> filterDataList = new ArrayList<>();
+				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
 				Map<String, Integer> overallRCACountMap = new HashMap<>();
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseRCAList.entrySet()) {
@@ -169,7 +169,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					middleOverallData.setValue(dataCountList);
 					middleTrendValueListForPriorities.add(middleOverallData);
 
-					DataCountGroup filterData = new DataCountGroup(priority, middleTrendValueListForPriorities);
+					IterationKpiValue filterData = new IterationKpiValue(priority, middleTrendValueListForPriorities);
 
 					filterDataList.add(filterData);
 					dataCountList.add(priorityRCAData);
@@ -200,20 +200,20 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
 							latestSprint.getSprintFilter().getName(), fieldMapping);
 
-					// "Overall" dataCountGroup added to filterDataList and added in the final filterDataList
-					DataCountGroup filterDataOverall = new DataCountGroup(OVERALL, middleTrendValueListOverAll);
+					// "Overall" iterationKpiValue added to filterDataList and added in the final filterDataList
+					IterationKpiValue filterDataOverall = new IterationKpiValue(OVERALL, middleTrendValueListOverAll);
 					filterDataList.add(filterDataOverall);
 					kpiElement.setSprint(latestSprint.getName());
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(dataCountGroup -> dataCountGroup.getFilter().equalsIgnoreCase(OVERALL))
-							.findFirst().orElse(new DataCountGroup()));
-					filterDataList.removeIf(dataCountGroup -> dataCountGroup.getFilter().equalsIgnoreCase(OVERALL));
+									.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OVERALL))
+							.findFirst().orElse(new IterationKpiValue()));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OVERALL));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
-					// filterDataList will consist of dataCountGroup for all the available priorities such as P1, P2, P3, P4, Overall etc.
+					// filterDataList will consist of iterationKpiValue for all the available priorities such as P1, P2, P3, P4, Overall etc.
 					kpiElement.setTrendValueList(sortedFilterDataList);
 					LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
 							overAllRCAIssueCount.get(0));
@@ -269,7 +269,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 						Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
 	}
 
-	private void sortListByKey(List<DataCountGroup> list) {
-		list.sort(Comparator.comparing(DataCountGroup::getFilter));
+	private void sortListByKey(List<IterationKpiValue> list) {
+		list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
 	}
 }
