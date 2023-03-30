@@ -331,6 +331,7 @@ public class KpiHelperServiceTest {
 		statusChangeLogs.add(jiraHistoryChangeLog1);
 		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
 		jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLogs);
+		jiraIssueCustomHistory.setCreatedDate(DateTime.now());
 		double result = kpiHelperService.processStoryData(jiraIssueCustomHistory, "fromStatus", "fromStatus");
 		assertEquals(0.0, result, 0);
 	}
