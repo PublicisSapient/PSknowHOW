@@ -53,19 +53,15 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 	public static final String UNCHECKED = "unchecked";
 	public static final String DEFECT = "Defect";
+	public static final String PERCENTAGE = "percentage";
 	private static final Logger LOGGER = LoggerFactory.getLogger(FTPRServiceImpl.class);
-
 	private static final String ISSUES = "issues";
-
 	private static final String FIRST_TIME_PASS_STORIES = "First Time Pass Stories";
 	private static final String TOTAL_STORIES = "Total Stories";
 	private static final String FIRST_TIME_PASS_PERCENTAGE = "First Time Pass Rate";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
-
 	private static final String SPRINT_HISTORY = "sprint history";
-	public static final String PERCENTAGE = "percentage";
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -131,25 +127,40 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				projectWisePriority.put(fieldMapping.getBasicProjectConfigId().toString(), priorityValues);
 			}
 
-			List<JiraIssue> priorityWiseDefect = totalDeffects.stream().filter(defects -> projectWisePriority
-					.get(defects.getBasicProjectConfigId()).contains(defects.getPriority()))
+			List<JiraIssue> fieldMappingPriorityWiseDefect = totalDeffects.stream()
+					.filter(defects -> projectWisePriority.get(defects.getBasicProjectConfigId())
+							.contains(defects.getPriority()))
 					.collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(priorityWiseDefect)) {
-				Set<String> listOfStory = priorityWiseDefect.stream().map(JiraIssue::getDefectStoryID)
+			if (CollectionUtils.isNotEmpty(fieldMappingPriorityWiseDefect)) {
+				Set<String> listOfDefectId = fieldMappingPriorityWiseDefect.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
 				List<JiraIssue> priorityWiseStories = totalStoryList.stream()
-						.filter(issues -> listOfStory.contains(issues.getNumber())).collect(Collectors.toList());
+						.filter(issues -> listOfDefectId.contains(issues.getNumber())).collect(Collectors.toList());
 				firstTimePassStoryList = Stream.concat(firstTimePassStoryList.stream(), priorityWiseStories.stream())
 						.collect(Collectors.toList());
 			}
+
+			List<JiraIssue> priorityDefectWOMapping = totalDeffects.stream().filter(defects -> !(projectWisePriority
+					.get(defects.getBasicProjectConfigId()).contains(defects.getPriority())))
+					.collect(Collectors.toList());
+			// excluding stories with linked defect from FTPR if any defect priority is not
+			// maintained in field mapping
+			if (CollectionUtils.isNotEmpty(priorityDefectWOMapping)) {
+				Set<String> listOfDefectId = priorityDefectWOMapping.stream().map(JiraIssue::getDefectStoryID)
+						.flatMap(Set::stream).collect(Collectors.toSet());
+				firstTimePassStoryList = firstTimePassStoryList.stream()
+						.filter(issues -> !(listOfDefectId.contains(issues.getNumber()))).collect(Collectors.toList());
+
+			}
+
 		}
 		return firstTimePassStoryList;
 	}
 
 	private static List<JiraIssue> excludeLinkedDefectStories(List<JiraIssue> totalStoryList,
-															  List<JiraIssue> firstTimePassStoryList, Set<String> listOfStory) {
+			List<JiraIssue> firstTimePassStoryList, Set<String> listOfStory) {
 		if (CollectionUtils.isNotEmpty(listOfStory)) {
-			
+
 			firstTimePassStoryList = totalStoryList.stream()
 					.filter(jiraIssue -> !listOfStory.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 		}
@@ -173,10 +184,6 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		return totalStoryList;
 	}
 
-	private double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
-		return roundingOff((priorityWiseFTPS * 100) / priorityWiseTotalStory);
-	}
-
 	private static List<JiraIssue> ftprBasedOnResolutionTypeForRejection(FieldMapping fieldMapping,
 			List<JiraIssue> firstTimePassStoryList) {
 		if (Optional.ofNullable(fieldMapping.getResolutionTypeForRejection()).isPresent()
@@ -187,6 +194,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					.collect(Collectors.toList());
 		}
 		return firstTimePassStoryList;
+	}
+
+	private double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
+		return roundingOff((priorityWiseFTPS * 100) / priorityWiseTotalStory);
 	}
 
 	@Override
@@ -280,14 +291,12 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			List<JiraIssue> totalDeffects = allIssues.stream()
 					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase(DEFECT)).collect(Collectors.toList());
 
-			if (CollectionUtils.isNotEmpty(totalDeffects)) {
-				 listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
-						.collect(Collectors.toSet());
-			}
+			listOfStory = getDefectIds(listOfStory, totalDeffects);
 			// exclude stories from FTPR with linked defect
 			firstTimePassStoryList = excludeLinkedDefectStories(totalStoryList, firstTimePassStoryList, listOfStory);
 
-			// filter the issues from first time pass stories based on resolution type for rejection
+			// filter the issues from first time pass stories based on resolution type for
+			// rejection
 			firstTimePassStoryList = ftprBasedOnResolutionTypeForRejection(fieldMapping, firstTimePassStoryList);
 
 			// exclude stories from FTPR with return transaction
@@ -331,48 +340,45 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				priorities.add(priority);
 				if (priorityWiseTotalFTPSIssues.containsKey(priority)) {
 
-				List<JiraIssue> finalFirstTimePassStoryList = priorityWiseTotalFTPSIssues.get(priority).stream()
-						.collect(Collectors.toList());
-				List<IterationKpiModalValue> modalValues = new ArrayList<>();
-				List<String> expressions = new ArrayList<>();
-				int priorityWiseFTPS = 0;
-				int priorityWiseTotalStory = 0;
-				for (JiraIssue jiraIssue : issues) {
+					List<JiraIssue> finalFirstTimePassStoryList = priorityWiseTotalFTPSIssues.get(priority).stream()
+							.collect(Collectors.toList());
+					List<IterationKpiModalValue> modalValues = new ArrayList<>();
+					List<String> expressions = new ArrayList<>();
+					int priorityWiseFTPS = 0;
+					int priorityWiseTotalStory = 0;
+					for (JiraIssue jiraIssue : issues) {
 
-					priorityWiseTotalStory = priorityWiseTotalStory + 1;
-					overAllStory.set(0, overAllStory.get(0) + 1);
+						priorityWiseTotalStory = priorityWiseTotalStory + 1;
+						overAllStory.set(0, overAllStory.get(0) + 1);
 
-					if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
-							&& finalFirstTimePassStoryList.contains(jiraIssue)) {
-						priorityWiseFTPS = priorityWiseFTPS + 1;
-						overAllFTPS.set(0, overAllFTPS.get(0) + 1);
+						priorityWiseFTPS = getPriorityWiseFTPS(overAllFTPS, finalFirstTimePassStoryList, priorityWiseFTPS, jiraIssue);
+
+						populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
+								finalFirstTimePassStoryList, listOfStory, totalDeffects);
+
 					}
 
-					populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
-							finalFirstTimePassStoryList, listOfStory, totalDeffects);
+					List<IterationKpiData> data = new ArrayList<>();
+					expressions.add(FIRST_TIME_PASS_STORIES);
+					expressions.add(TOTAL_STORIES);
+					expressions.add(PERCENTAGE);
 
+					IterationKpiData ftprStories = new IterationKpiData(FIRST_TIME_PASS_STORIES,
+							(double) priorityWiseFTPS, null, null, null, null);
+
+					IterationKpiData stories = new IterationKpiData(TOTAL_STORIES, (double) priorityWiseTotalStory,
+							null, null, null, modalValues);
+
+					IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE + " %",
+							calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, null, null,
+							expressions);
+
+					data.add(ftprStories);
+					data.add(stories);
+					data.add(ftprPercentage);
+					IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, null, data);
+					iterationKpiValues.add(iterationKpiValue);
 				}
-
-				List<IterationKpiData> data = new ArrayList<>();
-				expressions.add(FIRST_TIME_PASS_STORIES);
-				expressions.add(TOTAL_STORIES);
-				expressions.add(PERCENTAGE);
-
-				IterationKpiData ftprStories = new IterationKpiData(FIRST_TIME_PASS_STORIES, (double) priorityWiseFTPS,
-						null, null, null, null);
-
-				IterationKpiData stories = new IterationKpiData(TOTAL_STORIES, (double) priorityWiseTotalStory, null,
-						null, null, modalValues);
-
-				IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE + " %",
-						calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, null, null, expressions);
-
-				data.add(ftprStories);
-				data.add(stories);
-				data.add(ftprPercentage);
-				IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, null, data);
-				iterationKpiValues.add(iterationKpiValue);
-			}
 			}
 
 			List<IterationKpiData> data = new ArrayList<>();
@@ -392,12 +398,28 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
-
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.FIRST_TIME_PASS_RATE_ITERATION.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+
+	private static int getPriorityWiseFTPS(List<Integer> overAllFTPS, List<JiraIssue> finalFirstTimePassStoryList, int priorityWiseFTPS, JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
+				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
+			priorityWiseFTPS = priorityWiseFTPS + 1;
+			overAllFTPS.set(0, overAllFTPS.get(0) + 1);
+		}
+		return priorityWiseFTPS;
+	}
+
+	private static Set<String> getDefectIds(Set<String> listOfStory, List<JiraIssue> totalDeffects) {
+		if (CollectionUtils.isNotEmpty(totalDeffects)) {
+			listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+					.collect(Collectors.toSet());
+		}
+		return listOfStory;
 	}
 
 }

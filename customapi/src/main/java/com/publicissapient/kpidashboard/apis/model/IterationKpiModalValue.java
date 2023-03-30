@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -104,7 +105,7 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Linked Defect")
 	private Map<String, String> linkedDefefect;
 	@JsonProperty("Defect Priority")
-	private Map<String, String> linkedDefefectPriority;
+	private Map<String, List<String>> linkedDefefectPriority;
 
 
 }
