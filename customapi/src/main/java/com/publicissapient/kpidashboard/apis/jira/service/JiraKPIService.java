@@ -22,7 +22,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -337,10 +336,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 			iterationKpiModalValue.setLinkedDefefect(linkedDefects);
 
-			Map<String, List<String>> linkedDefectsPriority = new HashMap<>();
+			Map<String, String> linkedDefectsPriority = new HashMap<>();
 			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-					.forEach(defect -> linkedDefectsPriority
-							.computeIfAbsent(defect.getPriority(), d -> new ArrayList<>()).add(defect.getNumber()));
+					.forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
 			iterationKpiModalValue.setLinkedDefefectPriority(linkedDefectsPriority);
 		}
 
