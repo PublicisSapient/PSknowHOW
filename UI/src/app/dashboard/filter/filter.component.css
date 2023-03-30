@@ -1075,6 +1075,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   cursor: pointer;
   color: rgb(85,26,139);
   font-size: 12px;
+  font-family: 'FuturaNext_Medium';
 }
 
 .username-btn-wraper{
