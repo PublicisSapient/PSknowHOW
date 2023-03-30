@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -132,10 +133,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 							.contains(defects.getPriority()))
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(fieldMappingPriorityWiseDefect)) {
-				Set<String> listOfDefectId = fieldMappingPriorityWiseDefect.stream().map(JiraIssue::getDefectStoryID)
+				Set<String> listOfStoryId = fieldMappingPriorityWiseDefect.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
 				List<JiraIssue> priorityWiseStories = totalStoryList.stream()
-						.filter(issues -> listOfDefectId.contains(issues.getNumber())).collect(Collectors.toList());
+						.filter(issues -> listOfStoryId.contains(issues.getNumber())).collect(Collectors.toList());
 				firstTimePassStoryList = Stream.concat(firstTimePassStoryList.stream(), priorityWiseStories.stream())
 						.collect(Collectors.toList());
 			}
@@ -146,10 +147,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// excluding stories with linked defect from FTPR if any defect priority is not
 			// maintained in field mapping
 			if (CollectionUtils.isNotEmpty(priorityDefectWOMapping)) {
-				Set<String> listOfDefectId = priorityDefectWOMapping.stream().map(JiraIssue::getDefectStoryID)
+				Set<String> listOfStoryId = priorityDefectWOMapping.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
 				firstTimePassStoryList = firstTimePassStoryList.stream()
-						.filter(issues -> !(listOfDefectId.contains(issues.getNumber()))).collect(Collectors.toList());
+						.filter(issues -> !(listOfStoryId.contains(issues.getNumber()))).collect(Collectors.toList());
 
 			}
 
@@ -353,7 +354,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 						priorityWiseFTPS = getPriorityWiseFTPS(overAllFTPS, finalFirstTimePassStoryList, priorityWiseFTPS, jiraIssue);
 
-						populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
+						KPIExcelUtility.populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
 								finalFirstTimePassStoryList, listOfStory, totalDeffects);
 
 					}

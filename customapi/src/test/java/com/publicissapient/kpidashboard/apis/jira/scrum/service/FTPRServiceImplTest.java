@@ -122,6 +122,7 @@ public class FTPRServiceImplTest {
 		fieldMapping.setJiraFTPRStoryIdentification(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectRejectionStatus("Duplicate");
 		fieldMapping.setJiraIssueDeliverdStatus(Arrays.asList("Closed"));
+		fieldMapping.setDefectPriority(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 

@@ -22,12 +22,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
@@ -318,38 +316,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public double roundingOff(double value){
 		return (double)Math.round(value*100)/100;
 	}
-
-	public void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, List<JiraIssue> finalFirstTimePassStoryList,
-			Set<String> storiesWithDefect, List<JiraIssue> totalDeffects) {
-
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-
-		if (CollectionUtils.isNotEmpty(storiesWithDefect) && storiesWithDefect.contains(jiraIssue.getNumber())) {
-
-			Map<String, String> linkedDefects = new HashMap<>();
-			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-					.forEach(defect -> linkedDefects.putIfAbsent(defect.getNumber(), defect.getUrl()));
-
-			iterationKpiModalValue.setLinkedDefefect(linkedDefects);
-
-			Map<String, String> linkedDefectsPriority = new HashMap<>();
-			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-					.forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
-			iterationKpiModalValue.setLinkedDefefectPriority(linkedDefectsPriority);
-		}
-
-		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
-				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
-			iterationKpiModalValue.setFirstTimePass("Y");
-		}
-
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
-
-	}
+	
 
 }
