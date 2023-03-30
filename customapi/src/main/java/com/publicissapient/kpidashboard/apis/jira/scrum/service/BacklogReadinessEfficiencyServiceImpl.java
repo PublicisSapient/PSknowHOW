@@ -60,7 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
  */
 @Component
 public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(BacklogReadinessEfficiencyServiceImpl.class);
 
 	private static final double backlogStrengthForFilter = 0.0;
@@ -84,13 +84,13 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	private static final String READY_BACKLOG = "Ready Backlog";
 
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
-	
+
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-	
+
 	public static final String UNCHECKED = "unchecked";
-	
+
 	private static final String ISSUES = "issues";
-	
+
 	private static final String OVERALL = "Overall";
 
 	@Autowired
@@ -230,8 +230,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-						AtomicLong difference = getActivityCycleTimeForAnIssue(fieldMapping.getReadyForDevelopmentStatus(),
-								historyForIssues, jiraIssue);
+						AtomicLong difference = getActivityCycleTimeForAnIssue(
+								fieldMapping.getReadyForDevelopmentStatus(), historyForIssues, jiraIssue);
 						cycleTime = cycleTime + difference.get();
 						overAllCycleTime.set(overAllCycleTime.get() + difference.get());
 						if (null != jiraIssue.getStoryPoints()) {
@@ -242,8 +242,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
 							Double.valueOf(issueCount), storyPoint, null, SP, modalValues);
-					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, backlogStrengthForFilter, null, null,
-							SPRINT, null);
+					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, backlogStrengthForFilter,
+							null, null, SPRINT, null);
 					IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
 							cycleTime / Double.valueOf(issueCount), null, null, DAYS, null);
 					data.add(issuesForDevelopment);
@@ -283,6 +283,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	/**
 	 * Calculates the activity cycle time based on the history data for an issue
+	 * 
 	 * @param status
 	 * @param historyForIssues
 	 * @param jiraIssue
@@ -316,6 +317,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	/**
 	 * Gets the sprint velocity of n number of previous sprint
+	 * 
 	 * @param leafNodeList
 	 * @param sprintDetails
 	 * @param allJiraIssue
@@ -325,11 +327,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	private Double getAverageSprintCapacity(List<Node> leafNodeList, List<SprintDetails> sprintDetails,
 			List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
 		List<Node> inputNodes = new ArrayList<>(leafNodeList);
-		//calculation for the closed sprint is pending
-		
 		Collections.reverse(inputNodes);
 
-		List<Node>sprintForStregthCalculation = inputNodes.stream()
+		List<Node> sprintForStregthCalculation = inputNodes.stream()
+				.filter(node -> null != node.getSprintFilter().getEndDate()
+						&& DateTime.parse(node.getSprintFilter().getEndDate()).isBefore(DateTime.now()))
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
