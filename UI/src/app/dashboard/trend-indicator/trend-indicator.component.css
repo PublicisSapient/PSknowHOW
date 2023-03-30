@@ -5,7 +5,7 @@
     border-left: 10px solid var(--color-secondary-blue);
     border-radius: 3px;
     align-items: baseline;
-    padding: 8px 13px;
+    padding: 8px 5px;
 }
 
 .indicator-container.second {

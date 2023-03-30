@@ -200,10 +200,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				IterationKpiData storyPoints;
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint, null, null,
+					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint), null, null,
 							CommonConstant.SP, null);
 				} else {
-					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate, null, null,
+					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate), null, null,
 							CommonConstant.HOURS, null);
 				}
 				data.add(issueCounts);
@@ -217,10 +217,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			IterationKpiData overAllStPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0), null,
+				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(overAllStoryPoints.get(0)), null,
 						null, CommonConstant.SP, null);
 			} else {
-				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(overAllOriginalEstimate.get(0)),
 						null, null, CommonConstant.HOURS, null);
 			}
 			data.add(overAllCount);

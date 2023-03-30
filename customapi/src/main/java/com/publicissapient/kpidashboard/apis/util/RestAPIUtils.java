@@ -50,6 +50,13 @@ public class RestAPIUtils {
 		return header;
 	}
 
+	public HttpHeaders getHeadersForPAT(String pat) {
+		HttpHeaders header = new HttpHeaders();
+		String authenticationHeader = "Bearer " + pat;
+		header.set("Authorization", authenticationHeader);
+		return header;
+	}
+
 	/**
 	 * Converts json Array to string response body.
 	 *

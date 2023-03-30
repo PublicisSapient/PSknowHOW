@@ -3021,7 +3021,6 @@ db.getCollection('kpi_master').insert(
             "type": "paragraph",
             "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
         },
-
         {
           "type": "paragraph",
           "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
@@ -3037,6 +3036,14 @@ db.getCollection('kpi_master').insert(
         {
           "type": "paragraph",
           "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+           "type": "paragraph",
+           "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+           "type": "paragraph",
+           "value": "Issues finishing post issue due date are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3379,6 +3386,57 @@ db.getCollection('kpi_master').insert(
          "calculateMaturity": false
        },
   {
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 13,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+    "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
+       "details": [
+                 {
+                   "type": "paragraph",
+                   "value": "The KPI shows:"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "1. Linked defects to story"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "2. Defect Injection Rate"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "3. Defect Density"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "4. Unlinked defects"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+                 }
+                 ]
+            },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "kpiFilter": "",
+     "showTrend": false,
+     "boxType": "3_column"
+   },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",
@@ -3390,20 +3448,16 @@ db.getCollection('kpi_master').insert(
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "stackedColumn",
+    "chartType": "GroupBarChart",
     "kpiInfo": {
       "details": [
         {
           "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of no. of issues closed on a daily basis."
+          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
         }
       ]
     },
@@ -3412,7 +3466,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "multiselectdropdown",
     "boxType": "chart",
     "calculateMaturity": false
   },

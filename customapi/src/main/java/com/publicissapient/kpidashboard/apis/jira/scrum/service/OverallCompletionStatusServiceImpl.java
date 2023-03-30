@@ -64,8 +64,6 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String ACTUAL_COMPLETION_DAYS = "actualCompletionDays";
 	public static final String ACTUAL_COMPLETE_DATE = "actualCompleteDate";
-	private static final String LABEL_INFO = "(Issue Count/Story Points)";
-	private static final String LABEL_INFO_FOR_ORIGINAL_ESTIMATE = "(Issue Count/Original Estimate)";
 	public static final String COMPLETED = "Completed";
 	public static final String PLANNED = "Planned";
 	public static final String ACTUAL = "Actual";
@@ -251,6 +249,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 								if (jiraIssue.getOriginalEstimateMinutes() != null)
 									originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
 
+								String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
 								// calling function for cal actual completion days
 								Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
 										sprintDetails, fieldMapping);
@@ -272,7 +271,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 											+ jiraIssue.getOriginalEstimateMinutes());
 								}
 								populateIterationDataForWorkCompleted(overAllmodalValues, modalValues, jiraIssue,
-										fieldMapping, actualCompletionData, jiraIssueDelay);
+										fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 							}
 						}
 						List<IterationKpiData> data = new ArrayList<>();
@@ -328,11 +327,11 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		IterationKpiData iterationKpiData;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), storyPoint, LABEL_INFO, "",
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
 					CommonConstant.SP, modalvalue);
 		} else {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), originalEstimate,
-					LABEL_INFO_FOR_ORIGINAL_ESTIMATE, "", CommonConstant.DAY, modalvalue);
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
+					null, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
 	}

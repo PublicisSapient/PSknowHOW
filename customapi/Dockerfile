@@ -3,14 +3,11 @@ FROM openjdk:8-jre-slim-buster
 # There are environment variables with periods in the names so change bash as default
 RUN ln -sf /bin/bash /bin/sh && apt-get update && apt upgrade libc-bin -y
 
-VOLUME /tmp
 VOLUME /app
 VOLUME /app/properties
-VOLUME /app/offline_data
 VOLUME /app/certs
 
-ENV CONFIG_LOCATION="/app/properties/customapi.properties"
-ENV JAVA_OPTS=""
+ENV CONFIG_LOCATION="/app/properties/customapi.properties" certhostpath="/app/certs/" keytoolalias="myknowhow" JAVA_OPTS="" keystorefile="/usr/local/openjdk-8/lib/security/cacerts"
 
 ARG JAR_FILE
 ADD ${JAR_FILE} /app/customapi.jar

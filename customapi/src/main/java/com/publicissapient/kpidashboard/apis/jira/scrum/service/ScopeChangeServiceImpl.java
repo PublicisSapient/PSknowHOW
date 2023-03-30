@@ -290,11 +290,11 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 				IterationKpiData issueCounts;
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount), storyPoints, null, "",
+					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),roundingOff(storyPoints), null, "",
 							CommonConstant.SP, modalValues);
 				} else {
 					issueCounts = new IterationKpiData(label, Double.valueOf(issueCount),
-							overAllOriginalEstimate.get(0), null, "", CommonConstant.DAY, modalValues);
+							roundingOff(originalEstimate), null, "", CommonConstant.DAY, modalValues);
 				}
 				data.add(issueCounts);
 				IterationKpiValue matchingObject = iterationKpiValues.stream()
@@ -314,11 +314,11 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<IterationKpiModalValue> overAllModalValues, String kpiLabel) {
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)), overAllIssueSp.get(0), null,
+			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)), roundingOff(overAllIssueSp.get(0)), null,
 					"", CommonConstant.SP, overAllModalValues);
 		} else {
 			return new IterationKpiData(kpiLabel, Double.valueOf(overAllIssueCount.get(0)),
-					overAllOriginalEstimate.get(0), null, "", CommonConstant.DAY, overAllModalValues);
+					roundingOff(overAllOriginalEstimate.get(0)), null, "", CommonConstant.DAY, overAllModalValues);
 		}
 	}
 

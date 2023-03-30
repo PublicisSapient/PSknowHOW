@@ -261,7 +261,7 @@ describe('ConnectionListComponent', () => {
 
 
   const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
-  
+
 
   const connectionLabelsFields = [
     {
@@ -275,6 +275,8 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
+        'Use bearer token',
+        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
@@ -290,6 +292,8 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
+        'bearerToken',
+        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
@@ -566,6 +570,8 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
+        'Use bearer token',
+        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
@@ -581,6 +587,8 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
+        'bearerToken',
+        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
@@ -872,6 +880,12 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
+      bearerToken: [
+        {
+          field: 'patOAuthToken',
+          isEnabled: false
+        }
+        ],
       vault: [
         {
           field: 'password',
@@ -911,6 +925,7 @@ describe('ConnectionListComponent', () => {
           field: 'password',
           isEnabled: true,
         },
+        
         {
           field: 'apiEndPoint',
           isEnabled: true,
@@ -918,6 +933,14 @@ describe('ConnectionListComponent', () => {
         {
           field: 'isOAuth',
           isEnabled: true,
+        },
+        {
+          field: 'bearerToken',
+          isEnabled: true
+        },
+        {
+          field: 'patOAuthToken',
+          isEnabled: true
         },
         {
           field: 'privateKey',
@@ -929,6 +952,7 @@ describe('ConnectionListComponent', () => {
         },
       ],
       isOAuth: [],
+      bearerToken: [],
       vault: [
         {
           field: 'password',
@@ -1035,6 +1059,7 @@ describe('ConnectionListComponent', () => {
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
+      bearerToken:false,
       offline: false,
       password: undefined,
       pat: undefined,
@@ -1118,33 +1143,16 @@ describe('ConnectionListComponent', () => {
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.basicConnectionForm.controls['offline'].setValue(false);
     component.basicConnectionForm.controls['connPrivate'].setValue(true);
-    component.basicConnectionForm.controls['privateKey'].setValue('test');
-    component.basicConnectionForm.controls['consumerKey'].setValue('test');
     component.basicConnectionForm.controls['vault'].setValue(false);
+    component.basicConnectionForm.controls['bearerToken'].setValue(false);
+    component.basicConnectionForm.controls['privateKey'].disable();
+    component.basicConnectionForm.controls['consumerKey'].disable();
+    component.basicConnectionForm.controls['patOAuthToken'].disable();
     component.isNewlyConfigAdded = true;
+    const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
     fixture.detectChanges();
-    expect(component.basicConnectionForm.valid).toBeTruthy();
-    httpMock.match(`${baseUrl}/api/connections`)[0].flush({
-      message: 'created and saved new connection',
-      success: true,
-      data: {
-        id: '6066c07569515b0001df160f',
-        type: 'Jira',
-        connectionName: 'TestConnectionRishabh4',
-        cloudEnv: true,
-        baseUrl: ' https://test.com/jira',
-        username: 'tst-1',
-        password: '',
-        apiEndPoint: 'rest/api/2',
-        isOAuth: false,
-        offline: false,
-        createdBy: 'SUPERADMIN',
-        connPrivate: true,
-        updatedBy: 'SUPERADMIN',
-        connectionUser: ['SUPERADMIN'],
-      },
-    });
+    expect(addConnection).toHaveBeenCalled();
   });
 
   it('should hide dialog', () => {
@@ -1167,6 +1175,7 @@ describe('ConnectionListComponent', () => {
       username: 'tst-1',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
+      bearerToken:false,
       offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
@@ -1565,7 +1574,7 @@ describe('ConnectionListComponent', () => {
     expect(component.emptyUrlInZephyr()).toBeFalse();
   })
 
- 
+
 
   it("should give success response, while testing for jira",()=>{
     component.testingConnection = true;
