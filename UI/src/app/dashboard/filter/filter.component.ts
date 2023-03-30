@@ -597,12 +597,11 @@ export class FilterComponent implements OnInit {
     this.masterData = masterData;
     this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
     if (
-      this.selectedTab?.toLowerCase() == 'iteration' ||
-      this.selectedTab?.toLowerCase() == 'backlog'
+      this.selectedTab?.toLowerCase() == 'iteration'
     ) {
       this.projectIndex = 0;
       this.handleIterationFilters('project', 1);
-    } else {
+    }else {
       this.applyChanges();
     }
   }
