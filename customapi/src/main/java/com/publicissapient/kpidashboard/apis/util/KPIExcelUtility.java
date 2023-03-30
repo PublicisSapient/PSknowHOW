@@ -1358,36 +1358,36 @@ public class KPIExcelUtility {
         overAllmodalValues.add(iterationKpiModalValue);
     }
 
-    public static void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
-                                                                 List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, List<JiraIssue> finalFirstTimePassStoryList,
-                                                                 Set<String> storiesWithDefect, List<JiraIssue> totalDeffects) {
+	public static void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, List<JiraIssue> finalFirstTimePassStoryList,
+			Set<String> storiesWithDefect, List<JiraIssue> totalDeffects) {
 
-        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-        iterationKpiModalValue.setDescription(jiraIssue.getName());
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
 
-        if (CollectionUtils.isNotEmpty(storiesWithDefect) && storiesWithDefect.contains(jiraIssue.getNumber())) {
+		if (CollectionUtils.isNotEmpty(storiesWithDefect) && storiesWithDefect.contains(jiraIssue.getNumber())) {
 
-            Map<String, String> linkedDefects = new HashMap<>();
-            totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-                    .forEach(defect -> linkedDefects.putIfAbsent(defect.getNumber(), defect.getUrl()));
+			Map<String, String> linkedDefects = new HashMap<>();
+			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefects.putIfAbsent(defect.getNumber(), defect.getUrl()));
 
-            iterationKpiModalValue.setLinkedDefefect(linkedDefects);
+			iterationKpiModalValue.setLinkedDefefect(linkedDefects);
 
-            Map<String, String> linkedDefectsPriority = new HashMap<>();
-            totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-                    .forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
-            iterationKpiModalValue.setLinkedDefefectPriority(linkedDefectsPriority);
-        }
+			Map<String, String> linkedDefectsPriority = new HashMap<>();
+			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
+			iterationKpiModalValue.setLinkedDefefectPriority(linkedDefectsPriority);
+		}
 
-        if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
-                && finalFirstTimePassStoryList.contains(jiraIssue)) {
-            iterationKpiModalValue.setFirstTimePass("Y");
-        }
+		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
+				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
+			iterationKpiModalValue.setFirstTimePass("Y");
+		}
 
-        modalValues.add(iterationKpiModalValue);
-        overAllmodalValues.add(iterationKpiModalValue);
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
 
-    }
+	}
 }
