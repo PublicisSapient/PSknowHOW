@@ -62,9 +62,9 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
-public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScopeChangeServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IterationCommitmentServiceImpl.class);
 
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by status";
@@ -74,7 +74,7 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
 	private static final String SCOPE_ADDED = "Scope added";
 	private static final String SCOPE_REMOVED = "Scope removed";
-	private static final String ITERATION_COMMITMENT = "Iteration Commitment";
+	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
 
 	@Autowired
@@ -131,7 +131,8 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 										CommonConstant.NOT_COMPLETED_ISSUES))
 						.flatMap(Collection::stream).collect(Collectors.toList());
-
+				// Adding issues which were added before sprint start and later removed
+				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
 							basicProjectConfigId);
@@ -205,10 +206,10 @@ public class ScopeChangeServiceImpl extends JiraKPIService<Integer, List<Object>
 			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 			setScopeChange(issueTypes, statuses, typeAndStatusWiseInitialIssues, iterationKpiValues,
-					overAllInitialIssueCount, overAllInitialIssueSp, overAllInitialmodalValues, ITERATION_COMMITMENT,
+					overAllInitialIssueCount, overAllInitialIssueSp, overAllInitialmodalValues, INITIAL_COMMITMENT,
 					fieldMapping, overAllOriginalEstimate);
 			IterationKpiData overAllInitialCount = setIterationKpiData(fieldMapping, overAllInitialIssueCount,
-					overAllInitialIssueSp, overAllOriginalEstimate, overAllInitialmodalValues, ITERATION_COMMITMENT);
+					overAllInitialIssueSp, overAllOriginalEstimate, overAllInitialmodalValues, INITIAL_COMMITMENT);
 			data.add(overAllInitialCount);
 		}
 
