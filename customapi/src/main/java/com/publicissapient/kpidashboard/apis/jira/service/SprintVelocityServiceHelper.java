@@ -17,10 +17,21 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-
+/**
+ * Helper class for the sprint velocity calculation
+ * @author dhachuda
+ *
+ */
 @Service
 public class SprintVelocityServiceHelper {
 
+	/**
+	 * Fetches the issues for each sprint
+	 * @param allJiraIssue
+	 * @param sprintWiseIssues
+	 * @param sprintDetails
+	 * @param currentSprintLeafVelocityMap
+	 */
 	public void getSprintForProject(List<JiraIssue> allJiraIssue,
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues, List<SprintDetails> sprintDetails,
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap) {
@@ -65,6 +76,14 @@ public class SprintVelocityServiceHelper {
 		}
 	}
 
+	/**
+	 * Calculates the velocity for each sprint
+	 * @param currentSprintLeafVelocityMap
+	 * @param currentNodeIdentifier
+	 * @param sprintJiraIssues
+	 * @param fieldMapping
+	 * @return
+	 */
 	public double calculateSprintVelocityValue(
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
 			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintJiraIssues,

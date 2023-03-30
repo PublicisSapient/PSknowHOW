@@ -21,7 +21,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 /**
- * Service to fetch the Backlog dashboard
+ * Service to fetch the Backlog dashboard data
  * 
  * @author dhachuda
  *

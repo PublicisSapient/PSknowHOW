@@ -434,5 +434,12 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Kpi Maturity',
         type: ['Other'],
         fieldNames : { }
+      },
+	  {
+        kpiId: 'kpi138',
+        kpiName: 'Backlog Readiness Efficiency',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Issue Types Mapping' : ['readyForDevelopmentStatus'] }
       }
 	  ]);
