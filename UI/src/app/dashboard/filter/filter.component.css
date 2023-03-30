@@ -1073,6 +1073,8 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   background-color: white;
   border-radius: 0.25rem;
   cursor: pointer;
+  color: rgb(85,26,139);
+  font-size: 12px;
 }
 
 .username-btn-wraper{
