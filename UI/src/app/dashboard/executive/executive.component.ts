@@ -289,7 +289,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
     setBoardIdForSelectedTab() {
-        if (!this.service.getDashConfigData()[this.selectedtype.toLowerCase() === 'kanban' ? 'kanban' : 'scrum']?.find(boardDetails => boardDetails.boardName.toLowerCase() === this.service.getSelectedTab()?.toLowerCase())) {
+        if (!this.service.getDashConfigData()[this.selectedtype.toLowerCase() === 'kanban' ? 'kanban' : 'scrum']?.find(boardDetails => (boardDetails.boardName.toLowerCase() === this.service.getSelectedTab()?.toLowerCase()) ||
+        (boardDetails.boardName.toLowerCase() === this.service.getSelectedTab()?.toLowerCase().split('-').join(' ')) )) {
             this.boardId = this.service.getDashConfigData()[this.selectedtype.toLowerCase()][0].boardId;
         } else {
             this.boardId = this.service.getDashConfigData()[this.selectedtype.toLowerCase() === 'kanban' ? 'kanban' : 'scrum']?.find(boardDetails => boardDetails.boardName.toLowerCase() === this.service.getSelectedTab().toLowerCase()).boardId;

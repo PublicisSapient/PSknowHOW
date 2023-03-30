@@ -1156,6 +1156,21 @@ describe('FilterComponent', () => {
       const spy = spyOn(messageService,'add');
       component.getNotification();
       expect(spy).toHaveBeenCalled();
-    })
-   
+    });
+
+    it('should check if maturity tab is hidden',()=>{
+      component.kpiListData = configGlobalData['data'];
+      expect(component.checkIfMaturityTabHidden()).toBeFalse();
+    });
+
+    it('navigate to dashboard should call navigateToSelectedTab',()=>{
+      spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
+      spyOn(component,'getNotification');
+      spyOn(component,'processKpiList');
+      const navigateToSelectedTabSpy = spyOn(component,'navigateToSelectedTab');
+      component.navigateToDashboard();
+      fixture.detectChanges();
+      expect(navigateToSelectedTabSpy).toHaveBeenCalled();
+    });
+
 });
