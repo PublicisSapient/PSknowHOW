@@ -741,7 +741,12 @@ export class IterationComponent implements OnInit, OnDestroy {
         if(this.typeOf(colData[key])){
           obj[key] = [];
           for(let y in colData[key]){
-            obj[key].push({text: y, hyperlink: colData[key][y]})
+            //added check if valid url
+            if(colData[key][y].includes('http')){
+              obj[key].push({text: y, hyperlink: colData[key][y]});
+            }else{
+              obj[key].push(colData[key][y]);
+            }
           }
         }else if(key == 'Issue Id'){
           obj['Issue Id'] = {};
