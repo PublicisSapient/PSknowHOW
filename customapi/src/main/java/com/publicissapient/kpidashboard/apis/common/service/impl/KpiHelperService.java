@@ -213,9 +213,7 @@ public class KpiHelperService { // NOPMD
 				daysDifference = ChronoUnit.DAYS.between(startDate, closeDate);
 			}
 		} else {
-			LocalDateTime firstDate = LocalDateTime.parse(DateUtil.getFormattedDate(
-					jiraIssueCustomHistory.getCreatedDate() != null ? jiraIssueCustomHistory.getCreatedDate().toString()
-							: ""));
+			LocalDateTime firstDate = LocalDateTime.parse(DateUtil.getFormattedDate(jiraIssueCustomHistory.getCreatedDate()));
 			LocalDateTime secondDate = jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn();
 			daysDifference = ChronoUnit.DAYS.between(firstDate, secondDate);
 		}
