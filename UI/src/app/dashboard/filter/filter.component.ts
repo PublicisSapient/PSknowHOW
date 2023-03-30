@@ -689,11 +689,24 @@ export class FilterComponent implements OnInit {
     }
   }
 
+  checkIfMaturityTabHidden(){
+    const maturityBoard = this.kpiListData['others']?.find((board) =>
+        board.boardName === 'Kpi Maturity');
+    return (maturityBoard && maturityBoard.kpis[0].shown)  ? false : true;
+  }
+
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if(this.selectedTab === 'Maturity'){
-        this.router.navigateByUrl(`/dashboard/Maturity`);
-        return;
+      if (this.selectedTab === 'Maturity') {
+        if (!this.checkIfMaturityTabHidden()) {
+          this.router.navigateByUrl(
+            `/dashboard/Maturity`,
+          );
+          return;
+        } else {
+          this.selectedTab = 'iteration';
+          this.kanban = false;
+        }
       }
       let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find((board) =>board.boardName.toLowerCase() === this.selectedTab.toLowerCase()) ||
         this.kpiListData['others']?.find((board) => board.boardName.toLowerCase() === this.selectedTab.toLowerCase());
@@ -1264,7 +1277,13 @@ export class FilterComponent implements OnInit {
    
   /** when user clicks on Back to dashboard or logo*/
    navigateToDashboard(){
-    this.getNotification();
-    this.navigateToSelectedTab()
+    this.httpService.getShowHideKpi().subscribe(response =>{
+      this.service.setDashConfigData(response.data);
+      this.kpiListData = response.data;
+      this.getNotification();
+      this.processKpiList();
+      this.navigateToSelectedTab();
+    });
+
    }
 }
