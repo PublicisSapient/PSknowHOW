@@ -3600,6 +3600,7 @@
           "type": "paragraph",
           "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
         }
+
       ]
     },
     "xAxisLabel": "",
@@ -3761,31 +3762,6 @@
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
-    "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi132",
-    "kpiName": "Refinement Rejection Rate",
-    "maxValue": "",
-    "kpiUnit": "Count",
-    "isDeleted": "False",
-    "defaultOrder": 10,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Jira",
-    "groupId": 8,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "stackedColumn",
-    "kpiInfo": {
-      "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
-    },
-    "xAxisLabel": "Days",
-    "yAxisLabel": "Count",
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
-    "boxType": "chart",
     "calculateMaturity": false
   }
 ]
