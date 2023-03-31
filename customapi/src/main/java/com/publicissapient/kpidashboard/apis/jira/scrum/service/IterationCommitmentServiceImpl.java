@@ -131,7 +131,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 								KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 										CommonConstant.NOT_COMPLETED_ISSUES))
 						.flatMap(Collection::stream).collect(Collectors.toList());
-				// Adding issues which were added before sprint start and later removed
+				// Adding issues which were added before sprint start and later removed form sprint or dropped.
 				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
