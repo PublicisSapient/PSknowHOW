@@ -434,5 +434,13 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Kpi Maturity',
         type: ['Other'],
         fieldNames : { }
-      }
+      },
+             {
+               kpiId: 'kpi137',
+               kpiName: 'Refinement Rejection Rate',
+               kpiSource: 'Jira',
+               type: ['Other'],
+               fieldNames : { }
+             }
+
 	  ]);

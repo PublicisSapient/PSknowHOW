@@ -55,4 +55,6 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
 
+	List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters);
+
 }

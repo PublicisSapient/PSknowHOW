@@ -3586,6 +3586,31 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+          "kpiId": "kpi137",
+          "kpiName": "Refinement Rejection Rate",
+          "maxValue": "",
+          "kpiUnit": "Count",
+          "isDeleted": "False",
+          "defaultOrder": 10,
+          "kpiCategory": "Backlog",
+          "kpiSource": "Jira",
+          "groupId": 8,
+          "thresholdValue": "",
+          "kanban": false,
+          "chartType": "stackedColumn",
+          "kpiInfo": {
+          		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+          		},
+          "xAxisLabel": "Days",
+          "yAxisLabel": "Count",
+          "isPositiveTrend": true,
+          "showTrend": false,
+          "isAdditionalFilterSupport": false,
+          "kpiFilter": "",
+          "boxType": "chart",
+          "calculateMaturity": false
+        },
+  {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
     "isDeleted": "False",
@@ -3595,4 +3620,4 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false,
     "kanban": false
   }
-]);
+]

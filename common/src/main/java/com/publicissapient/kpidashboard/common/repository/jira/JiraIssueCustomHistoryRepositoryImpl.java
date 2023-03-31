@@ -18,16 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
-
+import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -41,8 +33,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * The Class FeatureCustomHistoryRepositoryImpl.
@@ -182,6 +176,18 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssueCustomHistory.class);
+	}
+
+	@Override
+	public List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters) {
+		Criteria criteria = new Criteria();
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
+		Query query = new Query(criteria);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 

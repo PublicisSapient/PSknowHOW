@@ -306,6 +306,15 @@ public final class KpiDataHelper {
 		return cdr;
 	}
 
+	public static CustomDateRange getDayForPastDataHistory(int pastDayCount) {
+		CustomDateRange cdr = new CustomDateRange();
+		LocalDate endDate = LocalDate.now();
+		LocalDate startDate = endDate.minusDays(pastDayCount);
+		cdr.setStartDate(startDate);
+		cdr.setEndDate(endDate);
+		return cdr;
+	}
+
 	/**
 	 * Based on sprint details type converted sprint issue objects to jira issue
 	 * number ids list

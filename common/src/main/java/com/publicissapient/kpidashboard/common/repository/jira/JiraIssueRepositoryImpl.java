@@ -72,6 +72,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
+	private static final String JIRA_CHANGE_DATE = "changeDate";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -227,6 +228,26 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		return operations.find(query, JiraIssue.class);
 	}
+
+	@Override
+	public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,Map<String, List<String>> mapOfFilters){
+		Criteria criteria = new Criteria();
+		Criteria orCriteria = new Criteria();
+		List<Criteria> filter = new ArrayList<>();
+		for (String val:mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
+		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
+		criteria.and(JIRA_CHANGE_DATE).gte(startDate).lte(endDate);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(),Criteria.where(SPRINT_NAME).is(""),orCriteria);
+		Query query = new Query(criteria);
+
+
+		return operations.find(query, JiraIssue.class);
+	}
+
 
 	@Override
 	public List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters) {

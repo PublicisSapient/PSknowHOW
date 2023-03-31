@@ -18,43 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.MasterResponse;
-import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -65,21 +35,27 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.*;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -107,6 +83,11 @@ public class KpiHelperService { // NOPMD
 	private static final String ISSUE_DATA = "issueData";
 	private static final String FIELD_STATUS = "status";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	private static final String READY_FOR_REFINEMENT_ISSUE = "Ready For Refinement";
+	private static final String ACCEPTED_IN_REFINEMENT_ISSUE = "Accepted In Refinement";
+	private static final String REJECTED_IN_REFINEMENT_ISSUE = "Rejected In Refinement";
+	private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
+	private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -719,7 +700,8 @@ public class KpiHelperService { // NOPMD
 				projectWiseIssueTypeMap.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
 						fieldMapping.getKanbanRCACountIssueType().stream().distinct().collect(Collectors.toList()));
 			}
-		} else {
+		}
+		else {
 			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
@@ -1292,4 +1274,51 @@ public class KpiHelperService { // NOPMD
 		return kpiFieldMappingResponse;
 	}
 
+	public List<JiraIssue> fetchUnAssignedJiraIssues(List<Node> leafNodeList, String startDate, String endDate) {
+		List<JiraIssue> unAssignedJiraList = new ArrayList<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		List<String> projectList = new ArrayList<>();
+
+			leafNodeList.forEach(leaf -> {
+				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+				projectList.add(basicProjectConfigId.toString());
+				mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),projectList.stream().distinct().collect(Collectors.toList()));
+
+				unAssignedJiraList.addAll(jiraIssueRepository.findUnassignedIssues(startDate,endDate,mapOfFilters));
+			});
+		return unAssignedJiraList;
+	}
+
+	public List<JiraIssueCustomHistory> fetchJiraCustomHistory(List<Node> leafNodeList,List<JiraIssue> unAssignedJiraList) {
+		List<JiraIssueCustomHistory> jiraIssueHistory = new ArrayList<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+
+		List<String> projectList = new ArrayList<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			projectList.add(basicProjectConfigId.toString());
+			List<String> historyData = unAssignedJiraList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),projectList);
+			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),historyData);
+
+			jiraIssueHistory.addAll(jiraIssueCustomHistoryRepository.findCustomHistoryStory(mapOfFilters));
+		});
+		return  jiraIssueHistory;
+
+	}
+
+
+	public Map<String,List<Map<String, Object>>> getProjectWiseDataMap(Node node, Map<String, Object> resultMap) {
+		Map<String,List<Map<String, Object>>> dataMap = new HashMap<>();
+			for (String map:resultMap.keySet()) {
+				List<JiraIssue> dataList = ((List<JiraIssue>) resultMap.get(map)).stream().filter(f->f.getProjectID().equalsIgnoreCase(node.getProjectFilter().getId())).collect(Collectors.toList());
+				Map<String, Object> subMap = new HashMap<>();
+				subMap.put(map,dataList);
+				if(null==dataMap.get(node.getId())){
+					dataMap.put(node.getId(),new ArrayList<>());
+				}
+				dataMap.get(node.getId()).add(subMap);
+			}
+		return dataMap;
+	}
 }

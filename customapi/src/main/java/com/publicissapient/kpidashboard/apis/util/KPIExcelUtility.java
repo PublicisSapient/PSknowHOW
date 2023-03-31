@@ -75,6 +75,9 @@ public class KPIExcelUtility {
 
     private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
     private static final String DATE_YEAR_MONTH_FORMAT = "dd-MMM-yy";
+    private static final String READY_FOR_REFINEMENT_ISSUE = "Ready For Refinement";
+    private static final String ACCEPTED_IN_REFINEMENT_ISSUE = "Accepted In Refinement";
+    private static final String REJECTED_IN_REFINEMENT_ISSUE = "Rejected In Refinement";
 
     private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
     private static final DecimalFormat df2 = new DecimalFormat(".##");
@@ -1356,5 +1359,54 @@ public class KPIExcelUtility {
             iterationKpiModalValue.setLinkedStoriesSize(storyPoint.get().toString());
         }
         overAllmodalValues.add(iterationKpiModalValue);
+    }
+    public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,Map<String, Map<String,List<JiraIssue>>> weekAndTypeMap) {
+
+
+        if (CollectionUtils.isNotEmpty(issuesExcel)) {
+            issuesExcel.forEach(e -> {
+                String week = getWeekName(weekAndTypeMap,e);
+                String status = getStatusName(weekAndTypeMap,e);
+                KPIExcelData excelData = new KPIExcelData();
+                Map<String, String> epicLink = new HashMap<>();
+                epicLink.put(e.getNumber(), checkEmptyURL(e));
+                excelData.setChangeDate(LocalDate.parse(e.getChangeDate().split("\\.")[0],DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString());
+                excelData.setIssueID(epicLink);
+                excelData.setPriority(e.getPriority());
+                excelData.setIssueDesc(e.getName());
+                excelData.setStatus(e.getStatus());
+                excelData.setIssueStatus(status);
+                excelData.setWeeks(week);
+                excelDataList.add(excelData);
+            });
+        }
+    }
+
+    private static String getStatusName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+        String statusName = "";
+        for (String week:weekAndTypeMap.keySet()) {
+            for (String type:weekAndTypeMap.get(week).keySet()) {
+                for (JiraIssue issue:weekAndTypeMap.get(week).get(type)) {
+                    if(issue.getNumber().equalsIgnoreCase(e.getNumber())){
+                        statusName = type;
+                    }
+                }
+            }
+        }
+        return statusName;
+    }
+
+    private static String getWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+        String weekName = "";
+        for (String week:weekAndTypeMap.keySet()) {
+            for (String type:weekAndTypeMap.get(week).keySet()) {
+                for (JiraIssue issue:weekAndTypeMap.get(week).get(type)) {
+                    if(issue.getNumber().equalsIgnoreCase(e.getNumber())){
+                        weekName = week;
+                    }
+                }
+            }
+        }
+        return weekName;
     }
 }

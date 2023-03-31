@@ -358,7 +358,13 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi131", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name()),
+
+	/**
+	 * Refinement Rejection Rate
+	 */
+	REFINEMENT_REJECTION_RATE("kpi137", KPISource.JIRA.name());
+
 
 	// @formatter:on
 
