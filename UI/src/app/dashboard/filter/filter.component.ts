@@ -541,7 +541,7 @@ export class FilterComponent implements OnInit {
 
   onSelectedTrendValueChange($event) {
   const selectedValue  = this.filterForm.get('selectedTrendValue').value;
-    if(selectedValue && selectedValue.length > 0 && !this.kanban ){
+    if(selectedValue && selectedValue.length > 0 && !this.kanban && this.filterForm?.get('selectedLevel').value.toLowerCase() === 'project' ){
       localStorage.setItem('filter',selectedValue[0]);
     }
     this.additionalFiltersArr.forEach((additionalFilter) => {
@@ -982,9 +982,9 @@ export class FilterComponent implements OnInit {
       } else {
         this.filterForm?.get('selectedTrendValue').setValue([]);
       }
-      if(!this.kanban){
+      if(!this.kanban && this.filterForm?.get('selectedLevel').value.toLowerCase() === 'project'){
         const selectedProject = localStorage.getItem('filter');
-        this.filterForm?.get('selectedTrendValue')?.setValue([selectedProject.charAt(0).toUpperCase() + selectedProject.slice(1)]);
+        this.filterForm?.get('selectedTrendValue')?.setValue([selectedProject]);
       }
     } else {
       this.filterForm?.get('selectedLevel').setValue('project');
