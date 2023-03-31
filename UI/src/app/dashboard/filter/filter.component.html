@@ -9,12 +9,12 @@
    *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
       <div id="Filters" #filterDiv class="tabs p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
          <div class="filter-nav p-justify-between"
-            *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'">
+            *ngIf="selectedTab?.toLowerCase() !== 'iteration'">
             <form [formGroup]="filterForm">
                <div class="p-d-flex p-justify-between p-align-center">
                   <div class="p-d-flex p-align-end">
                      <!-- Aggregation level -->
-                     <div class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
+                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
                            id="Filter-Aggregation-Level" class="p-pb-0">
@@ -27,9 +27,9 @@
                      <div class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(up to ' + (this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount) + ')'"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + (this.selectedTab?.toLowerCase() !== 'maturity' && this.selectedTab?.toLowerCase() !== 'backlog'?  '(up to ' + heirarchyCount + ')': '')"
                            [closeOnSelect]="false"
-                           [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount"
+                           [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'backlog' ? 1 : heirarchyCount"
                            class="trend-line-value p-pb-0" [clearable]="false">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
@@ -48,7 +48,7 @@
                         </ng-select>
                      </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog'">
                      <!-- Date filter start -->
                      <div *ngIf="kanban && selectedDateFilter !== ''"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -131,7 +131,7 @@
             </form>
          </div>
          <form [formGroup]="filterForm"
-            *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'backlog'"
+            *ngIf="selectedTab?.toLowerCase() === 'iteration'"
             class="p-d-flex p-align-center">
             <!-- project -->
             <div class="form-check filter-box p-col-lg trend-line-container abc iteration-selected-project">
@@ -145,7 +145,7 @@
             <!-- sprint -->
 
             <div class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint"
-               *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
+               >
                <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
                   (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false"
                   class="p-pb-0">

@@ -448,7 +448,6 @@ export class FilterComponent implements OnInit {
       !Object.keys(filterData).length ||
       this.previousType !== this.kanban ||
       this.selectedTab?.toLowerCase() == 'iteration' ||
-      this.selectedTab?.toLowerCase() == 'backlog' ||
       this.initFlag
     ) {
       this.filterKpiRequest = this.httpService
@@ -504,20 +503,17 @@ export class FilterComponent implements OnInit {
         this.filterForm?.get('selectedTrendValue')?.value?.length == 0 ||
         (this.takeFiltersFromPreviousTab == false &&
           this.selectedTab?.toLowerCase() !== 'iteration' &&
-          this.selectedTab?.toLowerCase() !== 'backlog' &&
           this.selectedTab?.toLowerCase() !== 'maturity')
       ) {
         this.checkDefaultFilterSelection();
         if (
           this.selectedTab?.toLowerCase() !== 'iteration' &&
-          this.selectedTab?.toLowerCase() !== 'backlog' &&
           this.selectedTab?.toLowerCase() !== 'maturity'
         ) {
           this.takeFiltersFromPreviousTab = true;
         }
       } else if (
         this.selectedTab?.toLowerCase() === 'iteration' ||
-        this.selectedTab?.toLowerCase() === 'backlog' ||
         this.selectedTab?.toLowerCase() === 'maturity'
       ) {
         this.checkDefaultFilterSelection();
@@ -789,7 +785,6 @@ export class FilterComponent implements OnInit {
       // setTimeout(() => {
 
       // }, 0);
-
       this.service.select(
         this.masterData,
         this.filterData,
@@ -1195,8 +1190,7 @@ export class FilterComponent implements OnInit {
 
   checkDefaultFilterSelection() {
     if (
-      this.selectedTab?.toLowerCase() != 'iteration' &&
-      this.selectedTab?.toLowerCase() != 'backlog'
+      this.selectedTab?.toLowerCase() != 'iteration'
     ) {
       // for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) { 
         for (let i = 0; i < this.hierarchyLevels?.length; i++) {  
@@ -1238,8 +1232,8 @@ export class FilterComponent implements OnInit {
           this.trendLineValueList,
         );
         this.filterForm
-          ?.get('selectedTrendValue')
-          .setValue([this.trendLineValueList[0]['nodeId']]);
+        ?.get('selectedTrendValue')
+        .setValue([this.trendLineValueList[0]['nodeId']]);
       } else {
         this.filterForm?.get('selectedTrendValue').setValue([]);
       }
