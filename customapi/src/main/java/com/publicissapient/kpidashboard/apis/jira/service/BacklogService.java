@@ -9,12 +9,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.jira.scrum.service.BacklogReadinessEfficiencyServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -28,6 +31,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
  */
 @Service
 public class BacklogService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BacklogService.class);
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -57,6 +62,8 @@ public class BacklogService {
 		}
 		mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 				CommonUtils.convertToPatternList(statusList));
+		LOGGER.debug(
+				"Status configured for fetching the backlog items is " + fieldMapping.getReadyForDevelopmentStatus());
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 

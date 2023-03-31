@@ -50,7 +50,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
  * Jira service class to fetch backlog readiness kpi details
@@ -244,6 +243,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 							Double.valueOf(issueCount), storyPoint, null, SP, modalValues);
 					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, backlogStrengthForFilter,
 							null, null, SPRINT, null);
+					LOGGER.debug("Issue type: " + issueType + "priority: " + "Cycle time: " + cycleTime);
 					IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
 							cycleTime / Double.valueOf(issueCount), null, null, DAYS, null);
 					data.add(issuesForDevelopment);
@@ -258,9 +258,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
 					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, SP, overAllmodalValues);
+			LOGGER.debug("Overall  the avg velocity of the previous sprint: " + avgVelocity);
 			double strength = Math.round(overAllStoryPoints.get(0) / avgVelocity);
 			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
 					null);
+			LOGGER.debug("Overall  the cycle time is : " + overAllCycleTime.get());
 			IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
 					overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0)), null, null, DAYS, null);
 			data.add(overAllIssues);
@@ -295,7 +297,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
 		AtomicLong difference = new AtomicLong(0);
 		if (jiraCustomHistory.isPresent()) {
-
 			Optional<JiraIssueSprint> sprint = jiraCustomHistory.get().getStorySprintDetails().stream()
 					.filter(sprintDetails -> sprintDetails.getFromStatus().equalsIgnoreCase(status)).findFirst();
 			if (sprint.isPresent()) {
@@ -309,9 +310,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						jiraCustomHistory.get().getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
 				difference.set(difference.get() + new Duration(createdDate, changedDate).getStandardDays());
 			}
-			;
-
 		}
+		LOGGER.debug("cycle time for the issue " + jiraIssue.getNumber() + " is " + difference);
 		return difference;
 	}
 
@@ -326,13 +326,14 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	 */
 	private Double getAverageSprintCapacity(List<Node> leafNodeList, List<SprintDetails> sprintDetails,
 			List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
+		int sprintCountForBackLogStrength = customApiConfig.getSprintCountForBackLogStrength();
 		List<Node> inputNodes = new ArrayList<>(leafNodeList);
 		Collections.reverse(inputNodes);
 
 		List<Node> sprintForStregthCalculation = inputNodes.stream()
 				.filter(node -> null != node.getSprintFilter().getEndDate()
 						&& DateTime.parse(node.getSprintFilter().getEndDate()).isBefore(DateTime.now()))
-				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
+				.limit(sprintCountForBackLogStrength).collect(Collectors.toList());
 
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
@@ -346,7 +347,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssues, fieldMapping);
 			storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
 		});
-		return Double.valueOf(storyPoint.get() / customApiConfig.getSprintCountForBackLogStrength());
+		LOGGER.debug("Velocity for " + sprintCountForBackLogStrength + " sprints is " + storyPoint.get());
+		return Double.valueOf(storyPoint.get() / sprintCountForBackLogStrength);
 	}
 
 }
