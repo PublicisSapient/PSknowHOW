@@ -51,120 +51,104 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RefinementRejectionRateServiceImplTest {
-    public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-    public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+@RunWith(MockitoJUnitRunner.class) public class RefinementRejectionRateServiceImplTest {
+	private static final String READY_FOR_REFINEMENT_ISSUE = "Ready For Refinement";
+	private static final String ACCEPTED_IN_REFINEMENT_ISSUE = "Accepted In Refinement";
+	private static final String REJECTED_IN_REFINEMENT_ISSUE = "Rejected In Refinement";
+	private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
+	private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	List<JiraIssue> jiraIssueList = new ArrayList<>();
+	List<JiraIssueCustomHistory> unassignedJiraHistoryDataList = new ArrayList<>();
+	Map<String, Object> refinementList = new HashMap<>();
+	List<Node> leafNodeList = new ArrayList<>();
+	Map<String, List<Map<String, Object>>> projectWiseMap = new HashMap<>();
+	TreeAggregatorDetail treeAggregatorDetail;
+	Map<String, Object> defaultMap = new HashMap<>();
+	@Mock ConfigHelperService configHelperService;
+	@Mock KpiHelperService kpiHelperService;
+	@InjectMocks RefinementRejectionRateServiceImpl refinementRejectionRateService;
+	@Mock CustomDateRange customDateRange;
+	private KpiRequest kpiRequest;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
-    private static final String READY_FOR_REFINEMENT_ISSUE = "Ready For Refinement";
-    private static final String ACCEPTED_IN_REFINEMENT_ISSUE = "Accepted In Refinement";
-    private static final String REJECTED_IN_REFINEMENT_ISSUE = "Rejected In Refinement";
-    private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
-    private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";
-    List<JiraIssue> jiraIssueList = new ArrayList<>();
-    List<JiraIssueCustomHistory> unassignedJiraHistoryDataList = new ArrayList<>();
-    private KpiRequest kpiRequest;
-    private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-    Map<String, Object> refinementList = new HashMap<>();
-    List<Node> leafNodeList = new ArrayList<>();
-    Map<String, List<Map<String, Object>>> projectWiseMap = new HashMap<>();
-    TreeAggregatorDetail treeAggregatorDetail;
-    Map<String, Object> defaultMap = new HashMap<>();
+	@Before public void setup() throws ApplicationException {
+		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi137");
+		kpiRequest.setLabel("PROJECT");
+		List<KpiElement> kpiElementList = new ArrayList<>();
+		kpiElementList.add(new KpiElement());
+		kpiRequest.setKpiList(kpiElementList);
+		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory.newInstance();
+		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-    @Mock
-    ConfigHelperService configHelperService;
+		leafNodeList = new ArrayList<>();
+		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
+				new ArrayList<>(), "hierarchyLevelOne", 5);
+		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
-    @Mock
-    KpiHelperService kpiHelperService;
+			leafNodeList.addAll(v);
+		});
 
-    @InjectMocks
-    RefinementRejectionRateServiceImpl refinementRejectionRateService;
+		customDateRange = new CustomDateRange();
+		customDateRange.setStartDate(LocalDate.now());
+		customDateRange.setEndDate(LocalDate.now().minusDays(45));
 
-    @Mock
-    CustomDateRange customDateRange;
+		configHelperService.setProjectConfigMap(projectConfigMap);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 
-    @Before
-    public void setup() throws ApplicationException {
-        KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest("kpi137");
-        kpiRequest.setLabel("PROJECT");
-        List<KpiElement> kpiElementList = new ArrayList<>();
-        kpiElementList.add(new KpiElement());
-        kpiRequest.setKpiList(kpiElementList);
-        AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-                .newInstance();
-        accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		jiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
+		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
 
-        leafNodeList = new ArrayList<>();
-        treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+		refinementList = new HashMap<>();
+		refinementList.put(UNASSIGNED_JIRA_ISSUE, jiraIssueList);
+		refinementList.put(UNASSIGNED_JIRA_ISSUE_HISTORY, unassignedJiraHistoryDataList);
 
-            leafNodeList.addAll(v);
-        });
+		defaultMap.put(READY_FOR_REFINEMENT_ISSUE, jiraIssueList);
+		defaultMap.put(REJECTED_IN_REFINEMENT_ISSUE, jiraIssueList);
+		defaultMap.put(ACCEPTED_IN_REFINEMENT_ISSUE, jiraIssueList);
 
-        customDateRange = new CustomDateRange();
-        customDateRange.setStartDate(LocalDate.now());
-        customDateRange.setEndDate(LocalDate.now().minusDays(45));
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMappingMap.put(new ObjectId(), fieldMapping);
 
-        configHelperService.setProjectConfigMap(projectConfigMap);
-        configHelperService.setFieldMappingMap(fieldMappingMap);
+		List<Map<String, Object>> dataList = new ArrayList<>();
+		for (String key : defaultMap.keySet()) {
+			Map<String, Object> dataMap = new HashMap<>();
+			dataMap.put(key, defaultMap.get(key));
+			dataList.add(dataMap);
+		}
 
-        jiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
-        unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+		projectWiseMap.put(leafNodeList.get(0).getId(), dataList);
 
-        refinementList = new HashMap<>();
-        refinementList.put(UNASSIGNED_JIRA_ISSUE, jiraIssueList);
-        refinementList.put(UNASSIGNED_JIRA_ISSUE_HISTORY, unassignedJiraHistoryDataList);
+		unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+	}
 
+	@SuppressWarnings("unchecked") @Test public void testFetchKPIDataFromDbData() throws ApplicationException {
 
-        defaultMap.put(READY_FOR_REFINEMENT_ISSUE, jiraIssueList);
-        defaultMap.put(REJECTED_IN_REFINEMENT_ISSUE, jiraIssueList);
-        defaultMap.put(ACCEPTED_IN_REFINEMENT_ISSUE, jiraIssueList);
+		when(kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, customDateRange.getStartDate().toString(),
+				customDateRange.getEndDate().toString())).thenReturn(jiraIssueList);
+		when(kpiHelperService.fetchJiraCustomHistory(leafNodeList, jiraIssueList)).thenReturn(
+				unassignedJiraHistoryDataList);
+		Map<String, Object> refinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
+				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
+		assertNotNull(refinementList);
+		assertNotNull(refinementList.get(UNASSIGNED_JIRA_ISSUE));
+		assertNotNull(refinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
+	}
 
-        FieldMapping fieldMapping = new FieldMapping();
-        fieldMappingMap.put(new ObjectId(), fieldMapping);
+	@SuppressWarnings("unchecked") @Test public void testGetKpiData() throws ApplicationException {
+		when(kpiHelperService.getProjectWiseDataMap(Mockito.any(), Mockito.anyMap())).thenReturn(projectWiseMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		KpiElement kpiElement = refinementRejectionRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
 
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        for (String key : defaultMap.keySet()) {
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put(key, defaultMap.get(key));
-            dataList.add(dataMap);
-        }
+		assertNotNull(kpiElement);
+		assertNotNull(kpiElement.getTrendValueList());
 
-        projectWiseMap.put(leafNodeList.get(0).getId(), dataList);
+	}
 
-        unassignedJiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFetchKPIDataFromDbData() throws ApplicationException {
-
-        when(kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString())).thenReturn(jiraIssueList);
-        when(kpiHelperService.fetchJiraCustomHistory(leafNodeList, jiraIssueList)).thenReturn(unassignedJiraHistoryDataList);
-        Map<String, Object> refinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList, customDateRange.getStartDate().toString(),
-                customDateRange.getEndDate().toString(), kpiRequest);
-        assertNotNull(refinementList);
-        assertNotNull(refinementList.get(UNASSIGNED_JIRA_ISSUE));
-        assertNotNull(refinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testGetKpiData() throws ApplicationException {
-        when(kpiHelperService.getProjectWiseDataMap(Mockito.any(), Mockito.anyMap())).thenReturn(projectWiseMap);
-        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        KpiElement kpiElement = refinementRejectionRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                treeAggregatorDetail);
-
-        assertNotNull(kpiElement);
-        assertNotNull(kpiElement.getTrendValueList());
-
-    }
-
-    @Test
-    public void testGetQualifierType() {
-        assertThat(refinementRejectionRateService.getQualifierType(), equalTo("REFINEMENT_REJECTION_RATE"));
-    }
+	@Test public void testGetQualifierType() {
+		assertThat(refinementRejectionRateService.getQualifierType(), equalTo("REFINEMENT_REJECTION_RATE"));
+	}
 }

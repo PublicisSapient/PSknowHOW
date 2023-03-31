@@ -20,9 +20,8 @@ package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
 
-import java.util.*;
-import java.util.regex.Pattern;
-
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +36,16 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Repository for {@link JiraIssue} with custom methods implementation.
  */
-@Service
-public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NOPMD
+@Service public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NOPMD
 	// to avoid tooManyMethods
 
 	private static final String PROJECT_ID = "projectID";
@@ -74,14 +75,11 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String NIN = "nin";
 	private static final String JIRA_CHANGE_DATE = "changeDate";
 
-	@Autowired
-	private MongoTemplate operations;
+	@Autowired private MongoTemplate operations;
 
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-			String individualDevOrQa) {
+	@SuppressWarnings(UNCHECKED) @Override public List<SprintWiseStory> findIssuesGroupBySprint(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap,
+			String filterToShowOnTrend, String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -96,21 +94,20 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			projectCriteriaList.add(projectCriteria);
 
 		});
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
-				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
+				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
 	}
 
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<JiraIssue> findIssueByStoryNumber(Map<String, List<String>> mapOfFilters, List<String> storyNumber,
+	@SuppressWarnings(UNCHECKED) @Override public List<JiraIssue> findIssueByStoryNumber(
+			Map<String, List<String>> mapOfFilters, List<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMapFolder) {
 		Criteria criteria = new Criteria();
 
@@ -129,8 +126,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 				hierarchyCriteriaList.add(projectCriteria);
 
 			});
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.andOperator(hierarchyCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria().andOperator(
+					hierarchyCriteriaList.toArray(new Criteria[0]));
 			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 		}
@@ -152,10 +149,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+	@SuppressWarnings(UNCHECKED) @Override public List<JiraIssue> findIssuesBySprintAndType(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -171,8 +166,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		Query query = new Query(criteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+					projectCriteriaList.toArray(new Criteria[0]));
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 			query = new Query(criteriaProjectLevelAdded);
@@ -185,18 +180,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	/**
 	 * Find issues by sprint and type list.
 	 *
-	 * @param mapOfFilters
-	 *            the map of filters
-	 * @param uniqueProjectMap
-	 *            the unique project map
-	 * @param uniqueProjectMapNotIn
-	 *            for not in query
+	 * @param mapOfFilters          the map of filters
+	 * @param uniqueProjectMap      the unique project map
+	 * @param uniqueProjectMapNotIn for not in query
 	 * @return list of feature
 	 */
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+	@SuppressWarnings(UNCHECKED) @Override public List<JiraIssue> findIssuesBySprintAndType(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap,
+			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -219,8 +210,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		Query query = new Query(criteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+					projectCriteriaList.toArray(new Criteria[0]));
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 			query = new Query(criteriaProjectLevelAdded);
@@ -229,28 +220,25 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(query, JiraIssue.class);
 	}
 
-	@Override
-	public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,Map<String, List<String>> mapOfFilters){
+	@Override public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,
+			Map<String, List<String>> mapOfFilters) {
 		Criteria criteria = new Criteria();
 		Criteria orCriteria = new Criteria();
 		List<Criteria> filter = new ArrayList<>();
-		for (String val:mapOfFilters.keySet()) {
+		for (String val : mapOfFilters.keySet()) {
 			Criteria expression = new Criteria();
 			expression.and(val).is(mapOfFilters.get(val));
 			filter.add(expression);
 		}
 		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
 		criteria.and(JIRA_CHANGE_DATE).gte(startDate).lte(endDate);
-		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(),Criteria.where(SPRINT_NAME).is(""),orCriteria);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
 		Query query = new Query(criteria);
-
 
 		return operations.find(query, JiraIssue.class);
 	}
 
-
-	@Override
-	public List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters) {
+	@Override public List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -263,10 +251,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@Override
-	public List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-			String individualDevOrQa) {
+	@Override public List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -275,8 +261,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		// Project level storyType filters
 		List<Criteria> projectCriteriaList = projectLevelStoryTypeFilters(uniqueProjectMap);
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
@@ -291,7 +277,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
-	 * 
 	 * @param mapOfFilters
 	 * @param criteria
 	 * @return
@@ -307,12 +292,11 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
-	 * 
 	 * @param uniqueProjectMap
 	 * @return
 	 */
-	@SuppressWarnings(UNCHECKED)
-	private List<Criteria> projectLevelStoryTypeFilters(Map<String, Map<String, Object>> uniqueProjectMap) {
+	@SuppressWarnings(UNCHECKED) private List<Criteria> projectLevelStoryTypeFilters(
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
@@ -330,8 +314,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return projectCriteriaList;
 	}
 
-	@Override
-	public List<JiraIssue> findDefectLinkedWithSprint(Map<String, List<String>> mapOfFilters) {
+	@Override public List<JiraIssue> findDefectLinkedWithSprint(Map<String, List<String>> mapOfFilters) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -342,8 +325,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@Override
-	public List<JiraIssue> findDefectCountByRCA(Map<String, List<String>> mapOfFilters) {
+	@Override public List<JiraIssue> findDefectCountByRCA(Map<String, List<String>> mapOfFilters) {
 
 		Criteria criteria = new Criteria();
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
@@ -362,16 +344,12 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	/**
 	 * Find defects without story link.
 	 *
-	 * @param mapOfFilters
-	 *            the map of filters
-	 * @param uniqueProjectMapNotIn
-	 *            for not in query
+	 * @param mapOfFilters          the map of filters
+	 * @param uniqueProjectMapNotIn for not in query
 	 * @return list of feature
 	 */
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+	@SuppressWarnings(UNCHECKED) @Override public List<JiraIssue> findDefectsWithoutStoryLink(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
 		Criteria criteria = new Criteria();
 
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
@@ -385,8 +363,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().andOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 		Query query = new Query(criteriaProjectLevelAdded);
@@ -394,8 +372,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(query, JiraIssue.class);
 	}
 
-	@Override
-	public List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds) {
+	@Override public List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds) {
 
 		Criteria criteria = new Criteria();
 		criteria.and(TYPE_NAME).is(typeName).and(DEFECT_STORY_ID).in(defectStoryIds);
@@ -403,8 +380,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(new Query(criteria), JiraIssue.class);
 	}
 
-	@Override
-	public List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
+	@Override public List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 
@@ -421,8 +397,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		});
 
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+					projectCriteriaList.toArray(new Criteria[0]));
 			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 		}
@@ -436,16 +412,13 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	/**
 	 * This method is used to find stories for a given list of sprints
-	 * 
-	 * @param mapOfFilters
-	 *            filters
-	 * @param storyNumber
-	 *            story number
+	 *
+	 * @param mapOfFilters filters
+	 * @param storyNumber  story number
 	 * @return list of Feature
 	 */
-	@SuppressWarnings("javadoc")
-	@Override
-	public List<JiraIssue> findStoriesBySprints(Map<String, List<String>> mapOfFilters, List<String> storyNumber) {
+	@SuppressWarnings("javadoc") @Override public List<JiraIssue> findStoriesBySprints(
+			Map<String, List<String>> mapOfFilters, List<String> storyNumber) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -480,8 +453,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(query, JiraIssue.class);
 	}
 
-	@Override
-	public void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset) {
+	@Override public void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset) {
 		Criteria criteria = new Criteria();
 		criteria.and(CONFIG_ID).is(basicProjectConfigId);
 		Query query = new Query(criteria);
@@ -495,10 +467,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@Override
-	@SuppressWarnings(UNCHECKED)
-	public List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+	@Override @SuppressWarnings(UNCHECKED) public List<JiraIssue> findNonRegressionTestCases(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
@@ -517,16 +487,15 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			});
 			projectCriteriaList.add(projectCriteria);
 		});
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().andOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 
 		return operations.find(query, JiraIssue.class);
 	}
 
-	@Override
-	public List<JiraIssue> findIssuesByDateAndTypeAndStatus(Map<String, List<String>> mapOfFilters,
+	@Override public List<JiraIssue> findIssuesByDateAndTypeAndStatus(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String dateCriteria,
 			String mapStatusCriteria, boolean isProductionDefect) {
 
@@ -566,8 +535,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		Query query = new Query(criteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+					projectCriteriaList.toArray(new Criteria[0]));
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 			query = new Query(criteriaProjectLevelAdded);
 		}
@@ -575,10 +544,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@Override
-	public List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
-														 Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-														 String individualDevOrQa,Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+	@Override public List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
+			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
 
 		Criteria criteria = new Criteria();
 
@@ -601,20 +569,19 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			projectCriteriaList.add(projectCriteria);
 
 		});
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
-				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
+				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
 	}
 
-	@Override
-	public List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber) {
+	@Override public List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber) {
 
 		Criteria criteria = new Criteria();
 		criteria = criteria.and(NUMBER).in(storyNumber);

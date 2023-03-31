@@ -18,34 +18,20 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
-@SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "field_mapping")
-public class FieldMapping extends BasicModel {
+@SuppressWarnings("PMD.TooManyFields") @Data @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Document(collection = "field_mapping") public class FieldMapping
+		extends BasicModel {
 
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
@@ -62,8 +48,7 @@ public class FieldMapping extends BasicModel {
 	private String envImpacted;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
-	@Builder.Default
-	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	@Builder.Default private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDod;
@@ -165,14 +150,11 @@ public class FieldMapping extends BasicModel {
 	//field for In Progress status
 	private List<String> jiraStatusForInProgress;
 
-	@Builder.Default
-	private String estimationCriteria = "Story Point";
+	@Builder.Default private String estimationCriteria = "Story Point";
 
-	@Builder.Default
-	private Double storyPointToHourMapping = 8D;
+	@Builder.Default private Double storyPointToHourMapping = 8D;
 
-	@Builder.Default
-	private Double workingHoursDayCPT = 6D;
+	@Builder.Default private Double workingHoursDayCPT = 6D;
 
 	// additional filter config fields
 	private List<AdditionalFilterConfig> additionalFilterConfig;
@@ -193,8 +175,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraBlockedStatus;
 
 	//for for JiraDueDate
-	@Builder.Default
-	private String jiraDueDateField= CommonConstant.DUE_DATE;
+	@Builder.Default private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
@@ -220,12 +201,10 @@ public class FieldMapping extends BasicModel {
 	/**
 	 * Sets jira issue type names.
 	 *
-	 * @param jiraIssueTypeNames
-	 *            the jira issue type names
+	 * @param jiraIssueTypeNames the jira issue type names
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
 	}
-
 
 }

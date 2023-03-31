@@ -18,26 +18,22 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.util.List;
-import java.util.Map;
-
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface FeatureHistoryCustomQueryRepository.
  */
-@Repository
-public interface JiraIssueHistoryCustomQueryRepository {
+@Repository public interface JiraIssueHistoryCustomQueryRepository {
 
 	/**
 	 * Find feature custom history story project wise list.
 	 *
-	 * @param mapOfFilters
-	 *            the map of filters
-	 * @param uniqueProjectMap
-	 *            the unique project map
+	 * @param mapOfFilters     the map of filters
+	 * @param uniqueProjectMap the unique project map
 	 * @return the list
 	 */
 	List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,

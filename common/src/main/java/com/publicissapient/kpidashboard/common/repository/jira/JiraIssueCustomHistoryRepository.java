@@ -18,20 +18,19 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 import java.util.List;
 
 /**
  * Repository for FeatureCollector.
  */
-@Repository
-public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIssueCustomHistory, String>,
-		QuerydslPredicateExecutor<JiraIssueCustomHistory>, JiraIssueHistoryCustomQueryRepository {
+@Repository public interface JiraIssueCustomHistoryRepository
+		extends CrudRepository<JiraIssueCustomHistory, String>, QuerydslPredicateExecutor<JiraIssueCustomHistory>,
+		JiraIssueHistoryCustomQueryRepository {
 
 	/**
 	 * Find by story id list.
@@ -52,7 +51,7 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 
 	/**
 	 * Deletes all documents that matches with given projectID.
-	 * 
+	 *
 	 * @param projectID String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);

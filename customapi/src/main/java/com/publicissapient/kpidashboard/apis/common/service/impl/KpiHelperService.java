@@ -62,8 +62,7 @@ import java.util.stream.Collectors;
  *
  * @author tauakram
  */
-@Service
-public class KpiHelperService { // NOPMD
+@Service public class KpiHelperService { // NOPMD
 
 	private static final String STORY_DATA = "storyData";
 	private static final String PROJECT_WISE_OPEN_STORY_STATUS = "projectWiseOpenStatus";
@@ -89,44 +88,80 @@ public class KpiHelperService { // NOPMD
 	private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
 	private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";
 
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
+	@Autowired private JiraIssueRepository jiraIssueRepository;
 
-	@Autowired
-	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+	@Autowired private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
 
-	@Autowired
-	private CapacityKpiDataRepository capacityKpiDataRepository;
+	@Autowired private CapacityKpiDataRepository capacityKpiDataRepository;
 
-	@Autowired
-	private KanbanCapacityRepository kanbanCapacityRepository;
+	@Autowired private KanbanCapacityRepository kanbanCapacityRepository;
 
-	@Autowired
-	private ConfigHelperService configHelperService;
+	@Autowired private ConfigHelperService configHelperService;
 
-	@Autowired
-	private KPIVideoLinkRepository kpiVideoLinkRepository;
+	@Autowired private KPIVideoLinkRepository kpiVideoLinkRepository;
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
+	@Autowired private CustomApiConfig customApiConfig;
 
-	@Autowired
-	private SprintRepository sprintRepository;
+	@Autowired private SprintRepository sprintRepository;
 
-	@Autowired
-	private FilterHelperService flterHelperService;
+	@Autowired private FilterHelperService flterHelperService;
 
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+	@Autowired private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+
+	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
+			ObjectId basicProjectConfigId, FieldMapping fieldMapping) {
+		Map<String, List<String>> filtersMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getResolutionTypeForRejection())) {
+			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, fieldMapping.getResolutionTypeForRejection());
+		}
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDefectRejectionStatus())) {
+			filtersMap.put(Constant.DEFECT_REJECTION_STATUS,
+					Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
+		}
+		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
+	}
+
+	public static void getDefectsWithoutDrop(Map<String, Map<String, List<String>>> droppedDefects,
+			List<JiraIssue> defectDataList, List<JiraIssue> defectListWoDrop) {
+		if (CollectionUtils.isNotEmpty(defectDataList)) {
+			Set<JiraIssue> defectListWoDropSet = new HashSet<>();
+			defectDataList.forEach(jiraIssue -> getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue));
+			defectListWoDrop.addAll(defectListWoDropSet);
+		}
+	}
+
+	private static void getDefectsWoDrop(Map<String, Map<String, List<String>>> droppedDefects,
+			Set<JiraIssue> defectListWoDropSet, JiraIssue jiraIssue) {
+		Map<String, List<String>> defectStatus = droppedDefects.get(jiraIssue.getBasicProjectConfigId());
+		if (MapUtils.isNotEmpty(defectStatus)) {
+			List<String> rejectedDefect = defectStatus.getOrDefault(Constant.DEFECT_REJECTION_STATUS,
+					new ArrayList<>());
+			List<String> resolutionTypeForRejection = defectStatus.getOrDefault(Constant.RESOLUTION_TYPE_FOR_REJECTION,
+					new ArrayList<>());
+			if (!rejectedDefect.contains(jiraIssue.getStatus()) && !resolutionTypeForRejection.contains(
+					jiraIssue.getResolution())) {
+				defectListWoDropSet.add(jiraIssue);
+			}
+		} else {
+			defectListWoDropSet.add(jiraIssue);
+		}
+	}
+
+	public static void removeRejectedStoriesFromSprint(List<SprintWiseStory> sprintWiseStories,
+			List<JiraIssue> acceptedStories) {
+
+		Set<String> acceptedStoryIds = acceptedStories.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
+
+		sprintWiseStories.forEach(sprintWiseStory -> sprintWiseStory.getStoryList()
+				.removeIf(storyId -> !acceptedStoryIds.contains(storyId)));
+	}
 
 	/**
 	 * Prepares Kpi Elemnts on the basis of kpi master data.
 	 *
-	 * @param kpiList
-	 *            the kpi list
+	 * @param kpiList the kpi list
 	 */
 	public void kpiResolution(List<KpiElement> kpiList) {
 		Iterable<KpiMaster> kpiIterable = configHelperService.loadKpiMaster();
@@ -173,12 +208,9 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Process story data double.
 	 *
-	 * @param jiraIssueCustomHistory
-	 *            the feature custom history
-	 * @param status1
-	 *            the status 1
-	 * @param status2
-	 *            the status 2
+	 * @param jiraIssueCustomHistory the feature custom history
+	 * @param status1                the status 1
+	 * @param status2                the status 2
 	 * @return difference of two date as days
 	 */
 	public double processStoryData(JiraIssueCustomHistory jiraIssueCustomHistory, String status1, String status2) {
@@ -187,7 +219,7 @@ public class KpiHelperService { // NOPMD
 		if (storyDataSize >= 2 && null != status1 && null != status2) {
 			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStorySprintDetails().get(0).getFromStatus())
 					&& status1.equalsIgnoreCase(
-							jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getFromStatus())) {
+					jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getFromStatus())) {
 				DateTime closeDate = new DateTime(
 						jiraIssueCustomHistory.getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
 				DateTime startDate = new DateTime(
@@ -209,10 +241,8 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * This method returns DIR data based upon kpi request and leaf node list.
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
-	 * @param kpiRequest
-	 *            the kpi request
+	 * @param leafNodeList the leaf node list
+	 * @param kpiRequest   the kpi request
 	 * @return Map of string and object
 	 */
 	public Map<String, Object> fetchDIRDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
@@ -224,7 +254,7 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -267,8 +297,8 @@ public class KpiHelperService { // NOPMD
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
-		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(
+				mapOfFiltersFH, uniqueProjectMapFH);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 		sprintWiseStoryList.stream().forEach(story -> {
@@ -305,7 +335,7 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -352,8 +382,8 @@ public class KpiHelperService { // NOPMD
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
-		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(
+				mapOfFiltersFH, uniqueProjectMapFH);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 
@@ -390,10 +420,8 @@ public class KpiHelperService { // NOPMD
 	 * Fetch sprint velocity data from db map. based upon kpi request and leaf
 	 * node list
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
-	 * @param kpiRequest
-	 *            the kpi request
+	 * @param leafNodeList the leaf node list
+	 * @param kpiRequest   the kpi request
 	 * @return map
 	 */
 	public Map<String, Object> fetchSprintVelocityDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
@@ -436,8 +464,8 @@ public class KpiHelperService { // NOPMD
 			sprintDetails.stream().forEach(sprintDetail -> {
 
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
-					List<String> sprintWiseIssueIds = KpiDataHelper
-							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
+					List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
+							sprintDetail, CommonConstant.COMPLETED_ISSUES);
 					totalIssueIds.addAll(sprintWiseIssueIds);
 				}
 			});
@@ -476,8 +504,7 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Fetches sprint capacity data from db based upon leaf node list.
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
+	 * @param leafNodeList the leaf node list
 	 * @return the list
 	 */
 	public List<JiraIssue> fetchSprintCapacityDataFromDb(List<Node> leafNodeList) {
@@ -521,8 +548,7 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Fetch capacity data from db based upon leaf node list.
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
+	 * @param leafNodeList the leaf node list
 	 * @return list
 	 */
 	public List<CapacityKpiData> fetchCapacityDataFromDB(List<Node> leafNodeList) {
@@ -548,12 +574,9 @@ public class KpiHelperService { // NOPMD
 	 * Fetch ticket velocity data from db based upon leaf node list within range
 	 * of start date and end date.
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
-	 * @param startDate
-	 *            the start date
-	 * @param endDate
-	 *            the end date
+	 * @param leafNodeList the leaf node list
+	 * @param startDate    the start date
+	 * @param endDate      the end date
 	 * @return {@code Map<String ,Object> map}
 	 */
 	public Map<String, Object> fetchTicketVelocityDataFromDb(List<Node> leafNodeList, String startDate,
@@ -567,8 +590,7 @@ public class KpiHelperService { // NOPMD
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(basicProjectConfigId);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			projectList.add(basicProjectConfigId.toString());
 			if (Optional.ofNullable(fieldMapping.getJiraTicketVelocityIssueType()).isPresent()) {
@@ -586,9 +608,9 @@ public class KpiHelperService { // NOPMD
 
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
-		
-		List<KanbanIssueCustomHistory> dateVelocityList = kanbanJiraIssueHistoryRepository
-				.findIssuesByStatusAndDate(mapOfFilters, uniqueProjectMap, startDate, endDate, IN);
+
+		List<KanbanIssueCustomHistory> dateVelocityList = kanbanJiraIssueHistoryRepository.findIssuesByStatusAndDate(
+				mapOfFilters, uniqueProjectMap, startDate, endDate, IN);
 		resultListMap.put(TICKETVELOCITYKEY, dateVelocityList);
 		resultListMap.put(SUBGROUPCATEGORY, subGroupCategory);
 		return resultListMap;
@@ -598,16 +620,11 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Fetch team capacity data from db map.
 	 *
-	 * @param leafNodeList
-	 *            the leaf node list
-	 * @param startDate
-	 *            the start date
-	 * @param endDate
-	 *            the end date
-	 * @param kpiRequest
-	 *            the kpi request
-	 * @param capacityKey
-	 *            the capacity key
+	 * @param leafNodeList the leaf node list
+	 * @param startDate    the start date
+	 * @param endDate      the end date
+	 * @param kpiRequest   the kpi request
+	 * @param capacityKey  the capacity key
 	 * @return the map
 	 */
 	public Map<String, Object> fetchTeamCapacityDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -615,30 +632,25 @@ public class KpiHelperService { // NOPMD
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<ObjectId>> mapOfFilters = new LinkedHashMap<>();
 		List<ObjectId> projectList = new ArrayList<>();
-		leafNodeList.forEach(leaf ->
-			projectList.add(leaf.getProjectFilter().getBasicProjectConfigId()));
+		leafNodeList.forEach(leaf -> projectList.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(capacityKey,
-				kanbanCapacityRepository.findIssuesByType(mapOfFilters, startDate, endDate));
+		resultListMap.put(capacityKey, kanbanCapacityRepository.findIssuesByType(mapOfFilters, startDate, endDate));
 		resultListMap.put(SUBGROUPCATEGORY, Constant.DATE);
 		return resultListMap;
 	}
 
-
 	/**
 	 * Convert string to date local date.
 	 *
-	 * @param dateString
-	 *            the date string
+	 * @param dateString the date string
 	 * @return the local date
 	 */
 	public LocalDate convertStringToDate(String dateString) {
 		return LocalDate.parse(dateString);
 	}
-
 
 	/**
 	 * fetching jira from jiraKanbanhistory for last 15 months and also
@@ -681,8 +693,8 @@ public class KpiHelperService { // NOPMD
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
-		List<KanbanIssueCustomHistory> issuesByCreatedDateAndType = kanbanJiraIssueHistoryRepository
-				.findIssuesByCreatedDateAndType(mapOfFilters, uniqueProjectMap, startDate, endDate);
+		List<KanbanIssueCustomHistory> issuesByCreatedDateAndType = kanbanJiraIssueHistoryRepository.findIssuesByCreatedDateAndType(
+				mapOfFilters, uniqueProjectMap, startDate, endDate);
 		resultListMap.put(SUBGROUPCATEGORY, subGroupCategory);
 		resultListMap.put(PROJECT_WISE_ISSUE_TYPES, projectWiseIssueTypeMap);
 		resultListMap.put(PROJECT_WISE_CLOSED_STORY_STATUS, projectWiseClosedStatusMap);
@@ -700,8 +712,7 @@ public class KpiHelperService { // NOPMD
 				projectWiseIssueTypeMap.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
 						fieldMapping.getKanbanRCACountIssueType().stream().distinct().collect(Collectors.toList()));
 			}
-		}
-		else {
+		} else {
 			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
@@ -733,7 +744,6 @@ public class KpiHelperService { // NOPMD
 	 * the current status of that ticket is not close the list will not contain
 	 * those tickets which were closed before the filtered range
 	 *
-	 *
 	 * @param resultListMap
 	 * @param startDate
 	 * @return
@@ -742,18 +752,18 @@ public class KpiHelperService { // NOPMD
 			Map<String, Object> resultListMap, String startDate) {
 
 		List<KanbanIssueCustomHistory> nonClosedTicketsList = new ArrayList<>();
-		List<KanbanIssueCustomHistory> jiraIssueHistoryDataList = (List<KanbanIssueCustomHistory>) resultListMap
-				.get(JIRA_ISSUE_HISTORY_DATA);
-		Map<String, List<String>> projectWiseClosedStoryStatus = (Map<String, List<String>>) resultListMap
-				.get(PROJECT_WISE_CLOSED_STORY_STATUS);
-		Map<String, String> projectWiseOpenStoryStatus = (Map<String, String>) resultListMap
-				.get(PROJECT_WISE_OPEN_STORY_STATUS);
+		List<KanbanIssueCustomHistory> jiraIssueHistoryDataList = (List<KanbanIssueCustomHistory>) resultListMap.get(
+				JIRA_ISSUE_HISTORY_DATA);
+		Map<String, List<String>> projectWiseClosedStoryStatus = (Map<String, List<String>>) resultListMap.get(
+				PROJECT_WISE_CLOSED_STORY_STATUS);
+		Map<String, String> projectWiseOpenStoryStatus = (Map<String, String>) resultListMap.get(
+				PROJECT_WISE_OPEN_STORY_STATUS);
 
 		jiraIssueHistoryDataList.stream().forEach(issueCustomHistory -> {
 
 			boolean isTicketAdded = false;
-			List<String> jiraClosedStatusList = projectWiseClosedStoryStatus
-					.get(issueCustomHistory.getBasicProjectConfigId());
+			List<String> jiraClosedStatusList = projectWiseClosedStoryStatus.get(
+					issueCustomHistory.getBasicProjectConfigId());
 			List<String> nonClosedStatusList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(issueCustomHistory.getHistoryDetails())) {
 				prepareClosedListHistoryDetailsWise(startDate, nonClosedTicketsList, issueCustomHistory, isTicketAdded,
@@ -778,7 +788,6 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 *
 	 * @param startDate
 	 * @param nonClosedTicketsList
 	 * @param issueCustomHistory
@@ -846,8 +855,8 @@ public class KpiHelperService { // NOPMD
 			Map<String, List<KanbanIssueCustomHistory>> projectWiseNonClosedTickets, String startDate,
 			Map<String, Object> historyDataResultMap) {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = new HashMap<>();
-		Map<String, String> projectWiseOpenStatus = (Map<String, String>) historyDataResultMap
-				.get(PROJECT_WISE_OPEN_STORY_STATUS);
+		Map<String, String> projectWiseOpenStatus = (Map<String, String>) historyDataResultMap.get(
+				PROJECT_WISE_OPEN_STORY_STATUS);
 		projectWiseNonClosedTickets.entrySet().stream().forEach(nonClosedTicketsList -> {
 			String openStatusFromFieldMapping = projectWiseOpenStatus.getOrDefault(nonClosedTicketsList.getKey(),
 					CommonConstant.OPEN);
@@ -864,8 +873,9 @@ public class KpiHelperService { // NOPMD
 				List<KanbanIssueHistory> statusHistoryDetailsList = issueCustomHistory.getHistoryDetails();
 				if (CollectionUtils.isNotEmpty(statusHistoryDetailsList)) {
 					for (KanbanIssueHistory statusList : statusHistoryDetailsList) {
-						String currentStatus = statusList.getStatus().equals("") ? openStatusFromFieldMapping
-								: statusList.getStatus();
+						String currentStatus = statusList.getStatus().equals("") ?
+								openStatusFromFieldMapping :
+								statusList.getStatus();
 						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
 								DATE_TIME_FORMATTER);
 						/*
@@ -874,8 +884,8 @@ public class KpiHelperService { // NOPMD
 						 * and latest status in selected filter range cumulative
 						 * way otherwise will move into the loop
 						 */
-						if (activityLocalDate.isEqual(startLocalDateTemp)
-								|| activityLocalDate.isAfter(startLocalDateTemp)) {
+						if (activityLocalDate.isEqual(startLocalDateTemp) || activityLocalDate.isAfter(
+								startLocalDateTemp)) {
 							if (status == null) {
 								/*
 								 * when no change in status happened after the
@@ -905,10 +915,9 @@ public class KpiHelperService { // NOPMD
 									 * the status remain consistent for some
 									 * days
 									 */
-									for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate
-											.isBefore(activityLocalDate)
-											|| loopStartDate.isEqual(activityLocalDate); loopStartDate = loopStartDate
-													.plusDays(1)) {
+									for (LocalDate loopStartDate = startLocalDateTemp;
+										 loopStartDate.isBefore(activityLocalDate) || loopStartDate.isEqual(
+												 activityLocalDate); loopStartDate = loopStartDate.plusDays(1)) {
 										if (loopStartDate.isEqual(activityLocalDate)) {
 											status = currentStatus;
 										}
@@ -922,8 +931,9 @@ public class KpiHelperService { // NOPMD
 						}
 						// if activity date is less than the filter range then
 						// just update the status
-						status = statusList.getStatus().equals("") ? openStatusFromFieldMapping
-								: statusList.getStatus();
+						status = statusList.getStatus().equals("") ?
+								openStatusFromFieldMapping :
+								statusList.getStatus();
 					}
 
 					LocalDate endDate = LocalDate.now();
@@ -934,8 +944,9 @@ public class KpiHelperService { // NOPMD
 					 * date for cumulative sum
 					 */
 					if (dateLessThanStartDate || startLocalDateTemp.isBefore(endDate)) {
-						for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate.isBefore(endDate)
-								|| loopStartDate.isEqual(endDate); loopStartDate = loopStartDate.plusDays(1)) {
+						for (LocalDate loopStartDate = startLocalDateTemp;
+							 loopStartDate.isBefore(endDate) || loopStartDate.isEqual(
+									 endDate); loopStartDate = loopStartDate.plusDays(1)) {
 							populateJiraHistoryFieldAndDateWiseIssues(loopStartDate.toString(), status,
 									issueCustomHistory.getStoryID(), jiraHistoryStatusAndDateWiseIssueMap);
 						}
@@ -1011,10 +1022,10 @@ public class KpiHelperService { // NOPMD
 			Map<String, List<KanbanIssueCustomHistory>> projectWiseNonClosedTickets, String startDate,
 			Map<String, Object> resultListMap, String fieldName) {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryFieldAndDateWiseIssueMap = new HashMap<>();
-		Map<String, List<String>> projectWiseClosedStoryStatus = (Map<String, List<String>>) resultListMap
-				.get(PROJECT_WISE_CLOSED_STORY_STATUS);
-		Map<String, String> projectWiseOpenStoryStatus = (Map<String, String>) resultListMap
-				.get(PROJECT_WISE_OPEN_STORY_STATUS);
+		Map<String, List<String>> projectWiseClosedStoryStatus = (Map<String, List<String>>) resultListMap.get(
+				PROJECT_WISE_CLOSED_STORY_STATUS);
+		Map<String, String> projectWiseOpenStoryStatus = (Map<String, String>) resultListMap.get(
+				PROJECT_WISE_OPEN_STORY_STATUS);
 
 		projectWiseNonClosedTickets.entrySet().stream().forEach(nonClosedTicketsList -> {
 			String openStatusFromFieldMapping = projectWiseOpenStoryStatus.getOrDefault(nonClosedTicketsList.getKey(),
@@ -1028,15 +1039,16 @@ public class KpiHelperService { // NOPMD
 				// for every ticket this status will always be set to null for
 				// first time
 				String status = null;
-				List<String> jiraClosedStatusList = projectWiseClosedStoryStatus
-						.get(issueCustomHistory.getBasicProjectConfigId());
+				List<String> jiraClosedStatusList = projectWiseClosedStoryStatus.get(
+						issueCustomHistory.getBasicProjectConfigId());
 				LocalDate startLocalDateTemp = LocalDate.parse(startDate);
 				String fieldValues = basedOnKPIFieldNameFetchValues(fieldName, issueCustomHistory);
 				List<KanbanIssueHistory> statusHistoryDetailsList = issueCustomHistory.getHistoryDetails();
 				if (CollectionUtils.isNotEmpty(statusHistoryDetailsList) && StringUtils.isNotEmpty(fieldValues)) {
 					for (KanbanIssueHistory statusList : statusHistoryDetailsList) {
-						String currentStatus = statusList.getStatus().equals("") ? openStatusFromFieldMapping
-								: statusList.getStatus();
+						String currentStatus = statusList.getStatus().equals("") ?
+								openStatusFromFieldMapping :
+								statusList.getStatus();
 						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
 								DATE_TIME_FORMATTER);
 						/*
@@ -1045,8 +1057,8 @@ public class KpiHelperService { // NOPMD
 						 * and latest status in selected filter range cumulative
 						 * way otherwise will move into the loop
 						 */
-						if ((activityLocalDate.isEqual(startLocalDateTemp)
-								|| activityLocalDate.isAfter(startLocalDateTemp))) {
+						if ((activityLocalDate.isEqual(startLocalDateTemp) || activityLocalDate.isAfter(
+								startLocalDateTemp))) {
 							if (status == null) {
 								/*
 								 * when no change in status happened after the
@@ -1078,10 +1090,9 @@ public class KpiHelperService { // NOPMD
 									 * the status remain consistent for some
 									 * days
 									 */
-									for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate
-											.isBefore(activityLocalDate)
-											|| loopStartDate.isEqual(activityLocalDate); loopStartDate = loopStartDate
-													.plusDays(1)) {
+									for (LocalDate loopStartDate = startLocalDateTemp;
+										 loopStartDate.isBefore(activityLocalDate) || loopStartDate.isEqual(
+												 activityLocalDate); loopStartDate = loopStartDate.plusDays(1)) {
 										if (loopStartDate.isEqual(activityLocalDate)) {
 											status = currentStatus;
 										}
@@ -1096,8 +1107,9 @@ public class KpiHelperService { // NOPMD
 						}
 						// if activity date is less than the filter range then
 						// just update the status
-						status = statusList.getStatus().equals("") ? openStatusFromFieldMapping
-								: statusList.getStatus();
+						status = statusList.getStatus().equals("") ?
+								openStatusFromFieldMapping :
+								statusList.getStatus();
 					}
 
 					LocalDate endDate = LocalDate.now();
@@ -1107,10 +1119,11 @@ public class KpiHelperService { // NOPMD
 					 * range loop will run from last activity date till today's
 					 * date for cumulative sum
 					 */
-					if (!jiraClosedStatusList.contains(status)
-							&& (dateLessThanStartDate || startLocalDateTemp.isBefore(endDate))) {
-						for (LocalDate loopStartDate = startLocalDateTemp; loopStartDate.isBefore(endDate)
-								|| loopStartDate.isEqual(endDate); loopStartDate = loopStartDate.plusDays(1)) {
+					if (!jiraClosedStatusList.contains(status) && (dateLessThanStartDate || startLocalDateTemp.isBefore(
+							endDate))) {
+						for (LocalDate loopStartDate = startLocalDateTemp;
+							 loopStartDate.isBefore(endDate) || loopStartDate.isEqual(
+									 endDate); loopStartDate = loopStartDate.plusDays(1)) {
 							populateJiraHistoryFieldAndDateWiseIssues(loopStartDate.toString(), fieldValues,
 									issueCustomHistory.getStoryID(), jiraHistoryStatusAndDateWiseIssueMap);
 						}
@@ -1125,7 +1138,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * if status is contains in closed jira list then we did not populate
-	 * 
+	 *
 	 * @param jiraHistoryStatusAndDateWiseIssueMap
 	 * @param issueCustomHistory
 	 * @param status
@@ -1145,7 +1158,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * based on field name fetch values from db
-	 * 
+	 *
 	 * @param fieldName
 	 * @param issueCustomHistory
 	 * @return
@@ -1219,49 +1232,6 @@ public class KpiHelperService { // NOPMD
 		return fieldWiseIssuesLatestMap;
 	}
 
-	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
-												ObjectId basicProjectConfigId, FieldMapping fieldMapping) {
-		Map<String, List<String>> filtersMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getResolutionTypeForRejection())) {
-			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, fieldMapping.getResolutionTypeForRejection());
-		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDefectRejectionStatus())) {
-			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
-		}
-		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
-	}
-
-	public static void getDefectsWithoutDrop(Map<String, Map<String, List<String>>> droppedDefects,
-			List<JiraIssue> defectDataList, List<JiraIssue> defectListWoDrop) {
-		if (CollectionUtils.isNotEmpty(defectDataList)) {
-			Set<JiraIssue> defectListWoDropSet = new HashSet<>();
-			defectDataList.forEach(jiraIssue -> getDefectsWoDrop(droppedDefects, defectListWoDropSet, jiraIssue));
-			defectListWoDrop.addAll(defectListWoDropSet);
-		}
-	}
-
-	private static void getDefectsWoDrop(Map<String, Map<String, List<String>>> droppedDefects, Set<JiraIssue> defectListWoDropSet, JiraIssue jiraIssue) {
-		Map<String, List<String>> defectStatus = droppedDefects.get(jiraIssue.getBasicProjectConfigId());
-		if (MapUtils.isNotEmpty(defectStatus)) {
-			List<String> rejectedDefect = defectStatus.getOrDefault(Constant.DEFECT_REJECTION_STATUS, new ArrayList<>());
-			List<String> resolutionTypeForRejection = defectStatus.getOrDefault(Constant.RESOLUTION_TYPE_FOR_REJECTION, new ArrayList<>());
-			if (!rejectedDefect.contains(jiraIssue.getStatus()) && !resolutionTypeForRejection.contains(jiraIssue.getResolution())) {
-				defectListWoDropSet.add(jiraIssue);
-			}
-		} else {
-			defectListWoDropSet.add(jiraIssue);
-		}
-	}
-
-	public static void removeRejectedStoriesFromSprint(List<SprintWiseStory> sprintWiseStories,
-												 List<JiraIssue> acceptedStories) {
-
-		Set<String> acceptedStoryIds = acceptedStories.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
-
-		sprintWiseStories.forEach(sprintWiseStory -> sprintWiseStory.getStoryList()
-				.removeIf(storyId -> !acceptedStoryIds.contains(storyId)));
-	}
-
 	/**
 	 * Fetchs kpi fieldmapping list KpiFieldMapping response.
 	 *
@@ -1279,17 +1249,19 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> projectList = new ArrayList<>();
 
-			leafNodeList.forEach(leaf -> {
-				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-				projectList.add(basicProjectConfigId.toString());
-				mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),projectList.stream().distinct().collect(Collectors.toList()));
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			projectList.add(basicProjectConfigId.toString());
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					projectList.stream().distinct().collect(Collectors.toList()));
 
-				unAssignedJiraList.addAll(jiraIssueRepository.findUnassignedIssues(startDate,endDate,mapOfFilters));
-			});
+			unAssignedJiraList.addAll(jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
+		});
 		return unAssignedJiraList;
 	}
 
-	public List<JiraIssueCustomHistory> fetchJiraCustomHistory(List<Node> leafNodeList,List<JiraIssue> unAssignedJiraList) {
+	public List<JiraIssueCustomHistory> fetchJiraCustomHistory(List<Node> leafNodeList,
+			List<JiraIssue> unAssignedJiraList) {
 		List<JiraIssueCustomHistory> jiraIssueHistory = new ArrayList<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 
@@ -1297,28 +1269,30 @@ public class KpiHelperService { // NOPMD
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			projectList.add(basicProjectConfigId.toString());
-			List<String> historyData = unAssignedJiraList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),projectList);
-			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),historyData);
+			List<String> historyData = unAssignedJiraList.stream().map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), projectList);
+			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), historyData);
 
 			jiraIssueHistory.addAll(jiraIssueCustomHistoryRepository.findCustomHistoryStory(mapOfFilters));
 		});
-		return  jiraIssueHistory;
+		return jiraIssueHistory;
 
 	}
 
-
-	public Map<String,List<Map<String, Object>>> getProjectWiseDataMap(Node node, Map<String, Object> resultMap) {
-		Map<String,List<Map<String, Object>>> dataMap = new HashMap<>();
-			for (String map:resultMap.keySet()) {
-				List<JiraIssue> dataList = ((List<JiraIssue>) resultMap.get(map)).stream().filter(f->f.getProjectID().equalsIgnoreCase(node.getProjectFilter().getId())).collect(Collectors.toList());
-				Map<String, Object> subMap = new HashMap<>();
-				subMap.put(map,dataList);
-				if(null==dataMap.get(node.getId())){
-					dataMap.put(node.getId(),new ArrayList<>());
-				}
-				dataMap.get(node.getId()).add(subMap);
+	public Map<String, List<Map<String, Object>>> getProjectWiseDataMap(Node node, Map<String, Object> resultMap) {
+		Map<String, List<Map<String, Object>>> dataMap = new HashMap<>();
+		for (String map : resultMap.keySet()) {
+			List<JiraIssue> dataList = ((List<JiraIssue>) resultMap.get(map)).stream()
+					.filter(f -> f.getProjectID().equalsIgnoreCase(node.getProjectFilter().getId()))
+					.collect(Collectors.toList());
+			Map<String, Object> subMap = new HashMap<>();
+			subMap.put(map, dataList);
+			if (null == dataMap.get(node.getId())) {
+				dataMap.put(node.getId(), new ArrayList<>());
 			}
+			dataMap.get(node.getId()).add(subMap);
+		}
 		return dataMap;
 	}
 }

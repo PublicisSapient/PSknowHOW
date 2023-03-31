@@ -18,30 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -52,22 +28,28 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
-import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The class contains methods for helping kpi to prepare data
  *
  * @author anisingh4
  */
-@Slf4j
-public final class KpiDataHelper {
+@Slf4j public final class KpiDataHelper {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
 
@@ -91,13 +73,16 @@ public final class KpiDataHelper {
 		}
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
-	            .collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
-		
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
 			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
-				if(CollectionUtils.isNotEmpty(entry.getValue()) && null!=addFilterCategory.get(entry.getKey().toUpperCase())) {
-					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERID.getFieldValueInFeature(),Arrays.asList(entry.getKey()));
-					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERVALUES_VALUEID.getFieldValueInFeature(),entry.getValue());
+				if (CollectionUtils.isNotEmpty(entry.getValue()) && null != addFilterCategory.get(
+						entry.getKey().toUpperCase())) {
+					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERID.getFieldValueInFeature(),
+							Arrays.asList(entry.getKey()));
+					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERVALUES_VALUEID.getFieldValueInFeature(),
+							entry.getValue());
 					subGroupCategory = entry.getKey();
 				}
 			}
@@ -111,7 +96,7 @@ public final class KpiDataHelper {
 	 * @param subGroupCategory
 	 * @param sprintWiseStoryList
 	 * @return {@code Map<String , Map <String , List <String>>>} Map of sprint
-	 *         and subcategory wise list of featureId
+	 * and subcategory wise list of featureId
 	 */
 	public static Map<Pair<String, String>, Map<String, List<String>>> createSubCategoryWiseMap(String subGroupCategory,
 			List<SprintWiseStory> sprintWiseStoryList, String filterToShowOnTrend) {
@@ -163,7 +148,8 @@ public final class KpiDataHelper {
 	 * @return
 	 */
 	public static Map<String, List<KanbanIssueCustomHistory>> createProjectWiseMapKanbanHistory(
-			List<KanbanIssueCustomHistory> ticketList, String subGroupCategory, FilterHelperService flterHelperService) {
+			List<KanbanIssueCustomHistory> ticketList, String subGroupCategory,
+			FilterHelperService flterHelperService) {
 		Map<String, List<KanbanIssueCustomHistory>> projectAndDateWiseTicketMap = new HashMap<>();
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
 		List<String> addFilterCategoryList = new ArrayList<>(addFilterCat.keySet());
@@ -193,10 +179,10 @@ public final class KpiDataHelper {
 			projectWiseCapacityMap.forEach((project, capacityList) -> {
 				Map<String, List<KanbanCapacity>> dateWiseCapacityMap = new HashMap<>();
 				capacityList.forEach(kanbanCapacity -> {
-					for (LocalDate date = kanbanCapacity.getStartDate(); (date.isBefore(kanbanCapacity.getEndDate())
-							|| date.isEqual(kanbanCapacity.getEndDate()))
-							&& !(date.getDayOfWeek().equals(DayOfWeek.SUNDAY)
-									|| date.getDayOfWeek().equals(DayOfWeek.SATURDAY)); date = date.plusDays(1)) {
+					for (LocalDate date = kanbanCapacity.getStartDate();
+						 (date.isBefore(kanbanCapacity.getEndDate()) || date.isEqual(kanbanCapacity.getEndDate())) && !(
+								 date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek()
+										 .equals(DayOfWeek.SATURDAY)); date = date.plusDays(1)) {
 						String formattedDate = date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 						dateWiseCapacityMap.putIfAbsent(formattedDate, new ArrayList<>());
 						dateWiseCapacityMap.get(formattedDate).add(kanbanCapacity);
@@ -208,11 +194,9 @@ public final class KpiDataHelper {
 		return projectAndDateWiseCapacityMap;
 	}
 
-
 	public static LocalDate convertStringToDate(String dateString) {
 		return LocalDate.parse(dateString.split("T")[0]);
 	}
-
 
 	public static CustomDateRange getStartAndEndDate(KpiRequest kpiRequest) {
 		int dataPoint = (int) ObjectUtils.defaultIfNull(kpiRequest.getKanbanXaxisDataPoints(), 7) + 1;
@@ -318,7 +302,7 @@ public final class KpiDataHelper {
 	/**
 	 * Based on sprint details type converted sprint issue objects to jira issue
 	 * number ids list
-	 * 
+	 *
 	 * @param sprintDetails
 	 * @param issueType
 	 * @return
@@ -326,29 +310,29 @@ public final class KpiDataHelper {
 	public static List<String> getIssuesIdListBasedOnTypeFromSprintDetails(SprintDetails sprintDetails,
 			String issueType) {
 		if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.NOT_COMPLETED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getNotCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.PUNTED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssuesAnotherSprint()).stream().filter(Objects::nonNull)
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssues()).stream().filter(Objects::nonNull)
 					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.NOT_COMPLETED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getNotCompletedIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.PUNTED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssuesAnotherSprint()).stream()
+					.filter(Objects::nonNull).map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		} else if (issueType.equalsIgnoreCase(CommonConstant.TOTAL_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
+			return CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		} else {
 			return new ArrayList<>();
 		}
 	}
 
 	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
-																   FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
-		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
-				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
+			FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent() && CollectionUtils.containsAny(
+				kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
 			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
 			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
 		}
@@ -390,15 +374,16 @@ public final class KpiDataHelper {
 				filterJiraIssue.setPriority(sprintIssue.getPriority());
 				filterJiraIssue.setStatus(sprintIssue.getStatus());
 				filterJiraIssue.setTypeName(sprintIssue.getTypeName());
-				if(null!=filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()){
-					filterJiraIssue.setRemainingEstimateMinutes((filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()));
-				}
-				else if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
+				if (null != filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()) {
+					filterJiraIssue.setRemainingEstimateMinutes(
+							(filterJiraIssue.getAggregateTimeRemainingEstimateMinutes()));
+				} else if (Objects.nonNull(sprintIssue.getRemainingEstimate())) {
 					Double remainingEst = (sprintIssue.getRemainingEstimate()) / 60;
 					filterJiraIssue.setRemainingEstimateMinutes(remainingEst.intValue());
 				}
-				if(null!=filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()){
-					filterJiraIssue.setOriginalEstimateMinutes((filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()));
+				if (null != filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+					filterJiraIssue.setOriginalEstimateMinutes(
+							(filterJiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 				}
 				filteredIssues.add(filterJiraIssue);
 			}
@@ -435,8 +420,9 @@ public final class KpiDataHelper {
 			int remainingEstimateTime = getRemainingEstimateTime(issue);
 			LocalDate potentialClosedDate = getPotentialClosedDate(sprintDetails, pivotPCD, remainingEstimateTime);
 			int potentialDelay = getPotentialDelay(entry.getKey(), potentialClosedDate);
-			iterationPotentialDelayList.add(createIterationPotentialDelay(potentialClosedDate, potentialDelay,
-					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
+			iterationPotentialDelayList.add(
+					createIterationPotentialDelay(potentialClosedDate, potentialDelay, remainingEstimateTime, issue,
+							sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
 		// when a story is expected to get completed, the subsequent story will be
@@ -449,6 +435,7 @@ public final class KpiDataHelper {
 	/**
 	 * if remaining time is 0 and sprint is closed, then PCD is sprint end time
 	 * otherwise will create PCD
+	 *
 	 * @param sprintDetails
 	 * @param pivotPCD
 	 * @param estimatedTime
@@ -456,9 +443,9 @@ public final class KpiDataHelper {
 	 */
 	private static LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD,
 			int estimatedTime) {
-		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
-				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
+		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED)) ?
+				DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC) :
+				createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
 	}
 
 	private static IterationPotentialDelay createIterationPotentialDelay(LocalDate potentialClosedDate,
@@ -475,7 +462,7 @@ public final class KpiDataHelper {
 	/**
 	 * if due date is less than potential closed date, then potential delay will be
 	 * negative
-	 * 
+	 *
 	 * @param dueDate
 	 * @param potentialClosedDate
 	 * @return
@@ -498,9 +485,9 @@ public final class KpiDataHelper {
 	 */
 	private static LocalDate checkPivotPCD(SprintDetails sprintDetails, LocalDate potentialClosedDate,
 			int remainingEstimateTime, LocalDate pivotPCDLocal) {
-		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate))
-				&& (!sprintDetails.getState().equalsIgnoreCase(CLOSED)
-						|| (sprintDetails.getState().equalsIgnoreCase(CLOSED) && remainingEstimateTime != 0))) {
+		if ((pivotPCDLocal == null || pivotPCDLocal.isBefore(potentialClosedDate)) && (
+				!sprintDetails.getState().equalsIgnoreCase(CLOSED) || (sprintDetails.getState().equalsIgnoreCase(CLOSED)
+						&& remainingEstimateTime != 0))) {
 			pivotPCDLocal = potentialClosedDate;
 		}
 		return pivotPCDLocal;
@@ -508,7 +495,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * create dueDateWise sorted Map only for the stories having dueDate
-	 * 
+	 *
 	 * @param arrangeJiraIssueList
 	 * @return
 	 */
@@ -536,9 +523,9 @@ public final class KpiDataHelper {
 		LocalDate pcd = null;
 		if (pivotPCD == null) {
 			// for the first calculation
-			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
-					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-					: LocalDate.now();
+			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED) ?
+					DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC) :
+					LocalDate.now();
 
 			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(startDate, remainingEstimateTime);
 		} else {
@@ -557,6 +544,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * setting in progress and open issues
+	 *
 	 * @param fieldMapping
 	 * @param allIssues
 	 * @param inProgressIssues
@@ -567,8 +555,9 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
-				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (null != fieldMapping.getJiraStatusForInProgress()
+				&& org.apache.commons.collections.CollectionUtils.isNotEmpty(
+				fieldMapping.getJiraStatusForInProgress())) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
 					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList()));

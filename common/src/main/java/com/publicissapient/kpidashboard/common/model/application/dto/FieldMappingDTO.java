@@ -18,32 +18,19 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
-import java.util.List;
-
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import org.bson.types.ObjectId;
-
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import lombok.*;
+import org.bson.types.ObjectId;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
-@SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class FieldMappingDTO extends BasicModel {
+@SuppressWarnings("PMD.TooManyFields") @Data @Builder @Getter @Setter @AllArgsConstructor @NoArgsConstructor public class FieldMappingDTO
+		extends BasicModel {
 
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
@@ -170,14 +157,11 @@ public class FieldMappingDTO extends BasicModel {
 	//field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
 
-	@Builder.Default
-	private String estimationCriteria = "Story Point";
+	@Builder.Default private String estimationCriteria = "Story Point";
 
-	@Builder.Default
-	private Double storyPointToHourMapping = 8D;
+	@Builder.Default private Double storyPointToHourMapping = 8D;
 
-	@Builder.Default
-	private Double workingHoursDayCPT = 6D;
+	@Builder.Default private Double workingHoursDayCPT = 6D;
 
 	// additional filter config fields
 	private List<AdditionalFilterConfig> additionalFilterConfig;
@@ -198,8 +182,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraStatusForInProgress;
 
 	//for for JiraDueDate
-	@Builder.Default
-	private String jiraDueDateField= CommonConstant.DUE_DATE;
+	@Builder.Default private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
@@ -213,7 +196,6 @@ public class FieldMappingDTO extends BasicModel {
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
 
-
 	/**
 	 * Get jira issue type names string [ ].
 	 *
@@ -226,8 +208,7 @@ public class FieldMappingDTO extends BasicModel {
 	/**
 	 * Sets jira issue type names.
 	 *
-	 * @param jiraIssueTypeNames
-	 *            the jira issue type names
+	 * @param jiraIssueTypeNames the jira issue type names
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
@@ -245,8 +226,7 @@ public class FieldMappingDTO extends BasicModel {
 	/**
 	 * Sets link defect to story field.
 	 *
-	 * @param linkDefectToStoryField
-	 *            the link defect to story field
+	 * @param linkDefectToStoryField the link defect to story field
 	 */
 	public void setLinkDefectToStoryField(String[] linkDefectToStoryField) {
 		this.linkDefectToStoryField = linkDefectToStoryField == null ? null : linkDefectToStoryField.clone();

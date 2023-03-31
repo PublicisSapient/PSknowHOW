@@ -41,12 +41,7 @@ import java.util.regex.Pattern;
 /**
  * The Class FeatureCustomHistoryRepositoryImpl.
  */
-@Service
-public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCustomQueryRepository {
-
-	/** The operations. */
-	@Autowired
-	private MongoOperations operations;
+@Service public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCustomQueryRepository {
 
 	private static final String STORY_SPRINT_DETAILS = "storySprintDetails";
 	private static final String ACTIVITY_DATE = "storySprintDetails.activityDate";
@@ -58,12 +53,15 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String START_TIME = "T00:00:00.000Z";
 	private static final String END_TIME = "T23:59:59.000Z";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
+	/**
+	 * The operations.
+	 */
+	@Autowired private MongoOperations operations;
 
 	/**
 	 * To iso 8601 utc string.
 	 *
-	 * @param date
-	 *            the date
+	 * @param date the date
 	 * @return the string
 	 */
 	public static String toISO8601UTC(Date date) {
@@ -73,10 +71,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		return df.format(date);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+	@SuppressWarnings("unchecked") @Override public List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap) {
 
 		List<AggregationOperation> list = new ArrayList<>();
 		Criteria criteria = new Criteria();
@@ -96,8 +92,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaAggregatedForFirstMatchStage = new Criteria().andOperator(criteria,
 				criteriaAggregatedAtProjectLevel);
 
@@ -113,18 +109,17 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			storyStatuscriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevelForStatus = new Criteria()
-				.orOperator(storyStatuscriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevelForStatus = new Criteria().orOperator(
+				storyStatuscriteriaList.toArray(new Criteria[0]));
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 
 		list.add(Aggregation.sort(Sort.Direction.DESC, ACTIVITY_DATE));
-		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STORY_SPRINT_DETAILS)
-				.as(STORY_SPRINT_DETAILS));
+		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STORY_SPRINT_DETAILS).as(STORY_SPRINT_DETAILS));
 		list.add(Aggregation.project(STORY_SPRINT_DETAILS));
 		TypedAggregation<JiraIssueCustomHistory> agg = Aggregation.newAggregation(JiraIssueCustomHistory.class, list);
 
-		List<IssueHistoryMappedData> data = operations
-				.aggregate(agg, JiraIssueCustomHistory.class, IssueHistoryMappedData.class).getMappedResults();
+		List<IssueHistoryMappedData> data = operations.aggregate(agg, JiraIssueCustomHistory.class,
+				IssueHistoryMappedData.class).getMappedResults();
 
 		List<JiraIssueCustomHistory> resultList = new ArrayList<>();
 
@@ -148,8 +143,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	 * @param dateTo
 	 * @return List<JiraIssueCustomHistory>
 	 */
-	@Override
-	public List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
+	@Override public List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo) {
 
 		DateTime startDate = new DateTime(new StringBuilder(dateFrom).append(START_TIME).toString(), DateTimeZone.UTC);
@@ -172,15 +166,14 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(
+				projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
-	@Override
-	public List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters) {
+	@Override public List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters) {
 		Criteria criteria = new Criteria();
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
 			if (CollectionUtils.isNotEmpty(entry.getValue())) {
