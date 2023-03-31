@@ -51,26 +51,21 @@
                               </div>
                               <p class="text-data">
                                 <span
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk' 
-                                  || (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 > 0),
-                                  'text-green': (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 <= 0)}">{{x?.value
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
                                   != -99 ?
                                   convertToHoursIfTime(x?.value,x?.unit, kpi?.kpiId) : '-'}}</span>
                                 <span
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk' 
-                                  || (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 > 0), 'noSpace':x?.unit == '%',
-                                  'text-green': (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 <= 0)}"
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit == '%'}"
                                   *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
                                   {{ x?.value != -99 ? x?.unit: ''}}
                                 </span>
                                 <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 > 0), 'text-green': (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 <= 0)}">{{'/' +
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                   (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
                                     convertToHoursIfTime(x?.value1,x?.unit1, kpi?.kpiId) : x?.value1)}}</span>
                                     <span
                                       [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
-                                      || x?.label?.toLowerCase() === 'issues at risk' || (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 > 0), 'noSpace':x?.unit1 == '%',
-                                      'text-green': (kpi?.kpiId == 'kpi128' && x?.label?.toLowerCase() == 'delay' && x?.value1 <= 0)}"
+                                      || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                       *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                       {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                     </span>

@@ -660,7 +660,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         val = '0d';
       }
     }
-    if (isLessThanZero && kpiId != 'kpi128') {
+    if (isLessThanZero) {
       val = '-' + val;
     }
     return val;
