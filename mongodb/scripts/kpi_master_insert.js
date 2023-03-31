@@ -3062,7 +3062,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Overall Completion Status",
+    "kpiName": "Planned Work Status",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
@@ -3077,7 +3077,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
             "type": "paragraph",
-            "value": "Overall Completion status explains the planned vs actual progress weighed in terms of issues and size of work."
+            "value": "Planned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",

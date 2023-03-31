@@ -22,7 +22,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.*;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.*;
@@ -56,7 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OverallCompletionStatusServiceImplTest {
+public class PlannedWorkStatusServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -65,7 +64,7 @@ public class OverallCompletionStatusServiceImplTest {
 	@Mock
 	private ConfigHelperService configHelperService;
 	@InjectMocks
-	private OverallCompletionStatusServiceImpl overallCompletionStatusService;
+	private PlannedWorkStatusServiceImpl plannedWorkStatusService;
 	@Mock
 	private SprintRepository sprintRepository;
 	@Mock
@@ -128,10 +127,10 @@ public class OverallCompletionStatusServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(overallCompletionStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(plannedWorkStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
-			KpiElement kpiElement = overallCompletionStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = plannedWorkStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
@@ -153,10 +152,10 @@ public class OverallCompletionStatusServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(overallCompletionStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(plannedWorkStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
-			KpiElement kpiElement = overallCompletionStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = plannedWorkStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
@@ -168,7 +167,7 @@ public class OverallCompletionStatusServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(overallCompletionStatusService.getQualifierType(), equalTo("OVERALL_COMPLETION_STATUS"));
+		assertThat(plannedWorkStatusService.getQualifierType(), equalTo("PLANNED_WORK_STATUS"));
 	}
 
 	@Test
@@ -183,7 +182,7 @@ public class OverallCompletionStatusServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);
-		Map<String, Object> returnMap = overallCompletionStatusService.fetchKPIDataFromDb(leafNodeList, startDate,
+		Map<String, Object> returnMap = plannedWorkStatusService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}

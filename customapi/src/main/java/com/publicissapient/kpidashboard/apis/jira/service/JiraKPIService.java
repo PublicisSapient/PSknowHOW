@@ -251,9 +251,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
-	public void populateIterationDataForOverAllCompletion(List<IterationKpiModalValue> overAllmodalValues,
+	public void populateIterationDataForPlannedWork(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, Object> actualCompletionData, int delay, String devCompletionDate) {
+			Map<String, Object> actualCompletionData, Map<String,Object> jiraIssueData) {
 		int originalEstimate = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
@@ -262,7 +262,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setActualStartDate(actualCompletionData.get("actualStartDate").toString());
-		iterationKpiModalValue.setDevCompletionDate(devCompletionDate);
+		iterationKpiModalValue.setDevCompletionDate((String) jiraIssueData.get("devCompletionDate"));
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
@@ -276,14 +276,18 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		// Original Estimate in days
 		if (null != jiraIssue.getOriginalEstimateMinutes()) {
 			iterationKpiModalValue
-					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
+					.setOriginalEstimateMinutes(jiraIssue.getOriginalEstimateMinutes() > 0
+					? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
+					: "0m");
+		}else{
+			iterationKpiModalValue.setOriginalEstimateMinutes(" - ");
 		}
 		if (jiraIssue.getDueDate() != null)
 			iterationKpiModalValue.setDueDate(jiraIssue.getDueDate().substring(0, jiraIssue.getDueDate().indexOf('T')));
 		if (actualCompletionData.get("actualCompleteDate") != null)
 			iterationKpiModalValue.setActualCompletionDate(actualCompletionData.get("actualCompleteDate").toString());
-		if (jiraIssue.getOriginalEstimateMinutes() != null && actualCompletionData.get("actualCompletionDays") != "-") {
-			iterationKpiModalValue.setDelayInDays(String.valueOf(delay)+ "d");
+		if (!jiraIssueData.get("issueDelay").equals(Constant.DASH)) {
+			iterationKpiModalValue.setDelayInDays(String.valueOf(jiraIssueData.get("issueDelay")) + "d");
 		} else {
 			iterationKpiModalValue.setDelayInDays(" - ");
 		}
