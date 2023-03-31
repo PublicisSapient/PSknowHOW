@@ -1047,7 +1047,6 @@ export class FilterComponent implements OnInit {
          localStorage.setItem('filter',selectedProject);
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
           this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
@@ -1081,6 +1080,7 @@ export class FilterComponent implements OnInit {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(selectedSprint);
         this.createFilterApplyData();
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
         this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
       } else {
         if (type == 1) {
