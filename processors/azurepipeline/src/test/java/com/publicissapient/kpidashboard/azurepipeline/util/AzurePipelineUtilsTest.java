@@ -57,17 +57,17 @@ public class AzurePipelineUtilsTest {
 
 	@Test
 	public void joinUrlWithoutBackslash() {
-		String url1 = "https://dev.azure.com/sundeepm/AzureSpeedy";
+		String url1 = "https://dev.azure.com/testUser/testProject";
 		String url2 = "_apis/build/builds";
-		String result = "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds";
+		String result = "https://dev.azure.com/testUser/testProject/_apis/build/builds";
 		assertEquals(result, AzurePipelineUtils.joinURL(url1, url2));
 	}
 
 	@Test
 	public void joinUrlWithBackslash() {
-		String url1 = "https://dev.azure.com/sundeepm/AzureSpeedy/";
+		String url1 = "https://dev.azure.com/testUser/testProject/";
 		String url2 = "_apis/build/builds";
-		String result = "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds";
+		String result = "https://dev.azure.com/testUser/testProject/_apis/build/builds";
 		assertEquals(result, AzurePipelineUtils.joinURL(url1, url2));
 	}
 
@@ -80,8 +80,8 @@ public class AzurePipelineUtilsTest {
 
 	@Test
 	public void addParamToBaseUrl() {
-		StringBuilder url = new StringBuilder("https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds");
-		String resUrl = "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds?api-version=5.1";
+		StringBuilder url = new StringBuilder("https://dev.azure.com/testUser/testProject/_apis/build/builds");
+		String resUrl = "https://dev.azure.com/testUser/testProject/_apis/build/builds?api-version=5.1";
 		String finalUrl = AzurePipelineUtils.addParam(url, "api-version", "5.1").toString();
 		assertEquals(resUrl, finalUrl);
 	}
@@ -89,8 +89,8 @@ public class AzurePipelineUtilsTest {
 	@Test
 	public void addParamToQueryUrl() {
 		StringBuilder url = new StringBuilder(
-				"https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds?api-version=5.1");
-		String resUrl = "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds?api-version=5.1&definitions=1";
+				"https://dev.azure.com/testUser/testProject/_apis/build/builds?api-version=5.1");
+		String resUrl = "https://dev.azure.com/testUser/testProject/_apis/build/builds?api-version=5.1&definitions=1";
 		String finalUrl = AzurePipelineUtils.addParam(url, "definitions", "1").toString();
 		assertEquals(resUrl, finalUrl);
 	}
@@ -100,8 +100,8 @@ public class AzurePipelineUtilsTest {
 	public void getString() {
 		JSONObject obj = new JSONObject();
 		obj.put("id", 1);
-		obj.put("url", "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds",
+		obj.put("url", "https://dev.azure.com/testUser/testProject/_apis/build/builds");
+		assertEquals("https://dev.azure.com/testUser/testProject/_apis/build/builds",
 				AzurePipelineUtils.getString(obj, "url"));
 	}
 
@@ -113,7 +113,7 @@ public class AzurePipelineUtilsTest {
 		array.add(1);
 		array.add(2);
 		obj.put("id", 1);
-		obj.put("url", "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds");
+		obj.put("url", "https://dev.azure.com/testUser/testProject/_apis/build/builds");
 		obj.put("buildIds", array);
 		assertEquals(array, AzurePipelineUtils.getJsonArray(obj, "buildIds"));
 	}
@@ -124,9 +124,9 @@ public class AzurePipelineUtilsTest {
 		JSONObject obj = new JSONObject();
 		JSONObject buildObj = new JSONObject();
 		buildObj.put("buildId", 3);
-		buildObj.put("buildUrl", "https://dev.azure.com/sundeepm/_apis/build/Builds/7");
+		buildObj.put("buildUrl", "https://dev.azure.com/testUser/_apis/build/Builds/7");
 		obj.put("id", 1);
-		obj.put("url", "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds");
+		obj.put("url", "https://dev.azure.com/testUser/testProject/_apis/build/builds");
 		obj.put("buildObj", buildObj);
 		assertEquals(buildObj, AzurePipelineUtils.getJsonObject(obj, "buildObj"));
 	}
