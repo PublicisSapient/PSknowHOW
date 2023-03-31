@@ -60,7 +60,7 @@ public class PushDataValidationServiceImplTest {
 		}
 
 		Map<Pair<String, String>, List<PushValidationType>> buildValidationMap = createBuildValidationMap(
-				pushBuildDeployCorrectData.getBuilds().get(0));
+				pushBuildDeployCorrectData.getBuilds().stream().findFirst().get());
 		Map<String, String> errorsMap = pushDataValidationService.createBuildDeployErrorMap(buildValidationMap);
 		Assert.assertEquals(0, errorsMap.size());
 
@@ -77,7 +77,7 @@ public class PushDataValidationServiceImplTest {
 		}
 
 		Map<Pair<String, String>, List<PushValidationType>> buildValidationMap = createDeployValidationMap(
-				pushBuildDeployCorrectData.getDeployments().get(0));
+				pushBuildDeployCorrectData.getDeployments().stream().findFirst().get());
 		Map<String, String> errorsMap = pushDataValidationService.createBuildDeployErrorMap(buildValidationMap);
 		Assert.assertEquals(0, errorsMap.size());
 

@@ -1,0 +1,139 @@
+[
+  {
+    "_id": "6420329c4069c9035e6e1ff3",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:25:08.868",
+    "totalRecord": 1,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 0,
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "642032634069c9035e6e1ff1",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:24:11.122",
+    "totalRecord": 1,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 0,
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "64203092de090a30aa9c5e5b",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:16:25.979",
+    "totalRecord": 2,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 0,
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "64203018de090a30aa9c5e58",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:14:24.430",
+    "totalRecord": 2,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 0,
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "64202fefde090a30aa9c5e57",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:13:43.065",
+    "responseStatus": "Bad Request",
+    "responseCode": "400",
+    "totalRecord": 2,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 1,
+    "errorMessage": "Errors in particular below ids",
+    "pushDataDetails": [
+      {
+        "tool": "build",
+        "jobName": "Test1",
+        "jobNumber": "123",
+        "errors": [
+          "startTime:startTime is after endTime"
+        ]
+      },
+      {
+        "tool": "build",
+        "jobName": "Test2",
+        "jobNumber": "123",
+        "errors": []
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "64202fbade090a30aa9c5e56",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T17:12:50.441",
+    "responseStatus": "Bad Request",
+    "responseCode": "400",
+    "totalRecord": 2,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 1,
+    "errorMessage": "Errors in particular below ids",
+    "pushDataDetails": [
+      {
+        "tool": "build",
+        "jobName": "Test1",
+        "jobNumber": "123",
+        "errors": [
+          "startTime:startTime is after endTime",
+          "buildStatus:buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN"
+        ]
+      },
+      {
+        "tool": "build",
+        "jobName": "Test2",
+        "jobNumber": "123",
+        "errors": []
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "64202c3758a03a794ea18388",
+    "pushApiSource": "build",
+    "projectName": "ABC",
+    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "userName": "SUPERADMIN",
+    "requestTime": "2023-03-26T16:57:50.903",
+    "responseStatus": "Bad Request",
+    "responseCode": "400",
+    "totalRecord": 2,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 1,
+    "errorMessage": "Errors in particular below ids",
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  },
+  {
+    "_id": "641db51238efaf52d5e5ad08",
+    "requestTime": "2023-03-24T20:00:14.263",
+    "responseStatus": "Unauthorized",
+    "responseCode": "401",
+    "totalRecord": 0,
+    "totalSavedRecord": 0,
+    "totalFailedRecord": 0,
+    "errorMessage": "a",
+    "_class": "com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog"
+  }
+]
