@@ -199,7 +199,7 @@ class JiraTestServiceImplTest {
 		toolInfo.setId(new ObjectId("625fd013572701449a44b556"));
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
 		toolInfo.setToolName(ProcessorConstants.JIRA_TEST);
-		toolInfo.setUrl("https://tools.publicis.sapient.com/jira");
+		toolInfo.setUrl("https://abc.com/jira");
 		toolInfo.setApiEndPoint("rest/api/2/");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");

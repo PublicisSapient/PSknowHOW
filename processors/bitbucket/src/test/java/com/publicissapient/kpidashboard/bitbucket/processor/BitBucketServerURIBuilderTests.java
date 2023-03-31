@@ -55,7 +55,7 @@ public class BitBucketServerURIBuilderTests {
 		when(config.getApi()).thenReturn("/rest/api/1.0");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/bitbucket/");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");

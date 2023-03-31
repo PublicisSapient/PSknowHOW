@@ -7,7 +7,7 @@
     "result": [
       {
         "link": {
-          "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/result/MT-IN-3",
+          "href": "/bamboo/rest/api/latest/result/MT-IN-3",
           "rel": "self"
         },
         "plan": {
@@ -16,7 +16,7 @@
           "type": "chain",
           "enabled": true,
           "link": {
-            "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/plan/MT-IN",
+            "href": "/bamboo/rest/api/latest/plan/MT-IN",
             "rel": "self"
           },
           "key": "MT-IN",
@@ -43,7 +43,7 @@
       },
       {
         "link": {
-          "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/result/BAMPRC-DOJO-3",
+          "href": "/bamboo/rest/api/latest/result/BAMPRC-DOJO-3",
           "rel": "self"
         },
         "plan": {
@@ -52,7 +52,7 @@
           "type": "chain",
           "enabled": true,
           "link": {
-            "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/plan/BAMPRC-DOJO",
+            "href": "/bamboo/rest/api/latest/plan/BAMPRC-DOJO",
             "rel": "self"
           },
           "key": "BAMPRC-DOJO",

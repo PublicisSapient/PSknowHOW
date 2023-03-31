@@ -58,7 +58,7 @@ class AzureRepoServerURIBuilderTests {
 		azureRepoProcessorInfo.setApiVersion("5.1");
 		azureRepoProcessorInfo.setBranch("master");
 		azureRepoProcessorInfo.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		azureRepoProcessorInfo.setPat("9cZJr0+Z5bKUKUDRd0llzQrif1teMof18n93nRX6OsERvNiAOOawZ");
+		azureRepoProcessorInfo.setPat("testPat");
 		azureRepoProcessorInfo.setRepositoryName("AzureSpeedy");
 		
 		uriBuilder = new AzureRepoServerURIBuilder(azureRepoRepo, config,azureRepoProcessorInfo);

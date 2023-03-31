@@ -109,7 +109,7 @@ public class JiraTestProcessorJobExecutorTest {
 		toolInfo = new ProcessorToolConnection();
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
 		toolInfo.setToolName(ProcessorConstants.JIRA_TEST);
-		toolInfo.setUrl("https://tools.publicis.sapient.com/jira");
+		toolInfo.setUrl("https://abc.com/jira");
 		toolInfo.setApiEndPoint("/rest/atm/1.0");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");

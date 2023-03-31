@@ -50,7 +50,7 @@ public class GitLabURIBuilderTest {
 	@BeforeEach
 	public void init() {
 		gitLabInfo.setBranch("release/core-r4.4");
-		gitLabInfo.setPassword("020892BE903C15F566C09DAFEA800619");
+		gitLabInfo.setPassword("testPassword");
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");

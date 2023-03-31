@@ -192,7 +192,7 @@ public class AzureRepoProcessorJobExecutorTest {
 		azureRepoProcessorInfo.setApiVersion("5.6");
 		azureRepoProcessorInfo.setBranch("master");
 		azureRepoProcessorInfo.setUrl("https://dev.azure.com/ankbhard/KnowHOW");
-		azureRepoProcessorInfo.setPat("9cZJr0+Z5bKUKUDRd0llzQrif1teMof18n93nRX6OsERvNiAOOawZ");
+		azureRepoProcessorInfo.setPat("testPat");
 		azureRepoProcessorInfo.setRepoSlug("knowHow");
 		
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -245,8 +245,7 @@ public class AzureRepoProcessorJobExecutorTest {
 		List<ProjectToolConfig> toolConfigs = Arrays.asList(objectMapper3.readValue(file3, ProjectToolConfig[].class));
 		Connection connection = new Connection();
 		connection.setBaseUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		connection.setAccessToken(
-				"8PTAhVLdwUoQk7gUnPfiPXWmOiUojMSJVyl/vIKBJ01X80SocKq1rzKsK9u1QQisyuYXOmeRkZhNTHq648pscw==");
+		connection.setAccessToken("testAccessToken");
 		Mockito.when(processorItemRepository.findByProcessorIdIn(processorIds)).thenReturn(processorItems);
 		Mockito.when(connectionsRepository.findById(toolConfigs.get(0).getConnectionId())).thenReturn(Optional.of(connection));
 		Whitebox.invokeMethod(azureRepoProcessorJobExecutor, "addProcessorItems", processor, toolConfigs);
