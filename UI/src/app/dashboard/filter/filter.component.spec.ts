@@ -752,14 +752,30 @@ describe('FilterComponent', () => {
 
   it('should handle iteration filter', () => {
     component.filterForm = new UntypedFormGroup({
-      selectedProjectValue: new UntypedFormControl('DEMO_SONAR_63284960fdd20276d60e4df5'),
-      selectedSprintValue: new UntypedFormControl('')
+      selectedProjectValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
     });
-    component.trendLineValueList = [{nodeId:'DEMO_SONAR_63284960fdd20276d60e4df5', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
-    component.additionalFiltersDdn = [];
+    component.selectedFilterArray = [];
+    component.trendLineValueList = [{nodeId:'DOTC_63b51633f33fd2360e9e72bd', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
+    component.additionalFiltersDdn = {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'active',
+      }]
+    };
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
-    component.handleIterationFilters('project', 2);
+    spyOn(component, 'createFilterApplyData');
+    component.handleIterationFilters('project', 1);
     expect(spy).toHaveBeenCalled();
   });
 
