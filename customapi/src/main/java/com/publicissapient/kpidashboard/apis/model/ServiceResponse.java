@@ -38,6 +38,12 @@ public class ServiceResponse extends BaseResponse {
 		setSuccess(isSuccess);
 	}
 
+	public ServiceResponse(Boolean isSuccess, String msg) {
+		super();
+		setMessage(msg);
+		setSuccess(isSuccess);
+	}
+
 	/**
 	 * 
 	 * @return data
