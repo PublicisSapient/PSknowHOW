@@ -876,4 +876,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     getJiraTemplate(projectId) {
         return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)     
     }
+
+    getMappingTemplateFlag(toolID,data){
+        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
+    }
 }
