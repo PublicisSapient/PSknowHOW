@@ -33,6 +33,7 @@ public class MetadataIdentifierServiceImpl implements MetaDataIdentifierService 
             metadataIdentifierDTO.setTemplateCode(metadataIdentifier.getTemplateCode());
             metadataIdentifierDTO.setKanban(metadataIdentifier.getIsKanban());
             metadataIdentifierDTO.setTool(metadataIdentifier.getTool());
+            metadataIdentifierDTO.setDisabled(metadataIdentifier.isDisabled());
             templateNamesFlagAndID.add(metadataIdentifierDTO);
         }
         return templateNamesFlagAndID;

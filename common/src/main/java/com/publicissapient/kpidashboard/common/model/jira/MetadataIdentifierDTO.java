@@ -10,4 +10,5 @@ public class MetadataIdentifierDTO {
     private String templateName;
     private String templateCode;
     private boolean isKanban;
+    private boolean disabled;
 }

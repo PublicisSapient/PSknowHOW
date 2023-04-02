@@ -147,8 +147,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
 
-		Map<ObjectId, FieldMapping> objectIdFieldMappingMap = (Map<ObjectId, FieldMapping>) cacheService.cacheFieldMappingMapData();
-		FieldMapping existingFieldMapping = objectIdFieldMappingMap.get(fieldMapping.getBasicProjectConfigId());
+		FieldMapping existingFieldMapping = fieldMappingRepository
+				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
 
 		if (existingFieldMapping != null) {
 			fieldMapping.setId(existingFieldMapping.getId());

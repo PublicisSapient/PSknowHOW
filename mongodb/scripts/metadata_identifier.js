@@ -5,6 +5,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Agile Template",
                                           "templateCode": "1",
                                           "isKanban": true,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "issuetype",
@@ -116,6 +117,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Safe Template",
                                           "templateCode": "2",
                                           "isKanban": true,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "issuetype",
@@ -227,6 +229,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Studio Template",
                                           "templateCode": "3",
                                           "isKanban": true,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "issuetype",
@@ -338,6 +341,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Agile Template",
                                           "templateCode": "4",
                                           "isKanban": false,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "story",
@@ -414,6 +418,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Safe Template",
                                           "templateCode": "5",
                                           "isKanban": false,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "story",
@@ -490,6 +495,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "DOJO Studio Template",
                                           "templateCode": "6",
                                           "isKanban": false,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "story",
@@ -565,6 +571,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "Standard Template",
                                           "templateCode": "7",
                                           "isKanban": false,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "story",
@@ -780,6 +787,7 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "Standard Template",
                                           "templateCode": "8",
                                           "isKanban": true,
+                                          "disabled": false,
                                           "issues": [
                                             {
                                               "type": "epic",
@@ -1259,15 +1267,17 @@ db.getCollection('metadata_identifier').remove({});
                                         },
                                         {
                                           "tool": "Jira",
-                                          "templateName": "Customize Template",
+                                          "templateName": "Custom Template",
                                           "templateCode": "9",
-                                          "isKanban": true
+                                          "isKanban": true,
+                                          "disabled": true,
                                         },
                                         {
                                           "tool": "Jira",
-                                          "templateName": "Customize Template",
+                                          "templateName": "Custom Template",
                                           "templateCode": "10",
-                                          "isKanban": false
+                                          "isKanban": false,
+                                          "disabled": true,
                                         },
                                         {
                                           "tool": "Azure",
