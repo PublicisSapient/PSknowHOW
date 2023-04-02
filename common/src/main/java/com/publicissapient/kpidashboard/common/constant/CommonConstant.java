@@ -51,7 +51,7 @@ public final class CommonConstant {
 	public static final String TICKET_COUNT_ISSUE_TYPE = "ticketCountIssueType";
 
 	public static final String FIRST_STATUS = "firststatus";
-	public static final String OPEN = "open";
+	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
 	public static final String ROOT_CAUSE = "rootcause";
 	public static final String DEVELOPMENT = "development";
@@ -167,7 +167,7 @@ public final class CommonConstant {
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
 
-
+	public static final String REJECTED = "Rejected";
 
 
 

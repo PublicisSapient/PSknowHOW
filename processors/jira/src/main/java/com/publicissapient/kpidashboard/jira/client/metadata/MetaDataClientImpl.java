@@ -67,6 +67,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	public static final String DOJO_AGILE_TEMPLATE = "DOJO Agile Template";
 	public static final String DOJO_SAFE_TEMPLATE = "DOJO Safe Template";
 	public static final String DOJO_STUDIO_TEMPLATE = "DOJO Studio Template";
+	public static final String STANDARD_TEMPLATE = "Standard Template";
 	private final JiraAdapter jiraAdapter;
 	private final BoardMetadataRepository boardMetadataRepository;
 	private final FieldMappingRepository fieldMappingRepository;
@@ -110,7 +111,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			BoardMetadata boardMetadata = new BoardMetadata();
 			boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
 			boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-			boardMetadata.setMetadataTemplateID(projectConfig.getProjectToolConfig().getMetadataTemplateID());
+			boardMetadata.setMetadataTemplateCode(projectConfig.getProjectToolConfig().getMetadataTemplateCode());
 			List<Metadata> fullMetaDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(fieldList)) {
 				fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -220,13 +221,13 @@ public class MetaDataClientImpl implements MetadataClient {
 	 */
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		log.info("Fetching and comparing  metadata identifier");
-		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateID(), JiraConstants.JIRA,
+		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
 				projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
 		List<Identifier> customFieldList = new ArrayList<>();
 		Map<String, List<String>> valuesToIdentifyMap = new HashMap<>();
 		List<Identifier> issueList = metadataIdentifier.getIssues();
-		if (templateName.equalsIgnoreCase("Standard Template")) {
+		if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
 			customFieldList = metadataIdentifier.getCustomfield();
 			valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 					.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
@@ -251,8 +252,8 @@ public class MetaDataClientImpl implements MetadataClient {
 		}
 		Map<String, List<String>> issueTypeMap = compareIssueType(issueList, allIssueTypes);
 		Map<String, List<String>> workflowMap = compareWorkflow(workflowList, allWorkflow);
-		if (templateName.equalsIgnoreCase("Standard Template")) {
-			 customField = compareCustomField(customFieldList, allCustomField);
+		if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
+			customField = compareCustomField(customFieldList, allCustomField);
 		}
 
 
@@ -395,22 +396,21 @@ public class MetaDataClientImpl implements MetadataClient {
 			}
 			fieldMapping.setJiraIntakeToDorIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setStoryFirstStatus(workflowMap.get(CommonConstant.FIRST_STATUS).get(0));
+			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping
 					.setJiraIssueDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
 			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
-			fieldMapping.setJiraDor(workflowMap.get(CommonConstant.DOR).get(0));
+			fieldMapping.setJiraDor(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejection(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setJiraDefectDroppedStatus(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setJiraStatusForDevelopment(workflowMap.get(CommonConstant.DEVELOPMENT));
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
-			fieldMapping.setJiraDefectRejectionStatus(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
+			fieldMapping.setJiraDefectRejectionStatus(CommonConstant.REJECTED);
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 		}
 	}

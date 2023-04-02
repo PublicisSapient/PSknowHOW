@@ -84,6 +84,7 @@ describe('NavComponent', () => {
       httpService = TestBed.inject(HttpService);
       messageService = TestBed.inject(MessageService);
       shareService = TestBed.inject(SharedService);
+      spyOn(component,'startWorker').and.callFake(()=>{});
       fixture.detectChanges();
       router = TestBed.get(Router);
       // httpMock.expectOne(baseUrl + '/api/file/logo').flush(getLogo);
@@ -112,7 +113,7 @@ describe('NavComponent', () => {
     component.editDashboardName();
     tick();
     expect(component.displayEditModal).toBe(false);
-  }))
+  }));
 
   it("should Edit dash board name and disabled model if successfully response came",()=>{
     const fakeRespose = {
@@ -162,6 +163,9 @@ describe('NavComponent', () => {
   })
 
   it("should stop worker",()=>{
+    component.worker = {terminate: ()=>{
+      component.worker = undefined;
+    }};
     component.stopWorker();
     expect(component.worker).toBe(undefined);
   })

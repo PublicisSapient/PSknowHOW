@@ -19,9 +19,11 @@
 package com.publicissapient.kpidashboard.apis.pushdata.util;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataResponse;
 
+@Component
 public class PushDataException extends RuntimeException {
 	private static final long serialVersionUID = -664077740219817001L;
 

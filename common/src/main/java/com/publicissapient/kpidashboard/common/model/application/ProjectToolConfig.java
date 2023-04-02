@@ -96,6 +96,6 @@ public class ProjectToolConfig extends BasicModel {
 	private String parameterNameForEnvironment;
 
 	//template ID
-	private ObjectId metadataTemplateID;
+	private String metadataTemplateCode;
 
 }

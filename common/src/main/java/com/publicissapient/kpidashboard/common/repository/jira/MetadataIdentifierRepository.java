@@ -34,6 +34,6 @@ public interface MetadataIdentifierRepository extends CrudRepository<MetadataIde
 	
 	MetadataIdentifier findByToolAndIsKanban(String tool, Boolean isKanban);
 
-	MetadataIdentifier findByIdAndToolAndIsKanban(ObjectId id, String tool, Boolean isKanban);
+	MetadataIdentifier findByIdAndToolAndIsKanban(String id, String tool, Boolean isKanban);
 
 }

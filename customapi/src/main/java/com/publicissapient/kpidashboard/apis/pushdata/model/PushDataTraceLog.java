@@ -16,34 +16,53 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.apis.pushdata.model;
 
 import java.util.List;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+/**
+ * token details for push data via expose api
+ */
 
-
-@Builder
+@Data
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "board_metadata")
-public class BoardMetadata extends BasicModel {
+@Document(collection = "push_data_trace_log")
+public class PushDataTraceLog extends BasicModel {
+	private static PushDataTraceLog pushDataTraceLog=null;
 
-	private ObjectId projectBasicConfigId;
-	private ObjectId projectToolConfigId;
-	private String metadataTemplateCode;
-	private List<Metadata> metadata;
-	
+	private String pushApiSource;
+	private String projectName;
+	private ObjectId basicProjectConfigId;
+	private String userName;
+	private String requestTime;
+	private String responseStatus;
+	private String responseCode;
+	private int totalRecord;
+	private int totalSavedRecord;
+	private int totalFailedRecord;
+	private String errorMessage;
+	private List<PushDataDetail> pushDataDetails;
 
+	public static synchronized  PushDataTraceLog getInstance(){
+		if(pushDataTraceLog==null){
+			pushDataTraceLog=new PushDataTraceLog();
+		}
+		return pushDataTraceLog;
+	}
+
+	public static void destroy(){
+		pushDataTraceLog=null;
+	}
 }

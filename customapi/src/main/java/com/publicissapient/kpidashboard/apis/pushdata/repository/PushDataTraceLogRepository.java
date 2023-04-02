@@ -16,28 +16,19 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
+package com.publicissapient.kpidashboard.apis.pushdata.repository;
 
-import java.util.Set;
+import java.util.List;
 
-import javax.validation.Valid;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class PushBuildDeployDTO {
-	@Valid
-	Set<PushBuild> builds;
-	@Valid
-	Set<PushDeploy> deployments;
+@Repository
+public interface PushDataTraceLogRepository extends MongoRepository<PushDataTraceLog, ObjectId> {
+
+	List<PushDataTraceLog> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
 }
