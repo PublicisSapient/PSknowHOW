@@ -79,6 +79,32 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	@RequestMapping(value = "/tools/{projectToolConfigId}/saveMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> saveFieldMapping(@PathVariable String projectToolConfigId,
+														   @RequestBody FieldMappingDTO fieldMappingDTO) {
+
+		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
+
+		ProjectBasicConfig projectBasicConfig = fieldMappingService
+				.getBasicProjectConfigById(fieldMappingDTO.getBasicProjectConfigId());
+		policy.checkPermission(projectBasicConfig, "UPDATE_PROJECT");
+
+		final ModelMapper modelMapper = new ModelMapper();
+		FieldMapping fieldMapping = modelMapper.map(fieldMappingDTO, FieldMapping.class);
+
+		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
+
+		ServiceResponse response = null;
+		if (result) {
+			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
+		} else {
+			response = new ServiceResponse(false, "mappings are same as default mapping", result);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {
 
