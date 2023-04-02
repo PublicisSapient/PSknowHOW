@@ -566,8 +566,10 @@ export class FieldMappingComponent implements OnInit {
       if (response && response['success']) {
         if (response['data']) {
           this.confirmationService.confirm({
-            message: `Are you want sure to proceed?`,
-            header: 'Template Instruction',
+            message: `Please note that change in mappings is a deviation from initially configured template.
+            If you continue with the change in mappings then these changes will be mapped to a 
+            Custom template in project configurations which cannot be changed again to a initially configured template.`,
+            header: 'Template Change Info',
             key: 'templateInfoDialog',
             accept: () => {
               this.saveFieldMapping(submitData);
