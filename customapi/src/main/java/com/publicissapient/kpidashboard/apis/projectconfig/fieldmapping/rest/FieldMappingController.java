@@ -96,9 +96,9 @@ public class FieldMappingController {
 
 		ServiceResponse response = null;
 		if (result) {
-			response = new ServiceResponse(true, "mappings are not same as default mapping");
+			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
 		} else {
-			response = new ServiceResponse(false, "mappings are same as default mapping");
+			response = new ServiceResponse(true, "mappings are same as default mapping", result);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
