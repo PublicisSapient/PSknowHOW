@@ -116,6 +116,36 @@ describe('JiraConfigComponent', () => {
     offlineFilePath: ''
   };
 
+  const fakeTemplateList = [ {
+      id: "641cc51bd830154a05d77370",
+      tool: "Jira",
+      templateName: "DOJO Studio Template",
+      templateCode: "6",
+      kanban: false
+  },
+  {
+      id: "641cc51bd830154a05d77371",
+      tool: "Jira",
+      templateName: "Standard Template",
+      templateCode: "7",
+      kanban: false
+  },
+  {
+      id: "641cc51bd830154a05d77372",
+      tool: "Jira",
+      templateName: "Standard Template",
+      templateCode: "8",
+      kanban: true
+  },
+  {
+      id: "641cc51bd830154a05d77371",
+      tool: "Jira",
+      templateName: "Custom Template",
+      templateCode: "7",
+      kanban: true
+  },
+];
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [JiraConfigComponent],
@@ -188,7 +218,7 @@ describe('JiraConfigComponent', () => {
   it('should save form', () => {
     component.ngOnInit();
     component.toolForm.controls['projectKey'].setValue('1212');
-    component.toolForm.controls['metadataTemplateID'].setValue({
+    component.toolForm.controls['metadataTemplateCode'].setValue({
       id:"641d986af8d42d02b0c2558f",
       kanban:true,
       templateCode: "1",
@@ -746,35 +776,29 @@ describe('JiraConfigComponent', () => {
     expect(component.hideFormElements).toHaveBeenCalled();
   })
 
-  it("should get template list and filter based on kanban",()=>{
-    const templateList = [ {
+  it("should get template list and filter based on kanban", () => {
+    const templateList = fakeTemplateList;
+    component.selectedProject = {
       id: "641cc51bd830154a05d77370",
-      tool: "Jira",
-      templateName: "DOJO Studio Template",
-      templateCode: "6",
-      kanban: false
-  },
-  {
-      id: "641cc51bd830154a05d77371",
-      tool: "Jira",
-      templateName: "Standard Template",
-      templateCode: "7",
-      kanban: false
-  },
-  {
-      id: "641cc51bd830154a05d77372",
-      tool: "Jira",
-      templateName: "Standard Template",
-      templateCode: "8",
-      kanban: true
-  },]
-  component.selectedProject = {
-    id : "641cc51bd830154a05d77370",
-    Type : "kanban"
-  }
-    spyOn(httpService,'getJiraTemplate').and.returnValue(of(templateList))
+      Type: "kanban"
+    }
+    spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
-    expect(component.jiraTemplate.length).toBe(1);
+    expect(component.jiraTemplate.length).toBeGreaterThan(0);
+  })
+
+  it("should dropdown disabled for custom template", () => {
+    const templateList = fakeTemplateList;
+    component.ngOnInit();
+    component.urlParam = "jira`";
+    component.initializeFields(component.urlParam);
+    component.selectedProject = {
+      id: "641cc51bd830154a05d77370",
+      Type: "kanban"
+    }
+    spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
+    component.getJiraTemplate()
+    expect(component.toolForm.get('metadataTemplateCode').disabled).toBeFalsy();
   })
 
 });

@@ -2370,7 +2370,7 @@ export class JiraConfigComponent implements OnInit {
      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
         this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
-        if(selectedTemplate.templateName === 'Customize Template'){
+        if(selectedTemplate?.templateName === 'Custom Template'){
           this.toolForm.get('metadataTemplateCode').disable();
         }
       }
