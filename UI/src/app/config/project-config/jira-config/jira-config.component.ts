@@ -855,8 +855,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiKey', header: 'API Key', class: 'normal' },
             { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
-            { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
-            { field: 'patOAuthToken', header: 'PAT OAuth Token', class: 'long-text' },
+            { field: 'isOAuth', header: 'OAuth', class: 'small-text' }
           ];
 
           this.formTemplate = {
