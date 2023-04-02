@@ -221,7 +221,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	 */
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		log.info("Fetching and comparing  metadata identifier");
-		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByIdAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
+		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
 				projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
 		List<Identifier> customFieldList = new ArrayList<>();
