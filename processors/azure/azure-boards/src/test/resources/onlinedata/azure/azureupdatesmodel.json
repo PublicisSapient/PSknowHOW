@@ -48,16 +48,16 @@
 					},
 					"System.AssignedTo": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -66,16 +66,16 @@
 					},
 					"System.CreatedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -84,31 +84,31 @@
 					},
 					"System.ChangedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
 					"System.AuthorizedAs": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -164,7 +164,7 @@
 						"newValue": "New"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/1"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/1"
 			},
 			{
 				"id": 2,
@@ -172,16 +172,16 @@
 				"rev": 2,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "2020-07-15T12:55:29.99Z",
@@ -227,16 +227,16 @@
 					},
 					"Microsoft.VSTS.Common.ActivatedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -245,7 +245,7 @@
 						"newValue": "Active"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/2"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/2"
 			},
 			{
 				"id": 3,
@@ -253,16 +253,16 @@
 				"rev": 3,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "2020-07-15T12:55:46.937Z",
@@ -300,7 +300,7 @@
 						"newValue": "AzureSpeedy\\Sprint3_June29_July10"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/3"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/3"
 			},
 			{
 				"id": 4,
@@ -308,16 +308,16 @@
 				"rev": 4,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "2020-07-15T19:27:45.1Z",
@@ -363,16 +363,16 @@
 					},
 					"Microsoft.VSTS.Common.ActivatedBy": {
 						"oldValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -381,7 +381,7 @@
 						"newValue": "New"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/4"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/4"
 			},
 			{
 				"id": 5,
@@ -389,16 +389,16 @@
 				"rev": 5,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "2020-07-15T19:28:37.66Z",
@@ -436,16 +436,16 @@
 					},
 					"Microsoft.VSTS.Common.ActivatedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -462,7 +462,7 @@
 						"newValue": "Active"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/5"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/5"
 			},
 			{
 				"id": 6,
@@ -470,16 +470,16 @@
 				"rev": 6,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "2020-07-15T19:29:14.85Z",
@@ -517,16 +517,16 @@
 					},
 					"Microsoft.VSTS.Common.ResolvedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -543,7 +543,7 @@
 						"newValue": "Resolved"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/6"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/6"
 			},
 			{
 				"id": 7,
@@ -551,16 +551,16 @@
 				"rev": 7,
 				"revisedBy": {
 					"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-					"name": "Arti Patel <artpatel@publicisgroupe.net>",
-					"displayName": "Arti Patel",
-					"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+					"name": "Test Display Name <testUser@test.com>",
+					"displayName": "Test Display Name",
+					"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 					"_links": {
 						"avatar": {
-							"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+							"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
-					"uniqueName": "artpatel@publicisgroupe.net",
-					"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+					"uniqueName": "testUser@test.com",
+					"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 					"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 				},
 				"revisedDate": "9999-01-01T00:00:00Z",
@@ -606,16 +606,16 @@
 					},
 					"Microsoft.VSTS.Common.ClosedBy": {
 						"newValue": {
-							"displayName": "Arti Patel",
-							"url": "https://spsprodsin1.vssps.visualstudio.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+							"displayName": "Test Display Name",
+							"url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
 							"_links": {
 								"avatar": {
-									"href": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+									"href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 								}
 							},
 							"id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
-							"uniqueName": "artpatel@publicisgroupe.net",
-							"imageUrl": "https://dev.azure.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+							"uniqueName": "testUser@test.com",
+							"imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
 							"descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
 						}
 					},
@@ -624,7 +624,7 @@
 						"newValue": "Closed"
 					}
 				},
-				"url": "https://dev.azure.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/7"
+				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/7"
 			}
 		]
 	}
