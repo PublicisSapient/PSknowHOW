@@ -6,14 +6,14 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Injection Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType']}
+        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
       },
       {
         kpiId: 'kpi82',
         kpiName: 'First Time Pass Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
         },
 
       {
@@ -21,7 +21,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Density',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraQADefectDensityIssueType'], 'Workflow Status Mapping' : ['jiraDod'], 'Defects Mapping' : ['jiraBugRaisedByQAIdentification'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraQADefectDensityIssueType'], 'Workflow Status Mapping' : ['jiraDod','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Defects Mapping' : ['jiraBugRaisedByQAIdentification','defectPriority','excludeRCAFromFTPR'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi35',
@@ -421,6 +421,13 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : { 'Workflow Status Mapping' : ['jiraBlockedStatus', 'jiraWaitStatus'] }
+      },
+      {
+        kpiId: 'kpi133',
+        kpiName: 'Quality Status',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { 'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi989',
