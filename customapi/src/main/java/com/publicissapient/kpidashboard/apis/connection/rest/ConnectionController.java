@@ -90,7 +90,7 @@ public class ConnectionController {
 
 	@PostMapping
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody 	ConnectionDTO connectionDTO) {
 
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection conn = modelMapper.map(connectionDTO, Connection.class);

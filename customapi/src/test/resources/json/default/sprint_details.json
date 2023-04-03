@@ -448,6 +448,13 @@
         "estimate" : "0.0"
       },
       {
+        "number" : "DTS-18475",
+        "priority" : "P2 - Critical",
+        "status" : "Closed",
+        "typeName" : "Defect",
+        "estimate" : "0.0"
+      },
+      {
         "number" : "DTS-19003",
         "priority" : "P4 - Minor",
         "status" : "In Investigation",

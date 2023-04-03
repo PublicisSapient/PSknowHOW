@@ -41,11 +41,11 @@ describe('RequestStatusComponent', () => {
   const baseUrl = environment.baseUrl;
 
   const fakeRequestsData = {
-    message: 'Found access_requests under username Rishabh',
+    message: 'Found access_requests under username testUser',
     success: true,
     data: [{
       _id: '5da46ff3e645ca33dc927b83',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -58,7 +58,7 @@ describe('RequestStatusComponent', () => {
       }]
     }, {
       _id: '5da47bdde645ca33dc927ba8',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -71,7 +71,7 @@ describe('RequestStatusComponent', () => {
       }]
     }, {
       _id: '5da47c2ae645ca33dc927bb3',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -122,7 +122,7 @@ describe('RequestStatusComponent', () => {
   });
 
   it('should load pending requests on load', (done) => {
-    component.userName = 'Rishabh';
+    component.userName = 'testUser';
     component.ngOnInit();
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/accessrequests/user/' + component.userName)[0].flush(fakeRequestsData);

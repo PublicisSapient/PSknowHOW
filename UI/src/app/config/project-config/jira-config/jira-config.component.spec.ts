@@ -103,7 +103,7 @@ describe('JiraConfigComponent', () => {
     type: 'Jira',
     connectionName: 'DOJO Transformation Internal -Jira Connection',
     cloudEnv: false,
-    baseUrl: 'https://tools.publicis.sapient.com/jira',
+    baseUrl: 'http://testabc.com/jira',
     username: '',
     password: '',
     apiEndPoint: 'rest/api/2/',

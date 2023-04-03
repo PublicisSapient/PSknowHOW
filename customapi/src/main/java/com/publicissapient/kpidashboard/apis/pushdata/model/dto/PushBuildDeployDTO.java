@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -37,7 +37,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PushBuildDeployDTO {
 	@Valid
-	List<PushBuild> builds;
+	Set<PushBuild> builds;
 	@Valid
-	List<PushDeploy> deployments;
+	Set<PushDeploy> deployments;
 }

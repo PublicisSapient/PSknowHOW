@@ -97,7 +97,7 @@ public class OnlineAdapterTest {
        JiraToolConfig jiraConfig = new JiraToolConfig();
        Optional<Connection> conn=Optional.of(new Connection());
    		conn.get().setOffline(Boolean.FALSE);
-   		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+   		conn.get().setBaseUrl("https://abc.com/jira/");
    		conn.get().setApiEndPoint("rest/api/2/");
    		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
    		jiraConfig.setConnection(conn);

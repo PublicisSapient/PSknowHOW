@@ -178,24 +178,14 @@ public class OfflineDataProcessorImplTest {
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
         //Online Project Config data
         projectConfig.setId(new ObjectId("5e15d8b195fe1300014538ce"));
-//        projectConfig.setProjectId("63102");
-//        projectConfig.setProjectKey("TEST");
         projectConfig.setProjectName("TestProject");
         SubProjectConfig subProjectConfig = new SubProjectConfig();
         subProjectConfig.setSubProjectIdentification("CustomField");
         subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
         List<SubProjectConfig> subProjectList = new ArrayList<>();
         subProjectList.add(subProjectConfig);
-      //  projectConfig.setSubProjects(subProjectList);
         ProjectToolConfig jiraConfig = new ProjectToolConfig();
         jiraConfig.setProjectKey("TestProject");
-        
-//        jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
-//        jiraConfig.setUrl("https://tools.publicis.sapient.com/jira/");
-//        jiraConfig.setJiraQueryEndpoint("rest/api/2/");
-//        jiraConfig.setOfflineMethod(true);
-//        jiraConfig.setFilePath("offlineData");
-//        projectConfig.setJira(jiraConfig);
         projectConfig.setIsKanban(false);
         scrumProjectList.add(projectConfig);
     }

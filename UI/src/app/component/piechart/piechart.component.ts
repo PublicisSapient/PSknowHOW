@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import {
+ import {
   Component,
   Input,
   OnChanges,
@@ -39,11 +39,11 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
 
   svg: any;
-  margin = 20;
-  width = 500;
-  height = 190;
+  margin = 50;
+  width = '100%';
+  height = 298;
   // The radius of the pie chart is half the smallest side
-  radius = Math.min(this.width, this.height) / 2 - this.margin;
+  radius =  this.height / 2 - this.margin;
   colors;
   pieChartValuesArray = [];
 
@@ -54,16 +54,16 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   }
 
   createSvg(): void {
-    d3.select(this.elem).select('figure#pie').select('svg').remove();
+    d3.select(this.elem).select('#pie').select('svg').remove();
     this.svg = d3
-      .select('figure#pie')
+      .select('#pie')
       .append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g')
       .attr(
         'transform',
-        'translate(' + 80 + ',' + this.height / 2 + ')',
+        'translate(' + 120 + ',' + this.height / 2 + ')',
       );
   }
   //d.Stars.toString()
@@ -97,7 +97,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const width = this.width;
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
-    const pieChartValues = this.data[0]?.value[0]?.value;
+    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
@@ -124,7 +124,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .data(pie(this.pieChartValuesArray))
       .enter().append("g")
       .attr("transform", function (d, i) {
-        return "translate(" + (width - 350) + "," + (i * 15 - 80) + ")"; // place each legend on the right and bump each one down 15 pixels
+        return "translate(" + 150 + "," + (i * 15 - 80) + ")"; // place each legend on the right and bump each one down 15 pixels
       })
       .attr("class", "legend");
 
@@ -152,7 +152,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     // this is used for removing svg already made when value is updated
-    d3.select(this.elem).select('figure#pie').select('svg').remove();
+    d3.select(this.elem).select('#pie').select('svg').remove();
 
     this.pieChartValuesArray = [];
   }

@@ -66,6 +66,7 @@ public class ProcessorToolConnection {
 	private String url;
 	private String username;
 	private String password;
+	private String patOAuthToken;
 	private boolean vault;
 	private String apiEndPoint;
 	private String consumerKey;
@@ -110,4 +111,12 @@ public class ProcessorToolConnection {
 	private String deploymentProjectId;
 	private String jobType;
 	private String parameterNameForEnvironment;
+	private boolean bearerToken;
+
+	public boolean getbearerToken() {
+		return bearerToken;
+	}
+	public void setbearerToken(boolean bearerToken) {
+		bearerToken = bearerToken;
+	}
 }

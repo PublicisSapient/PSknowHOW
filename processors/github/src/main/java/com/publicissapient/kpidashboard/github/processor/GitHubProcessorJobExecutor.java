@@ -289,8 +289,10 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 			commitDetailList.stream().forEach(commit -> {
 				CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
 						gitHubProcessorItem.getId(), commit.getRevisionNumber());
-				commitDetailsData.setAuthor(commit.getAuthor());
-				updateAuthor.add(commitDetailsData);
+				if(commitDetailsData != null){
+					commitDetailsData.setAuthor(commit.getAuthor());
+					updateAuthor.add(commitDetailsData);
+				}
 			});
 			commitsRepo.saveAll(updateAuthor);
 
@@ -304,8 +306,10 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 			mergeRequestsList.stream().forEach(mergeRequests -> {
 				MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
 						gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
-				mergeRequestData.setAuthor(mergeRequests.getAuthor());
-				updateAuthor.add(mergeRequestData);
+				if (mergeRequestData != null) {
+					mergeRequestData.setAuthor(mergeRequests.getAuthor());
+					updateAuthor.add(mergeRequestData);
+				}
 			});
 			mergReqRepo.saveAll(updateAuthor);
 		}

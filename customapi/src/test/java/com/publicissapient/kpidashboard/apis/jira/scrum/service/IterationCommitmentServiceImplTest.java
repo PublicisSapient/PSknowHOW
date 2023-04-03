@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +67,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScopeChangeServiceImplTest {
+public class IterationCommitmentServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -83,7 +82,7 @@ public class ScopeChangeServiceImplTest {
 	private FieldMappingRepository fieldMappingRepository;
 
 	@InjectMocks
-	private ScopeChangeServiceImpl scopeChangeServiceImpl;
+	private IterationCommitmentServiceImpl iterationCommitmentServiceImpl;
 
 	@Mock
 	private SprintRepository sprintRepository;
@@ -142,9 +141,9 @@ public class ScopeChangeServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(scopeChangeServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = scopeChangeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
@@ -156,7 +155,7 @@ public class ScopeChangeServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(scopeChangeServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
+		assertThat(iterationCommitmentServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
 	}
 
 	@After

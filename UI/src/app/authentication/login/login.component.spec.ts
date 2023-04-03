@@ -53,7 +53,7 @@ describe('LoginComponent', () => {
     projectsAccess: [],
     user_name: 'SUPERADMIN',
     account_name: 'XYZ',
-    'X-Authentication-Token': 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTY2NTE2ODU2MH0.Oi-U3qdd5OuZUazy9OBOSAjWh7trjGDkZiMMJ51qmig8Jy59aB4N5tAPWEbVSrZn2Z4hNgKkLzR6BG2pAudhvA',
+    'X-Authentication-Token': 'dummytokenstring',
     project_name: 'XYZ',
     authorities: [
       'ROLE_SUPERADMIN'
