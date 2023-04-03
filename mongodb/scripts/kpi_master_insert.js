@@ -3043,7 +3043,7 @@ db.getCollection('kpi_master').insert(
         },
         {
            "type": "paragraph",
-           "value": "Issues finishing post issue due date are marked in RED"
+           "value": "Issues finishing post iteration are marked in RED"
         },
         {
           "type": "paragraph",
