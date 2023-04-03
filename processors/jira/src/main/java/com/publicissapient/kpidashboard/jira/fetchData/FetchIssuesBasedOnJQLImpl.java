@@ -66,11 +66,11 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     private KanbanJiraIssueRepository kanbanJiraRepo;
 
-    @Autowired
-    private RabbitTemplate template;
-
-    @Autowired
-    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
+//    @Autowired
+//    private RabbitTemplate template;
+//
+//    @Autowired
+//    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
 
     @Autowired
     private JiraCommonService jiraCommonService;
@@ -130,10 +130,10 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     psLogData.setTotalFetchedIssues(String.valueOf(total));
                 }
 
-                if (CollectionUtils.isNotEmpty(issues)) {
-                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
-//                    template.convertAndSend(exchange, routingKey, jiraIssues);
-                }
+//                if (CollectionUtils.isNotEmpty(issues)) {
+//                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
+//                   template.convertAndSend(exchange, routingKey, jiraIssues);
+//                }
 
                 if (issues.size() < pageSize) {
                     break;

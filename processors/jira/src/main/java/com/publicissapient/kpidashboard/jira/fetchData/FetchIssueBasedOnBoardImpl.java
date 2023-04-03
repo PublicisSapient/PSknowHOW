@@ -63,8 +63,8 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
     @Autowired
     private JiraCommonService jiraCommonService;
 
-    @Autowired
-    private FetchSprintReport fetchSprintReport;
+//    @Autowired
+//    private FetchSprintReport fetchSprintReport;
 
     @Override
     public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming){
@@ -98,7 +98,6 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
             String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
 //            Set<SprintDetails> setForCacheClean = new HashSet<>();
             String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
-//            int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
             List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
             for (BoardDetails board : boardDetailsList) {
                 psLogData.setBoardId(board.getBoardId());
@@ -117,16 +116,10 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
                         psLogData.setTotalFetchedIssues(String.valueOf(total));
                     }
 
-//                if (!latestDataFetched && setForCacheClean.size() > sprintCount) {
-//                    latestDataFetched = cleanCache();
-//                    setForCacheClean.clear();
-//                    log.info("latest sprint fetched cache cleaned.");
-//                }
-
                     if (issues.size() < pageSize) {
                         break;
                     }
-//                TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+                TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                 }
             }
         } catch (InterruptedException e) {

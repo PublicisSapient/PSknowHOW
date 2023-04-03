@@ -2,7 +2,7 @@
   {
     "_id" : "63f619e817b32e30f5b97fc1",
     "processorId" :"63b3f50b6d8d7f44def6ec2f",
-    "issueId" : "16920783",
+    "issueId" : "1",
     "number" : "DTS-22047",
     "name" : "Anaylse current code for jira history",
     "typeId" : "7",
