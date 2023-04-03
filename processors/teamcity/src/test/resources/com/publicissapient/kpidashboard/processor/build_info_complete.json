@@ -5,7 +5,7 @@
   "status": "SUCCESS",
   "state": "finished",
   "href": "/app/rest/builds/id:5",
-  "webUrl": "http://10.207.4.242:8111/viewLog.html?buildId=5&buildTypeId=Project2_Build2",
+  "webUrl": "http://localhost:port/viewLog.html?buildId=5&buildTypeId=Project2_Build2",
   "statusText": "Success",
   "buildType": {
       "id": "Project2_Build2",
@@ -13,7 +13,7 @@
       "projectName": "Project-2",
       "projectId": "Project2",
       "href": "/app/rest/buildTypes/id:Project2_Build2",
-      "webUrl": "http://10.207.4.242:8111/viewType.html?buildTypeId=Project2_Build2"
+      "webUrl": "http://localhost:port/viewType.html?buildTypeId=Project2_Build2"
   },
   "queuedDate": "20200402T122613+0530",
   "startDate": "20200402T122613+0530",
@@ -39,7 +39,7 @@
       "name": "Default Agent",
       "typeId": 1,
       "href": "/app/rest/agents/id:1",
-      "webUrl": "http://10.207.4.242:8111/agentDetails.html?id=1&agentTypeId=1&realAgentName=Default%20Agent"
+      "webUrl": "http://localhost:port/agentDetails.html?id=1&agentTypeId=1&realAgentName=Default%20Agent"
   },
   "artifacts": {
       "count": 0,

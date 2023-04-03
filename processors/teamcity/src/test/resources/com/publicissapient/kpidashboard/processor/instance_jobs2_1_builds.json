@@ -4,13 +4,13 @@
     "parentProjectId": "_Root",
     "description": "Sample project to test teamcity api",
     "href": "/app/rest/projects/id:p1",
-    "webUrl": "http://10.207.4.242:8111/project.html?projectId=p1",
+    "webUrl": "http://test.com/project.html?projectId=p1",
     "parentProject": {
         "id": "_Root",
         "name": "<Root project>",
         "description": "Contains all other projects",
         "href": "/app/rest/projects/id:_Root",
-        "webUrl": "http://10.207.4.242:8111/project.html?projectId=_Root"
+        "webUrl": "http://test.com/project.html?projectId=_Root"
     },
     "buildTypes": {
         "count": 1,
@@ -22,7 +22,7 @@
                 "projectName": "Project1",
                 "projectId": "p1",
                 "href": "/app/rest/buildTypes/id:build1",
-                "webUrl": "http://10.207.4.242:8111/viewType.html?buildTypeId=build1"
+                "webUrl": "http://test.com/viewType.html?buildTypeId=build1"
             }
         ]
     },

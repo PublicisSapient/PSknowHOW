@@ -13,8 +13,8 @@
         ]
       },
       "remoteUrls" : [
-		"https://github.com/myrepo/Speedy222.git",
-		"https://github.com/myrepo/Speedy.git"
+		"https://test.com/myrepo/Speedy222.git",
+		"https://test.com/myrepo/Speedy.git"
       ]
     }
   ],

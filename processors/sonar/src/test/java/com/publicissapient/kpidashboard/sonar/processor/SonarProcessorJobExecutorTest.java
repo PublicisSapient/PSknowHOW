@@ -266,8 +266,8 @@ public class SonarProcessorJobExecutorTest {
 	private List<SonarProcessorItem> getOtherProjects() {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
-		project.setInstanceUrl("http://sonar1.com");
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject2");
+		project.setInstanceUrl("http://test1.com");
+		project.setProjectName("testPackage.sonar:TestProject2");
 		project.setProjectId(PROJECT_ID);
 		project.setKey(PROJECT_ID);
 		project.setLatestVersion("6.5");
@@ -281,8 +281,8 @@ public class SonarProcessorJobExecutorTest {
 	private List<SonarProcessorItem> getOtherProjectsWithDifferentVersion() {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
-		project.setInstanceUrl("http://sonar1.com");
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject2");
+		project.setInstanceUrl("http://test1.com");
+		project.setProjectName("testPackage.sonar:TestProject2");
 		project.setProjectId(PROJECT_ID);
 		project.setKey(PROJECT_ID);
 		project.setLatestVersion("6.6");
@@ -298,7 +298,7 @@ public class SonarProcessorJobExecutorTest {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject1");
+		project.setProjectName("testPackage.sonar:TestProject1");
 		project.setProjectId("AVu3b-MAphY78UZXuYHq");
 		project.setKey("AVu3b-MAphY78UZXuYHq");
 		project.setTimestamp(1_570_018_174L);
@@ -311,7 +311,7 @@ public class SonarProcessorJobExecutorTest {
 	private SonarProcessorItem getProject() {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject");
+		project.setProjectName("testPackage.sonar:TestProject");
 		project.setProjectId(PROJECT_ID_2);
 		project.setKey(PROJECT_ID_2);
 		project.setActive(true);

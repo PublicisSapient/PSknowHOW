@@ -4,13 +4,13 @@
     "projectName": "Project-2",
     "projectId": "Project2",
     "href": "/app/rest/buildTypes/id:Project2_Build2",
-    "webUrl": "http://10.207.4.242:8111/viewType.html?buildTypeId=Project2_Build2",
+    "webUrl": "http://test.com/viewType.html?buildTypeId=Project2_Build2",
     "project": {
         "id": "Project2",
         "name": "Project-2",
         "parentProjectId": "_Root",
         "href": "/app/rest/projects/id:Project2",
-        "webUrl": "http://10.207.4.242:8111/project.html?projectId=Project2"
+        "webUrl": "http://test.com/project.html?projectId=Project2"
     },
     "templates": {
         "count": 0,

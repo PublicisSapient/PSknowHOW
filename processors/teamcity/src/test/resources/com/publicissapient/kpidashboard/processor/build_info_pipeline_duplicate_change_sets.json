@@ -11,7 +11,7 @@
         "items": [
           {
             "author": {
-              "fullName": "uschindler"
+              "fullName": "testUser"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -31,12 +31,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "uschindler"
+            "user": "testUser"
           }          
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -73,7 +73,7 @@
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -82,7 +82,7 @@
         "items": [
           {
             "author": {
-              "fullName": "uschindler"
+              "fullName": "testUser"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -102,12 +102,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "uschindler"
+            "user": "testUser"
           }          
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -144,7 +144,7 @@
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -152,58 +152,19 @@
   ],
   "culprits": [
     {
-      "fullName": "ab"
+      "fullName": "test1"
     },
     {
-      "fullName": "anshum"
+      "fullName": "test2"
     },
     {
-      "fullName": "dsmiley"
+      "fullName": "test3"
     },
     {
-      "fullName": "ehatcher"
-    },
+      "fullName": "test4"
+    }
     {
-      "fullName": "erick"
-    },
-    {
-      "fullName": "gchanan"
-    },
-    {
-      "fullName": "hossman"
-    },
-    {
-      "fullName": "jbernste"
-    },
-    {
-      "fullName": "jpountz"
-    },
-    {
-      "fullName": "markrmiller"
-    },
-    {
-      "fullName": "mikemccand"
-    },
-    {
-      "fullName": "noble"
-    },
-    {
-      "fullName": "rmuir"
-    },
-    {
-      "fullName": "sarowe"
-    },
-    {
-      "fullName": "shalin"
-    },
-    {
-      "fullName": "tflobbe"
-    },
-    {
-      "fullName": "thelabdude"
-    },
-    {
-      "fullName": "uschindler"
+      "fullName": "test5"
     }
   ]
 }
