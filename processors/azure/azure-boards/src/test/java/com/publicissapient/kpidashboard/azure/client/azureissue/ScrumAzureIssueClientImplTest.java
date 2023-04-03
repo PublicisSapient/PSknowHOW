@@ -200,7 +200,7 @@ public class ScrumAzureIssueClientImplTest {
 		AzureToolConfig config = new AzureToolConfig();
 		Connection conn = new Connection();
 		conn.setOffline(Boolean.TRUE);
-		conn.setBaseUrl("https://dev.azure.com/testUser/testProject");
+		conn.setBaseUrl("https://test.com/testUser/testProject");
 		config.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		config.setConnection(conn);
 		projectConfFieldMapping.setAzure(config);
