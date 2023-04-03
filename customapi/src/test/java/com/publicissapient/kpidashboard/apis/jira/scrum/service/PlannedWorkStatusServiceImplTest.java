@@ -22,7 +22,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.*;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.*;
@@ -56,7 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OverallCompletionStatusServiceImplTest {
+public class PlannedWorkStatusServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -65,7 +64,7 @@ public class OverallCompletionStatusServiceImplTest {
 	@Mock
 	private ConfigHelperService configHelperService;
 	@InjectMocks
-	private OverallCompletionStatusServiceImpl overallCompletionStatusService;
+	private PlannedWorkStatusServiceImpl overallCompletionStatusService;
 	@Mock
 	private SprintRepository sprintRepository;
 	@Mock

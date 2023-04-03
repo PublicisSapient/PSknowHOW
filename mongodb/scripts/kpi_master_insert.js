@@ -3062,7 +3062,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Overall Completion Status",
+    "kpiName": "Planned Work Status",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
