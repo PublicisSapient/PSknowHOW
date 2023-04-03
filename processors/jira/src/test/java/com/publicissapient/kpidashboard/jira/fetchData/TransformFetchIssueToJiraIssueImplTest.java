@@ -93,7 +93,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
         when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
         when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code","coding"));
         when(additionalFilterHelper.getAdditionalFilter(any(), any())).thenReturn(getMockAdditionalFilterFromJiraIssue());
-        Assert.assertEquals(JiraIssue.class,(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,Collections.EMPTY_SET,false)).get(0).getClass());
+        Assert.assertEquals(JiraIssue.class,(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,false)).get(0).getClass());
 
     }
 

@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -48,6 +49,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     FetchIssuesBasedOnJQL fetchIssuesBasedOnJQL;
 
     @Autowired
+    FetchIssueBasedOnBoard fetchIssueBasedOnBoard;
+
+    @Autowired
     CreateMetadata createMetadata;
 
     @Autowired
@@ -78,7 +82,7 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
 
     private List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
-//               "63bfa0d5b7617e260763ca21"
+//               "63bfa0d5b7617e260763ca21" //project name:bazooka uniliver
 //               "63c04dc7b7617e260763ca4e"
 //               "64102db328f2534cd9d9b0e8"
                "641350b3280939593b19b941" //project name:tester
@@ -111,7 +115,12 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
                 for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
                     client = jiraClient.getClient(entry);
                     createMetadata.collectMetadata(entry.getValue(),client);
-                    fetchIssuesBasedOnJQL.fetchIssues(entry,client);
+                    if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
+                        fetchIssuesBasedOnJQL.fetchIssues(entry,client);
+                    } else {
+                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client);
+                        log.info("issues fetched from board"+issues.size());
+                    }
                 }
             } catch (InterruptedException | FileNotFoundException e) {
                 throw new RuntimeException(e);

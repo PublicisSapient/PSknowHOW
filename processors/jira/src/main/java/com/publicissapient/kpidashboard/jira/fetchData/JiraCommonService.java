@@ -1,11 +1,16 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -16,8 +21,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,15 +38,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
 public class JiraCommonService {
 
-    //function common in all any file except kanban and scrum goes here
+    private static final Logger LOGGER = LoggerFactory.getLogger(JiraCommonService.class);
 
     @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
@@ -160,6 +168,44 @@ public class JiraCommonService {
     public String encodeCredentialsToBase64(String username, String password) {
         String cred = username + ":" + password;
         return Base64.getEncoder().encodeToString(cred.getBytes());
+    }
+
+    public boolean cleanCache() {
+        boolean accountHierarchyCleaned = cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+                CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+        boolean kpiDataCleaned = cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+                CommonConstant.JIRA_KPI_CACHE);
+        return accountHierarchyCleaned && kpiDataCleaned;
+    }
+
+    public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
+        boolean cleaned = false;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
+        uriBuilder.path("/");
+        uriBuilder.path(cacheEndPoint);
+        uriBuilder.path("/");
+        uriBuilder.path(cacheName);
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = null;
+        try {
+            response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+        } catch (RuntimeException e) {
+            LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
+        }
+
+        if (null != response && response.getStatusCode().is2xxSuccessful()) {
+            cleaned = true;
+            LOGGER.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
+        } else {
+            LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
+        }
+        return cleaned;
     }
 
 }

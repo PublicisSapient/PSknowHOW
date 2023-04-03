@@ -59,11 +59,15 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
     @Autowired
     private CreateJiraIssueHistoryImpl createJiraIssueHistory;
 
+    @Autowired
+    private SaveData saveData;
+
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard) throws JSONException,InterruptedException {
+                                              boolean dataFromBoard) throws JSONException,InterruptedException {
 
         List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
+        List<JiraIssueCustomHistory> jiraIssueCustomHistoryToSave=new ArrayList<>();
 
         if (null == currentPagedJiraRs) {
             log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -151,9 +155,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
                 setEstimates(jiraIssue, issue);
 
-                JiraIssueCustomHistory jiraIssueHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig, issueNumber,jiraIssue, issue, fieldMapping, fields);
-
-                log.info("Jira issue History {}",jiraIssueHistory);
+                jiraIssueCustomHistoryToSave.add(createJiraIssueHistory.createIssueCustomHistory(projectConfig, issueNumber,jiraIssue, issue, fieldMapping, fields));
 
                 if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                     jiraIssuesToSave.add(jiraIssue);
@@ -161,15 +163,15 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             }
         }
 
-        createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
-
+        Set<SprintDetails> setForCacheClean = new HashSet<>();
+        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
+        List<SprintDetails> sprintDetailsList =new ArrayList<>();
+        //now we will be putting setCacheClean in fetchSprints fn
         if (!dataFromBoard) {
-            fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet);
+            sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet,setForCacheClean);
         }
+        saveData.saveData(jiraIssuesToSave,jiraIssueCustomHistoryToSave,sprintDetailsList,createAccountHierarchySet,setForCacheClean,projectConfig);
 
-        setForCacheClean.addAll(sprintDetailsSet.stream()
-                .filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
-                .collect(Collectors.toSet()));
         return jiraIssuesToSave;
     }
 

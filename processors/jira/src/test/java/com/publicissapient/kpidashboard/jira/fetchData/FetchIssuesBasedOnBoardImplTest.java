@@ -1,8 +1,11 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.jira.rest.client.api.SearchRestClient;
-import com.atlassian.jira.rest.client.api.StatusCategory;
+import com.atlassian.httpclient.apache.httpcomponents.DefaultRequest;
+import com.atlassian.httpclient.api.HttpClient;
+import com.atlassian.jira.rest.client.api.*;
 import com.atlassian.jira.rest.client.api.domain.*;
+import com.atlassian.jira.rest.client.internal.async.AbstractAsynchronousRestClient;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -10,27 +13,25 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
+import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser.CustomSearchResultJsonParser;
+import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
+import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchHttpClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.*;
+import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.beanutils.BeanUtils;
-import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,19 +39,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FetchIssuesBasedOnJQLImplTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(fullyQualifiedNames="scr/main/java/com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.*")
+public class FetchIssuesBasedOnBoardImplTest {
 
     @Mock
     private JiraProcessorConfig jiraProcessorConfig;
@@ -59,20 +62,22 @@ public class FetchIssuesBasedOnJQLImplTest {
     private JiraIssueRepository jiraIssueRepository;
 
     @Mock
-    SearchRestClient searchRestClient;
+    private ProcessorJiraRestClient client;
 
     @Mock
-    Promise<SearchResult> promisedRs;
-
-    @Mock
-    JiraCommonService jiraCommonService;
+    private KanbanJiraIssueRepository kanbanJiraRepo;
 
     @Mock
     private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
-    @InjectMocks
-    private FetchIssuesBasedOnJQLImpl fetchIssuesBasedOnJQL;
+    @Mock
+    private JiraCommonService jiraCommonService;
 
+    @Mock
+    Promise<SearchResult> promisedRs;
+
+    @InjectMocks
+    private FetchIssueBasedOnBoardImpl fetchIssueBasedOnBoard;
 
     JiraIssue jiraIssue;
 
@@ -91,7 +96,32 @@ public class FetchIssuesBasedOnJQLImplTest {
     SearchResult searchResult;
 
     @Mock
-    private ProcessorJiraRestClient client;
+    MetadataRestClient metadataRestClient;
+
+    @Mock
+    HttpClient httpClient;
+
+    @Mock
+    SessionRestClient sessionRestClient;
+
+    @Mock
+    CustomSearchResultJsonParser searchResultJsonParser;
+
+    @Mock
+    private JiraRestClientFactory jiraRestClientFactory;
+
+    @Mock
+    AuthenticationHandler authenticationHandler;
+
+    @Mock
+    CustomAsynchronousIssueRestClient issueRestClient;
+
+    @Mock
+    private JiraOAuthProperties jiraOAuthProperties;
+
+
+    @Mock
+    AbstractAsynchronousRestClient abstractAsynchronousRestClient;
 
 
     @Before
@@ -105,27 +135,42 @@ public class FetchIssuesBasedOnJQLImplTest {
         createIssue();
     }
 
-    private List<ProcessorExecutionTraceLog> getMockProcessorExecutionTraceLog() {
-        ProcessorExecutionTracelogDataFactory processorExecutionTraceLogDataFactory = ProcessorExecutionTracelogDataFactory
-                .newInstance("/json/default/processor_execution_tracelog.json");
-        return processorExecutionTraceLogDataFactory.getProcessorExecutionTracelog();
-    }
-
     @Test
-    public void fetchIssues() throws Exception {
+    public void fetchIssueBasedOnBoard() throws Exception {
         when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
         when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
         when(jiraCommonService.getPageSize()).thenReturn(30);
         when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
         when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
-        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
-        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
-                .thenReturn(promisedRs);
+//        JiraInfo jiraInfoOAuth = JiraInfo.builder().jiraConfigBaseUrl(jiraOAuthProperties.getJiraBaseURL())
+//                .jiraConfigAccessToken(jiraOAuthProperties.getAccessToken())
+//                .username(entry.getValue().getJira().getConnection().get().getUsername())
+//                .password(entry.getValue().getJira().getConnection().get().getPassword())
+//                .jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
+//        when(jiraRestClientFactory.getJiraClient(jiraInfoOAuth)).thenReturn(client);
+//        when(httpClient.newRequest((URI) any()).setAccept(any()).get()).thenReturn();
+//        CustomAsynchronousIssueRestClient issueRestClient=CustomAsynchronousIssueRestClient.builder()
+//                .baseUri(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"))
+//                .metadataRestClient(metadataRestClient)
+//                .client(httpClient)
+//                .sessionRestClient(sessionRestClient).build();
+//        CustomAsynchronousIssueRestClient issueRestClient1=mock(CustomAsynchronousIssueRestClient.class,withSettings().useConstructor(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),metadataRestClient,httpClient,sessionRestClient).defaultAnswer(CALLS_REAL_METHODS));
+        PowerMockito.whenNew(CustomAsynchronousIssueRestClient.class).withArguments(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),any(),httpClient,sessionRestClient).thenReturn(issueRestClient);
+        when(client.getCustomIssueClient()).thenReturn(issueRestClient);
+        Set<String> stringSet=new HashSet<>();
+        stringSet.add("*all,-attachment,-worklog,-comment,-votes,-watches");
+//        when(issueRestClient.searchBoardIssue("11856","updatedDate>='2022-08-31 14:26' order by updatedDate desc",30,0,stringSet)).thenReturn(promisedRs);
+        when(issueRestClient.searchBoardIssue(anyString(),anyString(),anyInt(),anyInt(),anySet())).thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client).size());
+        fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client);
+    }
 
+    private List<ProcessorExecutionTraceLog> getMockProcessorExecutionTraceLog() {
+        ProcessorExecutionTracelogDataFactory processorExecutionTraceLogDataFactory = ProcessorExecutionTracelogDataFactory
+                .newInstance("/json/default/processor_execution_tracelog.json");
+        return processorExecutionTraceLogDataFactory.getProcessorExecutionTracelog();
     }
 
     private JiraIssue getMockJiraIssue() {
@@ -134,10 +179,10 @@ public class FetchIssuesBasedOnJQLImplTest {
         return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
     }
 
-    private  List<ProjectToolConfig> getMockProjectToolConfig() {
+    private List<ProjectToolConfig> getMockProjectToolConfig() {
         ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
                 .newInstance("/json/default/project_tool_configs.json");
-        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63c04dc7b7617e260763ca4e");
+        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63bfa0d5b7617e260763ca21");
     }
 
     private Optional<Connection> getMockConnection() {
@@ -247,5 +292,7 @@ public class FetchIssuesBasedOnJQLImplTest {
 
         return issueLinkList;
     }
+
+
 
 }

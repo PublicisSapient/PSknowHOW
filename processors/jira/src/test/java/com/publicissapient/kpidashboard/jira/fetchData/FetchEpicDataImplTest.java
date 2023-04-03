@@ -3,34 +3,29 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.*;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousSearchRestClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.data.*;
+import com.publicissapient.kpidashboard.jira.data.ConnectionsDataFactory;
+import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.jira.data.ToolConfigDataFactory;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import io.atlassian.util.concurrent.Promise;
-import org.apache.commons.beanutils.BeanUtils;
-import org.codehaus.jettison.json.JSONException;
+import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +33,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -50,33 +47,27 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FetchIssuesBasedOnJQLImplTest {
+public class FetchEpicDataImplTest {
+
+    @Mock
+    private JiraCommonService jiraCommonService;
 
     @Mock
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
-    private JiraIssueRepository jiraIssueRepository;
+    private ProcessorJiraRestClient client;
 
     @Mock
     SearchRestClient searchRestClient;
 
     @Mock
-    Promise<SearchResult> promisedRs;
-
-    @Mock
-    JiraCommonService jiraCommonService;
-
-    @Mock
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+    Promise<SearchResult> promise;
 
     @InjectMocks
-    private FetchIssuesBasedOnJQLImpl fetchIssuesBasedOnJQL;
+    private FetchEpicDataImpl fetchEpicData;
 
-
-    JiraIssue jiraIssue;
-
-    List<ProcessorExecutionTraceLog> tracelogs;
+    String epicResponse;
 
     List<ProjectToolConfig> projectToolConfigs;
 
@@ -86,18 +77,15 @@ public class FetchIssuesBasedOnJQLImplTest {
 
     List<FieldMapping> fieldMappingList;
 
-    List<Issue> issues=new ArrayList<>();
-
     SearchResult searchResult;
 
-    @Mock
-    private ProcessorJiraRestClient client;
-
+    List<Issue> issues=new ArrayList<>();
 
     @Before
-    public void setup() throws URISyntaxException {
-        jiraIssue=getMockJiraIssue();
-        tracelogs=getMockProcessorExecutionTraceLog();
+    public void setUp() throws IOException, URISyntaxException {
+        FileInputStream fis = new FileInputStream("src/test/resources/json/default/epic_response.txt");
+        epicResponse = IOUtils.toString(fis, "UTF-8");
+
         projectToolConfigs=getMockProjectToolConfig();
         connection=getMockConnection();
         projectConfigsList=getMockProjectConfig();
@@ -105,39 +93,58 @@ public class FetchIssuesBasedOnJQLImplTest {
         createIssue();
     }
 
-    private List<ProcessorExecutionTraceLog> getMockProcessorExecutionTraceLog() {
-        ProcessorExecutionTracelogDataFactory processorExecutionTraceLogDataFactory = ProcessorExecutionTracelogDataFactory
-                .newInstance("/json/default/processor_execution_tracelog.json");
-        return processorExecutionTraceLogDataFactory.getProcessorExecutionTracelog();
-    }
-
     @Test
-    public void fetchIssues() throws Exception {
-        when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
-        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
+    public void fetchEpic() throws IOException, InterruptedException {
+        when(jiraProcessorConfig.getJiraEpicApi()).thenReturn("rest/agile/1.0/board/{boardId}/epic?startAt={startAtIndex}");
+        when(jiraCommonService.getDataFromServer(any(),any())).thenReturn(epicResponse);
+        when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
         when(jiraCommonService.getPageSize()).thenReturn(30);
-        when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
-        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
-        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
-        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
-                .thenReturn(promisedRs);
-        when(promisedRs.claim()).thenReturn(searchResult);
+        when(client.getSearchClient()).thenReturn(searchRestClient);
+        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), any()))
+                .thenReturn(promise);
+
+        when(promise.claim()).thenReturn(searchResult);
+
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client).size());
+        fetchEpicData.fetchEpic(entry,"11856",client);
 
     }
 
-    private JiraIssue getMockJiraIssue() {
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
-                .newInstance("/json/default/jira_issues.json");
-        return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+    private Map<String, ProjectConfFieldMapping> createProjectConfigMap(){
+        Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
+        ProjectConfFieldMapping projectConfFieldMapping=ProjectConfFieldMapping.builder().build();
+        ProjectBasicConfig projectConfig=projectConfigsList.get(2);
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+
+        }
+        projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+        projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+        projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+        projectConfFieldMapping.setJira(getJiraToolConfig());
+        projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
+        projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
+        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
+        projectConfigMap.put(projectConfig.getProjectName(), projectConfFieldMapping);
+        return projectConfigMap;
     }
 
-    private  List<ProjectToolConfig> getMockProjectToolConfig() {
+    private JiraToolConfig getJiraToolConfig() {
+        JiraToolConfig toolObj = new JiraToolConfig();
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
+        } catch (IllegalAccessException | InvocationTargetException e){
+
+        }
+        toolObj.setConnection(connection);
+        return toolObj;
+    }
+
+    private List<ProjectToolConfig> getMockProjectToolConfig() {
         ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
                 .newInstance("/json/default/project_tool_configs.json");
-        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63c04dc7b7617e260763ca4e");
+        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63bfa0d5b7617e260763ca21");
     }
 
     private Optional<Connection> getMockConnection() {
@@ -158,41 +165,10 @@ public class FetchIssuesBasedOnJQLImplTest {
         return fieldMappingDataFactory.getFieldMappings();
     }
 
-    private Map<String, ProjectConfFieldMapping> createProjectConfigMap(){
-        Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
-        ProjectConfFieldMapping projectConfFieldMapping=ProjectConfFieldMapping.builder().build();
-        ProjectBasicConfig projectConfig=projectConfigsList.get(2);
-        try {
-            BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-
-        }
-        projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-        projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-        projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-        projectConfFieldMapping.setJira(getJiraToolConfig());
-        projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
-        projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
-        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
-        projectConfigMap.put(projectConfig.getProjectName(), projectConfFieldMapping);
-        return projectConfigMap;
-    }
-
-    private JiraToolConfig getJiraToolConfig() {
-        JiraToolConfig toolObj = new JiraToolConfig();
-        try {
-            BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-        } catch (IllegalAccessException | InvocationTargetException e){
-
-        }
-        toolObj.setConnection(connection);
-        return toolObj;
-    }
-
     private void createIssue() throws URISyntaxException {
         BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
-        IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
-        IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));
+        IssueType issueType1 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));
+        IssueType issueType2 = new IssueType(new URI("self"), 2l, "Epic", false, "desc", new URI("iconURI"));
         Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
                 new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
         BasicPriority basicPriority = new BasicPriority(new URI("self"), 1l, "priority1");
@@ -247,5 +223,4 @@ public class FetchIssuesBasedOnJQLImplTest {
 
         return issueLinkList;
     }
-
 }

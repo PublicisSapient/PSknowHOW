@@ -84,7 +84,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
 
 
     @Override
-    public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) throws InterruptedException {
+    public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean) throws InterruptedException {
         List<SprintDetails> sprintToSave = new ArrayList<>();
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
         if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -127,7 +127,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                     sprintToSave.add(sprint);
                 }
             }
-//            sprintRepository.saveAll(sprintToSave);
+
             sprintLogData.setAction(CommonConstant.SPRINT_DATA);
             sprintLogData
                     .setSprintListSaved(
@@ -145,6 +145,11 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
             sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
             log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
         }
+
+        setForCacheClean.addAll(sprintToSave.stream()
+                .filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
+                .collect(Collectors.toSet()));
+
         return sprintToSave;
     }
 
@@ -454,7 +459,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
     }
 
     @Override
-    public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig)
+    public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean)
             throws InterruptedException {
         List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
         List<SprintDetails> sprintDetailsBasedOnBoard=new ArrayList<>();
@@ -462,7 +467,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
             List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
             if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
                 Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-                sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet));
+                sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet,setForCacheClean));
             }
         }
         return sprintDetailsBasedOnBoard;

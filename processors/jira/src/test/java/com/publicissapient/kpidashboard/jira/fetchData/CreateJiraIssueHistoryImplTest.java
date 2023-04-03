@@ -28,6 +28,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONTokener;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -142,14 +143,18 @@ public class CreateJiraIssueHistoryImplTest {
         changeLogList.add(changelogGroup);
         changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "Labels", "10003", "L1", "15752", "L2")));
         changeLogList.add(changelogGroup);
-        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due Date", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
+        changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Due_Date", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
         changeLogList.add(changelogGroup);
         changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.CUSTOM, "Sprint", "10003", "KnowHOW | PI_12| ITR_4, KnowHOW | PI_12| ITR_5", "15752", "KnowHOW | PI_12| ITR_5")));
         changeLogList.add(changelogGroup);
 
+        Version version=new Version(new URI(""),1l,"","description",false,false,DateTime.now());
+        List<Version> versionList=new ArrayList<>();
+        versionList.add(version);
+
         issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
                 basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-                DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
+                DateTime.now(), new ArrayList<>(), versionList, new ArrayList<>(), null, issueFields, comments,
                 null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
                 changeLogList, null, new HashSet<>(Arrays.asList("label1")));
     }
@@ -240,57 +245,10 @@ public class CreateJiraIssueHistoryImplTest {
 
         fields.put("custom_007",new IssueField("","Fix Version",null,"KnowHowv6.7"));
 
-//        Iterable<IssueField> issueFieldIterable = new Iterable<IssueField>() {
-//            @Override
-//            public Iterator<IssueField> iterator() {
-//                return issueFieldList.iterator();
-//            }
-//        };
+//        map = new HashMap<>();
+//        map.put("value"," ");
+        fields.put("customfield_20303",new IssueField("","Due_Date",null,""));
+
     }
 
 }
-
-//    @Test
-//    public void testSetJiraFieldChangeLog1() {
-//
-//        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
-//        Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 3);
-//        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
-//        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 1);
-//
-//    }
-//
-//    @Test
-//    public void testSetJiraFieldChangeLog2() {
-//        if (ObjectUtils.isNotEmpty(changeLogList)) changeLogList.clear();
-//        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
-//        Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 1);
-//        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
-//        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 0);
-//        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 0);
-//        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 1);
-//        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 0);
-//        Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 0);
-//    }
-//
-//    @Test
-//    public void testJiraDueDateChangeLog() throws URISyntaxException {
-//        fieldMapping.setJiraDueDateCustomField("");
-//        fieldMapping.setJiraDueDateField("Due Date");
-//        ChangelogGroup changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""), new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "dueDate", "2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
-//        changeLogList.add(changelogGroup);
-//        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
-//        Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 3);
-//        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 2);
-//        Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
-//        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 2);
-//    }
-//
-//}

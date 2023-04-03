@@ -27,17 +27,11 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -49,6 +43,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Service
 public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
+    String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
@@ -125,8 +120,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             boolean hasMore = true;
             String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
 
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
-
             for (int i = 0; hasMore; i += pageSize) {
                 SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
                         userTimeZone, i, dataExist);
@@ -138,8 +131,8 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                 }
 
                 if (CollectionUtils.isNotEmpty(issues)) {
-                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
-                    template.convertAndSend(exchange, routingKey, jiraIssues);
+                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
+//                    template.convertAndSend(exchange, routingKey, jiraIssues);
                 }
 
                 if (issues.size() < pageSize) {

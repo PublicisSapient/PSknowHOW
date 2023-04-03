@@ -265,7 +265,7 @@ public class CreateMetadataImplTest {
     private Optional<Connection> getMockConnection() {
         ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
                 .newInstance("/json/default/connections.json");
-        return connectionDataFactory.findConnectionById("63f733a07af7ed784f088cd5");
+        return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
     }
 
     private  List<FieldMapping> getMockFieldMapping() {

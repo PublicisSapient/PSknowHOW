@@ -109,7 +109,7 @@ public class FetchSprintReportImplTest {
         when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn("rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraCommonService.getDataFromServer(any(),any())).thenReturn(sprintResponse);
-        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet).size());
+        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,Collections.EMPTY_SET).size());
     }
 
     private List<SprintDetails> getMockSprintDetails() {
@@ -144,7 +144,7 @@ public class FetchSprintReportImplTest {
         when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn("rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraCommonService.getDataFromServer(any(), any())).thenReturn(sprintResponse);
-        Assert.assertEquals(15,fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig).size());
+        Assert.assertEquals(15,fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,Collections.EMPTY_SET).size());
 
     }
 

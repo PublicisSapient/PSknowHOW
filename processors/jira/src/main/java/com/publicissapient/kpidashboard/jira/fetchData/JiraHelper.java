@@ -88,11 +88,19 @@ public class JiraHelper {
         return changeLogList;
     }
 
-    static List<Issue> getIssuesFromResult(SearchResult searchResult) {
+    static int getTotal(SearchResult searchResult) {
+        if (searchResult != null) {
+            return searchResult.getTotal();
+        }
+        return 0;
+    }
+
+   static List<Issue> getIssuesFromResult(SearchResult searchResult) {
         if (searchResult != null) {
             return Lists.newArrayList(searchResult.getIssues());
         }
         return new ArrayList<>();
     }
+
 
 }
