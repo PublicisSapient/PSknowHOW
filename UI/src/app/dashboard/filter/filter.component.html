@@ -220,10 +220,10 @@
   
    <div class="p-d-flex">
       <div class="back-btn-wraper">
-      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-         <button  class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
+            <button class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         </div>
       </div>
-     </div>
       <div class="username-btn-wraper" role="button">
          <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
             {{username}}
@@ -236,7 +236,6 @@
 
 <div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
    <div class="filter-nav">
-
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration'">
          <ul class="p-m-0 p-pl-0 p-d-flex flex-wrap">
             <!-- *ngIf="!kanban"-->
@@ -244,12 +243,8 @@
                <li class="selectedfilter p-mr-5">
                   <div class="selected-node">
                      <div class="selected-node-label"><span class="align-list-marker"></span>{{item?.nodeName?.length
-                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <!-- <span
-                           *ngIf="router.url !== '/dashboard/Maturity'">
-                           ( {{ item.grossMaturity }} )
-                           </span> -->
-                           <span class="remove-node p-l-1" (click)="removeNode(item.nodeId)"
-                              *ngIf="selectedFilterArray.length > 1">x</span>
+                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
+                           (click)="removeNode(item.nodeId)" *ngIf="selectedFilterArray.length > 1">x</span>
                      </div>
                      <div class="p-d-flex p-ml-2" *ngIf="item?.additionalFilters?.length > 0">
                         <div class="p-d-flex p-align-center" (mouseover)="showDropdown[item?.nodeId] = true"
