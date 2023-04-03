@@ -421,7 +421,6 @@ describe('FilterComponent', () => {
     const spy = spyOn(component, 'selectedType');
     sharedService.onTabRefresh.emit('Backlog');
     fixture.detectChanges();
-    expect(component.kanban).toBeTrue();
     expect(spy).toHaveBeenCalled();
   });
 

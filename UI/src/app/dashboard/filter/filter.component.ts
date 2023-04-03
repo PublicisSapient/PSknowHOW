@@ -38,27 +38,32 @@ import { first } from 'rxjs/operators';
   styleUrls: ['./filter.component.css'],
 })
 export class FilterComponent implements OnInit {
-  headerFixed = <boolean>false;
-  scrollOffset = <number>150;
+  @ViewChild('selector') ngselect: NgSelectComponent;
+  @ViewChild('toggleButton') toggleButton: ElementRef;
+  @ViewChild('drpmenu') drpmenu: ElementRef;
+  @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
+  @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
+
+  headerFixed = false;
+  scrollOffset = 150;
   isSuperAdmin = false;
   id = '';
   name = '';
-  masterData = <any>{};
-  filterData = <any>[];
-  shareDataObject = <any>{};
+  masterData: any = {};
+  filterData: any = [];
+  shareDataObject: any = {};
   selectedFilterCount = 0;
-  loader = <any>{};
-  getData = <any>[];
+  loader: any = {};
+  getData: any = [];
   filterRequestData = {};
-  filterkeys = <any>[];
-  selectedFilterData = <any>{};
+  filterkeys: any = [];
+  selectedFilterData: any = {};
   selectedTab;
-  downloadJson = <any>{};
-  disableDownloadBtn = <boolean>false;
+  downloadJson: any = {};
+  disableDownloadBtn = false;
   subscriptions: any[] = [];
-  filterKpiRequest = <any>'';
+  filterKpiRequest: any = '';
   kanban = false;
-  people$ = <any>[];
   filterType = 'Default';
   currentSelectionLabel = '';
   maxDate: Date;
@@ -66,36 +71,29 @@ export class FilterComponent implements OnInit {
   showIndicator = false;
   toggleDropdown = false;
   kpiListData: any = {};
-  kpiList: Array<object> = [];
-  showKpisList: Array<object> = [];
+  kpiList = [];
+  showKpisList = [];
   kpiForm: UntypedFormGroup;
   activeSprintList: any = [];
   currentSelectedSprintId: any;
   noAccessMsg = false;
-
   filterForm: UntypedFormGroup;
   toggleFilterDropdown = false;
   selectedFilterArray: Array<any> = [];
   faRotateRight: faRotateRight;
-  filterApplyData: object = {};
-  colorObj: object = {};
+  filterApplyData = {};
+  colorObj = {};
   tempParentArray: Array<any> = [];
-  selectedNodes: object = {};
+  selectedNodes = {};
   selectedNodeLevel = 0;
   hierarchyLevels = [];
   trendLineValueList: any = [];
-  @ViewChild('selector') ngselect: NgSelectComponent;
   toggleDateDropdown = false;
-  filteredSprints: Array<object> = [];
-  showDropdown: object = {};
+  filteredSprints = [];
+  showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
-  selectedProjectValueOnIteration : string;
-
-  @ViewChild('toggleButton') toggleButton: ElementRef;
-  @ViewChild('drpmenu') drpmenu: ElementRef;
-  @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
-  @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
+  selectedProjectValueOnIteration: string;
   selectedProjectLastSyncDate: any;
   processorsTracelogs = [];
   processorName = 'jira';
@@ -105,30 +103,28 @@ export class FilterComponent implements OnInit {
   selectedDays: any;
   previousType: boolean; // to check if Scrum/Kanban selection has changed
   takeFiltersFromPreviousTab: boolean; // to check if previous tab was following the same filter format
-  additionalFiltersArr: Array<object> = [];
-  additionalFiltersDdn: object = {};
-  toggleDropdownObj: object = {};
-  hierarchies: object = {};
-  filteredAddFilters: object = {};
+  additionalFiltersArr = [];
+  additionalFiltersDdn = {};
+  toggleDropdownObj = {};
+  hierarchies = {};
+  filteredAddFilters = {};
   initFlag = false;
   showChart = true;
   iterationConfigData = {};
   kpisNewOrder = [];
   isTooltip = false;
-  projectIndex: number = 0;
+  projectIndex = 0;
   notificationList = [];
   items: MenuItem[];
   username: string;
   isGuest = false;
   logoImage: any;
-  totalRequestCount : number = 0;
+  totalRequestCount = 0;
   selectedProjectData ={};
   allowMultipleSelection: boolean = true;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
-    private excelService: ExcelService,
-    private elemRef: ElementRef,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
     private ga: GoogleAnalyticsService,
@@ -136,37 +132,27 @@ export class FilterComponent implements OnInit {
     private helperService: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    // this.service.setSelectedType('Scrum');
+
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
 
     this.subscriptions.push(
+
       this.service.onTabRefresh.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
-        if (this.selectedTab?.toLowerCase() == 'iteration') {
+        if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
-          // this.service.setSelectedType('Scrum'); // Going in infinite loop
         }
         this.projectIndex = 0;
         const type = this.service.getSelectedType();
-        if (type === 'Scrum') {
-          this.kanban = false;
-        } else {
-          this.kanban = true;
-        }
         this.selectedType(type);
       }),
     );
 
      // added as scrum/kanban moved into nav component
     this.service.onTypeRefresh.subscribe(type=>{
-      if (type === 'Scrum') {
-        this.kanban = false;
-      } else {
-        this.kanban = true;
-      }
       this.selectedType(type);
-    })
-    
+    });
+
     this.subscriptions.push(
       this.service.mapColorToProjectObs.subscribe((x) => {
         if (Object.keys(x).length > 0) {
@@ -174,6 +160,7 @@ export class FilterComponent implements OnInit {
         }
       }),
     );
+
     this.httpService.getTooltipData().subscribe((filterData) => {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
@@ -181,6 +168,7 @@ export class FilterComponent implements OnInit {
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       }
     });
+
     this.getNotification();
      /*subscribe logo image from service*/
      this.service.getLogoImage().subscribe((logoImage) => {
@@ -222,28 +210,18 @@ export class FilterComponent implements OnInit {
         for (const key in this.toggleDropdownObj) {
           const btn = document.getElementById(key + 'Btn');
           const dropdown = document.getElementById(key + 'DDn');
-          if (target && target != btn && target?.closest('.add-filters-dropdown') !== dropdown) {
+          if (target && target !== btn && target?.closest('.add-filters-dropdown') !== dropdown) {
             this.toggleDropdownObj[key] = false;
           }
         }
       }
-      if (target && target != this.dateToggleButton?.nativeElement && target?.closest('.date-filter-dropdown') !== this.dateDrpmenu?.nativeElement) {
+      if (target && target !== this.dateToggleButton?.nativeElement && target?.closest('.date-filter-dropdown') !== this.dateDrpmenu?.nativeElement) {
         this.toggleDateDropdown = false;
       }
     });
 
     const self = this;
-    this.helperService.passMaturityToFilter.subscribe((maturityObj) => {
-      if (this.selectedFilterArray.length) {
-        this.selectedFilterArray.forEach((element) => {
-          element.grossMaturity = 'Maturity Score : ' + (maturityObj[element?.nodeName]? parseFloat(maturityObj[element?.nodeName] + '').toFixed(2) : 'NA');
-        });
-      } else if (self.trendLineValueList.length) {
-        // setTimeout(() => {
-        self.trendLineValueList[0]['grossMaturity'] = 'Maturity Score : ' + (maturityObj[self?.trendLineValueList[0]?.nodeName] ? parseFloat(maturityObj[self?.trendLineValueList[0]?.nodeName] + '').toFixed(2) : 'NA');
-        // }, 1000)
-      }
-    });
+
     this.service.setShowTableView(this.showChart);
     this.service.iterationCongifData.subscribe((iterationDetails) => {
       this.iterationConfigData = iterationDetails;
@@ -347,6 +325,9 @@ export class FilterComponent implements OnInit {
     } else {
       this.kanban = false;
     }
+    this.resetFilterApplyObj();
+    this.selectedFilterArray = [];
+    this.tempParentArray = [];
 
     if (this.kanban !== this.previousType) {
       this.filterForm?.reset();
@@ -1011,7 +992,7 @@ export class FilterComponent implements OnInit {
   }
 
   sortAlphabetically(objArray) {
-    objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
+    objArray?.sort((a, b) => a.nodeName?.localeCompare(b.nodeName));
     return objArray;
   }
 
@@ -1285,7 +1266,7 @@ export class FilterComponent implements OnInit {
         if (response && response.success) {
           if (response.data?.length) {
             this.notificationList = [...response.data].map((obj) => {
-                this.totalRequestCount = this.totalRequestCount + obj.count;              
+                this.totalRequestCount = this.totalRequestCount + obj.count;
               return {
                 label: obj.type + ' : ' + obj.count,
                 icon: '',
