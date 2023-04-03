@@ -158,7 +158,7 @@ public class GitLabProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://test.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/testProject/test.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(gitLabRepository.findActiveRepos(PROCESSORID)).thenReturn(gitLabRepos);
 

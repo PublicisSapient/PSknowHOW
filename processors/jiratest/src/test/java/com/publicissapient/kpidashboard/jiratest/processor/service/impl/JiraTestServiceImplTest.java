@@ -124,7 +124,7 @@ class JiraTestServiceImplTest {
 
 		Set<String> labelSet1 = new HashSet<>();
 		labelSet1.add("Labels1");
-		labelSet1.add("KnowHOW");
+		labelSet1.add("testLabels");
 		labelSet1.add("RegressionLabel");
 		Set<String> labelSet2 = new HashSet<>();
 		labelSet2.add("Labels2");
@@ -203,7 +203,7 @@ class JiraTestServiceImplTest {
 		toolInfo.setApiEndPoint("rest/api/2/");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");
-		toolInfo.setProjectKey("DTS");
+		toolInfo.setProjectKey("testProjectKey");
 		toolInfo.setConnectionId(new ObjectId("625d0d9d10ce157f45918b5c"));
 		String[] testCaseType = new String[2];
 		testCaseType[0] = "Test";

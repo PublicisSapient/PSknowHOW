@@ -78,7 +78,7 @@ public class GitLabClientTest {
 		
 		gitLabInfo.setBranch("release/core-r4.4");
 		gitLabInfo.setPassword("testPassword");
-		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/test.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
 

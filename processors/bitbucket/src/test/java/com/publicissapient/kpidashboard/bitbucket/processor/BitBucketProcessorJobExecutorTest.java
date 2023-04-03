@@ -194,7 +194,7 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("master");
-		commitDetails.setUrl("https://test.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
@@ -233,7 +233,7 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://test.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
