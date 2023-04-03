@@ -370,9 +370,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					IterationKpiData stories = new IterationKpiData(TOTAL_STORIES, (double) priorityWiseTotalStory,
 							null, null, null, modalValues);
 
-					IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE + " %",
-							calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, null, null,
-							expressions);
+					IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE,
+							calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, Constant.PERCENTAGE,
+							null, expressions);
 
 					data.add(ftprStories);
 					data.add(stories);
@@ -390,8 +390,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			IterationKpiData overAllStories = new IterationKpiData(TOTAL_STORIES, Double.valueOf(overAllStory.get(0)),
 					null, null, null, overAllmodalValues);
 
-			IterationKpiData overAllFTPRPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE + " %",
-					calculateFTPR(firstTimePassStoryList.size(), totalStoryList.size()), null, null, null, null);
+			IterationKpiData overAllFTPRPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE,
+					calculateFTPR(firstTimePassStoryList.size(), totalStoryList.size()), null, null,
+					Constant.PERCENTAGE, null);
 
 			data.add(overAllFTPRStories);
 			data.add(overAllStories);
