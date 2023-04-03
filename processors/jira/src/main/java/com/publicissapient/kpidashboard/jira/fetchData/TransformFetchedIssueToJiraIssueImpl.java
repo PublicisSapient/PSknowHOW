@@ -8,6 +8,7 @@ import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -17,6 +18,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
@@ -154,6 +156,8 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 setJiraAssigneeDetails(jiraIssue, assignee);
 
                 setEstimates(jiraIssue, issue);
+
+                setDueDates(jiraIssue, issue,fields,fieldMapping);
 
                 jiraIssueCustomHistoryToSave.add(createJiraIssueHistory.createIssueCustomHistory(projectConfig, issueNumber,jiraIssue, issue, fieldMapping, fields));
 
@@ -838,6 +842,32 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
         }
         jiraIssue.setUrl(baseUrl);
+    }
+
+    private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+                             FieldMapping fieldMapping) {
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+            if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+                    && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+                jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+            } else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+                    && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+                IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+                if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+                    jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                            .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+                && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+            IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+            if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+                jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+            }
+        }
     }
 
 
