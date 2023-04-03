@@ -216,7 +216,7 @@ public class ZephyrCloudImplTest {
 		when(zephyrConfig.getPageSize()).thenReturn(5);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("folder_details_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(
-						eq("https://api.test.com/v2/folders?maxResults=1000"), eq(HttpMethod.GET),
+						eq("https://api.zephyrscale.smartbear.com/v2/folders?maxResults=1000"), eq(HttpMethod.GET),
 						eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(eq(
