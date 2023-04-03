@@ -223,6 +223,7 @@ public class HandleJiraHistory {
 				} catch (ParseException | JSONException e) {
 					log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 				}
+
 			}
 		}
 	}
