@@ -42,6 +42,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -153,6 +157,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	@Autowired
 	private HandleJiraHistory handleJiraHistory;
+
+	@Autowired
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Autowired
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
@@ -578,6 +588,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
 		Set<Assignee> assigneeSetToSave = new HashSet<>();
+		List<IssueBacklog> issueBacklogsToSave=new ArrayList<>();
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave=new ArrayList<>();
 
 		if (null == currentPagedJiraRs) {
 			log.error("JIRA Processor | No list of current paged JIRA's issues found");
