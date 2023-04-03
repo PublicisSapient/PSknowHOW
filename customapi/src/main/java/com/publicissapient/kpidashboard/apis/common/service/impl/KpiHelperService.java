@@ -1310,7 +1310,7 @@ public class KpiHelperService { // NOPMD
 	 * @param projectWiseRCA
 	 * @return
 	 */
-	public List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
 			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> priorityRemaining = new ArrayList<>();
