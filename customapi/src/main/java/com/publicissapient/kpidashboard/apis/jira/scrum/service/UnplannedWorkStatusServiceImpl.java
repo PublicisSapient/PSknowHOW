@@ -158,9 +158,9 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 			List<Integer> overAllIssueCountCompleted = Arrays.asList(0);
 			List<Double> overAllStoryPointsCompleted = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimateCompleted = Arrays.asList(0.0);
-			List<Integer> overAllIssueCountPlanned = Arrays.asList(0);
-			List<Double> overAllStoryPointsPlanned = Arrays.asList(0.0);
-			List<Double> overAllOriginalEstimatePlanned = Arrays.asList(0.0);
+			List<Integer> overAllIssueCountUnplanned = Arrays.asList(0);
+			List<Double> overAllStoryPointsUnplanned = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimateUnplanned = Arrays.asList(0.0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 			typeAndPriorityWiseIssues
 					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
@@ -170,16 +170,16 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 						int issueCountCompleted = 0;
 						Double storyPointCompleted = 0.0;
 						Double originalEstimateCompleted = 0.0;
-						int issueCountPlanned = 0;
-						Double storyPointPlanned = 0.0;
-						Double originalEstimatePlanned = 0.0;
+						int issueCountUnplanned = 0;
+						Double storyPointUnplanned = 0.0;
+						Double originalEstimateUnplanned = 0.0;
 						for (JiraIssue jiraIssue : issues) {
-							issueCountPlanned = issueCountPlanned + 1;
-							overAllIssueCountPlanned.set(0, overAllIssueCountPlanned.get(0) + 1);
+							issueCountUnplanned = issueCountUnplanned + 1;
+							overAllIssueCountUnplanned.set(0, overAllIssueCountUnplanned.get(0) + 1);
 
-							storyPointPlanned = getStoryPoint(overAllStoryPointsPlanned, storyPointPlanned, jiraIssue);
-							originalEstimatePlanned = getOriginalEstimate(overAllOriginalEstimatePlanned,
-									originalEstimatePlanned, jiraIssue);
+							storyPointUnplanned = getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
+							originalEstimateUnplanned = getOriginalEstimate(overAllOriginalEstimateUnplanned,
+									originalEstimateUnplanned, jiraIssue);
 							// For unplanned completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
 								issueCountCompleted = issueCountCompleted + 1;
@@ -195,8 +195,8 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData issueCountsPlanned;
 						IterationKpiData issueCountsActual;
-						issueCountsPlanned = createIterationKpiData(OVERALL_UNPLANNED, fieldMapping, issueCountPlanned,
-								storyPointPlanned, originalEstimatePlanned, modalValues);
+						issueCountsPlanned = createIterationKpiData(OVERALL_UNPLANNED, fieldMapping, issueCountUnplanned,
+								storyPointUnplanned, originalEstimateUnplanned, modalValues);
 						issueCountsActual = createIterationKpiData(COMPLETED, fieldMapping, issueCountCompleted,
 								storyPointCompleted, originalEstimateCompleted, null);
 						data.add(issueCountsPlanned);
@@ -208,8 +208,8 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 			IterationKpiData overAllIssueCountsPlanned;
 			IterationKpiData overAllIssueCountsActual;
 			overAllIssueCountsPlanned = createIterationKpiData(OVERALL_UNPLANNED, fieldMapping,
-					overAllIssueCountPlanned.get(0), overAllStoryPointsPlanned.get(0),
-					overAllOriginalEstimatePlanned.get(0), overAllmodalValues);
+					overAllIssueCountUnplanned.get(0), overAllStoryPointsUnplanned.get(0),
+					overAllOriginalEstimateUnplanned.get(0), overAllmodalValues);
 			overAllIssueCountsActual = createIterationKpiData(COMPLETED, fieldMapping,
 					overAllIssueCountCompleted.get(0), overAllStoryPointsCompleted.get(0),
 					overAllOriginalEstimateCompleted.get(0), null);
