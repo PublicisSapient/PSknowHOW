@@ -24,12 +24,12 @@
                         </ng-select>
                      </div>
                      <!-- Trend line value -->
-                     <div class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + (this.selectedTab?.toLowerCase() !== 'maturity' && this.selectedTab?.toLowerCase() !== 'backlog'?  '(up to ' + heirarchyCount + ')': '')"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
                            [closeOnSelect]="false"
-                           [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'backlog' ? 1 : heirarchyCount"
+                           [maxSelectedItems]="3"
                            class="trend-line-value p-pb-0" [clearable]="false">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
@@ -45,6 +45,15 @@
                                  <!-- <button class="btn btn-filter rounded" (click)="applyChanges(true)">Apply</button> -->
                               </div>
                            </ng-template>
+                        </ng-select>
+                     </div>
+                     <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
+                           [closeOnSelect]="false" (change)="onSelectedTrendValueChange()"
+                           class="trend-line-value p-pb-0">
+                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
+                           </ng-option>
                         </ng-select>
                      </div>
                   </div>

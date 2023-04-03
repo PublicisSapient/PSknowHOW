@@ -122,6 +122,7 @@ export class FilterComponent implements OnInit {
   logoImage: any;
   requestCountMoreThanZero : boolean = false;
   selectedProjectData ={};
+  allowMultipleSelection: boolean = true;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -373,6 +374,12 @@ export class FilterComponent implements OnInit {
 
   selectedType(type) {
     this.resetFilterApplyObj();
+    if(this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
+      this.allowMultipleSelection = false;
+    }else{
+      this.allowMultipleSelection = true;
+    }
+
     this.selectedFilterArray = [];
     this.tempParentArray = [];
     if (type === 'Kanban') {
@@ -520,6 +527,7 @@ export class FilterComponent implements OnInit {
         this.takeFiltersFromPreviousTab = false;
       } else {
         this.takeFiltersFromPreviousTab = true;
+        this.setTrendValueFilter();
       }
 
       if (this.kanban) {
@@ -626,24 +634,27 @@ export class FilterComponent implements OnInit {
       for (const key in this.additionalFiltersDdn) {
         this.filteredAddFilters[key] = [];
       }
-      for (let i = 0; i < selectedProjects?.length; i++) {
-        for (const key in this.additionalFiltersDdn) {
-          if (key == 'sprint') {
-            this.filteredAddFilters[key] = [
-              ...this.filteredAddFilters[key],
-              ...this.additionalFiltersDdn[key]?.filter(
-                (x) =>
-                  x['parentId']?.includes(selectedProjects[i]) &&
-                  x['sprintState']?.toLowerCase() == 'closed',
-              ),
-            ];
-          } else {
-            this.filteredAddFilters[key] = [
-              ...this.filteredAddFilters[key],
-              ...this.additionalFiltersDdn[key]?.filter((x) =>
-                x['path'][0]?.includes(selectedProjects[i]),
-              ),
-            ];
+      if(selectedProjects?.length > 0){
+
+        for (let i = 0; i < selectedProjects?.length; i++) {
+          for (const key in this.additionalFiltersDdn) {
+            if (key == 'sprint') {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter(
+                  (x) =>
+                    x['parentId']?.includes(selectedProjects[i]) &&
+                    x['sprintState']?.toLowerCase() == 'closed',
+                ),
+              ];
+            } else {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter((x) =>
+                  x['path'][0]?.includes(selectedProjects[i]),
+                ),
+              ];
+            }
           }
         }
       }
@@ -666,14 +677,19 @@ export class FilterComponent implements OnInit {
     let selectedLevel = this.hierarchyLevels?.filter(
       (x) => x.hierarchyLevelId == selectedLevelId,
     )[0];
-    if (selectedTrendIds?.length > 0) {
-      let selectedTrendValues = [];
-      for (let i = 0; i < selectedTrendIds?.length; i++) {
-        selectedTrendValues.push(
-          this.trendLineValueList?.filter(
-            (x) => x.nodeId == selectedTrendIds[i],
-          )[0],
-        );
+    if (selectedTrendIds != '' || selectedTrendIds?.length > 0) {
+      let selectedTrendValues:any = [];
+      
+      if(Array.isArray(selectedTrendIds)){
+        for (let i = 0; i < selectedTrendIds?.length; i++) {
+          selectedTrendValues.push(
+            this.trendLineValueList?.filter(
+              (x) => x.nodeId == selectedTrendIds[i],
+            )[0],
+          );
+        }
+      }else{
+        selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
 
       this.service.setSelectedLevel(selectedLevel);
@@ -685,20 +701,13 @@ export class FilterComponent implements OnInit {
         this.closeAllDropdowns();
       }
       /**push selected upper level hierarchy in selectedFilterArray */
-      this.selectedFilterArray = [];
+      this.selectedFilterArray = [...selectedTrendValues];
       for (
         let i = 0;
-        i < this.filterForm?.get('selectedTrendValue')?.value?.length;
+        i < this.selectedFilterArray?.length;
         i++
       ) {
-        const selectedItem = {
-          ...this.trendLineValueList?.filter(
-            (x) =>
-              x.nodeId == this.filterForm?.get('selectedTrendValue')?.value[i],
-          )[0],
-        };
-        selectedItem['additionalFilters'] = [];
-        this.selectedFilterArray.push(selectedItem);
+        this.selectedFilterArray[i]['additionalFilters'] = [];
       }
       this.selectedFilterArray = this.sortAlphabetically(
         this.selectedFilterArray,
@@ -1134,8 +1143,11 @@ export class FilterComponent implements OnInit {
     );
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-    this.filterForm?.get('selectedTrendValue').setValue([]);
-    // }
+    if(this.allowMultipleSelection){
+      this.filterForm?.get('selectedTrendValue').setValue([]);
+    }else{
+      this.filterForm?.get('selectedTrendValue').setValue('');
+    }
   }
 
   setMarker() {
@@ -1188,6 +1200,21 @@ export class FilterComponent implements OnInit {
     return this.filterForm?.controls['selectedLevel']?.value?.toLowerCase();
   }
 
+  setTrendValueFilter(){
+    if(this.allowMultipleSelection){
+      this.filterForm
+      ?.get('selectedTrendValue')
+      .setValue([this.trendLineValueList[0]['nodeId']]);
+      console.log(this.filterForm.get('selectedTrendValue'));
+      
+    }else{
+      this.filterForm
+      ?.get('selectedTrendValue')
+      .setValue(this.trendLineValueList[0]['nodeId']);
+      console.log(this.filterForm.get('selectedTrendValue'));
+    }
+  }
+
   checkDefaultFilterSelection() {
     if (
       this.selectedTab?.toLowerCase() != 'iteration'
@@ -1231,12 +1258,9 @@ export class FilterComponent implements OnInit {
         this.trendLineValueList = this.makeUniqueArrayList(
           this.trendLineValueList,
         );
-        this.filterForm
-        ?.get('selectedTrendValue')
-        .setValue([this.trendLineValueList[0]['nodeId']]);
-      } else {
-        this.filterForm?.get('selectedTrendValue').setValue([]);
-      }
+        this.setTrendValueFilter();
+      } 
+
     } else {
       this.filterForm?.get('selectedLevel').setValue('project');
       this.trendLineValueList = this.filterData?.filter(
