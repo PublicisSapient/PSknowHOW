@@ -5,14 +5,14 @@
     "projectName": "Project1",
     "projectId": "p1",
     "href": "/app/rest/buildTypes/id:build1",
-    "webUrl": "http://test.com/viewType.html?buildTypeId=build1",
+    "webUrl": "http://server:port/viewType.html?buildTypeId=build1",
     "project": {
         "id": "p1",
         "name": "Project1",
         "parentProjectId": "_Root",
         "description": "Sample project to test teamcity api",
         "href": "/app/rest/projects/id:p1",
-        "webUrl": "http://test.com/project.html?projectId=p1"
+        "webUrl": "http://server:port/project.html?projectId=p1"
     },
     "templates": {
         "count": 0,

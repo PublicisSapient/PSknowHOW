@@ -5,13 +5,13 @@
   "number": 2483,
   "result": "FAILURE",
   "timestamp": 1421281415000,
-  "url": "https://builds.apache.org/job/Lucene-Solr-Tests-5.x-Java7/2483/",
+  "url": "https://test.org/job/Lucene-Solr-Tests-5.x-Java7/2483/",
   "changeSets": [
     {
         "items": [
           {
             "author": {
-              "fullName": "testUser"
+              "fullName": "testUser1"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -31,12 +31,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "testUser"
+            "user": "testUser1"
           }          
         ],
         "revisions": [
           {
-            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -45,7 +45,7 @@
         "items": [
           {
             "author": {
-              "fullName": "ehatcher"
+              "fullName": "testUser2"
             },
             "commitId": "1651896",
             "timestamp": 1421279338234,
@@ -68,12 +68,12 @@
               }
             ],
             "revision": 1651896,
-            "user": "ehatcher"
+            "user": "testUser2"
           }
         ],
         "revisions": [
           {
-            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -82,7 +82,7 @@
         "items": [
           {
             "author": {
-              "fullName": "testUser"
+              "fullName": "testUser1"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -102,12 +102,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "testUser"
+            "user": "testUser1"
           }          
         ],
         "revisions": [
           {
-            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -116,7 +116,7 @@
         "items": [
           {
             "author": {
-              "fullName": "ehatcher"
+              "fullName": "testUser2"
             },
             "commitId": "1651896",
             "timestamp": 1421279338234,
@@ -139,12 +139,12 @@
               }
             ],
             "revision": 1651896,
-            "user": "ehatcher"
+            "user": "testUser2"
           }
         ],
         "revisions": [
           {
-            "module": "http://test.com/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -152,19 +152,58 @@
   ],
   "culprits": [
     {
-      "fullName": "test1"
+      "fullName": "testUser1"
     },
     {
-      "fullName": "test2"
+      "fullName": "testUser2"
     },
     {
-      "fullName": "test3"
+      "fullName": "testUser3"
     },
     {
-      "fullName": "test4"
-    }
+      "fullName": "testUser4"
+    },
     {
-      "fullName": "test5"
+      "fullName": "testUser5"
+    },
+    {
+      "fullName": "testUser6"
+    },
+    {
+      "fullName": "testUser7"
+    },
+    {
+      "fullName": "testUser8"
+    },
+    {
+      "fullName": "testUser9"
+    },
+    {
+      "fullName": "testUser10"
+    },
+    {
+      "fullName": "testUser11"
+    },
+    {
+      "fullName": "testUser12"
+    },
+    {
+      "fullName": "testUser13"
+    },
+    {
+      "fullName": "testUser14"
+    },
+    {
+      "fullName": "testUser15"
+    },
+    {
+      "fullName": "testUser16"
+    },
+    {
+      "fullName": "testUser17"
+    },
+    {
+      "fullName": "testUser18"
     }
   ]
 }
