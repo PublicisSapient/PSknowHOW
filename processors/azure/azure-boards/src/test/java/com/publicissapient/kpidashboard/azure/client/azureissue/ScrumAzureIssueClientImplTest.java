@@ -175,7 +175,7 @@ public class ScrumAzureIssueClientImplTest {
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
 
-		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "DTS", azureAdapter);
+		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
 		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping);
 
