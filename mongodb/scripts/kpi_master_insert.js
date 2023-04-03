@@ -3436,6 +3436,40 @@ db.getCollection('kpi_master').insert(
      "showTrend": false,
      "boxType": "3_column"
    },
+   {
+     "kpiId": "kpi134",
+     "kpiName": "Unplanned Work Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 14,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,
+     "chartType": null,
+     "kpiInfo": {
+       "details": [
+         {
+             "type": "paragraph",
+             "value": "Unplanned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
+         },
+         {
+           "type": "paragraph",
+           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+         }
+       ]
+     },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isSquadSupport": false,
+     "kpiFilter": "multiSelectDropDown",
+     "boxType": "1_column",
+     "calculateMaturity": false
+  },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",

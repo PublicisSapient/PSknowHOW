@@ -351,6 +351,11 @@ public enum KPICode {
 	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
 
 	/**
+	 * Unplanned Work Status
+	 */
+	UNPLANNED_WORK_STATUS("kpi134", KPISource.JIRA.name()),
+
+	/**
 	 * Issues Without Story Link
 	 */
 	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),

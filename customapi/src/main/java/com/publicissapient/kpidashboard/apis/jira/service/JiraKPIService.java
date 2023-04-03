@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -49,9 +49,6 @@ import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
 /**
@@ -320,4 +317,29 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public double roundingOff(double value){
 		return (double)Math.round(value*100)/100;
 	}
+
+	/**
+	 *  For Assigning IterationKPiData
+	 * @param label
+	 * @param fieldMapping
+	 * @param issueCount
+	 * @param storyPoint
+	 * @param originalEstimate
+	 * @param modalvalue
+	 * @return
+	 */
+	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
+													Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
+		IterationKpiData iterationKpiData;
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
+					CommonConstant.SP, modalvalue);
+		} else {
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
+					null, "", CommonConstant.DAY, modalvalue);
+		}
+		return iterationKpiData;
+	}
+
 }

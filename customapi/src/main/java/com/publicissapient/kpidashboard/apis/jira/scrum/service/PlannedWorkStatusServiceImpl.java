@@ -66,8 +66,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	public static final String ACTUAL_COMPLETION_DAYS = "actualCompletionDays";
 	public static final String ACTUAL_COMPLETE_DATE = "actualCompleteDate";
 	public static final String COMPLETED = "Completed";
-	public static final String PLANNED = "Planned";
-	public static final String ACTUAL = "Actual";
+	public static final String PLANNED_COMPLETION = "Planned Completion";
+	public static final String ACTUAL_COMPLETION = "Actual Completion";
 	public static final String ACTUAL_START_DATE = "actualStartDate";
 	public static final String ACTUAL_COMPLETION_DATA = "actualCompletionData";
 	public static final String ISSUE_DELAY = "issueDelay";
@@ -284,9 +284,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						IterationKpiData issueCountsPlanned;
 						IterationKpiData issueCountsActual;
 						IterationKpiData delayed;
-						issueCountsPlanned = createIterationKpiData(PLANNED, fieldMapping, issueCountPlanned,
+						issueCountsPlanned = createIterationKpiData(PLANNED_COMPLETION, fieldMapping, issueCountPlanned,
 								storyPointPlanned, originalEstimatePlanned, modalValues);
-						issueCountsActual = createIterationKpiData(ACTUAL, fieldMapping, issueCountActual, storyPoint,
+						issueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, issueCountActual, storyPoint,
 								originalEstimate, null);
 						delayed = new IterationKpiData(DELAY, (double) getDelayInMinutes(delay), null, null,
 								CommonConstant.DAY, null);
@@ -300,9 +300,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			IterationKpiData overAllIssueCountsPlanned;
 			IterationKpiData overAllIssueCountsActual;
 			IterationKpiData overAllDelay;
-			overAllIssueCountsPlanned = createIterationKpiData(PLANNED, fieldMapping, overAllIssueCountPlanned.get(0),
+			overAllIssueCountsPlanned = createIterationKpiData(PLANNED_COMPLETION, fieldMapping, overAllIssueCountPlanned.get(0),
 					overAllStoryPointsPlanned.get(0), overAllOriginalEstimatePlanned.get(0), overAllmodalValues);
-			overAllIssueCountsActual = createIterationKpiData(ACTUAL, fieldMapping, overAllIssueCountActual.get(0),
+			overAllIssueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, overAllIssueCountActual.get(0),
 					overAllStoryPointsActual.get(0), overAllOriginalEstimateActual.get(0), null);
 			overAllDelay =new IterationKpiData(DELAY, (double) getDelayInMinutes(overallDelay.get(0)),
 					null, null, CommonConstant.DAY, null);
@@ -322,30 +322,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
-	}
-
-	/**
-	 *  For Assigning IterationKPiData
-	 * @param label
-	 * @param fieldMapping
-	 * @param issueCount
-	 * @param storyPoint
-	 * @param originalEstimate
-	 * @param modalvalue
-	 * @return
-	 */
-	private IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
-			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
-		IterationKpiData iterationKpiData;
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
-					CommonConstant.SP, modalvalue);
-		} else {
-			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
-					null, "", CommonConstant.DAY, modalvalue);
-		}
-		return iterationKpiData;
 	}
 
 	/**
