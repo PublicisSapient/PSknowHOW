@@ -63,6 +63,7 @@ import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.MDC;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -684,7 +685,19 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
+						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
+					IssueBacklog issueBacklog = new IssueBacklog();
+					IssueBacklogCustomHistory issueBacklogCustomHistory = new IssueBacklogCustomHistory();
+					BeanUtils.copyProperties(jiraIssue, issueBacklog);
+					BeanUtils.copyProperties(jiraIssueHistory, issueBacklogCustomHistory);
+					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
+					issueBacklogsToSave.add(issueBacklog);
+					continue;
+				}
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+					checkAndRemoveIssueFromBacklog(jiraIssue, projectConfig.getBasicProjectConfigId().toString(),
+							jiraIssueHistory);
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
 				}
@@ -695,6 +708,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
+		issueBacklogRepository.saveAll(issueBacklogsToSave);
+		issueBacklogCustomHistoryRepository.saveAll(issueBacklogCustomHistoryToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		if (!dataFromBoard) {
@@ -705,6 +720,26 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void checkAndRemoveIssueFromBacklog(JiraIssue jiraIssue, String basicProjectConfigId,
+			JiraIssueCustomHistory jiraIssueCustomHistory) {
+		if (!issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(jiraIssue.getIssueId(), basicProjectConfigId)
+				.isEmpty()) {
+			issueBacklogRepository.deleteByIssueIdAndBasicProjectConfigId(jiraIssue.getIssueId(), basicProjectConfigId);
+		}
+		if (!issueBacklogCustomHistoryRepository
+				.findByStoryIDAndBasicProjectConfigId(jiraIssueCustomHistory.getStoryID(), basicProjectConfigId)
+				.isEmpty()) {
+			issueBacklogCustomHistoryRepository
+					.deleteByStoryIDAndBasicProjectConfigId(jiraIssueCustomHistory.getStoryID(), basicProjectConfigId);
+		}
+	}
+
+	private boolean isIssueBacklog(JiraIssue jiraIssue, IssueField sprintField) {
+		return  sprintField == null || sprintField.getValue() == null
+				|| JiraConstants.EMPTY_STR.equals(sprintField.getValue())
+				|| jiraIssue.getSprintAssetState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE);
 	}
 
 	/**
@@ -1176,14 +1211,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			// imply kanban
 			// as a story on a scrum board without a sprint is really on the
 			// backlog
-			jiraIssue.setSprintID("");
-			jiraIssue.setSprintName("");
-			jiraIssue.setSprintBeginDate("");
-			jiraIssue.setSprintEndDate("");
-			jiraIssue.setSprintAssetState("");
+			 jiraIssue.setSprintID("");
+			 jiraIssue.setSprintName("");
+			 jiraIssue.setSprintBeginDate("");
+			 jiraIssue.setSprintEndDate("");
+			 jiraIssue.setSprintAssetState("");
 		} else {
 			Object sValue = sprintField.getValue();
 			try {
+				
 				List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
 				// Now sort so we can use the most recent one
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine

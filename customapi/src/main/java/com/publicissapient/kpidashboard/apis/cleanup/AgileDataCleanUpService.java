@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -95,6 +98,12 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Autowired
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Autowired
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+
 	@Override
 	public String getToolCategory() {
 		return ProcessorType.AGILE_TOOL.toString();
@@ -134,7 +143,9 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 
 			} else {
 				jiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
+				issueBacklogRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				jiraIssueCustomHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
+				issueBacklogCustomHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				boolean flag = false;
 				List<String> levelList = new ArrayList<>();
 				List<HierarchyLevel> accountHierarchyList = cacheService.getFullHierarchyLevel();

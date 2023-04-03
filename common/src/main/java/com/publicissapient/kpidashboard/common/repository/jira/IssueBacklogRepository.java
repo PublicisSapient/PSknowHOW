@@ -136,5 +136,7 @@ public interface IssueBacklogRepository extends CrudRepository<IssueBacklog, Obj
      */
     List<IssueBacklog> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
-    void deleteByNumberAndBasicProjectConfigId(String number, String valueOf);
+    void deleteByIssueIdAndBasicProjectConfigId(String issueId,  String basicProjectConfigId);
+
+
 }
