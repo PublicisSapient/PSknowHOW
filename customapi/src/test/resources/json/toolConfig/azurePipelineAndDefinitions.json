@@ -4,16 +4,16 @@
     {
       "_links": {
         "self": {
-          "href": "https://dev.azure.com/sanbhand1/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1"
+          "href": "https://dev.azure.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1"
         },
         "web": {
-          "href": "https://dev.azure.com/sanbhand1/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/definition?definitionId=1"
+          "href": "https://dev.azure.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/definition?definitionId=1"
         },
         "editor": {
-          "href": "https://dev.azure.com/sanbhand1/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/designer?id=1&_a=edit-build-definition"
+          "href": "https://dev.azure.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/designer?id=1&_a=edit-build-definition"
         },
         "badge": {
-          "href": "https://dev.azure.com/sanbhand1/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/status/1"
+          "href": "https://dev.azure.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/status/1"
         }
       },
       "quality": "definition",
@@ -22,24 +22,24 @@
         "url": "https://spsprodsin2.vssps.visualstudio.com/A81cdfba5-318a-4b1b-b21b-d4bbb8b35356/_apis/Identities/cf525a84-6b94-6bb4-a6f0-40632d9287f1",
         "_links": {
           "avatar": {
-            "href": "https://dev.azure.com/sanbhand1/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx"
+            "href": "https://dev.azure.com/test/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx"
           }
         },
         "id": "cf525a84-6b94-6bb4-a6f0-40632d9287f1",
-        "uniqueName": "sanbhand1@publicisgroupe.net",
-        "imageUrl": "https://dev.azure.com/sanbhand1/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx",
+        "uniqueName": "test",
+        "imageUrl": "https://dev.azure.com/test/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx",
         "descriptor": "aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx"
       },
       "drafts": [],
       "queue": {
         "_links": {
           "self": {
-            "href": "https://dev.azure.com/sanbhand1/_apis/build/Queues/8"
+            "href": "https://dev.azure.com/test/_apis/build/Queues/8"
           }
         },
         "id": 8,
         "name": "Hosted Ubuntu 1604",
-        "url": "https://dev.azure.com/sanbhand1/_apis/build/Queues/8",
+        "url": "https://dev.azure.com/test/_apis/build/Queues/8",
         "pool": {
           "id": 8,
           "name": "Hosted Ubuntu 1604",
@@ -48,7 +48,7 @@
       },
       "id": 1,
       "name": "AZURE_KNOWHOW",
-      "url": "https://dev.azure.com/sanbhand1/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1",
+      "url": "https://dev.azure.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1",
       "uri": "vstfs:///Build/Definition/1",
       "path": "\\",
       "type": "build",
@@ -58,7 +58,7 @@
       "project": {
         "id": "8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b",
         "name": "AZURE_KNOWHOW_Proj",
-        "url": "https://dev.azure.com/sanbhand1/_apis/projects/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b",
+        "url": "https://dev.azure.com/test/_apis/projects/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b",
         "state": "wellFormed",
         "revision": 12,
         "visibility": "private",

@@ -94,7 +94,7 @@ public class ZephyrProcessorJobExecutorTest {
 	public void init() {
 		toolInfo = new ProcessorToolConnection();
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		toolInfo.setUrl("https://tools.publicis.sapient.com/jira");
+		toolInfo.setUrl("https://zephyr.test.com/jira");
 		toolInfo.setApiEndPoint("/rest/atm/1.0");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");
