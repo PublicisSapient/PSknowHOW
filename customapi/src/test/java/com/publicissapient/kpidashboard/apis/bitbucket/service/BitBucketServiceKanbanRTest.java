@@ -117,10 +117,6 @@ public class BitBucketServiceKanbanRTest {
 				.newInstance("/json/kanban/kanban_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-
-		when(filterHelperService.getFilteredBuildsKanban(kpiRequestBitBucket, GROUP_PROJECT))
-				.thenReturn(accountHierarchyDataKanbanList);
-
 		commitKpiElement = setKpiElement(KPICode.NUMBER_OF_CHECK_INS.getKpiId(), "Code Commit Time");
 
 	}
@@ -157,9 +153,6 @@ public class BitBucketServiceKanbanRTest {
 				.thenReturn(accountHierarchyDataKanbanList);
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
-		when(authorizedProjectsService.getKanbanProjectNodesForRequest(accountHierarchyDataKanbanList))
-				.thenReturn(projects);
-
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
 		List<KpiElement> resultList = bitbucketServiceKanbanR.process(kpiRequest);
