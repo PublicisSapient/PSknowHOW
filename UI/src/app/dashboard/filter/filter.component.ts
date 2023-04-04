@@ -44,7 +44,7 @@ export class FilterComponent implements OnInit {
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
-  headerFixed = false;
+  // headerFixed = false;
   scrollOffset = 150;
   isSuperAdmin = false;
   id = '';
@@ -93,7 +93,7 @@ export class FilterComponent implements OnInit {
   showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
-  selectedProjectValueOnIteration: string;
+  // selectedProjectValueOnIteration: string;
   selectedProjectLastSyncDate: any;
   processorsTracelogs = [];
   processorName = 'jira';
@@ -274,14 +274,14 @@ export class FilterComponent implements OnInit {
   }
 
    // for making the header sticky on scroll
-   @HostListener('window:scroll', [])
-   onWindowScroll() {
-     if (this.router.url.indexOf('/Config/') === -1 && this.router.url !== '/dashboard/Maturity' && this.router.url !== '/dashboard/EngineeringMaturity') {
-       this.headerFixed = (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) > this.scrollOffset;
-     } else {
-       this.headerFixed = false;
-     }
-   }
+  //  @HostListener('window:scroll', [])
+  //  onWindowScroll() {
+  //    if (this.router.url.indexOf('/Config/') === -1 && this.router.url !== '/dashboard/Maturity' && this.router.url !== '/dashboard/EngineeringMaturity') {
+  //      this.headerFixed = (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) > this.scrollOffset;
+  //    } else {
+  //      this.headerFixed = false;
+  //    }
+  //  }
 
   /**create dynamic hierarchy levels for filter dropdown */
   getHierarchyLevels() {
