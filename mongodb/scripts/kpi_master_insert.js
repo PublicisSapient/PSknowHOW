@@ -3467,7 +3467,7 @@ db.getCollection('kpi_master').insert(
      "showTrend": false,
      "isSquadSupport": false,
      "kpiFilter": "multiSelectDropDown",
-     "boxType": "1_column",
+     "boxType": "2_column",
      "calculateMaturity": false
   },
   {
