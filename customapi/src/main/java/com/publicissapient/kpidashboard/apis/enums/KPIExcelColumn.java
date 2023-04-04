@@ -176,7 +176,7 @@ public enum KPIExcelColumn {
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 	
 	BACKLOG_READINESS_EFFICIENCY("kpi138",
-            Arrays.asList("Issue Type", "Issue Id", "Issue Description", "Priority", "Size(story point/hours)"));
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)"));
 
     // @formatter:on
 

@@ -201,6 +201,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());

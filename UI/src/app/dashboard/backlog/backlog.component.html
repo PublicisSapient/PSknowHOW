@@ -41,7 +41,7 @@
                                 [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                 x?.value1}}</span>
                               <span *ngIf="x?.value > 0 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                {{ x?.value > 0 ? x?.unit : ''}}
+                                {{ x?.value1 > 0 ? x?.unit : ''}}
                               </span>
                             </p>
                           </div>
