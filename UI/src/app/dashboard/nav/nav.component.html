@@ -19,7 +19,7 @@
 <div class="h-100">
   <div class="navigation2 rows" *ngIf="!visibleSidebar">
     <div class="selected-wraper">
-      <div class="selected-board" *ngIf="(selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration')">
+      <div class="selected-board">
         <div class="rotate">{{kanban ? 'Kanban' : 'Scrum'}}</div>
       </div>
 
@@ -37,14 +37,14 @@
   <div class="nav-wraper" *ngIf="visibleSidebar">
     <!--Scrum/Kanban Switch starts-->
     <div id="Filters" #filterDiv class="tabs p-mb-3 p-mt-3">
-      <div
-        *ngIf="router.url.split('/')[2]?.toLowerCase() !== 'iteration' && router.url.split('/')[2]?.toLowerCase() !== 'backlog'">
+      <div>
         <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
-        <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="selectedTypef('Scrum')" id="Layout-Scrum">
+        <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="setSelectedType('Scrum')" id="Layout-Scrum">
           <img src="../../../assets/img/ico-scrum-white.svg" alt="Scrum" class="ico-active p-mr-1" />
           <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
         <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
-        <label class="label2 rounded filter-btn" for="tab2" (click)="selectedTypef('Kanban')" id="Layout-Kanban">
+        <label class="label2 rounded filter-btn" for="tab2" (click)="setSelectedType('Kanban')" id="Layout-Kanban"
+        [ngClass]="{'disable-kanban': selectedTab.toLowerCase() === 'iteration' ||  selectedTab.toLowerCase() === 'backlog'}">
           <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
           <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
       </div>
@@ -59,9 +59,10 @@
               *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
               <a class="nav-link w-100"
                 [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
-                [routerLinkActive]="['active']"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{exact: true}"
                 [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
-                (click)="selectTab(board.boardName,board.boardId)">
+                (click)="selectTab(board.boardName)">
                 {{board.boardName}}
 
                 <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" class="white-icon"

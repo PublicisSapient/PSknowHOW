@@ -154,8 +154,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.service.selectTab('Maturity');
-
         this.selectedtype = this.service.getSelectedType();
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;

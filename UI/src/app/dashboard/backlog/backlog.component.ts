@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -55,7 +56,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.service.setSelectedType('Scrum');
-    this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
+    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
         this.receiveSharedData(sharedobject);
@@ -90,8 +91,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
   ngOnInit() {
     this.selectedtype = this.service.getSelectedType();
-
-    this.service.selectTab('Backlog');
     if (this.service.getFilterObject()) {
       this.receiveSharedData(this.service.getFilterObject());
     }

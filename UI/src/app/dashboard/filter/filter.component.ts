@@ -18,7 +18,6 @@
 
 import { Component, OnInit, ElementRef, ViewChild,HostListener } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -47,25 +46,20 @@ export class FilterComponent implements OnInit {
   headerFixed = false;
   scrollOffset = 150;
   isSuperAdmin = false;
-  id = '';
-  name = '';
   masterData: any = {};
   filterData: any = [];
   shareDataObject: any = {};
   selectedFilterCount = 0;
-  loader: any = {};
   getData: any = [];
   filterRequestData = {};
   filterkeys: any = [];
   selectedFilterData: any = {};
   selectedTab;
-  downloadJson: any = {};
   disableDownloadBtn = false;
   subscriptions: any[] = [];
   filterKpiRequest: any = '';
   kanban = false;
   filterType = 'Default';
-  currentSelectionLabel = '';
   maxDate: Date;
   enginneringMaturityErrorMessage = '';
   showIndicator = false;
@@ -178,6 +172,9 @@ export class FilterComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.service.globalDashConfigData.subscribe(data=>{
+      this.kpiListData = data;
+    });
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.filterForm = new UntypedFormGroup({
       selectedTrendValue: new UntypedFormControl(),
@@ -198,7 +195,6 @@ export class FilterComponent implements OnInit {
     }
     // setting max date user can select in calendar
     this.maxDate = new Date();
-    this.getKpiOrderedList();
     this.resetFilterApplyObj();
 
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
@@ -327,7 +323,6 @@ export class FilterComponent implements OnInit {
     this.setLevels();
     this.getFilterDataOnLoad();
     this.previousType = this.kanban;
-    // this.service.setSelectedType(type); // Going in infinite loop
 
     const data = {
       url: this.router.url +'/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
@@ -335,7 +330,6 @@ export class FilterComponent implements OnInit {
       version: this.httpService.currentVersion,
     };
     this.ga.setPageLoad(data);
-    this.navigateToSelectedTab();
     this.getKpiOrderedList();
   }
 
@@ -473,7 +467,7 @@ export class FilterComponent implements OnInit {
   processMasterData(masterData) {
     this.masterData = masterData;
     this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
-    if (this.selectedTab?.toLowerCase() == 'iteration' ||this.selectedTab?.toLowerCase() == 'backlog') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' ||this.selectedTab?.toLowerCase() === 'backlog') {
       this.projectIndex = 0;
       this.handleIterationFilters('project', 1);
     } else {
@@ -693,8 +687,7 @@ export class FilterComponent implements OnInit {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.service.setSelectedTab(boardDetails?.boardName,boardDetails?.boardId);
-        this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}/${boardDetails?.boardId}`);
+        this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
     }
   }
 
@@ -710,9 +703,8 @@ export class FilterComponent implements OnInit {
           if (response.success === true) {
             this.kpiListData = response.data;
             this.service.setDashConfigData(this.kpiListData);
-            this.navigateToSelectedTab();
-            this.service.changedMainDashboardValueSub.next(this.kpiListData?.scrum[0].boardName);
             this.processKpiList();
+            this.navigateToSelectedTab();
           }
         },
         (error) => {
@@ -724,6 +716,7 @@ export class FilterComponent implements OnInit {
       );
     } else {
       this.processKpiList();
+      this.navigateToSelectedTab();
     }
   }
 
@@ -737,7 +730,7 @@ export class FilterComponent implements OnInit {
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
         default:
-          this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.service.getSelectBoardId())[0]?.kpis;
+          this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase())[0]?.kpis;
       }
       const kpiObj = {};
       let count = 0;
@@ -1217,7 +1210,7 @@ export class FilterComponent implements OnInit {
         }
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
-        this.service.setSelectedTab(null,null); // doing null bcoz it was landing on previous tab 
+        this.service.setSelectedTab(null); // doing null bcoz it was landing on previous tab 
 
         this.router.navigate(['./authentication/login']);
       }
@@ -1260,7 +1253,6 @@ export class FilterComponent implements OnInit {
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
-      this.processKpiList();
       this.navigateToSelectedTab();
     });
 
