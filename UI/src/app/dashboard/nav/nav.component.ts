@@ -25,7 +25,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TextEncryptionService } from '../../services/text.encryption.service';
-import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nav',
@@ -201,7 +200,7 @@ export class NavComponent implements OnInit {
   getKpiOrderedList() {
     this.kpiListData = this.service.getDashConfigData();
     if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
-      this.httpService.getShowHideKpi().pipe(delay(4000)).subscribe(
+      this.httpService.getShowHideKpi().subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
