@@ -181,7 +181,7 @@ public class KanbanAzureIssueClientImplTest {
 		AzureToolConfig config = new AzureToolConfig();
 		Connection conn = new Connection();
 		conn.setOffline(Boolean.TRUE);
-		conn.setBaseUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		conn.setBaseUrl("https://dev.azure.com/test/testProject");
 		config.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		config.setConnection(conn);
 		projectConfFieldMapping.setAzure(config);

@@ -54,14 +54,14 @@ public class JenkinsToolConfigServiceImplTest {
 	private String connectionId;
 	private List<String> responseProjectList = new ArrayList<>();
 
-	private String jenkinsUrl = "http://10.148.240.59:8080/api/json?tree=jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url]]]]]]]]]]]]";
+	private String jenkinsUrl = "http://test.abc.com/api/json?tree=jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url,jobs[url]]]]]]]]]]]]";
 
 	@Before
 	public void setup() {
 		connectionId = "5fc4d61f80b6350f048a93e5";
 		connection = new Connection();
 		connection.setId(new ObjectId(connectionId));
-		connection.setBaseUrl("http://10.148.240.59:8080");
+		connection.setBaseUrl("http://test.abc.com");
 		connection.setUsername("username");
 		connection.setApiKey("encryptKey");
 		testConnectionOpt = Optional.ofNullable(connection);

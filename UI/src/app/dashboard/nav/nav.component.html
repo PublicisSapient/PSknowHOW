@@ -56,11 +56,11 @@
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
           <ng-container *ngFor="let board of boardNameArr">
             <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
-              *ngIf="(board.boardName.toLowerCase() !== 'kpi maturity') || (board.boardName.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
+              *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
               <a class="nav-link w-100"
-                [routerLink]="board.boardName.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
+                [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
                 [routerLinkActive]="['active']"
-                [ngClass]="{'active': selectedTab.toLowerCase() == board.boardName.toLowerCase()}"
+                [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
                 (click)="selectTab(board.boardName,board.boardId)">
                 {{board.boardName}}
 

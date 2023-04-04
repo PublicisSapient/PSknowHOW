@@ -52,10 +52,9 @@ public class SprintClientImplTest {
 		Connection conn = new Connection();
 		conn.setId(new ObjectId("6225b5c93f59bf41fe9f1b9d"));
 		conn.setOffline(Boolean.FALSE);
-		conn.setBaseUrl("https://dev.azure.com/mampacch/Test%20ProjectOne");
-		conn.setUsername("mampacch");
-		conn.setPat(
-				"Y6zDMW8TmRZwUs+sYsS+G4sxLdKHne4HPMJtEsObaDkCuJCbbo1oPJAlsHr8Gm8l4iSGjWG4oPWrqaJivEOzRKY8/2KyDtaAa5F+jopM146Tdfx7pbqaxZkBsyKAQ1wW");
+		conn.setBaseUrl("https://dev.azure.com/testUser/Test%20ProjectOne");
+		conn.setUsername("testUser");
+		conn.setPat("testPat");
 
 		BoardDetails boardDetails = new BoardDetails();
 		boardDetails.setBoardId("b573d13f-a0c5-43a3-b30a-1893c7593402");
