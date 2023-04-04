@@ -427,7 +427,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Quality Status',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Defects Mapping' : ['jiradefecttype'] }
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR','jiradefecttype'] }
       },
       {
         kpiId: 'kpi989',
