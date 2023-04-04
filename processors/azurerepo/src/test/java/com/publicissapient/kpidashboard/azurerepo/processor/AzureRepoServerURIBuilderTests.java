@@ -57,7 +57,7 @@ class AzureRepoServerURIBuilderTests {
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		azureRepoProcessorInfo.setApiVersion("5.1");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/testUser/testRepo");
+		azureRepoProcessorInfo.setUrl("https://test.com/testUser/testRepo");
 		azureRepoProcessorInfo.setPat("testPat");
 		azureRepoProcessorInfo.setRepositoryName("testRepo");
 		
@@ -67,7 +67,7 @@ class AzureRepoServerURIBuilderTests {
 	@Test
 	public void testBuild() throws Exception{	
 		String url = uriBuilder.build();
-		String expected = "https://dev.azure.com/testUser/testRepo/_apis/git/repositories/testRepo/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
+		String expected = "https://test.com/testUser/testRepo/_apis/git/repositories/testRepo/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
 		Assert.assertEquals(expected, url);
 	}
 
