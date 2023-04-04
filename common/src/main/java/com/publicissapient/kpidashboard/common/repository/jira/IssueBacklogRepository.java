@@ -96,6 +96,7 @@ public interface IssueBacklogRepository extends CrudRepository<IssueBacklog, Obj
     @Query(fields = "{'issueId' : 1}")
     List<IssueBacklog> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
+
     /**
      * Gets story by number.
      *
