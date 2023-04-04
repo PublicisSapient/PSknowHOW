@@ -617,7 +617,14 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
 			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueNumber);
+			IssueBacklog issueBacklog = getIssueBacklog(projectConfig, issueId);
+			IssueBacklogCustomHistory issueBacklogCustomHistory = getIssueBacklogCustomHistory(projectConfig, issueNumber);
 
+			if(issueBacklog!=null && jiraIssue.getIssueId().isEmpty())
+			{
+				BeanUtils.copyProperties(issueBacklog, jiraIssue);
+				BeanUtils.copyProperties(issueBacklogCustomHistory, jiraIssueHistory);
+			}
 			Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 
 			IssueType issueType = issue.getIssueType();
@@ -687,10 +694,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
 						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
-					IssueBacklog issueBacklog = new IssueBacklog();
-					IssueBacklogCustomHistory issueBacklogCustomHistory = new IssueBacklogCustomHistory();
 					BeanUtils.copyProperties(jiraIssue, issueBacklog);
 					BeanUtils.copyProperties(jiraIssueHistory, issueBacklogCustomHistory);
+					//when active issue is tagged to future sprint
+					checkAndRemoveIssueFromJiraIssue(jiraIssue, projectConfig.getBasicProjectConfigId().toString(),
+							jiraIssueHistory);
 					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
 					issueBacklogsToSave.add(issueBacklog);
 					continue;
@@ -720,6 +728,19 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void checkAndRemoveIssueFromJiraIssue(JiraIssue jiraIssue, String basicProjectConfigId, JiraIssueCustomHistory jiraIssueCustomHistory) {
+		if (!jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(jiraIssue.getIssueId(), basicProjectConfigId)
+				.isEmpty()) {
+			jiraIssueRepository.deleteByIssueIdAndBasicProjectConfigId(jiraIssue.getIssueId(), basicProjectConfigId);
+		}
+		if (!jiraIssueCustomHistoryRepository
+				.findByStoryIDAndBasicProjectConfigId(jiraIssueCustomHistory.getStoryID(), basicProjectConfigId)
+				.isEmpty()) {
+			jiraIssueCustomHistoryRepository
+					.deleteByStoryIDAndBasicProjectConfigId(jiraIssueCustomHistory.getStoryID(), basicProjectConfigId);
+		}
 	}
 
 	private void checkAndRemoveIssueFromBacklog(JiraIssue jiraIssue, String basicProjectConfigId,
@@ -1849,5 +1870,52 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
 			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 		}
+	}
+
+	private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
+		IssueBacklog issueBacklog;
+		issueBacklog=findOneIssueBacklog(issueId, projectConfig.getBasicProjectConfigId().toString());
+		if(issueBacklog==null){
+			issueBacklog=new IssueBacklog();
+		}
+		return issueBacklog;
+	}
+
+	private IssueBacklog findOneIssueBacklog(String issueId, String basicProjectConfigId) {
+		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId),
+				basicProjectConfigId);
+
+		if (issueBacklogs.size() > 1) {
+			log.error("JIRA Processor | More than one Issue Backlog item found for id {}", issueId);
+		}
+
+		if (!issueBacklogs.isEmpty()) {
+			return issueBacklogs.get(0);
+		}
+		return null;
+
+	}
+
+	private IssueBacklogCustomHistory getIssueBacklogCustomHistory(ProjectConfFieldMapping projectConfig, String storyId) {
+		IssueBacklogCustomHistory issueBacklogCustomHistory;
+		issueBacklogCustomHistory =findOneIssueBacklogCustomHistory(storyId, projectConfig.getBasicProjectConfigId().toString());
+		if(issueBacklogCustomHistory==null){
+			issueBacklogCustomHistory = new IssueBacklogCustomHistory();
+		}
+		return issueBacklogCustomHistory;
+	}
+
+	private IssueBacklogCustomHistory findOneIssueBacklogCustomHistory(String storyId, String basicProjectConfigId) {
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistorys = issueBacklogCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(storyId,
+				basicProjectConfigId);
+		if (issueBacklogCustomHistorys.size() > 1) {
+			log.error("JIRA Processor | More than one Issue backlog History item found for id {}", storyId);
+		}
+
+		if (!issueBacklogCustomHistorys.isEmpty()) {
+			return issueBacklogCustomHistorys.get(0);
+		}
+		return null;
+
 	}
 }
