@@ -30,7 +30,7 @@ public class ZephyrUtilTest {
 
 	private static final String KEY = "1231231231231234";
 	private static final String PLAIN_TEXT = "test";
-	private static final String ENCRYPTED_TEXT = "5EA3cfu4HV7Cv9Ma2kxKeg==";
+	private static final String ENCRYPTED_TEXT = "encryptedTest";
 
 	@Test
 	public void testBuildAuthenticationHeader() {
@@ -50,8 +50,8 @@ public class ZephyrUtilTest {
 
 	@Test
 	public void testZephyrUrl() {
-		assertEquals("tools.publicis.sapient.com/jira",
-				zephyrUtil.getZephyrUrl("https://tools.publicis.sapient.com/jira/"));
+		assertEquals("zephyr.test.com/jira",
+				zephyrUtil.getZephyrUrl("https://zephyr.test.com/jira/"));
 	}
 
 	@Test

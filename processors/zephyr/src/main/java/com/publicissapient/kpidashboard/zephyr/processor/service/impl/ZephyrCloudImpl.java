@@ -248,7 +248,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param url
 	 *            for example =
-	 *            https://tetrapak-smartsales.atlassian.net/rest/api/2/user?accountId=5cd97657e826800fcda592ff
+	 *            https://jira.cloudUrl/rest/api/2/user?accountId=5cd97657e826800fcda592ff
 	 * @param jiraCloudCredential
 	 *
 	 */
@@ -314,7 +314,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 *
 	 * @param url
 	 *            for example =
-	 *            https://tetrapak-smartsales.atlassian.net/rest/api/2/issue/103328
+	 *            https://jira.cloudurl.com/rest/api/2/issue/103328
 	 * @param jiraCloudCredential
 	 *
 	 */

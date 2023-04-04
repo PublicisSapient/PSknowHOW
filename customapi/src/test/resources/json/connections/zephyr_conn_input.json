@@ -2,8 +2,6 @@
   {
     "type": "Zephyr",
     "connectionName": "Zephyr Test Connection",
-    "baseUrl": "https://api.zephyrscale.smartbear.com/v2/",
-    "accessToken": "KTpDMYnjpyYT+eAblkAcnfEBy6Kzk0lWxxySRum7UT54kyo+nZHldT0g1IFMgRXMxqG27T4UT4/WbrZiO+rgty0dNz01Ave1hbQnnNtBBNnhSanbAerfM6NGJKoeVWhA+P4OH+9IT1Nurhno5ka4f5Uk+nBpivliIczDDFBP07Z0HBZGdsU2alFy1Onm6vcWbe09USJI0PsiNxgVQwBlmfdXT2fF3emSlVjR36MO1QXaEW8W9LsHzjE8jIAnlzd4GWIwlIvCHXRa1BGrrX4r8i2HjtPtxR6hMCwWMW4lSo4jY7ux4l8u0prln2nF8Jpe+cojjIKWln+QcXMhzf3WXA==",
     "connPrivate": true,
     "cloudEnv": true
   }

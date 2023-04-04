@@ -124,9 +124,7 @@ import io.atlassian.util.concurrent.Promise;
 
 @ExtendWith(SpringExtension.class)
 public class OnlineDataProcessorImplTest {
-	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-	private static final String AES_ENCRYPTED_PASSWORD = "DqxbAHmXRuo6o8/OJhSz0Q==";
-	private static final String USERNAME = "admin";
+	private static final String PLAIN_TEXT_PASSWORD = "TestPlainPassword";
 	List<ProjectBasicConfig> scrumProjectList = new ArrayList<>();
 	List<ProjectBasicConfig> kanbanProjectlist = new ArrayList<>();
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -362,7 +360,7 @@ public class OnlineDataProcessorImplTest {
 		conn.get().setOffline(Boolean.FALSE);
 		conn.get().setIsOAuth(Boolean.TRUE);
 		conn.get().setUsername("xyz");
-		conn.get().setPassword("6UZkCW7pdvfWO3QHfinMOg==");
+		conn.get().setPassword("testPassword");
 
 		List<Subproject> subProjectsList = new ArrayList<>();
 		Subproject subproject = new Subproject();
@@ -901,7 +899,7 @@ public class OnlineDataProcessorImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+		conn.get().setBaseUrl("https://jiradomain.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -916,7 +914,6 @@ public class OnlineDataProcessorImplTest {
 
 		projectConfFieldMapping2 = ProjectConfFieldMapping.builder().build();
 		jiraConfig = new JiraToolConfig();
-		// jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
 		jiraConfig.setBasicProjectConfigId("5ba8e182d3735010e7f1fa45");
 		jiraConfig.setConnection(conn);
 
@@ -1169,22 +1166,12 @@ public class OnlineDataProcessorImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		// Online Project Config data
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
-		// projectConfig.setProjectId("63102");
-		// projectConfig.setProjectKey("TEST");
 		projectConfig.setProjectName("TestProject");
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
 		List<SubProjectConfig> subProjectList = new ArrayList<>();
 		subProjectList.add(subProjectConfig);
-		// projectConfig.setSubProjects(subProjectList);
-		ProjectToolConfig jiraConfig = new ProjectToolConfig();
-		// jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
-		// jiraConfig.setUrl("https://tools.publicis.sapient.com/jira/");
-		// jiraConfig.setJiraQueryEndpoint("rest/api/2/");
-		// jiraConfig.setOfflineMethod(true);
-		// jiraConfig.setFilePath("offlineData");
-		// projectConfig.setJira(jiraConfig);
 		projectConfig.setIsKanban(false);
 		scrumProjectList.add(projectConfig);
 
@@ -1196,8 +1183,6 @@ public class OnlineDataProcessorImplTest {
 		subProjectConfig1.setSubProjectIdentification("CustomField");
 		subProjectConfig1.setSubProjectIdentSingleValue("customfield_37903");
 		List<SubProjectConfig> subProjectList1 = new ArrayList<>();
-		subProjectList1.add(subProjectConfig1); // projectConfig.setSubProjects(subProjectList);
-		ProjectToolConfig jiraConfig1 = new ProjectToolConfig();
 
 		projectConfig1.setIsKanban(true);
 		kanbanProjectlist.add(projectConfig1);
