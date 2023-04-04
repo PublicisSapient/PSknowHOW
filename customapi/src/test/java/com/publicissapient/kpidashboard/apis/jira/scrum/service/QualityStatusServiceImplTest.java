@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
@@ -71,6 +72,9 @@ public class QualityStatusServiceImplTest {
 	private QualityStatusServiceImpl qualityStatusServiceImpl;
 
 	@Mock
+	private CustomApiConfig customApiConfig;
+
+	@Mock
 	private SprintRepository sprintRepository;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
@@ -111,6 +115,8 @@ public class QualityStatusServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiraDefectRejectionStatus("");
+		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid","Duplicate","Unrequired"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
