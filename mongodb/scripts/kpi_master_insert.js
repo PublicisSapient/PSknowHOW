@@ -3349,7 +3349,7 @@ db.getCollection('kpi_master').insert(
     },
    {
          "kpiId": "kpi132",
-         "kpiName": "Defects by Root Cause",
+         "kpiName": "Defect Count by RCA",
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
@@ -3364,7 +3364,7 @@ db.getCollection('kpi_master').insert(
            "details": [
              {
                "type": "paragraph",
-               "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
+               "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
              },
              {
                "type": "paragraph",
