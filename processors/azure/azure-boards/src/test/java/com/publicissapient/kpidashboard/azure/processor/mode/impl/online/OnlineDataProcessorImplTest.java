@@ -106,7 +106,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 @ExtendWith(SpringExtension.class)
 public class OnlineDataProcessorImplTest {
 
-	private static final String PLAIN_TEXT_PASSWORD = "TestUser@123";
+	private static final String PLAIN_TEXT_PASSWORD = "testPat";
 	List<ProjectBasicConfig> scrumProjectList = new ArrayList<>();
 	List<ProjectBasicConfig> kanbanProjectlist = new ArrayList<>();
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -403,7 +403,7 @@ public class OnlineDataProcessorImplTest {
 	private Optional<Connection> returnConnectionObject() {
 		Connection connection = new Connection();
 		connection.setOffline(false);
-		connection.setBaseUrl("https://dev.azure.com/sun/azure");
+		connection.setBaseUrl("https://test.com/sun/azure");
 		connection.setPassword(PLAIN_TEXT_PASSWORD);
 		connection.setPat(PLAIN_TEXT_PASSWORD);
 		return Optional.of(connection);
@@ -411,8 +411,8 @@ public class OnlineDataProcessorImplTest {
 
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
-		azureServer.setPat("TestUser@123");
-		azureServer.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		azureServer.setPat("testPat");
+		azureServer.setUrl("https://test.com/testUser/testProject");
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;

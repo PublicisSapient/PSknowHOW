@@ -43,7 +43,7 @@ describe('RaiseRequestComponent', () => {
   const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
 
   const fakeRequestData = {
-    username: 'Rishabh',
+    username: 'testUser',
     status: 'Pending',
     reviewComments: '',
     roles: [{
@@ -61,7 +61,7 @@ describe('RaiseRequestComponent', () => {
     success: true,
     data: [{
       _id: '5da47c2ae645ca33dc927bb3',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
