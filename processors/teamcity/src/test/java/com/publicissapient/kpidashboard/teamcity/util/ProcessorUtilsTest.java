@@ -121,8 +121,8 @@ public class ProcessorUtilsTest {
 	@Test
     public void getGitRepoBranch(){
     	 List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
+	      list.add("test1");
+	      list.add("test2");
 	      JSONObject d = new JSONObject();
 	      for(int i = 0; i < list.size(); i++) {
 	    	  
@@ -165,9 +165,9 @@ public class ProcessorUtilsTest {
     public void startDate(){
 	      JSONObject d = new JSONObject();
 	  	  
-	    	  d.put("triggered", "raja");
-	    	  d.put("user", "rani");
-	    	  d.put("lastChanges", "me");
+	    	  d.put("triggered", "test1");
+	    	  d.put("user", "testuser");
+	    	  d.put("lastChanges", "test2");
 	    	  
 
     	ProcessorUtils.startDate(d);

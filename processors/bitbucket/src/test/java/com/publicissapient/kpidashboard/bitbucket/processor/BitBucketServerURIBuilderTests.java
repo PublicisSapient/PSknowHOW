@@ -55,12 +55,12 @@ public class BitBucketServerURIBuilderTests {
 		when(config.getApi()).thenReturn("/rest/api/1.0");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/bitbucket/");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
 		connectionDetail.setBitbucketProjKey("testproject");
-		connectionDetail.setRepoSlug("comp-proj");
+		connectionDetail.setRepoSlug("testRepoSlug");
 
 		uriBuilder = new BitBucketServerURIBuilder(bitBucketRepo, config, connectionDetail);
 	}
@@ -68,7 +68,7 @@ public class BitBucketServerURIBuilderTests {
 	@Test
 	public void testBuild() throws Exception{	
 		String url = uriBuilder.build();
-		String expected = "http://localhost:9999/rest/api/1.0/projects/testproject/repos/comp-proj/commits?limit=25&until=release%2Fcore-r4.4";
+		String expected = "http://localhost:9999/rest/api/1.0/projects/testproject/repos/testRepoSlug/commits?limit=25&until=release%2Fcore-r4.4";
 		Assert.assertEquals(expected, url);
 	}
 
