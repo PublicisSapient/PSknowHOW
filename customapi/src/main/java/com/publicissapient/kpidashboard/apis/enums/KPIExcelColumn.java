@@ -153,7 +153,7 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work")),
 
-	OVERALL_COMPLETION_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
+    PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
 			new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
 			new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
 			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Due Date", ""),
@@ -169,6 +169,9 @@ public enum KPIExcelColumn {
 
     QUALITY_STATUS("kpi133",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size")),
+
+    UNPLANNED_WORK_STATUS("kpi134",
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)","Remaining Estimate")),
 
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate")),

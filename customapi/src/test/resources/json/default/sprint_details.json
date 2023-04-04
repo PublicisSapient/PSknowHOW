@@ -401,7 +401,8 @@
         "priority" : "P3 - Major",
         "status" : "Ready for Testing",
         "typeName" : "Story",
-        "estimate" : "0.0"
+        "estimate" : "0.0",
+        "storyPoints" : 5
       },
       {
         "number" : "TEST-17919",

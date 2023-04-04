@@ -1849,6 +1849,9 @@ p-dialog .p-button-cancel.p-button-secondary {
 .text-red{
   color: var(--color-red);
 }
+.text-green{
+  color: var(--color-green);
+}
 .ng-select .ng-arrow-wrapper{
   bottom: 0;
 }
