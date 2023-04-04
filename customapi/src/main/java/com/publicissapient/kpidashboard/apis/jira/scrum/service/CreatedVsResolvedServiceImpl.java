@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -185,8 +186,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.TOTAL_ISSUES));
+				totalIssue.addAll(sprintDetail.getTotalIssues().stream()
+						.filter(sprintIssue -> sprintIssue.getTypeName() != NormalizedJira.DEFECT_TYPE.getValue())
+						.map(SprintIssue::getNumber).collect(Collectors.toSet()));
 			}
 
 		});
@@ -196,7 +198,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
+		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
+				sprintDetails.stream().map(SprintDetails::getSprintID).distinct().collect(Collectors.toList()));
+//		kpiHelperService.getSubTaskDefectsBySprint(totalIssue, sprintDetails, mapOfFilters, uniqueProjectMap);
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(CREATED_VS_RESOLVED_KEY,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));

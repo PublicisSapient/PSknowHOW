@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,12 +66,6 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
@@ -1377,5 +1372,30 @@ public class KpiHelperService { // NOPMD
 			}
 		}
 	}
+
+//	public List<JiraIssue> getSubTaskDefectsBySprint(Set<String> totalIssues, List<SprintDetails> sprintDetails,
+//			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap) {
+//
+//
+//		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalIssues, uniqueProjectMap);
+//
+//
+//
+//
+////		sprintDetails.forEach(sprintDetail ->
+////		{
+////			LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+////			LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+////		});
+//
+////		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+////		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+////		List<JiraIssue> totalBugs = jiraIssueRepository.findIssuesByType(mapOfFilters);
+////		List<JiraIssue> linkedDefects = totalBugs.stream()
+////				.filter(jiraIssue -> jiraIssue.getDefectStoryID().stream().anyMatch(totalIssues::contains))
+////				.collect(Collectors.toList());
+//		return linkedDefects;
+//
+//	}
 
 }
