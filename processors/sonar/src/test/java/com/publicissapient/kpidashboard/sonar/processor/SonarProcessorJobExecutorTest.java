@@ -151,15 +151,15 @@ public class SonarProcessorJobExecutorTest {
 		SonarProcessor sonarProcessor = new SonarProcessor();
 		ProcessorToolConnection SONARSAMPLESERVER = new ProcessorToolConnection();
 		SONARSAMPLESERVER.setId(new ObjectId("624fce22b2ee234aa990adfc"));
-		SONARSAMPLESERVER.setUrl("http://does:matter@jenkins.com");
-		SONARSAMPLESERVER.setUsername("does");
-		SONARSAMPLESERVER.setPassword("matter");
+		SONARSAMPLESERVER.setUrl("http://testUser@test.com");
+		SONARSAMPLESERVER.setUsername("testUser");
+		SONARSAMPLESERVER.setPassword("testPassword");
 		SONARSAMPLESERVER.setOffline(true);
 		ProcessorToolConnection SONARSAMPLESERVER1 = new ProcessorToolConnection();
 		SONARSAMPLESERVER1.setId(new ObjectId("624fce6e202f2154bf89ea57"));
-		SONARSAMPLESERVER1.setUrl("http://does:matter@jenkins.com");
-		SONARSAMPLESERVER1.setUsername("does");
-		SONARSAMPLESERVER1.setPassword("matter");
+		SONARSAMPLESERVER1.setUrl("http://testUser@test.com");
+		SONARSAMPLESERVER1.setUsername("testUser");
+		SONARSAMPLESERVER1.setPassword("testPassword");
 		SONARSAMPLESERVER1.setOffline(false);
 
 		connList.add(SONARSAMPLESERVER);

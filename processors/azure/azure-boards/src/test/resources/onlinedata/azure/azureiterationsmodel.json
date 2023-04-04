@@ -4,7 +4,7 @@
 		{
 			"id": "e6ad509e-9ffb-41ed-bb6e-1c5e17eab4f1",
 			"name": "Sprint1_June1_June12",
-			"path": "AzureSpeedy\\Sprint1_June1_June12",
+			"path": "TEST\\Sprint1_June1_June12",
 			"attributes": {
 				
 			},
@@ -13,7 +13,7 @@
 		{
 			"id": "b26bac91-77cf-40a4-9517-5d293aff6f54",
 			"name": "Sprint2_June15_June26",
-			"path": "AzureSpeedy\\Sprint2_June15_June26",
+			"path": "TEST\\Sprint2_June15_June26",
 			"attributes": {
 				"startDate": "2020-06-15T00:00:00Z",
 				"finishDate": "2020-06-26T00:00:00Z",
@@ -24,7 +24,7 @@
 		{
 			"id": "7fcbef86-4047-49f2-bf04-92b529e8c69d",
 			"name": "Sprint3_June29_July10",
-			"path": "AzureSpeedy\\Sprint3_June29_July10",
+			"path": "TEST\\Sprint3_June29_July10",
 			"attributes": {
 				"startDate": "2020-06-29T00:00:00Z",
 				"finishDate": "2020-07-10T00:00:00Z",
