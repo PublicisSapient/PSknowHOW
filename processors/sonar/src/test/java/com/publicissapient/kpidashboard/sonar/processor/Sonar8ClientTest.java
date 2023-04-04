@@ -86,7 +86,7 @@ public class Sonar8ClientTest {
 	private static final String PROJECT_SIZE = "500";
 	private static final String USER_NAME = "test";
 	private static final String PASSWORD = "password";
-	private static final String ACCESSTOKEN = "erdtygdgwqeufd";
+	private static final String ACCESSTOKEN = "accessToken";
 	private static final String EXCEPTION = "rest client exception";
 	
 	@Before

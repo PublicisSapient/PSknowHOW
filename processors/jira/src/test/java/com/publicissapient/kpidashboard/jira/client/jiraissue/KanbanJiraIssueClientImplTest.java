@@ -358,8 +358,8 @@ public class KanbanJiraIssueClientImplTest {
         connection.setConnectionName("DTS");
         connection.setCloudEnv(true);
         connection.setBaseUrl("url");
-        connection.setUsername("KnowHOW");
-        connection.setPassword("KnowHOW");
+        connection.setUsername("test");
+        connection.setPassword("testPassword");
         connection.setApiEndPoint("url");
         connection.setConsumerKey("123");
         connection.setPrivateKey("123");

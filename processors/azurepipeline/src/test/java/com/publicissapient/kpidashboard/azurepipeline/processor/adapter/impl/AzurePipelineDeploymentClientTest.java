@@ -69,7 +69,7 @@ class AzurePipelineDeploymentClientTest {
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	@BeforeEach
 	public void init() {
-		azurePipelineServer.setUrl("https://dev.azure.com/KnowHOW-demo/KnowHow");
+		azurePipelineServer.setUrl("https://dev.azure.com/testUser/testProject");
 		azurePipelineServer.setUsername(null);
 		azurePipelineServer.setJobName("1");
 		azurePipelineServer.setJobType("Deploy");
