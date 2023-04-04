@@ -58,7 +58,7 @@ public class JiraProcessorUtilTest {
 
 	@Test
 	public void deodeUTF8String() throws URISyntaxException {
-		BasicUser basicUser = new BasicUser(new URI("self"), "basicuser", "basicuser", "accountId");
+		BasicUser basicUser = new BasicUser(new URI("self"), "testUser", "testUser", "accountId");
 		Object jiraResponse = basicUser;
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
