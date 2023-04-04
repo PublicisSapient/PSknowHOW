@@ -272,7 +272,7 @@ public class ScrumJiraIssueClientImplTest {
     private static Connection getConnectionObject() {
         Connection connection = new Connection();
         connection.setType("Defect");
-        connection.setConnectionName("DTS");
+        connection.setConnectionName("TEST");
         connection.setCloudEnv(true);
         connection.setBaseUrl("url");
         connection.setUsername("test");

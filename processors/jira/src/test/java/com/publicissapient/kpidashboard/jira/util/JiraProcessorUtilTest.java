@@ -49,12 +49,12 @@ public class JiraProcessorUtilTest {
 
 	@Test
 	public void createJql() {
-		String result = "project IN ('DTS') AND ((issuetype IN ('Story') AND updatedDate>='2020-08-24') OR (issuetype IN ('Defect') AND updatedDate>='2020-08-23')) ORDER BY updated DESC";
+		String result = "project IN ('TEST') AND ((issuetype IN ('Story') AND updatedDate>='2020-08-24') OR (issuetype IN ('Defect') AND updatedDate>='2020-08-23')) ORDER BY updated DESC";
 
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");
-		String actual = JiraProcessorUtil.createJql("DTS", startDateTimeStrByIssueType);//TODO resolve
+		String actual = JiraProcessorUtil.createJql("TEST", startDateTimeStrByIssueType);//TODO resolve
 		Assert.assertEquals(result, actual);
 
 	}
@@ -72,8 +72,8 @@ public class JiraProcessorUtilTest {
 	 */
 	@Test
 	public void processJql_dataNotExist2() {
-		String query = "project IN ('DTS') and updatedDate > '20-21-22' ORDER BY updated DESC";
-		String expected = "project in ('dts') and updateddate > '20-21-22'   ORDER BY updated DESC";
+		String query = "project IN ('TEST') and updatedDate > '20-21-22' ORDER BY updated DESC";
+		String expected = "project in ('test') and updateddate > '20-21-22'   ORDER BY updated DESC";
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");

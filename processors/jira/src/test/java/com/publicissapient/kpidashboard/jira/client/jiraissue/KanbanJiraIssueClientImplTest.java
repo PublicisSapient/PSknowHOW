@@ -155,7 +155,7 @@ public class KanbanJiraIssueClientImplTest {
         ArrayList<KanbanIssueCustomHistory> kanbanIssueCustomHistories = new ArrayList<>();
         KanbanIssueCustomHistory kanbanIssueCustomHistory = new KanbanIssueCustomHistory();
         kanbanIssueCustomHistory.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
-        kanbanIssueCustomHistory.setStoryID("DTS-121");
+        kanbanIssueCustomHistory.setStoryID("TEST-121");
         kanbanIssueCustomHistories.add(kanbanIssueCustomHistory);
         ArrayList<KanbanJiraIssue> kanbanJiraIssue = new ArrayList<>();
         KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
@@ -355,7 +355,7 @@ public class KanbanJiraIssueClientImplTest {
     private static Connection getConnectionObject() {
         Connection connection = new Connection();
         connection.setType("Defect");
-        connection.setConnectionName("DTS");
+        connection.setConnectionName("TEST");
         connection.setCloudEnv(true);
         connection.setBaseUrl("url");
         connection.setUsername("test");
