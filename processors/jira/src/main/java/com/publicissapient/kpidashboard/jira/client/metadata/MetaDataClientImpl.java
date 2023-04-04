@@ -224,11 +224,10 @@ public class MetaDataClientImpl implements MetadataClient {
 		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
 				projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
-		List<Identifier> customFieldList = new ArrayList<>();
 		Map<String, List<String>> valuesToIdentifyMap = new HashMap<>();
 		List<Identifier> issueList = metadataIdentifier.getIssues();
+		List<Identifier> customFieldList  = metadataIdentifier.getCustomfield();
 		if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
-			customFieldList = metadataIdentifier.getCustomfield();
 			valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 					.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
 		}
@@ -239,7 +238,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		Set<String> allIssueTypes = new HashSet<>();
 		Set<String> allWorkflow = new HashSet<>();
 		Map<String, String> allCustomField = new HashMap<>();
-		Map<String, String> customField = new HashMap<>();
 
 		for (Metadata metadata : metadataList) {
 			if (metadata.getType().equals(CommonConstant.META_ISSUE_TYPE)) {
@@ -252,10 +250,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		}
 		Map<String, List<String>> issueTypeMap = compareIssueType(issueList, allIssueTypes);
 		Map<String, List<String>> workflowMap = compareWorkflow(workflowList, allWorkflow);
-		if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
-			customField = compareCustomField(customFieldList, allCustomField);
-		}
-
+		Map<String, String> customField  = compareCustomField(customFieldList, allCustomField);
 
 		return mapFieldMapping(issueTypeMap, workflowMap, customField, valuesToIdentifyMap, projectConfig, templateName);
 
