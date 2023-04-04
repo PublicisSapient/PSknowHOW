@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -339,7 +340,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	 * @return
 	 */
 	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
-													Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
+												   Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
 		IterationKpiData iterationKpiData;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
