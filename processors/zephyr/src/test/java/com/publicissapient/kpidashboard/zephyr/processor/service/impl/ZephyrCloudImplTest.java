@@ -76,10 +76,10 @@ public class ZephyrCloudImplTest {
 	@BeforeEach
 	public void init() {
 		projectConfFieldMapping = new ProjectConfFieldMapping();
-		projectConfFieldMapping.setProjectKey("SMAR");
+		projectConfFieldMapping.setProjectKey("TEST");
 		toolInfo = new ProcessorToolConnection();
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		toolInfo.setUrl("https://api.zephyrscale.smartbear.com/v2/");
+		toolInfo.setUrl("https://api.test.com/v2/");
 		toolInfo.setAccessToken("encryptToken");
 		toolInfo.setConnectionId(new ObjectId("625d0d9d10ce157f45918b5c"));
 		toolInfo.setCloudEnv(true);
@@ -103,7 +103,7 @@ public class ZephyrCloudImplTest {
 		projectConfFieldMapping.setProcessorToolConnection(toolInfo);
 		testCaseList = new ArrayList<>();
 		zephyrTestCaseDTO = new ZephyrTestCaseDTO();
-		zephyrTestCaseDTO.setKey("SMAR-T685");
+		zephyrTestCaseDTO.setKey("TEST-T685");
 		zephyrTestCaseDTO.setCreatedOn("2020-02-05T21:45:22Z");
 		zephyrTestCaseDTO.setUpdatedOn("2020-02-05T21:45:22Z");
 		List<String> labels = new ArrayList<>();
@@ -116,7 +116,7 @@ public class ZephyrCloudImplTest {
 		customFields.put("Functional test type", "Regression, Manual");
 		customFields.put("Scenario type", "Functional");
 		customFields.put("Execution Type", "Automation");
-		customFields.put("SynapseRT TC ref.", "SMAR-5332");
+		customFields.put("SynapseRT TC ref.", "TEST-5332");
 		zephyrTestCaseDTO.setCustomFields(customFields);
 		testCaseList.add(zephyrTestCaseDTO);
 
@@ -124,9 +124,9 @@ public class ZephyrCloudImplTest {
 		toolInfoForJiraCloud = new ProcessorToolConnection();
 		toolInfoForJiraCloud.setUsername("jiraUserName");
 		toolInfoForJiraCloud.setPassword("jiraCloudPwd");
-		zephyrTestCaseDTO.setOwner("PeterN.Nilsson");
+		zephyrTestCaseDTO.setOwner("TestUser");
 		Set<String> issueLinks = new HashSet<>();
-		issueLinks.add("SMAR-6659");
+		issueLinks.add("TEST-6659");
 		zephyrTestCaseDTO.setIssueLinks(issueLinks);
 		testCaseList2.add(zephyrTestCaseDTO);
 	}
@@ -146,7 +146,7 @@ public class ZephyrCloudImplTest {
 		when(zephyrConfig.getPageSize()).thenReturn(5);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://api.zephyrscale.smartbear.com/v2/testcases?maxResults=5&startAt=0&projectKey=SMAR"),
+						"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
 						eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("folder_details_response_zephyr_cloud.json"),
@@ -179,7 +179,7 @@ public class ZephyrCloudImplTest {
 		when(zephyrConfig.getPageSize()).thenReturn(5);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://api.zephyrscale.smartbear.com/v2/testcases?maxResults=5&startAt=0&projectKey=SMAR"),
+						"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
 						eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("folder_details_response_zephyr_cloud.json"),
@@ -189,12 +189,12 @@ public class ZephyrCloudImplTest {
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("owner_details_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://zephyr.test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7"),
+						"https://test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7"),
 						eq(HttpMethod.GET), eq(stringHttpEntity2), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("issue_links_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(
-						eq("https://zephyr.test.com/rest/api/2/issue/66229"), eq(HttpMethod.GET),
+						eq("https://test.com/rest/api/2/issue/66229"), eq(HttpMethod.GET),
 						eq(stringHttpEntity2), eq(String.class));
 
 		assertEquals(zephyrCloud.getTestCase(0, projectConfFieldMapping).size(), testCaseList2.size());
@@ -220,7 +220,7 @@ public class ZephyrCloudImplTest {
 						eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(eq(
-				"https://api.zephyrscale.smartbear.com/v2/testcases?maxResults=5&startAt=0&projectKey=SMAR"),
+				"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
 				eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
 
 		assertThrows(RestClientException.class, () -> {

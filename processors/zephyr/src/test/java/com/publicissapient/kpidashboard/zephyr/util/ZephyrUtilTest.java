@@ -50,8 +50,8 @@ public class ZephyrUtilTest {
 
 	@Test
 	public void testZephyrUrl() {
-		assertEquals("zephyr.test.com/jira",
-				zephyrUtil.getZephyrUrl("https://zephyr.test.com/jira/"));
+		assertEquals("test.com/jira",
+				zephyrUtil.getZephyrUrl("https://test.com/jira/"));
 	}
 
 	@Test

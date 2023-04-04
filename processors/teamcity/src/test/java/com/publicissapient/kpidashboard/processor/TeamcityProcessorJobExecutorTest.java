@@ -49,7 +49,7 @@ public class TeamcityProcessorJobExecutorTest {
 	private static final String CUSTOM_API_BASE_URL = "http://localhost:9090/";
 	private static final String METRICS1 = "nloc";
 	private static final String EXCEPTION = "rest client exception";
-	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
+	private static final String PLAIN_TEXT_PASSWORD = "PlainTestPassword";
 	@Mock
 	private TeamcityConfig teamcityConfig;
 	@Mock
