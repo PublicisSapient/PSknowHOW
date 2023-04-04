@@ -307,7 +307,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiradefecttype(jiraType);
 
 		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+				"TEST Consulting Request", "Test Case" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -331,7 +331,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);

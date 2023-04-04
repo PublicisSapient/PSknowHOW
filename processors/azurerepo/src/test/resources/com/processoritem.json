@@ -8,7 +8,7 @@
     "toolDetailsMap" : {
         "apiVersion" : "5.1",
         "scm" : "AzureRepository",
-        "repositoryName" : "AzureSpeedy",
+        "repositoryName" : "testRepo",
         "branch" : "master",
         "userID" : null
        },

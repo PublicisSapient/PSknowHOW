@@ -5,13 +5,13 @@
   "number": 2483,
   "result": "FAILURE",
   "timestamp": 1421281415000,
-  "url": "https://builds.apache.org/job/Lucene-Solr-Tests-5.x-Java7/2483/",
+  "url": "https://test.org/job/Lucene-Solr-Tests-5.x-Java7/2483/",
   "changeSets": [
     {
         "items": [
           {
             "author": {
-              "fullName": "uschindler"
+              "fullName": "testUser1"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -31,12 +31,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "uschindler"
+            "user": "testUser1"
           }          
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -45,7 +45,7 @@
         "items": [
           {
             "author": {
-              "fullName": "ehatcher"
+              "fullName": "testUser2"
             },
             "commitId": "1651896",
             "timestamp": 1421279338234,
@@ -68,12 +68,12 @@
               }
             ],
             "revision": 1651896,
-            "user": "ehatcher"
+            "user": "testUser2"
           }
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -82,7 +82,7 @@
         "items": [
           {
             "author": {
-              "fullName": "uschindler"
+              "fullName": "testUser1"
             },
             "commitId": "1651902",
             "timestamp": 1421279592948,
@@ -102,12 +102,12 @@
               }
             ],
             "revision": 1651902,
-            "user": "uschindler"
+            "user": "testUser1"
           }          
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_5x",
             "revision": 1651902
           }
         ]
@@ -116,7 +116,7 @@
         "items": [
           {
             "author": {
-              "fullName": "ehatcher"
+              "fullName": "testUser2"
             },
             "commitId": "1651896",
             "timestamp": 1421279338234,
@@ -139,12 +139,12 @@
               }
             ],
             "revision": 1651896,
-            "user": "ehatcher"
+            "user": "testUser2"
           }
         ],
         "revisions": [
           {
-            "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x",
+            "module": "http://test.org/repos/asf/lucene/dev/branches/branch_6x",
             "revision": 1651896
           }
         ]
@@ -152,58 +152,58 @@
   ],
   "culprits": [
     {
-      "fullName": "ab"
+      "fullName": "testUser1"
     },
     {
-      "fullName": "anshum"
+      "fullName": "testUser2"
     },
     {
-      "fullName": "dsmiley"
+      "fullName": "testUser3"
     },
     {
-      "fullName": "ehatcher"
+      "fullName": "testUser4"
     },
     {
-      "fullName": "erick"
+      "fullName": "testUser5"
     },
     {
-      "fullName": "gchanan"
+      "fullName": "testUser6"
     },
     {
-      "fullName": "hossman"
+      "fullName": "testUser7"
     },
     {
-      "fullName": "jbernste"
+      "fullName": "testUser8"
     },
     {
-      "fullName": "jpountz"
+      "fullName": "testUser9"
     },
     {
-      "fullName": "markrmiller"
+      "fullName": "testUser10"
     },
     {
-      "fullName": "mikemccand"
+      "fullName": "testUser11"
     },
     {
-      "fullName": "noble"
+      "fullName": "testUser12"
     },
     {
-      "fullName": "rmuir"
+      "fullName": "testUser13"
     },
     {
-      "fullName": "sarowe"
+      "fullName": "testUser14"
     },
     {
-      "fullName": "shalin"
+      "fullName": "testUser15"
     },
     {
-      "fullName": "tflobbe"
+      "fullName": "testUser16"
     },
     {
-      "fullName": "thelabdude"
+      "fullName": "testUser17"
     },
     {
-      "fullName": "uschindler"
+      "fullName": "testUser18"
     }
   ]
 }

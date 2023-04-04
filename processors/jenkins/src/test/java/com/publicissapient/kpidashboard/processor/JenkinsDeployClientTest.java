@@ -84,7 +84,7 @@ public class JenkinsDeployClientTest {
 		assertEquals(1, response.size());
 		Deployment deployment = response.values().stream().iterator().next().stream().iterator().next();
 		assertEquals("deployJob", deployment.getJobName());
-		assertEquals("10.148.240.62", deployment.getEnvName());
+		assertEquals("Test", deployment.getEnvName());
 		assertEquals(DeploymentStatus.SUCCESS, deployment.getDeploymentStatus());
 		assertEquals("1737", deployment.getNumber());
 	}

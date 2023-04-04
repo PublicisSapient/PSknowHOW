@@ -152,7 +152,7 @@ describe('ToolMenuComponent', () => {
         basicProjectConfigId: '6360fefc3fa9e175755f0728',
         projectName: '"KnowHOW"',
         userName: 'TESTADMIN',
-        apiToken: 'Egrgeedsjyekdsvntwymmt',
+        apiToken: 'TestToken',
         expiryDate:'2023-03-10',
         createdAt: '2023-02-10'
       }
@@ -187,7 +187,7 @@ describe('ToolMenuComponent', () => {
   });
 
   it('should copy token to clipboard',()=>{
-    component.generatedToken='ergbrtrehehehwweheh';
+    component.generatedToken='TestToken1';
     component.copyToken();
     expect(component.tokenCopied).toBeTrue();
   });
