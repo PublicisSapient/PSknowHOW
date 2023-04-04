@@ -734,6 +734,7 @@ describe('FilterComponent', () => {
     component.filterData = filterData;
     component.trendLineValueList = [];
     component.hierarchyLevels = hierarchyLevels;
+    spyOn(component, 'setTrendValueFilter');
     component.checkDefaultFilterSelection();
     expect(component.trendLineValueList.length).toBeGreaterThan(0);
   });
