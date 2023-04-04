@@ -252,6 +252,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
 			Map<String, Object> actualCompletionData, Map<String,Object> jiraIssueData) {
 		int originalEstimate = 0;
+		String markerValue = Constant.BLANK;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -283,11 +284,17 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			iterationKpiModalValue.setDueDate(jiraIssue.getDueDate().substring(0, jiraIssue.getDueDate().indexOf('T')));
 		if (actualCompletionData.get("actualCompleteDate") != null)
 			iterationKpiModalValue.setActualCompletionDate(actualCompletionData.get("actualCompleteDate").toString());
+		else
+			iterationKpiModalValue.setActualCompletionDate(" - ");
 		if (!jiraIssueData.get("issueDelay").equals(Constant.DASH)) {
 			iterationKpiModalValue.setDelayInDays(String.valueOf(jiraIssueData.get("issueDelay")) + "d");
 		} else {
 			iterationKpiModalValue.setDelayInDays(" - ");
 		}
+		if(DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isAfter(LocalDate.now().minusDays(1))){
+			markerValue = Constant.GREEN;
+		}
+		iterationKpiModalValue.setMarker(markerValue);
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}

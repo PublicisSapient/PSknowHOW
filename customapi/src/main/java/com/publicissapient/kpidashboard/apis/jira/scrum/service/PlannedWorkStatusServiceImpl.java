@@ -263,7 +263,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 											fieldMapping, actualCompletionData, jiraIssueData);
 								}
 							}
-							// Calculating delay for only completed issues
+							// Calculating actual work status for only completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
 								issueCountActual = issueCountActual + 1;
 								overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
@@ -277,6 +277,20 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 									originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
 									overAllOriginalEstimateActual.set(0, overAllOriginalEstimateActual.get(0)
 											+ jiraIssue.getOriginalEstimateMinutes());
+								}
+								if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isAfter(LocalDate.now().minusDays(1))) {
+									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
+											sprintDetails, allIssueHistories, jiraIssue);
+									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
+											.get(ACTUAL_COMPLETION_DATA);
+									if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+										int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+										delay += jiraIssueDelay;
+										overallDelay.set(0, overallDelay.get(0) + jiraIssueDelay);
+									}
+									populateIterationDataForPlannedWork(overAllmodalValues, modalValues, jiraIssue,
+											fieldMapping, actualCompletionData, jiraIssueData);
 								}
 							}
 						}
@@ -400,7 +414,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	private Map<String, Object> jiraIssueCalculation(FieldMapping fieldMapping, SprintDetails sprintDetails,
 			List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue) {
 		int jiraIssueDelay = 0;
-		int originalEstimateInDays = 0;
 		Map<String, Object> resultList = new HashMap<>();
 
 		JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
@@ -408,18 +421,15 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						.equals(jiraIssue.getNumber()))
 				.findFirst().orElse(new JiraIssueCustomHistory());
 
-		if (jiraIssue.getOriginalEstimateMinutes() != null)
-			originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
-
 		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
 		// calling function for cal actual completion days
 		Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
 				sprintDetails, fieldMapping);
-		int actualCompletionInDays = 0;
 
-		if (actualCompletionData.get(ACTUAL_COMPLETION_DAYS) != "-" && jiraIssue.getOriginalEstimateMinutes() != null) {
-			actualCompletionInDays = (int) actualCompletionData.get(ACTUAL_COMPLETION_DAYS);
-			jiraIssueDelay = actualCompletionInDays - originalEstimateInDays;
+		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null && jiraIssue.getDueDate() != null) {
+			LocalDate actualCompletedDate = (LocalDate) actualCompletionData.get(ACTUAL_COMPLETE_DATE);
+			jiraIssueDelay = getDelay(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
+					actualCompletedDate);
 			resultList.put(ISSUE_DELAY, jiraIssueDelay);
 		} else {
 			resultList.put(ISSUE_DELAY, Constant.DASH);
@@ -431,5 +441,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 	private int getDelayInMinutes(int delay) {
 		return delay*60*8;
+	}
+	private int getDelay(LocalDate dueDate, LocalDate completedDate) {
+		int potentialDelays = CommonUtils.getWorkingDays(dueDate, completedDate);
+		return (dueDate.isAfter(completedDate)) ? potentialDelays * (-1) : potentialDelays;
 	}
 }

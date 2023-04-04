@@ -3453,7 +3453,7 @@ db.getCollection('kpi_master').insert(
        "details": [
          {
              "type": "paragraph",
-             "value": "Unplanned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
+             "value": "Unplanned Work status keep track of the issues which doesn't have due date."
          },
          {
            "type": "paragraph",
