@@ -3614,6 +3614,7 @@ db.getCollection('kpi_master').insert(
     "showTrend":false,
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport":true,
+    "hideOverallFilter" : true,
     "calculateMaturity":false
   }
 ]);

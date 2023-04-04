@@ -3782,6 +3782,7 @@
     "kpiFilter":"dropdown",
     "showTrend":false,
     "isAdditionalFilterSupport":true,
+    "hideOverallFilter" : true,
     "calculateMaturity":false
   }
 ]
