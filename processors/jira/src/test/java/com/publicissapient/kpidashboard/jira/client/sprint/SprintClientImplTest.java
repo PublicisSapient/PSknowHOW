@@ -58,8 +58,8 @@ class SprintClientImplTest {
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.FALSE);
 		conn.get().setBaseUrl("https://abcd.com/jira");
-		conn.get().setUsername("jira");
-		conn.get().setPassword("hRjE0RY0GkbiZirguoqtcO/niMjBTcdvwOji0ZEpL6yl6e5L7/hBs0dsBM43mGiF");
+		conn.get().setUsername("test");
+		conn.get().setPassword("testPassword");
 		
 		BoardDetails jiraBoard = new BoardDetails();
 		jiraBoard.setBoardId("11856");

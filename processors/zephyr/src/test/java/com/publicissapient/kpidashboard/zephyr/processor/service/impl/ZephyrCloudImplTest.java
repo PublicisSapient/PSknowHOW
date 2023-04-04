@@ -189,12 +189,12 @@ public class ZephyrCloudImplTest {
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("owner_details_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://tetrapak-smartsales.atlassian.net/rest/api/2/user?accountId=5e315421a834270cb0992ca7"),
+						"https://zephyr.test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7"),
 						eq(HttpMethod.GET), eq(stringHttpEntity2), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("issue_links_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(
-						eq("https://tetrapak-smartsales.atlassian.net/rest/api/2/issue/66229"), eq(HttpMethod.GET),
+						eq("https://zephyr.test.com/rest/api/2/issue/66229"), eq(HttpMethod.GET),
 						eq(stringHttpEntity2), eq(String.class));
 
 		assertEquals(zephyrCloud.getTestCase(0, projectConfFieldMapping).size(), testCaseList2.size());

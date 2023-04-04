@@ -3,9 +3,7 @@
         {
             "id": "ffc97532-bbbe-418d-af15-f23a48",
             "name": "KnowHOW Team",
-            "url": "https://dev.azure.com/ankbhard/_apis/projects/5bSc2f494-19a2-4ead-80b0-b40eb7/teams/ffc97532-bbbe-418d-af15",
             "description": "The default project team.",
-            "identityUrl": "https://spsprodsin1.vssps.visualstudio.com/BA23826269-8034-4f07-9cec-15ab1d99/_apis/Identities/ffc97532-bbbe-418d-af15-f23a48",
             "projectName": "KnowHOW",
             "projectId": "5bc2dhl494-19a2-4ead-80b0-b40eb7a"
         }

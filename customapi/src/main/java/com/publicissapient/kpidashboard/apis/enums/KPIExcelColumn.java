@@ -170,6 +170,9 @@ public enum KPIExcelColumn {
     QUALITY_STATUS("kpi133",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size")),
 
+    UNPLANNED_WORK_STATUS("kpi134",
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)","Remaining Estimate")),
+
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate")),
 

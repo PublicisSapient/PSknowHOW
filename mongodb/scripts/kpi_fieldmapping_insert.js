@@ -429,6 +429,13 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Other'],
         fieldNames : { 'Defects Mapping' : ['jiradefecttype'] }
       },
+	  {
+        kpiId: 'kpi134',
+        kpiName: 'Unplanned Work Status',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { }
+      },
       {
         kpiId: 'kpi989',
         kpiName: 'Kpi Maturity',

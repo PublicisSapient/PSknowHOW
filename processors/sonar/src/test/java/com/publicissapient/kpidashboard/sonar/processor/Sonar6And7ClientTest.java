@@ -81,7 +81,7 @@ public class Sonar6And7ClientTest {
 	private static final String PROJECT_SIZE = "500";
 	private static final String USER_NAME = "test";
 	private static final String PASSWORD = "password";
-	private static final String ACCESS_TOKEN = "5345g34h5vhj24656";
+	private static final String ACCESS_TOKEN = "testAccessToken";
 
 	@Mock
 	private ToolCredentialProvider toolCredentialProvider;

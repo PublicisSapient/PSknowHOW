@@ -138,7 +138,7 @@ public class GitLabProcessorJobExecutorTest {
 		gitLabProcessor.setProcessorName("Jenkins");
 		gitLabProcessor.setId(PROCESSORID);
 		gitLabInfo.setBranch("release/core-r4.4");
-		gitLabInfo.setPassword("020892BE903C15F566C09DAFEA800619");
+		gitLabInfo.setPassword("testPassword");
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
@@ -147,7 +147,7 @@ public class GitLabProcessorJobExecutorTest {
 		List<GitLabRepo> gitLabRepos = new ArrayList<>();
 		GitLabRepo gitLabRepo = new GitLabRepo();
 		gitLabRepo.setBranch("Dev_Trunk");
-		gitLabRepo.setRepoUrl("https://tools.publicis.sapient.com/scm.git");
+		gitLabRepo.setRepoUrl("https://test.com/scm.git");
 		gitLabRepo.setProcessorId(PROCESSORID);
 		gitLabRepo.setGitLabAccessToken("abc");
 		gitLabRepo.setGitLabProjectId("557");
@@ -158,7 +158,7 @@ public class GitLabProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/testProject/test.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(gitLabRepository.findActiveRepos(PROCESSORID)).thenReturn(gitLabRepos);
 
@@ -204,7 +204,7 @@ public class GitLabProcessorJobExecutorTest {
 		toolConfig.setBranch("Dev_Trunk");
 		toolConfig.setToolName("Bitbucket");
 		toolConfig.setJobName("API_Build");
-		//toolConfig.setUrl("https://tools.publicis.sapient.com/scm.git");
+		//toolConfig.setUrl("https://test.com/scm.git");
 		toolConfigs.add(toolConfig);
 		Assert.assertEquals(1, processorItems.size());
 		Whitebox.invokeMethod(gitBucketProcessorJobExecutor, "addProcessorItems", processor);

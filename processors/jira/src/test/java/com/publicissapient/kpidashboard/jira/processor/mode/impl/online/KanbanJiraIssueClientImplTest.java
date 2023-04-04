@@ -197,7 +197,7 @@ public class KanbanJiraIssueClientImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+		conn.get().setBaseUrl("https://abc.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -417,7 +417,7 @@ public class KanbanJiraIssueClientImplTest {
 				null);
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://abc.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -451,7 +451,7 @@ public class KanbanJiraIssueClientImplTest {
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {
 		List<IssueLink> issueLinkList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://abc.com/jira/rest/api/2/issue/12344");
 		IssueLinkType linkType = new IssueLinkType("Blocks", "blocks", IssueLinkType.Direction.OUTBOUND);
 		IssueLink issueLink = new IssueLink("IssueKey", uri, linkType);
 		issueLinkList.add(issueLink);

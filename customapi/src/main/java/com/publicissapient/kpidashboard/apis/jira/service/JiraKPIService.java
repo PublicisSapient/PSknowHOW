@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -49,6 +49,9 @@ import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
 /**
@@ -252,6 +255,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
 			Map<String, Object> actualCompletionData, Map<String,Object> jiraIssueData) {
 		int originalEstimate = 0;
+		String markerValue = Constant.BLANK;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -283,11 +287,17 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			iterationKpiModalValue.setDueDate(jiraIssue.getDueDate().substring(0, jiraIssue.getDueDate().indexOf('T')));
 		if (actualCompletionData.get("actualCompleteDate") != null)
 			iterationKpiModalValue.setActualCompletionDate(actualCompletionData.get("actualCompleteDate").toString());
+		else
+			iterationKpiModalValue.setActualCompletionDate(" - ");
 		if (!jiraIssueData.get("issueDelay").equals(Constant.DASH)) {
 			iterationKpiModalValue.setDelayInDays(String.valueOf(jiraIssueData.get("issueDelay")) + "d");
 		} else {
 			iterationKpiModalValue.setDelayInDays(" - ");
 		}
+		if(DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isAfter(LocalDate.now().minusDays(1))){
+			markerValue = Constant.GREEN;
+		}
+		iterationKpiModalValue.setMarker(markerValue);
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
