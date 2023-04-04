@@ -113,7 +113,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
 		azureServer.setPat("pat");
-		azureServer.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		azureServer.setUrl("https://test.com/testUser/testProject");
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("username");
 		return azureServer;

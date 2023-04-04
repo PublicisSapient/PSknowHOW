@@ -151,7 +151,7 @@ public class AzurePipelineProcessorTaskTests {
 		when(processorToolConnectionService.findByTool(ProcessorConstants.AZUREPIPELINE)).thenReturn(new ArrayList<>());
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(anyString(), any()))
 				.thenReturn(new ArrayList<>());
-		AZUREPIPELINE_SAMPLE_SERVER.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		AZUREPIPELINE_SAMPLE_SERVER.setUrl("https://test.com/testUser/testProject");
 		AZUREPIPELINE_SAMPLE_SERVER.setApiVersion("5.1");
 		AZUREPIPELINE_SAMPLE_SERVER.setJobName("1");
 		AZUREPIPELINE_SAMPLE_SERVER.setPat("patKey");

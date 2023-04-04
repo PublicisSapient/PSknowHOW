@@ -126,9 +126,9 @@ public class Sonar8ClientTest {
 		List<SonarProcessorItem> projects = sonar8Client.getSonarProjectList(SONAR_SERVER);
 		Assert.assertThat("Projects count: ", projects.size(), is(2));
 		Assert.assertThat("First Project name: ", projects.get(0).getProjectName(),
-				is("com.publicissapient.kpidashboard.sonar:TestProject"));
+				is("testPackage.sonar:TestProject"));
 		Assert.assertThat("Second Project name: ", projects.get(1).getProjectName(),
-				is("com.publicissapient.kpidashboard.sonar:AnotherTestProject"));
+				is("testPackage.sonar:AnotherTestProject"));
 		Assert.assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
 		Assert.assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
 	}
@@ -154,7 +154,7 @@ public class Sonar8ClientTest {
 	private SonarProcessorItem getProject() {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject");
+		project.setProjectName("testPackage.sonar:TestProject");
 		project.setProjectId("AVu3b-MAphY78UZXuYHp");
 		project.setKey("KEY");
 		return project;

@@ -52,7 +52,7 @@ public class SprintClientImplTest {
 		Connection conn = new Connection();
 		conn.setId(new ObjectId("6225b5c93f59bf41fe9f1b9d"));
 		conn.setOffline(Boolean.FALSE);
-		conn.setBaseUrl("https://dev.azure.com/testUser/Test%20ProjectOne");
+		conn.setBaseUrl("https://test.com/testUser/Test%20ProjectOne");
 		conn.setUsername("testUser");
 		conn.setPat("testPat");
 

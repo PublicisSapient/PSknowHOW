@@ -488,7 +488,7 @@ public class OnlineDataProcessorImplTest {
 		when(kanbanIssues.get(0).getKey()).thenReturn("TEST-1234");
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -526,7 +526,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -563,7 +563,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -600,7 +600,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -677,7 +677,7 @@ public class OnlineDataProcessorImplTest {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -710,7 +710,7 @@ public class OnlineDataProcessorImplTest {
 		when(project.getKey()).thenReturn("KEY-12");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -740,7 +740,7 @@ public class OnlineDataProcessorImplTest {
 		when(project.getKey()).thenReturn("KEY-12");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -775,7 +775,7 @@ public class OnlineDataProcessorImplTest {
 
 	private Iterator<ChangelogGroup> createChangeLogGroupData() throws URISyntaxException {
 		List<ChangelogGroup> groupList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://test.com/jira/rest/api/2/issue/12344");
 		BasicUser user = new BasicUser(uri, "firstName", "firstName");
 		ChangelogGroup changelogGroup = new ChangelogGroup(user, DateTime.now(), createChangeLogItemData());
 		groupList.add(changelogGroup);
@@ -807,7 +807,7 @@ public class OnlineDataProcessorImplTest {
 
 	private Iterable<IssueLink> createIssueLinkData() throws URISyntaxException {
 		List<IssueLink> issueLinkList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://test.com/jira/rest/api/2/issue/12344");
 		IssueLinkType linkType = new IssueLinkType("Blocks", "blocks", IssueLinkType.Direction.OUTBOUND);
 		IssueLink issueLink = new IssueLink("IssueKey", uri, linkType);
 		issueLinkList.add(issueLink);
@@ -824,7 +824,7 @@ public class OnlineDataProcessorImplTest {
 	private Iterable<IssueField> createIssueFieldIterable(boolean sprintStatus) {
 		List<IssueField> issueFieldList = new ArrayList<>();
 		Map<String, Object> map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Client Testing (UAT)");
 		map.put("id", "12121");
 		IssueField issueField = new IssueField("customfield_12121", "UAT", null, new JSONObject(map));
@@ -848,28 +848,28 @@ public class OnlineDataProcessorImplTest {
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "TECH_DEBT");
 		map.put("id", "14141");
 		issueField = new IssueField("customfield_14141", "StoryPoints", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Mobile");
 		map.put("id", "18181");
 		issueField = new IssueField("customfield_18181", "Device Platform", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "code");
 		map.put("id", "19121");
 		issueField = new IssueField("customfield_19121", "code_issue", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "stage");
 		map.put("id", "13131");
 		issueField = new IssueField("customfield_13131", "stage", null, new JSONObject(map));
@@ -877,7 +877,7 @@ public class OnlineDataProcessorImplTest {
 
 		List<JSONObject> jsonArrayList = new ArrayList<>();
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "40");
 		map.put("id", "Test_Automation");
 		JSONObject jsonObject = new JSONObject(map);
@@ -899,7 +899,7 @@ public class OnlineDataProcessorImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://jiradomain.com/jira/");
+		conn.get().setBaseUrl("https://test.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -1037,7 +1037,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiradefecttype(jiraType);
 
 		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+				"TEST Consulting Request", "Test Case" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -1061,7 +1061,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);

@@ -49,7 +49,7 @@ public class TeamcityProcessorJobExecutorTest {
 	private static final String CUSTOM_API_BASE_URL = "http://localhost:9090/";
 	private static final String METRICS1 = "nloc";
 	private static final String EXCEPTION = "rest client exception";
-	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
+	private static final String PLAIN_TEXT_PASSWORD = "PlainTestPassword";
 	@Mock
 	private TeamcityConfig teamcityConfig;
 	@Mock
@@ -93,15 +93,15 @@ public class TeamcityProcessorJobExecutorTest {
 	public void init() {
 		MockitoAnnotations.initMocks(this);
 		ProcessorToolConnection processorToolConnection = new ProcessorToolConnection();
-		processorToolConnection.setUrl("http://does:matter@jenkins.com");
+		processorToolConnection.setUrl("http://test@test.com");
 		processorToolConnection.setId(new ObjectId("6296661b307f0239477f1e9e"));
 		processorToolConnection.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167659"));
 		processorToolConnection.setJobName("xyz");
 		processorToolConnection.setToolName("Teamcity");
 		processorToolConnection.setConnectionId(new ObjectId("5fa69f5d220038d6a365fec6"));
 		processorToolConnection.setConnectionName("Teamcity connection");
-		processorToolConnection.setUsername("does");
-		processorToolConnection.setPassword("matter");
+		processorToolConnection.setUsername("userName");
+		processorToolConnection.setPassword("password");
 		processorToolConnection.setJobName("jobName");
 
 		projectBasicConfig = new ProjectBasicConfig();
