@@ -17,27 +17,21 @@
  ******************************************************************************/
 
 .header {
-  -webkit-transition: all 0.5s ease;
+  /* -webkit-transition: all 0.5s ease;
   -moz-transition: position 10s;
   -ms-transition: position 10s;
   -o-transition: position 10s;
-  transition: all 0.5s ease;
+  transition: all 0.5s ease; */
   /* display: grid;
   grid-template-columns: 1fr 7fr 0.3fr; */
   border: 1px solid #a3a3a3;
   /* border-bottom: 1px solid #a3a3a3; */
   background-color: var(--color-white);
   width: 100%;
-}
-
-.sticky {
   position: sticky;
-  width: 100%;
-  left: 0;
-  top: 0;
-  /* z-index: 1; */
-  z-index: 1080;
-  animation: smoothScroll 0.5s forwards;
+    top: 0;
+    z-index: 1080;
+    left: 0;
 }
 
 .main-body-wrapper {
