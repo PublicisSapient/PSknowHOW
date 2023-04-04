@@ -34,18 +34,11 @@ import { delay } from 'rxjs/operators';
 })
 export class NavComponent implements OnInit {
   selectedTab;
-  username: string;
-  logoImage: any;
-  currentversion: any;
   subscription: Subscription;
   configOthersData;
-  selectedProject: any;
   worker: any;
-  showHelp = false;
-  isGuest = false;
-  kpiConfigData: Object = {};
+  kpiConfigData = {};
   kpiListData: any = {};
-  showNotificationPanel = false;
   changedBoardName: any;
   displayEditModal: boolean;
   selectedType: string;
@@ -64,24 +57,52 @@ export class NavComponent implements OnInit {
     private aesEncryption: TextEncryptionService,
   ) {
     this.service.setSelectedType('Scrum'); //sednig selected tab to service layer
+    this.selectedType ='scrum';
     const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab.split('/')[2];
-    this.boardId = isNaN(+selectedTab.split('/')[3])
-      ? this.boardId
-      : +selectedTab.split('/')[3];
-    this.service.setSelectedTab(this.selectedTab, this.boardId);
-    // this.service.onTypeRefresh.subscribe((type) => {
-    //   this.selectedTab = this.service.getSelectedTab();
-    // });
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+    if(this.selectedTab.includes('-')){
+      this.selectedTab = this.selectedTab.split('-').join(' ');
+    }
+    // this.boardId = isNaN(+selectedTab?.split('/')[3])
+    //   ? this.boardId
+    //   : +selectedTab.split('/')[3];
+    this.service.setSelectedTab(this.selectedTab);
+  }
 
 
-    this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if (globalConfig['others'] && globalConfig['others'].length > 1) {
-        this.configOthersData = globalConfig['others'][1]?.kpis;
-        this.processKpiConfigData();
+
+  ngOnInit() {
+    this.service.setSideNav(true);
+    this.service.changedMainDashboardValueObs.subscribe((data) => {
+      this.mainTab = data;
+      this.changedBoardName = data;
+      if (this.boardNameArr?.length > 0) {
+        this.boardNameArr[0].boardName = this.mainTab;
       }
     });
 
+    this.startWorker();
+    this.getKpiOrderedList();
+  }
+
+  // call when user is seleting tab
+  selectTab(selectedTab) {
+    this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
+    if(selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog'){
+      this.setSelectedType('Scrum');
+    }
+    this.service.setSelectedTab(this.selectedTab);
+  }
+
+  setSelectedType(type) {
+    this.selectedType = type?.toLowerCase();
+    this.service.setSelectedType(type);
+    if (type === 'Kanban') {
+      this.kanban = true;
+    } else {
+      this.kanban = false;
+    }
+    this.getKpiOrderedList();
   }
 
   processKpiConfigData() {
@@ -98,84 +119,6 @@ export class NavComponent implements OnInit {
       }
     }
   }
-
-  ngOnInit() {
-    this.service.selectedTabObs.subscribe(selectedTab => {
-      this.selectedTab = selectedTab;
-    });
-    this.service.setSideNav(true);
-    this.service.onTabRefresh.subscribe(tab=>{
-      this.selectedTab=tab;
-    });
-    this.service.changedMainDashboardValueObs.subscribe((data) => {
-      this.mainTab = data;
-      this.changedBoardName = data;
-      if (this.boardNameArr?.length > 0) {
-        this.boardNameArr[0].boardName = this.mainTab;
-      }
-    });
-    let authoritiesArr;
-    if (localStorage.getItem('authorities')) {
-      authoritiesArr = this.aesEncryption.convertText(
-        localStorage.getItem('authorities'),
-        'decrypt',
-      );
-    }
-    if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
-      this.isGuest = true;
-    }
-
-    if (authoritiesArr && authoritiesArr.indexOf('ROLE_SUPERADMIN') != -1) {
-      this.showHelp = true;
-    } else {
-      const projectsAccess = JSON.parse(localStorage.getItem('projectsAccess'));
-      this.showHelp =
-        projectsAccess &&
-        typeof projectsAccess != 'undefined' &&
-        projectsAccess.length !== 0;
-    }
-
-    document.addEventListener(
-      'click',
-      function (e) {
-        const profileChkBox = document.getElementById(
-          'profile2',
-        ) as HTMLInputElement;
-        const profileChkBoxIcon = document.querySelector(
-          'i.fa-bars.profileIcon',
-        );
-        e.stopPropagation();
-        if (e.target !== profileChkBox && e.target !== profileChkBoxIcon) {
-          if (profileChkBox && profileChkBox !== null) {
-            profileChkBox.checked = false;
-          }
-        }
-      },
-      false,
-    );
-
-    this.startWorker();
-    this.service.selectedTypeObs.subscribe((selectedType) => {
-      this.selectedType = selectedType;
-      this.getKpiOrderedList();
-    });
-  }
-
-  // call when user is seleting tab
-  selectTab(selectedTab, boardId = this.boardId) {
-    this.selectedTab =
-      selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    this.helper.isKanban = false;
-    this.service.setSelectedTab(this.selectedTab, boardId);
-    this.service.selectTab(this.selectedTab);
-    if (this.service.getSelectedType() === 'Kanban') {
-      this.kanban = true;
-    } else {
-      this.kanban = false;
-    }
-  }
-
-
 
   startWorker() {
     if (typeof Worker !== 'undefined') {
@@ -221,8 +164,7 @@ export class NavComponent implements OnInit {
   }
 
   processKPIListData() {
-    this.configOthersData = this.kpiListData['others'][0]?.kpis;
-    this.service.setDashConfigData(this.kpiListData);
+    this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
     this.boardNameArr = [];
     if (
       this.kpiListData[this.selectedType] &&
@@ -231,14 +173,7 @@ export class NavComponent implements OnInit {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
         this.boardNameArr.push({
           boardName: this.kpiListData[this.selectedType][i].boardName,
-          link:
-            this.kpiListData[this.selectedType][i].boardName
-              .toLowerCase()
-              .split(' ')
-              .join('-') +
-            '/' +
-            this.kpiListData[this.selectedType][i].boardId,
-          boardId: this.kpiListData[this.selectedType][i].boardId,
+          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
         });
       }
     }
@@ -247,9 +182,7 @@ export class NavComponent implements OnInit {
       this.boardNameArr.push({
         boardName: this.kpiListData['others'][i].boardName,
         link:
-          this.kpiListData['others'][i].boardName.toLowerCase() +
-          '/' +
-          this.kpiListData[this.selectedType][i].boardId,
+          this.kpiListData['others'][i].boardName.toLowerCase()
       });
     }
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
@@ -275,22 +208,14 @@ export class NavComponent implements OnInit {
     this.displayEditModal = true;
   }
 
-  assignUserNameForKpiData() {
-    if (!this.kpiListData['username']) {
-      delete this.kpiListData['id'];
-    }
-    this.kpiListData['username'] = localStorage.getItem('user_name');
-  }
-
   editDashboardName() {
     this.kpiListData.scrum[0].boardName = this.changedBoardName;
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
-    this.selectedTab = this.changedBoardName;
-    this.assignUserNameForKpiData();
+    this.service.setDashConfigData(this.kpiListData);
+    this.selectTab(this.changedBoardName);
     this.httpService.updateUserBoardConfig(this.kpiListData).subscribe(
       (data) => {
         if (data.success) {
-          console.log('Data save successfully');
           this.messageService.add({
             severity: 'success',
             summary: `Board name changed successfully to ${this.changedBoardName}`,
@@ -305,7 +230,6 @@ export class NavComponent implements OnInit {
         }
       },
       (error) => {
-        console.log(error);
         this.messageService.add({
           severity: 'error',
           summary: 'Something went wrong, Please try again.',
@@ -318,12 +242,4 @@ export class NavComponent implements OnInit {
     this.displayEditModal = false;
   }
 
-  selectedTypef(type) {
-    this.service.setSelectedType(type);
-    if (type === 'Kanban') {
-      this.kanban = true;
-    } else {
-      this.kanban = false;
-    }
-  }
 }
