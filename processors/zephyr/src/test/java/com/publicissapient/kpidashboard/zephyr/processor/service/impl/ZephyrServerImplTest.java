@@ -76,7 +76,7 @@ public class ZephyrServerImplTest {
 		projectConfFieldMapping.setProjectKey("DTS");
 		toolInfo = new ProcessorToolConnection();
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		toolInfo.setUrl("https://tools.publicis.sapient.com/jira");
+		toolInfo.setUrl("https://zephyr.test.com/jira");
 		toolInfo.setApiEndPoint("/rest/atm/1.0");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");
@@ -129,9 +129,9 @@ public class ZephyrServerImplTest {
 	@Test
 	public void getTestCaseSuccess() {
 
-		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://tools.publicis.sapient.com/jira");
+		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://zephyr.test.com/jira");
 		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
-				.thenReturn(UriComponentsBuilder.fromPath("https://tools.publicis.sapient.com/jira/rest/atm/1.0"));
+				.thenReturn(UriComponentsBuilder.fromPath("https://zephyr.test.com/jira/rest/atm/1.0"));
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);
@@ -144,9 +144,9 @@ public class ZephyrServerImplTest {
 
 	@Test()
 	public void testGetTestCaseNotFound() {
-		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://tools.publicis.sapient.com/jira");
+		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://zephyr.test.com/jira");
 		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
-				.thenReturn(UriComponentsBuilder.fromPath("https://tools.publicis.sapient.com/jira/rest/atm/1.0"));
+				.thenReturn(UriComponentsBuilder.fromPath("https://zephyr.test.com/jira/rest/atm/1.0"));
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);

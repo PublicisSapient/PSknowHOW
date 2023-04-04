@@ -1116,8 +1116,8 @@ describe('UploadComponent', () => {
         "projectName": "RS MAP",
         "basicProjectConfigId": "63db6583e1b2765622921512",
         "assigneeDetailsList": [{
-          "name": "abikanna1",
-          "displayName": "Abinaya Kannan"
+          "name": "testName1",
+          "displayName": "testDisplayName"
         }]
       }
     };
@@ -1191,8 +1191,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "userId",
+          "userName": "testUser",
           "role": "BACKEND_DEVELOPER",
           "plannedCapacity": 55.5,
           "leaves": 0
@@ -1207,17 +1207,17 @@ describe('UploadComponent', () => {
       projectName: "RS MAP",
       assigneeDetailsList: [
         {
-          "name": "adiursac",
-          "displayName": "Adina-Alexandra Ursache"
+          "name": "testDisplayName1",
+          "displayName": "testDisplayName"
         },
         {
-          "name": "abikanna1",
-          "displayName": "Abinaya Kannan"
+          "name": "userId",
+          "displayName": "testDisplayName"
         }
       ]
     };
     component.generateManageAssigneeData(selectedSprint);
-    expect(component.manageAssigneeList[0].name).toEqual('abikanna1');
+    expect(component.manageAssigneeList[0].name).toEqual('userId');
   });
 
   it('should get capacity data for scrum project', fakeAsync(() => {
@@ -1244,18 +1244,18 @@ describe('UploadComponent', () => {
   it('should add or remove users from managelist', () => {
     component.manageAssigneeList = [
       {
-        "name": "abikanna1",
-        "displayName": "Abinaya Kannan",
+        "name": "testDisplayName1",
+        "displayName": "testDisplayName1",
         "checked": true
       },
       {
-        "name": "agnprase",
-        "displayName": "Agney Praseed",
+        "name": "testDisplayName2",
+        "displayName": "testDisplayName2",
         "checked": true
       },
       {
-        "name": "anisingh4",
-        "displayName": "Anil Kumar Singh",
+        "name": "testDisplayName3",
+        "displayName": "testDisplayName3",
         "checked": false
       }
     ];
@@ -1271,22 +1271,22 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId1",
+          "userName": "testUser",
           "role": "BACKEND_DEVELOPER",
           "plannedCapacity": 55.5,
           "leaves": 0
         },
         {
-          "userId": "agnprase",
-          "userName": "Agney Praseed",
+          "userId": "testUserId2",
+          "userName": "testUser",
           "role": "BACKEND_DEVELOPER",
           "plannedCapacity": 15,
           "leaves": 0
         },
         {
-          "userId": "anisingh4",
-          "userName": "Anil Kumar Singh",
+          "userId": "testUserId3",
+          "userName": "testUser",
           "role": "BACKEND_DEVELOPER",
           "plannedCapacity": 20,
           "leaves": 0
@@ -1309,15 +1309,15 @@ describe('UploadComponent', () => {
         "basicProjectConfigId": "63db6583e1b2765622921512",
         "assigneeCapacity": [
           {
-            "userId": "abikanna1",
-            "userName": "Abinaya Kannan",
+            "userId": "testUserId4",
+            "userName": "testUser",
             "role": "BACKEND_DEVELOPER",
             "plannedCapacity": 55.5,
             "leaves": 0
           },
           {
-            "userId": "agnprase",
-            "userName": "Agney Praseed",
+            "userId": "testUserId5",
+            "userName": "testUser",
             "role": "BACKEND_DEVELOPER",
             "plannedCapacity": 15,
             "leaves": 0
@@ -1375,8 +1375,8 @@ describe('UploadComponent', () => {
 
   it('should validate plannedCapacity and leaves field value and calculate available capacity', () => {
     const assignee = {
-      "userId": "adiursac",
-      "userName": "Adina-Alexandra Ursache",
+      "userId": "testUserId6",
+      "userName": "testUser",
       "leaves": 0
     };
     const assigneeFormControls = {
@@ -1433,24 +1433,24 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId7",
+          "userName": "testUser",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 0,
           "availableCapacity": 40
         },
         {
-          "userId": "agnprase",
-          "userName": "Agney Praseed",
+          "userId": "testUserId8",
+          "userName": "testUser",
           "role": "FRONTEND_DEVELOPER",
           "plannedCapacity": 34,
           "leaves": 3,
           "availableCapacity": 31
         },
         {
-          "userId": "adiursac",
-          "userName": "Adina-Alexandra Ursache",
+          "userId": "testUserId9",
+          "userName": "testUser",
           "leaves": 0
         }
       ],
@@ -1473,24 +1473,24 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63db6583e1b2765622921512",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId10",
+          "userName": "testUser",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 0,
           "availableCapacity": 40
         },
         {
-          "userId": "agnprase",
-          "userName": "Agney Praseed",
+          "userId": "testUserId11",
+          "userName": "testUser",
           "role": "FRONTEND_DEVELOPER",
           "plannedCapacity": 34,
           "leaves": 3,
           "availableCapacity": 31
         },
         {
-          "userId": "adiursac",
-          "userName": "Adina-Alexandra Ursache",
+          "userId": "testUserId12",
+          "userName": "testUser",
           "leaves": 0
         }
       ],
@@ -1512,8 +1512,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId13",
+          "userName": "testUser",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 0
@@ -1534,8 +1534,8 @@ describe('UploadComponent', () => {
         "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
         "assigneeCapacity": [
           {
-            "userId": "abikanna1",
-            "userName": "Abinaya Kannan",
+            "userId": "testUserId14",
+            "userName": "testUser",
             "role": "TESTER",
             "plannedCapacity": 40,
             "leaves": 0
@@ -1567,8 +1567,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId15",
+          "userName": "testUser",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 12,
@@ -1590,8 +1590,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId16",
+          "userName": "testUser",
           "role": "TESTER",
           "plannedCapacity": 40,
           "leaves": 12,
@@ -1613,8 +1613,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId17",
+          "userName": "testUser",
           "role": "FRONTEND_DEVELOPER",
           "plannedCapacity": 40,
           "leaves": 12,
@@ -1644,8 +1644,8 @@ describe('UploadComponent', () => {
       "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
       "assigneeCapacity": [
         {
-          "userId": "abikanna1",
-          "userName": "Abinaya Kannan",
+          "userId": "testUserId18",
+          "userName": "testUser",
           "role": "FRONTEND_DEVELOPER",
           "plannedCapacity": 40,
           "leaves": 12,

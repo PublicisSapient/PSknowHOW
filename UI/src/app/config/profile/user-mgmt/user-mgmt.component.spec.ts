@@ -42,7 +42,7 @@ describe('UserManagementComponent', () => {
   let httpMock;
   let httpreq;
   const baseUrl = environment.baseUrl;
-  const successResponse = '{\"X-Authentication-Token\":\"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSaXNoYWJoIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9WSUVXRVIiXSwiZXhwIjoxNTk0NzQ5MjE2fQ.WUbx0Y_vgHYwJ3Q7pd2eSR59YAx04orDoSas0MZjEHb5oTt3YXYtEsOzXOJWg3UihKBwB_IIawTZRR8SI2uGjg\",\"Success\":\"Success\"}';
+  const successResponse = '{\"X-Authentication-Token\":\"dummytoken\",\"Success\":\"Success\"}';
   // const failure400Response = { 'timestamp': 1567511436517, 'status': 400, 'error': 'Bad request', 'message': 'Bad request Failed', 'path': '/api/changePassword' };
   const failureResponse = 'WrongOldPassword';
   beforeEach(waitForAsync(() => {
