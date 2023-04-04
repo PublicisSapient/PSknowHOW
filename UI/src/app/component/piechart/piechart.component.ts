@@ -97,7 +97,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
 
-    const pieChartValues = this.data[0]?.value[0]?.value;
+    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
@@ -127,6 +127,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .attr("transform", `translate(140,${-(this.height / 2 - this.margin)})`)
       .append("xhtml:div")
       .attr("id", "main-div")
+      .attr("class", "p-text-left")
       .style('border', '1px solid #dedede')
       .append('table')
       .style('width', '100%')
