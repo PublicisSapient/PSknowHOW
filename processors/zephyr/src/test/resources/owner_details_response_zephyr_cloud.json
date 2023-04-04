@@ -1,5 +1,5 @@
 {
-  "self": "https://tetrapak-smartsales.atlassian.net/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
+  "self": "https://zephyr.test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
   "accountId": "5e315421a834270cb0992ca7",
   "accountType": "atlassian",
   "avatarUrls": {

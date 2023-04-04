@@ -47,7 +47,7 @@ public class GitHubClientImplTest {
 	
 	@Test
 	public void testFetchCommits() throws Exception{
-		String restURI = "https://api.github.com/repos/username/repositiryname/commits?per_page=100&sha=develop";
+		String restURI = "https://test.com/repos/username/repositiryname/commits?per_page=100&sha=develop";
 		String serverResponse = getServerResponse("/github-server/commitResponse.json");		
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
@@ -58,7 +58,7 @@ public class GitHubClientImplTest {
 	
 	@Test
 	public void testMergeRequests() throws Exception{
-		String restURI = "https://api.github.com/repos/username/repositiryname/pulls?per_page=100&state=all&base=develop";
+		String restURI = "https://test.com/repos/username/repositiryname/pulls?per_page=100&state=all&base=develop";
 		String serverResponse = getServerResponse("/github-server/mergeRequestResponse.json");		
 		doReturn("abcd").when(gitLabConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
@@ -69,7 +69,7 @@ public class GitHubClientImplTest {
 	
 	private ProcessorToolConnection getToolConnection() {
 		ProcessorToolConnection githubToolConnection = new ProcessorToolConnection();
-		githubToolConnection.setUrl("https://api.github.com");
+		githubToolConnection.setUrl("https://test.com");
 		githubToolConnection.setAccessToken("abcd");
 		githubToolConnection.setUsername("username");
 		githubToolConnection.setRepositoryName("repositiryname");

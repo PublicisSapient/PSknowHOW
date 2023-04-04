@@ -99,9 +99,11 @@ class AzureRepoServerClientTest {
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		azureRepoProcessorInfo.setApiVersion("5.1");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		azureRepoProcessorInfo.setPat("8PTAhVLdwUoQk7gUnPfiPXWmOiUojMSJVyl/vIKBJ01X80SocKq1rzKsK9u1QQisyuYXOmeRkZhNTHq648pscw==");
-		azureRepoProcessorInfo.setRepoSlug("AzureSpeedy");
+		azureRepoProcessorInfo.setUrl("https://dev.azure.com/test/testProject");
+		azureRepoProcessorInfo.setPat("testPat");
+		azureRepoProcessorInfo.setRepoSlug("testProject");
+		repo.get(0).setRepoUrl("https://dev.azure.com/test/testProject");
+		repo.get(0).setPat("testPat");
 		String restUri = new AzureRepoServerURIBuilder(repo.get(0), config, azureRepoProcessorInfo).build();
 		when(stashClient.decryptPat(repo.get(0).getPat())).thenReturn("test");
 

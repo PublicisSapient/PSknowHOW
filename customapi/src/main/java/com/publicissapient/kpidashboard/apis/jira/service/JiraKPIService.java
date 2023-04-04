@@ -251,9 +251,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
-	public void populateIterationDataForWorkCompleted(List<IterationKpiModalValue> overAllmodalValues,
+	public void populateIterationDataForOverAllCompletion(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, Object> actualCompletionData, long delay, String devCompletionDate) {
+			Map<String, Object> actualCompletionData, int delay, String devCompletionDate) {
 		int originalEstimate = 0;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());

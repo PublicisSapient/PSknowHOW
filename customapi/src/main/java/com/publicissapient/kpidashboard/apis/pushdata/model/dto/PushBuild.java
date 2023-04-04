@@ -27,6 +27,8 @@ import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,4 +41,17 @@ public class PushBuild extends BuildDeployFields {
 	@NotNull(message = "The buildStatus must not be null.")
 	@JsonProperty("buildStatus")
 	private String buildStatus;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PushBuild that = (PushBuild) o;
+		return this.getJobName().equals(that.getJobName()) && this.getNumber().equals(that.getNumber());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getJobName(), this.getNumber());
+	}
 }

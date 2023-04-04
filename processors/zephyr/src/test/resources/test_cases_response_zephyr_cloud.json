@@ -22,7 +22,7 @@
       ],
       "component": {
         "id": 10023,
-        "self": "https://tetrapak-smartsales.atlassian.net/rest/api/2/component/10023"
+        "self": "https://zephyr.test.com/rest/api/2/component/10023"
       },
       "priority": {
         "id": 610337,
@@ -37,7 +37,7 @@
         "self": "https://api.zephyrscale.smartbear.com/v2/folders/588208"
       },
       "owner": {
-        "self": "https://tetrapak-smartsales.atlassian.net/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
+        "self": "https://zephyr.test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
         "accountId": "5e315421a834270cb0992ca7"
       },
       "testScript": {
@@ -59,7 +59,7 @@
             "self": "https://api.zephyrscale.smartbear.com/v2/links/2318280",
             "issueId": 66229,
             "id": 2318280,
-            "target": "https://tetrapak-smartsales.atlassian.net/rest/api/2/issue/66229",
+            "target": "https://zephyr.test.com/rest/api/2/issue/66229",
             "type": "COVERAGE"
           }
         ],

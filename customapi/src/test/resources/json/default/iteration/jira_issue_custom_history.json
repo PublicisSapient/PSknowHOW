@@ -19,7 +19,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21837",
     "description" : "Plug-in Production & Playground with current ELK setup",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -43,7 +42,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21835",
     "description" : "Plug-in Production & Playground with current ELK setup",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -67,7 +65,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21879",
     "description" : "Plug-in Production & Playground with current ELK setup",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -154,7 +151,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-21782",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -241,7 +237,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-16627",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -6134,7 +6129,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-19928",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -6221,7 +6215,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-20708",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -6308,7 +6301,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-20548",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   },
@@ -6395,7 +6387,6 @@
       }
     ],
     "additionalFilters" : [ ],
-    "url" : "https://tools.publicis.sapient.com/jira/browse/DTS-19822",
     "description" : "Updating automation script for Show/Hide kpis",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
   }
