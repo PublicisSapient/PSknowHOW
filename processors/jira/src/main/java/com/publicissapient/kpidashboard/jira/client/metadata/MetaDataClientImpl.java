@@ -271,7 +271,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
-			populateFieldMappingData(issueTypeMap, workflowMap, projectConfig, templateName, fieldMapping);
+			populateFieldMappingData(issueTypeMap, workflowMap, projectConfig, templateName, fieldMapping, customField);
 
 		} else {
 			fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
@@ -352,7 +352,7 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 
 			if (projectConfig.isKanban()) {
-				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
+				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName, customField);
 			}
 
 		}
@@ -361,9 +361,9 @@ public class MetaDataClientImpl implements MetadataClient {
 	}
 
 	private void populateFieldMappingData(Map<String, List<String>> issueTypeMap, Map<String, List<String>> workflowMap,
-			ProjectConfFieldMapping projectConfig, String templateName, FieldMapping fieldMapping) {
+										  ProjectConfFieldMapping projectConfig, String templateName, FieldMapping fieldMapping, Map<String, String> customField) {
 		if (projectConfig.isKanban()) {
-			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
+			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName, customField);
 		} else {
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
@@ -412,11 +412,24 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectRejectionStatus(CommonConstant.REJECTED);
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
+
+			fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
+			fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
+			fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
+			fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
+			fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
+			fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+
+			fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
+
+			fieldMapping.setJiraStoryPointsCustomField(
+					customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 		}
 	}
 
 	private void populateKanbanFieldMappingData(FieldMapping fieldMapping, Map<String, List<String>> workflowMap,
-			Map<String, List<String>> issueTypeMap, String templateName) {
+												Map<String, List<String>> issueTypeMap, String templateName, Map<String, String> customField) {
 
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
@@ -449,6 +462,17 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
+			fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
+			fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
+			fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
+			fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
+			fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+
+			fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
+
+			fieldMapping.setJiraStoryPointsCustomField(
+					customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 
 		} else {
 			fieldMapping

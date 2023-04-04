@@ -57,6 +57,68 @@ db.getCollection('metadata_identifier').remove({});
                                               ]
                                             }
                                           ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            }
+                                          ],
                                           "workflow": [
                                             {
                                               "type": "firststatus",
@@ -166,6 +228,68 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Story",
                                                 "Enabler Story"
+                                              ]
+                                            }
+                                          ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
                                               ]
                                             }
                                           ],
@@ -281,6 +405,68 @@ db.getCollection('metadata_identifier').remove({});
                                               ]
                                             }
                                           ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            }
+                                          ],
                                           "workflow": [
                                             {
                                               "type": "firststatus",
@@ -372,6 +558,74 @@ db.getCollection('metadata_identifier').remove({});
                                               ]
                                             }
                                           ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "sprint",
+                                              "value": [
+                                                "Sprint"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            }
+                                          ],
                                           "workflow": [
                                             {
                                               "type": "dor",
@@ -449,6 +703,74 @@ db.getCollection('metadata_identifier').remove({});
                                               ]
                                             }
                                           ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "sprint",
+                                              "value": [
+                                                "Sprint"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            }
+                                          ],
                                           "workflow": [
                                             {
                                               "type": "dor",
@@ -523,6 +845,74 @@ db.getCollection('metadata_identifier').remove({});
                                                 "Enabler Story",
                                                 "Change request",
                                                 "Defect"
+                                              ]
+                                            }
+                                          ],
+                                          "customfield": [
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Story Points"
+                                              ]
+                                            },
+                                            {
+                                              "type": "sprint",
+                                              "value": [
+                                                "Sprint"
+                                              ]
+                                            },
+                                            {
+                                              "type": "rootcause",
+                                              "value": [
+                                                "Root Cause"
+                                              ]
+                                            },
+                                            {
+                                              "type": "techdebt",
+                                              "value": [
+                                                "Tech Debt"
+                                              ]
+                                            },
+                                            {
+                                              "type": "uat",
+                                              "value": [
+                                                "UAT"
+                                              ]
+                                            },
+                                            {
+                                              "type": "timeCriticality",
+                                              "value": [
+                                                "Time Criticality"
+                                              ]
+                                            },
+                                            {
+                                              "type": "wsjf",
+                                              "value": [
+                                                "WSJF"
+                                              ]
+                                            },
+                                            {
+                                              "type": "costOfDelay",
+                                              "value": [
+                                                "Cost of Delay"
+                                              ]
+                                            },
+                                            {
+                                              "type": "businessValue",
+                                              "value": [
+                                                "User-Business Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "riskReduction",
+                                              "value": [
+                                                "Risk Reduction-Opportunity Enablement Value"
+                                              ]
+                                            },
+                                            {
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
                                               ]
                                             }
                                           ],
@@ -1270,14 +1660,14 @@ db.getCollection('metadata_identifier').remove({});
                                           "templateName": "Custom Template",
                                           "templateCode": "9",
                                           "isKanban": true,
-                                          "disabled": true,
+                                          "disabled": true
                                         },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Custom Template",
                                           "templateCode": "10",
                                           "isKanban": false,
-                                          "disabled": true,
+                                          "disabled": true
                                         },
                                         {
                                           "tool": "Azure",
