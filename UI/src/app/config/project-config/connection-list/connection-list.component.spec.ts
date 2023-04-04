@@ -182,7 +182,7 @@ describe('ConnectionListComponent', () => {
     {
       connectionName: 'DojoJira2',
       type: 'Jira',
-      username: 'SUPERADMIN',
+      username: 'TESTADMIN',
       baseUrl: 'https://test.com/jira/',
     },
     {

@@ -42,8 +42,8 @@ describe('ManageAssigneeComponent', () => {
 
   it('should update assignee selected status', () => {
     const assignee = {
-      "name": "abikanna1",
-      "displayName": "Abinaya Kannan",
+      "name": "testDisplayName",
+      "displayName": "testDisplayName",
       "checked": true
     };
     const event = {

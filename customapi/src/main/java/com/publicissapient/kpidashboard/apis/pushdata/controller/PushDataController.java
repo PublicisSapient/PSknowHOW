@@ -21,14 +21,20 @@ package com.publicissapient.kpidashboard.apis.pushdata.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +46,8 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
+
+import java.util.List;
 
 @Validated
 @RestController
@@ -53,6 +61,11 @@ public class PushDataController {
 	@Autowired
 	AuthExposeAPIService authExposeAPIService;
 
+	@Autowired
+	private PushDataTraceLogService pushDataTraceLogService;
+
+	final ModelMapper modelMapper = new ModelMapper();
+
 	/**
 	 * push data api for build tools
 	 * 
@@ -64,12 +77,26 @@ public class PushDataController {
 	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
-
+		PushDataTraceLog instance = PushDataTraceLog.getInstance();
+		instance.setPushApiSource("build");
 		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
-		final ModelMapper modelMapper = new ModelMapper();
 		PushBuildDeploy buildDeploy = modelMapper.map(pushBuildDeployDTO, PushBuildDeploy.class);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Saved Records successfully",
 				pushBuildService.processPushDataInput(buildDeploy, exposeApiToken.getBasicProjectConfigId())));
 	}
+
+	@RequestMapping(value = "/tracelog/{basicConfigId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> getTraceLog(@PathVariable String basicConfigId) {
+		List<PushDataTraceLogDTO> allLogs = pushDataTraceLogService.getByProjectConfigId(new ObjectId(basicConfigId));
+		ServiceResponse response;
+		if (CollectionUtils.isNotEmpty(allLogs)) {
+			log.info("Fetching all logs of configId "+basicConfigId);
+			response = new ServiceResponse(true, "Found Logs", allLogs);
+		} else {
+			response = new ServiceResponse(false, "No Logs Present",null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
 
 }
