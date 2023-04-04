@@ -1372,7 +1372,7 @@ public class KpiHelperService { // NOPMD
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
-				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority)));
+				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority).stream().map(String::toLowerCase).collect(Collectors.toList())));
 				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
 			}
 		}
