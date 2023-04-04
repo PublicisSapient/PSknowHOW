@@ -93,15 +93,15 @@ public class TeamcityProcessorJobExecutorTest {
 	public void init() {
 		MockitoAnnotations.initMocks(this);
 		ProcessorToolConnection processorToolConnection = new ProcessorToolConnection();
-		processorToolConnection.setUrl("http://does:matter@jenkins.com");
+		processorToolConnection.setUrl("http://test@test.com");
 		processorToolConnection.setId(new ObjectId("6296661b307f0239477f1e9e"));
 		processorToolConnection.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167659"));
 		processorToolConnection.setJobName("xyz");
 		processorToolConnection.setToolName("Teamcity");
 		processorToolConnection.setConnectionId(new ObjectId("5fa69f5d220038d6a365fec6"));
 		processorToolConnection.setConnectionName("Teamcity connection");
-		processorToolConnection.setUsername("does");
-		processorToolConnection.setPassword("matter");
+		processorToolConnection.setUsername("userName");
+		processorToolConnection.setPassword("password");
 		processorToolConnection.setJobName("jobName");
 
 		projectBasicConfig = new ProjectBasicConfig();

@@ -14,10 +14,10 @@
 						"newValue": 2
 					},
 					"System.NodeName": {
-						"newValue": "AzureSpeedy"
+						"newValue": "TEST"
 					},
 					"System.AreaLevel1": {
-						"newValue": "AzureSpeedy"
+						"newValue": "TEST"
 					},
 					"System.Rev": {
 						"newValue": 1
@@ -32,7 +32,7 @@
 						"newValue": 7
 					},
 					"System.IterationLevel1": {
-						"newValue": "AzureSpeedy"
+						"newValue": "TEST"
 					},
 					"System.IterationLevel2": {
 						"newValue": "Sprint2_June15_June26"
@@ -125,13 +125,13 @@
 						"newValue": 0
 					},
 					"System.TeamProject": {
-						"newValue": "AzureSpeedy"
+						"newValue": "TEST"
 					},
 					"System.AreaPath": {
-						"newValue": "AzureSpeedy"
+						"newValue": "TEST"
 					},
 					"System.IterationPath": {
-						"newValue": "AzureSpeedy\\Sprint2_June15_June26"
+						"newValue": "TEST\\Sprint2_June15_June26"
 					},
 					"System.Title": {
 						"newValue": "StoryTest"
@@ -296,8 +296,8 @@
 						"newValue": 128
 					},
 					"System.IterationPath": {
-						"oldValue": "AzureSpeedy\\Sprint2_June15_June26",
-						"newValue": "AzureSpeedy\\Sprint3_June29_July10"
+						"oldValue": "TEST\\Sprint2_June15_June26",
+						"newValue": "TEST\\Sprint3_June29_July10"
 					}
 				},
 				"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/3"
