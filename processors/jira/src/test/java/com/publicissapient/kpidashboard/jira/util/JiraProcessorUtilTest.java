@@ -125,9 +125,9 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
-	      list.add("Adithya");
+	      list.add("User1");
+	      list.add("User2");
+	      list.add("User3");
 	      JSONArray array = new JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
 	    	  JSONObject d = new JSONObject();
@@ -144,8 +144,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetailNull() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
+	      list.add("User1");
+	      list.add("User2");
 	      list.add(null);
 	      JSONArray array = new JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
@@ -163,9 +163,9 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail1() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
-	      list.add("Adithya");
+	      list.add("User1");
+	      list.add("User2");
+	      list.add("User3");
 	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
 	    	  JSONObject d = new JSONObject();
@@ -182,8 +182,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail1Null() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
+	      list.add("User1");
+	      list.add("User2");
 	      list.add(null);
 	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
