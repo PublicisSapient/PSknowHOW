@@ -514,6 +514,9 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else if (identifier.getType().equals(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE)) {
 				List<String> uatList = createFieldList(allIssueTypes, identifier);
 				issueTypeMap.put(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, uatList);
+			} else if (identifier.getType().equals(CommonConstant.TICKET_COUNT_ISSUE_TYPE)) {
+				List<String> ticketCountList = createFieldList(allIssueTypes, identifier);
+				issueTypeMap.put(CommonConstant.TICKET_COUNT_ISSUE_TYPE, ticketCountList);
 			}
 		}
 		return issueTypeMap;
@@ -583,6 +586,11 @@ public class MetaDataClientImpl implements MetadataClient {
 				case CommonConstant.JIRA_BLOCKED_STATUS: {
 					List<String> list = createFieldList(allworkflow, identifier);
 					workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS, list);
+					break;
+				}
+				case CommonConstant.REJECTION_RESOLUTION: {
+					List<String> list = createFieldList(allworkflow, identifier);
+					workflowMap.put(CommonConstant.REJECTION_RESOLUTION, list);
 					break;
 				}
 				case CommonConstant.JIRA_WAIT_STATUS: {
