@@ -1,19 +1,11 @@
 {
   "expand": "changes,metadata,plan,master,vcsRevisions,artifacts,comments,labels,jiraIssues,stages",
-  "link": {
-    "href": "https://mybamboo.com/rest/api/latest/result/SOME-BUILD71-15",
-    "rel": "self"
-  },
   "plan": {
     "master": {
       "shortName": "build-all-branches",
       "shortKey": "BUILD",
       "type": "chain",
       "enabled": true,
-      "link": {
-        "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD",
-        "rel": "self"
-      },
       "key": "SOME-BUILD",
       "name": "Buyer Tool Application API - build-all-branches",
       "planKey": {
@@ -24,10 +16,6 @@
     "shortKey": "BUILD71",
     "type": "chain_branch",
     "enabled": true,
-    "link": {
-      "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD71",
-      "rel": "self"
-    },
     "key": "SOME-BUILD71",
     "name": "Buyer Tool Application API - build-all-branches - release-2.3.0",
     "planKey": {
@@ -39,10 +27,6 @@
     "shortKey": "BUILD",
     "type": "chain",
     "enabled": true,
-    "link": {
-      "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD",
-      "rel": "self"
-    },
     "key": "SOME-BUILD",
     "name": "Buyer Tool Application API - build-all-branches",
     "planKey": {

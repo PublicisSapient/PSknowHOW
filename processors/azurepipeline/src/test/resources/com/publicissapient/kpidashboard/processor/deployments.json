@@ -6,15 +6,15 @@
       "release": {
         "id": 12,
         "name": "Release-12",
-        "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
+        "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
         "artifacts": [],
-        "webAccessUri": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary",
+        "webAccessUri": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary",
         "_links": {
           "self": {
-            "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
+            "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
           },
           "web": {
-            "href": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
+            "href": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
           }
         }
       },
@@ -26,26 +26,26 @@
           "id": "904c71a2-02fa-4971-bf6b-6380138ad788",
           "name": null
         },
-        "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1",
+        "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1",
         "_links": {
           "self": {
-            "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1"
+            "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1"
           },
           "web": {
-            "href": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=1"
+            "href": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=1"
           }
         }
       },
       "releaseEnvironment": {
         "id": 21,
         "name": "QA server release",
-        "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
+        "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
         "_links": {
           "self": {
-            "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21"
+            "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21"
           },
           "web": {
-            "href": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-logs&environmentId=21&releaseEnvironmentId=21"
+            "href": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-logs&environmentId=21&releaseEnvironmentId=21"
           }
         }
       },
@@ -60,12 +60,12 @@
         "url": "https://spsprodsin2.vssps.visualstudio.com/Abb618ce6-246b-4ea1-8519-7ce9ad761300/_apis/Identities/cbcfb869-68ce-64fe-8369-c9442152bbf2",
         "_links": {
           "avatar": {
-            "href": "https://dev.azure.com/KnowHOW-demo/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+            "href": "https://dev.azure.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
           }
         },
         "id": "cbcfb869-68ce-64fe-8369-c9442152bbf2",
         "uniqueName": "abc",
-        "imageUrl": "https://dev.azure.com/KnowHOW-demo/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
+        "imageUrl": "https://dev.azure.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
         "descriptor": "aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
       },
       "requestedFor": {
@@ -73,12 +73,12 @@
         "url": "https://spsprodsin2.vssps.visualstudio.com/Abb618ce6-246b-4ea1-8519-7ce9ad761300/_apis/Identities/cbcfb869-68ce-64fe-8369-c9442152bbf2",
         "_links": {
           "avatar": {
-            "href": "https://dev.azure.com/KnowHOW-demo/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+            "href": "https://dev.azure.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
           }
         },
         "id": "cbcfb869-68ce-64fe-8369-c9442152bbf2",
         "uniqueName": "abc",
-        "imageUrl": "https://dev.azure.com/KnowHOW-demo/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
+        "imageUrl": "https://dev.azure.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
         "descriptor": "aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
       },
       "queuedOn": "2022-06-01T10:35:42.64Z",
@@ -116,13 +116,13 @@
           "release": {
             "id": 12,
             "name": "Release-12",
-            "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
+            "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
             "_links": {
               "web": {
-                "href": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
+                "href": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
               },
               "self": {
-                "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
+                "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
               }
             }
           },
@@ -131,27 +131,27 @@
             "name": "knowhow-release",
             "path": "\\",
             "projectReference": null,
-            "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0",
+            "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0",
             "_links": {
               "web": {
-                "href": "https://dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=0"
+                "href": "https://dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=0"
               },
               "self": {
-                "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0"
+                "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0"
               }
             }
           },
           "releaseEnvironment": {
             "id": 21,
             "name": "QA server release",
-            "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
+            "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
             "_links": {
               "self": {
-                "href": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/0"
+                "href": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/0"
               }
             }
           },
-          "url": "https://vsrm.dev.azure.com/KnowHOW-demo/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/approvals/56"
+          "url": "https://vsrm.dev.azure.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/approvals/56"
         }
       ],
       "postDeployApprovals": [],
