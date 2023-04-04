@@ -111,6 +111,7 @@ public class JiraServiceR {
 
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
 						kpiRequest.getSprintIncluded());
+				cachedData = null;
 				if (!kpiRequest.getRequestTrackerId().toLowerCase()
 						.contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
