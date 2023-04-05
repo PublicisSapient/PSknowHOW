@@ -156,5 +156,5 @@ public interface JiraIssueRepository
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
-	void deleteByIssueIdAndBasicProjectConfigId(String issueId,  String basicProjectConfigId);
+
 }
