@@ -562,30 +562,35 @@ export class FieldMappingComponent implements OnInit {
 
     submitData = this.handleAdditionalFilters(submitData);
 
-    this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
-      if (response && response['success']) {
-        if (response['data']) {
-          this.confirmationService.confirm({
-            message: `Please note that change in mappings is a deviation from initially configured template.
-            If you continue with the change in mappings then these changes will be mapped to a 
-            Custom template in project configurations which cannot be changed again to a initially configured template.`,
-            header: 'Template Change Info',
-            key: 'templateInfoDialog',
-            accept: () => {
-              this.saveFieldMapping(submitData);
-            },
-            reject: () => {}
+    if(this.selectedToolConfig[0].toolName === 'Jira'){
+      this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
+        if (response && response['success']) {
+          if (response['data']) {
+            this.confirmationService.confirm({
+              message: `Please note that change in mappings is a deviation from initially configured template.
+              If you continue with the change in mappings then these changes will be mapped to a 
+              Custom template in project configurations which cannot be changed again to a initially configured template.`,
+              header: 'Template Change Info',
+              key: 'templateInfoDialog',
+              accept: () => {
+                this.saveFieldMapping(submitData);
+              },
+              reject: () => {}
+            });
+          } else {
+          this.saveFieldMapping(submitData);
+          }
+        }else{
+          this.messenger.add({
+            severity: 'error',
+            summary: 'Some error occurred. Please try again later.'
           });
-        } else {
-        this.saveFieldMapping(submitData);
         }
-      }else{
-        this.messenger.add({
-          severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
-        });
-      }
-    });
+        
+      });
+    }else{
+      this.saveFieldMapping(submitData);
+    }
   
   }
 
