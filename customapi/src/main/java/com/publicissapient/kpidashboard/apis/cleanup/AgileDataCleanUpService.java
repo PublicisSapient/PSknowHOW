@@ -20,9 +20,8 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogsRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +98,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	private SprintRepository sprintRepository;
 
 	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
+	private IssueBacklogsRepository issueBacklogRepository;
 
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
