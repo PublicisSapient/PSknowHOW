@@ -7,7 +7,7 @@
     "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
     "id": "766440",
     "self": "https://test.com/rest/api/latest/issue/766440",
-    "key": "TESTCI-21708",
+    "key": "TEST-21708",
     "fields": {
       "customfield_18111": null,
       "customfield_18112": null,
@@ -361,7 +361,6 @@
       "customfield_16905": null,
       "customfield_16904": null,
       "customfield_16903": null,
-      "customfield_16902": "<div style=\"border-width: 2px;border-style: solid;border-color: red;background-color: orange;text-align: center\">\r\n\t<b style=\"color:blue;\">NOTE</b> <br> \r\n\t<b>Our team supports following applications under \"GDT-Continuous Integration (GI)\" project</b>\r\n\t<Table align=\"center\">\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Stash:</td>\r\n\t\t\t<td align=\"left\">https://coderepository.TEST.com OR http://10.1.13.198:7999/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Jenkins:</td>\r\n\t\t\t<td align=\"left\">https://buildserver.TEST.com OR http://10.1.14.191:8080/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Artifactory:</td>\r\n\t\t\t<td align=\"left\">https://artifactrepository.TEST.com OR http://10.1.14.191:8081/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP SonarQube: </td>\r\n\t\t\t<td align=\"left\">http://10.1.4.254:9000</td>\r\n\t\t</tr>\r\n          </Table>\r\n\r\n\r\n                <br> \r\n\t        <b>\"ONLY India Business Hour\" - 24*5 Weekdays </b>\r\n                 <Table align=\"center\">\r\n\r\n                  <tr>\r\n\t\t\t<td align=\"left\">VET Bitbucket: </td>\r\n\t\t\t<td align=\"left\">https://bitbucket.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n                    \r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Artifactory: </td>\r\n\t\t\t<td align=\"left\">https://artifactory.sharedtools.vet-tools.digitalecp.TEST.com/artifactory/webapp/#/home</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Jenkins: </td>\r\n\t\t\t<td align=\"left\">https://jenkins.sharedtools.vet-tools.digitalecp.TEST.com</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">Consul: </td>\r\n\t\t\t<td align=\"left\">https://consul.prod.vet-prod.digitalecp.TEST.com/ui/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Vault: </td>\r\n\t\t\t<td align=\"left\">https://vault.prod.vet-prod.digitalecp.TEST.com/ui/vault/secrets</td>\r\n\t\t</tr>\r\n               \r\n                <tr>\r\n\t\t\t<td align=\"left\">Prometheus: </td>\r\n\t\t\t<td align=\"left\">http://prometheus.prod.vet-prod.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Grafana: </td>\r\n\t\t\t<td align=\"left\">https://grafana.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n\r\n\r\n\t</Table>\r\n</div>",
       "customfield_16906": null,
       "customfield_16901": null,
       "customfield_12300": null,
@@ -599,14 +598,14 @@
         "self": "https://test.com/rest/api/2/user?username=e7519223",
         "name": "e7519223",
         "key": "e7520219",
-        "emailAddress": "dwarampudi.prakashreddy@sapient.com",
+        "emailAddress": "user@abc.com",
         "avatarUrls": {
           "48x48": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=48",
           "24x24": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=24",
           "16x16": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=16",
           "32x32": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=32"
         },
-        "displayName": "Prakash Reddy Dwarampudi",
+        "displayName": "user",
         "active": true,
         "timeZone": "America/New_York"
       },
@@ -906,7 +905,7 @@
       "components": [{
         "self": "https://test.com/rest/api/2/component/14608",
         "id": "14608",
-        "name": "TESTCI"
+        "name": "TEST"
       }, {
         "self": "https://test.com/rest/api/2/component/14970",
         "id": "14970",
@@ -970,7 +969,7 @@
       "project": {
         "self": "https://test.com/rest/api/2/project/10100",
         "id": "10100",
-        "key": "TESTCI",
+        "key": "TEST",
         "name": "Customer Interaction Management",
         "projectTypeKey": "software",
         "avatarUrls": {
@@ -1046,7 +1045,7 @@
       "customfield_11103": null,
       "customfield_11104": null,
       "customfield_15700": null,
-      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TESTCI Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
+      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TEST Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
       "customfield_14605": null,
       "customfield_10006": null,
       "customfield_14606": null,
@@ -1246,14 +1245,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1272,14 +1271,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1298,14 +1297,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1331,7 +1330,7 @@
     "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
     "id": "678144",
     "self": "https://test.com/rest/api/latest/issue/678144",
-    "key": "TESTCI-21118",
+    "key": "TEST-21118",
     "fields": {
       "customfield_18111": null,
       "customfield_18112": null,
@@ -1476,7 +1475,7 @@
         },
         "outwardIssue": {
           "id": "674349",
-          "key": "TESTCI-21038",
+          "key": "TEST-21038",
           "self": "https://test.com/rest/api/2/issue/674349",
           "fields": {
             "summary": "DE | MTE | R6 | Folder Creation and code deployment",
@@ -1830,7 +1829,6 @@
       "customfield_16905": null,
       "customfield_16904": null,
       "customfield_16903": null,
-      "customfield_16902": "<div style=\"border-width: 2px;border-style: solid;border-color: red;background-color: orange;text-align: center\">\r\n\t<b style=\"color:blue;\">NOTE</b> <br> \r\n\t<b>Our team supports following applications under \"GDT-Continuous Integration (GI)\" project</b>\r\n\t<Table align=\"center\">\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Stash:</td>\r\n\t\t\t<td align=\"left\">https://coderepository.TEST.com OR http://10.1.13.198:7999/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Jenkins:</td>\r\n\t\t\t<td align=\"left\">https://buildserver.TEST.com OR http://10.1.14.191:8080/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Artifactory:</td>\r\n\t\t\t<td align=\"left\">https://artifactrepository.TEST.com OR http://10.1.14.191:8081/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP SonarQube: </td>\r\n\t\t\t<td align=\"left\">http://10.1.4.254:9000</td>\r\n\t\t</tr>\r\n          </Table>\r\n\r\n\r\n                <br> \r\n\t        <b>\"ONLY India Business Hour\" - 24*5 Weekdays </b>\r\n                 <Table align=\"center\">\r\n\r\n                  <tr>\r\n\t\t\t<td align=\"left\">VET Bitbucket: </td>\r\n\t\t\t<td align=\"left\">https://bitbucket.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n                    \r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Artifactory: </td>\r\n\t\t\t<td align=\"left\">https://artifactory.sharedtools.vet-tools.digitalecp.TEST.com/artifactory/webapp/#/home</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Jenkins: </td>\r\n\t\t\t<td align=\"left\">https://jenkins.sharedtools.vet-tools.digitalecp.TEST.com</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">Consul: </td>\r\n\t\t\t<td align=\"left\">https://consul.prod.vet-prod.digitalecp.TEST.com/ui/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Vault: </td>\r\n\t\t\t<td align=\"left\">https://vault.prod.vet-prod.digitalecp.TEST.com/ui/vault/secrets</td>\r\n\t\t</tr>\r\n               \r\n                <tr>\r\n\t\t\t<td align=\"left\">Prometheus: </td>\r\n\t\t\t<td align=\"left\">http://prometheus.prod.vet-prod.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Grafana: </td>\r\n\t\t\t<td align=\"left\">https://grafana.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n\r\n\r\n\t</Table>\r\n</div>",
       "customfield_16906": null,
       "customfield_16901": null,
       "customfield_12300": null,
@@ -2064,14 +2062,14 @@
         "self": "https://test.com/rest/api/2/user?username=e7203063",
         "name": "e7203063",
         "key": "e7203063",
-        "emailAddress": "bthangamuthu@sapient.com",
+        "emailAddress": "user2@abc.com",
         "avatarUrls": {
           "48x48": "https://test.com/secure/useravatar?avatarId=15922",
           "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
           "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
           "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
         },
-        "displayName": "Boominathan Thangamuthu",
+        "displayName": "user2",
         "active": true,
         "timeZone": "America/New_York"
       },
@@ -2430,7 +2428,7 @@
       "project": {
         "self": "https://test.com/rest/api/2/project/10100",
         "id": "10100",
-        "key": "TESTCI",
+        "key": "TEST",
         "name": "Customer Interaction Management",
         "projectTypeKey": "software",
         "avatarUrls": {
@@ -2506,7 +2504,7 @@
       "customfield_11103": null,
       "customfield_11104": null,
       "customfield_15700": null,
-      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TESTCI Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
+      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TEST Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
       "customfield_14605": null,
       "customfield_10006": null,
       "customfield_14606": null,
@@ -2681,7 +2679,6 @@
       "customfield_18801": null,
       "customfield_17711": null,
       "customfield_13110": null,
-      "customfield_17710": "<div id=\"demobox\">\r\n<center>\r\nPlease refer to the <a href=https://us-confluence.TEST.com/x/dL0bBw > Intake Requirements Guidelines </a> page for additional information regarding ClickStream/Customer Engagement/Reporting/Analytics/Data Requirements. \r\n</center>\r\n</div>\r\n<style>\r\n#demobox {\r\n\r\n  align=\"center\";\r\n  background-color: #FFC300 ;\r\n  padding: 2px;\r\n   \r\n}\r\n</style>",
       "customfield_18802": null,
       "customfield_13113": null,
       "customfield_13112": null,
@@ -2707,14 +2704,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7173538",
           "name": "e7173538",
           "key": "e7173538",
-          "emailAddress": "apanda24@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=32"
           },
-          "displayName": "Archana Panda",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2724,8 +2721,8 @@
           "fieldtype": "jira",
           "from": null,
           "fromString": null,
-          "to": "TESTCI-21038",
-          "toString": "This issue testing discovered TESTCI-21038"
+          "to": "TEST-21038",
+          "toString": "This issue testing discovered TEST-21038"
         }]
       }, {
         "id": "8270080",
@@ -2733,14 +2730,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2759,14 +2756,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2785,14 +2782,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7491265",
           "name": "e7491265",
           "key": "e7491265",
-          "emailAddress": "maz.abbas@capgemini.com",
+          "emailAddress": "user5@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7491265&avatarId=19337",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7491265&avatarId=19337",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7491265&avatarId=19337",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7491265&avatarId=19337"
           },
-          "displayName": "Mazher Abbas",
+          "displayName": "user5",
           "active": true,
           "timeZone": "America/Chicago"
         },
@@ -2811,14 +2808,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2827,9 +2824,9 @@
           "field": "assignee",
           "fieldtype": "jira",
           "from": "e7676293",
-          "fromString": "Pushpa Anusha Edara",
+          "fromString": "user4",
           "to": "e7203063",
-          "toString": "Boominathan Thangamuthu"
+          "toString": "user6"
         }]
       }, {
         "id": "8416190",
@@ -2837,14 +2834,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2863,14 +2860,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2889,14 +2886,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2907,7 +2904,7 @@
           "from": null,
           "fromString": null,
           "to": "14871",
-          "toString": "TESTCI Deploy - Sprint 62"
+          "toString": "TEST Deploy - Sprint 62"
         }]
       }, {
         "id": "9352300",
@@ -2915,14 +2912,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
             "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
             "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2941,14 +2938,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?avatarId=15922",
             "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
             "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2981,14 +2978,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?avatarId=15922",
             "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
             "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -3007,14 +3004,14 @@
           "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
             "48x48": "https://test.com/secure/useravatar?avatarId=15922",
             "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
             "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
             "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -3436,7 +3433,7 @@
     "customfield_16304": "Targeted Complete Date",
     "customfield_14119": "Planning Assumptions",
     "customfield_15208": "CCP",
-    "customfield_15209": "TESTCI",
+    "customfield_15209": "TEST",
     "customfield_14110": "Effective Date",
     "customfield_14113": "Date Assigned to Pod for Size/Score",
     "customfield_15202": "Nature of Development",
@@ -3829,7 +3826,7 @@
     "customfield_15509": "GLS",
     "components": "Component/s",
     "customfield_15741": "Backward Compatible",
-    "customfield_15500": "TESTCI",
+    "customfield_15500": "TEST",
     "customfield_15742": "On/Off Configurable",
     "customfield_15740": "Performance Impact",
     "customfield_15503": "DNA",
@@ -4061,7 +4058,7 @@
     "customfield_16419": "Short Term Mitigation",
     "customfield_16418": "Root Cause Analysis",
     "customfield_16413": "Core Microservice GLS",
-    "customfield_16412": "Offers Microservice TESTCI",
+    "customfield_16412": "Offers Microservice TEST",
     "customfield_17500": "Experiment",
     "customfield_16411": "Offers Microservice OCE",
     "customfield_16410": "Offers Microservice eCP",

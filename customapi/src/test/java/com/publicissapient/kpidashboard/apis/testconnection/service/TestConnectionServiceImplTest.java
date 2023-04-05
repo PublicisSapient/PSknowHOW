@@ -144,8 +144,6 @@ public class TestConnectionServiceImplTest {
 		conn.setBaseUrl("https:/abc.com");
 		conn.setAccessToken("testAccessToken");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
-				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());

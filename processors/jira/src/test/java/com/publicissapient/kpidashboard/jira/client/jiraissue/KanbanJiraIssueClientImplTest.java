@@ -81,7 +81,7 @@ public class KanbanJiraIssueClientImplTest {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
-        srs[0]="KnowHOW";
+        srs[0]="TestHOW";
         srs[1]="Defect";
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
@@ -102,7 +102,7 @@ public class KanbanJiraIssueClientImplTest {
         alVersion.add(version);
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
-        stringSet.add("KnowHOW");
+        stringSet.add("TestHOW");
         BasicProject project = new BasicProject(null, "key", null, null);
         Map<String, URI> avatarMap = new HashMap<>();
         avatarMap.put("48x48", new URI("value"));
@@ -110,7 +110,7 @@ public class KanbanJiraIssueClientImplTest {
                 null);
         Issue issue = new Issue("summary", null, "key", 121L, project,
                 new IssueType(null, 11L, "Defect", true, "Description", null),
-                new Status(null,null,"KnowHOW",null,null,null), "description",
+                new Status(null,null,"TestHOW",null,null,null), "description",
                 null, null,null,null, user1, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
@@ -140,7 +140,7 @@ public class KanbanJiraIssueClientImplTest {
         when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString())).thenReturn(Arrays.asList(getKanbanJiraIssue()));
         when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(Mockito.anyString(), Mockito.anyString())).thenReturn(new AssigneeDetails());
         Map<String, LocalDateTime> map = new HashMap<>();
-        map.put("KnowHOW", LocalDateTime.now());
+        map.put("TestHOW", LocalDateTime.now());
         doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
         JiraAdapter jiraAdapter = new OfflineAdapter(jiraProcessorConfig, searchResult, alVersion);
         kanbanJiraIssueClient.processesJiraIssues(projectConfFieldMapping, jiraAdapter, true);
@@ -155,7 +155,7 @@ public class KanbanJiraIssueClientImplTest {
         ArrayList<KanbanIssueCustomHistory> kanbanIssueCustomHistories = new ArrayList<>();
         KanbanIssueCustomHistory kanbanIssueCustomHistory = new KanbanIssueCustomHistory();
         kanbanIssueCustomHistory.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
-        kanbanIssueCustomHistory.setStoryID("DTS-121");
+        kanbanIssueCustomHistory.setStoryID("TEST-121");
         kanbanIssueCustomHistories.add(kanbanIssueCustomHistory);
         ArrayList<KanbanJiraIssue> kanbanJiraIssue = new ArrayList<>();
         KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
@@ -168,7 +168,7 @@ public class KanbanJiraIssueClientImplTest {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
-        srs[0]="KnowHOW";
+        srs[0]="TestHOW";
         srs[1]="Defect";
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
@@ -180,9 +180,9 @@ public class KanbanJiraIssueClientImplTest {
                 projectBasicConfig, jiraToolConfig);
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
-        stringSet.add("KnowHOW");
+        stringSet.add("TestHOW");
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
-                new Status(null,null,"KnowHOW",null,null,null), "description",
+                new Status(null,null,"TestHOW",null,null,null), "description",
                 null, null,null,null,null, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
@@ -203,15 +203,15 @@ public class KanbanJiraIssueClientImplTest {
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         fieldMapping.setEstimationCriteria("Actual Estimation");
         String[] srs = new String[2];
-        srs[0]="KnowHOW";
-        srs[1]="KnowHOW1";
+        srs[0]="TestHOW";
+        srs[1]="TestHOW1";
         fieldMapping.setJiraIssueTypeNames(srs);
         FieldMapping fieldMappingDup = new FieldMapping();
         fieldMappingDup.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         fieldMappingDup.setEstimationCriteria("Actual Estimation");
         String[] srsDup = new String[2];
-        srsDup[0]="KnowHOW";
-        srsDup[1]="KnowHOW1";
+        srsDup[0]="TestHOW";
+        srsDup[1]="TestHOW1";
         fieldMappingDup.setJiraIssueTypeNames(srs);
         fieldMappingDup.setJiraStoryPointsCustomField("customfield");
         kanbanJiraIssueClient.setEstimate(kanbanJiraIssue, map, fieldMapping, jiraProcessorConfig);
@@ -223,17 +223,17 @@ public class KanbanJiraIssueClientImplTest {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
-        srs[0]="KnowHOW";
-        srs[1]="KnowHOW1";
+        srs[0]="TestHOW";
+        srs[1]="TestHOW1";
         fieldMapping.setJiraIssueTypeNames(srs);
         Map<String, IssueField> map = new HashMap<>();
         IssueField issueField = null;
         map.put("111", issueField);
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
-        stringSet.add("KnowHOW");
+        stringSet.add("TestHOW");
         Issue issue = new Issue("summary", null, "key", 121L, null, new IssueType(null, 11L, "Defect", true, "Description", null),
-                new Status(null,null,"KnowHOW",null,null,null), "description",
+                new Status(null,null,"TestHOW",null,null,null), "description",
                 null, null,null,null,null, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
@@ -257,9 +257,9 @@ public class KanbanJiraIssueClientImplTest {
         map.put("111", issueField);
         Set<String> stringSet = new HashSet<>();
         stringSet.add("Bug");
-        stringSet.add("KnowHOW");
+        stringSet.add("TestHOW");
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
-                new Status(null,null,"KnowHOW",null,null,null), "description",
+                new Status(null,null,"TestHOW",null,null,null), "description",
                 null, null,null,null,null, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,stringSet);
@@ -279,7 +279,7 @@ public class KanbanJiraIssueClientImplTest {
         fieldMapping.setEnvImpacted("yes");
         fieldMapping.setJiraTechDebtIdentification(JiraConstants.LABELS);
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
-                new Status(null,null,"KnowHOW",null,null,null), "description",
+                new Status(null,null,"TestHOW",null,null,null), "description",
                 null, null,null,null,null, DateTime.now(), DateTime.now(),
                 null,null,null,null, null,null,null,null,
                 null,null,null,null,null,null,null,null,null);
@@ -310,7 +310,7 @@ public class KanbanJiraIssueClientImplTest {
         kanbanJiraIssue.setTypeId("123");
         kanbanJiraIssue.setTypeName("Defect");
         kanbanJiraIssue.setChangeDate("2021-07-26T10:22:12.0000000");
-        kanbanJiraIssue.setSTeamID("KnowHOW");
+        kanbanJiraIssue.setSTeamID("TestHOW");
         kanbanJiraIssue.setBasicProjectConfigId("5e9db8f1e4b0caefbfa8e0c7");
         return kanbanJiraIssue;
     }
@@ -323,7 +323,7 @@ public class KanbanJiraIssueClientImplTest {
         projectConfFieldMapping.setIssueCount(2);
         projectConfFieldMapping.setKanban(true);
         projectConfFieldMapping.setSprintCount(12);
-        projectConfFieldMapping.setProjectName("KnowHOW");
+        projectConfFieldMapping.setProjectName("TestHOW");
         projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
         projectConfFieldMapping.setJiraToolConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
@@ -344,7 +344,7 @@ public class KanbanJiraIssueClientImplTest {
         Connection connection = getConnectionObject();
         jiraToolConfig.setConnection(Optional.of(connection));
         BoardDetails boardDetails = new BoardDetails();
-        boardDetails.setBoardName("knowHOW");
+        boardDetails.setBoardName("TestHOW");
         boardDetails.setBoardId("123");
         ArrayList<BoardDetails> al = new ArrayList<>();
         al.add(boardDetails);
@@ -355,7 +355,7 @@ public class KanbanJiraIssueClientImplTest {
     private static Connection getConnectionObject() {
         Connection connection = new Connection();
         connection.setType("Defect");
-        connection.setConnectionName("DTS");
+        connection.setConnectionName("TEST");
         connection.setCloudEnv(true);
         connection.setBaseUrl("url");
         connection.setUsername("test");
@@ -375,11 +375,11 @@ public class KanbanJiraIssueClientImplTest {
         connection.setOfflineFilePath("offlineFilePath");
         connection.setCreatedAt("now");
         connection.setUpdatedAt("later");
-        connection.setUpdatedBy("KnowHOW");
+        connection.setUpdatedBy("TestHOW");
         connection.setConnPrivate(true);
-        connection.setUpdatedBy("KnowHOW");
+        connection.setUpdatedBy("TestHOW");
         ArrayList<String> alStrings = new ArrayList<>();
-        alStrings.add("KnowHOW");
+        alStrings.add("TestHOW");
         connection.setConnectionUsers(alStrings);
         return connection;
     }

@@ -49,12 +49,12 @@ public class JiraProcessorUtilTest {
 
 	@Test
 	public void createJql() {
-		String result = "project IN ('DTS') AND ((issuetype IN ('Story') AND updatedDate>='2020-08-24') OR (issuetype IN ('Defect') AND updatedDate>='2020-08-23')) ORDER BY updated DESC";
+		String result = "project IN ('TEST') AND ((issuetype IN ('Story') AND updatedDate>='2020-08-24') OR (issuetype IN ('Defect') AND updatedDate>='2020-08-23')) ORDER BY updated DESC";
 
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");
-		String actual = JiraProcessorUtil.createJql("DTS", startDateTimeStrByIssueType);//TODO resolve
+		String actual = JiraProcessorUtil.createJql("TEST", startDateTimeStrByIssueType);//TODO resolve
 		Assert.assertEquals(result, actual);
 
 	}
@@ -72,8 +72,8 @@ public class JiraProcessorUtilTest {
 	 */
 	@Test
 	public void processJql_dataNotExist2() {
-		String query = "project IN ('DTS') and updatedDate > '20-21-22' ORDER BY updated DESC";
-		String expected = "project in ('dts') and updateddate > '20-21-22'   ORDER BY updated DESC";
+		String query = "project IN ('TEST') and updatedDate > '20-21-22' ORDER BY updated DESC";
+		String expected = "project in ('test') and updateddate > '20-21-22'   ORDER BY updated DESC";
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");
@@ -125,9 +125,9 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
-	      list.add("Adithya");
+	      list.add("User1");
+	      list.add("User2");
+	      list.add("User3");
 	      JSONArray array = new JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
 	    	  JSONObject d = new JSONObject();
@@ -144,8 +144,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetailNull() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
+	      list.add("User1");
+	      list.add("User2");
 	      list.add(null);
 	      JSONArray array = new JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
@@ -163,9 +163,9 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail1() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
-	      list.add("Adithya");
+	      list.add("User1");
+	      list.add("User2");
+	      list.add("User3");
 	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
 	      for(int i = 0; i < list.size(); i++) {
 	    	  JSONObject d = new JSONObject();
@@ -182,8 +182,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void processSprintDetail1Null() throws ParseException, JSONException {
 	      List<String> list = new ArrayList<String>();
-	      list.add("Raja");
-	      list.add("Jai");
+	      list.add("User1");
+	      list.add("User2");
 	      list.add(null);
 	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
 	      for(int i = 0; i < list.size(); i++) {

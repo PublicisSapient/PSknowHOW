@@ -389,7 +389,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
 	  {
         kpiId: 'kpi128',
-        kpiName: 'Overall Completion Status',
+        kpiName: 'Planned Work Status',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus']}
@@ -427,7 +427,14 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Quality Status',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Defects Mapping' : ['jiradefecttype'] }
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR','jiradefecttype'] }
+      },
+	  {
+        kpiId: 'kpi134',
+        kpiName: 'Unplanned Work Status',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { }
       },
       {
         kpiId: 'kpi989',

@@ -224,8 +224,8 @@ public class NetOpenTicketCountStatusImplTest {
 		Map<String, Map<String, Set<String>>> jiraHistoryStatusAndDateWiseIssueMap = new HashMap<>();
 		Map<String, Set<String>> dateWiseIssueMap = new HashMap<>();
 		Set<String> ids = new HashSet<>();
-		ids.add("DTS-11232");
-		ids.add("DTS-11233");
+		ids.add("TEST-11232");
+		ids.add("TEST-11233");
 		dateWiseIssueMap.put("2022-07-01", ids);
 		dateWiseIssueMap.put("2022-07-02", ids);
 		jiraHistoryStatusAndDateWiseIssueMap.put("Open", dateWiseIssueMap);

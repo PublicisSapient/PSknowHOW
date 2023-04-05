@@ -191,9 +191,9 @@ public class AzureRepoProcessorJobExecutorTest {
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		azureRepoProcessorInfo.setApiVersion("5.6");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/testUser/testProject");
+		azureRepoProcessorInfo.setUrl("https://test.com/testUser/testProject");
 		azureRepoProcessorInfo.setPat("testPat");
-		azureRepoProcessorInfo.setRepoSlug("knowHow");
+		azureRepoProcessorInfo.setRepoSlug("testRepoSlug");
 		
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
@@ -244,7 +244,7 @@ public class AzureRepoProcessorJobExecutorTest {
 		objectMapper3.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<ProjectToolConfig> toolConfigs = Arrays.asList(objectMapper3.readValue(file3, ProjectToolConfig[].class));
 		Connection connection = new Connection();
-		connection.setBaseUrl("https://dev.azure.com/testUser/testProject");
+		connection.setBaseUrl("https://test.com/testUser/testProject");
 		connection.setAccessToken("testAccessToken");
 		Mockito.when(processorItemRepository.findByProcessorIdIn(processorIds)).thenReturn(processorItems);
 		Mockito.when(connectionsRepository.findById(toolConfigs.get(0).getConnectionId())).thenReturn(Optional.of(connection));
