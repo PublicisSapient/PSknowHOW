@@ -422,6 +422,8 @@ public class OnlineDataProcessorImplTest {
 	private MetadataIdentifier createMetaDataIdentifier() {
 		String tool = "Azure";
 		Boolean isKanban = Boolean.FALSE;
+		String templateName = "DOJO Safe Template";
+		String templateCode = "6";
 
 		Identifier issue1 = createIdentifier("story",
 				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request"));
@@ -467,7 +469,7 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool, isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
 				issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}
