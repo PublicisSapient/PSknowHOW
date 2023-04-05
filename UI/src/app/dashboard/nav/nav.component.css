@@ -306,10 +306,10 @@
     bottom: 0.8rem;
   }
 
-  .disable-kanban{
-    pointer-events: none;
-    background-color: rgba(0, 0, 0, 0.1) !important;
-    color: rgba(0, 0, 0, 0.38) !important;
-    border: 1px solid rgba(0,0,0,0.2) !important;
-  }
+}
+.disable-kanban{
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  color: rgba(0, 0, 0, 0.38) !important;
+  border: 1px solid rgba(0,0,0,0.2) !important;
 }
