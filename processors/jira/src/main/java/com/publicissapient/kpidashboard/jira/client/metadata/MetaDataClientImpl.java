@@ -263,22 +263,26 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 		fieldMapping.setProjectToolConfigId(projectConfig.getJiraToolConfigId());
 		fieldMapping.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
+		fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
+		fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
+		fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
+		fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
+		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
+		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
+		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
+		fieldMapping.setJiraStoryPointsCustomField(
+				customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
+
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
-			populateFieldMappingData(issueTypeMap, workflowMap, projectConfig, templateName, fieldMapping, customField);
+			populateFieldMappingData(issueTypeMap, workflowMap, projectConfig, templateName, fieldMapping);
 
 		} else {
-			fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 			fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-			fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
-			fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
-			fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
-			fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
-			fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
-			fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
 
 			List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 
@@ -290,7 +294,6 @@ public class MetaDataClientImpl implements MetadataClient {
 				fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
 			}
 			fieldMapping.setIssueStatusExcluMissingWork(firstStatusList);
-			fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 			fieldMapping.setJiraStatusForDevelopment(workflowMap.get(CommonConstant.DEVELOPMENT));
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
@@ -316,8 +319,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraDefectRemovalIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 			fieldMapping.setJiraTestAutomationIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraSprintVelocityIssueType(
@@ -347,7 +348,7 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 
 			if (projectConfig.isKanban()) {
-				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName, customField);
+				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
 			}
 
 		}
@@ -356,9 +357,9 @@ public class MetaDataClientImpl implements MetadataClient {
 	}
 
 	private void populateFieldMappingData(Map<String, List<String>> issueTypeMap, Map<String, List<String>> workflowMap,
-										  ProjectConfFieldMapping projectConfig, String templateName, FieldMapping fieldMapping, Map<String, String> customField) {
+			ProjectConfFieldMapping projectConfig, String templateName, FieldMapping fieldMapping) {
 		if (projectConfig.isKanban()) {
-			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName, customField);
+			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
 		} else {
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
@@ -407,24 +408,12 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectRejectionStatus(CommonConstant.REJECTED);
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
-			fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
 
-			fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
-			fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
-			fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
-			fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
-			fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
-			fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
-
-			fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
-
-			fieldMapping.setJiraStoryPointsCustomField(
-					customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 		}
 	}
 
 	private void populateKanbanFieldMappingData(FieldMapping fieldMapping, Map<String, List<String>> workflowMap,
-												Map<String, List<String>> issueTypeMap, String templateName, Map<String, String> customField) {
+			Map<String, List<String>> issueTypeMap, String templateName) {
 
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
@@ -457,17 +446,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-			fieldMapping.setEpicCostOfDelay(customField.get(CommonConstant.COST_OF_DELAY));
-			fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
-			fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
-			fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
-			fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
-			fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
-
-			fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
-
-			fieldMapping.setJiraStoryPointsCustomField(
-					customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 
 		} else {
 			fieldMapping
