@@ -54,16 +54,12 @@ export class NavComponent implements OnInit {
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    this.service.setSelectedType('Scrum'); //sednig selected tab to service layer
     this.selectedType ='scrum';
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
     if(this.selectedTab.includes('-')){
       this.selectedTab = this.selectedTab.split('-').join(' ');
     }
-    // this.boardId = isNaN(+selectedTab?.split('/')[3])
-    //   ? this.boardId
-    //   : +selectedTab.split('/')[3];
     this.service.setSelectedTab(this.selectedTab);
   }
 
@@ -86,7 +82,7 @@ export class NavComponent implements OnInit {
   // call when user is seleting tab
   selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    if(selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog'){
+    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog') && this.selectedType.toLowerCase() !== 'scrum'){
       this.setSelectedType('Scrum');
     }
     this.service.setSelectedTab(this.selectedTab);

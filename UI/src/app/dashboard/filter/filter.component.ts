@@ -113,7 +113,7 @@ export class FilterComponent implements OnInit {
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData ={};
-  allowMultipleSelection: boolean = true;
+  allowMultipleSelection = true;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -142,7 +142,7 @@ export class FilterComponent implements OnInit {
 
      // added as scrum/kanban moved into nav component
     this.service.onTypeRefresh.subscribe(type=>{
-      this.selectedType(type);
+        this.selectedType(type);
     });
 
     this.subscriptions.push(
@@ -193,7 +193,6 @@ export class FilterComponent implements OnInit {
     }
     // setting max date user can select in calendar
     this.maxDate = new Date();
-    this.resetFilterApplyObj();
 
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
@@ -296,7 +295,6 @@ export class FilterComponent implements OnInit {
   }
 
   selectedType(type) {
-    this.resetFilterApplyObj();
     if(this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
       this.allowMultipleSelection = false;
     }else{
@@ -310,7 +308,6 @@ export class FilterComponent implements OnInit {
     } else {
       this.kanban = false;
     }
-    this.resetFilterApplyObj();
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
@@ -656,20 +653,10 @@ export class FilterComponent implements OnInit {
         filterApplied,
       );
 
-      this.limitSelectedTrendValueListChars();
     }
 
   }
 
-  limitSelectedTrendValueListChars() {
-    const selectedTrendNodeValueList: NodeList = document.querySelectorAll('.trend-line-value .ng-value .ng-value-label');
-    for (let i = 0; i < selectedTrendNodeValueList.length; i++) {
-      if ((selectedTrendNodeValueList[i] as HTMLElement).innerText.length > 10) {
-        (selectedTrendNodeValueList[i] as HTMLElement).innerText =
-          (selectedTrendNodeValueList[i] as HTMLElement).innerText.slice(0,10) + '...';
-      }
-    }
-  }
 
   resetAdditionalFiltersToInitialValue() {
     for (let i = 0; i < Object.keys(this.additionalFiltersDdn)?.length; i++) {
@@ -679,8 +666,7 @@ export class FilterComponent implements OnInit {
 
   createFilterApplyData() {
     this.resetFilterApplyObj();
-    let isAdditionalFilterFlag: boolean =
-      this.selectedFilterArray?.filter((item) => item?.additionalFilters?.length > 0)?.length > 0? true : false;
+    let isAdditionalFilterFlag = this.selectedFilterArray?.filter((item) => item?.additionalFilters?.length > 0)?.length > 0? true : false;
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
       if (isAdditionalFilterFlag) {
         const temp = this.selectedFilterArray[i]?.additionalFilters;
@@ -879,12 +865,6 @@ export class FilterComponent implements OnInit {
   }
   /** get kpi ordered list ends */
 
-  sanitizeDate(date) {
-    return (
-      date.getFullYear() + '/' + (parseInt(date.getMonth()) + 1 < 10 ? '0' + (parseInt(date.getMonth()) + 1) : parseInt(date.getMonth()) + 1) + '/' +
-      (parseInt(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate())
-    );
-  }
 
   setKPIOrder() {
     const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
@@ -987,13 +967,10 @@ export class FilterComponent implements OnInit {
       this.filterForm
       ?.get('selectedTrendValue')
       .setValue([this.trendLineValueList[0]['nodeId']]);
-      console.log(this.filterForm.get('selectedTrendValue'));
-      
     }else{
       this.filterForm
       ?.get('selectedTrendValue')
       .setValue(this.trendLineValueList[0]['nodeId']);
-      console.log(this.filterForm.get('selectedTrendValue'));
     }
   }
 
