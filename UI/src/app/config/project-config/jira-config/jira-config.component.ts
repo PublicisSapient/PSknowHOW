@@ -2135,7 +2135,13 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
+     
+    }
+
+    if(this.urlParam === 'Jira'){
       submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
+    }else{
+      delete submitData['metadataTemplateCode'];
     }
 
     if (this.urlParam === 'AzurePipeline') {
