@@ -1292,18 +1292,14 @@ public class KPIExcelUtility {
 			blankDueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString();
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			iterationKpiModalValue.setPotentialOverallDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			if (LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())
-					.compareTo(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)) > 0) {
+			if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) >= 0) {
+				if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+						.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) <= 1) {
+					markerValue = Constant.AMBER;
+				}
+			} else {
 				markerValue = Constant.RED;
-			}
-			String endDate = (sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
-					? sprintDetails.getCompleteDate()
-					: sprintDetails.getEndDate();
-			if (DateUtil.stringToLocalDate(endDate, DateUtil.TIME_FORMAT_WITH_SEC)
-					.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) >= 0
-					&& (DateUtil.stringToLocalDate(endDate, DateUtil.TIME_FORMAT_WITH_SEC)
-							.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) <= 1)) {
-				markerValue = Constant.AMBER;
 			}
 			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 

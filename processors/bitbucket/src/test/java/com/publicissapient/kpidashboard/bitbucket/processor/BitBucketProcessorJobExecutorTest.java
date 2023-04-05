@@ -185,7 +185,7 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketRepos.add(bitbucketRepo);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
@@ -194,7 +194,7 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
@@ -224,7 +224,7 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
@@ -233,7 +233,7 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
@@ -254,7 +254,7 @@ class BitBucketProcessorJobExecutorTest {
 	void testGetResponse() throws Exception {
 		String userName = "test";
 		String password = "test";
-		String url = "https://tools.publicis.sapient.com/scm.git";
+		String url = "https://test.com/scm.git";
 		try {
 			Whitebox.invokeMethod(basicBitBucketClient, "getResponse", userName, password, url);
 		} catch(RestClientException e) {

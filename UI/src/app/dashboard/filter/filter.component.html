@@ -221,7 +221,7 @@
    <div class="p-d-flex">
       <div class="back-btn-wraper">
       <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-         <a routerLink="mydashboard" class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</a>
+         <button  class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
       </div>
      </div>
       <div class="username-btn-wraper" role="button">

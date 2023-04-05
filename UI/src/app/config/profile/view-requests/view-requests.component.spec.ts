@@ -45,7 +45,7 @@ describe('ViewRequestsComponent', () => {
     success: true,
     data: [{
       _id: '5da428e6e645ca28a026e729',
-      username: 'anamital',
+      username: 'testUser',
       status: 'Pending',
       projects: [{
         projectName: 'check',
@@ -57,7 +57,7 @@ describe('ViewRequestsComponent', () => {
       }]
     }, {
       _id: '5da46ff3e645ca33dc927b83',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -70,7 +70,7 @@ describe('ViewRequestsComponent', () => {
       }]
     }, {
       _id: '5da47bdde645ca33dc927ba8',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -83,7 +83,7 @@ describe('ViewRequestsComponent', () => {
       }]
     }, {
       _id: '5da47c2ae645ca33dc927bb3',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -139,7 +139,7 @@ describe('ViewRequestsComponent', () => {
 
   // const fakeAcceptRequestData = {
   //   'id': '5de631c02ab79c000990489e',
-  //   'username': 'Rishabh',
+  //   'username': 'testUser',
   //   'status': 'Approved',
   //   'reviewComments': '',
   //   'roles': [{
@@ -166,7 +166,7 @@ describe('ViewRequestsComponent', () => {
 
   const fakeAcceptRequestData = {
     id: '61cc34b463780d7cd623cc04',
-    username: 'RishabhQA',
+    username: 'testUserQA',
     status: 'Pending',
     reviewComments: '',
     role: 'ROLE_PROJECT_ADMIN',
@@ -191,7 +191,7 @@ describe('ViewRequestsComponent', () => {
   //   'success': true,
   //   'data': [{
   //     'id': '5de631c02ab79c000990489e',
-  //     'username': 'Rishabh',
+  //     'username': 'testUser',
   //     'status': 'Approved',
   //     'reviewComments': '',
   //     'roles': [{
