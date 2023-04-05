@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogsRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +98,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	private SprintRepository sprintRepository;
 
 	@Autowired
-	private IssueBacklogsRepository issueBacklogRepository;
+	private IssueBacklogRepository issueBacklogRepository;
 
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;

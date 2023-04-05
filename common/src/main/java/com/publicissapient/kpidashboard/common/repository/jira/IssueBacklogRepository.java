@@ -1,6 +1,6 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogs;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @Repository
-public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, ObjectId>, QuerydslPredicateExecutor<IssueBacklogs> {
+public interface IssueBacklogRepository extends CrudRepository<IssueBacklog, ObjectId>, QuerydslPredicateExecutor<IssueBacklog> {
     /**
      * This essentially returns the max change date from the collection, based
      * on the last change date (or default delta change date property) available
@@ -25,8 +25,8 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      *         existing collection
      */
     @Query
-    List<IssueBacklogs> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-                                                                                      String changeDate);
+    List<IssueBacklog> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
+                                                                                         String changeDate);
 
     /**
      * This essentially returns the max change date from the collection, based
@@ -44,8 +44,8 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      */
     @Deprecated
     @Query
-    List<IssueBacklogs> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-                                                                                                       String projectKey, String changeDate);
+    List<IssueBacklog> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
+                                                                                                      String projectKey, String changeDate);
 
     /**
      * This essentially returns the max change date from the collection, based
@@ -62,7 +62,7 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      *         existing collection
      */
     @Query
-    List<IssueBacklogs> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+    List<IssueBacklog> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
             ObjectId processorId, String basicProjectConfigId, String changeDate);
 
     /**
@@ -81,7 +81,7 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      * @return IssueBacklogs object
      */
     @Query
-    IssueBacklogs findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
+    IssueBacklog findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
             ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
 
     /**
@@ -94,7 +94,7 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      * @return the feature id by id
      */
     @Query(fields = "{'issueId' : 1}")
-    List<IssueBacklogs> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
+    List<IssueBacklog> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
 
     /**
@@ -105,9 +105,9 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      * @return the story by number
      */
     @Query(" {'number' : ?0 }")
-    List<IssueBacklogs> getStoryByNumber(String number);
+    List<IssueBacklog> getStoryByNumber(String number);
 
-    List<IssueBacklogs> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
+    List<IssueBacklog> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
     /**
      * Find one document for given basicProjectConfigId.
@@ -116,7 +116,7 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      *            basicProjectConfigId
      * @return IssueBacklogs
      */
-    IssueBacklogs findTopByBasicProjectConfigId(String basicProjectConfigId);
+    IssueBacklog findTopByBasicProjectConfigId(String basicProjectConfigId);
 
     /**
      * Deletes all documents that matches with given basicProjectConfigId.
@@ -135,7 +135,7 @@ public interface IssueBacklogsRepository extends CrudRepository<IssueBacklogs, O
      *            basicProjectConfigId
      * @return IssueBacklogs
      */
-    List<IssueBacklogs> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
+    List<IssueBacklog> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
     void deleteByIssueIdAndBasicProjectConfigId(String issueId,  String basicProjectConfigId);
 

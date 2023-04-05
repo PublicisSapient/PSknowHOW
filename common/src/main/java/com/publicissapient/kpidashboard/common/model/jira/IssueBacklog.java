@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Document(collection = "issue_backlog")
-public class IssueBacklogs extends BasicModel implements Cloneable {
+public class IssueBacklog extends BasicModel implements Cloneable {
 	private ObjectId processorId;
 	/*
 	 * Story data

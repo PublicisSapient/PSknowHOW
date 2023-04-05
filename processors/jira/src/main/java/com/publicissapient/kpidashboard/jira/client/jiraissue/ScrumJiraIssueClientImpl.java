@@ -42,13 +42,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogs;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogsRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.catalina.mapper.Mapper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -64,9 +63,7 @@ import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.MDC;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
@@ -162,7 +159,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private HandleJiraHistory handleJiraHistory;
 
 	@Autowired
-	private IssueBacklogsRepository issueBacklogRepository;
+	private IssueBacklogRepository issueBacklogRepository;
 
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
@@ -591,11 +588,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Set<Assignee> assigneeSetToSave = new HashSet<>();
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
-		List<IssueBacklogs> issueBacklogsToSave=new ArrayList<>();
+		List<IssueBacklog> issueBacklogToSave =new ArrayList<>();
 		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave=new ArrayList<>();
 		List<JiraIssue> jiraIssuesToDelete = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToDelete = new ArrayList<>();
-		List<IssueBacklogs> issueBacklogsToDelete=new ArrayList<>();
+		List<IssueBacklog> issueBacklogToDelete =new ArrayList<>();
 		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete=new ArrayList<>();
 
 		if (null == currentPagedJiraRs) {
@@ -623,7 +620,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
 			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueNumber);
-			IssueBacklogs issueBacklog = getIssueBacklog(projectConfig, issueId);
+			IssueBacklog issueBacklog = getIssueBacklog(projectConfig, issueId);
 			IssueBacklogCustomHistory issueBacklogCustomHistory = getIssueBacklogCustomHistory(projectConfig, issueNumber);
 			boolean jiraIssuePresentInDb = jiraIssue.getIssueId()!=null? true : false;
 			boolean backlogPresentInDb = issueBacklog.getIssueId()!=null? true : false;
@@ -699,18 +696,19 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
 					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
 					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
+					//When issue is moved from active sprint to backlog/future sprint
 					if(jiraIssuePresentInDb)
 					{
 						jiraIssuesToDelete.add(jiraIssue);
 						jiraIssueHistoryToDelete.add(jiraIssueHistory);
 					}
 					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
-					issueBacklogsToSave.add(issueBacklog);
+					issueBacklogToSave.add(issueBacklog);
 				}
 				else if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                      if(backlogPresentInDb)
 					 {
-						 issueBacklogsToDelete.add(issueBacklog);
+						 issueBacklogToDelete.add(issueBacklog);
 						 issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
 					 }
 					jiraIssuesToSave.add(jiraIssue);
@@ -719,16 +717,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			}
 		}
+
 		// Deleting from MongoDB
 		jiraIssueRepository.deleteAll(jiraIssuesToDelete);
 		jiraIssueCustomHistoryRepository.deleteAll(jiraIssueHistoryToDelete);
-		issueBacklogRepository.deleteAll(issueBacklogsToDelete);
+		issueBacklogRepository.deleteAll(issueBacklogToDelete);
 		issueBacklogCustomHistoryRepository.deleteAll(issueBacklogCustomHistoryToDelete);
 
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		issueBacklogRepository.saveAll(issueBacklogsToSave);
+		issueBacklogRepository.saveAll(issueBacklogToSave);
 		issueBacklogCustomHistoryRepository.saveAll(issueBacklogCustomHistoryToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
@@ -774,7 +773,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		issueBacklogCustomHistory.setDescription(jiraIssueHistory.getDescription());
 	}
 
-	private void concertJiraIssueToBacklog(JiraIssue jiraIssue, IssueBacklogs issueBacklog) {
+	private void concertJiraIssueToBacklog(JiraIssue jiraIssue, IssueBacklog issueBacklog) {
 		issueBacklog.setProcessorId(jiraIssue.getProcessorId());
 		issueBacklog.setIssueId(jiraIssue.getIssueId());
 		issueBacklog.setNumber(jiraIssue.getNumber());
@@ -2003,17 +2002,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
-	private IssueBacklogs getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
-		IssueBacklogs issueBacklog;
+	private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
+		IssueBacklog issueBacklog;
 		issueBacklog=findOneIssueBacklog(issueId, projectConfig.getBasicProjectConfigId().toString());
 		if(issueBacklog==null){
-			issueBacklog=new IssueBacklogs();
+			issueBacklog=new IssueBacklog();
 		}
 		return issueBacklog;
 	}
 
-	private IssueBacklogs findOneIssueBacklog(String issueId, String basicProjectConfigId) {
-		List<IssueBacklogs> issueBacklogs = issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId),
+	private IssueBacklog findOneIssueBacklog(String issueId, String basicProjectConfigId) {
+		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId),
 				basicProjectConfigId);
 
 		if (issueBacklogs.size() > 1) {
