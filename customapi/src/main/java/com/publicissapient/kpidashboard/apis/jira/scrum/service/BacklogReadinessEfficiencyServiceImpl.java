@@ -62,7 +62,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BacklogReadinessEfficiencyServiceImpl.class);
 
-	private static final double backlogStrengthForFilter = 0.0;
+	private static final double DEFAULT_BACKLOG_STRENGTH = 0.0;
 
 	private static final String DAYS = "days";
 
@@ -192,8 +192,10 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+		FieldMapping fieldMapping = latestSprint != null
+				? configHelperService.getFieldMappingMap()
+						.get(latestSprint.getProjectFilter().getBasicProjectConfigId())
+				: new FieldMapping();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 
@@ -241,9 +243,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
 							Double.valueOf(issueCount), storyPoint, null, SP, modalValues);
-					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, backlogStrengthForFilter,
+					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, DEFAULT_BACKLOG_STRENGTH,
 							null, null, SPRINT, null);
-					LOGGER.debug("Issue type: " + issueType + "priority: " + "Cycle time: " + cycleTime);
+					LOGGER.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
 					IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
 							cycleTime / Double.valueOf(issueCount), null, null, DAYS, null);
 					data.add(issuesForDevelopment);
@@ -258,11 +260,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
 					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, SP, overAllmodalValues);
-			LOGGER.debug("Overall  the avg velocity of the previous sprint: " + avgVelocity);
+			LOGGER.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
 			double strength = Math.round(overAllStoryPoints.get(0) / avgVelocity);
 			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
 					null);
-			LOGGER.debug("Overall  the cycle time is : " + overAllCycleTime.get());
+			LOGGER.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
 			IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
 					overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0)), null, null, DAYS, null);
 			data.add(overAllIssues);
@@ -311,7 +313,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				difference.set(difference.get() + new Duration(createdDate, changedDate).getStandardDays());
 			}
 		}
-		LOGGER.debug("cycle time for the issue " + jiraIssue.getNumber() + " is " + difference);
+		LOGGER.debug("cycle time for the issue {} is {}", jiraIssue.getNumber(), difference.get());
 		return difference;
 	}
 
@@ -347,7 +349,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssues, fieldMapping);
 			storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
 		});
-		LOGGER.debug("Velocity for " + sprintCountForBackLogStrength + " sprints is " + storyPoint.get());
+		LOGGER.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
 		return Double.valueOf(storyPoint.get() / sprintCountForBackLogStrength);
 	}
 

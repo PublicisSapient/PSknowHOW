@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.jira.scrum.service.BacklogReadinessEfficiencyServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;

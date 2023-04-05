@@ -58,8 +58,8 @@ public class SprintVelocityServiceHelper {
 						});
 						Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
 								sd.getSprintID());
-						LOGGER.debug("Issue count for the sprint " + sd.getSprintID() + " is "
-								+ filterIssueDetailsSet.size());
+						LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
+								filterIssueDetailsSet.size());
 						currentSprintLeafVelocityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 					});
 				}
@@ -100,7 +100,7 @@ public class SprintVelocityServiceHelper {
 			FieldMapping fieldMapping) {
 		double sprintVelocityForCurrentLeaf = 0.0d;
 		if (CollectionUtils.isNotEmpty(sprintJiraIssues.get(currentNodeIdentifier))) {
-			LOGGER.debug("Current Node identifier is present in sprintjirsissues map" + currentNodeIdentifier);
+			LOGGER.debug("Current Node identifier is present in sprintjirsissues map {} ", currentNodeIdentifier);
 			List<JiraIssue> jiraIssueList = sprintJiraIssues.get(currentNodeIdentifier);
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -115,8 +115,8 @@ public class SprintVelocityServiceHelper {
 			}
 		} else {
 			if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
-				LOGGER.debug("Current Node identifier is present in currentSprintLeafVelocityMap map"
-						+ currentNodeIdentifier);
+				LOGGER.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
+						currentNodeIdentifier);
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -132,8 +132,8 @@ public class SprintVelocityServiceHelper {
 				}
 			}
 		}
-		LOGGER.debug("Sprint velocity for the sprint " + currentNodeIdentifier.getValue() + " is "
-				+ sprintVelocityForCurrentLeaf);
+		LOGGER.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
+				sprintVelocityForCurrentLeaf);
 		return sprintVelocityForCurrentLeaf;
 	}
 
