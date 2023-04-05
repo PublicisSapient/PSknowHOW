@@ -3043,7 +3043,7 @@ db.getCollection('kpi_master').insert(
         },
         {
            "type": "paragraph",
-           "value": "Issues finishing post issue due date are marked in RED"
+           "value": "Issues finishing post iteration are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3062,7 +3062,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Overall Completion Status",
+    "kpiName": "Planned Work Status",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
@@ -3077,7 +3077,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
             "type": "paragraph",
-            "value": "Overall Completion status explains the planned vs actual progress weighed in terms of issues and size of work."
+            "value": "Planned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",
@@ -3436,6 +3436,40 @@ db.getCollection('kpi_master').insert(
      "showTrend": false,
      "boxType": "3_column"
    },
+   {
+     "kpiId": "kpi134",
+     "kpiName": "Unplanned Work Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 14,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,
+     "chartType": null,
+     "kpiInfo": {
+       "details": [
+         {
+             "type": "paragraph",
+             "value": "Unplanned Work status keep track of the issues which doesn't have due date."
+         },
+         {
+           "type": "paragraph",
+           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+         }
+       ]
+     },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isSquadSupport": false,
+     "kpiFilter": "multiSelectDropDown",
+     "boxType": "2_column",
+     "calculateMaturity": false
+  },
   {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",

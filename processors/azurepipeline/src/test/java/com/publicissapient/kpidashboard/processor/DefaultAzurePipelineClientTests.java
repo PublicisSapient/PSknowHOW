@@ -78,12 +78,12 @@ public class DefaultAzurePipelineClientTests {
 	@BeforeEach
 	public void init() {
 		Mockito.when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
-		AZUREPIPELINE_SAMPLE_SERVER_ONE.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		AZUREPIPELINE_SAMPLE_SERVER_ONE.setUrl("https://test.com/testUser/testProject");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setApiVersion("5.1");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setJobName("1");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setPat("patKey");
 
-		AZUREPIPELINE_SAMPLE_SERVER_TWO.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		AZUREPIPELINE_SAMPLE_SERVER_TWO.setUrl("https://test.com/testUser/testProject");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setApiVersion("5.1");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setJobName("2");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setPat("patKey");
@@ -91,27 +91,27 @@ public class DefaultAzurePipelineClientTests {
 
 	@Test
 	public void joinURLsTest() throws Exception {
-		String u1 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy",
+		String u1 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds?api-version=5.1", u1);
+		assertEquals("https://test.com/testUser/testProject/_apis/build/builds?api-version=5.1", u1);
 
-		String u2 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "test",
+		String u2 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "test",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u2);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u2);
 
-		String u3 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "/test/",
+		String u3 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "/test/",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u3);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u3);
 
-		String u4 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "///test",
+		String u4 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "///test",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u4);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u4);
 	}
 
 	@Test
 	public void verifyBasicAuth() throws Exception {
 		@SuppressWarnings("unused")
-		URL u = new URL(new URL("https://dev.azure.com/sundeepm/AzureSpeedy"),
+		URL u = new URL(new URL("https://test.com/testUser/testProject"),
 				"/_apis/build/builds" + "?api-version=5.1");
 
 		HttpHeaders headers = AzurePipelineUtils.createHeaders("wrggipp62ak7kvtfc4qqc56fsbt3uxphsv5yo4ezabynbote2ipw");
@@ -130,7 +130,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultAzurePipelineClient.doRestCall("https://dev.azure.com/sundeepm/AzureSpeedy",
+		defaultAzurePipelineClient.doRestCall("https://test.com/testUser/testProject",
 				AZUREPIPELINE_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class));
@@ -147,7 +147,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultAzurePipelineClient.doRestCall("https://dev.azure.com/sundeepm/AzureSpeedy",
+		defaultAzurePipelineClient.doRestCall("https://test.com/testUser/testProject",
 				AZUREPIPELINE_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class));

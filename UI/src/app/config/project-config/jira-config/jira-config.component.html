@@ -202,6 +202,14 @@
                                         [attr.disabled]="!this[form_elem.disabled] ? true : null"></textarea>
                                 </ng-container>
                             </div>
+                            <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
+                                <ng-container>
+                                    <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                        <p-dropdown [options]="jiraTemplate"  optionLabel="templateName"
+                                        id="{{form_elem.id}}" formControlName="{{form_elem.id}}"
+                                        ></p-dropdown>
+                                </ng-container>
+                            </div>
                             <div *ngSwitchCase="'button'" class="p-mb-3">
                                 <ng-container>
                                     <label for="{{form_elem.id}}"

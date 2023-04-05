@@ -63,7 +63,7 @@ class SprintClientImplTest {
 		
 		BoardDetails jiraBoard = new BoardDetails();
 		jiraBoard.setBoardId("11856");
-		jiraBoard.setBoardName("DTS");
+		jiraBoard.setBoardName("TEST");
 		List<BoardDetails> jiraBoardList = new ArrayList<>();
 		jiraBoardList.add(jiraBoard);
 		projectToolConfig.setBoards(jiraBoardList);
