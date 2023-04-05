@@ -333,6 +333,9 @@ public class KpiHelperService { // NOPMD
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
