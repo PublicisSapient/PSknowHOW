@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -37,6 +36,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -160,7 +160,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 	private static List<JiraIssue> excludeLinkedDefectStories(List<JiraIssue> totalStoryList,
 			List<JiraIssue> firstTimePassStoryList, Set<String> listOfStory) {
-		if (CollectionUtils.isNotEmpty(listOfStory)) {
+		if (CollectionUtils.isNotEmpty(totalStoryList)) {
 
 			firstTimePassStoryList = totalStoryList.stream()
 					.filter(jiraIssue -> !listOfStory.contains(jiraIssue.getNumber())).collect(Collectors.toList());
@@ -195,6 +195,23 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					.collect(Collectors.toList());
 		}
 		return firstTimePassStoryList;
+	}
+
+	private static List<Integer> getOverAllFTPR(List<Integer> overAllFTPS,
+												List<JiraIssue> finalFirstTimePassStoryList, JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
+				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
+			overAllFTPS.set(0, overAllFTPS.get(0) + 1);
+		}
+		return overAllFTPS;
+	}
+
+	private static Set<String> getDefectIds(Set<String> listOfStory, List<JiraIssue> totalDeffects) {
+		if (CollectionUtils.isNotEmpty(totalDeffects)) {
+			listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+					.collect(Collectors.toSet());
+		}
+		return listOfStory;
 	}
 
 	private double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
@@ -300,86 +317,44 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// rejection
 			firstTimePassStoryList = ftprBasedOnResolutionTypeForRejection(fieldMapping, firstTimePassStoryList);
 
-			// exclude stories from FTPR with return transaction
-			kpiHelperService.removeStoriesWithReturnTransaction(firstTimePassStoryList, totalJiraIssuesHistory);
+			if (CollectionUtils.isNotEmpty(firstTimePassStoryList)
+					&& CollectionUtils.isNotEmpty(totalJiraIssuesHistory)) {
+				// exclude stories from FTPR with return transaction
+				kpiHelperService.removeStoriesWithReturnTransaction(firstTimePassStoryList, totalJiraIssuesHistory);
+
+			}
 
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, List<String>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> projectWiseRCA = new HashMap<>();
-			Map<String, List<JiraIssue>> priorityWiseTotalIssues = new HashMap<>();
-			Map<String, List<JiraIssue>> priorityWiseTotalFTPSIssues = new HashMap<>();
-
-			// consider stories based on defect priority to exclude from FTPR field mapping
-			firstTimePassStoryList = getIssueList(fieldMapping, totalStoryList, firstTimePassStoryList, totalDeffects,
-					configPriority, projectWisePriority);
-
-			// consider stories based on RCA values to exclude from FTPR field mapping
-			firstTimePassStoryList = getFTPSListBasedOnRCA(fieldMapping, totalStoryList, firstTimePassStoryList,
-					totalDeffects, projectWiseRCA);
-
-			if (CollectionUtils.isNotEmpty(totalStoryList)) {
-
-				priorityWiseTotalIssues = totalStoryList.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getPriority));
-			}
 
 			if (CollectionUtils.isNotEmpty(firstTimePassStoryList)) {
 
-				priorityWiseTotalFTPSIssues = firstTimePassStoryList.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getPriority));
+				// consider stories based on defect priority to exclude from FTPR field mapping
+				firstTimePassStoryList = getIssueList(fieldMapping, totalStoryList, firstTimePassStoryList,
+						totalDeffects, configPriority, projectWisePriority);
+
+				// consider stories based on RCA values to exclude from FTPR field mapping
+				firstTimePassStoryList = getFTPSListBasedOnRCA(fieldMapping, totalStoryList, firstTimePassStoryList,
+						totalDeffects, projectWiseRCA);
+
 			}
 
-			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllFTPS = Arrays.asList(0);
 			List<Integer> overAllStory = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+			List<IterationKpiModalValue> modalValues = new ArrayList<>();
 
-			for (Map.Entry<String, List<JiraIssue>> entry : priorityWiseTotalIssues.entrySet()) {
-				String priority = entry.getKey();
-				List<JiraIssue> issues = entry.getValue();
-				priorities.add(priority);
-				if (priorityWiseTotalFTPSIssues.containsKey(priority)) {
+			for (JiraIssue jiraIssue : totalStoryList) {
 
-					List<JiraIssue> finalFirstTimePassStoryList = priorityWiseTotalFTPSIssues.get(priority).stream()
-							.collect(Collectors.toList());
-					List<IterationKpiModalValue> modalValues = new ArrayList<>();
-					List<String> expressions = new ArrayList<>();
-					int priorityWiseFTPS = 0;
-					int priorityWiseTotalStory = 0;
-					for (JiraIssue jiraIssue : issues) {
+				overAllStory.set(0, overAllStory.get(0) + 1);
 
-						priorityWiseTotalStory = priorityWiseTotalStory + 1;
-						overAllStory.set(0, overAllStory.get(0) + 1);
+				overAllFTPS = getOverAllFTPR(overAllFTPS, firstTimePassStoryList, jiraIssue);
 
-						priorityWiseFTPS = getPriorityWiseFTPS(overAllFTPS, finalFirstTimePassStoryList, priorityWiseFTPS, jiraIssue);
+				KPIExcelUtility.populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
+						firstTimePassStoryList, listOfStory, totalDeffects);
 
-						KPIExcelUtility.populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
-								finalFirstTimePassStoryList, listOfStory, totalDeffects);
-
-					}
-
-					List<IterationKpiData> data = new ArrayList<>();
-					expressions.add(FIRST_TIME_PASS_STORIES);
-					expressions.add(TOTAL_STORIES);
-					expressions.add(PERCENTAGE);
-
-					IterationKpiData ftprStories = new IterationKpiData(FIRST_TIME_PASS_STORIES,
-							(double) priorityWiseFTPS, null, null, null, null);
-
-					IterationKpiData stories = new IterationKpiData(TOTAL_STORIES, (double) priorityWiseTotalStory,
-							null, null, null, modalValues);
-
-					IterationKpiData ftprPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE,
-							calculateFTPR(priorityWiseFTPS, priorityWiseTotalStory), null, null, Constant.PERCENTAGE,
-							null, expressions);
-
-					data.add(ftprStories);
-					data.add(stories);
-					data.add(ftprPercentage);
-					IterationKpiValue iterationKpiValue = new IterationKpiValue(priority, null, data);
-					iterationKpiValues.add(iterationKpiValue);
-				}
 			}
 
 			List<IterationKpiData> data = new ArrayList<>();
@@ -391,8 +366,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					null, null, null, overAllmodalValues);
 
 			IterationKpiData overAllFTPRPercentage = new IterationKpiData(FIRST_TIME_PASS_PERCENTAGE,
-					calculateFTPR(firstTimePassStoryList.size(), totalStoryList.size()), null, null,
-					Constant.PERCENTAGE, null);
+					calculateFTPR(overAllFTPS.get(0), overAllStory.get(0)), null, null, Constant.PERCENTAGE, null);
 
 			data.add(overAllFTPRStories);
 			data.add(overAllStories);
@@ -405,23 +379,6 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			kpiElement.setModalHeads(KPIExcelColumn.FIRST_TIME_PASS_RATE_ITERATION.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
-	}
-
-	private static int getPriorityWiseFTPS(List<Integer> overAllFTPS, List<JiraIssue> finalFirstTimePassStoryList, int priorityWiseFTPS, JiraIssue jiraIssue) {
-		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
-				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
-			priorityWiseFTPS = priorityWiseFTPS + 1;
-			overAllFTPS.set(0, overAllFTPS.get(0) + 1);
-		}
-		return priorityWiseFTPS;
-	}
-
-	private static Set<String> getDefectIds(Set<String> listOfStory, List<JiraIssue> totalDeffects) {
-		if (CollectionUtils.isNotEmpty(totalDeffects)) {
-			listOfStory = totalDeffects.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
-					.collect(Collectors.toSet());
-		}
-		return listOfStory;
 	}
 
 }
