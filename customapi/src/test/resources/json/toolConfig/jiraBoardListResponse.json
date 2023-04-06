@@ -6,13 +6,11 @@
   "values": [
     {
       "id": 11862,
-      "self": "https://test.server.com/jira/rest/agile/1.0/board/11862",
       "name": "Test | XYZ | Scrum Board",
       "type": "scrum"
     },
     {
       "id": 14857,
-      "self": "https://test.server.com/jira/rest/agile/1.0/board/14857",
       "name": "Test | ABC Support | Scrum Board",
       "type": "scrum"
     }

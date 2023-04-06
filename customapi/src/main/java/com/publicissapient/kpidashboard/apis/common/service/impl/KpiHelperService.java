@@ -34,8 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.*;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +65,12 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
@@ -76,6 +80,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHi
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -102,7 +107,6 @@ public class KpiHelperService { // NOPMD
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String ISSUE_DATA = "issueData";
 	private static final String FIELD_STATUS = "status";
-	private static final String BLANK = "";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -1307,13 +1311,13 @@ public class KpiHelperService { // NOPMD
 	 * @param projectWiseRCA
 	 * @return
 	 */
-	public List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
 			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> priorityRemaining = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
 			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
 					priorityRemaining.add(jiraIssue);
 				}
 			} else {
@@ -1369,7 +1373,7 @@ public class KpiHelperService { // NOPMD
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
-				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority)));
+				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority).stream().map(String::toLowerCase).collect(Collectors.toList())));
 				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
 			}
 		}
@@ -1377,20 +1381,21 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 *
-	 * @param totalSPrintReportStories
+	 * @param totalSprintReportStories
 	 * @param sprintReportDefects
 	 * @param mapOfFilters
 	 * @param uniqueProjectMap
 	 * @param sprintDetails
 	 * @return
 	 */
-	public Map<String, List<JiraIssue>> getSubTaskDefectsBySprint(Set<String> totalSPrintReportStories,
+
+	public Map<String, List<JiraIssue>> getSubTaskDefectsBySprint(Set<String> totalSprintReportStories,
 			Set<String> sprintReportDefects, Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, List<SprintDetails> sprintDetails) {
 
 		Map<String, List<JiraIssue>> sprintWiseSubTask = new HashMap<>();
 
-		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSPrintReportStories,
+		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSprintReportStories,
 				uniqueProjectMap);
 		List<JiraIssue> subTaskBugs = totalBugs.stream()
 				.filter(jiraIssue -> !sprintReportDefects.contains(jiraIssue.getNumber())).collect(Collectors.toList());

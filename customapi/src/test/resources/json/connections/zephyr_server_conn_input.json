@@ -2,9 +2,6 @@
   {
     "type": "Zephyr",
     "connectionName": "Zephyr Test",
-    "baseUrl": "https://tools.publicis.sapient.com/jira",
-    "username": "test",
-    "password": "YxRKGZGVU7o4FhKfzGkBIXfMQUSjRrL+zxiuri9Ltg3VFcKz/SeBlysbwlHbMmgUO1ZwTOchwMMMwMZrkPkXX1ENpKiv9EWEDZvVOtqvHHEm8R4jH+GjlT575Sn9g0isE12Qh9KsZPlqw3CxzCWCCSvGnZOX5BXuxiVoMT2U6DsNB0eMUMG2kxNwai7LEhz+LGgdocZ+qH2fb34ksVqLOR4KjuN2WRBXKkzfYAnCgm8csmehOIbMZUSUXUpx6d9jxPg/F1emSNtdoWfPEWOjifVm/h3LYvBmOSq7d7bR+7ArkWOsAhBiGRlTQ2Glbs6L49CPWbclD5J6u9heu9wkAA==",
     "apiEndPoint": "/rest/atm/1.0",
     "connPrivate": false,
     "cloudEnv": false

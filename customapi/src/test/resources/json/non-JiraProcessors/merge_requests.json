@@ -10,11 +10,11 @@
     "createdDate" : 1660037655000,
     "updatedDate" : 1660037968000,
     "closedDate" : 1660037968000,
-    "fromBranch" : "feature/Daya-DTS-17942",
+    "fromBranch" : "feature/Daya-TEST-17942",
     "toBranch" : "develop",
     "repoSlug" : "NA",
     "projKey" : "KnowHow",
-    "author" : "dayshank2",
+    "author" : "testUser1",
     "reviewers" : [
       "76546582"
     ],

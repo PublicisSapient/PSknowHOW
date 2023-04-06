@@ -2,15 +2,15 @@
     {
       "sc": "default-organization",
       "id": "AVu3b-MAphY78UZXuYHp",
-      "k": "com.publicissapient.kpidashboard.sonar:TestProject",
-      "nm": "com.publicissapient.kpidashboard.sonar:TestProject",
+      "k": "testPackage.sonar:TestProject",
+      "nm": "testPackage.sonar:TestProject",
       "qu": "TRK"
     },
     {
       "sc": "default-organization",
       "id": "BVx3b-MAphY78UZXuYHp",
-      "k": "com.publicissapient.kpidashboard.sonar:AnotherTestProject",
-      "nm": "com.publicissapient.kpidashboard.sonar:AnotherTestProject",
+      "k": "testPackage.sonar:AnotherTestProject",
+      "nm": "testPackage.sonar:AnotherTestProject",
       "qu": "TRK"
     }
   ]

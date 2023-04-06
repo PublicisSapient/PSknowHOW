@@ -430,10 +430,7 @@ public final class KpiDataHelper {
 					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
-		// when a story is expected to get completed, the subsequent story will be
-		// picked up the next working day
-		LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal, 1);
-		pivotPCD = workingDayAfterAdditionofDays == null ? pivotPCD : workingDayAfterAdditionofDays;
+		pivotPCD = pivotPCDLocal == null ? pivotPCD : pivotPCDLocal;
 		return pivotPCD;
 	}
 
@@ -448,7 +445,7 @@ public final class KpiDataHelper {
 	private static LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD,
 			int estimatedTime) {
 		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
-				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+				? DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
 	}
 
@@ -522,13 +519,16 @@ public final class KpiDataHelper {
 		return localDateListMap;
 	}
 
+	/*
+	 * add remaining estimates to the PCD calculated from the previous stories
+	 */
 	private static LocalDate createPotentialClosedDate(SprintDetails sprintDetails, int remainingEstimateTime,
 			LocalDate pivotPCD) {
 		LocalDate pcd = null;
 		if (pivotPCD == null) {
 			// for the first calculation
 			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
-					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					? DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					: LocalDate.now();
 
 			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(startDate, remainingEstimateTime);

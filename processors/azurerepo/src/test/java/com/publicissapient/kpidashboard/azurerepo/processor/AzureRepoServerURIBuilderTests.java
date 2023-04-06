@@ -50,16 +50,16 @@ class AzureRepoServerURIBuilderTests {
 	public void init() {
 		
 		Map<String, Object> options = new HashMap<>();
-		options.put("repositoryName", "AzureSpeedy");
+		options.put("repositoryName", "testRepo");
 		options.put("apiVersion", "5.1");
 		
 		when(config.getApi()).thenReturn("_apis/git/repositories");
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		azureRepoProcessorInfo.setApiVersion("5.1");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		azureRepoProcessorInfo.setPat("9cZJr0+Z5bKUKUDRd0llzQrif1teMof18n93nRX6OsERvNiAOOawZ");
-		azureRepoProcessorInfo.setRepositoryName("AzureSpeedy");
+		azureRepoProcessorInfo.setUrl("https://test.com/testUser/testRepo");
+		azureRepoProcessorInfo.setPat("testPat");
+		azureRepoProcessorInfo.setRepositoryName("testRepo");
 		
 		uriBuilder = new AzureRepoServerURIBuilder(azureRepoRepo, config,azureRepoProcessorInfo);
 	}
@@ -67,7 +67,7 @@ class AzureRepoServerURIBuilderTests {
 	@Test
 	public void testBuild() throws Exception{	
 		String url = uriBuilder.build();
-		String expected = "https://dev.azure.com/sundeepm/AzureSpeedy/_apis/git/repositories/AzureSpeedy/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
+		String expected = "https://test.com/testUser/testRepo/_apis/git/repositories/testRepo/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
 		Assert.assertEquals(expected, url);
 	}
 
