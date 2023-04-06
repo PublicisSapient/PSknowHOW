@@ -65,15 +65,15 @@ import lombok.extern.slf4j.Slf4j;
 @RunWith(MockitoJUnitRunner.class)
 public class BambooClientDeployImplTest {
 
-	private static final String DOES = "tst-ll-SystemAdmin";
+	private static final String DOES = "test";
 
 	private static final String ALL_DEPLOYMENT_JOBS = "/rest/api/latest/search/deployments.json?max-result=2000";
 	private static final String DOES_MATTER = "does:matter";
-	private static final String BASE_URL = "https://tools.publicis.sapient.com/bamboo/";
+	private static final String BASE_URL = "https://xyz.com/bamboo/";
 	private static final String HTTP_BAMBOO_COM_JOB_JOB1 = "http://bamboo.com/job/job1";
 	private static final String BASE_URL_WITH_ENVIRONMENT = "/rest/api/latest/deploy/environment/test/results";
-	private static final String MATTER = "32X[r<>5k^y+ZefV";
-	private static final String HTTP_SERVER_JOB_JOB2_2 = "https://tools.publicis.sapient.com/bamboo/rest/api/latest/result/HDEP-AST/140";
+	private static final String MATTER = "test";
+	private static final String HTTP_SERVER_JOB_JOB2_2 = "https://xyz.com/bamboo/rest/api/latest/result/HDEP-AST/140";
 	private static final String URL_TEST = HTTP_SERVER_JOB_JOB2_2;
 	private static final String HTTP_EMAIL = "http://does:matter@bamboo.com";
 	private static final ProcessorToolConnection PROJECT_TOOL_CONNECTION_1 = new ProcessorToolConnection();
@@ -127,7 +127,7 @@ public class BambooClientDeployImplTest {
 	public void appendToURLTest1() throws Exception {
 		String url = BambooClient.appendToURL(BASE_URL, ALL_DEPLOYMENT_JOBS);
 		assertEquals("appendToURL() with one param test",
-				"https://tools.publicis.sapient.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000",
+				"https://xyz.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000",
 				url);
 	}
 
@@ -135,20 +135,20 @@ public class BambooClientDeployImplTest {
 	public void appendToURLTest2() throws Exception {
 		String u4 = BambooClient.appendToURL(BASE_URL, BASE_URL_WITH_ENVIRONMENT, "1234");
 		assertEquals("appendToURL() with two params test",
-				"https://tools.publicis.sapient.com/bamboo/rest/api/latest/deploy/environment/test/results/1234", u4);
+				"https://xyz.com/bamboo/rest/api/latest/deploy/environment/test/results/1234", u4);
 	}
 
 	//@Test
 	public void checkBambooConnection() {
 		try {
-			HttpEntity<String> headers = generateHeader("tst-4ll-SystemAdmin:32X[r<>5k^y+ZefV");
+			HttpEntity<String> headers = generateHeader("test:decryptPassword");
 			when(restClient.exchange(
 					eq(URI.create(
-							"https://tools.publicis.sapient.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
+							"https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
 					eq(HttpMethod.GET), eq(headers), eq(String.class))).thenReturn(
 							new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
 			bambooClientDeploy.connectBamboo(
-					"https://tools.publicis.sapient.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
+					"https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
 					PROJECT_TOOL_CONNECTION_1, headers);
 			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class));
 		} catch (IOException e) {

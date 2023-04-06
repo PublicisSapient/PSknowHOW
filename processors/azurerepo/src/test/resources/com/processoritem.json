@@ -6,13 +6,11 @@
     "processorId" : "5eeb595c0cccfd093afd2b43",
     "updatedTime" : 1592878560320,
     "toolDetailsMap" : {
-        "pat" : "8PTAhVLdwUoQk7gUnPfiPXWmOiUojMSJVyl/vIKBJ01X80SocKq1rzKsK9u1QQisyuYXOmeRkZhNTHq648pscw==",
         "apiVersion" : "5.1",
         "scm" : "AzureRepository",
-        "repositoryName" : "AzureSpeedy",
+        "repositoryName" : "testRepo",
         "branch" : "master",
-        "userID" : null,
-        "url" : "https://dev.azure.com/sundeepm/AzureSpeedy"
+        "userID" : null
        },
     "version" : 2,
     "toolConfigId" : "5eeb00c3c4cf29def8a6c359"

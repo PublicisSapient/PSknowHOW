@@ -141,7 +141,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
-
 					resultListMap.put(STORY_LIST, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -177,9 +176,18 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, startDate, endDate, kpiRequest);
 
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
-			List<JiraIssue> totalJiraIssues = (List<JiraIssue>) resultMap.get(STORY_LIST);
+			List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(STORY_LIST);
+			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+			Map<String, List<String>> projectWisePriority = new HashMap<>();
+			Map<String, List<String>> configPriority = customApiConfig.getPriority();
+			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+			Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping);
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, latestSprint.getProjectFilter().getBasicProjectConfigId(), fieldMapping);
+			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 					.orElse(Collections.emptyList());
@@ -187,6 +195,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					JiraIssue::getNumber, Function.identity()));
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
+			allDefects=KpiHelperService.excludePriorityAndRCA(allDefects,projectWisePriority,projectWiseRCA);
 			List<JiraIssue> allStory = totalJiraIssues.stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 

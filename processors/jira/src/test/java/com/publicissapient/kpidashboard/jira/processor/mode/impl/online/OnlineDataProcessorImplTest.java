@@ -125,9 +125,7 @@ import io.atlassian.util.concurrent.Promise;
 
 @ExtendWith(SpringExtension.class)
 public class OnlineDataProcessorImplTest {
-	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-	private static final String AES_ENCRYPTED_PASSWORD = "DqxbAHmXRuo6o8/OJhSz0Q==";
-	private static final String USERNAME = "admin";
+	private static final String PLAIN_TEXT_PASSWORD = "TestPlainPassword";
 	List<ProjectBasicConfig> scrumProjectList = new ArrayList<>();
 	List<ProjectBasicConfig> kanbanProjectlist = new ArrayList<>();
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -337,7 +335,130 @@ public class OnlineDataProcessorImplTest {
 
 		}
 
-		when(metadataIdentifierRepository.findByToolAndIsKanban(any(), any())).thenReturn(metadataIdentifier);
+		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any())).thenReturn(metadataIdentifier);
+
+		when(projectRestClient.getProject("TEST")).thenReturn(projectPromise);
+		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
+		when(connectionRepository.findById(any())).thenReturn(conn);
+		when(subProjectRepository.findBybasicProjectConfigIdIn(any())).thenReturn(subProjectsList);
+		Project project = mock(Project.class);
+		when(projectPromise.claim()).thenReturn(project);
+		when(jiraProcessorConfig.isFetchMetadata()).thenReturn(Boolean.TRUE);
+		when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
+		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
+		onlineDataProcessor.validateAndCollectIssues(scrumProjectList);
+	}
+
+	@Test
+	public void validateAndCollectIssuesDOJOKanban() throws URISyntaxException {
+		List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
+		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
+		projectToolConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
+		projectToolConfig.setConnectionId(new ObjectId("5b719d06a500d00814bfb2b9"));
+		projectToolConfig.setToolName(ProcessorConstants.JIRA);
+		projectToolConfigList.add(projectToolConfig);
+		Optional<Connection> conn = Optional.of(new Connection());
+		conn.get().setOffline(Boolean.FALSE);
+
+		List<Subproject> subProjectsList = new ArrayList<>();
+		Subproject subproject = new Subproject();
+		subproject.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
+		subproject.setToolConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
+		subProjectsList.add(subproject);
+
+		prepareIssuesData();
+		prepareAccountHierarchy();
+		JiraInfo jiraInfo = JiraInfo.builder()
+				.jiraConfigBaseUrl(projectConfFieldMapping.getJira().getConnection().get().getBaseUrl())
+				.username(projectConfFieldMapping.getJira().getConnection().get().getUsername())
+				.password(projectConfFieldMapping.getJira().getConnection().get().getPassword())
+				.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
+
+		JiraInfo jiraInfoOAuth = JiraInfo.builder().jiraConfigBaseUrl(jiraOAuthProperties.getJiraBaseURL())
+				.jiraConfigAccessToken(jiraOAuthProperties.getAccessToken())
+				.username(projectConfFieldMapping2.getJira().getConnection().get().getUsername())
+				.password(projectConfFieldMapping2.getJira().getConnection().get().getPassword())
+				.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
+		when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
+		when(jiraRestClientFactory.getJiraClient(jiraInfo)).thenReturn(client);
+		when(jiraRestClientFactory.getJiraClient(jiraInfoOAuth)).thenReturn(client);
+		when(jiraProcessorConfig.getStartDate()).thenReturn("2020-01-01T00:00:00.000000");
+		when(jiraIssueClientFactory.getJiraIssueDataClient(any())).thenReturn(scrumJiraIssueClient);
+
+		when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
+		when(jiraProcessorConfig.getPageSize()).thenReturn(4);
+		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
+		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+				.thenReturn(promisedRs);
+		SearchResult sr = Mockito.mock(SearchResult.class);
+		when(promisedRs.claim()).thenReturn(sr);
+		when(sr.getIssues()).thenReturn(issueIterable);
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
+		when(jiraProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
+		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(new ArrayList<JiraIssue>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(), any()))
+				.thenReturn(new ArrayList<JiraIssueCustomHistory>());
+		when(user.getName()).thenReturn("First LastName");
+		when(user.getDisplayName()).thenReturn("First LastName");
+		issueMockData();
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
+				scrumProjectList.get(0).getId())).thenReturn(Arrays.asList(accountHierarchy));
+		ProjectRestClient projectRestClient = mock(ProjectRestClient.class);
+		when(client.getProjectClient()).thenReturn(projectRestClient);
+
+		MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
+		when(client.getMetadataClient()).thenReturn(metadataRestClient);
+
+		Field field1 = new Field("Story Points", "customfield_20803", FieldType.JIRA, true, true, true, null);
+		Field field2 = new Field("Sprint", "customfield_12700", FieldType.JIRA, true, true, true, null);
+		Field field3 = new Field("Root Cause", "customfield_19121", FieldType.JIRA, true, true, true, null);
+		Field field4 = new Field("Tech Debt", "customfield_59601", FieldType.JIRA, true, true, true, null);
+		Field field5 = new Field("UAT", "UAT", FieldType.JIRA, true, true, true, null);
+		List<Field> fields = Arrays.asList(field1, field2, field3, field4, field5);
+
+		Iterable<Field> fieldItr = fields;
+		when(metadataRestClient.getFields()).thenReturn(metaDataFieldPromise);
+		when(metaDataFieldPromise.claim()).thenReturn(fieldItr);
+
+		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
+		IssueType issueType2 = new IssueType(new URI("self"), 1l, "Enabler Story", false, "desc", new URI("iconURI"));
+		IssueType issueType3 = new IssueType(new URI("self"), 1l, "Tech Story", false, "desc", new URI("iconURI"));
+		IssueType issueType4 = new IssueType(new URI("self"), 1l, "Change request", false, "desc", new URI("iconURI"));
+		IssueType issueType5 = new IssueType(new URI("self"), 1l, "Defect", false, "desc", new URI("iconURI"));
+		IssueType issueType6 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));
+		IssueType issueType7 = new IssueType(new URI("self"), 1l, "UAT Defect", false, "desc", new URI("iconURI"));
+		List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5,
+				issueType6, issueType7);
+
+		Iterable<IssueType> issueTypeItr = issueTypes;
+		when(metadataRestClient.getIssueTypes()).thenReturn(metaDataIssueTypePromise);
+		when(metaDataIssueTypePromise.claim()).thenReturn(issueTypeItr);
+
+		Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
+				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
+		Status status2 = new Status(new URI("self"), 1l, "Closed", "desc", new URI("iconURI"),
+				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
+		Status status3 = new Status(new URI("self"), 1l, "Implementing", "desc", new URI("iconURI"),
+				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
+		Status status4 = new Status(new URI("self"), 1l, "In Testing", "desc", new URI("iconURI"),
+				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
+		List<Status> statuses = Arrays.asList(status1, status2, status3, status4);
+		Iterable<Status> statusItr = statuses;
+		when(metadataRestClient.getStatuses()).thenReturn(metaDataStatusPromise);
+		when(metaDataStatusPromise.claim()).thenReturn(statusItr);
+
+		MetadataIdentifier metadataIdentifier = createKanbanMetaDataIdentifier();
+		when(onlineAdapter.getUserTimeZone(any())).thenReturn("Indian/Maldives");
+		try {
+			PowerMockito.whenNew(OnlineAdapter.class).withAnyArguments().thenReturn(onlineAdapter);
+		} catch (Exception e) {
+
+		}
+
+		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
+				.thenReturn(metadataIdentifier);
 
 		when(projectRestClient.getProject("TEST")).thenReturn(projectPromise);
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
@@ -363,7 +484,7 @@ public class OnlineDataProcessorImplTest {
 		conn.get().setOffline(Boolean.FALSE);
 		conn.get().setIsOAuth(Boolean.TRUE);
 		conn.get().setUsername("xyz");
-		conn.get().setPassword("6UZkCW7pdvfWO3QHfinMOg==");
+		conn.get().setPassword("testPassword");
 
 		List<Subproject> subProjectsList = new ArrayList<>();
 		Subproject subproject = new Subproject();
@@ -491,7 +612,7 @@ public class OnlineDataProcessorImplTest {
 		when(kanbanIssues.get(0).getKey()).thenReturn("TEST-1234");
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -529,7 +650,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -566,7 +687,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -603,7 +724,7 @@ public class OnlineDataProcessorImplTest {
 		when(user.getDisplayName()).thenReturn("Display Name");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -680,7 +801,7 @@ public class OnlineDataProcessorImplTest {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -713,7 +834,7 @@ public class OnlineDataProcessorImplTest {
 		when(project.getKey()).thenReturn("KEY-12");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -743,7 +864,7 @@ public class OnlineDataProcessorImplTest {
 		when(project.getKey()).thenReturn("KEY-12");
 		map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		value = new JSONObject(map);
@@ -777,7 +898,7 @@ public class OnlineDataProcessorImplTest {
 
 	private Iterator<ChangelogGroup> createChangeLogGroupData() throws URISyntaxException {
 		List<ChangelogGroup> groupList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://test.com/jira/rest/api/2/issue/12344");
 		BasicUser user = new BasicUser(uri, "firstName", "firstName");
 		ChangelogGroup changelogGroup = new ChangelogGroup(user, DateTime.now(), createChangeLogItemData());
 		groupList.add(changelogGroup);
@@ -809,7 +930,7 @@ public class OnlineDataProcessorImplTest {
 
 	private Iterable<IssueLink> createIssueLinkData() throws URISyntaxException {
 		List<IssueLink> issueLinkList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://test.com/jira/rest/api/2/issue/12344");
 		IssueLinkType linkType = new IssueLinkType("Blocks", "blocks", IssueLinkType.Direction.OUTBOUND);
 		IssueLink issueLink = new IssueLink("IssueKey", uri, linkType);
 		issueLinkList.add(issueLink);
@@ -826,7 +947,7 @@ public class OnlineDataProcessorImplTest {
 	private Iterable<IssueField> createIssueFieldIterable(boolean sprintStatus) {
 		List<IssueField> issueFieldList = new ArrayList<>();
 		Map<String, Object> map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Client Testing (UAT)");
 		map.put("id", "12121");
 		IssueField issueField = new IssueField("customfield_12121", "UAT", null, new JSONObject(map));
@@ -850,28 +971,28 @@ public class OnlineDataProcessorImplTest {
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "TECH_DEBT");
 		map.put("id", "14141");
 		issueField = new IssueField("customfield_14141", "StoryPoints", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Mobile");
 		map.put("id", "18181");
 		issueField = new IssueField("customfield_18181", "Device Platform", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "code");
 		map.put("id", "19121");
 		issueField = new IssueField("customfield_19121", "code_issue", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "stage");
 		map.put("id", "13131");
 		issueField = new IssueField("customfield_13131", "stage", null, new JSONObject(map));
@@ -879,7 +1000,7 @@ public class OnlineDataProcessorImplTest {
 
 		List<JSONObject> jsonArrayList = new ArrayList<>();
 		map = new HashMap<>();
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "40");
 		map.put("id", "Test_Automation");
 		JSONObject jsonObject = new JSONObject(map);
@@ -901,7 +1022,7 @@ public class OnlineDataProcessorImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+		conn.get().setBaseUrl("https://test.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -916,7 +1037,6 @@ public class OnlineDataProcessorImplTest {
 
 		projectConfFieldMapping2 = ProjectConfFieldMapping.builder().build();
 		jiraConfig = new JiraToolConfig();
-		// jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
 		jiraConfig.setBasicProjectConfigId("5ba8e182d3735010e7f1fa45");
 		jiraConfig.setConnection(conn);
 
@@ -1040,7 +1160,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiradefecttype(jiraType);
 
 		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+				"TEST Consulting Request", "Test Case" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -1064,7 +1184,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
@@ -1169,22 +1289,12 @@ public class OnlineDataProcessorImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		// Online Project Config data
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
-		// projectConfig.setProjectId("63102");
-		// projectConfig.setProjectKey("TEST");
 		projectConfig.setProjectName("TestProject");
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
 		List<SubProjectConfig> subProjectList = new ArrayList<>();
 		subProjectList.add(subProjectConfig);
-		// projectConfig.setSubProjects(subProjectList);
-		ProjectToolConfig jiraConfig = new ProjectToolConfig();
-		// jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
-		// jiraConfig.setUrl("https://tools.publicis.sapient.com/jira/");
-		// jiraConfig.setJiraQueryEndpoint("rest/api/2/");
-		// jiraConfig.setOfflineMethod(true);
-		// jiraConfig.setFilePath("offlineData");
-		// projectConfig.setJira(jiraConfig);
 		projectConfig.setIsKanban(false);
 		scrumProjectList.add(projectConfig);
 
@@ -1196,8 +1306,6 @@ public class OnlineDataProcessorImplTest {
 		subProjectConfig1.setSubProjectIdentification("CustomField");
 		subProjectConfig1.setSubProjectIdentSingleValue("customfield_37903");
 		List<SubProjectConfig> subProjectList1 = new ArrayList<>();
-		subProjectList1.add(subProjectConfig1); // projectConfig.setSubProjects(subProjectList);
-		ProjectToolConfig jiraConfig1 = new ProjectToolConfig();
 
 		projectConfig1.setIsKanban(true);
 		kanbanProjectlist.add(projectConfig1);
@@ -1207,6 +1315,8 @@ public class OnlineDataProcessorImplTest {
 	private MetadataIdentifier createMetaDataIdentifier() {
 		String tool = "Jira";
 		Boolean isKanban = Boolean.FALSE;
+		String templateName = "DOJO Safe Template";
+		String templateCode = "6";
 
 		Identifier issue1 = createIdentifier("story",
 				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request"));
@@ -1252,7 +1362,62 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool, isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+				issuelinkIdentifer, valuestoidentifyIdentifer);
+
+	}
+
+	private MetadataIdentifier createKanbanMetaDataIdentifier() {
+		String tool = "Jira";
+		Boolean isKanban = Boolean.TRUE;
+		String templateName = "Standard Template";
+		String templateCode = "6";
+
+		Identifier issue1 = createIdentifier("story",
+				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request"));
+		Identifier issue2 = createIdentifier("bug", Arrays.asList("Defect", "Bug"));
+		Identifier issue3 = createIdentifier("epic", Arrays.asList("Epic"));
+		Identifier issue4 = createIdentifier("issuetype",
+				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"));
+		Identifier issue5 = createIdentifier("uatdefect", Arrays.asList("UAT Defect"));
+		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5);
+
+		Identifier customField1 = createIdentifier("storypoint", Arrays.asList("storypoint"));
+		Identifier customField2 = createIdentifier("sprint", Arrays.asList("Sprint"));
+		Identifier customField3 = createIdentifier("rootcause", Arrays.asList("Root Cause"));
+		Identifier customField4 = createIdentifier("techdebt", Arrays.asList("Tech Debt"));
+		Identifier customField5 = createIdentifier("uat", Arrays.asList("UAT"));
+		Identifier customField6 = createIdentifier("timeCriticality", Arrays.asList("Time Criticality"));
+		Identifier customField7 = createIdentifier("wsjf", Arrays.asList("WSJF"));
+		Identifier customField8 = createIdentifier("costOfDelay", Arrays.asList("Cost of Delay"));
+		Identifier customField9 = createIdentifier("businessValue", Arrays.asList("User-Business Value"));
+		Identifier customField10 = createIdentifier("riskReduction",
+				Arrays.asList("Risk Reduction-Opportunity Enablement Value"));
+		Identifier customField11 = createIdentifier("jobSize", Arrays.asList("Job Size"));
+		List<Identifier> customfieldIdentifer = Arrays.asList(customField1, customField2, customField3, customField4,
+				customField5, customField6, customField7, customField8, customField9, customField10, customField11);
+
+		Identifier workflow1 = createIdentifier("dor", Arrays.asList("Ready for Sprint Planning", "In Progress"));
+		Identifier workflow2 = createIdentifier("dod", Arrays.asList("Closed", "Resolved", "Ready for Delivery"));
+		Identifier workflow3 = createIdentifier("qa", Arrays.asList("In Testing"));
+		Identifier workflow4 = createIdentifier("firststatus", Arrays.asList("Open"));
+		Identifier workflow5 = createIdentifier("rejection", Arrays.asList("Closed", "Rejected"));
+		Identifier workflow6 = createIdentifier("delivered",
+				Arrays.asList("Closed", "Resolved", "Ready for Delivery", "Ready for Release"));
+		Identifier workflow7 = createIdentifier("firststatus", Arrays.asList("Open"));
+		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5,
+				workflow6, workflow7);
+
+		Identifier valuestoidentify1 = createIdentifier("rootCauseValue", Arrays.asList("Coding"));
+		Identifier valuestoidentify2 = createIdentifier("rejectionResolution",
+				Arrays.asList("Invalid", "Duplicate", "Unrequired"));
+		Identifier valuestoidentify3 = createIdentifier("qaRootCause",
+				Arrays.asList("Coding", "Configuration", "Regression", "Data"));
+		List<Identifier> valuestoidentifyIdentifer = Arrays.asList(valuestoidentify1, valuestoidentify2,
+				valuestoidentify3);
+
+		List<Identifier> issuelinkIdentifer = new ArrayList<>();
+		return new MetadataIdentifier(tool,templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
 				issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}

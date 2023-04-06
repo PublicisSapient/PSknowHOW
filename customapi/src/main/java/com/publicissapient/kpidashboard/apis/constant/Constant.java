@@ -135,7 +135,7 @@ public final class Constant {
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
 	public static final String RED = "#FF0000";
 	public static final String AMBER = "#FFBF00";
-
+	public static final String GREEN = "#00ff00";
 
 	private Constant() {
 	}
