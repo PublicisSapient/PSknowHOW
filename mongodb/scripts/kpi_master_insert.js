@@ -3585,31 +3585,30 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
-  {
-          "kpiId": "kpi137",
-          "kpiName": "Refinement Rejection Rate",
-          "maxValue": "",
-          "kpiUnit": "Count",
-          "isDeleted": "False",
-          "defaultOrder": 10,
-          "kpiCategory": "Backlog",
-          "kpiSource": "Jira",
-          "groupId": 8,
-          "thresholdValue": "",
-          "kanban": false,
-          "chartType": "stackedColumn",
-          "kpiInfo": {
-          		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
-          		},
-          "xAxisLabel": "Days",
-          "yAxisLabel": "Count",
-          "isPositiveTrend": true,
-          "showTrend": false,
-          "isAdditionalFilterSupport": false,
-          "kpiFilter": "",
-          "boxType": "chart",
-          "calculateMaturity": false
-        },
+{
+		"kpiId": "kpi137",
+		"kpiName": "Refinement Rejection Rate",
+		"kpiUnit": "Number",
+		"isDeleted": "False",
+		"defaultOrder": 3,
+		"kpiCategory": "Backlog",
+		"kpiSource": "Jira",
+		"groupId": 2,
+		"thresholdValue": "",
+		"kanban": false,
+		"chartType": "line",
+		"kpiInfo": {
+		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+		},
+		"xAxisLabel": "Months",
+		"yAxisLabel": "Count",
+		"isPositiveTrend": false,
+		"kpiFilter": "multiSelectDropDown",
+		"showTrend": false,
+		"aggregationCriteria": "sum",
+		"isAdditionalFilterSupport": true,
+		"calculateMaturity": false
+	},
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
