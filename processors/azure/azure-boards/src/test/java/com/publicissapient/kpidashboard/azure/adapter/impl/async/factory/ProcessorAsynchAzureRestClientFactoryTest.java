@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -36,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -110,10 +112,10 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
-		azureServer.setPat("TestUser@123");
-		azureServer.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		azureServer.setPat("pat");
+		azureServer.setUrl("https://test.com/testUser/testProject");
 		azureServer.setApiVersion("5.1");
-		azureServer.setUsername("");
+		azureServer.setUsername("username");
 		return azureServer;
 
 	}
@@ -122,7 +124,8 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 	public void getUpdatesResponse()
 		throws RestClientException, URISyntaxException, JsonParseException, JsonMappingException, IOException {
 		AzureServer azureServer = prepareAzureServer();
-		String authHeader = "Basic " + "OlRlc3RVc2VyQDEyMw==";
+		String userInfo = "username:pat";
+		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createUpdateResponse(), HttpStatus.OK);
@@ -194,7 +197,8 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
 		
 		AzureServer azureServer = prepareAzureServer();
-		String authHeader = "Basic " + "OlRlc3RVc2VyQDEyMw==";
+		String userInfo = "username:pat";
+		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createWorkItemResponse(), HttpStatus.OK);
@@ -218,7 +222,8 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
 		
 		AzureServer azureServer = prepareAzureServer();
-		String authHeader = "Basic " + "OlRlc3RVc2VyQDEyMw==";
+		String userInfo = "username:pat";
+		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createIterationsResponse(), HttpStatus.OK);

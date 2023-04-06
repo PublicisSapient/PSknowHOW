@@ -36,7 +36,7 @@ describe('MyprofileComponent', () => {
   let httpMock;
   let aesEncryption;
   const baseUrl = environment.baseUrl;
-  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'SUPERADMIN', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
+  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
   const hierarchyData = [
     {
       level: 1,

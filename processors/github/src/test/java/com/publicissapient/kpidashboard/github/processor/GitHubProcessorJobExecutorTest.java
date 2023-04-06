@@ -167,7 +167,7 @@ public class GitHubProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/username/repoName.git");
 		commitDetailList.add(commitDetails);
 		return commitDetailList;
 	}
@@ -176,7 +176,7 @@ public class GitHubProcessorJobExecutorTest {
 		List<MergeRequests> mergeRequestsList = new ArrayList<>();
 		MergeRequests mergeRequests = new MergeRequests();
 		mergeRequests.setAuthor("Master");
-		mergeRequests.setTitle("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		mergeRequests.setTitle("https://test.com/scm/username/repoName.git");
 		mergeRequestsList.add(mergeRequests);
 		return mergeRequestsList;
 	}

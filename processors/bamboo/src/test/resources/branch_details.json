@@ -1,9 +1,5 @@
 {
   "expand": "branches",
-  "link": {
-    "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/plan/CFDP-TPBP/branch",
-    "rel": "self"
-  },
   "branches": {
     "size": 0,
     "expand": "branch",

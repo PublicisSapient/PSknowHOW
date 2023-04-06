@@ -2,7 +2,6 @@
   {
     "_id" : "6335535fbb571b720a93c222",
     "name" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
-    "url" : "https://tools.publicis.sapient.com/sonar/dashboard/index/ENGINEERING.KPIDASHBOARD.PROCESSORS",
     "type" : "STATIC_ANALYSIS",
     "version" : "4.6.0-SNAPSHOT",
     "processorItemId" : "6335535dbb571b720a93c221",

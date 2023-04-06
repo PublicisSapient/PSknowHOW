@@ -541,8 +541,8 @@ export class FilterComponent implements OnInit {
 
   onSelectedTrendValueChange($event) {
   const selectedValue  = this.filterForm.get('selectedTrendValue').value;
-    if(selectedValue && selectedValue.length > 0 && !this.kanban ){
-      this.selectedProjectValueOnIteration = selectedValue[0];
+    if(selectedValue && selectedValue.length > 0 && !this.kanban && this.filterForm?.get('selectedLevel').value.toLowerCase() === 'project' ){
+      localStorage.setItem('filter',selectedValue[0]);
     }
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.patchValue({[additionalFilter['hierarchyLevelId']]: null});
@@ -982,8 +982,9 @@ export class FilterComponent implements OnInit {
       } else {
         this.filterForm?.get('selectedTrendValue').setValue([]);
       }
-      if(!this.kanban){
-        this.filterForm?.get('selectedTrendValue')?.setValue([this.selectedProjectValueOnIteration]);
+      if(!this.kanban && this.filterForm?.get('selectedLevel').value.toLowerCase() === 'project'){
+        const selectedProject = localStorage.getItem('filter');
+        this.filterForm?.get('selectedTrendValue')?.setValue([selectedProject]);
       }
     } else {
       this.filterForm?.get('selectedLevel').setValue('project');
@@ -993,13 +994,13 @@ export class FilterComponent implements OnInit {
         this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
         this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
         this.filterForm?.get('selectedProjectValue').setValue(this.trendLineValueList[0]['nodeId']);
-        this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
+          localStorage.setItem('filter',this.filterForm?.get('selectedProjectValue').value);
           if(this.selectedTab?.toLowerCase() != 'backlog'){
             this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId)
           }
       } else {
         this.filterForm?.get('selectedProjectValue').setValue('');
-        this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
+        localStorage.setItem('filter','');
       }
     }
   }
@@ -1043,10 +1044,9 @@ export class FilterComponent implements OnInit {
       this.service.setNoSprints(false);
       if (level?.toLowerCase() == 'project') {
         const selectedProject = this.filterForm?.get('selectedProjectValue')?.value;
-         this.selectedProjectValueOnIteration = selectedProject;
+         localStorage.setItem('filter',selectedProject);
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-        this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
           this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
@@ -1080,17 +1080,18 @@ export class FilterComponent implements OnInit {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(selectedSprint);
         this.createFilterApplyData();
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
         this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
       } else {
         if (type == 1) {
           if (this.projectIndex < this.trendLineValueList?.length) {
             this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
-              this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
+              localStorage.setItem('filter',this.trendLineValueList[++this.projectIndex]?.nodeId)
             this.handleIterationFilters('project', 1);
           } else {
             this.projectIndex = 0;
             this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
-              this.selectedProjectValueOnIteration = this.filterForm?.get('selectedProjectValue').value;
+            localStorage.setItem('filter',this.trendLineValueList[++this.projectIndex]?.nodeId);
           }
         }
       }
@@ -1145,7 +1146,7 @@ export class FilterComponent implements OnInit {
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId).subscribe((response) => {
         if (response.success) {
-          if(this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
+          if(this?.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
             this.processorsTracelogs = response.data;
         }
           this.showExecutionDate();

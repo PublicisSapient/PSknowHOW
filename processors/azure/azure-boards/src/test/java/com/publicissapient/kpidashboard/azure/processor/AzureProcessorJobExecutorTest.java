@@ -198,7 +198,7 @@ public class AzureProcessorJobExecutorTest {
 	private Optional<Connection> returnConnectionObject() {
 		Connection connection = new Connection();
 		connection.setOffline(false);
-		connection.setBaseUrl("https://dev.azure.com/sun/azure");
+		connection.setBaseUrl("https://test.com/testUser/testProject");
 		connection.setPassword(PLAIN_TEXT_PASSWORD);
 		connection.setPat(PLAIN_TEXT_PASSWORD);
 		connection.setOffline(true);
@@ -208,7 +208,7 @@ public class AzureProcessorJobExecutorTest {
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
 		azureServer.setPat("TestUser@123");
-		azureServer.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		azureServer.setUrl("https://test.com/testUser/testProject");
 		azureServer.setApiVersion("5.1");
 		azureServer.setUsername("");
 		return azureServer;
