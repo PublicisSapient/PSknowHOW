@@ -14,7 +14,7 @@
     "processorId": "632902802757f265fcb6c452",
     "completedIssues" : [
       {
-        "number" : "TEST-16048",
+        "number" : "TEST-17768",
         "priority" : "P4 - Minor",
         "status" : "Closed",
         "typeName" : "Story",
@@ -401,7 +401,8 @@
         "priority" : "P3 - Major",
         "status" : "Ready for Testing",
         "typeName" : "Story",
-        "estimate" : "0.0"
+        "estimate" : "0.0",
+        "storyPoints" : 5
       },
       {
         "number" : "TEST-17919",

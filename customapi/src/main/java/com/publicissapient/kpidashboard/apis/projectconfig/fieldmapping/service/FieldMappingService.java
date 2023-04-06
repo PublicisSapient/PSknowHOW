@@ -32,6 +32,8 @@ public interface FieldMappingService {
 
 	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping);
 
+	boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping);
+
 	/**
 	 * Gets ProjectBasicConfig object by its id.
 	 * 
