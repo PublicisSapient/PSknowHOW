@@ -99,6 +99,8 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Dev Due Date")
 	private String devDueDate;
 	private String marker;
+	@JsonProperty("Assignee")
+	private String assignee;
 	// Added for Defect Reopen Rate - submohan1
 	@JsonProperty("Closed Date")
 	private String closedDate;
