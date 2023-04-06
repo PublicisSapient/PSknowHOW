@@ -311,6 +311,7 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
 				Mockito.any(String.class))).thenReturn(createProcessorExecutionTraceLog());
+		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718")).thenReturn(createProjectToolConfigOpt().get());
 	}
 	
 	private void mockRepositoriesForKanban() {
@@ -428,6 +429,13 @@ public class FieldMappingServiceImplTest {
 		processorExecutionTraceLog.setId(new ObjectId("5fa29069c5a8470e24667c36"));
 		Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogOpt = Optional.of(processorExecutionTraceLog);
 		return processorExecutionTraceLogOpt;
+	}
+
+	private Optional<ProjectToolConfig> createProjectToolConfigOpt() {
+		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
+		projectToolConfig.setMetadataTemplateCode("9");
+		Optional<ProjectToolConfig> projectToolConfigOpt = Optional.of(projectToolConfig);
+		return projectToolConfigOpt;
 	}
 
 }
