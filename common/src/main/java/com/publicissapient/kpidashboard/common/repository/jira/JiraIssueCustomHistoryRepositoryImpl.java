@@ -201,7 +201,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
- 			projectCriteria.and(STORY_TYPE).in((List<Pattern>) filterMap.get(STORY_TYPE));
 			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("storySprintDetails.story.fromStatus"));
 			projectCriteriaList.add(projectCriteria);
 		});

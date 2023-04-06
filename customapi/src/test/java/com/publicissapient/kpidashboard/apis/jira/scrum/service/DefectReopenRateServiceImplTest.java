@@ -7,10 +7,10 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
@@ -56,9 +57,7 @@ public class DefectReopenRateServiceImplTest {
 	@InjectMocks
 	DefectReopenRateServiceImpl defectReopenRateService;
 
-	List<String> testJiraNumberList = Arrays.asList("DTS-18868", "DTS-17908");
 	private KpiRequest kpiRequest;
-	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	List<JiraIssue> totalJiraIssueList = new ArrayList<>();
 	List<JiraIssueCustomHistory> totalJiraIssueHistoryList = new ArrayList<>();
@@ -82,15 +81,16 @@ public class DefectReopenRateServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi134");
 		kpiRequest.setLabel("PROJECT");
-		kpiElement = kpiRequest.getKpiList().get(0);
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-		totalJiraIssueList = JiraIssueDataFactory.newInstance().findIssueByNumberList(testJiraNumberList);
-		totalJiraIssueHistoryList = Arrays.asList(JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory()
-				.stream().filter(issueHistory -> issueHistory.getStoryID().equals("DTS-17908")).findFirst().get());
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/iteration/jira_issues.json");
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance("/json/default/iteration/jira_issue_custom_history.json");
+		totalJiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -104,7 +104,12 @@ public class DefectReopenRateServiceImplTest {
 					treeAggregatorDetail);
 			assertNotNull(kpiElement);
 			assertNotNull(kpiElement.getTrendValueList());
-			assertNotNull(((DataCount) kpiElement.getTrendValueList()).getValue());
+			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
+			IterationKpiValue iterationKpiValue = iterationKpiValues.stream().filter(kpiValue -> "Overall"
+					.equals(kpiValue.getFilter1())).findFirst().get();
+			assertNotNull(iterationKpiValue);
+			assertEquals(Optional.of(3.0d).get(), iterationKpiValue.getData().get(0).getValue());
 		} catch (ApplicationException applicationException) {
 
 		}

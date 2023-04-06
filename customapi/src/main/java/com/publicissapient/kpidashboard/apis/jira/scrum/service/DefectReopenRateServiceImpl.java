@@ -15,12 +15,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,10 +51,12 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectReopenRateServiceImpl.class);
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Defect Reopen Rate";
 	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopen/Total Defects";
@@ -96,7 +97,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		LOGGER.info("DEFECT-REOPEN-RATE Kpi {}", kpiRequest.getRequestTrackerId());
+		log.info("DEFECT-REOPEN-RATE Kpi {}", kpiRequest.getRequestTrackerId());
 		DataCount trendValue = new DataCount();
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.PROJECT) {
@@ -128,7 +129,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<JiraIssue>> priorityWiseTotalStory = totalDefects.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getPriority));
 		Map<String, JiraIssueCustomHistory> reopenJiraHistoryMap = reopenJiraHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, jiraIssueHistory -> jiraIssueHistory));
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
 		Set<String> filters = new LinkedHashSet<>();
 		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -140,9 +141,10 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			jiraIssueList.forEach(jiraIssue -> {
 				if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
 					JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
-					List<String> closedStatusList = closedStatusMap.get(jiraIssue.getBasicProjectConfigId());
+					List<String> closedStatusList = closedStatusMap.getOrDefault(jiraIssue.getBasicProjectConfigId(), new ArrayList<>());
 					List<JiraIssueSprint> issueHistoryList = jiraIssueCustomHistory.getStorySprintDetails();
 					Optional<JiraIssueSprint> closedHistoryOptional = issueHistoryList.stream()
+							.filter(Objects::nonNull)
 							.filter(issueHistory -> closedStatusList.contains(issueHistory.getFromStatus()))
 							.findFirst();
 					if (closedHistoryOptional.isPresent()) {
@@ -178,6 +180,16 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		kpiElement.setTrendValueList(trendValue);
 	}
 
+
+	/**
+	 * Update iterationKpiValues.
+	 * @param iterationKpiValues
+	 * @param priority
+	 * @param jiraIssueList
+	 * @param modalValues
+	 * @param totalDuration
+	 *
+	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
 			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
 		double averageTimeToReopen = totalDuration.get(0) > 0 && modalValues.size() > 0
@@ -193,6 +205,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	}
 
 	/**
+	 * create IterationKPIModel.
 	 * @param issue
 	 * @param closedHistory
 	 * @param reopenHistory
@@ -214,10 +227,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	}
 
 	/**
-	 * 
+	 * create ReopenRateIterationData.
 	 * @param reopenIssueList
 	 * @param totalDefects
-	 * @param kpiLabel
 	 * @return IterationKpiData.
 	 */
 	private IterationKpiData createReopenRateIterationData(List<IterationKpiModalValue> reopenIssueList,
@@ -295,12 +307,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			List<String> closedStatusList = (List<String>) CollectionUtils
 					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
-			List<String> defectTypeList = new ArrayList<>(fieldMapping.getJiradefecttype());
-			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
-			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
-					.collect(Collectors.toList());
-			mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(defectList));
 			mapOfProjectFilters.put("storySprintDetails.story.fromStatus",
 					CommonUtils.convertToPatternList(closedStatusList));
 			uniqueProjectMap.put(basicProjectConfigObjectId.toString(), mapOfProjectFilters);
