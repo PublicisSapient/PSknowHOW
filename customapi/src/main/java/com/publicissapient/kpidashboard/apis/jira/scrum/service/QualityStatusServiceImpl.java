@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -171,13 +172,15 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 									sprintDetails.getTotalIssues(), issueList);
 					List<SprintDetails> sprintDetailsList = new ArrayList<>();
 					sprintDetailsList.add(sprintDetails);
-					Map<String, List<JiraIssue>> sprintWiseSubTaskBugList = kpiHelperService.getSubTaskDefectsBySprint(
+					Map<String, List<JiraIssue>> sprintWiseSubTaskBugMap = kpiHelperService.getSubTaskDefectsBySprint(
 							totalSprintReportStories, totalSprintReportDefects, mapOfFilters, uniqueProjectMap,
 							sprintDetailsList);
-					List<JiraIssue> subTaskBugList = sprintWiseSubTaskBugList.get(sprintId);
 					List<JiraIssue> totalIssues = new ArrayList<>();
 					totalIssues.addAll(filtersIssuesList);
-					totalIssues.addAll(subTaskBugList);
+					if(MapUtils.isNotEmpty(sprintWiseSubTaskBugMap)){
+						List<JiraIssue> subTaskBugList = sprintWiseSubTaskBugMap.get(sprintId);
+						totalIssues.addAll(subTaskBugList);
+					}
 					resultListMap.put(TOTAL_ISSUES, totalIssues);
 				}
 			}
