@@ -607,9 +607,16 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
+	/**
+	 *
+	 * @param mapOfFilters
+	 * @param defectStoryIds
+	 * @param uniqueProjectMap
+	 * @return
+	 */
 	@Override
-	public List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
-											 Map<String, Map<String, Object>> uniqueProjectMap) {
+	public List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectStoryIds,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 
 		// map of common filters Project and Sprint
@@ -631,7 +638,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		}
 
-		criteria = criteria.and(DEFECT_STORY_ID).in(storyNumber);
+		criteria = criteria.and(DEFECT_STORY_ID).in(defectStoryIds);
 		Query query = new Query(criteria);
 
 		return operations.find(query, JiraIssue.class);

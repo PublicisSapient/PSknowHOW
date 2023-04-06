@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.*;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -101,6 +102,7 @@ public class KpiHelperService { // NOPMD
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String ISSUE_DATA = "issueData";
 	private static final String FIELD_STATUS = "status";
+	private static final String BLANK = "";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -1373,29 +1375,40 @@ public class KpiHelperService { // NOPMD
 		}
 	}
 
-//	public List<JiraIssue> getSubTaskDefectsBySprint(Set<String> totalIssues, List<SprintDetails> sprintDetails,
-//			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap) {
-//
-//
-//		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalIssues, uniqueProjectMap);
-//
-//
-//
-//
-////		sprintDetails.forEach(sprintDetail ->
-////		{
-////			LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
-////			LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-////		});
-//
-////		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
-////		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-////		List<JiraIssue> totalBugs = jiraIssueRepository.findIssuesByType(mapOfFilters);
-////		List<JiraIssue> linkedDefects = totalBugs.stream()
-////				.filter(jiraIssue -> jiraIssue.getDefectStoryID().stream().anyMatch(totalIssues::contains))
-////				.collect(Collectors.toList());
-//		return linkedDefects;
-//
-//	}
+	/**
+	 *
+	 * @param totalSPrintReportStories
+	 * @param sprintReportDefects
+	 * @param mapOfFilters
+	 * @param uniqueProjectMap
+	 * @param sprintDetails
+	 * @return
+	 */
+	public Map<String, List<JiraIssue>> getSubTaskDefectsBySprint(Set<String> totalSPrintReportStories,
+			Set<String> sprintReportDefects, Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, List<SprintDetails> sprintDetails) {
+
+		Map<String, List<JiraIssue>> sprintWiseSubTask = new HashMap<>();
+
+		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSPrintReportStories,
+				uniqueProjectMap);
+		List<JiraIssue> subTaskBugs = totalBugs.stream()
+				.filter(jiraIssue -> !sprintReportDefects.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+
+		sprintDetails.forEach(sprintDetail -> {
+			LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0],
+					DATE_TIME_FORMATTER);
+			LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+			sprintWiseSubTask.put(sprintDetail.getSprintID(),
+					subTaskBugs.stream()
+							.filter(jiraIssue -> DateUtil.isWithinDateRange(
+									LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+									sprintStartDate, sprintEndDate))
+							.collect(Collectors.toList()));
+		});
+
+		return sprintWiseSubTask;
+
+	}
 
 }
