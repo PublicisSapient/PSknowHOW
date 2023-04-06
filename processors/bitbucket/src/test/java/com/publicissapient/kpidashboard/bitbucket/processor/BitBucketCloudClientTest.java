@@ -92,10 +92,10 @@ class BitBucketCloudClientTest {
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
 		repo.setUserId("userID");
-		repo.setPassword("020892BE903C15F566C09DAFEA800619");
+		repo.setPassword("testPasswordString");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPasswordString");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");

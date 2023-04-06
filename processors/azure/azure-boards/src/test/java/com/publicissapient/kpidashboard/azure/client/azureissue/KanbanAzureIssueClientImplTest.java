@@ -158,7 +158,7 @@ public class KanbanAzureIssueClientImplTest {
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
 		
-		kanbanIssueClientImpl.processesAzureIssues(projectConfFieldMapping,"DTS", azureAdapter);
+		kanbanIssueClientImpl.processesAzureIssues(projectConfFieldMapping,"TestKey", azureAdapter);
 		kanbanIssueClientImpl.purgeAzureIssues(issues,projectConfFieldMapping);
 		kanbanIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping);
 	}
@@ -181,7 +181,7 @@ public class KanbanAzureIssueClientImplTest {
 		AzureToolConfig config = new AzureToolConfig();
 		Connection conn = new Connection();
 		conn.setOffline(Boolean.TRUE);
-		conn.setBaseUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		conn.setBaseUrl("https://test.com/test/testProject");
 		config.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		config.setConnection(conn);
 		projectConfFieldMapping.setAzure(config);
@@ -379,7 +379,7 @@ public class KanbanAzureIssueClientImplTest {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://test.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);

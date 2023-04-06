@@ -178,24 +178,14 @@ public class OfflineDataProcessorImplTest {
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
         //Online Project Config data
         projectConfig.setId(new ObjectId("5e15d8b195fe1300014538ce"));
-//        projectConfig.setProjectId("63102");
-//        projectConfig.setProjectKey("TEST");
         projectConfig.setProjectName("TestProject");
         SubProjectConfig subProjectConfig = new SubProjectConfig();
         subProjectConfig.setSubProjectIdentification("CustomField");
         subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
         List<SubProjectConfig> subProjectList = new ArrayList<>();
         subProjectList.add(subProjectConfig);
-      //  projectConfig.setSubProjects(subProjectList);
         ProjectToolConfig jiraConfig = new ProjectToolConfig();
         jiraConfig.setProjectKey("TestProject");
-        
-//        jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
-//        jiraConfig.setUrl("https://tools.publicis.sapient.com/jira/");
-//        jiraConfig.setJiraQueryEndpoint("rest/api/2/");
-//        jiraConfig.setOfflineMethod(true);
-//        jiraConfig.setFilePath("offlineData");
-//        projectConfig.setJira(jiraConfig);
         projectConfig.setIsKanban(false);
         scrumProjectList.add(projectConfig);
     }
@@ -297,7 +287,7 @@ public class OfflineDataProcessorImplTest {
         jiraType.add("Defect");
         fieldMapping.setJiradefecttype(jiraType);
 
-        jiraIssueType = new String[]{"Support Request", "Incident", "Project Request", "Member Account Request", "DOJO Consulting Request","Test Case"};
+        jiraIssueType = new String[]{"Support Request", "Incident", "Project Request", "Member Account Request", "Test Consulting Request","Test Case"};
         fieldMapping.setJiraIssueTypeNames(jiraIssueType);
         fieldMapping.setStoryFirstStatus("Open");
 
@@ -318,7 +308,7 @@ public class OfflineDataProcessorImplTest {
         fieldMapping.setJiraStoryPointsCustomField("customfield_20803");
         fieldMapping.setJiraTechDebtIdentification("CustomField");
 
-        jiraType = new ArrayList<>(Arrays.asList(new String[]{"Support Request", "Incident", "Project Request", "Member Account Request", "DOJO Consulting Request","Test Case"}));
+        jiraType = new ArrayList<>(Arrays.asList(new String[]{"Support Request", "Incident", "Project Request", "Member Account Request", "Test Consulting Request","Test Case"}));
         fieldMapping.setTicketCountIssueType(jiraType);
         fieldMapping.setJiraTicketVelocityIssueType(jiraType);
         fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);

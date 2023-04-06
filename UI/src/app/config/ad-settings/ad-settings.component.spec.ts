@@ -28,12 +28,12 @@ describe('AdSettingsComponent', () => {
         adLogin: true
       },
       adServerDetail: {
-        username: 'svc-glbl-khADintgrt',
+        username: 'testUser',
         password: '',
-        host: 'lladldap.hk.publicisgroupe.net',
+        host: 'testhost.net',
         port: 639,
-        rootDn: 'DC=global,DC=publicisgroupe,DC=net',
-        domain: 'publicisgroupe.net'
+        rootDn: 'DC=global,DC=testhost,DC=net',
+        domain: 'testdomian.net'
       }
     }
   };
@@ -93,7 +93,7 @@ describe('AdSettingsComponent', () => {
       success: true,
       data: {
         username: 'test-username',
-        password: '8HvZjOM5y5T2c6ROq5CN7Z/IaAk0Q/cuubrN9sPOXmWdzEwlwNu9i48pHMPuvbAH',
+        password: 'dummypassword',
         host: 'test-host-name',
         port: 639,
         rootDn: 'test-root',

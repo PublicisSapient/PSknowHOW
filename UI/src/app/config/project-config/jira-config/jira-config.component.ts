@@ -101,6 +101,8 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
+  jiraTemplate : any[];
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -133,6 +135,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.getConnectionList(this.urlParam?.toLowerCase() == 'jiratest' ? 'Jira' : this.urlParam);
         this.initializeFields(this.urlParam);
+        this.getJiraTemplate();
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
       }
@@ -177,7 +180,6 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-
   }
 
   getPlansForBamboo(connectionId) {
@@ -917,7 +919,19 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
-              }
+              },
+              {
+                type: 'basicDropdown',
+                label: 'JIRA Configuration Template',
+                label2: '',
+                id: 'metadataTemplateCode',
+                onChangeEventHandler: this.jiraMethodChange,
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: ``,
+                disabled: 'false',
+                show: true,
+              },
             ],
           };
         }
@@ -1963,7 +1977,6 @@ export class JiraConfigComponent implements OnInit {
       }
     });
     this.toolForm = new UntypedFormGroup(group);
-
     if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
@@ -2122,6 +2135,13 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
+     
+    }
+
+    if(this.urlParam === 'Jira'){
+      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
+    }else{
+      delete submitData['metadataTemplateCode'];
     }
 
     if (this.urlParam === 'AzurePipeline') {
@@ -2347,5 +2367,19 @@ export class JiraConfigComponent implements OnInit {
       this.hideFormElements(['testRegressionByCustomField']);
       this.showFormElements(['jiraRegressionTestValue']);
     }
+  }
+
+  getJiraTemplate(){
+    const isKanban = this.selectedProject.Type?.toLowerCase() === 'kanban' ? true : false;
+    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+      this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
+     if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
+        const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
+        this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
+        if(selectedTemplate?.templateName === 'Custom Template'){
+          this.toolForm.get('metadataTemplateCode').disable();
+        }
+      }
+    })
   }
 }
