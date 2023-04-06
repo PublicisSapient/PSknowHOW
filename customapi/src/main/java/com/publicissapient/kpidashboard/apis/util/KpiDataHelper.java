@@ -446,8 +446,6 @@ public final class KpiDataHelper {
 					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
-		// when a story is expected to get completed, the subsequent story will be
-		// picked up the next working day
 		pivotPCD = pivotPCDLocal == null ? pivotPCD : pivotPCDLocal;
 		return pivotPCD;
 	}
