@@ -18,7 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -34,7 +41,15 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -143,8 +158,11 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		List<String> allCompletedIssuesList = (List<String>) resultMap.get(COMPLETED);
 		// Filtering out the issues without due date.
-		List<JiraIssue> allIssuesWithoutDueDate = allIssues.stream()
-				.filter(jiraIssue -> StringUtils.isBlank(jiraIssue.getDueDate())).collect(Collectors.toList());
+		List<JiraIssue> allIssuesWithoutDueDate = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(allIssues)) {
+			allIssuesWithoutDueDate = allIssues.stream()
+					.filter(jiraIssue -> StringUtils.isBlank(jiraIssue.getDueDate())).collect(Collectors.toList());
+		}
 		if (CollectionUtils.isNotEmpty(allIssuesWithoutDueDate)) {
 			LOGGER.info("Unplanned Work Status -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssuesWithoutDueDate.size());
