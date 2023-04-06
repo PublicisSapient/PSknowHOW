@@ -79,7 +79,7 @@ public class DefectReopenRateServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi134");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi135");
 		kpiRequest.setLabel("PROJECT");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();

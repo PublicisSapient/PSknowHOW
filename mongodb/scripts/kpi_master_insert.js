@@ -3630,7 +3630,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false
   },
   {
-    "kpiId":"kpi134",
+    "kpiId":"kpi135",
     "kpiName":"Defect Reopen Rate",
     "kpiUnit":"Hours",
     "isDeleted":"False",

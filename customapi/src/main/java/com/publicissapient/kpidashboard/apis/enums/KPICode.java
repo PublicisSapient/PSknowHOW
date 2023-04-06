@@ -368,7 +368,7 @@ public enum KPICode {
 	/**
 	 * Defect Reopen Rate
 	 */
-	DEFECT_REOPEN_RATE("kpi134", KPISource.JIRA.name());
+	DEFECT_REOPEN_RATE("kpi135", KPISource.JIRA.name());
 
 	// @formatter:on
 

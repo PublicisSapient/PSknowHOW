@@ -443,7 +443,7 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { }
       },
       {
-        kpiId: 'kpi134',
+        kpiId: 'kpi135',
         kpiName: 'Defect Reopen Rate',
         kpiSource: 'Jira',
         type: ['Other'],
