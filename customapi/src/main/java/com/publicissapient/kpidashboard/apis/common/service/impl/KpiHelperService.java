@@ -80,6 +80,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHi
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -1376,6 +1377,43 @@ public class KpiHelperService { // NOPMD
 				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param totalSprintReportStories
+	 * @param sprintReportDefects
+	 * @param mapOfFilters
+	 * @param uniqueProjectMap
+	 * @param sprintDetails
+	 * @return
+	 */
+
+	public Map<String, List<JiraIssue>> getSubTaskDefectsBySprint(Set<String> totalSprintReportStories,
+			Set<String> sprintReportDefects, Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, List<SprintDetails> sprintDetails) {
+
+		Map<String, List<JiraIssue>> sprintWiseSubTask = new HashMap<>();
+
+		List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSprintReportStories,
+				uniqueProjectMap);
+		List<JiraIssue> subTaskBugs = totalBugs.stream()
+				.filter(jiraIssue -> !sprintReportDefects.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+
+		sprintDetails.forEach(sprintDetail -> {
+			LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0],
+					DATE_TIME_FORMATTER);
+			LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+			sprintWiseSubTask.put(sprintDetail.getSprintID(),
+					subTaskBugs.stream()
+							.filter(jiraIssue -> DateUtil.isWithinDateRange(
+									LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+									sprintStartDate, sprintEndDate))
+							.collect(Collectors.toList()));
+		});
+
+		return sprintWiseSubTask;
+
 	}
 
 }
