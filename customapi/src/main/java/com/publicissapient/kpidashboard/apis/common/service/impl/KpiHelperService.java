@@ -1304,13 +1304,13 @@ public class KpiHelperService { // NOPMD
 	 * @param projectWiseRCA
 	 * @return
 	 */
-	public List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
 			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> priorityRemaining = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
 			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
 					priorityRemaining.add(jiraIssue);
 				}
 			} else {
@@ -1366,7 +1366,7 @@ public class KpiHelperService { // NOPMD
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
-				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority)));
+				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority).stream().map(String::toLowerCase).collect(Collectors.toList())));
 				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
 			}
 		}

@@ -357,7 +357,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
 			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
 					remainingDefects.add(jiraIssue);
 				}
 			} else {

@@ -8,7 +8,6 @@
     "buildJob" : "Test",
     "jobFolder" : "Test",
     "number" : "123",
-    "buildUrl" : "http://10.148.240.59:8080/job/API_Build/123/",
     "startTime" : 1675048599000,
     "endTime" : 1675108599000,
     "duration" : 1556204,
