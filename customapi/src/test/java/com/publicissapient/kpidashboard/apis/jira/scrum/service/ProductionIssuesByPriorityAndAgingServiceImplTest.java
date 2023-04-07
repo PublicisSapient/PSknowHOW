@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,10 +48,8 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductionIssuesByPriorityAndAgingServiceImplTest {
@@ -66,12 +67,12 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
     private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 
-    List<JiraIssue> totalJiraIssueList = new ArrayList<>();
+    List<IssueBacklog> totalIssueBacklogList = new ArrayList<>();
 
     private List<DataCount> trendValues = new ArrayList<>();
 
     @Mock
-    JiraIssueRepository jiraIssueRepository;
+    IssueBacklogRepository issueBacklogRepository;
 
     @Mock
     CacheService cacheService;
@@ -123,7 +124,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-        totalJiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
+        totalIssueBacklogList = IssueBacklogDataFactory.newInstance().getIssueBacklogs();
     }
 
 
@@ -137,7 +138,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
         List<String> xAxisRange = new ArrayList<>(Arrays.asList("0-1", "1-3", "3-6", "6-12", ">12"));
         when(customApiConfig.getTotalDefectCountAgingXAxisRange()).thenReturn(xAxisRange);
 
-        Mockito.doReturn(totalJiraIssueList).when(jiraIssueRepository).findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(), anyString(), anyString(), eq(true));
+        Mockito.doReturn(totalIssueBacklogList).when(issueBacklogRepository).findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(), anyString(), anyString(), eq(true));
 
         when(customApiConfig.getpriorityP1()).thenReturn(P1);
         when(customApiConfig.getpriorityP2()).thenReturn(P2);
@@ -200,7 +201,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
         Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
                 .fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 
-        assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
+        assertThat("Total Defects issue list :", ((List<IssueBacklog>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
                 equalTo(0));
     }
 
