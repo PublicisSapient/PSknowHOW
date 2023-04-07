@@ -33,6 +33,7 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -245,11 +246,11 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-														   JiraIssue jiraIssue) {
+														   IssueBacklog issueBacklog) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
+		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());
+		iterationKpiModalValue.setDescription(issueBacklog.getName());
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 

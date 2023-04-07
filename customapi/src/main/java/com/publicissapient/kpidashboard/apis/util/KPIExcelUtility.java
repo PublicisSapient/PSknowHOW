@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -828,7 +829,7 @@ public class KPIExcelUtility {
 
     }
 
-    public static void populateDefectWithoutIssueLinkExcelData(List<JiraIssue> defectWithoutStory,
+    public static void populateDefectWithoutIssueLinkExcelData(List<IssueBacklog> defectWithoutStory,
                                                                List<KPIExcelData> kpiExcelData, String sprintName) {
         if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
             defectWithoutStory.forEach(defect -> {
@@ -975,7 +976,7 @@ public class KPIExcelUtility {
         }
     }
 
-    public static void populateProductionDefectAgingExcelData(String projectName, List<JiraIssue> defectList,
+    public static void populateProductionDefectAgingExcelData(String projectName, List<IssueBacklog> defectList,
                                                               List<KPIExcelData> kpiExcelData) {
         if (CollectionUtils.isNotEmpty(defectList)) {
             defectList.forEach(defect -> {
