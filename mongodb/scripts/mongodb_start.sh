@@ -111,6 +111,9 @@ echo "########## insert jira test tool added for existing user using testing fie
 
   echo "########## jira issue custom history backward compatibility ############"
      mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/jira_issue_custom_history_backward_compatibility.js
+     echo "########## add custom template code for existing projects ############"
+          mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
+
 }
 
 function cron_service()

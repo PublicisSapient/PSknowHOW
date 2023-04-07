@@ -69,8 +69,8 @@ public class SonarToolConfigServiceImplTest {
 
 	private static final String RESOURCE_BRANCH_ENDPOINT = "/api/project_branches/list?project=%s";
 
-	private static final String SONAR_URL = "https://tools.publicis.sapient.com/sonar";
-	private static final String SONAR_CLOUD_URL = "https://sonarcloud.io";
+	private static final String SONAR_URL = "https://abc.com/sonar";
+	private static final String SONAR_CLOUD_URL = "https://abc.com";
 	private static final String EXCEPTION = "rest client exception";
 	private static final String USER_NAME = "test";
 	private static final String PROJECT_KEY = "SURVEY_APP_API";
@@ -124,7 +124,7 @@ public class SonarToolConfigServiceImplTest {
 				Mockito.eq(projectsUrl), Mockito.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				Mockito.eq(String.class));
 		when(aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()))
-				.thenReturn("45e10a7801cadab53f55cc844d9dea6f48a72213");
+				.thenReturn("decryptTestKey");
 		List<String> projectList = sonarToolConfigService.getSonarProjectKeyList(connection, ORG_KEY);
 		Assert.assertEquals(projectList.size(), cloudResponseProjectList.size());
 	}

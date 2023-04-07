@@ -43,7 +43,7 @@
             {
               "_class": "hudson.model.StringParameterValue",
               "name": "SERVER_IP",
-              "value": "10.148.240.62"
+              "value": "Test"
             },
             {
               "_class": "hudson.model.StringParameterValue",
@@ -68,7 +68,7 @@
             {
               "_class": "hudson.model.StringParameterValue",
               "name": "SERVER_PASSWORD",
-              "value": "Sapient@123"
+              "value": "Test"
             },
             {
               "_class": "hudson.model.StringParameterValue",

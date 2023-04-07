@@ -17,7 +17,7 @@
         ]
       },
       "remoteUrls": [
-        "https://github.com/myrepo/Speedy.git"
+        "https://test.com/myrepo/test.git"
       ]
     }
   ],
@@ -26,7 +26,7 @@
   "number": 179,
   "result": "FAILURE",
   "timestamp": 1473102515400,
-  "url": "http://localhost:8082/job/Speedy-Common/179/",
+  "url": "http://localhost:port/job/test-Common/179/",
   "changeSet": {
     "items": [],
     "kind": null

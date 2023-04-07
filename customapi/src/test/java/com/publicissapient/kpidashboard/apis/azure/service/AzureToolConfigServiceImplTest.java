@@ -62,14 +62,14 @@ public class AzureToolConfigServiceImplTest {
 		connectionId = "5fc4d61f80b6350f048a93e5";
 		connection1 = new Connection();
 		connection1.setId(new ObjectId(connectionId));
-		connection1.setBaseUrl("https://dev.azure.com/sanbhand1/AZURE_KNOWHOW_Proj");
+		connection1.setBaseUrl("https://test.server.com/testUser/TestProject");
 		connection1.setUsername("testDummyUser");
 		connection1.setPat("encryptKey");
 		testConnectionOpt = Optional.ofNullable(connection1);
 		connectionId = "1290e452fa2b456d5a72099e";
 		connection2 = new Connection();
 		connection2.setId(new ObjectId(connectionId));
-		connection2.setBaseUrl("https://dev.azure.com/KnowHOW-demo/KnowHow");
+		connection2.setBaseUrl("https://test.server.com/testuser/testProject");
 		connection2.setUsername("testDummyUser");
 		connection2.setPat("encryptKey");
 		testConnectionOpt1 = Optional.ofNullable(connection2);
@@ -86,16 +86,16 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("azurePipelineAndDefinitions.json"), HttpStatus.OK))
-				.when(restTemplate).exchange(eq("https://dev.azure.com/sanbhand1/AZURE_KNOWHOW_Proj/_apis/build/definitions?api-version=6.0"),
+				.when(restTemplate).exchange(eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
 						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("name", "AZURE_KNOWHOW");
+		jsonObject.put("name", "TEST_PROJECT");
 		jsonObject.put("id", "1");
 		jsonArray.add(jsonObject);
 		responseProjectList.add(jsonObject.toJSONString());
 		when(restAPIUtils.convertJSONArrayFromResponse(anyString(), anyString())).thenReturn(jsonArray);
-		when(restAPIUtils.convertToString(jsonObject, "name")).thenReturn("AZURE_KNOWHOW");
+		when(restAPIUtils.convertToString(jsonObject, "name")).thenReturn("TEST_PROJECT");
 		when(restAPIUtils.convertToString(jsonObject, "id")).thenReturn("1");
 		Assert.assertEquals(azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId , "6.0").size(),
 				responseProjectList.size());
@@ -112,7 +112,7 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(null,null, HttpStatus.NO_CONTENT))
-				.when(restTemplate).exchange(eq("https://dev.azure.com/sanbhand1/AZURE_KNOWHOW_Proj/_apis/build/definitions?api-version=6.0"),
+				.when(restTemplate).exchange(eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
 						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		Assert.assertEquals(0,azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId , "6.0").size());
 	}
