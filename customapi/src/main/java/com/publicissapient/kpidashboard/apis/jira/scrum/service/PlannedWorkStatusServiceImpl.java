@@ -20,9 +20,20 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,13 +48,24 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.*;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -63,7 +85,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	public static final String ACTUAL_COMPLETION_DAYS = "actualCompletionDays";
 	public static final String ACTUAL_COMPLETE_DATE = "actualCompleteDate";
 	public static final String COMPLETED = "Completed";
 	public static final String PLANNED_COMPLETION = "Planned Completion";
@@ -86,7 +107,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		DataCount trendValue = new DataCount();
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
@@ -110,7 +131,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-												  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
@@ -153,7 +174,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-										  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -169,8 +190,12 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		// Filtering out the issues with due date.
-		List<JiraIssue> allIssuesWithDueDate = allIssues.stream()
-				.filter(jiraIssue -> StringUtils.isNotBlank(jiraIssue.getDueDate())).collect(Collectors.toList());
+		List<JiraIssue> allIssuesWithDueDate = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(allIssues)){
+			allIssuesWithDueDate = allIssues.stream()
+					.filter(jiraIssue -> StringUtils.isNotBlank(jiraIssue.getDueDate())).collect(Collectors.toList());
+		}
+
 		List<String> allCompletedIssuesList = (List<String>) resultMap.get(COMPLETED);
 		List<JiraIssueCustomHistory> allIssueHistories = (List<JiraIssueCustomHistory>) resultMap
 				.get(ISSUE_CUSTOM_HISTORY);
@@ -339,7 +364,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	}
 
 	/**
-	 * Method to calculate actualCompletion days both start and end date inclusive
+	 * Method to calculate story start and completed date
 	 *
 	 * @param issueCustomHistory
 	 * @param sprintDetail
@@ -347,60 +372,103 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 * @return
 	 */
 	private Map<String, Object> calActualCompletionDays(JiraIssueCustomHistory issueCustomHistory,
-														SprintDetails sprintDetail, FieldMapping fieldMapping) {
+			SprintDetails sprintDetail, FieldMapping fieldMapping) {
 		List<String> inProgressStatuses = new ArrayList<>();
-		List<JiraHistoryChangeLog> filterStatusUpdationLog = new ArrayList<>();
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
 
 		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		Map<String, Object> resultList = new HashMap<>();
 
-		// filtering statusUpdationLog lies in between sprintStart and sprintEnd
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
-			filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog().stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-									.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER),
-							sprintStartDate, sprintEndDate))
-					.collect(Collectors.toList());
-		}
+		// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
+		filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
+				sprintStartDate, sprintEndDate);
 
+		// Creating the set of completed status
 		Set<String> closedStatus = sprintDetail.getCompletedIssues().stream().map(SprintIssue::getStatus)
 				.collect(Collectors.toSet());
 
 		// sorting the story history on basis of activityDate
-		filterStatusUpdationLog.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+		filterStatusUpdationLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
-		}
+		// Creating the closed status count of that story.
+		Map<String, Integer> statusCountMap = new HashMap<>();
+
+		createClosedStatusCountMap(filterStatusUpdationLogs, closedStatus, statusCountMap);
+
+		Set<Integer> distinctValues = new HashSet<>(statusCountMap.values());
+
+		inProgressStatuses = getInProgressStatuses(fieldMapping, inProgressStatuses);
 
 		LocalDate startDate = null;
 		LocalDate endDate = null;
-		boolean isStartDateFound = false;
-		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLog) {
-			LocalDate activityLocalDate = LocalDate.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
-					DATE_TIME_FORMATTER);
+		AtomicBoolean isStartDateFound = new AtomicBoolean(false);
+		boolean isEndDateFound = false;
+		int count = 0;
+		int entryCount = 0;
+		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
+			LocalDate activityLocalDate = LocalDate
+					.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER);
 
-			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
-				startDate = activityLocalDate;
-				isStartDateFound = true;
-			}
-			if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
+			startDate = setStartDate(inProgressStatuses,statusUpdationLog,isStartDateFound,startDate,activityLocalDate);
+			// For issue which are having only one closed cycle
+			if(distinctValues.size() == 1 && !isEndDateFound && closedStatus.contains(statusUpdationLog.getChangedTo())){
 				endDate = activityLocalDate;
+				isEndDateFound = true;
+			}
+			// For issues which are having more than one closed cycle i.e. reopened & closed in same sprint.
+			if(distinctValues.size() > 1 && !isEndDateFound && closedStatus.contains(statusUpdationLog.getChangedTo())){
+				Integer repeated = Collections.max(distinctValues);
+				// we have to take the first close state date of last close cycle
+				if(closedStatus.size() - 1 == entryCount)
+						count = count + 1;
+				else
+					entryCount++;
+				// count will check if last close cycle is reached or not
+				if(count == repeated - 1 ){
+					endDate = activityLocalDate;
+					isEndDateFound = true;
+				}
 			}
 		}
-		if (startDate != null && endDate != null) {
-			// +1 to include end date
-			resultList.put(ACTUAL_COMPLETION_DAYS, CommonUtils.getWorkingDays(startDate, endDate) + 1);
-		} else {
-			resultList.put(ACTUAL_COMPLETION_DAYS, "-");
-		}
-		if (startDate != null)
-			resultList.put(ACTUAL_START_DATE, startDate);
-		else
-			resultList.put(ACTUAL_START_DATE, "-");
+		resultList.put(ACTUAL_START_DATE,startDate);
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
+	}
+
+	private List<String> getInProgressStatuses(FieldMapping fieldMapping, List<String> inProgressStatuses) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
+		}
+		return inProgressStatuses;
+	}
+
+	// Filtering the history which happened inside the sprint on basis of activity date
+	private List<JiraHistoryChangeLog> getFilterStatusUpdationLogs(JiraIssueCustomHistory issueCustomHistory,
+			List<JiraHistoryChangeLog> filterStatusUpdationLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
+					.filter(jiraHistoryChangeLog -> DateUtil.isWithinDateRange(LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		return filterStatusUpdationLogs;
+	}
+
+	// For creating the creating map of closed status count
+	private void createClosedStatusCountMap(List<JiraHistoryChangeLog> filterStatusUpdationLogs, Set<String> closedStatus,
+			Map<String, Integer> statusCountMap) {
+		filterStatusUpdationLogs.stream()
+				.filter(jiraHistoryChangeLog -> closedStatus.contains(jiraHistoryChangeLog.getChangedTo()))
+				.forEach(jiraHistoryChangeLog -> {
+					String fromStatus = jiraHistoryChangeLog.getChangedTo();
+					if (statusCountMap.containsKey(fromStatus)) {
+						statusCountMap.put(fromStatus, statusCountMap.get(fromStatus) + 1);
+					} else {
+						statusCountMap.put(fromStatus, 1);
+					}
+				});
 	}
 
 	/**
@@ -412,7 +480,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 * @return
 	 */
 	private Map<String, Object> jiraIssueCalculation(FieldMapping fieldMapping, SprintDetails sprintDetails,
-													 List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue) {
+			List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue) {
 		int jiraIssueDelay = 0;
 		Map<String, Object> resultList = new HashMap<>();
 
@@ -445,5 +513,14 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	private int getDelay(LocalDate dueDate, LocalDate completedDate) {
 		int potentialDelays = CommonUtils.getWorkingDays(dueDate, completedDate);
 		return (dueDate.isAfter(completedDate)) ? potentialDelays * (-1) : potentialDelays;
+	}
+
+	private LocalDate setStartDate(List<String> inProgressStatuses, JiraHistoryChangeLog statusUpdationLog,
+								   AtomicBoolean isStartDateFound, LocalDate startDate, LocalDate activityLocalDate) {
+		if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound.get()) {
+			startDate = activityLocalDate;
+			isStartDateFound.set(true);
+		}
+		return startDate;
 	}
 }
