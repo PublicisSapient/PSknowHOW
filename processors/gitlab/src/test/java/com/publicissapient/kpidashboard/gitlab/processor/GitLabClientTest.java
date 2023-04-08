@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabClient;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabURIBuilder;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GitLabClientTest {
@@ -69,14 +70,15 @@ public class GitLabClientTest {
 	@Mock
 	private AesEncryptionService aesEncryptionService;
 	ProcessorToolConnection gitLabInfo=new ProcessorToolConnection();
+	ProjectBasicConfig projectBasicConfig=new ProjectBasicConfig();
 	@BeforeEach
 	public void init() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		when(gitLabRestOperations.getTypeInstance()).thenReturn(restTemplate);
 		
 		gitLabInfo.setBranch("release/core-r4.4");
-		gitLabInfo.setPassword("020892BE903C15F566C09DAFEA800619");
-		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		gitLabInfo.setPassword("testPassword");
+		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/test.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
 
@@ -91,9 +93,10 @@ public class GitLabClientTest {
 		String serverResponse = getServerResponse("/gitlab-server/stashresponse.json");
 		String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).build();
 		restUrl = URLDecoder.decode(restUrl, "UTF-8");
+		projectBasicConfig.setSaveAssigneeDetails(true);
 		when(restTemplate.exchange(eq(restUrl), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo, true,gitLabInfo);
+		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo,gitLabInfo, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		CommitDetails gitLabCommit = commits.get(0);
 		Assert.assertEquals("userab", gitLabCommit.getAuthor());

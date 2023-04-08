@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -72,6 +72,8 @@ import com.publicissapient.kpidashboard.common.repository.application.Deployment
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BambooProcessorJobExecuterTests {
@@ -83,6 +85,8 @@ public class BambooProcessorJobExecuterTests {
 	private static final String HTTP_URL = "http://does:matter@bamboo.com";
 	private static final String SERVER1 = "server1";
 	private static final List<ProcessorToolConnection> pt = new ArrayList<>();
+	private static final List<ProcessorExecutionTraceLog> petl = new ArrayList<>();
+	private  Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogs;
 	private static final List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private static final List<Deployment> deploymentList = new ArrayList<>();
 	private static final List<Deployment> queuedDeploymentList = new ArrayList<>();
@@ -112,6 +116,8 @@ public class BambooProcessorJobExecuterTests {
 	@Mock
 	private ProcessorToolConnectionService processorToolConnectionService;
 	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Mock
 	private BambooClientFactory bambooClientFactory;
@@ -121,6 +127,13 @@ public class BambooProcessorJobExecuterTests {
 	private BambooClientDeployImpl bambooClientDeploy;
 	@InjectMocks
 	private BambooProcessorJobExecuter task;
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	Deployment deployment3 = new Deployment();
+	Deployment deployment1 = new Deployment();
+	Deployment deployment2 = new Deployment();
+	Deployment deployment = new Deployment();
+
 
 	@Before
 	public void init() {
@@ -163,7 +176,7 @@ public class BambooProcessorJobExecuterTests {
 		BAMBOOSAMPLESERVER2.setUsername("does");
 		BAMBOOSAMPLESERVER2.setPassword(null);
 		BAMBOOSAMPLESERVER2.setJobType("deploy");
-		BAMBOOSAMPLESERVER2.setDeploymentProjectName("KnowHowDeployemnt");
+		BAMBOOSAMPLESERVER2.setDeploymentProjectName("TestDep");
 		BAMBOOSAMPLESERVER2.setDeploymentProjectId("190709761");
 
 		pt.add(BAMBOOSAMPLESERVER);
@@ -173,9 +186,10 @@ public class BambooProcessorJobExecuterTests {
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("60b7dbb489c5974a407e923b"));
 		basicConfig.setId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
+		basicConfig.setSaveAssigneeDetails(true);
 		projectConfigList.add(basicConfig);
 
-		Deployment deployment = new Deployment();
+
 		deployment.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -185,9 +199,10 @@ public class BambooProcessorJobExecuterTests {
 		deployment.setDeploymentStatus(DeploymentStatus.IN_PROGRESS);
 		deployment.setJobId("190709761");
 		deployment.setNumber("189988914");
-		deployment.setJobName("KnowHowDeployemnt");
+		deployment.setJobName("TestDep");
+		deployment.setDeployedBy("user1");
 
-		Deployment deployment1 = new Deployment();
+
 		deployment1.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment1.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment1.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -197,9 +212,10 @@ public class BambooProcessorJobExecuterTests {
 		deployment1.setDeploymentStatus(DeploymentStatus.SUCCESS);
 		deployment1.setJobId("190709761");
 		deployment1.setNumber("189988914");
-		deployment1.setJobName("KnowHowDeployemnt");
+		deployment1.setJobName("TestDep");
+		deployment1.setDeployedBy("user2");
 
-		Deployment deployment2 = new Deployment();
+
 		deployment2.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment2.setProjectToolConfigId(new ObjectId("6706661b307f0239477f1e9e"));
 		deployment2.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -209,9 +225,10 @@ public class BambooProcessorJobExecuterTests {
 		deployment2.setDeploymentStatus(DeploymentStatus.IN_PROGRESS);
 		deployment2.setJobId("190709761");
 		deployment2.setNumber("189988914");
-		deployment2.setJobName("KnowHowDeployemnt");
+		deployment2.setJobName("TestDep");
+		deployment2.setDeployedBy("user3");
 
-		Deployment deployment3 = new Deployment();
+
 		deployment3.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment3.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment3.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -222,7 +239,7 @@ public class BambooProcessorJobExecuterTests {
 		deployment3.setDeploymentStatus(DeploymentStatus.SUCCESS);
 		deployment3.setJobId("190709761");
 		deployment3.setNumber("189988914");
-		deployment3.setJobName("KnowHowDeployemnt");
+		deployment3.setJobName("TestDep");
 		queuedDeploymentList.add(deployment);
 		deploymentList.add(deployment);
 		deploymentList.add(deployment1);
@@ -272,12 +289,22 @@ public class BambooProcessorJobExecuterTests {
 		buildSet.add(build1);
 		buildSet.add(build2);
 		buildSet.add(build3);
+
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setId(new ObjectId("63d7d2c124f5327fc7f9ac35"));
+		processorExecutionTraceLog.setLastSuccessfulRun( "2023-02-06");
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(true);
+		processorExecutionTraceLog.setProcessorName("Bamboo");
+		processorExecutionTraceLog.setBasicProjectConfigId("5f9014743cb73ce896167659");
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
+
+
 	}
 
 	@Test
 	public void collectNoBuildServersNothingAdded() {
 		task.execute(BambooProcessor.prototype());
-		verifyNoInteractions(bambooClient, buildRepository);
+		verifyNoMoreInteractions(bambooClient, buildRepository);
 	}
 
 	@Test
@@ -291,7 +318,7 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any())).thenReturn(jobs);
+			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooJob());
@@ -308,11 +335,16 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any())).thenReturn(jobs);
+			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
+			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(any(), any())).thenReturn(processorExecutionTraceLogs);
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
+			when(processorExecutionTraceLogRepository.
+					findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, "5f9014743cb73ce896167659"))
+					.thenReturn(optionalProcessorExecutionTraceLog);
+			when(deploymentRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(deployment);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -327,7 +359,7 @@ public class BambooProcessorJobExecuterTests {
 			Build build = build("1", JOB1_1_URL);
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any())).thenReturn(buildMap);
+			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
 			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
@@ -367,7 +399,7 @@ public class BambooProcessorJobExecuterTests {
 
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any())).thenReturn(buildMap);
+			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooJob());
@@ -430,7 +462,7 @@ public class BambooProcessorJobExecuterTests {
 	@Test
 	public void checkForDeployedJobs() throws MalformedURLException, ParseException {
 		try {
-			when(bambooClientDeploy.getDeployJobsFromServer(any())).thenReturn(oneDeployJob(
+			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(deploymentList)));
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -446,7 +478,7 @@ public class BambooProcessorJobExecuterTests {
 	public void checkForNewDeployedJobsWithInProgress() throws MalformedURLException, ParseException {
 		try {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek mili jo queued hai
-			when(bambooClientDeploy.getDeployJobsFromServer(any())).thenReturn(oneDeployJob(
+			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -462,7 +494,7 @@ public class BambooProcessorJobExecuterTests {
 	public void checkForMaxDeployedJobs() throws MalformedURLException, ParseException {
 		try {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek mili jo queued hai
-			when(bambooClientDeploy.getDeployJobsFromServer(any())).thenReturn(oneDeployJob(
+			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(maxDeployment)));
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -478,7 +510,7 @@ public class BambooProcessorJobExecuterTests {
 	public void checkForFirstDeploymentQueuedJobs() throws MalformedURLException, ParseException {
 		try {
 			when(deploymentRepository.findAll()).thenReturn(new ArrayList<>());
-			when(bambooClientDeploy.getDeployJobsFromServer(any())).thenReturn(oneDeployJob(
+			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
@@ -494,7 +526,7 @@ public class BambooProcessorJobExecuterTests {
 	public void deleteFromDeployments() throws MalformedURLException, ParseException {
 		try {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek tool Extra
-			when(bambooClientDeploy.getDeployJobsFromServer(any())).thenReturn(oneDeployJob(
+			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))

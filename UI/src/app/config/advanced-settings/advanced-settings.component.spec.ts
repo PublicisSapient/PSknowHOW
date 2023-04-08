@@ -242,7 +242,7 @@ describe('AdvancedSettingsComponent', () => {
     component.getProjects();
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
-    // expect(component.userProjects).toEqual([{ "name": "TestRIshabh", "id": "601bca9569515b0001d68182" }]);
+    // expect(component.userProjects).toEqual([{ "name": "TestUser", "id": "601bca9569515b0001d68182" }]);
   });
 
   it('should allow user to select project', () => {
@@ -317,7 +317,7 @@ describe('AdvancedSettingsComponent', () => {
     };
     const selectedProject = {
       id: '63b51633f33fd2360e9e72bd',
-      name: 'DOTC',
+      name: 'testprojName',
     };
 
     component.toolConfigsDetails = [

@@ -133,7 +133,13 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
     private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
     private authDetailsUrl = this.baseUrl + '/api/authdetails';
+    private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
+    private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
+    private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
+    private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
+    private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
+    private jiraTemplateUrl = this.baseUrl +'/api/templates';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -144,16 +150,13 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** getFilterData from the server */
     getFilterData(filterRequestData): Observable<object> {
-        return this.http.post<object>(this.filterDataUrl, filterRequestData).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.filterDataUrl, filterRequestData);
     }
 
 
     /** get individual kpi excel report from the server */
     downloadExcel(downloadKpiReport, kpiId): Observable<object> {
-        return this.http.post<object>(this.downloadKpiWiseReportUrl + '/' + kpiId, downloadKpiReport)
-            .pipe(tap(getData => { }
-            ));
+        return this.http.post<object>(this.downloadKpiWiseReportUrl + '/' + kpiId, downloadKpiReport);
     }
 
     /** get EMM Excel report from the server */
@@ -167,30 +170,26 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** GET getMasterData from the server */
     getDefaultData(toolName): Observable<any> {
-        return this.http.get(this.getDefaultDataUrl + '/' + toolName).pipe(tap(getData => { }
-        ));
+        return this.http.get(this.getDefaultDataUrl + '/' + toolName);
 
 
     }
 
     /** GET Property File Config from the server */
     getPropertiesConfig(): Observable<any> {
-        return this.http.get(this.getCustomApiPropertiesUrl).pipe(tap(getData => { }
-        ));
+        return this.http.get(this.getCustomApiPropertiesUrl);
     }
 
     editSavedConfig(username, requestData): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.append('userId', username);
-        return this.http.put(this.saveConfigurl, requestData, { headers }).pipe(tap(heroes => { }
-        ));
+        return this.http.put(this.saveConfigurl, requestData, { headers });
     }
 
     SaveConfig(username, requestData): Observable<any> {
         let headers: HttpHeaders = new HttpHeaders();
         headers = headers.append('userId', username);
-        return this.http.post(this.saveConfigurl, requestData, { headers }).pipe(tap(heroes => { }
-        ));
+        return this.http.post(this.saveConfigurl, requestData, { headers });
     }
 
 
@@ -199,35 +198,29 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         headers = headers.append('userId', username);
         return this.http.get(this.saveConfigurl + 's', {
             headers
-        }).pipe(tap(heroes => {
-        }));
+        });
     }
 
     /** GET getMasterData from the server */
     getMasterData(): Observable<any> {
-        return this.http.get(this.masterDataUrl).pipe(tap(getData => { }));
-
-
+        return this.http.get(this.masterDataUrl);
     }
 
     /** GET getTooltipData from the server */
     getTooltipData(): Observable<any> {
-        return this.http.get(this.tooltipDataUrl).pipe(tap(heroes => {
-        }));
+        return this.http.get(this.tooltipDataUrl);
     }
 
 
     /** GET getTooltipData from the server */
     getConfigData(): Observable<any> {
-        return this.http.get(this.configUrl).pipe(tap(getConfigData => {
-        }));
+        return this.http.get(this.configUrl);
     }
 
 
     /** get individual kpi excel report from the server */
     addConfig(requestData): Observable<any> {
-        return this.http.post<object>(this.configUrl + '/addOrUpdate', requestData)
-            .pipe(tap(getData => { }));
+        return this.http.post<object>(this.configUrl + '/addOrUpdate', requestData);
     }
 
 
@@ -237,8 +230,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
      *
      */
     deleteTool(requestUrl): Observable<any> {
-        return this.http.delete<object>(this.configUrl + requestUrl)
-            .pipe(tap(getData => { }));
+        return this.http.delete<object>(this.configUrl + requestUrl);
     }
 
 
@@ -352,14 +344,12 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** POST: Makes call to get data of Enginnering maturity  */
     getEnginneringMaturityData(data): Observable<object> {
-        return this.http.post<object>(this.enginneringMaturityUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.enginneringMaturityUrl, data);
     }
 
     /** POST: Makes call to get data of Enginnering maturity  */
     getEnginneringMaturityTableData(data): Observable<object> {
-        return this.http.post<object>(this.enginneringMaturityTableUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.enginneringMaturityTableUrl, data);
     }
 
     /** POST: Upload image file of dashboard configuration */
@@ -372,7 +362,6 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             pipe(tap((res) => {
             }));
     }
-
     /** get uploaded image file */
     getUploadedImage(): Observable<object> {
 
@@ -700,6 +689,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.get<any>(this.getEmmStatsUrl);
     }
 
+
     getSSOUserInfo(){
         return this.http.get<any>(this.getSSOUserInfoUrl);
     }
@@ -728,6 +718,22 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
                 }
             }
         });
+    }
+    
+    generateToken(postData): Observable<any> {
+        return this.http.post<any>(this.generateTokenUrl, postData);
+    }
+
+    getJiraProjectAssignee(projectId){
+        return this.http.get<any>(this.getJiraProjectAssigneUrl +'/'+projectId);
+    }
+
+    getAssigneeRoles(){
+        return this.http.get<any>(this.getAssigneeRolesUrl);
+    }
+
+    saveOrUpdateAssignee(postData){
+        return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
@@ -780,8 +786,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** post feedback/idea */
     submitFeedbackData(data): Observable<any> {
-        return this.http.post<object>(this.submitFeedbackUrl, data).pipe(tap((getData) => { }
-        ));
+        return this.http.post<object>(this.submitFeedbackUrl, data);
     }
 
     /** get overall Summary */
@@ -891,5 +896,24 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     deleteProcessorData(toolId, projectId) {
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
+    }
+
+    /* Update project details  */
+      updateProjectDetails(updatedDetails,id){
+            return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
+        }
+        /** POST: Upload ldap certificate file */
+    uploadCertificate(file): Observable<object> {
+        const fileFormData = new FormData();
+        fileFormData.append('file', file);
+        return this.http.post<object>(this.uploadCert, fileFormData);
+    }
+
+    getJiraTemplate(projectId) {
+        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)     
+    }
+
+    getMappingTemplateFlag(toolID,data){
+        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
     }
 }

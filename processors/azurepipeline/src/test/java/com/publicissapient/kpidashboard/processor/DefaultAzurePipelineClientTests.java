@@ -54,12 +54,14 @@ import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class DefaultAzurePipelineClientTests {
 
 	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
 	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private  ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	private static final long LASTUPDATEDTIME = 0;
 	private static final long LASTUPDATEDTIME1 = 500000;
 	@Mock
@@ -76,12 +78,12 @@ public class DefaultAzurePipelineClientTests {
 	@BeforeEach
 	public void init() {
 		Mockito.when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
-		AZUREPIPELINE_SAMPLE_SERVER_ONE.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		AZUREPIPELINE_SAMPLE_SERVER_ONE.setUrl("https://test.com/testUser/testProject");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setApiVersion("5.1");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setJobName("1");
 		AZUREPIPELINE_SAMPLE_SERVER_ONE.setPat("patKey");
 
-		AZUREPIPELINE_SAMPLE_SERVER_TWO.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
+		AZUREPIPELINE_SAMPLE_SERVER_TWO.setUrl("https://test.com/testUser/testProject");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setApiVersion("5.1");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setJobName("2");
 		AZUREPIPELINE_SAMPLE_SERVER_TWO.setPat("patKey");
@@ -89,27 +91,27 @@ public class DefaultAzurePipelineClientTests {
 
 	@Test
 	public void joinURLsTest() throws Exception {
-		String u1 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy",
+		String u1 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/_apis/build/builds?api-version=5.1", u1);
+		assertEquals("https://test.com/testUser/testProject/_apis/build/builds?api-version=5.1", u1);
 
-		String u2 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "test",
+		String u2 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "test",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u2);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u2);
 
-		String u3 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "/test/",
+		String u3 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "/test/",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u3);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u3);
 
-		String u4 = AzurePipelineUtils.joinURL("https://dev.azure.com/sundeepm/AzureSpeedy/", "///test",
+		String u4 = AzurePipelineUtils.joinURL("https://test.com/testUser/testProject/", "///test",
 				"/_apis/build/builds?api-version=5.1");
-		assertEquals("https://dev.azure.com/sundeepm/AzureSpeedy/test/_apis/build/builds?api-version=5.1", u4);
+		assertEquals("https://test.com/testUser/testProject/test/_apis/build/builds?api-version=5.1", u4);
 	}
 
 	@Test
 	public void verifyBasicAuth() throws Exception {
 		@SuppressWarnings("unused")
-		URL u = new URL(new URL("https://dev.azure.com/sundeepm/AzureSpeedy"),
+		URL u = new URL(new URL("https://test.com/testUser/testProject"),
 				"/_apis/build/builds" + "?api-version=5.1");
 
 		HttpHeaders headers = AzurePipelineUtils.createHeaders("wrggipp62ak7kvtfc4qqc56fsbt3uxphsv5yo4ezabynbote2ipw");
@@ -128,7 +130,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultAzurePipelineClient.doRestCall("https://dev.azure.com/sundeepm/AzureSpeedy",
+		defaultAzurePipelineClient.doRestCall("https://test.com/testUser/testProject",
 				AZUREPIPELINE_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class));
@@ -145,7 +147,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultAzurePipelineClient.doRestCall("https://dev.azure.com/sundeepm/AzureSpeedy",
+		defaultAzurePipelineClient.doRestCall("https://test.com/testUser/testProject",
 				AZUREPIPELINE_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class));
@@ -156,7 +158,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = azurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE,
-				LASTUPDATEDTIME);
+				LASTUPDATEDTIME, projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -168,7 +170,7 @@ public class DefaultAzurePipelineClientTests {
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_1_job_1_build.json"), HttpStatus.OK));
-		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds);
+		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds, projectBasicConfig);
 		assertEquals(0, lastStartTimeOfBuilds);
 	}
 
@@ -178,7 +180,7 @@ public class DefaultAzurePipelineClientTests {
 		when(azurePipelineConfig.getApiEndPoint()).thenReturn("_apis/build/builds");
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds);
+		defaultAzurePipelineClient.getInstanceJobs(AZUREPIPELINE_SAMPLE_SERVER_ONE, lastStartTimeOfBuilds, projectBasicConfig);
 		assertEquals(0, lastStartTimeOfBuilds);
 	}
 

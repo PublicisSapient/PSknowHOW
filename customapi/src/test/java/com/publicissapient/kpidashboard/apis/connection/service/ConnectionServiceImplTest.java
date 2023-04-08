@@ -152,7 +152,7 @@ public class ConnectionServiceImplTest {
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setToolName("Jira");
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5fc0853c410df80001701321"));
-		projectToolConfig.setProjectKey("DTS");
+		projectToolConfig.setProjectKey("TEST");
 		projectToolConfig.setCreatedAt("2020-11-27T04:50:56");
 		projectToolConfig.setUpdatedAt("2020-11-30T04:54:59");
 		projectToolConfig.setQueryEnabled(true);
@@ -310,11 +310,13 @@ public class ConnectionServiceImplTest {
 		c1.setConnPrivate(true);
 		c1.setType("Zephyr");
 		c1.setConnectionName("Zephyr Test");
-		c1.setBaseUrl("https://tetrapak-smartsales.atlassian.net/");
+		c1.setBaseUrl("https://test.abc.com/");
 		c1.setConnectionUsers(connUsers);
 		c1.setConnPrivate(true);
 		connList.add(c1);
 		Connection connectionInput = connectionsByType.get(0);
+		connectionInput.setBaseUrl("https://test.abc.com");
+		connectionInput.setAccessToken("testAccessToken");
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
 		when(connectionRepository.save(any(Connection.class))).thenReturn(connectionInput);
 		when(connectionRepository.findByTypeAndConnPrivate("Zephyr",true)).thenReturn(connList);
@@ -328,6 +330,9 @@ public class ConnectionServiceImplTest {
 
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.ZEPHYR);
 		Connection connectionInput = connectionsByType.get(0);
+		connectionInput.setBaseUrl("https://test.abc.com/jira");
+		connectionInput.setUsername("test");
+		connectionInput.setAccessToken("testAccessToken");
 		List<Connection> connList=new ArrayList<>();
 		List<String> connUsers=new ArrayList<>();
 		connUsers.add("test");
@@ -335,7 +340,7 @@ public class ConnectionServiceImplTest {
 		c1.setConnPrivate(false);
 		c1.setType("Zephyr");
 		c1.setConnectionName("Zephyr Test Connection");
-		c1.setBaseUrl("https://tools.publicis.sapient.com/jira");
+		c1.setBaseUrl("https://test.abc.com/jira");
 		c1.setUsername("test");
 		c1.setConnectionUsers(connUsers);
 		c1.setApiEndPoint("/rest/atm/1.0");
@@ -499,13 +504,14 @@ public class ConnectionServiceImplTest {
 		conn.setConnPrivate(true);
 		conn.setType("Sonar");
 		conn.setConnectionName("Sonar Test Connection");
-		conn.setBaseUrl("https://sonarcloud.io");
-		conn.setAccessToken(
-				"KTpDMYnjpyYT+eAblkAcnfEBy6Kzk0lWxxySRum7UT54kyo+nZHldT0g1IFMgRXMxqG27T4UT4/WbrZiO+rgty0dNz01Ave1hbQnnNtBBNnhSanbAerfM6NGJKoeVWhA+P4OH+9IT1Nurhno5ka4f5Uk+nBpivliIczDDFBP07Z0HBZGdsU2alFy1Onm6vcWbe09USJI0PsiNxgVQwBlmfdXT2fF3emSlVjR36MO1QXaEW8W9LsHzjE8jIAnlzd4GWIwlIvCHXRa1BGrrX4r8i2HjtPtxR6hMCwWMW4lSo4jY7ux4l8u0prln2nF8Jpe+cojjIKWln+QcXMhzf3WXA==");
+		conn.setBaseUrl("https://abc.com");
+		conn.setAccessToken("testAccessToken");
 		conn.setConnectionUsers(connUsers);
 		conn.setConnPrivate(false);
 		connList.add(conn);
 		Connection connectionInput = connectionsByType.get(0);
+		connectionInput.setBaseUrl("https://abc.com");
+		connectionInput.setAccessToken("testAccessToken");
 		when(authenticationService.getLoggedInUser()).thenReturn("test User");
 		when(connectionRepository.findByTypeAndConnPrivate("Sonar", false)).thenReturn(connList);
 
@@ -549,11 +555,14 @@ public class ConnectionServiceImplTest {
 		c1.setConnPrivate(true);
 		c1.setType("GitHub");
 		c1.setConnectionName("Test GitHub");
-		c1.setBaseUrl("https://tools.publicis.sapient.com/gitlab");
+		c1.setBaseUrl("https://test.server.com//gitlab");
 		c1.setUsername("testUser");
 		c1.setConnectionUsers(connUsers);
 		connList.add(c1);
 		Connection connectionInput = connectionsByType.get(0);
+		connectionInput.setBaseUrl("https://test.server.com//gitlab");
+		connectionInput.setUsername("test");
+		connectionInput.setAccessToken("testAccessToken");
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
 		when(connectionRepository.save(any(Connection.class))).thenReturn(connectionInput);
 		when(connectionRepository.findByTypeAndConnPrivate("GitHub",true)).thenReturn(connList);

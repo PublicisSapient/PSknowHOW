@@ -331,7 +331,13 @@ public class SprintClientImpl implements SprintClient {
 			}
 		}
 
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
+			request.setRequestProperty("Authorization", "Bearer " + connectionOptional.get().getPatOAuthToken()); // NOSONAR
+		}
+		else{
+			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		}
+
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
@@ -361,7 +367,7 @@ public class SprintClientImpl implements SprintClient {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		String serverURL = jiraProcessorConfig.getJiraSprintByBoardUrlApi();
 		serverURL = serverURL.replace("{startAtIndex}", String.valueOf(startIndex)).replace("{boardId}", boardId);
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
 

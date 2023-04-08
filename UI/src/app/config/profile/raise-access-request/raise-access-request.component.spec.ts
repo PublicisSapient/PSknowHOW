@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, inject, TestBed, waitForAsync } from '@angular/core/testing';
 import { ToastModule } from 'primeng/toast';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { RaiseAccessRequestComponent } from './raise-access-request.component';
@@ -28,7 +28,8 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { from } from 'rxjs';
+import { from, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 describe('RaiseRequestComponent', () => {
   let component: RaiseAccessRequestComponent;
@@ -42,7 +43,7 @@ describe('RaiseRequestComponent', () => {
   const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
 
   const fakeRequestData = {
-    username: 'Rishabh',
+    username: 'testUser',
     status: 'Pending',
     reviewComments: '',
     roles: [{
@@ -60,7 +61,7 @@ describe('RaiseRequestComponent', () => {
     success: true,
     data: [{
       _id: '5da47c2ae645ca33dc927bb3',
-      username: 'Rishabh',
+      username: 'testUser',
       status: 'Pending',
       reviewComments: '',
       projects: [{
@@ -234,5 +235,15 @@ describe('RaiseRequestComponent', () => {
     // fixture.detectChanges();
     expect(component.roleSelected).toBeTruthy();
   });
+
+  it('should logout application', inject([Router], (router: Router) => {
+    localStorage.setItem('auth_token', 'hsgdagd78a6d78asda');
+    spyOn(httpService, 'logout').and.returnValue(of({}));
+    spyOn(router, 'navigate').and.stub();
+    fixture.detectChanges();
+    component.logout();
+    expect(localStorage.getItem('auth_token')).toBeFalsy();
+    expect(router.navigate).toHaveBeenCalledWith(['./authentication/login']);
+  }))
 
 });

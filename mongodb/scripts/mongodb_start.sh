@@ -106,6 +106,12 @@ echo "########## insert jira test tool added for existing user using testing fie
   echo "########## remove processor item dependency from build tools ############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/remove_processors_item_from_build_details.js
 
+  echo "########## remove Assignee details from all tools ############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/delete_assigneeDetails.js
+
+     echo "########## add custom template code for existing projects ############"
+          mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
+
 }
 
 function cron_service()

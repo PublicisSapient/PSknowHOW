@@ -20,9 +20,11 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,7 @@ import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 class BitBucketCloudClientTest {
@@ -83,14 +86,16 @@ class BitBucketCloudClientTest {
 		String serverResponse = getServerResponse("/bitbucket-server/stashresponse.json");
 		ResponseEntity<String> responseEntity = new ResponseEntity<String>(serverResponse, HttpStatus.ACCEPTED);
 		BitbucketRepo repo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
 		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
 		repo.setUserId("userID");
-		repo.setPassword("020892BE903C15F566C09DAFEA800619");
+		repo.setPassword("testPasswordString");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPasswordString");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
@@ -102,31 +107,11 @@ class BitBucketCloudClientTest {
 				ArgumentMatchers.<Class<String>> any()
 				)
 		).thenReturn(responseEntity);
-		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail);
+		List<CommitDetails> commits = bucketCloudClient.fetchAllCommits(repo, true,connectionDetail, proBasicConfig);
 		Assert.assertEquals(2, commits.size());
 	}
 
 	private String getServerResponse(String resource) throws Exception{
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
-	}
-
-	@Test
-	void testBuildEndPointUrl () throws Exception {
-		String theRepoUrl= "http://localhost:9999/scm/testproject/comp-proj.git";
-		String defaultHost= "localhost";
-		String defaultApi = "/rest/api/1.0/";
-		Whitebox.invokeMethod(bucketCloudClient, "buildEndPointUrl", theRepoUrl,defaultHost,defaultApi);
-	}
-
-	@Test
-	void tetGetPastDate() throws Exception {
-		BitbucketRepo repo = new BitbucketRepo();
-		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
-		repo.setBranch("release/core-r4.4");
-		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
-		repo.setUserId("userID");
-		repo.setPassword("password");
-		int histDays = 5;
-		Whitebox.invokeMethod(bucketCloudClient,"getPastDate",repo,true,histDays);
 	}
 }

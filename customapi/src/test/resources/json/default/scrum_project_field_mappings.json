@@ -49,6 +49,11 @@
       "Enabler Story",
       "Change request"
     ],
+    "jiraStatusForInProgress": [
+      "On Progress",
+      "In Development",
+      "In Testing"
+    ],
     "jiraTechDebtIdentification": "",
     "jiraTechDebtCustomField": "",
     "jiraTechDebtValue": [],
@@ -167,6 +172,16 @@
       "Story",
       "Enabler Story",
       "Change request"
+    ],
+    "jiraWaitStatus": [
+      "Ready for Testing",
+      "In Development",
+      "Closed"
+    ],
+    "jiraBlockedStatus": [
+      "On Hold",
+      "In Investigation",
+      "Open"
     ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 

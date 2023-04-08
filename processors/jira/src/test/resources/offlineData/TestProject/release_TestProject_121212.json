@@ -6,8 +6,8 @@
   "issues": [{
     "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
     "id": "766440",
-    "self": "https://us-jira.TEST.com/rest/api/latest/issue/766440",
-    "key": "TESTCI-21708",
+    "self": "https://test.com/rest/api/latest/issue/766440",
+    "key": "TEST-21708",
     "fields": {
       "customfield_18111": null,
       "customfield_18112": null,
@@ -55,10 +55,10 @@
       "customfield_10605": null,
       "subtasks": [],
       "issuetype": {
-        "self": "https://us-jira.TEST.com/rest/api/2/issuetype/10001",
+        "self": "https://test.com/rest/api/2/issuetype/10001",
         "id": "10001",
         "description": "Created by Jira Software - do not edit or delete. Issue type for a user story.",
-        "iconUrl": "https://us-jira.TEST.com/secure/viewavatar?size=xsmall&avatarId=10315&avatarType=issuetype",
+        "iconUrl": "https://test.com/secure/viewavatar?size=xsmall&avatarId=10315&avatarType=issuetype",
         "name": "Story",
         "subtask": false,
         "avatarId": 10315
@@ -169,7 +169,7 @@
       "customfield_11513": null,
       "customfield_11512": null,
       "customfield_11515": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/12207",
+        "self": "https://test.com/rest/api/2/customFieldOption/12207",
         "value": "NONE",
         "id": "12207"
       },
@@ -185,7 +185,7 @@
       "customfield_11504": null,
       "customfield_11505": "2019-12-04",
       "customfield_11507": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/12139",
+        "self": "https://test.com/rest/api/2/customFieldOption/12139",
         "value": "Enhancement",
         "id": "12139"
       },
@@ -205,7 +205,7 @@
       "customfield_12827": null,
       "customfield_10409": null,
       "customfield_12829": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/14370",
+        "self": "https://test.com/rest/api/2/customFieldOption/14370",
         "value": "Medium",
         "id": "14370"
       },
@@ -223,7 +223,7 @@
       "customfield_13903": null,
       "customfield_12817": null,
       "customfield_13906": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/16432",
+        "self": "https://test.com/rest/api/2/customFieldOption/16432",
         "value": "No",
         "id": "16432"
       },
@@ -340,7 +340,7 @@
       "customfield_14502": null,
       "customfield_13412": null,
       "customfield_14503": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/17417",
+        "self": "https://test.com/rest/api/2/customFieldOption/17417",
         "value": "No",
         "id": "17417"
       },
@@ -361,7 +361,6 @@
       "customfield_16905": null,
       "customfield_16904": null,
       "customfield_16903": null,
-      "customfield_16902": "<div style=\"border-width: 2px;border-style: solid;border-color: red;background-color: orange;text-align: center\">\r\n\t<b style=\"color:blue;\">NOTE</b> <br> \r\n\t<b>Our team supports following applications under \"GDT-Continuous Integration (GI)\" project</b>\r\n\t<Table align=\"center\">\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Stash:</td>\r\n\t\t\t<td align=\"left\">https://coderepository.TEST.com OR http://10.1.13.198:7999/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Jenkins:</td>\r\n\t\t\t<td align=\"left\">https://buildserver.TEST.com OR http://10.1.14.191:8080/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Artifactory:</td>\r\n\t\t\t<td align=\"left\">https://artifactrepository.TEST.com OR http://10.1.14.191:8081/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP SonarQube: </td>\r\n\t\t\t<td align=\"left\">http://10.1.4.254:9000</td>\r\n\t\t</tr>\r\n          </Table>\r\n\r\n\r\n                <br> \r\n\t        <b>\"ONLY India Business Hour\" - 24*5 Weekdays </b>\r\n                 <Table align=\"center\">\r\n\r\n                  <tr>\r\n\t\t\t<td align=\"left\">VET Bitbucket: </td>\r\n\t\t\t<td align=\"left\">https://bitbucket.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n                    \r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Artifactory: </td>\r\n\t\t\t<td align=\"left\">https://artifactory.sharedtools.vet-tools.digitalecp.TEST.com/artifactory/webapp/#/home</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Jenkins: </td>\r\n\t\t\t<td align=\"left\">https://jenkins.sharedtools.vet-tools.digitalecp.TEST.com</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">Consul: </td>\r\n\t\t\t<td align=\"left\">https://consul.prod.vet-prod.digitalecp.TEST.com/ui/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Vault: </td>\r\n\t\t\t<td align=\"left\">https://vault.prod.vet-prod.digitalecp.TEST.com/ui/vault/secrets</td>\r\n\t\t</tr>\r\n               \r\n                <tr>\r\n\t\t\t<td align=\"left\">Prometheus: </td>\r\n\t\t\t<td align=\"left\">http://prometheus.prod.vet-prod.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Grafana: </td>\r\n\t\t\t<td align=\"left\">https://grafana.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n\r\n\r\n\t</Table>\r\n</div>",
       "customfield_16906": null,
       "customfield_16901": null,
       "customfield_12300": null,
@@ -385,8 +384,8 @@
       "customfield_16320": null,
       "customfield_16322": null,
       "priority": {
-        "self": "https://us-jira.TEST.com/rest/api/2/priority/2",
-        "iconUrl": "https://us-jira.TEST.com/images/icons/priorities/critical.svg",
+        "self": "https://test.com/rest/api/2/priority/2",
+        "iconUrl": "https://test.com/images/icons/priorities/critical.svg",
         "name": "High",
         "id": "2"
       },
@@ -453,7 +452,7 @@
       "customfield_14110": null,
       "customfield_14113": null,
       "customfield_15202": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/18051",
+        "self": "https://test.com/rest/api/2/customFieldOption/18051",
         "value": "Core Dev",
         "id": "18051"
       },
@@ -494,7 +493,7 @@
       "customfield_16517": null,
       "customfield_15429": null,
       "customfield_16512": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19736",
+        "self": "https://test.com/rest/api/2/customFieldOption/19736",
         "value": "No",
         "id": "19736"
       },
@@ -502,14 +501,14 @@
       "customfield_13000": null,
       "customfield_17600": null,
       "customfield_16511": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19733",
+        "self": "https://test.com/rest/api/2/customFieldOption/19733",
         "value": "Yes",
         "id": "19733"
       },
       "customfield_15423": null,
       "customfield_15420": null,
       "customfield_16510": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19731",
+        "self": "https://test.com/rest/api/2/customFieldOption/19731",
         "value": "Yes",
         "id": "19731"
       },
@@ -561,7 +560,7 @@
       "customfield_15406": null,
       "customfield_15407": null,
       "customfield_17826": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/21476",
+        "self": "https://test.com/rest/api/2/customFieldOption/21476",
         "value": "No",
         "id": "21476"
       },
@@ -596,17 +595,17 @@
       "customfield_18468": null,
       "customfield_18469": null,
       "assignee": {
-        "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7519223",
+        "self": "https://test.com/rest/api/2/user?username=e7519223",
         "name": "e7519223",
         "key": "e7520219",
-        "emailAddress": "dwarampudi.prakashreddy@sapient.com",
+        "emailAddress": "user@abc.com",
         "avatarUrls": {
           "48x48": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=48",
           "24x24": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=24",
           "16x16": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=16",
           "32x32": "https://www.gravatar.com/avatar/5eb086e5039b23e9c0549cb5d28bca0a?d=mm&s=32"
         },
-        "displayName": "Prakash Reddy Dwarampudi",
+        "displayName": "user",
         "active": true,
         "timeZone": "America/New_York"
       },
@@ -736,7 +735,7 @@
       "customfield_18401": null,
       "customfield_18643": null,
       "customfield_18402": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/22536",
+        "self": "https://test.com/rest/api/2/customFieldOption/22536",
         "value": "Strategic Core Release",
         "id": "22536"
       },
@@ -756,13 +755,13 @@
       "customfield_14701": null,
       "customfield_13602": null,
       "status": {
-        "self": "https://us-jira.TEST.com/rest/api/2/status/1",
+        "self": "https://test.com/rest/api/2/status/1",
         "description": "The issue is open and ready for the assignee to start work on it.",
-        "iconUrl": "https://us-jira.TEST.com/images/icons/statuses/open.png",
+        "iconUrl": "https://test.com/images/icons/statuses/open.png",
         "name": "Open",
         "id": "1",
         "statusCategory": {
-          "self": "https://us-jira.TEST.com/rest/api/2/statuscategory/2",
+          "self": "https://test.com/rest/api/2/statuscategory/2",
           "id": 2,
           "key": "new",
           "colorName": "blue-gray",
@@ -791,13 +790,13 @@
       "customfield_10310": null,
       "customfield_10311": null,
       "customfield_11401": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/11806",
+        "self": "https://test.com/rest/api/2/customFieldOption/11806",
         "value": "No",
         "id": "11806"
       },
       "customfield_10312": null,
       "customfield_11400": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/11801",
+        "self": "https://test.com/rest/api/2/customFieldOption/11801",
         "value": "No",
         "id": "11801"
       },
@@ -806,7 +805,7 @@
       "customfield_14900": null,
       "customfield_10306": null,
       "customfield_10307": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/10326",
+        "self": "https://test.com/rest/api/2/customFieldOption/10326",
         "value": "Medium",
         "id": "10326"
       },
@@ -904,11 +903,11 @@
       "customfield_15506": null,
       "customfield_15509": null,
       "components": [{
-        "self": "https://us-jira.TEST.com/rest/api/2/component/14608",
+        "self": "https://test.com/rest/api/2/component/14608",
         "id": "14608",
-        "name": "TESTCI"
+        "name": "TEST"
       }, {
-        "self": "https://us-jira.TEST.com/rest/api/2/component/14970",
+        "self": "https://test.com/rest/api/2/component/14970",
         "id": "14970",
         "name": "DEPLOY",
         "description": "Deployment Track"
@@ -968,16 +967,16 @@
       "customfield_10273": null,
       "customfield_15720": null,
       "project": {
-        "self": "https://us-jira.TEST.com/rest/api/2/project/10100",
+        "self": "https://test.com/rest/api/2/project/10100",
         "id": "10100",
-        "key": "TESTCI",
+        "key": "TEST",
         "name": "Customer Interaction Management",
         "projectTypeKey": "software",
         "avatarUrls": {
-          "48x48": "https://us-jira.TEST.com/secure/projectavatar?pid=10100&avatarId=10726",
-          "24x24": "https://us-jira.TEST.com/secure/projectavatar?size=small&pid=10100&avatarId=10726",
-          "16x16": "https://us-jira.TEST.com/secure/projectavatar?size=xsmall&pid=10100&avatarId=10726",
-          "32x32": "https://us-jira.TEST.com/secure/projectavatar?size=medium&pid=10100&avatarId=10726"
+          "48x48": "https://test.com/secure/projectavatar?pid=10100&avatarId=10726",
+          "24x24": "https://test.com/secure/projectavatar?size=small&pid=10100&avatarId=10726",
+          "16x16": "https://test.com/secure/projectavatar?size=xsmall&pid=10100&avatarId=10726",
+          "32x32": "https://test.com/secure/projectavatar?size=medium&pid=10100&avatarId=10726"
         }
       },
       "customfield_10274": null,
@@ -1046,7 +1045,7 @@
       "customfield_11103": null,
       "customfield_11104": null,
       "customfield_15700": null,
-      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TESTCI Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
+      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TEST Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
       "customfield_14605": null,
       "customfield_10006": null,
       "customfield_14606": null,
@@ -1078,7 +1077,7 @@
       "customfield_18636": null,
       "customfield_14037": null,
       "customfield_18637": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/23079",
+        "self": "https://test.com/rest/api/2/customFieldOption/23079",
         "value": "Not prioritized",
         "id": "23079"
       },
@@ -1101,7 +1100,7 @@
       "customfield_14022": null,
       "customfield_14020": null,
       "customfield_14025": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/16544",
+        "self": "https://test.com/rest/api/2/customFieldOption/16544",
         "value": "Medium",
         "id": "16544"
       },
@@ -1243,17 +1242,17 @@
       "histories": [{
         "id": "9352343",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7349360",
+          "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1269,17 +1268,17 @@
       }, {
         "id": "9411863",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7349360",
+          "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1295,17 +1294,17 @@
       }, {
         "id": "9411870",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7349360",
+          "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user1@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user1",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -1330,8 +1329,8 @@
   }, {
     "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
     "id": "678144",
-    "self": "https://us-jira.TEST.com/rest/api/latest/issue/678144",
-    "key": "TESTCI-21118",
+    "self": "https://test.com/rest/api/latest/issue/678144",
+    "key": "TEST-21118",
     "fields": {
       "customfield_18111": null,
       "customfield_18112": null,
@@ -1340,7 +1339,7 @@
       "customfield_18110": null,
       "customfield_18115": null,
       "resolution": {
-        "self": "https://us-jira.TEST.com/rest/api/2/resolution/1",
+        "self": "https://test.com/rest/api/2/resolution/1",
         "id": "1",
         "description": "A fix for this issue is checked into the tree and tested.",
         "name": "Fixed"
@@ -1372,28 +1371,28 @@
       "customfield_11703": null,
       "issuelinks": [{
         "id": "906101",
-        "self": "https://us-jira.TEST.com/rest/api/2/issueLink/906101",
+        "self": "https://test.com/rest/api/2/issueLink/906101",
         "type": {
           "id": "10000",
           "name": "Blocks",
           "inward": "is blocked by",
           "outward": "blocks",
-          "self": "https://us-jira.TEST.com/rest/api/2/issueLinkType/10000"
+          "self": "https://test.com/rest/api/2/issueLinkType/10000"
         },
         "inwardIssue": {
           "id": "678078",
           "key": "GQPT-88830",
-          "self": "https://us-jira.TEST.com/rest/api/2/issue/678078",
+          "self": "https://test.com/rest/api/2/issue/678078",
           "fields": {
             "summary": "Campaign Not able to List/Download file from S3 [MTE01]",
             "status": {
-              "self": "https://us-jira.TEST.com/rest/api/2/status/1",
+              "self": "https://test.com/rest/api/2/status/1",
               "description": "The issue is open and ready for the assignee to start work on it.",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/statuses/open.png",
+              "iconUrl": "https://test.com/images/icons/statuses/open.png",
               "name": "Open",
               "id": "1",
               "statusCategory": {
-                "self": "https://us-jira.TEST.com/rest/api/2/statuscategory/2",
+                "self": "https://test.com/rest/api/2/statuscategory/2",
                 "id": 2,
                 "key": "new",
                 "colorName": "blue-gray",
@@ -1401,16 +1400,16 @@
               }
             },
             "priority": {
-              "self": "https://us-jira.TEST.com/rest/api/2/priority/2",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/priorities/critical.svg",
+              "self": "https://test.com/rest/api/2/priority/2",
+              "iconUrl": "https://test.com/images/icons/priorities/critical.svg",
               "name": "High",
               "id": "2"
             },
             "issuetype": {
-              "self": "https://us-jira.TEST.com/rest/api/2/issuetype/1",
+              "self": "https://test.com/rest/api/2/issuetype/1",
               "id": "1",
               "description": "A problem which impairs or prevents the functions of the product.",
-              "iconUrl": "https://us-jira.TEST.com/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
+              "iconUrl": "https://test.com/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
               "name": "Bug",
               "subtask": false,
               "avatarId": 10303
@@ -1419,28 +1418,28 @@
         }
       }, {
         "id": "907161",
-        "self": "https://us-jira.TEST.com/rest/api/2/issueLink/907161",
+        "self": "https://test.com/rest/api/2/issueLink/907161",
         "type": {
           "id": "10000",
           "name": "Blocks",
           "inward": "is blocked by",
           "outward": "blocks",
-          "self": "https://us-jira.TEST.com/rest/api/2/issueLinkType/10000"
+          "self": "https://test.com/rest/api/2/issueLinkType/10000"
         },
         "inwardIssue": {
           "id": "679381",
           "key": "VET-5032",
-          "self": "https://us-jira.TEST.com/rest/api/2/issue/679381",
+          "self": "https://test.com/rest/api/2/issue/679381",
           "fields": {
             "summary": "CLONE - Campaign Not able to List/Download file from S3 [MTE01]",
             "status": {
-              "self": "https://us-jira.TEST.com/rest/api/2/status/10001",
+              "self": "https://test.com/rest/api/2/status/10001",
               "description": "",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/statuses/closed.png",
+              "iconUrl": "https://test.com/images/icons/statuses/closed.png",
               "name": "Done",
               "id": "10001",
               "statusCategory": {
-                "self": "https://us-jira.TEST.com/rest/api/2/statuscategory/3",
+                "self": "https://test.com/rest/api/2/statuscategory/3",
                 "id": 3,
                 "key": "done",
                 "colorName": "green",
@@ -1448,16 +1447,16 @@
               }
             },
             "priority": {
-              "self": "https://us-jira.TEST.com/rest/api/2/priority/2",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/priorities/critical.svg",
+              "self": "https://test.com/rest/api/2/priority/2",
+              "iconUrl": "https://test.com/images/icons/priorities/critical.svg",
               "name": "High",
               "id": "2"
             },
             "issuetype": {
-              "self": "https://us-jira.TEST.com/rest/api/2/issuetype/10100",
+              "self": "https://test.com/rest/api/2/issuetype/10100",
               "id": "10100",
               "description": "",
-              "iconUrl": "https://us-jira.TEST.com/secure/viewavatar?size=xsmall&avatarId=10300&avatarType=issuetype",
+              "iconUrl": "https://test.com/secure/viewavatar?size=xsmall&avatarId=10300&avatarType=issuetype",
               "name": "Support Request",
               "subtask": false,
               "avatarId": 10300
@@ -1466,28 +1465,28 @@
         }
       }, {
         "id": "905216",
-        "self": "https://us-jira.TEST.com/rest/api/2/issueLink/905216",
+        "self": "https://test.com/rest/api/2/issueLink/905216",
         "type": {
           "id": "10301",
           "name": "Testing",
           "inward": "discovered while testing",
           "outward": "testing discovered",
-          "self": "https://us-jira.TEST.com/rest/api/2/issueLinkType/10301"
+          "self": "https://test.com/rest/api/2/issueLinkType/10301"
         },
         "outwardIssue": {
           "id": "674349",
-          "key": "TESTCI-21038",
-          "self": "https://us-jira.TEST.com/rest/api/2/issue/674349",
+          "key": "TEST-21038",
+          "self": "https://test.com/rest/api/2/issue/674349",
           "fields": {
             "summary": "DE | MTE | R6 | Folder Creation and code deployment",
             "status": {
-              "self": "https://us-jira.TEST.com/rest/api/2/status/6",
+              "self": "https://test.com/rest/api/2/status/6",
               "description": "",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/statuses/closed.png",
+              "iconUrl": "https://test.com/images/icons/statuses/closed.png",
               "name": "Closed",
               "id": "6",
               "statusCategory": {
-                "self": "https://us-jira.TEST.com/rest/api/2/statuscategory/3",
+                "self": "https://test.com/rest/api/2/statuscategory/3",
                 "id": 3,
                 "key": "done",
                 "colorName": "green",
@@ -1495,16 +1494,16 @@
               }
             },
             "priority": {
-              "self": "https://us-jira.TEST.com/rest/api/2/priority/2",
-              "iconUrl": "https://us-jira.TEST.com/images/icons/priorities/critical.svg",
+              "self": "https://test.com/rest/api/2/priority/2",
+              "iconUrl": "https://test.com/images/icons/priorities/critical.svg",
               "name": "High",
               "id": "2"
             },
             "issuetype": {
-              "self": "https://us-jira.TEST.com/rest/api/2/issuetype/10001",
+              "self": "https://test.com/rest/api/2/issuetype/10001",
               "id": "10001",
               "description": "Created by Jira Software - do not edit or delete. Issue type for a user story.",
-              "iconUrl": "https://us-jira.TEST.com/secure/viewavatar?size=xsmall&avatarId=10315&avatarType=issuetype",
+              "iconUrl": "https://test.com/secure/viewavatar?size=xsmall&avatarId=10315&avatarType=issuetype",
               "name": "Story",
               "subtask": false,
               "avatarId": 10315
@@ -1525,10 +1524,10 @@
       "customfield_10605": null,
       "subtasks": [],
       "issuetype": {
-        "self": "https://us-jira.TEST.com/rest/api/2/issuetype/1",
+        "self": "https://test.com/rest/api/2/issuetype/1",
         "id": "1",
         "description": "A problem which impairs or prevents the functions of the product.",
-        "iconUrl": "https://us-jira.TEST.com/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
+        "iconUrl": "https://test.com/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
         "name": "Bug",
         "subtask": false,
         "avatarId": 10303
@@ -1634,7 +1633,7 @@
       "customfield_11513": null,
       "customfield_11512": null,
       "customfield_11515": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/12207",
+        "self": "https://test.com/rest/api/2/customFieldOption/12207",
         "value": "NONE",
         "id": "12207"
       },
@@ -1650,7 +1649,7 @@
       "customfield_11504": null,
       "customfield_11505": "2019-08-14",
       "customfield_11507": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/12139",
+        "self": "https://test.com/rest/api/2/customFieldOption/12139",
         "value": "Enhancement",
         "id": "12139"
       },
@@ -1670,7 +1669,7 @@
       "customfield_12827": null,
       "customfield_10409": null,
       "customfield_12829": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/14370",
+        "self": "https://test.com/rest/api/2/customFieldOption/14370",
         "value": "Medium",
         "id": "14370"
       },
@@ -1688,7 +1687,7 @@
       "customfield_13903": null,
       "customfield_12817": null,
       "customfield_13906": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/16432",
+        "self": "https://test.com/rest/api/2/customFieldOption/16432",
         "value": "No",
         "id": "16432"
       },
@@ -1712,7 +1711,7 @@
       "customfield_14310": null,
       "customfield_18914": null,
       "customfield_11046": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/11333",
+        "self": "https://test.com/rest/api/2/customFieldOption/11333",
         "value": "Configuration Related",
         "id": "11333"
       },
@@ -1809,7 +1808,7 @@
       "customfield_14502": null,
       "customfield_13412": null,
       "customfield_14503": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/17417",
+        "self": "https://test.com/rest/api/2/customFieldOption/17417",
         "value": "No",
         "id": "17417"
       },
@@ -1830,7 +1829,6 @@
       "customfield_16905": null,
       "customfield_16904": null,
       "customfield_16903": null,
-      "customfield_16902": "<div style=\"border-width: 2px;border-style: solid;border-color: red;background-color: orange;text-align: center\">\r\n\t<b style=\"color:blue;\">NOTE</b> <br> \r\n\t<b>Our team supports following applications under \"GDT-Continuous Integration (GI)\" project</b>\r\n\t<Table align=\"center\">\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Stash:</td>\r\n\t\t\t<td align=\"left\">https://coderepository.TEST.com OR http://10.1.13.198:7999/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Jenkins:</td>\r\n\t\t\t<td align=\"left\">https://buildserver.TEST.com OR http://10.1.14.191:8080/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP Artifactory:</td>\r\n\t\t\t<td align=\"left\">https://artifactrepository.TEST.com OR http://10.1.14.191:8081/</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td align=\"left\">CORP SonarQube: </td>\r\n\t\t\t<td align=\"left\">http://10.1.4.254:9000</td>\r\n\t\t</tr>\r\n          </Table>\r\n\r\n\r\n                <br> \r\n\t        <b>\"ONLY India Business Hour\" - 24*5 Weekdays </b>\r\n                 <Table align=\"center\">\r\n\r\n                  <tr>\r\n\t\t\t<td align=\"left\">VET Bitbucket: </td>\r\n\t\t\t<td align=\"left\">https://bitbucket.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n                    \r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Artifactory: </td>\r\n\t\t\t<td align=\"left\">https://artifactory.sharedtools.vet-tools.digitalecp.TEST.com/artifactory/webapp/#/home</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">VET Jenkins: </td>\r\n\t\t\t<td align=\"left\">https://jenkins.sharedtools.vet-tools.digitalecp.TEST.com</td>\r\n\t\t</tr>\r\n\r\n                 <tr>\r\n\t\t\t<td align=\"left\">Consul: </td>\r\n\t\t\t<td align=\"left\">https://consul.prod.vet-prod.digitalecp.TEST.com/ui/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Vault: </td>\r\n\t\t\t<td align=\"left\">https://vault.prod.vet-prod.digitalecp.TEST.com/ui/vault/secrets</td>\r\n\t\t</tr>\r\n               \r\n                <tr>\r\n\t\t\t<td align=\"left\">Prometheus: </td>\r\n\t\t\t<td align=\"left\">http://prometheus.prod.vet-prod.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n                <tr>\r\n\t\t\t<td align=\"left\">Grafana: </td>\r\n\t\t\t<td align=\"left\">https://grafana.sharedtools.vet-tools.digitalecp.TEST.com/</td>\r\n\t\t</tr>\r\n\r\n\r\n\r\n\t</Table>\r\n</div>",
       "customfield_16906": null,
       "customfield_16901": null,
       "customfield_12300": null,
@@ -1854,8 +1852,8 @@
       "customfield_16320": null,
       "customfield_16322": null,
       "priority": {
-        "self": "https://us-jira.TEST.com/rest/api/2/priority/1",
-        "iconUrl": "https://us-jira.TEST.com/images/icons/priorities/blocker.svg",
+        "self": "https://test.com/rest/api/2/priority/1",
+        "iconUrl": "https://test.com/images/icons/priorities/blocker.svg",
         "name": "Critical",
         "id": "1"
       },
@@ -1922,7 +1920,7 @@
       "customfield_14110": null,
       "customfield_14113": null,
       "customfield_15202": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/18051",
+        "self": "https://test.com/rest/api/2/customFieldOption/18051",
         "value": "Core Dev",
         "id": "18051"
       },
@@ -1964,7 +1962,7 @@
       "customfield_16517": null,
       "customfield_15422": null,
       "customfield_16512": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19736",
+        "self": "https://test.com/rest/api/2/customFieldOption/19736",
         "value": "No",
         "id": "19736"
       },
@@ -1972,13 +1970,13 @@
       "customfield_15423": null,
       "customfield_17600": null,
       "customfield_16511": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19733",
+        "self": "https://test.com/rest/api/2/customFieldOption/19733",
         "value": "Yes",
         "id": "19733"
       },
       "customfield_15420": null,
       "customfield_16510": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/19731",
+        "self": "https://test.com/rest/api/2/customFieldOption/19731",
         "value": "Yes",
         "id": "19731"
       },
@@ -2061,17 +2059,17 @@
       "customfield_18468": null,
       "customfield_18469": null,
       "assignee": {
-        "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7203063",
+        "self": "https://test.com/rest/api/2/user?username=e7203063",
         "name": "e7203063",
         "key": "e7203063",
-        "emailAddress": "bthangamuthu@sapient.com",
+        "emailAddress": "user2@abc.com",
         "avatarUrls": {
-          "48x48": "https://us-jira.TEST.com/secure/useravatar?avatarId=15922",
-          "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&avatarId=15922",
-          "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&avatarId=15922",
-          "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&avatarId=15922"
+          "48x48": "https://test.com/secure/useravatar?avatarId=15922",
+          "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
+          "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
+          "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
         },
-        "displayName": "Boominathan Thangamuthu",
+        "displayName": "user2",
         "active": true,
         "timeZone": "America/New_York"
       },
@@ -2217,13 +2215,13 @@
       "customfield_14701": null,
       "customfield_13602": null,
       "status": {
-        "self": "https://us-jira.TEST.com/rest/api/2/status/10001",
+        "self": "https://test.com/rest/api/2/status/10001",
         "description": "",
-        "iconUrl": "https://us-jira.TEST.com/images/icons/statuses/closed.png",
+        "iconUrl": "https://test.com/images/icons/statuses/closed.png",
         "name": "Done",
         "id": "10001",
         "statusCategory": {
-          "self": "https://us-jira.TEST.com/rest/api/2/statuscategory/3",
+          "self": "https://test.com/rest/api/2/statuscategory/3",
           "id": 3,
           "key": "done",
           "colorName": "green",
@@ -2241,7 +2239,7 @@
       "customfield_12501": null,
       "customfield_10323": null,
       "customfield_12500": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/18870",
+        "self": "https://test.com/rest/api/2/customFieldOption/18870",
         "value": "Configuration",
         "id": "18870"
       },
@@ -2256,13 +2254,13 @@
       "customfield_10310": null,
       "customfield_10311": null,
       "customfield_11401": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/11806",
+        "self": "https://test.com/rest/api/2/customFieldOption/11806",
         "value": "No",
         "id": "11806"
       },
       "customfield_10312": null,
       "customfield_11400": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/11801",
+        "self": "https://test.com/rest/api/2/customFieldOption/11801",
         "value": "No",
         "id": "11801"
       },
@@ -2271,7 +2269,7 @@
       "customfield_14900": null,
       "customfield_10306": null,
       "customfield_10307": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/10326",
+        "self": "https://test.com/rest/api/2/customFieldOption/10326",
         "value": "Medium",
         "id": "10326"
       },
@@ -2369,7 +2367,7 @@
       "customfield_15506": null,
       "customfield_15509": null,
       "components": [{
-        "self": "https://us-jira.TEST.com/rest/api/2/component/14970",
+        "self": "https://test.com/rest/api/2/component/14970",
         "id": "14970",
         "name": "DEPLOY",
         "description": "Deployment Track"
@@ -2428,16 +2426,16 @@
       "customfield_10273": null,
       "customfield_15720": null,
       "project": {
-        "self": "https://us-jira.TEST.com/rest/api/2/project/10100",
+        "self": "https://test.com/rest/api/2/project/10100",
         "id": "10100",
-        "key": "TESTCI",
+        "key": "TEST",
         "name": "Customer Interaction Management",
         "projectTypeKey": "software",
         "avatarUrls": {
-          "48x48": "https://us-jira.TEST.com/secure/projectavatar?pid=10100&avatarId=10726",
-          "24x24": "https://us-jira.TEST.com/secure/projectavatar?size=small&pid=10100&avatarId=10726",
-          "16x16": "https://us-jira.TEST.com/secure/projectavatar?size=xsmall&pid=10100&avatarId=10726",
-          "32x32": "https://us-jira.TEST.com/secure/projectavatar?size=medium&pid=10100&avatarId=10726"
+          "48x48": "https://test.com/secure/projectavatar?pid=10100&avatarId=10726",
+          "24x24": "https://test.com/secure/projectavatar?size=small&pid=10100&avatarId=10726",
+          "16x16": "https://test.com/secure/projectavatar?size=xsmall&pid=10100&avatarId=10726",
+          "32x32": "https://test.com/secure/projectavatar?size=medium&pid=10100&avatarId=10726"
         }
       },
       "customfield_10274": null,
@@ -2506,7 +2504,7 @@
       "customfield_11103": null,
       "customfield_11104": null,
       "customfield_15700": null,
-      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TESTCI Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
+      "customfield_10005": ["com.atlassian.greenhopper.service.sprint.Sprint@7e3bbb5[id=14871,rapidViewId=771,state=ACTIVE,name=TEST Deploy - Sprint 62,startDate=2019-12-04T01:09:31.925-05:00,endDate=2019-12-18T01:09:00.000-05:00,completeDate=<null>,sequence=14871,goal=]"],
       "customfield_14605": null,
       "customfield_10006": null,
       "customfield_14606": null,
@@ -2557,7 +2555,7 @@
       "customfield_14022": null,
       "customfield_14020": null,
       "customfield_14025": {
-        "self": "https://us-jira.TEST.com/rest/api/2/customFieldOption/16544",
+        "self": "https://test.com/rest/api/2/customFieldOption/16544",
         "value": "Medium",
         "id": "16544"
       },
@@ -2580,7 +2578,7 @@
       "customfield_18624": null,
       "customfield_18618": null,
       "versions": [{
-        "self": "https://us-jira.TEST.com/rest/api/2/version/17918",
+        "self": "https://test.com/rest/api/2/version/17918",
         "id": "17918",
         "name": "Investigating",
         "archived": false,
@@ -2681,7 +2679,6 @@
       "customfield_18801": null,
       "customfield_17711": null,
       "customfield_13110": null,
-      "customfield_17710": "<div id=\"demobox\">\r\n<center>\r\nPlease refer to the <a href=https://us-confluence.TEST.com/x/dL0bBw > Intake Requirements Guidelines </a> page for additional information regarding ClickStream/Customer Engagement/Reporting/Analytics/Data Requirements. \r\n</center>\r\n</div>\r\n<style>\r\n#demobox {\r\n\r\n  align=\"center\";\r\n  background-color: #FFC300 ;\r\n  padding: 2px;\r\n   \r\n}\r\n</style>",
       "customfield_18802": null,
       "customfield_13113": null,
       "customfield_13112": null,
@@ -2704,17 +2701,17 @@
       "histories": [{
         "id": "8258815",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7173538",
+          "self": "https://test.com/rest/api/2/user?username=e7173538",
           "name": "e7173538",
           "key": "e7173538",
-          "emailAddress": "apanda24@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/74f4f89d9d0ef9860de6d9f08796ef86?d=mm&s=32"
           },
-          "displayName": "Archana Panda",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2724,23 +2721,23 @@
           "fieldtype": "jira",
           "from": null,
           "fromString": null,
-          "to": "TESTCI-21038",
-          "toString": "This issue testing discovered TESTCI-21038"
+          "to": "TEST-21038",
+          "toString": "This issue testing discovered TEST-21038"
         }]
       }, {
         "id": "8270080",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7676293",
+          "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2756,17 +2753,17 @@
       }, {
         "id": "8270087",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7676293",
+          "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2782,17 +2779,17 @@
       }, {
         "id": "8278218",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7491265",
+          "self": "https://test.com/rest/api/2/user?username=e7491265",
           "name": "e7491265",
           "key": "e7491265",
-          "emailAddress": "maz.abbas@capgemini.com",
+          "emailAddress": "user5@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7491265&avatarId=19337",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7491265&avatarId=19337",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7491265&avatarId=19337",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7491265&avatarId=19337"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7491265&avatarId=19337",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7491265&avatarId=19337",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7491265&avatarId=19337",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7491265&avatarId=19337"
           },
-          "displayName": "Mazher Abbas",
+          "displayName": "user5",
           "active": true,
           "timeZone": "America/Chicago"
         },
@@ -2808,17 +2805,17 @@
       }, {
         "id": "8416187",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7676293",
+          "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2827,24 +2824,24 @@
           "field": "assignee",
           "fieldtype": "jira",
           "from": "e7676293",
-          "fromString": "Pushpa Anusha Edara",
+          "fromString": "user4",
           "to": "e7203063",
-          "toString": "Boominathan Thangamuthu"
+          "toString": "user6"
         }]
       }, {
         "id": "8416190",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7676293",
+          "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2860,17 +2857,17 @@
       }, {
         "id": "8416192",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7676293",
+          "self": "https://test.com/rest/api/2/user?username=e7676293",
           "name": "e7676293",
           "key": "e7676293",
-          "emailAddress": "pushpa.edara@publicissapient.com",
+          "emailAddress": "user4@abc.com",
           "avatarUrls": {
             "48x48": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=48",
             "24x24": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=24",
             "16x16": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=16",
             "32x32": "https://www.gravatar.com/avatar/6fe33dfa55dd67026645387cb123b2d1?d=mm&s=32"
           },
-          "displayName": "Pushpa Anusha Edara",
+          "displayName": "user4",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2886,17 +2883,17 @@
       }, {
         "id": "9352299",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7349360",
+          "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2907,22 +2904,22 @@
           "from": null,
           "fromString": null,
           "to": "14871",
-          "toString": "TESTCI Deploy - Sprint 62"
+          "toString": "TEST Deploy - Sprint 62"
         }]
       }, {
         "id": "9352300",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7349360",
+          "self": "https://test.com/rest/api/2/user?username=e7349360",
           "name": "e7349360",
           "key": "e7349360",
-          "emailAddress": "idhiman@sapient.com",
+          "emailAddress": "user3@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
+            "48x48": "https://test.com/secure/useravatar?ownerId=e7349360&avatarId=17950",
+            "24x24": "https://test.com/secure/useravatar?size=small&ownerId=e7349360&avatarId=17950",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&ownerId=e7349360&avatarId=17950",
+            "32x32": "https://test.com/secure/useravatar?size=medium&ownerId=e7349360&avatarId=17950"
           },
-          "displayName": "Ishani Dhiman",
+          "displayName": "user3",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2938,17 +2935,17 @@
       }, {
         "id": "9463484",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7203063",
+          "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?avatarId=15922",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&avatarId=15922",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&avatarId=15922",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&avatarId=15922"
+            "48x48": "https://test.com/secure/useravatar?avatarId=15922",
+            "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
+            "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -2978,17 +2975,17 @@
       }, {
         "id": "9463490",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7203063",
+          "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?avatarId=15922",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&avatarId=15922",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&avatarId=15922",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&avatarId=15922"
+            "48x48": "https://test.com/secure/useravatar?avatarId=15922",
+            "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
+            "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -3004,17 +3001,17 @@
       }, {
         "id": "9463491",
         "author": {
-          "self": "https://us-jira.TEST.com/rest/api/2/user?username=e7203063",
+          "self": "https://test.com/rest/api/2/user?username=e7203063",
           "name": "e7203063",
           "key": "e7203063",
-          "emailAddress": "bthangamuthu@sapient.com",
+          "emailAddress": "user6@abc.com",
           "avatarUrls": {
-            "48x48": "https://us-jira.TEST.com/secure/useravatar?avatarId=15922",
-            "24x24": "https://us-jira.TEST.com/secure/useravatar?size=small&avatarId=15922",
-            "16x16": "https://us-jira.TEST.com/secure/useravatar?size=xsmall&avatarId=15922",
-            "32x32": "https://us-jira.TEST.com/secure/useravatar?size=medium&avatarId=15922"
+            "48x48": "https://test.com/secure/useravatar?avatarId=15922",
+            "24x24": "https://test.com/secure/useravatar?size=small&avatarId=15922",
+            "16x16": "https://test.com/secure/useravatar?size=xsmall&avatarId=15922",
+            "32x32": "https://test.com/secure/useravatar?size=medium&avatarId=15922"
           },
-          "displayName": "Boominathan Thangamuthu",
+          "displayName": "user6",
           "active": true,
           "timeZone": "America/New_York"
         },
@@ -3436,7 +3433,7 @@
     "customfield_16304": "Targeted Complete Date",
     "customfield_14119": "Planning Assumptions",
     "customfield_15208": "CCP",
-    "customfield_15209": "TESTCI",
+    "customfield_15209": "TEST",
     "customfield_14110": "Effective Date",
     "customfield_14113": "Date Assigned to Pod for Size/Score",
     "customfield_15202": "Nature of Development",
@@ -3829,7 +3826,7 @@
     "customfield_15509": "GLS",
     "components": "Component/s",
     "customfield_15741": "Backward Compatible",
-    "customfield_15500": "TESTCI",
+    "customfield_15500": "TEST",
     "customfield_15742": "On/Off Configurable",
     "customfield_15740": "Performance Impact",
     "customfield_15503": "DNA",
@@ -4061,7 +4058,7 @@
     "customfield_16419": "Short Term Mitigation",
     "customfield_16418": "Root Cause Analysis",
     "customfield_16413": "Core Microservice GLS",
-    "customfield_16412": "Offers Microservice TESTCI",
+    "customfield_16412": "Offers Microservice TEST",
     "customfield_17500": "Experiment",
     "customfield_16411": "Offers Microservice OCE",
     "customfield_16410": "Offers Microservice eCP",

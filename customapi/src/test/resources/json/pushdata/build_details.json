@@ -1,0 +1,17 @@
+[
+  {
+    "_id" : "633552f809c7635933ad1925",
+    "processorItemId" : "633552f809c7635933ad1924",
+    "basicProjectConfigId": "632824e949794a18e8a44787",
+    "projectToolConfigId": "632824e949794a18e8a44787",
+    "timestamp" : 1664439031847,
+    "buildJob" : "Test",
+    "jobFolder" : "Test",
+    "number" : "123",
+    "startTime" : 1675048599000,
+    "endTime" : 1675108599000,
+    "duration" : 1556204,
+    "buildStatus" : "SUCCESS",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
+  }
+]

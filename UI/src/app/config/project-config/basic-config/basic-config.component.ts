@@ -47,6 +47,8 @@ export class BasicConfigComponent implements OnInit {
   getFieldsResponse: any;
   public form: UntypedFormGroup = this.formBuilder.group({});
   blocked = true;
+  assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  isProjectAdmin = false;
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private aesEncryption: TextEncryptionService) {
     this.projectTypeOptions = [
@@ -60,6 +62,7 @@ export class BasicConfigComponent implements OnInit {
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
+    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
   }
 
   getFields() {
@@ -86,6 +89,17 @@ export class BasicConfigComponent implements OnInit {
         inputType: 'text',
         value: '',
         required: true
+      }
+    );
+    this.formData.push(
+      {
+        level: this.formData.length,
+        hierarchyLevelId: 'assigneeDetails',
+        label1:'Enable Individual KPIs',
+        label2: this.assigneeSwitchInfo,
+        inputType: 'boolean',
+        value: false,
+        required: false
       }
     );
 
@@ -118,6 +132,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['projectName'] = formValue['projectName'];
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
+    submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
 
     this.getFieldsResponse.forEach(element => {
       submitData['hierarchy'].push({
@@ -137,6 +152,7 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['id'] = response.serviceResponse.data['id'];
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
+        this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });

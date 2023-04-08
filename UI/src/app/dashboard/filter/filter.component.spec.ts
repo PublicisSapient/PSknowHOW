@@ -754,14 +754,30 @@ describe('FilterComponent', () => {
 
   it('should handle iteration filter', () => {
     component.filterForm = new UntypedFormGroup({
-      selectedProjectValue: new UntypedFormControl('DEMO_SONAR_63284960fdd20276d60e4df5'),
-      selectedSprintValue: new UntypedFormControl('')
+      selectedProjectValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
     });
-    component.trendLineValueList = [];
-    component.additionalFiltersDdn = [];
+    component.selectedFilterArray = [];
+    component.trendLineValueList = [{nodeId:'DOTC_63b51633f33fd2360e9e72bd', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
+    component.additionalFiltersDdn = {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'active',
+      }]
+    };
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
-    component.handleIterationFilters('project', 2);
+    spyOn(component, 'createFilterApplyData');
+    component.handleIterationFilters('project', 1);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1099,5 +1115,80 @@ describe('FilterComponent', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBe(true);
    })
-   
+
+    it('should redirect on login page',inject([Router], (router: Router) => {
+      const navigateSpy = spyOn(router, 'navigate');
+      component.logout();
+      httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);
+      expect(navigateSpy).toHaveBeenCalledWith(['./authentication/login']);
+    }));
+
+    it("should redirect from notification",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      component.routeForAccess("Project Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/RequestStatus']);
+    }))
+
+    it("should redirect on project access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("Project Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantRequests']);
+    }))
+
+    it("should redirect on User access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("User Access Request");
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+    }))
+
+    it("should not redirect on User access/project access from notification for Superadmin and admin",inject([Router], (router: Router) =>{
+      const navigateSpy = spyOn(router, 'navigate');
+      spyOn(getAuthorizationService,"checkIfSuperUser").and.returnValue(true);
+      spyOn(getAuthorizationService,"checkIfProjectAdmin").and.returnValue(true);
+      component.routeForAccess("Default case");
+      expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+    }))
+
+    it("should notification list not null if response is comming",()=>{
+      const fakeResponce = {
+        message: 'Data came successfully',
+        success: true,
+        data: [{ count: 2, type: 'User Access Request' }],
+      };
+      spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+      component.getNotification();
+      expect(component.notificationList).not.toBe(null);
+    })
+
+    it("should call message service if notification api is facing any issue",()=>{
+      const fakeResponce = {
+        message: 'some error occured',
+        success: false,
+        data: [],
+      };
+      spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+      const spy = spyOn(messageService,'add');
+      component.getNotification();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should check if maturity tab is hidden',()=>{
+      component.kpiListData = configGlobalData['data'];
+      expect(component.checkIfMaturityTabHidden()).toBeFalse();
+    });
+
+    it('navigate to dashboard should call navigateToSelectedTab',()=>{
+      spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
+      spyOn(component,'getNotification');
+      spyOn(component,'processKpiList');
+      const navigateToSelectedTabSpy = spyOn(component,'navigateToSelectedTab');
+      component.navigateToDashboard();
+      fixture.detectChanges();
+      expect(navigateToSelectedTabSpy).toHaveBeenCalled();
+    });
+
 });

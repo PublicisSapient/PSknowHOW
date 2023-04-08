@@ -35,6 +35,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {AccordionModule} from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe } from '@angular/common';
+import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -98,11 +99,15 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+
 import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
+
+import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
+
 
 /******************************************************/
 
@@ -159,9 +164,9 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
-        TableComponent,
         SsoAuthFailureComponent,
-        UnauthorisedAccessComponent
+        UnauthorisedAccessComponent,
+        GroupBarChartComponent
     ],
     imports: [
         DropdownModule,
@@ -189,7 +194,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         AccordionModule,
         DialogModule,
         FontAwesomeModule,
-        DragDropModule
+        DragDropModule,
+        MenuModule
     ],
     providers: [
         ExcelService,

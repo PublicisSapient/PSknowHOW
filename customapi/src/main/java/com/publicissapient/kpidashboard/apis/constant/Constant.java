@@ -101,6 +101,7 @@ public final class Constant {
 
 	public static final String DEFAULT = "Default";
 	public static final String DASH = "-";
+	public static final String BLANK = "";
 
 	public static final String ACCESS_REQUEST_STATUS_PENDING = "Pending";
 	public static final String ACCESS_REQUEST_STATUS_APPROVED = "Approved";
@@ -132,7 +133,9 @@ public final class Constant {
 	public static final String CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL = "additionalFilterHierLevel";
 	public static final String RESOLUTION_TYPE_FOR_REJECTION = "Resolution Type for Rejection";
 	public static final String DEFECT_REJECTION_STATUS = "Defect Rejection Status";
-
+	public static final String RED = "#FF0000";
+	public static final String AMBER = "#FFBF00";
+	public static final String GREEN = "#00ff00";
 
 	private Constant() {
 	}

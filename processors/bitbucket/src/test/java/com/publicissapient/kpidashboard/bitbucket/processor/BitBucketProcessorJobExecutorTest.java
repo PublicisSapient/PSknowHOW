@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +65,9 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 class BitBucketProcessorJobExecutorTest {
@@ -127,7 +131,11 @@ class BitBucketProcessorJobExecutorTest {
 	private BitBucketServerClient bitBucketServerClient;
 	
 	private List<ProjectBasicConfig> projectConfigList;
-
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 	@BeforeEach
 	public void setUp() {
 		bitBucketProcessorJobExecutor = new BitBucketProcessorJobExecutor(taskScheduler);
@@ -144,6 +152,13 @@ class BitBucketProcessorJobExecutorTest {
 			p.setId(PROCESSORID);
 			p.setProjectName("projectName");
 			projectConfigList.add(p);
+
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JENKINS);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("5e2ac020e4b098db0edf5145");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 	}
 
 	@Test
@@ -162,12 +177,15 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketProcessor.setId(PROCESSORID);
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
+		proBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		bitbucketRepos.add(bitbucketRepo);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
@@ -176,15 +194,18 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail))
+		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
 
@@ -196,11 +217,14 @@ class BitBucketProcessorJobExecutorTest {
 		bitbucketProcessor.setId(PROCESSORID);
 		List<BitbucketRepo> bitbucketRepos = new ArrayList<>();
 		BitbucketRepo bitbucketRepo = new BitbucketRepo();
+		ProjectBasicConfig proBasicConfig= new ProjectBasicConfig();
+		proBasicConfig.setSaveAssigneeDetails(true);
+		proBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		bitbucketRepo.setProcessorId(PROCESSORID);
 		bitbucketRepo.setProcessor(bitbucketProcessor);
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
+		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
@@ -209,17 +233,20 @@ class BitBucketProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail))
+		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);
 		Mockito.when(bitBucketRepository.findByProcessorIdAndToolConfigId(any(), any())).thenReturn(bitbucketRepos);
 		Mockito.when(bitBucketRepository.save(any(BitbucketRepo.class))).thenReturn(bitbucketRepo);
 		Mockito.when(bitBucketConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		Mockito.when(bitBucketClientFactory.getBitbucketClient(false)).thenReturn(bitBucketServerClient);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, "5e2ac020e4b098db0edf5145"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		bitBucketProcessorJobExecutor.execute(bitbucketProcessor);
 	}
 
@@ -227,7 +254,7 @@ class BitBucketProcessorJobExecutorTest {
 	void testGetResponse() throws Exception {
 		String userName = "test";
 		String password = "test";
-		String url = "https://tools.publicis.sapient.com/scm.git";
+		String url = "https://test.com/scm.git";
 		try {
 			Whitebox.invokeMethod(basicBitBucketClient, "getResponse", userName, password, url);
 		} catch(RestClientException e) {

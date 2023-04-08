@@ -25,6 +25,7 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServerClientTest {
@@ -84,20 +86,23 @@ public class BitBucketServerClientTest {
 		String serverResponse = getServerResponse("/bitbucket-server/stashresponse.json");
 		
 		BitbucketRepo repo = new BitbucketRepo();
-		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		repo.setRepoUrl("http://localhost:9999/scm/testproject/test.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
+		ProjectBasicConfig projectBasicConfig =new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
-		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		connectionDetail.setPassword("testPassword");
+		connectionDetail.setUrl("http://localhost:9999/scm/testproject/test.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
 		String restUri = new BitBucketServerURIBuilder(repo, config,connectionDetail).build();
 		when(stashClient.decryptPassword(connectionDetail.getPassword())).thenReturn("test");
 		
 		when(restTemplate.exchange(eq(URLDecoder.decode(restUri,"UTF-8")), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail);
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		
 		CommitDetails bitBucketCommit = commits.get(0);

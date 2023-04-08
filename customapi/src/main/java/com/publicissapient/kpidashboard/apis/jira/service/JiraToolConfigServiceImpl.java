@@ -1,11 +1,31 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -21,8 +41,17 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +66,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JiraToolConfigServiceImpl {
 
 	private static final String RESOURCE_JIRA_BOARD_ENDPOINT = "/rest/agile/1.0/board?projectKeyOrId=%s&startAt=%d&type=%s";
-
 	final ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
@@ -51,6 +79,15 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
+
+	@Autowired
+	private ProjectToolConfigRepository projectToolConfigRepository;
+
+	@Autowired
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
@@ -113,7 +150,7 @@ public class JiraToolConfigServiceImpl {
 	private HttpEntity<?> getHttpEntity(Connection connection) {
 		String username = "";
 		String password = "";
-
+		HttpHeaders headers = new HttpHeaders();
 		if (connection.isVault()){
 			ToolCredential credential = toolCredentialProvider.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
 			if (credential != null){
@@ -125,7 +162,34 @@ public class JiraToolConfigServiceImpl {
 			password = connection.getPassword() == null ? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
 		}
-		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
+
+		if(connection.getPatOAuthToken()!=null){
+			headers = restAPIUtils.getHeadersForPAT(connection.getPatOAuthToken());
+		}else {
+			headers = restAPIUtils.getHeaders(username, password);
+		}
 		return new HttpEntity<>(headers);
+
+	}
+
+	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
+		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(projectConfigId,
+				ProcessorConstants.JIRA);
+		List<AssigneeDetailsDTO> assigneeDetailsDTOResponseList = new ArrayList<>();
+		if (assigneeDetails != null && CollectionUtils.isNotEmpty(assigneeDetails.getAssignee())) {
+			assigneeDetails.getAssignee().stream().forEach(assignee -> {
+				AssigneeDetailsDTO assigneeDetailsDTO = new AssigneeDetailsDTO();
+				// assigneeId will be unique id for assignee
+				assigneeDetailsDTO.setName(assignee.getAssigneeId());
+				assigneeDetailsDTO.setDisplayName(assignee.getAssigneeName());
+				assigneeDetailsDTOResponseList.add(assigneeDetailsDTO);
+			});
+			Collections.sort(assigneeDetailsDTOResponseList, (AssigneeDetailsDTO o1, AssigneeDetailsDTO o2) -> o1
+					.getDisplayName().compareTo(o2.getDisplayName()));
+		}
+		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
+		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOResponseList);
+		return assigneeResponseDTO;
 	}
 }

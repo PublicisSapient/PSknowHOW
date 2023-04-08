@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azurerepo.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,9 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class AzureRepoProcessorJobExecutorTest {
@@ -136,12 +140,18 @@ public class AzureRepoProcessorJobExecutorTest {
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		azureRepoProcessorJobExecutor = new AzureRepoProcessorJobExecutor(taskScheduler, azureRepoProcessorRepo,
 				azureRepoConfig, toolConfigRepository, azureRepoRepository, azureRepoClient, processorItemRepository,
 				commitsRepo, connectionsRepository, processorToolConnectionService, projectConfigRepository,
-				mergReqRepo, processorExecutionTraceLogService);
+				mergReqRepo, processorExecutionTraceLogService, processorExecutionTraceLogRepository);
 		Mockito.when(azurerepoRestOperations.getTypeInstance()).thenReturn(new RestTemplate());
 		basicAzureRepoClient = new BasicAzureRepoClient(azureRepoConfig, azurerepoRestOperations, aesEncryptionService);
 
@@ -181,18 +191,27 @@ public class AzureRepoProcessorJobExecutorTest {
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		azureRepoProcessorInfo.setApiVersion("5.6");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/ankbhard/KnowHOW");
-		azureRepoProcessorInfo.setPat("9cZJr0+Z5bKUKUDRd0llzQrif1teMof18n93nRX6OsERvNiAOOawZ");
-		azureRepoProcessorInfo.setRepoSlug("knowHow");
+		azureRepoProcessorInfo.setUrl("https://test.com/testUser/testProject");
+		azureRepoProcessorInfo.setPat("testPat");
+		azureRepoProcessorInfo.setRepoSlug("testRepoSlug");
 		
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("60b7dbb489c5974a407e923b"));
 		projectConfigList.add(basicConfig);
+
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZUREREPO);
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
+		processorExecutionTraceLog.setBasicProjectConfigId("60b7dbb489c5974a407e923b");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 		
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		
 		Mockito.when(azureRepoRepository.findActiveRepos(processorId)).thenReturn(azurerepoRepos);
+		Mockito.when(processorExecutionTraceLogRepository.
+						findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREREPO, "60b7dbb489c5974a407e923b"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		
 		boolean actualexecutionstatus = azureRepoProcessorJobExecutor.execute(azurerepoProcessor);
 		
@@ -225,9 +244,8 @@ public class AzureRepoProcessorJobExecutorTest {
 		objectMapper3.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<ProjectToolConfig> toolConfigs = Arrays.asList(objectMapper3.readValue(file3, ProjectToolConfig[].class));
 		Connection connection = new Connection();
-		connection.setBaseUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		connection.setAccessToken(
-				"8PTAhVLdwUoQk7gUnPfiPXWmOiUojMSJVyl/vIKBJ01X80SocKq1rzKsK9u1QQisyuYXOmeRkZhNTHq648pscw==");
+		connection.setBaseUrl("https://test.com/testUser/testProject");
+		connection.setAccessToken("testAccessToken");
 		Mockito.when(processorItemRepository.findByProcessorIdIn(processorIds)).thenReturn(processorItems);
 		Mockito.when(connectionsRepository.findById(toolConfigs.get(0).getConnectionId())).thenReturn(Optional.of(connection));
 		Whitebox.invokeMethod(azureRepoProcessorJobExecutor, "addProcessorItems", processor, toolConfigs);

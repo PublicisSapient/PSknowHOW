@@ -1740,7 +1740,8 @@ a:hover {
   padding: 0.3rem 1rem;
 }
 .test-execution-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child,
-.capcity-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child{
+.capcity-scrum-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child,
+.capcity-kanban-table .custom-grid .p-datatable .p-datatable-tbody > tr > td:first-child{
   text-align: left;
 }
 .custom-grid .p-datatable table {
@@ -1848,6 +1849,9 @@ p-dialog .p-button-cancel.p-button-secondary {
 .text-red{
   color: var(--color-red);
 }
+.text-green{
+  color: var(--color-green);
+}
 .ng-select .ng-arrow-wrapper{
   bottom: 0;
 }
@@ -1881,6 +1885,9 @@ p-dialog .p-button-cancel.p-button-secondary {
 }
 .w-100{
   width: 100%;
+}
+.h-100{
+  height: 100%;
 }
 .alert {
   position: relative;

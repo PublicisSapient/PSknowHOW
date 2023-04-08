@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.processor;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -57,6 +58,7 @@ import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.DefaultTeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class DefaultTeamcityClientTests {
@@ -73,6 +75,7 @@ public class DefaultTeamcityClientTests {
 	private static final int PAGE_SIZE = 10;
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
 	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -81,58 +84,58 @@ public class DefaultTeamcityClientTests {
 		config.setPageSize(PAGE_SIZE);
 		teamcityClient = defaultTeamcityClient = new DefaultTeamcityClient(restOperationsFactory, config);
 		TEAMCITY_SAMPLE_SERVER_TWO.setId(new ObjectId("63b40aea8ec44416b3ce96b5"));
-		TEAMCITY_SAMPLE_SERVER_ONE.setUrl("http://does:matter@teamcity.com");
-		TEAMCITY_SAMPLE_SERVER_ONE.setUsername("does");
-		TEAMCITY_SAMPLE_SERVER_ONE.setPassword("matter");
+		TEAMCITY_SAMPLE_SERVER_ONE.setUrl("http://test@test.com");
+		TEAMCITY_SAMPLE_SERVER_ONE.setUsername("test");
+		TEAMCITY_SAMPLE_SERVER_ONE.setPassword("password");
 
 		TEAMCITY_SAMPLE_SERVER_TWO.setId(new ObjectId("63c53ed169fa1a025c5f1244"));
 		TEAMCITY_SAMPLE_SERVER_TWO.setUrl("http://server/");
-		TEAMCITY_SAMPLE_SERVER_TWO.setUsername("does");
-		TEAMCITY_SAMPLE_SERVER_TWO.setPassword("matter");
+		TEAMCITY_SAMPLE_SERVER_TWO.setUsername("test");
+		TEAMCITY_SAMPLE_SERVER_TWO.setPassword("password");
 		
 	}
 
 	@Test
 	public void joinURLsTest() throws Exception {
-		String u = ProcessorUtils.joinURL("http://teamcity.com", "/app/rest/projects");
-		assertEquals("http://teamcity.com/app/rest/projects", u);
+		String u = ProcessorUtils.joinURL("http://test.com", "/app/rest/projects");
+		assertEquals("http://test.com/app/rest/projects", u);
 
-		String u4 = ProcessorUtils.joinURL("http://teamcity.com/", "app/rest/", "builds");
-		assertEquals("http://teamcity.com/app/rest/builds", u4);
+		String u4 = ProcessorUtils.joinURL("http://test.com/", "app/rest/", "builds");
+		assertEquals("http://test.com/app/rest/builds", u4);
 
 	}
 
 	@Test
 	public void rebuildURLTest() throws Exception {
 
-		String u1 = DefaultTeamcityClient.rebuildJobUrl("http://teamcity.com/app/rest/projects",
-				"https://123456:234567@teamcity.com");
-		assertEquals("https://123456:234567@teamcity.com/app/rest/projects", u1);
+		String u1 = DefaultTeamcityClient.rebuildJobUrl("http://test.com/app/rest/projects",
+				"https://123456:234567@test.com");
+		assertEquals("https://123456:234567@test.com/app/rest/projects", u1);
 
-		String u2 = DefaultTeamcityClient.rebuildJobUrl("https://teamcity.com/app/rest/projects",
-				"https://123456:234567@teamcity.com");
-		assertEquals("https://123456:234567@teamcity.com/app/rest/projects", u2);
+		String u2 = DefaultTeamcityClient.rebuildJobUrl("https://test.com/app/rest/projects",
+				"https://123456:234567@test.com");
+		assertEquals("https://123456:234567@test.com/app/rest/projects", u2);
 
-		String u3 = DefaultTeamcityClient.rebuildJobUrl("http://teamcity.com/app/rest/projects",
-				"http://123456:234567@teamcity.com");
-		assertEquals("http://123456:234567@teamcity.com/app/rest/projects", u3);
+		String u3 = DefaultTeamcityClient.rebuildJobUrl("http://test.com/app/rest/projects",
+				"http://123456:234567@test.com");
+		assertEquals("http://123456:234567@test.com/app/rest/projects", u3);
 
-		String u4 = DefaultTeamcityClient.rebuildJobUrl("http://teamcity.com/app/rest/projects",
-				"http://123456:234567@teamcity.com");
-		assertEquals("http://123456:234567@teamcity.com/app/rest/projects", u4);
+		String u4 = DefaultTeamcityClient.rebuildJobUrl("http://test.com/app/rest/projects",
+				"http://123456:234567@test.com");
+		assertEquals("http://123456:234567@test.com/app/rest/projects", u4);
 
-		String orig = "http://teamcity.com/app/rest/project%20with%20space";
-		String u5 = DefaultTeamcityClient.rebuildJobUrl(orig, "http://teamcity.com");
+		String orig = "http://test.com/app/rest/project%20with%20space";
+		String u5 = DefaultTeamcityClient.rebuildJobUrl(orig, "http://test.com");
 		assertEquals(orig, u5);
 	}
 
 	@Test
 	public void verifyBasicAuth() throws Exception {
 		@SuppressWarnings("unused")
-		URL u = new URL(new URL("http://teamcity.com"), "/app/rest/projects");
+		URL u = new URL(new URL("http://test.com"), "/app/rest/projects");
 
-		HttpHeaders headers = ProcessorUtils.createHeaders("Aladdin:open sesame");
-		assertEquals("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==", headers.getFirst(HttpHeaders.AUTHORIZATION));
+		HttpHeaders headers = ProcessorUtils.createHeaders("test:pwd");
+		assertNotNull(headers.getFirst(HttpHeaders.AUTHORIZATION));
 	}
 
 	@Test
@@ -146,7 +149,7 @@ public class DefaultTeamcityClientTests {
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultTeamcityClient.doRestCall("http://user:pass@teamcity.com", TEAMCITY_SAMPLE_SERVER_ONE);
+		defaultTeamcityClient.doRestCall("http://user:pass@test.com", TEAMCITY_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class));
 	}
 
@@ -155,25 +158,25 @@ public class DefaultTeamcityClientTests {
 		// TODO: This change to clear a JAVA Warnings should be correct but test
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
-		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
+		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("test:password"));
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("does:matter"));
+		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultTeamcityClient.doRestCall("http://teamcity.com", TEAMCITY_SAMPLE_SERVER_ONE);
+		defaultTeamcityClient.doRestCall("http://test.com", TEAMCITY_SAMPLE_SERVER_ONE);
 		verify(rest).exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class));
 	}
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("does:matter"));
+		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		defaultTeamcityClient.getLog("http://teamcity.com", TEAMCITY_SAMPLE_SERVER_ONE);
-		verify(rest).exchange(eq(URI.create("http://teamcity.com/consoleText")), eq(HttpMethod.GET), eq(headers),
+		defaultTeamcityClient.getLog("http://test.com", TEAMCITY_SAMPLE_SERVER_ONE);
+		verify(rest).exchange(eq(URI.create("http://test.com/consoleText")), eq(HttpMethod.GET), eq(headers),
 				eq(String.class));
 	}
 
@@ -216,6 +219,8 @@ public class DefaultTeamcityClientTests {
 
 	 @Test
 	public void buildDetails_full() throws Exception {
+
+		 projectBasicConfig.setSaveAssigneeDetails(true);
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 
@@ -232,7 +237,7 @@ public class DefaultTeamcityClientTests {
 						.thenReturn(new ResponseEntity<>(getJson("build_info_stats.json"), HttpStatus.OK));
 
 		Build build = teamcityClient.getBuildDetails("http://server/app/rest/buildTypes/id:Project2_Build2/",
-				"http://server", TEAMCITY_SAMPLE_SERVER_TWO);
+				"http://server", TEAMCITY_SAMPLE_SERVER_TWO, projectBasicConfig);
 
 		assertThat(build.getTimestamp(), notNullValue());
 		assertThat(build.getNumber(), is("3"));

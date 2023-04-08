@@ -35,7 +35,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
@@ -138,6 +141,9 @@ public class KanbanJiraIssueClientImplTest {
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
@@ -165,6 +171,8 @@ public class KanbanJiraIssueClientImplTest {
 				kanbanProjectlist.get(0).getId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
+				Mockito.anyString(), Mockito.anyString())).thenReturn(null);
 
 		projectConfFieldMapping.setProjectName("prName");
 		assertEquals(0, kanbanJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
@@ -175,6 +183,7 @@ public class KanbanJiraIssueClientImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
+		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -188,7 +197,7 @@ public class KanbanJiraIssueClientImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+		conn.get().setBaseUrl("https://abc.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -298,7 +307,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiradefecttype(jiraType);
 
 		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+				"TEST Consulting Request", "Test Case" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -322,7 +331,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
@@ -379,6 +388,9 @@ public class KanbanJiraIssueClientImplTest {
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 		ProjectToolConfig jiraConfig = new ProjectToolConfig();
 		BoardDetails board = new BoardDetails();
 		board.setBoardId("1111");
@@ -405,7 +417,7 @@ public class KanbanJiraIssueClientImplTest {
 				null);
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://abc.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
@@ -439,7 +451,7 @@ public class KanbanJiraIssueClientImplTest {
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {
 		List<IssueLink> issueLinkList = new ArrayList<>();
-		URI uri = new URI("https://testDomain.com/jira/rest/api/2/issue/12344");
+		URI uri = new URI("https://abc.com/jira/rest/api/2/issue/12344");
 		IssueLinkType linkType = new IssueLinkType("Blocks", "blocks", IssueLinkType.Direction.OUTBOUND);
 		IssueLink issueLink = new IssueLink("IssueKey", uri, linkType);
 		issueLinkList.add(issueLink);

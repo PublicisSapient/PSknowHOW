@@ -101,6 +101,8 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
+  jiraTemplate : any[];
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -133,6 +135,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.getConnectionList(this.urlParam?.toLowerCase() == 'jiratest' ? 'Jira' : this.urlParam);
         this.initializeFields(this.urlParam);
+        this.getJiraTemplate();
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
       }
@@ -177,7 +180,6 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     });
-
   }
 
   getPlansForBamboo(connectionId) {
@@ -185,8 +187,7 @@ export class JiraConfigComponent implements OnInit {
       this.bambooPlanList = [];
       this.showLoadingOnFormElement('planName');
       this.http.getPlansForBamboo(connectionId).subscribe((data) => {
-        try {
-          if (data.success) {
+          if (data.success && data?.data?.length > 0) {
             this.bambooProjectDataFromAPI = [...data.data];
             this.bambooPlanList = [...this.bambooProjectDataFromAPI].map(
               (item) => ({ planName: item.projectAndPlanName }),
@@ -202,21 +203,13 @@ export class JiraConfigComponent implements OnInit {
             this.toolForm?.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
-
+            if (this.toolForm?.controls['jobType'].value === 'Build') {
+              this.messenger.add({
+                severity: 'error',
+                summary: data.message,
+              });
+            }
           }
-        } catch (error) {
-          this.bambooPlanList = [];
-          this.toolForm?.controls['planKey'].setValue('');
-          this.toolForm?.controls['branchKey'].setValue('');
-          this.bambooBranchList = [];
-          this.hideLoadingOnFormElement('planName');
-          if (this.toolForm?.controls['jobType'].value === 'Build') {
-            this.messenger.add({
-              severity: 'error',
-              summary: error.message,
-            });
-          }
-        }
       });
     }
 
@@ -383,8 +376,8 @@ export class JiraConfigComponent implements OnInit {
       return this.jobType;
     } else if (id === 'deploymentProject') {
       return this.deploymentProjectList;
-    }else if(id === 'testAutomatedIdentification' 
-    || id === 'testAutomationCompletedIdentification' 
+    }else if(id === 'testAutomatedIdentification'
+    || id === 'testAutomationCompletedIdentification'
     || id === 'testRegressionIdentification'){
       return this.testCaseIdentification;
     }
@@ -601,7 +594,8 @@ export class JiraConfigComponent implements OnInit {
     switch (this.urlParam) {
       case 'Bamboo':
         if (value.toLowerCase() === 'build') {
-          if (this.bambooPlanList?.length == 0) {
+          const planField =this.formTemplate?.elements?.find(element => element.id === 'planName');
+          if (this.bambooPlanList?.length == 0 && !planField?.isLoading) {
             this.messenger.add({
               severity: 'error',
               summary: 'No plan details found',
@@ -861,7 +855,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiKey', header: 'API Key', class: 'normal' },
             { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
-            { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+            { field: 'isOAuth', header: 'OAuth', class: 'small-text' }
           ];
 
           this.formTemplate = {
@@ -925,7 +919,19 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
-              }
+              },
+              {
+                type: 'basicDropdown',
+                label: 'JIRA Configuration Template',
+                label2: '',
+                id: 'metadataTemplateCode',
+                onChangeEventHandler: this.jiraMethodChange,
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: ``,
+                disabled: 'false',
+                show: true,
+              },
             ],
           };
         }
@@ -1971,7 +1977,6 @@ export class JiraConfigComponent implements OnInit {
       }
     });
     this.toolForm = new UntypedFormGroup(group);
-
     if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
@@ -2071,7 +2076,7 @@ export class JiraConfigComponent implements OnInit {
   save() {
     this.submitted = true;
     // return if form is invalid
-    if (this.toolForm.invalid || !this.selectedConnection) { 
+    if (this.toolForm.invalid || !this.selectedConnection) {
       this.messenger.add({
         severity: 'error',
         summary: 'Please fill all fields and select a connection.',
@@ -2112,6 +2117,13 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
+     
+    }
+
+    if(this.urlParam === 'Jira'){
+      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
+    }else{
+      delete submitData['metadataTemplateCode'];
     }
 
     if (this.urlParam === 'AzurePipeline') {
@@ -2133,14 +2145,14 @@ export class JiraConfigComponent implements OnInit {
     let successAlert = '';
     if (this.urlParam === 'Jira') {
       successAlert = 'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
-    }    
+    }
     if (!this.isEdit) {
 
       for (const obj in submitData) {
         if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
-      } 
+      }
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {
@@ -2337,5 +2349,19 @@ export class JiraConfigComponent implements OnInit {
       this.hideFormElements(['testRegressionByCustomField']);
       this.showFormElements(['jiraRegressionTestValue']);
     }
+  }
+
+  getJiraTemplate(){
+    const isKanban = this.selectedProject.Type?.toLowerCase() === 'kanban' ? true : false;
+    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+      this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
+     if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
+        const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
+        this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
+        if(selectedTemplate?.templateName === 'Custom Template'){
+          this.toolForm.get('metadataTemplateCode').disable();
+        }
+      }
+    })
   }
 }

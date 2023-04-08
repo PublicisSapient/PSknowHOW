@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FieldMappingComponent } from './field-mapping.component';
-import { MessageService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
@@ -40,6 +40,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { environment } from 'src/environments/environment';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { BadgeModule } from 'primeng/badge';
+import { of } from 'rxjs';
 
 const completeHierarchyData = {
   kanban: [
@@ -621,7 +622,7 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
   ]
 };
 const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
-
+const fakeKpiFieldMappingList = require('../../../../test/resource/fakeKPIFieldMappingList.json');
 describe('FieldMappingComponent', () => {
   let component: FieldMappingComponent;
   let fixture: ComponentFixture<FieldMappingComponent>;
@@ -650,12 +651,12 @@ describe('FieldMappingComponent', () => {
         DialogModule,
         InputNumberModule,
         RadioButtonModule,
-        BadgeModule
       ],
       providers: [
         HttpService,
         SharedService,
         MessageService,
+        ConfirmationService,
         GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
@@ -741,11 +742,11 @@ describe('FieldMappingComponent', () => {
     expect(component.displayDialog).toBeFalsy();
   });
 
-  it('should save fieldmappings', () => {
+  it('should check for template info popup', () => {
     component.ngOnInit();
     component.save();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
 
@@ -861,6 +862,21 @@ describe('FieldMappingComponent', () => {
     sharedService.setSelectedFieldMapping(fakeSelectedFieldMappingWithAdditionalFilters);
     component.ngOnInit();
     component.save();
+    // fixture.detectChanges();
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
+    expect(component.fieldMappingForm.valid).toBeTruthy();
+  });
+
+  it('should get getKPIFieldMappingRelationships', fakeAsync(() => {
+    spyOn(httpService, 'getKPIFieldMappingRelationships').and.returnValue(of(fakeKpiFieldMappingList));
+    component.getKPIFieldMappingRelationships();
+    tick();
+    expect(component.kpiRelationShips.length).toEqual(fakeKpiFieldMappingList.kpiFieldMappingList.length);
+  }));
+
+  it('should save field mapping', () => {
+    component.ngOnInit();
+    component.saveFieldMapping("63282cbaf5c740241aff32a1");
     // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();

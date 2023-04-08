@@ -16,42 +16,61 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ChangeDetectorRef, AfterContentInit, HostListener, Output, Renderer2 } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  AfterContentInit,
+  HostListener,
+  Output,
+  Renderer2,
+} from '@angular/core';
 import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 
 /**
  Route the path from app-route and redirect to dashboard
  */
 export class DashboardComponent implements OnInit, AfterContentInit {
-
   authorized = <boolean>true;
   headerFixed = <boolean>false;
   scrollOffset = <number>150;
+
   displayModal = false;
   modalDetails={
     header:'User Request Approved',
     content:'Click on "Continue" to reflect the changes happened from requested Role change.'
   };
-  constructor(public cdRef: ChangeDetectorRef, public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private renderer: Renderer2) {
-    this.renderer.listen('document', 'click',(e: Event)=>{
+
+  isApply = false;
+  
+  constructor(
+    public cdRef: ChangeDetectorRef,
+    public router: Router,
+    private service: SharedService,
+    private getAuth: GetAuthService,
+    private httpService: HttpService,
+    private renderer: Renderer2,
+  ) {
+    this.renderer.listen('document', 'click', (e: Event) => {
+
       // setting document click event data to identify outside click for show/hide kpi filter
       this.service.setClickedItem(e?.target);
-  });
+    });
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
     // this.authorized = this.getAuth.checkAuth();
+
     this.httpService.loadApp.subscribe(data=>{
       if(this.httpService.createdProjectName){
         this.modalDetails.header =`Project Created`;
@@ -59,17 +78,24 @@ export class DashboardComponent implements OnInit, AfterContentInit {
       }
       this.displayModal =data;
     });
-
+    this.service.isSideNav.subscribe((flag) => {
+      this.isApply = flag;
+    });
   }
 
   // for making the header sticky on scroll
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    if (this.router.url.indexOf('/Config/') === -1 && this.router.url !== '/dashboard/Maturity' && this.router.url !== '/dashboard/EngineeringMaturity') {
-      this.headerFixed = (window.pageYOffset
-        || document.documentElement.scrollTop
-        || document.body.scrollTop || 0
-      ) > this.scrollOffset;
+    if (
+      this.router.url.indexOf('/Config/') === -1 &&
+      this.router.url !== '/dashboard/Maturity' &&
+      this.router.url !== '/dashboard/EngineeringMaturity'
+    ) {
+      this.headerFixed =
+        (window.pageYOffset ||
+          document.documentElement.scrollTop ||
+          document.body.scrollTop ||
+          0) > this.scrollOffset;
     } else {
       this.headerFixed = false;
     }
@@ -86,5 +112,4 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   ngAfterContentInit() {
     this.cdRef.detectChanges();
   }
-
 }

@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.azurerepo.util.AzureRepoRestOperations;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 class AzureRepoServerClientTest {
@@ -95,21 +96,23 @@ class AzureRepoServerClientTest {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) ;
 		List<AzureRepoModel> repo = Arrays.asList(objectMapper.readValue(file, AzureRepoModel[].class)) ;
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		azureRepoProcessorInfo.setApiVersion("5.1");
 		azureRepoProcessorInfo.setBranch("master");
-		azureRepoProcessorInfo.setUrl("https://dev.azure.com/sundeepm/AzureSpeedy");
-		azureRepoProcessorInfo.setPat("8PTAhVLdwUoQk7gUnPfiPXWmOiUojMSJVyl/vIKBJ01X80SocKq1rzKsK9u1QQisyuYXOmeRkZhNTHq648pscw==");
-		azureRepoProcessorInfo.setRepoSlug("AzureSpeedy");
+		azureRepoProcessorInfo.setUrl("https://test.com/test/testProject");
+		azureRepoProcessorInfo.setPat("testPat");
+		azureRepoProcessorInfo.setRepoSlug("testProject");
+		repo.get(0).setRepoUrl("https://test.com/test/testProject");
+		repo.get(0).setPat("testPat");
 		String restUri = new AzureRepoServerURIBuilder(repo.get(0), config, azureRepoProcessorInfo).build();
 		when(stashClient.decryptPat(repo.get(0).getPat())).thenReturn("test");
 
 		when(restTemplate.exchange(eq(restUri), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo.get(0), true, azureRepoProcessorInfo);
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo.get(0), true, azureRepoProcessorInfo, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		
 		CommitDetails azureRepoCommit = commits.get(0);
-		Assert.assertEquals("Arti Patel", azureRepoCommit.getAuthor());
 		Assert.assertEquals("Merged PR 2: Updated test file master", azureRepoCommit.getCommitLog());
 	
 	}

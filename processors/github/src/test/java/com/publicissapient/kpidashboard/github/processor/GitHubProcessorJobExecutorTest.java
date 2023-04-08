@@ -2,11 +2,12 @@ package com.publicissapient.kpidashboard.github.processor;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,10 @@ import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorItemRepository;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorRepository;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 /**
  * @author narsingh9
@@ -88,12 +93,18 @@ public class GitHubProcessorJobExecutorTest {
 
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
+	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+
 
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		MockitoAnnotations.openMocks(this);
+
 	}
 
 	private List<ProjectBasicConfig> getProjectConfigList(){
@@ -112,14 +123,22 @@ public class GitHubProcessorJobExecutorTest {
 		gitHubProcessor.setProcessorType(ProcessorType.SCM);
 		gitHubProcessor.setProcessorName("GitHub");
 		gitHubProcessor.setId(new ObjectId());
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUB);
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
+		processorExecutionTraceLog.setBasicProjectConfigId("624d5c9ed837fc14d40b3039");
+		pl.add(processorExecutionTraceLog);
+		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
 		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService).findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any());
+		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
 
-		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any());
+		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
+		when(processorExecutionTraceLogRepository.
+				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);
 	}
@@ -148,7 +167,7 @@ public class GitHubProcessorJobExecutorTest {
 		List<CommitDetails> commitDetailList = new ArrayList<>();
 		CommitDetails commitDetails = new CommitDetails();
 		commitDetails.setBranch("Master");
-		commitDetails.setUrl("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		commitDetails.setUrl("https://test.com/scm/username/repoName.git");
 		commitDetailList.add(commitDetails);
 		return commitDetailList;
 	}
@@ -157,7 +176,7 @@ public class GitHubProcessorJobExecutorTest {
 		List<MergeRequests> mergeRequestsList = new ArrayList<>();
 		MergeRequests mergeRequests = new MergeRequests();
 		mergeRequests.setAuthor("Master");
-		mergeRequests.setTitle("https://tools.publicis.sapient.com/scm/speed/speedy.git");
+		mergeRequests.setTitle("https://test.com/scm/username/repoName.git");
 		mergeRequestsList.add(mergeRequests);
 		return mergeRequestsList;
 	}

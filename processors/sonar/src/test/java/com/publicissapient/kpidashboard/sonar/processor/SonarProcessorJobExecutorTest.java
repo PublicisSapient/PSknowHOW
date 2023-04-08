@@ -151,15 +151,15 @@ public class SonarProcessorJobExecutorTest {
 		SonarProcessor sonarProcessor = new SonarProcessor();
 		ProcessorToolConnection SONARSAMPLESERVER = new ProcessorToolConnection();
 		SONARSAMPLESERVER.setId(new ObjectId("624fce22b2ee234aa990adfc"));
-		SONARSAMPLESERVER.setUrl("http://does:matter@jenkins.com");
-		SONARSAMPLESERVER.setUsername("does");
-		SONARSAMPLESERVER.setPassword("matter");
+		SONARSAMPLESERVER.setUrl("http://testUser@test.com");
+		SONARSAMPLESERVER.setUsername("testUser");
+		SONARSAMPLESERVER.setPassword("testPassword");
 		SONARSAMPLESERVER.setOffline(true);
 		ProcessorToolConnection SONARSAMPLESERVER1 = new ProcessorToolConnection();
 		SONARSAMPLESERVER1.setId(new ObjectId("624fce6e202f2154bf89ea57"));
-		SONARSAMPLESERVER1.setUrl("http://does:matter@jenkins.com");
-		SONARSAMPLESERVER1.setUsername("does");
-		SONARSAMPLESERVER1.setPassword("matter");
+		SONARSAMPLESERVER1.setUrl("http://testUser@test.com");
+		SONARSAMPLESERVER1.setUsername("testUser");
+		SONARSAMPLESERVER1.setPassword("testPassword");
 		SONARSAMPLESERVER1.setOffline(false);
 
 		connList.add(SONARSAMPLESERVER);
@@ -266,8 +266,8 @@ public class SonarProcessorJobExecutorTest {
 	private List<SonarProcessorItem> getOtherProjects() {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
-		project.setInstanceUrl("http://sonar1.com");
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject2");
+		project.setInstanceUrl("http://test1.com");
+		project.setProjectName("testPackage.sonar:TestProject2");
 		project.setProjectId(PROJECT_ID);
 		project.setKey(PROJECT_ID);
 		project.setLatestVersion("6.5");
@@ -281,8 +281,8 @@ public class SonarProcessorJobExecutorTest {
 	private List<SonarProcessorItem> getOtherProjectsWithDifferentVersion() {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
-		project.setInstanceUrl("http://sonar1.com");
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject2");
+		project.setInstanceUrl("http://test1.com");
+		project.setProjectName("testPackage.sonar:TestProject2");
 		project.setProjectId(PROJECT_ID);
 		project.setKey(PROJECT_ID);
 		project.setLatestVersion("6.6");
@@ -298,7 +298,7 @@ public class SonarProcessorJobExecutorTest {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject1");
+		project.setProjectName("testPackage.sonar:TestProject1");
 		project.setProjectId("AVu3b-MAphY78UZXuYHq");
 		project.setKey("AVu3b-MAphY78UZXuYHq");
 		project.setTimestamp(1_570_018_174L);
@@ -311,7 +311,7 @@ public class SonarProcessorJobExecutorTest {
 	private SonarProcessorItem getProject() {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
-		project.setProjectName("com.publicissapient.kpidashboard.sonar:TestProject");
+		project.setProjectName("testPackage.sonar:TestProject");
 		project.setProjectId(PROJECT_ID_2);
 		project.setKey(PROJECT_ID_2);
 		project.setActive(true);

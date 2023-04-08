@@ -172,7 +172,9 @@ return item.kpiId;
        let showCount = 0;
        if (!event.checked) {
          this.kpiFormValue.kpiCategories['controls'][boardName].setValue(false);
+         this.setMainDashboardKpiShowHideStatus(kpi.kpiId,false);
        } else {
+        this.setMainDashboardKpiShowHideStatus(kpi.kpiId,true);
         kpiIds.forEach((id) => {
           if (this.kpiFormValue.kpis['controls'][id] && this.kpiFormValue.kpis['controls'][id].value){
             ++showCount;
@@ -199,13 +201,24 @@ return item.kpiId;
         modifiedObj.kpis.forEach((item) => {
           item.shown = true;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(true);
+          this.setMainDashboardKpiShowHideStatus(item.kpiId,true);
+          return item;
         });
        } else {
         targetSelector.classList.add('hide-kpisList');
         modifiedObj.kpis.forEach((item) => {
           item.shown = false;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
+          this.setMainDashboardKpiShowHideStatus(item.kpiId,false);
+          return item;
         });
        }
+     }
+
+     setMainDashboardKpiShowHideStatus(kpiId,shown){
+      const selectedKpi = this.tabListContent[this.selectedTab][0].kpis.find(kpiDetail => kpiDetail.kpiId === kpiId);
+      if(selectedKpi){
+        selectedKpi.shown = shown;
+      }
      }
  }

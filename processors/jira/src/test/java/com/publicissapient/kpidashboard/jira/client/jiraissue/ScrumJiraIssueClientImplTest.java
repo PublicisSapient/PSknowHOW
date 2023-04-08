@@ -1,9 +1,12 @@
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
@@ -31,6 +35,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -43,6 +48,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -90,12 +96,15 @@ public class ScrumJiraIssueClientImplTest {
     @Mock
     private AdditionalFilterHelper additionalFilterHelper;
 
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
 
     @Test
     public void purgeJiraIssuesTest() {
         List<Issue> issuesList = new ArrayList<>();
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
-                new Status(null, null, "KnowHOW", null, null, null), "description",
+                new Status(null, null, "TestHOW", null, null, null), "description",
                 null, null, null, null, null, DateTime.now(), DateTime.now(),
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null);
@@ -103,8 +112,8 @@ public class ScrumJiraIssueClientImplTest {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
-        srs[0] = "KnowHOW";
-        srs[1] = "KnowHOW1";
+        srs[0] = "TestHOW";
+        srs[1] = "TestHOW1";
         fieldMapping.setJiraIssueTypeNames(srs);
         ProjectToolConfig projectToolConfig = new ProjectToolConfig();
         projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
@@ -138,12 +147,12 @@ public class ScrumJiraIssueClientImplTest {
 
 
 	@Test
-	public void processesJiraIssues() throws InterruptedException {
+	public void processesJiraIssues() throws InterruptedException, URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
 		String[] srs = new String[2];
-		srs[0] = "KnowHOW";
-		srs[1] = "KnowHOW1";
+		srs[0] = "TestHOW";
+		srs[1] = "TestHOW1";
 		fieldMapping.setJiraIssueTypeNames(srs);
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
@@ -155,10 +164,11 @@ public class ScrumJiraIssueClientImplTest {
 		projectToolConfig.setBoards(boardList);
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		projectBasicConfig.setSaveAssigneeDetails(true);
 		JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
 		Set<String> stringSet = new HashSet<>();
 		stringSet.add("Bug");
-		stringSet.add("KnowHOW");
+		stringSet.add("TestHOW");
 		ArrayList<Version> alVersion = new ArrayList<>();
 		Version version = null;
 		alVersion.add(version);
@@ -168,9 +178,12 @@ public class ScrumJiraIssueClientImplTest {
 		List<ChangelogGroup> grouplist = new ArrayList<>();
 		grouplist.add(new ChangelogGroup(null, DateTime.now(), itemList));
 		BasicProject project = new BasicProject(null, "key", null, null);
+		Map<String, URI> userAvtar = new HashMap<>();
+		userAvtar.put("48x48" ,new URI("https://test.com/jira/secure/useravatar?avatarId=10122"));
+		User user1 = new User(new URI("https://test.com/jira/rest/api/2/user?username=testUser")  , "TestUser" , "User" , "llid" , true  ,new ExpandableProperty<>(0) , userAvtar , "");
 		Issue issue = new Issue("summary", null, "key", 121L, project,
 				new IssueType(null, 11L, "Defect", true, "Description", null),
-				new Status(null, null, "KnowHOW", null, null, null), "description", null, null, null, null, null,
+				new Status(null, null, "TestHOW", null, null, null), "description", null, null, null, null, user1,
 				DateTime.now(), DateTime.now(), null, null, null, null, null, null, null, null, null, null, null, null,
 				null, null, grouplist, null, stringSet);
 		Iterable<Issue> iterable = Arrays.asList(issue);
@@ -192,6 +205,7 @@ public class ScrumJiraIssueClientImplTest {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
 		when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
 		assertEquals(1,
 				scrumJiraIssueClient.processesJiraIssues(
@@ -204,15 +218,15 @@ public class ScrumJiraIssueClientImplTest {
         FieldMapping fieldMapping = new FieldMapping();
         fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         String[] srs = new String[2];
-        srs[0] = "KnowHOW";
-        srs[1] = "KnowHOW1";
+        srs[0] = "TestHOW";
+        srs[1] = "TestHOW1";
         fieldMapping.setJiraIssueTypeNames(srs);
         JiraIssue jiraIssue = new JiraIssue();
         Map<String, IssueField> map = new HashMap<>();
         IssueField issueField = null;
         map.put("111", issueField);
         Issue issue = new Issue("summary", null, "key", 121L, null, null,
-                new Status(null, null, "KnowHOW", null, null, null), "description",
+                new Status(null, null, "TestHOW", null, null, null), "description",
                 null, null, null, null, null, DateTime.now(), DateTime.now(),
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null);
@@ -231,7 +245,7 @@ public class ScrumJiraIssueClientImplTest {
         Connection connection = getConnectionObject();
         jiraToolConfig.setConnection(Optional.of(connection));
         BoardDetails boardDetails = new BoardDetails();
-        boardDetails.setBoardName("knowHOW");
+        boardDetails.setBoardName("TestHOW");
         boardDetails.setBoardId("123");
         ArrayList<BoardDetails> al = new ArrayList<>();
         al.add(boardDetails);
@@ -247,7 +261,7 @@ public class ScrumJiraIssueClientImplTest {
         projectConfFieldMapping.setIssueCount(2);
         projectConfFieldMapping.setKanban(true);
         projectConfFieldMapping.setSprintCount(12);
-        projectConfFieldMapping.setProjectName("KnowHOW");
+        projectConfFieldMapping.setProjectName("TestHOW");
         projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
         projectConfFieldMapping.setJiraToolConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
         projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
@@ -258,11 +272,11 @@ public class ScrumJiraIssueClientImplTest {
     private static Connection getConnectionObject() {
         Connection connection = new Connection();
         connection.setType("Defect");
-        connection.setConnectionName("DTS");
+        connection.setConnectionName("TEST");
         connection.setCloudEnv(true);
         connection.setBaseUrl("url");
-        connection.setUsername("KnowHOW");
-        connection.setPassword("KnowHOW");
+        connection.setUsername("test");
+        connection.setPassword("testPassword");
         connection.setApiEndPoint("url");
         connection.setConsumerKey("123");
         connection.setPrivateKey("123");
@@ -278,11 +292,11 @@ public class ScrumJiraIssueClientImplTest {
         connection.setOfflineFilePath("offlineFilePath");
         connection.setCreatedAt("now");
         connection.setUpdatedAt("later");
-        connection.setUpdatedBy("KnowHOW");
+        connection.setUpdatedBy("TestHOW");
         connection.setConnPrivate(true);
-        connection.setUpdatedBy("KnowHOW");
+        connection.setUpdatedBy("TestHOW");
         ArrayList<String> alStrings = new ArrayList<>();
-        alStrings.add("KnowHOW");
+        alStrings.add("TestHOW");
         connection.setConnectionUsers(alStrings);
         return connection;
     }

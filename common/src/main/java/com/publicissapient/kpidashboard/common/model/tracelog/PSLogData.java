@@ -63,5 +63,5 @@ public class PSLogData {
 	private List<String> lastSavedJiraIssueChangedDateByType;
 	private String action;
 	private String projectExecutionStatus;
-
+	private String lastEnableAssigneeToggleState;
 }

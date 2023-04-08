@@ -290,5 +290,24 @@ public class KPIExcelData {
     private Map<String, String> linkedDefectsStory;
 
     @JsonProperty("Size(story point/hours)")
-    private String storyPoint;
+        private String storyPoint;
+
+    @JsonProperty("Planned Completion Date (Due Date)")
+    private String dueDate;
+
+    @JsonProperty("Remaining Estimate")
+    private String remainingEstimateMinutes;
+
+    @JsonProperty("Potential Delay(in days)")
+    private String potentialDelay;
+
+    @JsonProperty("Predicted Completion Date")
+    private String predictedCompletionDate;
+
+    @JsonProperty("Actual Completion Date")
+    private String actualCompletionDate;
+
+    @JsonProperty("Assignee")
+    private String assignee;
+
 }
