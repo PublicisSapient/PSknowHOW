@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,10 +48,10 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -65,23 +67,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, List<Object>, Map<String, Object>> {
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
-
-	@Autowired
-	private KanbanTestExecutionRepository kanbanTestExecutionRepository;
-
 	private static final String QA = "QaKpi";
 	private static final String SUBGROUPCATEGORY = "subGroupCategory";
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
 	private static final String TOTAL = "Total Test Cases";
 	private static final String EXECUTED = "Executed Test Cases";
 	private static final String PASSED = "Passed Test Cases";
-
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private KanbanTestExecutionRepository kanbanTestExecutionRepository;
 
 	@Override
 	public String getQualifierType() {
@@ -106,7 +104,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,KPICode.TEST_EXECUTION_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
 
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
@@ -177,7 +175,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 
 	private void kpiWithoutFilter(Map<String, Map<String, KanbanTestExecution>> projectWiseTestExecutions,
 			Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData= new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
 		leafNodeList.forEach(node -> {
@@ -209,8 +207,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 							testExecutionAggregatedValuesForDateRange);
 					dataCounts.add(dcObj);
 
-					populateValidationDataObject(projectName, requestTrackerId, projectName + "_" + xAxisDataPointName,
-							dataForTreadList, validationDataMap);
+					populateValidationDataObject(projectName, requestTrackerId,
+							dataForTreadList, excelData);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -225,7 +223,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 			}
 		});
 
-		kpiElement.setMapOfSprintAndData(validationDataMap);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.TEST_EXECUTION_KANBAN.getColumns());
 
 	}
 
@@ -311,8 +310,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		return Math.round((100.0 * executed) / total);
 	}
 
-	private Map<String, Integer> getHoverValue(int total, int executed, int passed) {
-		Map<String, Integer> hoverData = new HashMap<>();
+	private Map<String, Object> getHoverValue(int total, int executed, int passed) {
+		Map<String, Object> hoverData = new HashMap<>();
 		hoverData.put(TOTAL, total);
 		hoverData.put(EXECUTED, executed);
 		hoverData.put(PASSED, passed);
@@ -320,31 +319,19 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		return hoverData;
 	}
 
-	private void populateValidationDataObject(String projectName, String requestTrackerId, String validationKey,
-			Map<String, KanbanTestExecution> dataForTreadList, Map<String, ValidationData> validationDataMap) {
+	private void populateValidationDataObject(String projectName, String requestTrackerId,
+											  Map<String, KanbanTestExecution> dataForTreadList, List<KPIExcelData> excelData) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-
-			List<String> projectNames = new ArrayList<>();
-			List<String> dates = new ArrayList<>();
-			List<String> totalTests = new ArrayList<>();
-			List<String> executedTests = new ArrayList<>();
-			List<String> passedTests = new ArrayList<>();
 
 			dataForTreadList.forEach((date, testExecution) -> {
-				projectNames.add(projectName);
-				dates.add(testExecution.getExecutionDate());
-				totalTests.add(String.valueOf(testExecution.getTotalTestCases()));
-				executedTests.add(String.valueOf(testExecution.getExecutedTestCase()));
-				passedTests.add(String.valueOf(testExecution.getPassedTestCase()));
-			});
+				double executionPerc = Math
+						.round((100.0 * testExecution.getExecutedTestCase()) / testExecution.getTotalTestCases());
+				double passedPerc = Math
+						.round((100.0 * testExecution.getPassedTestCase()) / (testExecution.getExecutedTestCase()));
+				KPIExcelUtility.populateTestExcecutionExcelData(projectName, null, testExecution, executionPerc,
+						passedPerc, excelData);
 
-			validationData.setProjectName(projectNames);
-			validationData.setExecutionDateList(dates);
-			validationData.setTotalTestList(totalTests);
-			validationData.setExecutedTestList(executedTests);
-			validationData.setPassedTestList(passedTests);
-			validationDataMap.put(validationKey, validationData);
+			});
 
 		}
 	}

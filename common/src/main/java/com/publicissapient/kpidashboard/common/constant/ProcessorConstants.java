@@ -39,17 +39,21 @@ public final class ProcessorConstants {
 	/**
 	 * The constant GITLAB.
 	 */
-	
-	//public static final String GITLAB = "GitlabFeature";
+
+	// public static final String GITLAB = "GitlabFeature";
 	/**
 	 * The constant ZEPHYR.
 	 */
 	public static final String ZEPHYR = "Zephyr";
 
+	/**
+	 * The constant Jira Test tool.
+	 */
+	public static final String JIRA_TEST = "JiraTest";
+
 	public static final String BITBUCKET = "Bitbucket";
-	
-	
-	public static final String AZUREREPO ="AzureRepository";
+
+	public static final String AZUREREPO = "AzureRepository";
 
 	public static final String GITLAB = "GitLab";
 	public static final String BAMBOO = "Bamboo";
@@ -64,7 +68,7 @@ public final class ProcessorConstants {
 	public static final String AZUREPIPELINE = "AzurePipeline";
 
 	public static final String TEAMCITY = "Teamcity";
-	
+
 	public static final String GITHUB = "GitHub";
 
 	private ProcessorConstants() {

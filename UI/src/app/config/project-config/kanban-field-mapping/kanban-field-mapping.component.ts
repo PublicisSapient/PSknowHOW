@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -24,6 +24,7 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { ChangeDetectionStrategy } from '@angular/core';
+import { Accordion } from 'primeng/accordion';
 declare const require: any;
 
 @Component({
@@ -33,6 +34,7 @@ declare const require: any;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KanbanFieldMappingComponent implements OnInit {
+  @ViewChild('accordion') accordion: Accordion;
   fieldMappingForm: UntypedFormGroup;
   fieldMappingFormObj: any;
   selectedConfig: any = {};
@@ -62,6 +64,16 @@ export class KanbanFieldMappingComponent implements OnInit {
   additionalFilterIdentifier: any = {};
   additionalFiltersArray: any = [];
   additionalFilterOptions: any = [];
+    // kpi to field mapping relationships
+  kpiRelationShips: any = [];
+  fieldstoShow = [];
+  groupsToShow = {
+    groupNames: [],
+    groupFields: {},
+    showAllgroups: true
+  };
+  disableAdditionalFilterAdd =true;
+
   private setting = {
     element: {
       dynamicDownload: null as HTMLElement
@@ -75,10 +87,6 @@ export class KanbanFieldMappingComponent implements OnInit {
   ngOnInit(): void {
 
     this.techDebtIdentification = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'CustomField',
         value: 'CustomField'
@@ -95,10 +103,6 @@ export class KanbanFieldMappingComponent implements OnInit {
 
     this.additionalFilterIdentificationOptions = [
       {
-        label: 'Select',
-        value: ''
-      },
-      {
         label: 'Component',
         value: 'Component'
       },
@@ -114,27 +118,15 @@ export class KanbanFieldMappingComponent implements OnInit {
 
     this.estimationCriteriaTypes = [
       {
-        label: 'Select',
-        value: ''
-      },
-      {
         label: 'Story Point',
         value: 'Story Point'
       },
       {
         label: 'Actual Estimation',
         value: 'Actual Estimation'
-      },
-      {
-        label: 'Buffered Estimation',
-        value: 'Buffered Estimation'
       }
     ];
     this.testCaseIdentification = [
-      {
-        label: 'Select',
-        value: ''
-      },
       {
         label: 'CustomField',
         value: 'CustomField'
@@ -165,7 +157,18 @@ export class KanbanFieldMappingComponent implements OnInit {
       }
     }
     this.getMappings();
+    this.getKPIFieldMappingRelationships();
   }
+
+  getKPIFieldMappingRelationships() {
+    this.http.getKPIFieldMappingRelationships().subscribe(response => {
+      if (response['kpiFieldMappingList']) {
+        this.kpiRelationShips = response['kpiFieldMappingList'];
+        this.kpiRelationShips = this.kpiRelationShips.filter((kpi) => kpi.type.includes('Kanban') && kpi.kpiSource === 'Jira');
+      }
+    });
+  }
+
 
   getMappings() {
     this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
@@ -189,7 +192,7 @@ export class KanbanFieldMappingComponent implements OnInit {
 
       const additionalFilters = this.filterHierarchy.filter((filter) => filter.level > this.filterHierarchy.filter(f => f.hierarchyLevelId === 'project')[0].level);
 
-      additionalFilterMappings.forEach(element => {
+      additionalFilterMappings?.forEach(element => {
 
         this.additionalFiltersArray.push({
           name: additionalFilters.filter((f) => f.hierarchyLevelId === element.filterId)[0].hierarchyLevelName,
@@ -204,12 +207,12 @@ export class KanbanFieldMappingComponent implements OnInit {
         }
         if (element['identifyFrom'] === 'CustomField') {
           if (!this.fieldMappingForm.controls[element.filterId + 'IdentSingleValue']) {
-            this.fieldMappingForm.addControl(element.filterId + 'IdentSingleValue', this.formBuilder.control('', [Validators.required]));
+            this.fieldMappingForm.addControl(element.filterId + 'IdentSingleValue', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'IdentSingleValue'].setValue(element['identificationField']);
           }
         } else {
           if (!this.fieldMappingForm.controls[element.filterId + 'IdentMultiValue']) {
-            this.fieldMappingForm.addControl(element.filterId + 'IdentMultiValue', this.formBuilder.control('', [Validators.required]));
+            this.fieldMappingForm.addControl(element.filterId + 'IdentMultiValue', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'IdentMultiValue'].setValue(element['values']);
           }
         }
@@ -342,8 +345,6 @@ export class KanbanFieldMappingComponent implements OnInit {
       storyFirstStatus: [''],
       ticketDeliverdStatus: [[]],
       jiraTicketTriagedStatus: [[]],
-      jiraTicketResolvedStatus: [[]],
-      jiraTicketWipStatus: [[]],
       jiraTicketRejectedStatus: [[]],
       jiraTicketClosedStatus: [[]],
       jiraLiveStatus: [''],
@@ -354,7 +355,6 @@ export class KanbanFieldMappingComponent implements OnInit {
       kanbanRCACountIssueType: [[]],
       jiraTicketVelocityIssueType: [[]],
       kanbanCycleTimeIssueType: [[]],
-      kanbanJiraTechDebtIssueType: [[]],
       jiraIssueEpicType: [[]],
       epicCostOfDelay: [''],
       epicRiskReduction: [''],
@@ -363,33 +363,12 @@ export class KanbanFieldMappingComponent implements OnInit {
       epicTimeCriticality: [''],
       epicJobSize: [''],
       // defect mapping
-      rootCauseValue: [[]],
 
       // custom fields mapping
       jiraStoryPointsCustomField: [''],
       rootCause: [''],
       estimationCriteria: [''],
       storyPointToHourMapping: [''],
-
-      // tech debt mapping
-      jiraTechDebtIdentification: [''],
-      jiraTechDebtValue: [[]],
-      jiraTechDebtCustomField: [''],
-
-      // test case mapping
-      testAutomatedIdentification: [''],
-      testAutomationCompletedIdentification: [''],
-      testRegressionIdentification: [''],
-      testAutomated: [''],
-      testAutomationCompletedByCustomField: [''],
-      testRegressionByCustomField: [''],
-      jiraCanBeAutomatedTestValue: [[]],
-      jiraRegressionTestValue: [[]],
-      jiraCanNotAutomatedTestValue: [[]],
-      jiraAutomatedTestValue: [[]],
-      jiraTestCaseType: [[]],
-      testCaseStatus:[[]],
-      regressionAutomationLabels: [[]],
       //squad mapping
       squadIdentifier: [''],
       squadIdentMultiValue: [[]],
@@ -428,21 +407,15 @@ export class KanbanFieldMappingComponent implements OnInit {
     }
   }
 
-  changeControl(event) {
+  changeControl(event, additionalFilterIdentifier) {
     if (event.value === 'Component' || event.value === 'Labels') {
-      if (!this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentMultiValue']) {
-        this.fieldMappingForm.addControl(this.additionalFilterIdentifier.code + 'IdentMultiValue', this.formBuilder.control('', [Validators.required]));
-      }
-      if (this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentSingleValue']) {
-        this.fieldMappingForm.removeControl(this.additionalFilterIdentifier.code + 'IdentSingleValue');
+      if (!this.fieldMappingForm.controls[additionalFilterIdentifier.code + 'IdentMultiValue']) {
+        this.fieldMappingForm.addControl(additionalFilterIdentifier.code + 'IdentMultiValue', this.formBuilder.control(''));
       }
 
     } else {
-      if (!this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentSingleValue']) {
-        this.fieldMappingForm.addControl(this.additionalFilterIdentifier.code + 'IdentSingleValue', this.formBuilder.control('', [Validators.required]));
-      }
-      if (this.fieldMappingForm.controls[this.additionalFilterIdentifier.code + 'IdentMultiValue']) {
-        this.fieldMappingForm.removeControl(this.additionalFilterIdentifier.code + 'IdentMultiValue');
+      if (!this.fieldMappingForm.controls[additionalFilterIdentifier.code + 'IdentSingleValue']) {
+        this.fieldMappingForm.addControl(additionalFilterIdentifier.code + 'IdentSingleValue', this.formBuilder.control(''));
       }
     }
   }
@@ -471,8 +444,6 @@ export class KanbanFieldMappingComponent implements OnInit {
 
   cleanTestCaseMappingForm() {
 
-    this.fieldMappingForm.controls['jiraTestCaseType'].setValue([]);
-    this.fieldMappingForm.controls['testAutomated'].setValue('');
     this.fieldMappingForm.controls['jiraCanNotAutomatedTestValue'].setValue([]);
     this.fieldMappingForm.controls['jiraAutomatedTestValue'].setValue([]);
     this.fieldMappingForm.controls['regressionAutomationLabels'].setValue([]);
@@ -490,6 +461,38 @@ export class KanbanFieldMappingComponent implements OnInit {
     this.populateDropdowns = false;
     document.documentElement.scrollTop = this.bodyScrollPosition;
   }
+
+  resetRadioButton(fieldName){
+    this.fieldMappingForm.patchValue({[fieldName]: ''});
+  }
+
+  showFields(kpiRelatedFields) {
+    this.closeAllAccordionTabs();
+    this.fieldstoShow=[];
+    this.groupsToShow={
+      groupFields:{},
+      groupNames:[],
+      showAllgroups: true
+    };
+    if(kpiRelatedFields?.hasOwnProperty('fieldNames')){
+      for(const key in kpiRelatedFields.fieldNames){
+        this.groupsToShow.groupNames.push(key);
+        this.groupsToShow.groupFields[key]=kpiRelatedFields.fieldNames[key].length;
+        this.fieldstoShow.push(...Object.values(kpiRelatedFields.fieldNames[key]));
+      }
+      this.groupsToShow.showAllgroups =false;
+    }else{
+      this.fieldstoShow=[];
+    }
+  }
+
+  closeAllAccordionTabs() {
+    if(this.accordion){
+        for(const tab of this.accordion.tabs) {
+              tab.selected = false;
+        }
+    }
+}
 
   save() {
     this.fieldMappingSubmitted = true;
@@ -571,7 +574,7 @@ export class KanbanFieldMappingComponent implements OnInit {
           additionalFilterObj['values'] = [];
         } else {
           additionalFilterObj['identificationField'] = '';
-          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'];
+          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'] ? submitData[element.hierarchyLevelId + 'IdentMultiValue'] : [];
         }
         submitData['additionalFilterConfig'].push(additionalFilterObj);
       }

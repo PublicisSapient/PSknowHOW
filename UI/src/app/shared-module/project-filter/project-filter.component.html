@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <div class="p-grid filter-grid">
-    <div class="p-field p-col-6" *ngFor="let field of data[0]?.hierarchy">
+    <div class="p-sm-6" *ngFor="let field of data[0]?.hierarchy">
         <!-- <span class="ui-float-label">
             <label for="{{ field.hierarchyLevel.hierarchyLevelId }}">Select {{ field.hierarchyLevel.hierarchyLevelName
                 }}</label>
@@ -31,11 +31,10 @@
                 showClear="true" (onChange)="filterData($event, field.hierarchyLevel.hierarchyLevelId)">
             </p-multiSelect>
         </span> -->
-        <span class="ui-float-label">
+        <div class="ui-float-label">
             <label for="{{ field.hierarchyLevel.hierarchyLevelId }}">Select {{ field.hierarchyLevel.hierarchyLevelName
                 }}</label>
-            <p-multiSelect inputId="{{ field.hierarchyLevel.hierarchyLevelId }}" autoWidth="false"
-                [style]="{'width':'100%', 'max-width': '100%'}"
+            <p-multiSelect inputId="{{ field.hierarchyLevel.hierarchyLevelId }}" appendTo="body" 
                 [options]="hierarchyData[field.hierarchyLevel.hierarchyLevelId]"
                 [(ngModel)]="selectedVal[field.hierarchyLevel.hierarchyLevelId]"
                 placeholder="Select {{ field.hierarchyLevel.hierarchyLevelName }}" optionLabel="code" filter="true"
@@ -56,19 +55,19 @@
                     </div>
                 </ng-template>
             </p-multiSelect>
-        </span>
+        </div>
     </div>
 
-    <div class="p-field p-col-12">
-        <span class="ui-float-label">
+    <div class="p-sm-12">
+        <div class="ui-float-label">
             <label for="project">Select Projects</label>
-            <p-multiSelect *ngIf="resetDropdowns" inputId="project" [style]="{'width':'100%','max-width': '100%'}"
+            <p-multiSelect *ngIf="resetDropdowns" class="multiselect-custom" appendTo="body" inputId="project" [style]="{'width':'100%','max-width': '100%'}"
                 [options]="projects" [(ngModel)]="selectedValProjects" defaultLabel="Select Projects"
                 optionLabel="projectName" display="chip" (onChange)="projectSelected()">
             </p-multiSelect>
-        </span>
+        </div>
     </div>
-    <div class="p-field p-col-12" *ngIf="filtersApplied || selectedValProjects.length">
+    <div class="p-sm-12" *ngIf="filtersApplied || selectedValProjects.length">
         <button pButton type="button" label="Remove Filters" icon="pi pi-filter-slash"
             class="p-button-text p-button-danger" (click)="clearFilters()"></button>
     </div>

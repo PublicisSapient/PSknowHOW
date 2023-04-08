@@ -107,6 +107,10 @@ export class FilterComponent implements OnInit {
     filteredAddFilters: object = {};
     initFlag = false;
     showChart = true;
+    iterationConfigData={};
+    kpisNewOrder=[];
+    isTooltip = false;
+    projectIndex: number = 0;
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private elemRef: ElementRef, private getAuthorizationService: GetAuthorizationService, public router: Router, private ga: GoogleAnalyticsService, private messageService: MessageService, private helperService: HelperService) {
         this.service.setSelectedType('Scrum');
         this.selectedTab = (this.service.getSelectedTab() || 'mydashboard');
@@ -117,6 +121,7 @@ export class FilterComponent implements OnInit {
                 this.service.setEmptyFilter();
                 this.service.setSelectedType('Scrum');
             }
+            this.projectIndex = 0;
             const type = this.service.getSelectedType();
             if (type === 'Scrum') {
                 this.kanban = false;
@@ -200,6 +205,13 @@ export class FilterComponent implements OnInit {
             }
         });
         this.service.setShowTableView(this.showChart);
+        this.service.iterationCongifData.subscribe(iterationDetails =>{
+            this.iterationConfigData = iterationDetails;
+        });
+
+        this.service.kpiListNewOrder.subscribe(kpiListNewOrder =>{
+            this.kpisNewOrder=kpiListNewOrder;
+        });
     }
 
     /**create dynamic hierarchy levels for filter dropdown */
@@ -239,16 +251,14 @@ export class FilterComponent implements OnInit {
             this.kanban = false;
         }
 
-        //no calls for Kanban on KPI Maturity
-        if (!this.kanban || (this.kanban && this.router.url !== '/dashboard/Maturity')) {
-            if (this.kanban !== this.previousType) {
-                this.filterForm?.reset();
-                this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
-            }
-            this.setLevels();
-            this.getFilterDataOnLoad();
-            this.previousType = this.kanban;
+
+        if (this.kanban !== this.previousType) {
+            this.filterForm?.reset();
+            this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         }
+        this.setLevels();
+        this.getFilterDataOnLoad();
+        this.previousType = this.kanban;
         this.service.setSelectedType(type);
 
         const data = {
@@ -400,7 +410,7 @@ export class FilterComponent implements OnInit {
         this.masterData = masterData;
         this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
         if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'backlog') {
-            this.handleIterationFilters('project');
+            this.handleIterationFilters('project', 1);
         } else {
             this.applyChanges();
         }
@@ -454,8 +464,17 @@ export class FilterComponent implements OnInit {
 
     // this method would be called on click of apply button of filter
     applyChanges(applySource?, filterApplied = true): void {
-        if (this.filterForm?.get('selectedTrendValue')?.value?.length > 0) {
-
+        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+        let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
+        let selectedLevel = this.hierarchyLevels?.filter(x => x.hierarchyLevelId == selectedLevelId)[0];
+        if (selectedTrendIds?.length > 0) {
+            let selectedTrendValues = [];
+            for(let i = 0; i<selectedTrendIds?.length;i++){
+                selectedTrendValues.push(this.trendLineValueList?.filter(x => x.nodeId == selectedTrendIds[i])[0]);
+            }
+            
+            this.service.setSelectedLevel(selectedLevel);
+            this.service.setSelectedTrends(selectedTrendValues);
             if (!applySource) {
                 this.ngselect?.close();
                 this.ngselect?.blur();
@@ -499,10 +518,10 @@ export class FilterComponent implements OnInit {
             }
 
             if (!applySource) {
-                for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-                    this.selectedFilterArray[i]['additionalFilters'] = [];
-                }
-                this.resetAdditionalFiltersToInitialValue();
+                // for (let i = 0; i < this.selectedFilterArray?.length; i++) {
+                //     this.selectedFilterArray[i]['additionalFilters'] = [];
+                // }
+                // this.resetAdditionalFiltersToInitialValue();
                 this.filterAdditionalFilters();
             }
             if (applySource?.toLowerCase() == 'date' && this.kanban) {
@@ -545,9 +564,10 @@ export class FilterComponent implements OnInit {
 
     createFilterApplyData() {
         this.resetFilterApplyObj();
+        let isAdditionalFilterFlag: boolean = this.selectedFilterArray?.filter(item => item?.additionalFilters?.length > 0)?.length > 0 ? true : false;
         for (let i = 0; i < this.selectedFilterArray?.length; i++) {
 
-            if (this.selectedFilterArray[i]?.additionalFilters?.length > 0) {
+            if (isAdditionalFilterFlag) {
                 const temp = this.selectedFilterArray[i]?.additionalFilters;
                 for (let j = 0; j < temp?.length; j++) {
                     if (this.filterApplyData['level'] < temp[j].level) {
@@ -619,7 +639,7 @@ export class FilterComponent implements OnInit {
         if (!this.isEmptyObject(this.kpiListData)) {
             switch (this.selectedTab) {
                 case 'Iteration':
-                    this.kpiList = this.kpiListData['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
+                    this.kpiList = this.kpiListData['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis.filter(kpi => kpi.kpiId !== 'kpi121');
                     break;
                 case 'Backlog':
                     this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
@@ -684,7 +704,11 @@ export class FilterComponent implements OnInit {
         const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
         for (let i = 0; i < kpiArray.length; i++) {
             if (kpiArray[i].boardName.toLowerCase() == this.selectedTab.toLowerCase()) {
-                this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.kpiList;
+                if(this.selectedTab.toLowerCase() === 'iteration'){
+                    this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] =  [this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'].find(kpi => kpi.kpiId === 'kpi121'),...this.kpiList];
+                }else{
+                    this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.kpiList;
+                }
             }
         }
         this.assignUserNameForKpiData();
@@ -704,6 +728,31 @@ export class FilterComponent implements OnInit {
 
     sanitizeDate(date) {
         return date.getFullYear() + '/' + ((parseInt(date.getMonth()) + 1) < 10 ? '0' + (parseInt(date.getMonth()) + 1) : (parseInt(date.getMonth()) + 1)) + '/' + (parseInt(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate());
+    }
+
+    setKPIOrder() {
+        const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
+        for (const kpiBoard of kpiArray) {
+            if (kpiBoard.boardName.toLowerCase() === this.selectedTab.toLowerCase()) {
+                kpiBoard.kpis = this.kpisNewOrder;
+            }
+        }
+        this.kpiList = this.kpisNewOrder.filter(kpi => kpi.kpiId !== 'kpi121');
+        this.httpService.submitShowHideKpiData(this.kpiListData).subscribe((response) => {
+            this.kpisNewOrder = [];
+            if (response.success === true) {
+                this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
+                this.service.setDashConfigData(this.kpiListData);
+            } else {
+                this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
+            }
+        }, error => {
+            this.messageService.add({ severity: 'error', summary: 'Error in saving kpis. Please try after some time.' });
+        });
+    }
+
+    showTooltip(val) {
+        this.isTooltip = val;
     }
 
     ngOnDestroy() {
@@ -835,7 +884,10 @@ export class FilterComponent implements OnInit {
         return isDisabled;
     }
 
-    handleIterationFilters(level) {
+    /*'type' argument: to understand onload or onchange
+    1: onload
+    2: onchange */
+    handleIterationFilters(level, type) {
         if (this.filterForm?.get('selectedProjectValue')?.value != '') {
             let selectedSprint = {};
             let activeSprints = [];
@@ -882,6 +934,16 @@ export class FilterComponent implements OnInit {
                 this.selectedFilterArray.push(selectedSprint);
                 this.createFilterApplyData();
                 this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+            }else{
+                if(type == 1){
+                    if(this.projectIndex < this.trendLineValueList?.length){
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+                        this.handleIterationFilters('project', 1);
+                    }else{
+                        this.projectIndex = 0;
+                        this.filterForm?.get('selectedProjectValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+                    }
+                }
             }
 
 
@@ -979,5 +1041,10 @@ isDisabled = null;
     showChartToggle(val){
         this.showChart = val;
         this.service.setShowTableView(this.showChart);
+    }
+
+    exportToExcel($event = null) {
+        this.disableDownloadBtn = true;
+        this.service.setGlobalDownload(true);
     }
 }

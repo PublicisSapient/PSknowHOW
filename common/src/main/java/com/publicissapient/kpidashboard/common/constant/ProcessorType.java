@@ -30,7 +30,7 @@ public enum ProcessorType {
     STATIC_SECURITY_SCAN("StaticSecurityScan"),
     NEW_RELIC("NewRelic"),
     SCM("Scm"),
-    ZEPHYR("TestingTools");
+    TESTING_TOOLS("TestingTools");
 
     private String value;
 

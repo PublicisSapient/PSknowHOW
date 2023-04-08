@@ -181,5 +181,4 @@ public class AdditionalFilterHelper {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

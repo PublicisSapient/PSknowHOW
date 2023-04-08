@@ -54,48 +54,38 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 @RunWith(MockitoJUnitRunner.class)
 public class LeadTimeServiceImplTest {
 
-	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@InjectMocks
-	LeadTimeServiceImpl leadTimeService;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	CustomApiConfig customApiSetting;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-	@Mock
-	private CommonService commonService;
-
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private Map<String, Object> filterLevelMap;
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private List<DataCount> trendValues = new ArrayList<>();
-	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
-
-	private KpiRequest kpiRequest;
-	private KpiElement kpiElement;
-
-	private List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	private static final String LEAD_TIME = "Lead Time";
 	private static final String INTAKE_TO_DOR = "Intake - DoR";
 	private static final String DOR_TO_DOD = "DoR - DoD";
 	private static final String DOD_TO_LIVE = "DoD - Live";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@InjectMocks
+	LeadTimeServiceImpl leadTimeService;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	CustomApiConfig customApiSetting;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private CommonService commonService;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private Map<String, Object> filterLevelMap;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
+	private KpiRequest kpiRequest;
+	private KpiElement kpiElement;
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 
 	@Before
 	public void setup() {

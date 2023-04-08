@@ -101,10 +101,6 @@ public class RegressionPercentageKanbanServiceImplTest {
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		setMockFieldMapping();
-		fieldMappingList.forEach(fieldMapping -> {
-			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		});
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -114,43 +110,6 @@ public class RegressionPercentageKanbanServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
-	}
-
-
-	private void setMockFieldMapping() {
-		FieldMapping projectOne = new FieldMapping();
-		projectOne.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
-		projectOne.setJiraTestAutomationIssueType(Arrays.asList("Ticket"));
-		projectOne.setJiraTicketResolvedStatus(Arrays.asList("Resolved"));
-		projectOne.setJiraTicketClosedStatus(Arrays.asList("Done"));
-		projectOne.setJiraTestAutomationIssueType(Arrays.asList(""));
-		List<String> regressionAutomationValue = new ArrayList<>();
-		regressionAutomationValue.add("Regression");
-		List<String> jiraRegressionTestValue = new ArrayList<>();
-		jiraRegressionTestValue.add("Jira Regression");
-		projectOne.setTestRegressionValue(regressionAutomationValue);
-		projectOne.setJiraRegressionTestValue(Arrays.asList(""));
-		projectOne.setRegressionAutomationFolderPath(Arrays.asList("/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard"));
-
-
-		FieldMapping projectTwo = new FieldMapping();
-		projectTwo.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-		projectTwo.setTicketCountIssueType(Arrays.asList("Ticket"));
-		projectTwo.setJiraTicketResolvedStatus(Arrays.asList("Resolved"));
-		projectTwo.setJiraTicketClosedStatus(Arrays.asList("Done"));
-		List<String> regressionAutomationLabels = new ArrayList<>();
-		regressionAutomationLabels.add("Regression");
-		List<String> regressionAutomationValues = new ArrayList<>();
-		regressionAutomationValues.add("Regression");
-		List<String> jiraRegressionTestValues = new ArrayList<>();
-		jiraRegressionTestValues.add("Jira Regression");
-		projectTwo.setJiraRegressionTestValue(jiraRegressionTestValues);
-		projectTwo.setTestRegressionValue(regressionAutomationValues);
-		projectTwo.setRegressionAutomationLabels(regressionAutomationLabels);
-		projectTwo.setRegressionAutomationFolderPath(Arrays.asList("regressionLabel/abc"));
-		fieldMappingList.add(projectOne);
-		fieldMappingList.add(projectTwo);
-
 	}
 
 

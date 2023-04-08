@@ -27,19 +27,21 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -52,6 +54,7 @@ public class NetOpenTicketCountStatusImpl
 
 	private static final String FIELD_STATUS = "status";
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
+	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
@@ -198,7 +201,8 @@ public class NetOpenTicketCountStatusImpl
 
 	private void kpiWithFilter(Map<String, Map<String, Map<String, Set<String>>>> projectWiseStatusDateData,
 			Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		Map<String, List<String>> projectWiseDoneStatus = (Map<String, List<String>>) historyDataResultMap
 				.get(PROJECT_WISE_CLOSED_STORY_STATUS);
@@ -230,17 +234,19 @@ public class NetOpenTicketCountStatusImpl
 					String date = getRange(dateRange, kpiRequest);
 
 					populateProjectFilterWiseDataMap(projectWiseStatusCountMap, projectWiseStatusList, dataCountMap,
-							node.getProjectFilter().getId(),date);
+							node.getProjectFilter().getId(), date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 
 				}
 				// Populates data in Excel for validation for tickets created before
-				populateValidationDataObject(kpiElement, requestTrackerId, statusWiseDateData, validationDataMap, node,
-						projectWiseStatusList);
+				populateExcelDataObject(requestTrackerId, statusWiseDateData, node, projectWiseStatusList,
+						new HashSet<>((List<KanbanIssueCustomHistory>)  historyDataResultMap.get(JIRA_ISSUE_HISTORY_DATA)), excelData,kpiRequest);
 				mapTmp.get(node.getId()).setValue(dataCountMap);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.NET_OPEN_TICKET_COUNT_BY_STATUS.getColumns());
 	}
 
 	private Set<String> getStatusOtherThanDone(Map<String, Map<String, Set<String>>> statusWiseDateData,
@@ -286,7 +292,7 @@ public class NetOpenTicketCountStatusImpl
 			String projectNodeId, String date) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		Map<String, Long> finalMap = new HashMap<>();
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWiseStatusList)) {
 			projectWiseStatusList.forEach(status -> {
 				Long statusWiseCount = projectWiseStatusCountMap.getOrDefault(status, 0L);
@@ -349,13 +355,14 @@ public class NetOpenTicketCountStatusImpl
 	 * @param status
 	 * @param
 	 */
-	private DataCount getDataCountObject(Long value, String projectName, String date, String status, Map<String, Integer> overAllHoverValueMap) {
+	private DataCount getDataCountObject(Long value, String projectName, String date, String status,
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(status);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (status.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {
@@ -368,29 +375,19 @@ public class NetOpenTicketCountStatusImpl
 		return dataCount;
 	}
 
-	/**
-	 * Populates Validation Data Object for excel.
-	 * Only Latest today cumulative data export in excel
-	 * 
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param projectWiseFeatureList
-	 * @param validationDataMap
-	 * @param node
-	 * @param projectWiseStatusList
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, Map<String, Set<String>>> projectWiseFeatureList, Map<String, ValidationData> validationDataMap,
-			Node node, Set<String> projectWiseStatusList) {
+	private void populateExcelDataObject(String requestTrackerId,
+			Map<String, Map<String, Set<String>>> projectWiseFeatureList, Node node, Set<String> projectWiseStatusList,
+			Set<KanbanIssueCustomHistory> kanbanJiraIssues, List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String projectName = node.getAccountHierarchyKanban().getNodeName();
-			ValidationData excelValidation = kpiHelperService.prepareExcelForKanbanCumulativeDataMap(
-					projectWiseFeatureList, FIELD_STATUS, projectWiseStatusList);
-			validationDataMap.put(projectName, excelValidation);
+			String date = getRange(KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(),
+					kpiRequest.getDuration()), kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(projectName, projectWiseFeatureList,
+					projectWiseStatusList, kanbanJiraIssues, excelData,date,
+					KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId());
 		}
 
-		kpiElement.setMapOfSprintAndData(validationDataMap);
 	}
 
 }

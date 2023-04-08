@@ -406,6 +406,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		azureIssueHistory.setRootCauseList(azureIssue.getRootCauseList());
 		azureIssueHistory.setStoryType(azureIssue.getTypeName());
 		azureIssueHistory.setAdditionalFilters(azureIssue.getAdditionalFilters());
+		azureIssueHistory.setUrl(azureIssue.getUrl());
+		azureIssueHistory.setDescription(azureIssue.getName());
 		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
 		azureIssueHistory.setBasicProjectConfigId(azureIssue.getBasicProjectConfigId());
 	}

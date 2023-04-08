@@ -94,6 +94,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private basicConfigUrl = this.baseUrl + '/api/basicconfigs';
     private connectionUrl = this.baseUrl + '/api/connections';
     private fieldMappingsUrl = this.baseUrl + '/api/tools';
+    private getKPIFieldMappingRelationshipsUrl = this.baseUrl + '/api/kpiFieldMapping';
     private getAllBoardsUrl = this.baseUrl + '/api/jira/board';
     private getHierarchyLevelsUrl = this.baseUrl + '/api/hierarchylevels';
 
@@ -338,8 +339,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
 
     /** POST: This make kpi call of scrum */
-    postKpi(data, source): Observable<object> {
-        return this.http.post<object>(this.getDataUrl + source + '/kpi', data)
+    postKpi(data, source): Observable<any> {
+        return this.http.post<any>(this.getDataUrl + source + '/kpi', data)
             .pipe(catchError(this.handleKpiError));
     }
 
@@ -662,6 +663,11 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     /** Save all Field Mappings */
     setFieldMappings(toolId, mappingConfig) {
         return this.http.post(this.fieldMappingsUrl + '/' + toolId + '/fieldMapping', mappingConfig);
+    }
+
+    /** Get KPI-field mapping relationships */
+    getKPIFieldMappingRelationships() {
+        return this.http.get<any>(this.getKPIFieldMappingRelationshipsUrl);
     }
 
     /** get Active Directory Config */

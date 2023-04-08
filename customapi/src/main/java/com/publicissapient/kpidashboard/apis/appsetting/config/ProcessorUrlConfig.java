@@ -48,6 +48,7 @@ public class ProcessorUrlConfig {
 	String excel;
 	String jenkins;
 	String jira;
+	String jiraTest;
 	String sonar;
 	String azure;
 	String azurepipeline;
@@ -75,6 +76,8 @@ public class ProcessorUrlConfig {
 			return getJenkins();
 		case ProcessorConstants.JIRA:
 			return getJira();
+		case ProcessorConstants.JIRA_TEST:
+			return getJiraTest();
 		case ProcessorConstants.AZURE:
 			return getAzure();
 		case ProcessorConstants.AZUREPIPELINE:

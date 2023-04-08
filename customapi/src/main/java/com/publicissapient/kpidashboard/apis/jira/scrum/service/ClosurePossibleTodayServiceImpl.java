@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,12 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalColoumn;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -66,12 +67,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
-	private static final String MODAL_HEAD_ISSUE_ID = "Issue Id";
-	private static final String MODAL_HEAD_ISSUE_DESC = "Issue Description";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String STORY_POINT = "Story Point";
 	private static final String OVERALL = "Overall";
-	private static final String SP = "SP";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -123,7 +120,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(notCompletedIssues, basicProjectConfigId);
-					resultListMap.put(ISSUES, issueList);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getNotCompletedIssues(), issueList);
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
 		}
@@ -157,14 +157,15 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		List<String> testingStatuses = fieldMapping.getJiraStatusForQa();
 		Double minutesInDay = fieldMapping.getWorkingHoursDayCPT() * 60;
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(ISSUES))) {
-			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ISSUES)).stream().filter(
-					issue -> testingStatuses.contains(issue.getStatus()) || (null != issue.getRemainingEstimateMinutes()
-							&& issue.getRemainingEstimateMinutes() <= minutesInDay))
+			List<JiraIssue> allIssues = ((List<JiraIssue>) resultMap.get(ISSUES)).stream()
+					.filter(issue -> testingStatuses.contains(issue.getStatus())
+							|| (null != issue.getRemainingEstimateMinutes() && issue.getRemainingEstimateMinutes() > 0
+									&& issue.getRemainingEstimateMinutes() <= minutesInDay))
 					.collect(Collectors.toList());
-
 			if (CollectionUtils.isNotEmpty(allIssues)) {
 				LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 						allIssues.size());
+				allIssues = excludeOnHoldStatusIssue(fieldMapping, allIssues);
 
 				Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 						.collect(Collectors.groupingBy(JiraIssue::getTypeName));
@@ -173,30 +174,39 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 				List<Integer> overAllIssueCount = Arrays.asList(0);
 				List<Double> overAllStoryPoints = Arrays.asList(0.0);
+				List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
 				List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 				typeWiseIssues.forEach((issueType, issues) -> {
 					issueTypes.add(issueType);
 					List<IterationKpiModalValue> modalValues = new ArrayList<>();
 					int issueCount = 0;
 					Double storyPoint = 0.0;
+					Double originalEstimate = 0.0;
 					for (JiraIssue jiraIssue : issues) {
-						IterationKpiModalColoumn iterationKpiModalColoumn = new IterationKpiModalColoumn(
-								jiraIssue.getNumber(), jiraIssue.getUrl());
-						IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue(
-								iterationKpiModalColoumn, jiraIssue.getName());
-						modalValues.add(iterationKpiModalValue);
-						overAllmodalValues.add(iterationKpiModalValue);
+						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
 							storyPoint = storyPoint + jiraIssue.getStoryPoints();
 							overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
 						}
+						if (null != jiraIssue.getOriginalEstimateMinutes()) {
+							originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+							overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+						}
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issueCounts = new IterationKpiData(ISSUE_COUNT, Double.valueOf(issueCount), null,
 							null, "", modalValues);
-					IterationKpiData storyPoints = new IterationKpiData(STORY_POINT, storyPoint, null, null, SP, null);
+					IterationKpiData storyPoints;
+					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+						storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
+								null, null, CommonConstant.SP, null);
+					} else {
+						storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
+								null, null, CommonConstant.HOURS, null);
+					}
 					data.add(issueCounts);
 					data.add(storyPoints);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, null, data);
@@ -205,8 +215,15 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData overAllCount = new IterationKpiData(ISSUE_COUNT,
 						Double.valueOf(overAllIssueCount.get(0)), null, null, "", overAllmodalValues);
-				IterationKpiData overAllStPoints = new IterationKpiData(STORY_POINT, overAllStoryPoints.get(0), null,
-						null, SP, null);
+				IterationKpiData overAllStPoints;
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
+						fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
+							null, null, CommonConstant.SP, null);
+				} else {
+					overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+							null, null, CommonConstant.HOURS, null);
+				}
 				data.add(overAllCount);
 				data.add(overAllStPoints);
 				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
@@ -215,14 +232,22 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				// Create kpi level filters
 				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-				// Modal Heads Options
-				List<String> modalHeads = Arrays.asList(MODAL_HEAD_ISSUE_ID, MODAL_HEAD_ISSUE_DESC);
 				trendValue.setValue(iterationKpiValues);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestSprint.getName());
-				kpiElement.setModalHeads(modalHeads);
+				kpiElement.setModalHeads(KPIExcelColumn.CLOSURES_POSSIBLE_TODAY.getColumns());
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
 	}
+
+	private List<JiraIssue> excludeOnHoldStatusIssue(FieldMapping fieldMapping, List<JiraIssue> allIssues) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatus())) {
+			allIssues = allIssues.stream().filter(
+					issue -> !fieldMapping.getJiraOnHoldStatus().contains(issue.getStatus()))
+					.collect(Collectors.toList());
+		}
+		return allIssues;
+	}
+
 }

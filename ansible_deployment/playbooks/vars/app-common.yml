@@ -14,18 +14,18 @@ VERSION: "{{ VERSION }}"
 FROMVERSION: "{{ FROMVERSION }}"
 aws_secret_key: "{{aws_secret_key}}"
 aws_access_key: "{{aws_access_key}}"
-
+JAVA_OPTS: "-XX:+HeapDumpOnOutOfMemoryError"
 
 CUSTOMAPI_IMAGE: "{{ select_docker_registry }}/speedy/customapi"
 CUSTOMAPI_MEMORY_LIMIT: "4096m"
 CUSTOMAPI_MEMORY_RESERVATION: "1024m"
 
 JIRA_IMAGE: "{{ select_docker_registry }}/speedy/jira-processor"
-JIRA_MEMORY_LIMIT: "2048m"
+JIRA_MEMORY_LIMIT: "4096m"
 JIRA_MEMORY_RESERVATION: "1024m"
 
 UI_2_IMAGE: "{{ select_docker_registry }}/speedy/ui"
-UI_2_MEMORY_LIMIT: "256m"
+UI_2_MEMORY_LIMIT: "1024m"
 UI_2_MEMORY_RESERVATION: "256m"
 
 NON_JIRA_PROCESSORS_IMAGE: "{{ select_docker_registry }}/speedy/nonjira-processor"

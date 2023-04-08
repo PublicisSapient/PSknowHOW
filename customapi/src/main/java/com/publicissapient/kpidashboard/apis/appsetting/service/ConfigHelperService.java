@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
+import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -72,11 +75,15 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
+	private KpiFieldMappingRepository kpiFieldMappingRepository;
+	@Autowired
 	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
 	private ProjectToolConfigRepository projectToolConfigRepository;
+	@Autowired
+	private UserBoardConfigRepository userBoardConfigRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
@@ -237,8 +244,7 @@ public class ConfigHelperService {
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
 		LOGGER.info("loading KPI Master data");
-		Iterable<KpiMaster> masterData = kpiMasterRepository.findAll();
-		return masterData;
+		return kpiMasterRepository.findAll();
 	}
 
 	@PostConstruct
@@ -284,6 +290,23 @@ public class ConfigHelperService {
 	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
 		LOGGER.info("loading hierarchy level Master data");
 		return hierarchyLevelSuggestionRepository.findAll();
+	}
+
+	/**
+	 * Load KPI Field Mapping.
+	 */
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_KPI_FIELD_MAPPING)
+	public Object loadKpiFieldMapping() {
+		LOGGER.info("loading KPI FieldMapping data");
+		return kpiFieldMappingRepository.findAll();
+	}
+
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
+	public List<UserBoardConfig> loadUserBoardConfig() {
+		LOGGER.info("loading UserBoarConfig");
+		return userBoardConfigRepository.findAll();
 	}
 
 }

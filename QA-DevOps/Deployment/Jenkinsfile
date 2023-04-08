@@ -1,5 +1,9 @@
 pipeline {
    agent any
+   options {
+        ansiColor('xterm')
+        timeout(time: 60, unit: 'MINUTES')
+    }
       environment {
        select_docker_registry = "${env.DEFAULT_REGISTRY}"
        registryCredId = "DOCKER_REGISTRY_CREDENTIALS"

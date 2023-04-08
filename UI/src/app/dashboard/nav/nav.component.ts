@@ -277,44 +277,55 @@ export class NavComponent implements OnInit {
   }
 
   getKpiOrderedList() {
-    this.httpService.getShowHideKpi().subscribe(
-      (response) => {
-        if (response.success === true) {
-          this.kpiListData = response.data;
-          this.configOthersData = this.kpiListData['others'][0]?.kpis;
-          this.service.setDashConfigData(this.kpiListData);
-          this.boardNameArr = [];
-          if (this.kpiListData[this.selectedType] && Array.isArray(this.kpiListData[this.selectedType])) {
-            for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-              this.boardNameArr.push(
-                {
-                  boardName: this.kpiListData[this.selectedType][i].boardName,
-                  link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-') + '/' + this.kpiListData[this.selectedType][i].boardId,
-                  boardId: this.kpiListData[this.selectedType][i].boardId
-                });
-            }
+    this.kpiListData = this.service.getDashConfigData();
+    if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
+      this.httpService.getShowHideKpi().subscribe(
+        (response) => {
+          if (response.success === true) {
+            this.kpiListData = response.data;
+           this.processKPIListData();
           }
+        },
+        (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in fetching roles. Please try after some time.',
+          });
+        },
+      );
+    }else{
+      this.processKPIListData();
+    }
 
-          for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-            this.boardNameArr.push(
-              {
-                boardName: this.kpiListData['others'][i].boardName,
-                link: this.kpiListData['others'][i].boardName.toLowerCase() + '/' + this.kpiListData[this.selectedType][i].boardId
-              });
-          }
-          this.service.changedMainDashboardValueSub.next(
-            this.kpiListData?.scrum[0]?.boardName,
-          );
-          this.processKpiConfigData();
-        }
-      },
-      (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error in fetching roles. Please try after some time.',
+  }
+
+
+  processKPIListData(){
+    this.configOthersData = this.kpiListData['others'][0]?.kpis;
+    this.service.setDashConfigData(this.kpiListData);
+    this.boardNameArr = [];
+    if (this.kpiListData[this.selectedType] && Array.isArray(this.kpiListData[this.selectedType])) {
+      for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
+        this.boardNameArr.push(
+          {
+            boardName: this.kpiListData[this.selectedType][i].boardName,
+            link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-') + '/' + this.kpiListData[this.selectedType][i].boardId,
+            boardId: this.kpiListData[this.selectedType][i].boardId
+          });
+      }
+    }
+
+    for (let i = 0; i < this.kpiListData['others']?.length; i++) {
+      this.boardNameArr.push(
+        {
+          boardName: this.kpiListData['others'][i].boardName,
+          link: this.kpiListData['others'][i].boardName.toLowerCase() + '/' + this.kpiListData[this.selectedType][i].boardId
         });
-      },
+    }
+    this.service.changedMainDashboardValueSub.next(
+      this.kpiListData?.scrum[0]?.boardName,
     );
+    this.processKpiConfigData();
   }
 
   isEmptyObject(value) {

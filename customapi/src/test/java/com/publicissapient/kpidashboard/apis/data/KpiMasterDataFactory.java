@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,6 +84,10 @@ public class KpiMasterDataFactory {
 
 	public List<KpiMaster> getKpiList() {
 		return kpiList;
+	}
+
+	public List<KpiMaster> getSpecificKpis(List<String> kpis){
+		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
 	}
 
 }

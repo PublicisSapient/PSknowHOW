@@ -104,7 +104,7 @@ export class TestConnectionService {
     );
   }
 
-  testSonar(baseUrl, username, password, accesstoken, cloudEnv, vault): Observable<any> {
+  testSonar(baseUrl, username, password, accesstoken, cloudEnv, vault, accessTokenEnabled): Observable<any> {
 
     let postData = {};
 
@@ -114,16 +114,23 @@ export class TestConnectionService {
         baseUrl,
         accessToken: accesstoken ? this.rsa.encrypt(accesstoken) : '',
         cloudEnv: true,
-        vault
+        vault,
+        accessTokenEnabled
       };
     } else {
       postData = {
         baseUrl,
-        username,
-        password: password ? this.rsa.encrypt(password) : '',
         cloudEnv: false,
-        vault
+        vault,
+        accessTokenEnabled : accessTokenEnabled === undefined ? false : accessTokenEnabled
       };
+
+      if (accessTokenEnabled) {
+        postData['accessToken'] = accesstoken ? this.rsa.encrypt(accesstoken) : '';
+      } else {
+        postData['password'] = password ? this.rsa.encrypt(password) : '';
+        postData['username'] =  username;
+      }
     }
 
     let headers: HttpHeaders = new HttpHeaders();

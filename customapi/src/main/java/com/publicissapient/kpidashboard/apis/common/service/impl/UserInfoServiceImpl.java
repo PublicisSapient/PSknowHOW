@@ -135,8 +135,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                     nonApprovedUserList.add(userInfo);
                 }
 
-                createProjectAccess(userInfo);
             }
+            createProjectAccess(userInfo);
         });
         List<UserInfo> approvedUserList = Lists.newArrayList(userInfoList);
         approvedUserList.removeAll(nonApprovedUserList);

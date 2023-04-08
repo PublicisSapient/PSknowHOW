@@ -2,6 +2,7 @@ pipeline {
    agent any
    options {
         ansiColor('xterm')
+	timeout(time: 60, unit: 'MINUTES')
     }
    environment {
        awss3credentialsid = "AWS_S3_CREDENTIALS"
@@ -10,10 +11,7 @@ pipeline {
        }
    parameters {
            gitParameter defaultValue: 'origin/develop', name: 'SBRANCH', type: 'PT_BRANCH_TAG',quickFilterEnabled:true ,description: 'Select Branch'
-           booleanParam(name: 'BUILD', defaultValue: 'true', description: 'BUILD')
-           booleanParam(name: 'SKIP_UNIT_TEST', defaultValue: 'false', description: 'SKIP UNIT TEST Cases')
-           booleanParam(name: 'SONAR', defaultValue: 'true', description: 'SONAR')
-           booleanParam(name: 'PUSH_REGISTRY', defaultValue: 'false', description: 'PUSH_REGISTRY')
+           booleanParam(name: 'PUSH_REGISTRY', defaultValue: 'true', description: 'PUSH_REGISTRY')
            booleanParam(name:'SCAN_DOCKER_IMAGE', defaultValue: 'false', description: 'SCAN-Docker-image')
            choice(name: 'DEPLOY', choices: ['', 'OPENSOURCE', 'PS-INTERNAL'], description: '')
       	   string(name: 'DNS_NAME', defaultValue: '', description: 'enter DNS name if present')
@@ -66,18 +64,11 @@ pipeline {
             }
          }
          stage('Build CUSTOMAPI run Unit Test') {
- 		when{
-            expression { env.BUILD == 'true' }
-            expression { env.SKIP_UNIT_TEST == 'false' }
-        }
             steps {
                 sh "mvn clean install -Pcustomapi"
             }
       }
 	  stage('CodeAnalysis'){
-	    when{
-            expression { env.SONAR == 'true' }
-        }
           steps{
 	       withSonarQubeEnv( 'Sonar2') {
 			  sh """
@@ -87,9 +78,6 @@ pipeline {
            }
 	  }
       stage('Check Quality gates'){
-            when{
-            expression { env.SONAR == 'true' }
-        }
           steps{
                           sh """
 			  chmod +x SonarDelay.sh

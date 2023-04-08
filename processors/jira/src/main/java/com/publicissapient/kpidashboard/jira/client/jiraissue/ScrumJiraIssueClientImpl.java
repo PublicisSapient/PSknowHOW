@@ -18,6 +18,49 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.StringEscapeUtils;
+import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
@@ -45,11 +88,10 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -62,41 +104,6 @@ import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
-import org.bson.types.ObjectId;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This is an implemented/extended storyDataClient for configured Scrum
@@ -132,9 +139,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	@Autowired
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
 	@Autowired
@@ -154,7 +158,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		log.info("Start Processing Jira Issues");
+		if (projectConfig.getProjectToolConfig().isQueryEnabled()) {
+			return processesJiraIssuesJQL(projectConfig, jiraAdapter, isOffline);
+		} else {
+			return processesJiraIssuesBoard(projectConfig, jiraAdapter, isOffline);
+		}
+	}
 
+	private int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("false");
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -162,8 +177,108 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		setStartDate(jiraProcessorConfig);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 				projectConfig.getBasicProjectConfigId().toHexString());
+		boolean processorFetchingComplete = false;
 		try {
+			boolean dataExist = (jiraIssueRepository
+					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 
+			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
+					projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+
+			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
+
+			maxChangeDatesByIssueType.forEach((k, v) -> {
+				long extraMinutes = jiraProcessorConfig.getMinsToReduce();
+				maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
+			});
+			int pageSize = jiraAdapter.getPageSize();
+
+			boolean hasMore = true;
+
+			boolean latestDataFetched = false;
+
+			Set<SprintDetails> setForCacheClean = new HashSet<>();
+			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
+			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+
+			for (int i = 0; hasMore; i += pageSize) {
+				Instant startProcessingJiraIssues = Instant.now();
+				SearchResult searchResult = jiraAdapter.getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
+						userTimeZone, i, dataExist);
+				List<Issue> issues = getIssuesFromResult(searchResult);
+				if (total == 0) {
+					total = getTotal(searchResult);
+					psLogData.setTotalFetchedIssues(String.valueOf(total));
+				}
+
+				// in case of offline method issues size can be greater than
+				// pageSize, increase page size so that same issues not read
+
+				if (isOffline && issues.size() >= pageSize) {
+					pageSize = issues.size() + 1;
+				}
+				if (CollectionUtils.isNotEmpty(issues)) {
+					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
+							jiraAdapter, false);
+					findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
+					savedIsuesCount += issues.size();
+					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
+				}
+
+				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+					latestDataFetched = cleanCache();
+					setForCacheClean.clear();
+					log.info("latest sprint fetched cache cleaned.");
+				}
+				// will result in an extra call if number of results == pageSize
+				// but I would rather do that then complicate the jira client
+				// implementation
+
+				if (issues.size() < pageSize) {
+					break;
+				}
+			}
+			processorFetchingComplete = true;
+		} catch (JSONException e) {
+			log.error("Error while updating Story information in scrum client", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
+			lastSavedJiraIssueChangedDateByType.clear();
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+			lastSavedJiraIssueChangedDateByType.clear();
+			processorFetchingComplete = false;
+		} finally {
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete,psLogData);
+			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
+			if (!isAttemptSuccess) {
+				lastSavedJiraIssueChangedDateByType.clear();
+				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
+			}
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+		}
+
+		return savedIsuesCount;
+	}
+
+	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban("false");
+		int savedIsuesCount = 0;
+		int total = 0;
+
+		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+		setStartDate(jiraProcessorConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+				projectConfig.getBasicProjectConfigId().toHexString());
+		boolean processorFetchingComplete = false;
+		try {
+			sprintClient.createSprintDetailBasedOnBoard(projectConfig, jiraAdapter);
 			boolean dataExist = (jiraIssueRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 			//write get logic to fetch last successful updated date.
@@ -173,15 +288,20 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 			for(BoardDetails board : boardDetailsList) {
+				psLogData.setBoardId(board.getBoardId());
+				int boardTotal = 0;
 				boolean latestDataFetched = false;
 				int pageSize = jiraAdapter.getPageSize();
 				boolean hasMore = true;
 				for (int i = 0; hasMore; i += pageSize) {
+					Instant startProcessingJiraIssues = Instant.now();
 					SearchResult searchResult = jiraAdapter.getIssues(board,projectConfig, queryDate,
 							userTimeZone, i, dataExist);
 					List<Issue> issues = getIssuesFromResult(searchResult);
-					if (total == 0) {
-						total = getTotal(searchResult);
+					if (boardTotal == 0) {
+						boardTotal = getTotal(searchResult);
+						total += boardTotal;
+						psLogData.setTotalFetchedIssues(String.valueOf(total));
 					}
 
 					// in case of offline method issues size can be greater than
@@ -191,10 +311,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						pageSize = issues.size() + 1;
 					}
 					if (CollectionUtils.isNotEmpty(issues)) {
-
 						List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
-								jiraAdapter);
+								jiraAdapter, true);
 						savedIsuesCount += issues.size();
+						findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
+						savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false, psLogData);
 					}
 
 					if (!latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -202,8 +323,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						setForCacheClean.clear();
 						log.info("latest sprint fetched cache cleaned.");
 					}
-					MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
-					MDC.put("IssueCount", String.valueOf(issues.size()));
 					// will result in an extra call if number of results == pageSize
 					// but I would rather do that then complicate the jira client
 					// implementation
@@ -211,31 +330,107 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						break;
 					}
 				}
-				log.info("fetching epic");
+				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
-				saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
-						jiraAdapter);
+				psLogData.setEpicIssuesFetched((epicIssue==null)?"-1":String.valueOf(epicIssue.size()));
+				List<JiraIssue> jiraEpicIssueList = saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
+						jiraAdapter, true);
+				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime,true, psLogData);
 			}
+			processorFetchingComplete = true;
 		} catch (JSONException e) {
-			log.error("Error while updating Story information in scrum client", e);
+			log.error("Error while updating Story information in scrum client through board", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
 			lastSavedJiraIssueChangedDateByType.clear();
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+			lastSavedJiraIssueChangedDateByType.clear();
+			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
+			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
-			}else{
-				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(),QUERYDATEFORMAT));
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through board", kv(CommonConstant.PSLOGDATA, psLogData));
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
 		}
-
 		return savedIsuesCount;
-
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount) {
-		return savedCount > 0 && total == savedCount;
+	private void savingIssueLogs(int savedIssuesCount, List<JiraIssue> jiraIssues, Instant startProcessingJiraIssues,
+								 boolean isEpic, PSLogData psLogData) {
+		PSLogData saveIssueLog = new PSLogData();
+		saveIssueLog.setIssueAndDesc(jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+		saveIssueLog.setTotalSavedIssues(String.valueOf(savedIssuesCount));
+		psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
+		psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
+		psLogData.setSprintListFetched(null);
+		psLogData.setTotalFetchedSprints(null);
+		if (!isEpic) {
+			saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_ISSUES);
+			saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
+			log.debug("Saved Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, saveIssueLog));
+			log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, psLogData));
+		} else {
+			saveIssueLog.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+			psLogData.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+			saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
+			log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, saveIssueLog));
+			log.info("Processed Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+					kv(CommonConstant.PSLOGDATA, psLogData));
+
+		}
+	}
+
+	private void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
+											  Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
+		Map<String, List<JiraIssue>> issuesByType = CollectionUtils.emptyIfNull(jiraIssues)
+				.stream()
+				.sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
+				.collect(Collectors.groupingBy(JiraIssue::getTypeName));
+
+		issuesByType.forEach((typeName, issues) -> {
+			JiraIssue firstIssue = issues.stream()
+					.sorted(Comparator
+							.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+									DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+							.reversed())
+					.findFirst().orElse(null);
+			if (firstIssue != null) {
+				LocalDateTime currentIssueDate = LocalDateTime.parse(firstIssue.getChangeDate(),
+						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+				LocalDateTime capturedDate = lastSavedJiraIssueChangedDateByType.get(typeName);
+				lastSavedJiraIssueChangedDateByType.put(typeName, updatedDateToSave(capturedDate, currentIssueDate));
+			}
+		});
+	}
+
+	private LocalDateTime updatedDateToSave(LocalDateTime capturedDate, LocalDateTime currentIssueDate) {
+		if (capturedDate == null) {
+			return currentIssueDate;
+		}
+
+		if (currentIssueDate.isAfter(capturedDate)) {
+			return currentIssueDate;
+		}
+		return capturedDate;
+	}
+
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData) {
+		psLogData.setTotalFetchedIssues(String.valueOf(total));
+		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
+		return savedCount > 0 && total == savedCount && processorFetchingComplete;
 	}
 
 	private List<Issue> getIssuesFromResult(SearchResult searchResult) {
@@ -280,10 +475,32 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} else {
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(lastSavedJiraIssueChangedDateByType);
 		}
-
 		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		savingTraceLogToLog(processorExecutionTraceLog);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+	}
+
+	private void savingTraceLogToLog(ProcessorExecutionTraceLog processorExecutionTraceLog) {
+		PSLogData traceLog = new PSLogData();
+		traceLog.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
+		traceLog.setExecutionEndedAt(
+				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
+		traceLog.setExecutionStartedAt(
+				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
+		traceLog.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
+		traceLog.setProjectExecutionStatus(String.valueOf(processorExecutionTraceLog.isExecutionSuccess()));
+		List<String> logJiraIssueChange = new ArrayList<>();
+		if (MapUtils.isNotEmpty(processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType())) {
+			processorExecutionTraceLog.getLastSavedEntryUpdatedDateByType()
+					.forEach((issue, updateDated) -> logJiraIssueChange
+							.add(issue + CommonConstant.ARROW + updateDated.toString() + CommonConstant.NEWLINE));
+			traceLog.setLastSavedJiraIssueChangedDateByType(logJiraIssueChange);
+		}
+		log.info("last execution time of {} for project {} is {}. status is {}",
+				processorExecutionTraceLog.getProcessorName(), processorExecutionTraceLog.getBasicProjectConfigId(),
+				processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess(),
+				kv(CommonConstant.PSLOGDATA, traceLog));
 	}
 
 	private boolean cleanCache() {
@@ -307,15 +524,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 		List<JiraIssue> jiraIssuesToDelete = Lists.newArrayList();
 		List<JiraIssueCustomHistory> jiraIssuesHistoryToDelete = Lists.newArrayList();
-		List<TestCaseDetails> testCaseDetailsList = Lists.newArrayList();
 		purgeIssuesList.forEach(issue -> {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 			String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 
 			JiraIssue jiraIssue = findOneJiraIssue(issueId, projectConfig.getBasicProjectConfigId().toString());
-			JiraIssueCustomHistory jiraIssueHistory = findOneJiraIssueHistory(issueId,
-					projectConfig.getBasicProjectConfigId().toString());
-			TestCaseDetails testCaseDetail = findOneTestCaseDetail(issueNumber,
+			JiraIssueCustomHistory jiraIssueHistory = findOneJiraIssueHistory(issueNumber,
 					projectConfig.getBasicProjectConfigId().toString());
 			if (jiraIssue != null) {
 				jiraIssuesToDelete.add(jiraIssue);
@@ -323,14 +537,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (jiraIssueHistory != null) {
 				jiraIssuesHistoryToDelete.add(jiraIssueHistory);
 			}
-			if (testCaseDetail != null) {
-				testCaseDetailsList.add(testCaseDetail);
-			}
 
 		});
 		jiraIssueRepository.deleteAll(jiraIssuesToDelete);
 		jiraIssueCustomHistoryRepository.deleteAll(jiraIssuesHistoryToDelete);
-		testCaseDetailsRepository.deleteAll(testCaseDetailsList);
 	}
 
 	/**
@@ -346,10 +556,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *             Error If JSON is invalid
 	 */
 	public List<JiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter) throws JSONException {
+												Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard) throws JSONException,InterruptedException {
 
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
-		List<TestCaseDetails> testCaseDetailsToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
 
 		if (null == currentPagedJiraRs) {
@@ -360,6 +569,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<String, String> issueEpics = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
+
 		for (Issue issue : currentPagedJiraRs) {
 			FieldMapping fieldMapping = projectConfig.getFieldMapping();
 
@@ -375,7 +585,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
 			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueNumber);
-			TestCaseDetails testCaseDetail=getTestCaseDetail(projectConfig, issueNumber);
 
 			Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 
@@ -398,9 +607,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
 			if (issueTypeNames.contains(
-					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
-				log.debug(String.format("[%-12s] %s", JiraProcessorUtil.deodeUTF8String(issue.getKey()),
-						JiraProcessorUtil.deodeUTF8String(issue.getSummary())));
+					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
 				// collectorId
 				jiraIssue.setProcessorId(jiraProcessorId);
 
@@ -412,7 +619,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
-				setTestTypeIssue(jiraIssue, issueType, fieldMapping);
 
 				// Label
 				jiraIssue.setLabels(JiraIssueClientUtil.getLabelsList(issue));
@@ -445,13 +651,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
-				setTestAutomatedField(fieldMapping, issue, jiraIssue, fields, testCaseDetail);
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
-					if (StringUtils.isNotBlank(testCaseDetail.getProjectID())) {
-						testCaseDetailsToSave.add(testCaseDetail);
-					}
 				}
 
 			}
@@ -460,21 +662,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		testCaseDetailsRepository.saveAll(testCaseDetailsToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
+		if (!dataFromBoard) {
+			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter);
+		}
+
 		setForCacheClean.addAll(sprintDetailsSet.stream()
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
-	}
-
-	private TestCaseDetails getTestCaseDetail(ProjectConfFieldMapping projectConfig, String issueId) {
-		TestCaseDetails testCaseDetail;
-		testCaseDetail = findOneTestCaseDetail(issueId, projectConfig.getBasicProjectConfigId().toString());
-		if (testCaseDetail == null) {
-			testCaseDetail = new TestCaseDetails();
-		}
-		return testCaseDetail;
 	}
 
 	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
@@ -493,64 +689,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssue=new JiraIssue();
 		}
 		return jiraIssue;
-	}
-
-
-	private TestCaseDetails findOneTestCaseDetail(String issueId, String basicProjectConfigId) {
-		List<TestCaseDetails> testCaseDetails = testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(issueId,
-				basicProjectConfigId);
-
-		if (testCaseDetails.size() > 1) {
-			log.error("JIRA Processor | More than one TestCaseDetails found for id {}", issueId);
-		}
-
-		if (!testCaseDetails.isEmpty()) {
-			return testCaseDetails.get(0);
-		}
-		return null;
-
-	}
-
-	@Override
-	public void setTestAutomatedField(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
-			Map<String, IssueField> fields, TestCaseDetails testCaseDetail) {
-		try {
-			if (null != fieldMapping.getJiraTestCaseType() && Arrays.asList(fieldMapping.getJiraTestCaseType()).stream()
-					.anyMatch(testType -> testType.equals(issue.getIssueType().getName()))) {
-				String testAutomated = "None";
-				String testAutomatedValue = NormalizedJira.NO_VALUE.getValue();
-				String testCanBeAutomatedValue = NormalizedJira.NO_VALUE.getValue();
-				Map<String, List<String>> identifierMap = checkIdentifier(fieldMapping);
-				Map<String, String> finalLabelMap = null;
-				Map<String, String> finalCustomFieldMap = null;
-				for (Map.Entry<String, List<String>> entrySet : identifierMap.entrySet()) {
-					if (entrySet.getKey().equalsIgnoreCase(JiraConstants.LABELS)
-							&& CollectionUtils.isNotEmpty(entrySet.getValue())) {
-						finalLabelMap = processLabels(entrySet.getValue(), issue, fieldMapping);
-					}
-					if (entrySet.getKey().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
-							&& CollectionUtils.isNotEmpty(entrySet.getValue())) {
-						finalCustomFieldMap = processCustomField(entrySet.getValue(), fieldMapping, fields);
-					}
-
-				}
-				Map<String, String> finalMap = processMap(finalLabelMap, finalCustomFieldMap);
-				if (finalMap.get(TESTAUTOMATEDFLAG) != null) {
-					jiraIssue.setTestAutomatedDate(JiraProcessorUtil
-							.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issue.getCreationDate().toString())));
-				}
-				jiraIssue.setTestAutomated(finalMap.getOrDefault(AUTOMATEDVALUE, testAutomated));// THE VALUE
-				jiraIssue.setIsTestAutomated(finalMap.getOrDefault(TESTAUTOMATEDFLAG, testAutomatedValue));// THE VALUE
-				jiraIssue.setIsTestCanBeAutomated(
-						finalMap.getOrDefault(TESTCANBEAUTOMATEDFLAG, testCanBeAutomatedValue));// THE
-				// VALUE
-				jiraIssue.setTypeName(NormalizedJira.TEST_TYPE.getValue());
-				testCaseDetailData(jiraIssue, testCaseDetail);
-			}
-
-		} catch (Exception e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
-		}
 	}
 
 	private void setAdditionalFilters(JiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
@@ -806,6 +944,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
 		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
 		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
+		jiraIssueHistory.setUrl(jiraIssue.getUrl());
+		jiraIssueHistory.setDescription(jiraIssue.getName());
 		// This method is not setup method. write it to keep
 		// custom history
 		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
@@ -1039,7 +1179,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			projectTraceLog = traceLogs.get(0);
 		}
 		LocalDateTime configuredStartDate = LocalDateTime.parse(jiraProcessorConfig.getStartDate(),
-				DateTimeFormatter.ofPattern(JiraConstants.SETTING_JIRA_START_DATE_FORMAT));
+				DateTimeFormatter.ofPattern(QUERYDATEFORMAT));
 
 		for (String issueType : uniqueIssueTypes) {
 
@@ -1543,34 +1683,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (null != issue.getTimeTracking()) {
 			jiraIssue.setOriginalEstimateMinutes(issue.getTimeTracking().getOriginalEstimateMinutes());
 			jiraIssue.setRemainingEstimateMinutes(issue.getTimeTracking().getRemainingEstimateMinutes());
-		}
-	}
-
-	private void testCaseDetailData(JiraIssue jiraIssue, TestCaseDetails testCaseDetails) {
-		testCaseDetails.setProcessorId(jiraIssue.getProcessorId());
-		testCaseDetails.setNumber(jiraIssue.getNumber());
-		testCaseDetails.setTypeName(jiraIssue.getTypeName());
-		testCaseDetails.setLabels(jiraIssue.getLabels());
-		testCaseDetails.setCreatedDate(jiraIssue.getCreatedDate());
-		testCaseDetails.setProjectName(jiraIssue.getProjectName());
-		testCaseDetails.setProjectID(jiraIssue.getProjectID());
-		testCaseDetails.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-		testCaseDetails.setTestAutomated(jiraIssue.getTestAutomated());
-		testCaseDetails.setIsTestAutomated(jiraIssue.getIsTestAutomated());
-		testCaseDetails.setIsTestCanBeAutomated(jiraIssue.getIsTestCanBeAutomated());
-		testCaseDetails.setTestCaseFolderName(jiraIssue.getTestCaseFolderName());
-		testCaseDetails.setTestAutomatedDate(jiraIssue.getTestAutomatedDate());
-		testCaseDetails.setDefectStoryID(jiraIssue.getDefectStoryID());
-		testCaseDetails.setDefectRaisedBy(jiraIssue.getDefectRaisedBy());
-		testCaseDetails.setTestCaseStatus(jiraIssue.getStatus());
-	}
-
-
-	void setTestTypeIssue(JiraIssue jiraIssue, IssueType issueType, FieldMapping fieldMapping) {
-
-		if (null != fieldMapping.getJiraTestCaseType() && Arrays.asList(fieldMapping.getJiraTestCaseType()).stream()
-				.anyMatch(testType -> testType.equals(issueType.getName()))) {
-			jiraIssue.setTypeName(NormalizedJira.TEST_TYPE.getValue());
+			if(null != issue.getDueDate()){
+				jiraIssue.setDueDate(issue.getDueDate().toString());
+			}
 		}
 	}
 

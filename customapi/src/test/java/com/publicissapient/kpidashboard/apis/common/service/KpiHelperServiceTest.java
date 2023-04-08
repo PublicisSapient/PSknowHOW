@@ -201,7 +201,7 @@ public class KpiHelperServiceTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
 		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(leafNodeList, kpiRequest);
-		assertEquals(2, resultMap.size());
+		assertEquals(3, resultMap.size());
 	}
 
 	@Test
@@ -344,7 +344,7 @@ public class KpiHelperServiceTest {
 		MasterResponse masterResponse = kpiHelperService.fetchKpiMasterList();
 
 		KpiMaster kpiMaster = masterResponse.getKpiList().get(0);
-		assertEquals("kpi3", kpiMaster.getKpiId());
+		assertEquals("kpi14", kpiMaster.getKpiId());
 	}
 
 	private KpiMaster createKpiMaster() {

@@ -26,10 +26,6 @@
     margin: 8px;
     width: calc(100% - 16px);
   }
-.p-inputtext.p-component {
-    max-width: 500px;
-}
-
 .card__primary__title {padding: 24px 16px 16px;}
 .card__primary__title__text {
 display: block;
@@ -54,6 +50,8 @@ transform-origin: 149px 48px;
 ::ng-deep .p-inputgroup ul.p-chips-multiple-container {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
+    width: 100% !important;
+    max-width: none;
 }
 
 .save-container {
@@ -62,6 +60,7 @@ transform-origin: 149px 48px;
 
 .field-title {
     color: #7d7d7d;
+    width: 28vw;
 }
 
 ::ng-deep .p-multiselect .p-multiselect-label-container {
@@ -78,9 +77,14 @@ transform-origin: 149px 48px;
     float: left;
 }
 input[type="file"].btn-import { 
-    z-index: -1;
-    position: absolute;
     opacity: 0;
+}
+
+.fields-container{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  max-width: initial;
+  width: calc(60vw + 42px);
 }
   
 label.btn-import-label {
@@ -91,10 +95,64 @@ label.btn-import-label {
   cursor: pointer;
 }
 
-::ng-deep .field-mapping .p-inputgroup .p-inputtext, 
-::ng-deep .field-mapping .p-fluid .p-inputgroup .p-inputtext, 
-::ng-deep .field-mapping .p-inputgroup .p-inputwrapper, 
-::ng-deep .field-mapping .p-inputgroup .p-inputwrapper>.p-component {
-  flex: unset;
-  width: unset;
+::ng-deep .field-mapping .p-inputtext{
+  width: 100%;
+}
+::ng-deep .field-mapping .p-dropdown{
+  width: 100%;
+}
+::ng-deep .field-mapping .p-inputgroup .p-chips{
+  display: flex;
+  width: 100%;
+}
+::ng-deep .field-mapping .p-inputwrapper .p-chips{
+  display: flex;
+  width: 100%;
+}
+
+:host ::ng-deep .p-inputgroup{
+  width: auto;
+}
+
+:host ::ng-deep .p-accordion .p-accordion-tab .p-accordion-toggle-icon{
+  border: none;
+}
+
+::ng-deep .tooltiptext hr{
+  border: none;
+  border-top: 3px dotted white;
+  margin: 5px 0px;
+  margin-top: 12px;
+  margin-bottom: 1px !important;
+  padding: 0px;
+}
+
+.p-button-close{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 0px;
+  padding: 8px;
+}
+
+.additional-fields-container{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  padding: 5px;
+  width: calc(60vw + 42px);
+}
+
+.button-add{
+  padding: 15px;
+  border-top-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+
+::ng-deep .configure-btn .p-disabled{
+  background-color: #06a0ff !important;
+  color: white !important;
+  opacity: 0.6;
 } 

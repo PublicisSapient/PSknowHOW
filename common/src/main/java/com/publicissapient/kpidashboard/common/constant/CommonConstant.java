@@ -30,7 +30,7 @@ public final class CommonConstant {
 	public static final String BITBUCKET_KPI_CACHE = "bitbucketKpiCache";
 	public static final String GITLAB_KPI_CACHE = "gitLabKpiCache";
 	public static final String JENKINS_KPI_CACHE = "jenkinsKpiCache";
-	public static final String ZEPHYR_KPI_CACHE = "zephyrKpiCache";
+	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
@@ -96,12 +96,14 @@ public final class CommonConstant {
 	public static final String ENG_MATURITY_MASTER = "ENG_MATURITY_MASTER";
 	
 	public static final String ARROW = "->";
+	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
 	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
 	public static final String CACHE_PROJECT_BASIC_TREE="cache_project_basic_tree";
-	
+	public static final String CACHE_USER_BOARD_CONFIG="cache_user_board_config";
+
 	public static final String OVERALL = "Overall";
 	
 	public static final String WEEK = "WEEKS";
@@ -128,6 +130,35 @@ public final class CommonConstant {
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
+	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
+
+	public static final String PSLOGDATA = "PSLogData";
+	public static final String REQUESTID = "requestId";
+	public static final String USER_NAME = "userName";
+	public static final String ENVIRONMENT = "environment";
+	public static final String PROJECTNAME = "projectName";
+	public static final String PROJECT_CONFIG_ID = "projectBasicConfigId";
+	public static final String FETCHING_ISSUE = "fetchingIssue";
+	public static final String SPRINT_REPORTDATA = "collectSprintReport";
+	public static final String SAVED_ISSUES = "savedIssues";
+	public static final String SAVED_EPIC_ISSUES = "saveEpicIssues";
+	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
+	public static final String SPRINT_DATA = "collectSprintData";
+	public static final String RELEASE_DATA = "collectReleaseData";
+	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
+	public static final String EPIC_DATA = "collectEpicData";
+	public static final String METADATA = "collectMetaData";
+	public static final String PROJECT_RUN = "projectRun";
+	public static final String CRON = "cron";
+	public static final String STORY_POINT = "Story Point";
+	public static final String ACTUAL_ESTIMATION = "Actual Estimation";
+	public static final String SP = "SP";
+	public static final String HOURS = "Hours";
+	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
+
+
+
+
 
 
 

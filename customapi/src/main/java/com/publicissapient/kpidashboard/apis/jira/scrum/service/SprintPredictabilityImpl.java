@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -339,19 +341,14 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		}
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
-			String sprintName = node.getSprintFilter().getName();
 
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			if (MapUtils.isNotEmpty(currentSprintLeafPredictabilityMap)
-					&& CollectionUtils.isNotEmpty(currentSprintLeafPredictabilityMap.get(currentNodeIdentifier))) {
-				populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap,
-						currentSprintLeafPredictabilityMap.get(currentNodeIdentifier), sprintName);
-			}
+			populateExcelDataObject(requestTrackerId , excelData, currentSprintLeafPredictabilityMap, node);
 			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
 					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
 			if (predictability.get(currentNodeIdentifier) != null) {
@@ -369,6 +366,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				trendValueList.add(dataCount);
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());
 	}
 
 	@Override
@@ -458,36 +457,24 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	}
 
 	/**
-	 * Populates Validation Data Object
 	 *
-	 * @param kpiElement
 	 * @param requestTrackerId
-	 * @param sprintName
-	 * @param validationDataMap
-	 * @param issueDetailsSet
+	 * @param excelData
+	 * @param currentSprintLeafVelocityMap
+	 * @param node
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, Set<IssueDetails> issueDetailsSet, String sprintName) {
-
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			ValidationData validationData = new ValidationData();
-			List<String> storyKeyList = new ArrayList<>();
-			List<String> storyPointList = new ArrayList<>();
-
-			for (IssueDetails issueDetails : issueDetailsSet) {
-				storyKeyList.add(issueDetails.getSprintIssue().getNumber());
-				storyPointList.add(
-						Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
+			if (MapUtils.isNotEmpty(currentSprintLeafVelocityMap)
+					&& CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
+				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
+				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
+						excelData);
 			}
-
-			validationData.setStoryKeyList(storyKeyList);
-			validationData.setStoryPointList(storyPointList);
-
-			validationDataMap.put(sprintName, validationData);
-
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-
 		}
 	}
 }

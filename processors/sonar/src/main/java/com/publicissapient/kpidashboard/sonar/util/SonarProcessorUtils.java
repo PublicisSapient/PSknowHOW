@@ -49,6 +49,7 @@ public final class SonarProcessorUtils {
 	private static final String CODE_QUALITY_STATUS_WARN = "WARN";
 	private static final String CODE_QUALITY_STATUS_ALERT = "ALERT";
 	private static final int HOURS_IN_DAY = 8;
+	private static final String AUTHORIZATION = "Authorization";
 
 	private SonarProcessorUtils() {
 	}
@@ -159,7 +160,7 @@ public final class SonarProcessorUtils {
 			String authentication = username + ":" + password;
 			byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 			String authenticationHeader = "Basic " + new String(encodedAuth);
-			header.set("Authorization", authenticationHeader);
+			header.set(AUTHORIZATION, authenticationHeader);
 		}
 		return header;
 	}
@@ -167,7 +168,22 @@ public final class SonarProcessorUtils {
 	public static HttpHeaders getHeaders(String accessToken) {
 		HttpHeaders headers = new HttpHeaders();
 		if (accessToken != null && !accessToken.isEmpty()) {
-			headers.add("Authorization", "Bearer " + accessToken);
+			headers.add(AUTHORIZATION, "Bearer " + accessToken);
+		}
+		return headers;
+	}
+
+	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (accessToken != null && !accessToken.isEmpty()) {
+			if(usingBasicAuth){
+				String authentication = accessToken + ":";
+				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
+				String authenticationHeader = "Basic " + new String(encodedAuth);
+				headers.set(AUTHORIZATION, authenticationHeader);
+			}else{
+				headers.add(AUTHORIZATION, "Bearer " + accessToken);
+			}
 		}
 		return headers;
 	}

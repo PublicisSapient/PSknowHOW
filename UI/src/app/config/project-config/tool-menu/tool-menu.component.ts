@@ -92,6 +92,15 @@ export class ToolMenuComponent implements OnInit {
             index: 0
           },
           {
+            toolName: 'JiraTest',
+            category: 'ABC',
+            description: '-',
+            icon: 'fab fa-atlassian',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'JiraTest',
+            index: 11
+          },
+          {
             toolName: 'Zephyr',
             category: 'ABC',
             description: '-',
@@ -180,7 +189,8 @@ export class ToolMenuComponent implements OnInit {
             routerLink: '/dashboard/Config/JiraConfig',
             queryParams1: 'GitHub',
             index: 10
-          }
+          },
+          
 
         ];
       }

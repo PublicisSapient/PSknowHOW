@@ -19,7 +19,8 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -45,8 +45,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -121,15 +119,9 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 		if (tool != null) {
 			String basicProjectConfigId = tool.getBasicProjectConfigId().toHexString();
 			ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(basicProjectConfigId);
-			FieldMapping fieldMapping = fieldMappingRepository
-					.findByBasicProjectConfigId(tool.getBasicProjectConfigId());
 			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(basicProjectConfigId,
 					tool.getToolName());
-			if (Objects.nonNull(fieldMapping)) {
-				if (fieldMapping.getJiraTestCaseType() != null) {
-					testCaseDetailsRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
-				}
-			}
+
 			if (projectBasicConfig.getIsKanban()) {
 				kanbanJiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				kanbanJiraIssueHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
@@ -168,8 +160,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 			if (flag) {
 				levelList.add(hierarchyLevel.getHierarchyLevelId());
 			}
-			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) &&
-					hierarchyLevel.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) && hierarchyLevel.getHierarchyLevelId()
+					.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				flag = true;
 			}
 		}

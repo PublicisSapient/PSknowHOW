@@ -25,7 +25,7 @@
             </div>
         </ng-container>
     </div>
-    <p-dataView #dv [value]="tools" [loading]="dataLoading" [paginator]="true" [rows]="11" filterBy="toolName"
+    <p-dataView #dv [value]="tools" [loading]="dataLoading" [paginator]="true" [rows]="12" filterBy="toolName"
         layout="grid">
         <ng-template pTemplate="header">
             <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
@@ -45,7 +45,7 @@
             </div>
         </ng-template>
         <ng-template let-tool pTemplate="listItem">
-            <div class="p-col-12">
+            <div class="p-sm-12">
                 <div class="tool-list-item p-card" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
                     <figure class="card__media bg--0">
                         <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
@@ -71,7 +71,7 @@
             </div>
         </ng-template>
         <ng-template let-tool let-i="index" pTemplate="gridItem">
-            <div class="p-col-12 p-md-3">
+            <div class="p-sm-12 p-md-3">
                 <div class="tool-grid-item p-card p-m-3 p-d-flex p-flex-wrap" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
                     <div class="card__media__body">
                         <div class="card__primary__title">

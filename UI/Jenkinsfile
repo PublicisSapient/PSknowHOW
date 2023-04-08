@@ -2,6 +2,7 @@ pipeline {
    agent any
    options {
         ansiColor('xterm')
+        timeout(time: 60, unit: 'MINUTES')
     }
    environment {
        awss3credentialsid = "AWS_S3_CREDENTIALS"
@@ -10,11 +11,7 @@ pipeline {
        }
    parameters {
               gitParameter defaultValue: 'origin/develop', name: 'SBRANCH', type: 'PT_BRANCH_TAG',quickFilterEnabled:true ,description: 'Select Branch'
-              booleanParam(name: 'NPM_BUILD', defaultValue: 'true', description: 'NPM_BUILD')
-              booleanParam(name: 'BUILD_IMAGE', defaultValue: 'false', description: 'BUILD_IMAGE')
-              booleanParam(name: 'COVERAGE', defaultValue: 'true', description: 'COVERAGE')
-              booleanParam(name: 'SONAR', defaultValue: 'true', description: 'SONAR')
-              booleanParam(name: 'PUSH_REGISTRY', defaultValue: 'false', description: 'PUSH_REGISTRY')
+              booleanParam(name: 'PUSH_REGISTRY', defaultValue: 'true', description: 'PUSH_REGISTRY')
               choice(name: 'DEPLOY', choices: ['', 'OPENSOURCE', 'PS-INTERNAL'], description: '')
 	            string(name: 'DNS_NAME', defaultValue: '', description: 'enter DNS name if present')
    }
@@ -57,9 +54,6 @@ pipeline {
            }
       }
 	 stage('Build NPM') {
-        when {
-              expression { env.NPM_BUILD == 'true' }
-        }
         steps {
               sh """
                     cd UI/
@@ -79,21 +73,8 @@ pipeline {
 				      """
             }
      }
-     stage('Build Image') {
-		    when{
-            expression { env.BUILD_IMAGE == 'true' }
-        }
-        steps {
-                sh """
-                cd UI
-                docker build -t ui:${env.version} .
-                """
-        }
-     }
+
      stage('Coverage') {
-		    when{
-            expression { env.COVERAGE == 'true' }
-        }
         steps {
                 sh """
                 cd UI
@@ -104,9 +85,6 @@ pipeline {
         }
      }
      stage('Sonar') {
-		    when{
-            expression { env.SONAR == 'true' }
-        }
         steps {
                 sh """
                 cd UI
@@ -118,6 +96,23 @@ pipeline {
                 """
         }
      }
+     stage('Check Quality gates'){
+          steps{
+           sh """
+			        chmod +x SonarDelay.sh
+			        ./SonarDelay.sh ./UI/.scannerwork/report-task.txt
+			        """
+         }
+       }
+      stage('Build Image') {
+        steps {
+                sh """
+                cd UI
+                docker build -t ui:${env.version} .
+                """
+        }
+     }
+
      stage('Push Registry') {
 		     when{
             expression { env.PUSH_REGISTRY == 'true' }

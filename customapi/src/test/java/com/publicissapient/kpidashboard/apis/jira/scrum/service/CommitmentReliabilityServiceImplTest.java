@@ -194,7 +194,7 @@ public class CommitmentReliabilityServiceImplTest {
 		dataCount.setSProjectName("PR");
 		dataCount.setSSprintID(sprint);
 		dataCount.setSSprintName(sprintName);
-		Map<String, Integer> howermap = new HashMap<>();
+		Map<String, Object> howermap = new HashMap<>();
 		howermap.put("Delivered", delivered);
 		howermap.put("Committed", commited);
 		dataCount.setHoverValue(howermap);
@@ -232,7 +232,7 @@ public class CommitmentReliabilityServiceImplTest {
 		Map<String, Object> predictList = commitmentReliabilityImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Sprint story size :", ((List<JiraIssue>) predictList.get(PROJECT_WISE_TOTAL_ISSUE)).size(),
-				equalTo(17));
+				equalTo(19));
 	}
 
 	/**

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -122,6 +123,10 @@ public class DSRServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
 		kpiRequest.setLabel("PROJECT");
 
+		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
+		sprintWiseStoryList= sprintWiseStoryDataFactory.getSprintWiseStories();
+
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -165,7 +170,7 @@ public class DSRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(UATBUGKEY, uatBugList);
 		filterComponentIdWiseDefectMap.put(TOTALBUGKEY, totalBugList);
 		Double dsrValue = dsrServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DSR value :", dsrValue, equalTo(53.0));
+		assertThat("DSR value :", dsrValue, equalTo(47.0));
 	}
 
 	@SuppressWarnings("unchecked")

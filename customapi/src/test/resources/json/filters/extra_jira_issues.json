@@ -3199,6 +3199,179 @@
     "productionDefect": false,
     "updateDate": "2022-09-6T21:22:01.0000000",
     "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6335e31c4fd2f76a821114c6",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "13841584",
+    "number": "DTS-19345",
+    "name": "Remove D3V3 library - UI ",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Close",
+    "state": "Close",
+    "estimate": "0",
+    "storyPoints": "0",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "UI"
+    ],
+    "createdDate": "2022-09-23T10:10:03.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "mampacch"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "mampacch"
+    ],
+    "ownersFullName": [
+      "Mamatha Paccha"
+    ],
+    "ownersShortName": [
+      "mampacch"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2022-09-14T09:00:00.0000000",
+    "sprintName": "DTS| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "DTS",
+    "resolution": "Fixed",
+    "affectedVersions": [],
+    "additionalFilters": [
+      {
+        "filterId": "afOne",
+        "filterValues": [
+          {
+            "valueId": "UI_afOne_6335363749794a18e8a4479b",
+            "value": "UI"
+          }
+        ]
+      }
+    ],
+    "assigneeId": "mampacch",
+    "assigneeName": "Mamatha Paccha",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T19:12:43.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "15730846",
+    "number": "DTS-19346",
+    "name": "Overlapping and alignment issues on Project list screen",
+    "typeId": "1",
+    "typeName": "Bug",
+    "status": "Close",
+    "state": "Close",
+    "estimate": "0",
+    "storyPoints": "0",
+    "changeDate": "2022-09-19T07:39:57.0000000",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [],
+    "createdDate": "2022-09-12T12:14:45.0000000",
+    "rootCauseList": [
+      "code issue"
+    ],
+    "ownersID": [
+      "mampacch"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "mampacch"
+    ],
+    "ownersFullName": [
+      "Mamatha Paccha"
+    ],
+    "ownersShortName": [
+      "mampacch"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T15:30:00.0000000",
+    "sprintBeginDate": "2022-09-14T03:30:00.0000000",
+    "sprintName": "DTS| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "DTS",
+    "resolution": "Fixed",
+    "affectedVersions": [],
+    "additionalFilters": [],
+    "assigneeId": "mampacch",
+    "assigneeName": "Mamatha Paccha",
+    "defectRaisedBy": "UAT",
+    "jiraStatus": "Closed",
+    "defectStoryID": [
+      "DTS-19345"
+    ],
+    "timeSpentInMinutes": 480,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [],
+    "defectRaisedByQA": false,
+    "originalEstimateMinutes": 0,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-19T07:39:57.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   }
-
 ]

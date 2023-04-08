@@ -60,13 +60,13 @@ describe('KpiCardComponent', () => {
   expect(component.getColor('C1')).toBe('#079FFF');
   });
 
-  it('sholud handle filter change for radio',()=>{
+  it('should handle filter change for radio',()=>{
     const spy = spyOn(component.optionSelected,'emit');
     component.handleChange('radio','Story Points');
     expect(spy).toHaveBeenCalledWith('Story Points');
   });
 
-  it('sholud handle filter change for single select',()=>{
+  it('should handle filter change for single select',()=>{
     const filterOptionsingle = {
       filter1: [{}]
     };
@@ -76,7 +76,7 @@ describe('KpiCardComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('sholud handle filter change for multi select',()=>{
+  it('should handle filter change for multi select',()=>{
     const filterOptionMulti ={filter1 : ['P1','P2']};
     component.filterOptions = filterOptionMulti;
     const spy = spyOn(component.optionSelected,'emit');
@@ -88,64 +88,6 @@ describe('KpiCardComponent', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBeTrue();
   });
-
-  it('should return valid maturity value', () => {
-    const item = {
-      data: 'EU',
-      value: [
-        {
-          data: '2',
-          value: 2,
-          hoverValue: {},
-          date: '2022-08-29 to 2022-09-04',
-          sprojectName: 'Aarti Cons',
-          xName: 1
-        },
-        {
-          data: '5',
-          value: 5,
-          hoverValue: {},
-          date: '2022-09-05 to 2022-09-11',
-          sprojectName: 'Aarti Cons',
-          xName: 2
-        },
-        {
-          data: '11',
-          value: 11,
-          hoverValue: {},
-          date: '2022-09-12 to 2022-09-18',
-          sprojectName: 'Aarti Cons',
-          xName: 3
-        },
-        {
-          data: '2',
-          value: 2,
-          hoverValue: {},
-          date: '2022-09-19 to 2022-09-25',
-          sprojectName: 'Aarti Cons',
-          xName: 4
-        },
-        {
-          data: '4',
-          value: 4,
-          hoverValue: {},
-          date: '2022-09-26 to 2022-10-02',
-          sprojectName: 'Aarti Cons',
-          xName: 5
-        }
-      ],
-      maturity: '3'
-    };
-    expect(component.checkMaturity(item)).toBe('3');
-
-    const item1 = {
-      data: 'EU',
-      value: [],
-      maturity: '5'
-    };
-    expect(component.checkMaturity(item1)).toBe(0);
-  });
-
 
   it('should set filter default option', fakeAsync(() => {
     const response = {

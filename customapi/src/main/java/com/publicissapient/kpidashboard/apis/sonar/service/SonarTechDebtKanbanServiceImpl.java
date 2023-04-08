@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -169,7 +172,7 @@ public class SonarTechDebtKanbanServiceImpl
 
 	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
@@ -192,12 +195,15 @@ public class SonarTechDebtKanbanServiceImpl
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
 				mapTmp.get(projectName).setValue(projectWiseDataMap);
-				validationMap.putAll(populateValidationDataObjectForTechDebt(getRequestTrackerIdKanban(), projectList,
-						debtList, versionDate, mapTmp.get(projectName)));
+				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getProjectFilter().getName(),
+							projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+				}
 			}
 		});
 
-		kpiElement.setMapOfSprintAndData(validationMap);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_TECH_DEBT_KANBAN.getColumns());
 
 	}
 

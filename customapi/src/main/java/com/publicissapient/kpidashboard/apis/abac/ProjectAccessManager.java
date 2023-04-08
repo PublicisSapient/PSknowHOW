@@ -29,14 +29,19 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
+import javax.validation.constraints.NotNull;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,10 +78,6 @@ import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-
-import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * @author anisingh4
@@ -211,11 +212,9 @@ public class ProjectAccessManager {
 		String accessLevel = accessRequest.getAccessNode().getAccessLevel();
 		Set<String> requestIds = accessRequest.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
 				.collect(Collectors.toSet());
-		if (accessRequest.getRole().equals(Constant.ROLE_SUPERADMIN) && (StringUtils.isNotEmpty(accessLevel)
-				|| CollectionUtils.isNotEmpty(requestIds))) {
-			return true;
-		}
-		return false;
+		return accessRequest.getRole().equals(Constant.ROLE_SUPERADMIN)
+				&& (StringUtils.isNotEmpty(accessLevel) || CollectionUtils.isNotEmpty(requestIds));
+
 	}
 
 	/**

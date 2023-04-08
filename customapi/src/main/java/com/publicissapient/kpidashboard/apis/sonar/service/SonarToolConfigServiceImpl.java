@@ -297,11 +297,11 @@ public class SonarToolConfigServiceImpl {
 
 		HttpEntity<?> httpEntity;
 		if (connection.isCloudEnv()) {
-			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken));
-
+			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken,false));
+		} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
+			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken,true));
 		} else {
 			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(username, password));
-
 		}
 		return httpEntity;
 	}

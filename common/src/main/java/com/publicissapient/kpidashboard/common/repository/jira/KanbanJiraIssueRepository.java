@@ -19,7 +19,9 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -149,4 +151,5 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 			ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
 	
 	List<KanbanJiraIssue> findAll();
+
 }

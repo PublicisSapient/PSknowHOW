@@ -20,7 +20,7 @@ if (db.processor.countDocuments({}) === 0) {
                 "_class": "com.publicissapient.kpidashboard.sonar.model.SonarProcessor"
             }, {
                 "processorName": "Zephyr",
-                "processorType": "AGILE_TOOL",
+                "processorType": "TESTING_TOOLS",
                 "isActive": true,
                 "isOnline": true,
                 "errors": [],
@@ -103,6 +103,16 @@ if (db.processor.countDocuments({}) === 0) {
                 "updatedTime": new Date().getTime(),
                 "isLastSuccess": false,
                 "_class": "com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineProcessor"
+            } ,
+            {
+                "processorName": "JiraTest",
+                "processorType": "TESTING_TOOLS",
+                "isActive": true,
+                "isOnline": true,
+                "errors": [],
+                "updatedTime": new Date().getTime(),
+                "isLastSuccess": false,
+                "_class": "com.publicissapient.kpidashboard.jiratest.model.JiraTestProcessor"
             }
         ]);
 }

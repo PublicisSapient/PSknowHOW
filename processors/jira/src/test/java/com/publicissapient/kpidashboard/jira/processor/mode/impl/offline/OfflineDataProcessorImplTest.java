@@ -246,11 +246,6 @@ public class OfflineDataProcessorImplTest {
 
         jiraType = new ArrayList<>();
         jiraType.add("Automation");
-        fieldMapping.setJiraAutomatedTestValue(jiraType);
-
-        jiraType = new ArrayList<>();
-        jiraType.add("10");
-        fieldMapping.setJiraCanNotAutomatedTestValue(jiraType);
 
 
         jiraType = new ArrayList<>();
@@ -281,11 +276,8 @@ public class OfflineDataProcessorImplTest {
         jiraType = new ArrayList<>();
         jiraType.add("Ready for Sign-off");
         fieldMapping.setJiraDod(jiraType);
-        fieldMapping.setJiraTestCaseType(new String[]{"Story"});
-        fieldMapping.setTestAutomated("40");
         jiraType = new ArrayList<>();
         jiraType.add("2.1.0");
-        fieldMapping.setTestRegressionValue(jiraType);
 
 
         List<String> jiraSegData = new ArrayList<>();
@@ -322,10 +314,6 @@ public class OfflineDataProcessorImplTest {
         jiraType = new ArrayList<>();
         jiraType.add("Closed");
         fieldMapping.setJiraDefectRemovalStatus(jiraType);
-
-        jiraType = new ArrayList<>();
-        jiraType.add("10");
-        fieldMapping.setJiraCanNotAutomatedTestValue(jiraType);
 
         fieldMapping.setJiraStoryPointsCustomField("customfield_20803");
         fieldMapping.setJiraTechDebtIdentification("CustomField");
@@ -375,13 +363,9 @@ public class OfflineDataProcessorImplTest {
 
         jiraType = new ArrayList<>();
         jiraType.add("AutomationAutomation");
-        fieldMapping.setJiraAutomatedTestValue(jiraType);
 
-        fieldMapping.setJiraTestCaseType(new String[]{"Test Case"});
-        fieldMapping.setTestAutomated("40");
         jiraSegData = new ArrayList<>();
         jiraSegData.add("2.1.0");
-        fieldMapping.setTestRegressionValue(jiraSegData);
 
 
         jiraSegData = new ArrayList<>();

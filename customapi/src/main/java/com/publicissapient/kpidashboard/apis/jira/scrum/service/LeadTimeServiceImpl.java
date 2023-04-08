@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,23 +23,25 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -88,11 +91,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueType()).isPresent()) {
-				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraIntakeToDorIssueType()));
-			}
 
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraIntakeToDorIssueType(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+			}
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
@@ -197,7 +201,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	private void kpiWithFilter(Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getRequestTrackerId();
 
 		leafNodeList.forEach(node -> {
@@ -217,10 +222,18 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						"[LEAD-TIME-FILTER-WISE][{}].  : Intake to DOR: {} . DoR to DoD: {} . DoD to Live: {} . Intake to Live: {}",
 						requestTrackerId, cycleMap.get(INTAKE_TO_DOR), cycleMap.get(DOR_TO_DOD),
 						cycleMap.get(DOD_TO_LIVE), cycleMap.get(LEAD_TIME));
-				populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, cycleTimeList,
-						trendLineName);
+				LeadTimeData leadTimeData = getLeadTime(cycleTimeList);
+
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+
+					KPIExcelUtility.populateLeadTime(excelData, trendLineName, leadTimeData);
+
+				}
+
 			}
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME.getColumns());
 	}
 
 	private Map<String, List<DataCount>> getDataCountMap(String trendLineName, Map<String, Long> cycleMap) {
@@ -238,6 +251,67 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			dataCountMap.put(key, new ArrayList<>(Arrays.asList(dataCount)));
 		});
 		return dataCountMap;
+	}
+
+	private LeadTimeData getLeadTime(List<CycleTimeValidationData> cycletimeList) {
+
+		List<String> intakeDorDay = new ArrayList<>();
+		List<String> dorDodDay = new ArrayList<>();
+		List<String> dodLiveDay = new ArrayList<>();
+		List<String> intakeLiveDay = new ArrayList<>();
+		List<String> issueNumber = new ArrayList<>();
+		List<String> issueURL = new ArrayList<>();
+		List<String> issueDisc = new ArrayList<>();
+		LeadTimeData leadTimeData = new LeadTimeData();
+
+		if (CollectionUtils.isNotEmpty(cycletimeList)) {
+
+			for (CycleTimeValidationData cycleTimeValidationData : cycletimeList) {
+
+				issueNumber.add(cycleTimeValidationData.getIssueNumber());
+				issueURL.add(cycleTimeValidationData.getUrl());
+				issueDisc.add(cycleTimeValidationData.getIssueDesc());
+
+				if (cycleTimeValidationData.getIntakeDate() != null && cycleTimeValidationData.getDorDate() != null) {
+					Long diff = cycleTimeValidationData.getDorDate().getMillis()
+							- cycleTimeValidationData.getIntakeDate().getMillis();
+					intakeDorDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
+				} else {
+					intakeDorDay.add("NA");
+				}
+				if (cycleTimeValidationData.getDorDate() != null && cycleTimeValidationData.getDodDate() != null) {
+					Long diff = cycleTimeValidationData.getDodDate().getMillis()
+							- cycleTimeValidationData.getDorDate().getMillis();
+					dorDodDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
+				} else {
+					dorDodDay.add("NA");
+				}
+				if (cycleTimeValidationData.getDodDate() != null && cycleTimeValidationData.getLiveDate() != null) {
+					Long diff = cycleTimeValidationData.getLiveDate().getMillis()
+							- cycleTimeValidationData.getDodDate().getMillis();
+					dodLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
+				} else {
+					dodLiveDay.add("NA");
+				}
+				if (cycleTimeValidationData.getIntakeDate() != null && cycleTimeValidationData.getLiveDate() != null) {
+					Long diff = cycleTimeValidationData.getLiveDate().getMillis()
+							- cycleTimeValidationData.getIntakeDate().getMillis();
+					intakeLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
+				} else {
+					intakeLiveDay.add("NA");
+				}
+
+			}
+			leadTimeData.setIssueNumber(issueNumber);
+			leadTimeData.setUrlList(issueURL);
+			leadTimeData.setIssueDiscList(issueDisc);
+			leadTimeData.setIntakeToDor(intakeDorDay);
+			leadTimeData.setDorToDOD(dorDodDay);
+			leadTimeData.setDodToLive(dodLiveDay);
+			leadTimeData.setIntakeToLive(intakeLiveDay);
+		}
+
+		return leadTimeData;
 	}
 
 	private Map<String, Long> getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistories,
@@ -260,9 +334,11 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				String live = fieldMapping.getJiraLiveStatus();
 				CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 				cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
+				cycleTimeValidationData.setUrl(jiraIssueCustomHistory.getUrl());
+				cycleTimeValidationData.setIssueDesc(jiraIssueCustomHistory.getDescription());
 				CycleTime cycleTime = new CycleTime();
 				cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
-				cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate().toString());
+				cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 				jiraIssueCustomHistory.getStorySprintDetails()
 						.forEach(sprintDetail -> updateCycleTimeValidationData(dor, dod, live, cycleTimeValidationData,
 								cycleTime, sprintDetail));
@@ -332,40 +408,28 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime, JiraIssueSprint jiraIssueSprint) {
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(jiraIssueSprint.getFromStatus())) {
 			cycleTime.setReadyTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setDorDate(jiraIssueSprint.getActivityDate().toString());
+			cycleTimeValidationData.setDorDate(jiraIssueSprint.getActivityDate());
 		}
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(dod)
 				&& dod.contains(jiraIssueSprint.getFromStatus())) {
 			cycleTime.setDeliveryTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setDodDate(jiraIssueSprint.getActivityDate().toString());
+			cycleTimeValidationData.setDodDate(jiraIssueSprint.getActivityDate());
 		}
 		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(jiraIssueSprint.getFromStatus())) {
 			cycleTime.setLiveTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setLiveDate(jiraIssueSprint.getActivityDate().toString());
+			cycleTimeValidationData.setLiveDate(jiraIssueSprint.getActivityDate());
 		}
 	}
 
 	/**
-	 *
-	 * @param kpiElement
 	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param cycleTimeValidationData
+	 * @param excelData
 	 * @param trendLineName
+	 * @param cycleTimeList
 	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, List<CycleTimeValidationData> cycleTimeValidationData,
-			String trendLineName) {
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			Map<String, Long> cycleMap, String trendLineName, List<CycleTimeValidationData> cycleTimeList) {
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			if (CollectionUtils.isNotEmpty(cycleTimeValidationData)) {
-				validationData.setCycleTimeList(cycleTimeValidationData);
-			}
-			validationDataMap.put(trendLineName, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-
-		}
 	}
 
 	/**

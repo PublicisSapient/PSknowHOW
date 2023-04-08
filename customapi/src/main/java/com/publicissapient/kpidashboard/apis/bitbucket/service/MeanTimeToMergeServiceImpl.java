@@ -18,7 +18,6 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,13 +35,20 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.scm.BranchMergeReqCount;
 import com.publicissapient.kpidashboard.common.model.scm.MergeReqCount;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -52,22 +58,20 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author yasbano
- *
  */
 @Component
 @Slf4j
 public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List<Object>, List<MergeRequests>> {
 
+	public static final String MEAN_TIME_TO_MERGE = "meanTimeToMerge";
+	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
+	public static final String WEEK_SEPERATOR = " to ";
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String AZURE_REPO = "AzureRepository";
 	private static final String BITBUCKET = "Bitbucket";
 	private static final String GITLAB = "GitLab";
 	private static final String GITHUB = "GitHub";
-	public static final String MEAN_TIME_TO_MERGE = "meanTimeToMerge";
 	private static final String AGGREGATED = "Overall";
-	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
-	public static final String WEEK_SEPERATOR = " to ";
-	public static final String DATE_FORMAT = "yyyy-MM-dd";
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -95,28 +99,28 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			}
 
 		});
-			Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-			calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.MEAN_TIME_TO_MERGE);
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.MEAN_TIME_TO_MERGE);
 
-			Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
-					KPICode.MEAN_TIME_TO_MERGE);
-			Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
-			trendValuesMap.forEach((issueType, dataCounts) -> {
-				Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
-						.collect(Collectors.groupingBy(DataCount::getData));
-				kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
-			});
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+				KPICode.MEAN_TIME_TO_MERGE);
+		Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
+		});
 
-			List<DataCountGroup> dataCountGroups = new ArrayList<>();
-			kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
-				DataCountGroup dataCountGroup = new DataCountGroup();
-				List<DataCount> dataList = new ArrayList<>();
-				projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
-				dataCountGroup.setFilter(issueType);
-				dataCountGroup.setValue(dataList);
-				dataCountGroups.add(dataCountGroup);
-			});
-			kpiElement.setTrendValueList(dataCountGroups);
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+		kpiElement.setTrendValueList(dataCountGroups);
 
 		return kpiElement;
 	}
@@ -138,7 +142,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		Map<ObjectId, List<MergeRequests>> mergeRequestsListItemId = mergeRequestsList.stream()
 				.collect(Collectors.groupingBy(MergeRequests::getProcessorItemId));
 
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+
+		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			String projectName = node.getProjectFilter().getName();
 			LocalDateTime end = localEndDate;
@@ -149,14 +154,15 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			List<Tool> reposList = new ArrayList<>();
 			populateRepoList(reposList, mapOfListOfTools);
 			if (CollectionUtils.isEmpty(reposList)) {
-				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
-						node.getProjectFilter());
+				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
 			}
 
 			List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
 			List<String> repoList = new ArrayList<>();
 			List<String> branchList = new ArrayList<>();
+			Map<String, Double> excelDataLoader = new HashMap<>();
+
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			List<MergeRequests> aggMergeRequests = new ArrayList<>();
 			reposList.forEach(repo -> {
@@ -166,7 +172,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 							.get(repo.getProcessorItemList().get(0).getId());
 					if (CollectionUtils.isNotEmpty(mergeReqList)) {
 						aggMergeRequests.addAll(mergeReqList);
-						Map<String, Double> excelDataLoader = new HashMap<>();
+
 						String branchName = getBranchSubFilter(repo, projectName);
 						setWeekWiseMeanTimeToMerge(mergeReqList, end, excelDataLoader, branchName, projectName,
 								aggDataMap);
@@ -179,9 +185,10 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			setWeekWiseMeanTimeToMerge(aggMergeRequests, end, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
 					aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
-			populateValidationDataObject(kpiElement, requestTrackerId, repoWiseMRList, repoList, branchList,
-					validationDataMap, node);
+			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
 	}
 
 	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, LocalDateTime end,
@@ -220,7 +227,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		weekRange.forEach((week, value) -> {
 			DataCount dataCount = setDataCount(projectName, week, value);
 			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put("Week " + week, (double) TimeUnit.MILLISECONDS.toHours(value.longValue()));
+			excelDataLoader.put(week, (double) TimeUnit.MILLISECONDS.toHours(value.longValue()));
 		});
 	}
 
@@ -305,23 +312,22 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		}
 	}
 
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<Map<String, Double>> repoWiseMRList, List<String> repoList, List<String> branchList,
-			Map<String, ValidationData> validationDataMap, Node node) {
+	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Double>> repoWiseMRList,
+			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setRepoList(repoList);
-			validationData.setBranchList(branchList);
-			validationData.setWeekWiseMergeReqList(repoWiseMRList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+
+			String projectName = node.getProjectFilter().getName();
+
+			KPIExcelUtility.populateMeanTimeMergeExcelData(projectName, repoWiseMRList, repoList, branchList,
+					validationDataMap);
+
 		}
 	}
 
 	@Override
 	public Object calculateAggregatedValue(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
 			KPICode kpiCode) {
-		String kpiId= kpiCode.getKpiId();
+		String kpiId = kpiCode.getKpiId();
 
 		if (node == null) {
 			return 0;
@@ -393,10 +399,10 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 	public Double calculateKPIMetrics(List<MergeRequests> mergeRequests) {
 		return null;
 	}
-	
+
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList,kpiName);
+		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
 }

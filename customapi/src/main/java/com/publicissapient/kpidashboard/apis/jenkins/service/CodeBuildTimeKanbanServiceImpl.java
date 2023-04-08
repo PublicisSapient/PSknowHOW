@@ -5,16 +5,19 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -23,7 +26,6 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
@@ -41,13 +43,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -64,19 +66,12 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 
     @Autowired
     private ConfigHelperService configHelperService;
-
     @Autowired
     private KpiHelperService kpiHelperService;
-
     @Autowired
     private BuildRepository buildRepository;
-
     @Autowired
     private CustomApiConfig customApiConfig;
-
-
-    private final List<String> processorsList = Arrays.asList(ProcessorConstants.BAMBOO, ProcessorConstants.JENKINS,
-            ProcessorConstants.TEAMCITY, ProcessorConstants.AZUREPIPELINE);
 
     @Override
     public String getQualifierType() {
@@ -125,34 +120,21 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
     @Override
     public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
                                                          KpiRequest kpiRequest) {
-        Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-        Set<ObjectId> processorItemIdList = new HashSet<>();
+        Set<ObjectId> projectBasicConfigIds = new HashSet<>();
         List<String> statusList = new ArrayList<>();
         Map<String, List<String>> mapOfFilters = new HashMap<>();
         leafNodeList.forEach(node -> {
-            ObjectId id = node.getProjectFilter().getBasicProjectConfigId();
-            if (toolMap.get(id) == null) {
-                return;
-            }
-            List<Tool> allProcessorItems = getProcessorItemList(toolMap, id);
-            if (CollectionUtils.isEmpty(allProcessorItems)) {
-                return;
-            }
-
-            allProcessorItems.forEach(job -> {
-                if (isValidJob(job)) {
-                    processorItemIdList.addAll(prepareProcessorItemIdsList(job));
-                }
-            });
-
+            ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+            projectBasicConfigIds.add(basicProjectConfigId);
         });
-        if (CollectionUtils.isEmpty(processorItemIdList)) {
-            return new HashMap<>();
-        }
+
         statusList.add(BuildStatus.SUCCESS.name());
         mapOfFilters.put("buildStatus", statusList);
-        List<Build> buildList = buildRepository.findBuildList(mapOfFilters, processorItemIdList, startDate, endDate);
-        return buildList.stream().collect(Collectors.groupingBy(Build::getProcessorItemId, Collectors.toList()));
+        List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+        if (CollectionUtils.isEmpty(buildList)) {
+            return new HashMap<>();
+        }
+        return buildList.stream().collect(Collectors.groupingBy(Build::getBasicProjectConfigId, Collectors.toList()));
     }
 
     private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
@@ -177,133 +159,78 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 
     private void kpiWithFilter(Map<ObjectId, List<Build>> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
                                KpiElement kpiElement, KpiRequest kpiRequest) {
-        Map<String, ValidationData> validationDataMap = new HashMap<>();
         String requestTrackerId = getKanbanRequestTrackerId();
-        // gets the tool configuration
-        Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-
+        List<KPIExcelData> excelData = new ArrayList<>();
         leafNodeList.forEach(node -> {
             Map<String, List<DataCount>> trendValueMap = new HashMap<>();
             CodeBuildTimeInfo codeBuildTimeInfo = new CodeBuildTimeInfo();
             List<DataCount> dataCountAggList = new ArrayList<>();
             String projectNodeId = node.getId();
-            List<Tool> jenkinsJob = getJenkinsJobTools(toolMap, node);
+            ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+            List<Build> buildListProjectWise = resultMap.get(basicProjectConfigId);
 
-            if (CollectionUtils.isNotEmpty(jenkinsJob)) {
+			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
 
-                filterDataBasedOnJobAndRangeWise(resultMap, kpiRequest, trendValueMap, codeBuildTimeInfo,
-                        dataCountAggList, projectNodeId, jenkinsJob);
+				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
+						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 
-                List<DataCount> aggData = calculateAggregatedRangeWise(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(),
-                        dataCountAggList);
+				filterDataBasedOnJobAndRangeWise(kpiRequest, trendValueMap, codeBuildTimeInfo,
+						dataCountAggList, projectNodeId, buildMapJobWise);
 
-                if (CollectionUtils.isNotEmpty(aggData)) {
-                    trendValueMap.put(CommonConstant.OVERALL, aggData);
-                }
-                // Populates data in Excel for validation for tickets created before
-                populateValidationDataObject(kpiElement, requestTrackerId, codeBuildTimeInfo, validationDataMap, node);
+				List<DataCount> aggData = calculateAggregatedRangeWise(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(),
+						dataCountAggList);
 
-                mapTmp.get(node.getId()).setValue(trendValueMap);
-            } else {
+				if (CollectionUtils.isNotEmpty(aggData)) {
+					trendValueMap.put(CommonConstant.OVERALL, aggData);
+				}
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+
+					KPIExcelUtility.populateCodeBuildTimeExcelData(codeBuildTimeInfo, node.getProjectFilter().getName(),
+							excelData);
+				}
+				mapTmp.get(node.getId()).setValue(trendValueMap);
+			} else {
                 mapTmp.get(node.getId()).setValue(null);
                 return;
             }
         });
+        kpiElement.setExcelData(excelData);
+        kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME_KANBAN.getColumns());
     }
 
-    private void filterDataBasedOnJobAndRangeWise(Map<ObjectId, List<Build>> resultMap, KpiRequest kpiRequest,
+    private void filterDataBasedOnJobAndRangeWise(KpiRequest kpiRequest,
                                                   Map<String, List<DataCount>> trendValueMap, CodeBuildTimeInfo codeBuildTimeInfo,
-                                                  List<DataCount> dataCountAggList, String projectNodeId, List<Tool> jenkinsJob) {
+                                                  List<DataCount> dataCountAggList, String projectNodeId, Map<String, List<Build>> buildMapJobWise) {
 
         String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 
-        jenkinsJob.forEach(job -> {
+		for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
+			String jobName;
+			List<Build> buildList = entry.getValue();
+			if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+				jobName = buildList.get(0).getJobFolder();
+			} else {
+				jobName = entry.getKey();
+			}
+			LocalDate currentDate = LocalDate.now();
+			for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-            if (isValidJob(job)) {
-                List<Build> buildList = resultMap.get(job.getProcessorItemList().get(0).getId());
-                if (CollectionUtils.isEmpty(buildList)) {
-                    return;
-                }
-                String jobName;
-                if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-                    jobName = buildList.get(0).getJobFolder();
-                } else {
-                    jobName = job.getProcessorItemList().get(0).getDesc();
-                }
-                LocalDate currentDate = LocalDate.now();
-                for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
+				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
+						kpiRequest.getDuration());
 
-                    CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
-                            kpiRequest.getDuration());
+				String date = getRange(dateRange, kpiRequest);
 
-                    String date = getRange(dateRange, kpiRequest);
+				Map<String, Long> projectWiseBuildTimeCountMap = filterKanbanDataBasedOnDateAndBuildTimeWise(buildList,
+						dateRange, date, codeBuildTimeInfo, jobName, projectName);
 
-                    Map<String, Long> projectWiseBuildTimeCountMap = filterKanbanDataBasedOnDateAndBuildTimeWise(
-                            buildList, dateRange, date, codeBuildTimeInfo, jobName, projectName);
+				populateProjectFilterWiseDataMap(projectWiseBuildTimeCountMap, trendValueMap, projectName,
+						projectNodeId, date, dataCountAggList);
 
-                    populateProjectFilterWiseDataMap(projectWiseBuildTimeCountMap, trendValueMap, projectName,
-                            projectNodeId, date, dataCountAggList);
+				currentDate = getNextRangeDate(kpiRequest, currentDate);
 
-                    currentDate = getNextRangeDate(kpiRequest, currentDate);
-
-                }
-            }
-        });
-    }
-
-    private List<Tool> getJenkinsJobTools(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-
-        ProjectFilter projectFilter = node.getProjectFilter();
-        ObjectId objectId = projectFilter == null ? null
-                : projectFilter.getBasicProjectConfigId();
-
-        List<Tool> jenkinsJob = new ArrayList<>();
-        if (toolMap.containsKey(objectId)) {
-            jenkinsJob = getProcessorItemList(toolMap, objectId);
+			}
+		}
         }
-
-        if (CollectionUtils.isEmpty(jenkinsJob)) {
-            log.error("[JENKINS-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-        }
-
-        return jenkinsJob;
-    }
-
-    /**
-     * returns list of all the tools
-     *
-     * @param toolMap
-     * @param id
-     * @return
-     */
-    private List<Tool> getProcessorItemList(Map<ObjectId, Map<String, List<Tool>>> toolMap, ObjectId id) {
-        List<Tool> allProcessorItems = new ArrayList<>();
-
-        for (String processor : processorsList) {
-            if (toolMap.get(id).containsKey(processor)) {
-                List<Tool> processorItems = toolMap.get(id).get(processor);
-                allProcessorItems.addAll(processorItems);
-            }
-        }
-        return allProcessorItems;
-    }
-
-    private boolean isValidJob(Tool job) {
-        return !CollectionUtils.isEmpty(job.getProcessorItemList())
-                && job.getProcessorItemList().get(0).getId() != null;
-    }
-
-    /**
-     * prepare processorIds list
-     *
-     * @param job
-     * @return processorIds
-     */
-    private List<ObjectId> prepareProcessorItemIdsList(Tool job) {
-        List<ObjectId> processorIds = new ArrayList<>();
-        job.getProcessorItemList().forEach(e -> processorIds.add(e.getId()));
-        return processorIds;
-    }
 
     @Override
     public Long calculateKpiValue(List<Long> valueList, String kpiId) {
@@ -455,7 +382,6 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
                 values.add(value);
             }
             Long aggregatedValue = calculateKpiValue(values, kpiId);
-            Map<String, Integer> hoverMap = new HashMap<>();
             dataCount.setProjectNames(new ArrayList<>(projectNames));
             dataCount.setSSprintID(date);
             dataCount.setSSprintName(date);
@@ -465,7 +391,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
             dataCount.setValue(aggregatedValue);
             dataCount.setData(aggregatedValue.toString());
             dataCount.setDate(date);
-            dataCount.setHoverValue(hoverMap);
+            dataCount.setHoverValue(new HashMap<>());
             aggregatedDataCount.add(dataCount);
         });
         return aggregatedDataCount;
@@ -480,36 +406,6 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
      */
     private String createDurationString(long minutes, long seconds) {
         return minutes == 0L ? seconds + Constant.SEC : minutes + Constant.MIN + seconds + Constant.SEC;
-    }
-
-    /**
-     * Creates validation data for node.
-     *
-     * @param codeBuildTimeInfo
-     * @return ValidationData object
-     */
-    private ValidationData createValidationDataForNode(CodeBuildTimeInfo codeBuildTimeInfo) {
-        ValidationData validationData = new ValidationData();
-        validationData.setJobName(codeBuildTimeInfo.getBuildJobList());
-        validationData.setBuildUrl(codeBuildTimeInfo.getBuildUrlList());
-        validationData.setStartTime(codeBuildTimeInfo.getBuildStartTimeList());
-        validationData.setEndTime(codeBuildTimeInfo.getBuildEndTimeList());
-        validationData.setStartedBy(codeBuildTimeInfo.getStartedByList());
-        validationData.setWeeksList(codeBuildTimeInfo.getWeeksList());
-        validationData.setBuildStatus(codeBuildTimeInfo.getBuildStatusList());
-        validationData.setDuration(codeBuildTimeInfo.getDurationList());
-        return validationData;
-    }
-
-    private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-                                              CodeBuildTimeInfo codeBuildTimeInfo, Map<String, ValidationData> validationDataMap, Node node) {
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-            //TODO confirm from where we have to get project name
-            String dateProjectKey = node.getProjectFilter().getName();
-            ValidationData validationData = createValidationDataForNode(codeBuildTimeInfo);
-            validationDataMap.put(dateProjectKey, validationData);
-            kpiElement.setMapOfSprintAndData(validationDataMap);
-        }
     }
 
 }

@@ -18,6 +18,8 @@ import lombok.ToString;
 public class ResolutionTimeValidation {
 
 	private String issueNumber;
+	private String url;
+	private String issueDescription;
 	private String issueType;
 	private Double resolutionTime;
 

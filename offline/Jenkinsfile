@@ -9,7 +9,7 @@ pipeline {
 		}
 		stage('Checkout') {
 			steps {
-               checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/PublicisSapient/KnowHow.git',credentialsId: 'githubcred']], branches: [[name: '${SBRANCH}']]], poll: false
+               checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/PublicisSapient/PSknowHOW.git',credentialsId: 'githubcred']], branches: [[name: '${SBRANCH}']]], poll: false
 			}
 		}
 		stage('Capture Version') {
@@ -17,14 +17,12 @@ pipeline {
                 script {
 					def pom = readMavenPom file: 'pom.xml'
 					env.version = pom.version
-					echo "${pom.version}"
-					echo "${env.version}"
-
 					if(env.version.contains("SNAPSHOT")) {
 						env.version=env.version.replaceAll("-SNAPSHOT","")
 					}
 
 					version = env.version
+					println version
                 }
 			}
 		}
@@ -39,6 +37,7 @@ pipeline {
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/ui:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/customapi:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/mongodb:$version
+		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps:$version
                    docker pull setup-speedy.tools.publicis.sapient.com/speedy/azure-processor:$version
 		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/nonazureboards-processor:$version
 		   docker pull setup-speedy.tools.publicis.sapient.com/speedy/zookeeper:$version
@@ -50,6 +49,7 @@ pipeline {
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/ui:$version -o ui.zip
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/customapi:$version -o customapi.zip
                    docker save setup-speedy.tools.publicis.sapient.com/speedy/mongodb:$version -o mongo.zip
+		   docker save setup-speedy.tools.publicis.sapient.com/speedy/mongodb-ps:$version -o mongo-ps.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/azure-processor:$version -o azure-processor.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/nonazureboards-processor:$version -o nonazureboards-processor.zip
 		   docker save setup-speedy.tools.publicis.sapient.com/speedy/zookeeper:$version -o zookeeper.zip
@@ -71,12 +71,10 @@ pipeline {
 					cp -r $workspace/offline/scripts /tmp/${env.version}/
 					cd $workspace && zip -r dockers.zip *.zip
 					cp -r $workspace/dockers.zip /tmp/${env.version}
-					cp -r $workspace/offline/apex.json /tmp/${env.version}/
-					cp -r $workspace/offline/appx.json /tmp/${env.version}/
 					cp -r $workspace/offline/upgrade.sh /tmp/${env.version}/scripts
 					cp -r $workspace/offline/migration.sh /tmp/${env.version}/scripts
 					cd /tmp/${env.version}/
-					zip -r Speedy-${env.version}.zip dockers.zip readme.md docker-compose.yaml scripts apex.json appx.json
+					zip -r Speedy-${env.version}.zip dockers.zip readme.md docker-compose.yaml scripts
                 """
 			}
 		}

@@ -249,7 +249,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecution = createScrumTestExecutionData(testExecutionData);
 			}
 			testExecutionRepository.save(testExecution);
-			clearCache(CommonConstant.ZEPHYR_KPI_CACHE);
+			clearCache(CommonConstant.TESTING_KPI_CACHE);
 			processed = true;
 		}
 		return processed;

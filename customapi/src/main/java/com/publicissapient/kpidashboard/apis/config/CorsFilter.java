@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +78,7 @@ public class CorsFilter extends OncePerRequestFilter {
 		List<String> originWhiteList = apiSettings.getCorsFilterValidOrigin();
 		Boolean result = Boolean.FALSE;
 		String origin = request.getHeader(CORSConstants.HEADER_VALUE_ACCESS_CONTROL_ORIGIN);
-		log.info("Value of Origin header in request : {}", origin);
+		log.debug("Value of Origin header in request : {}", origin);
 		if (StringUtils.isNotBlank(origin)) {
 			if (CollectionUtils.isNotEmpty(originWhiteList)) {
 				result = validateOriginWithWhitelist(originWhiteList, result, origin);
@@ -138,6 +139,11 @@ public class CorsFilter extends OncePerRequestFilter {
 		response.addHeader(CORSConstants.HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS,
 				CORSConstants.HEADER_VALUE_EXPOSE_HEADERS);
 		response.setHeader("Access-Control-Allow-Credentials","true");
+		ExecutionLogContext executionLogContext= new ExecutionLogContext();
+		executionLogContext.setRequestId(request.getHeader(CORSConstants.REQUEST_ID));
+		executionLogContext.setEnvironment(orign);
+		ExecutionLogContext.set(executionLogContext);
+
 
 	}
 }

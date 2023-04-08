@@ -144,6 +144,7 @@ public class DIRServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put("storyData", storyData);
 		resultListMap.put("defectData", defectData);
+		resultListMap.put("issueData", jiraIssueDataFactory.getJiraIssues());
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -188,7 +189,7 @@ public class DIRServiceImplTest {
 				kpiRequest);
 		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(),
-				equalTo(17));
+				equalTo(19));
 	}
 
 }

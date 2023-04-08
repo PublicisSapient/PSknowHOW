@@ -25,6 +25,7 @@ import { SharedService } from '../services/shared.service';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import * as uuid from 'uuid';
 import { HttpService } from '../services/http.service';
 declare let $: any;
 
@@ -53,6 +54,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         } else if (req.url.indexOf('emm-feed') !== -1) {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
+        const requestId = uuid.v4();
+                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
+
 
         const redirectExceptions = [
             environment.baseUrl + '/api/jenkins/kpi',

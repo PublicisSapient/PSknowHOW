@@ -18,12 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.model;//NOPMD
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -31,6 +25,11 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.KpiInfo;
 import com.publicissapient.kpidashboard.common.model.application.TotalDefectAgingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents Kpi element. KPI detail.
@@ -41,7 +40,7 @@ public class KpiElement implements Serializable { // NOPMD
 	// This is required for apis to work
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5188503380533990782L;
 	private String kpiId;
@@ -91,18 +90,69 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient Map<String, ValidationData> mapOfSprintAndData;
 
 	private transient List<DataCount> trendValueListClosedTickets;
-	
+
 	@JsonIgnore
 	private transient Map<String, List<DataCount>> trendValueMap;
 	private Integer groupId;
 	private transient Map<String, String> maturityMap;
-	
+
 	private transient IterationKpiFilters filters;
 	private String sprint;
 	private List<String> modalHeads;
-	
+
 	@JsonIgnore
 	private transient List<KPIExcelData> excelData;
+	@JsonIgnore
+	private transient List<String> excelColumns;
+
+	/**
+	 * Instantiates a new Kpi element.
+	 */
+	public KpiElement() {
+	}
+
+	/**
+	 * Instantiates a new Kpi element.
+	 *
+	 * @param fieldName the field name
+	 * @param value     the value
+	 */
+	public KpiElement(String fieldName, Object value) {
+		this.fieldName = fieldName;
+		this.value = value;
+	}
+
+	/**
+	 * @param kpiElement
+	 */
+	public KpiElement(KpiElement kpiElement) {
+		this.chartType = kpiElement.getChartType();
+		this.groupId = kpiElement.getGroupId();
+		this.id = kpiElement.getId();
+		this.isDeleted = kpiElement.getIsDeleted();
+		this.kanban = kpiElement.getKanban();
+		this.kpiCategory = kpiElement.getKpiCategory();
+		this.kpiId = kpiElement.getKpiId();
+		this.kpiName = kpiElement.getKpiName();
+		this.kpiSource = kpiElement.getKpiSource();
+		this.kpiUnit = kpiElement.getKpiUnit();
+		this.maxValue = kpiElement.getMaxValue();
+		this.thresholdValue = kpiElement.getThresholdValue();
+		this.kpiInfo = kpiElement.getKpiInfo();
+		if (null != kpiElement.getValue()) {
+			this.value = kpiElement.getValue();
+		} else {
+			this.value = "undefined";
+		}
+	}
+
+	public List<String> getExcelColumns() {
+		return excelColumns;
+	}
+
+	public void setExcelColumns(List<String> excelColumns) {
+		this.excelColumns = excelColumns;
+	}
 
 	public Integer getGroupId() {
 		return groupId;
@@ -124,8 +174,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets map of sprint and data.
 	 *
-	 * @param mapOfSprintAndData
-	 *            the map of sprint and data
+	 * @param mapOfSprintAndData the map of sprint and data
 	 */
 	public void setMapOfSprintAndData(Map<String, ValidationData> mapOfSprintAndData) {
 		this.mapOfSprintAndData = mapOfSprintAndData;
@@ -143,30 +192,10 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets maturity value.
 	 *
-	 * @param maturityValue
-	 *            the maturity value
+	 * @param maturityValue the maturity value
 	 */
 	public void setMaturityValue(String maturityValue) {
 		this.maturityValue = maturityValue;
-	}
-
-	/**
-	 * Instantiates a new Kpi element.
-	 */
-	public KpiElement() {
-	}
-
-	/**
-	 * Instantiates a new Kpi element.
-	 *
-	 * @param fieldName
-	 *            the field name
-	 * @param value
-	 *            the value
-	 */
-	public KpiElement(String fieldName, Object value) {
-		this.fieldName = fieldName;
-		this.value = value;
 	}
 
 	/**
@@ -181,8 +210,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi id.
 	 *
-	 * @param kpiId
-	 *            the kpi id
+	 * @param kpiId the kpi id
 	 */
 	public void setKpiId(String kpiId) {
 		this.kpiId = kpiId;
@@ -200,8 +228,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi name.
 	 *
-	 * @param kpiName
-	 *            the kpi name
+	 * @param kpiName the kpi name
 	 */
 	public void setKpiName(String kpiName) {
 		this.kpiName = kpiName;
@@ -219,8 +246,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets value.
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 */
 	public void setValue(Object value) {
 		this.value = value;
@@ -238,8 +264,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets unit.
 	 *
-	 * @param unit
-	 *            the unit
+	 * @param unit the unit
 	 */
 	public void setUnit(String unit) {
 		this.unit = unit;
@@ -257,8 +282,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets max value.
 	 *
-	 * @param maxValue
-	 *            the max value
+	 * @param maxValue the max value
 	 */
 	public void setMaxValue(Object maxValue) {
 		this.maxValue = maxValue;
@@ -276,8 +300,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets chart type.
 	 *
-	 * @param chartType
-	 *            the chart type
+	 * @param chartType the chart type
 	 */
 	public void setChartType(String chartType) {
 		this.chartType = chartType;
@@ -295,8 +318,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets field name.
 	 *
-	 * @param fieldName
-	 *            the field name
+	 * @param fieldName the field name
 	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
@@ -314,8 +336,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets is deleted.
 	 *
-	 * @param isDeleted
-	 *            the is deleted
+	 * @param isDeleted the is deleted
 	 */
 	public void setIsDeleted(String isDeleted) {
 		this.isDeleted = isDeleted;
@@ -333,8 +354,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi category.
 	 *
-	 * @param kpiCategory
-	 *            the kpi category
+	 * @param kpiCategory the kpi category
 	 */
 	public void setKpiCategory(String kpiCategory) {
 		this.kpiCategory = kpiCategory;
@@ -352,8 +372,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi in aggregated feed.
 	 *
-	 * @param kpiInAggregatedFeed
-	 *            the kpi in aggregated feed
+	 * @param kpiInAggregatedFeed the kpi in aggregated feed
 	 */
 	public void setKpiInAggregatedFeed(String kpiInAggregatedFeed) {
 		this.kpiInAggregatedFeed = kpiInAggregatedFeed;
@@ -371,8 +390,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi on dashboard.
 	 *
-	 * @param kpiOnDashboard
-	 *            the kpi on dashboard
+	 * @param kpiOnDashboard the kpi on dashboard
 	 */
 	public void setKpiOnDashboard(List<String> kpiOnDashboard) {
 		this.kpiOnDashboard = kpiOnDashboard;
@@ -390,8 +408,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi base line.
 	 *
-	 * @param kpiBaseLine
-	 *            the kpi base line
+	 * @param kpiBaseLine the kpi base line
 	 */
 	public void setKpiBaseLine(String kpiBaseLine) {
 		this.kpiBaseLine = kpiBaseLine;
@@ -409,8 +426,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi unit.
 	 *
-	 * @param kpiUnit
-	 *            the kpi unit
+	 * @param kpiUnit the kpi unit
 	 */
 	public void setKpiUnit(String kpiUnit) {
 		this.kpiUnit = kpiUnit;
@@ -428,8 +444,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets is trend up on val increase.
 	 *
-	 * @param isTrendUpOnValIncrease
-	 *            the is trend up on val increase
+	 * @param isTrendUpOnValIncrease the is trend up on val increase
 	 */
 	public void setIsTrendUpOnValIncrease(Boolean isTrendUpOnValIncrease) {
 		this.isTrendUpOnValIncrease = isTrendUpOnValIncrease;
@@ -447,8 +462,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kpi source.
 	 *
-	 * @param kpiSource
-	 *            the kpi source
+	 * @param kpiSource the kpi source
 	 */
 	public void setKpiSource(String kpiSource) {
 		this.kpiSource = kpiSource;
@@ -466,8 +480,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets id.
 	 *
-	 * @param id
-	 *            the id
+	 * @param id the id
 	 */
 	public void setId(String id) {
 		this.id = id;
@@ -485,13 +498,11 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets trend value list.
 	 *
-	 * @param trendValueList
-	 *            the trend value list
+	 * @param trendValueList the trend value list
 	 */
 	public void setTrendValueList(Object trendValueList) {
 		this.trendValueList = trendValueList;
 	}
-	
 
 	public KpiInfo getKpiInfo() {
 		return kpiInfo;
@@ -501,7 +512,6 @@ public class KpiElement implements Serializable { // NOPMD
 		this.kpiInfo = kpiInfo;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "KpiElement [kpiId=" + kpiId + ", kpiName=" + kpiName + ", fieldName=" + fieldName + ", value=" + value
@@ -524,8 +534,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets threshold value.
 	 *
-	 * @param thresholdValue
-	 *            the threshold value
+	 * @param thresholdValue the threshold value
 	 */
 	public void setThresholdValue(Double thresholdValue) {
 		this.thresholdValue = thresholdValue;
@@ -543,8 +552,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets node wise kpi value.
 	 *
-	 * @param nodeWiseKPIValue
-	 *            the node wise kpi value
+	 * @param nodeWiseKPIValue the node wise kpi value
 	 */
 	public void setNodeWiseKPIValue(Map<Pair<String, String>, Node> nodeWiseKPIValue) {
 		this.nodeWiseKPIValue = nodeWiseKPIValue;
@@ -562,8 +570,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets maturity range.
 	 *
-	 * @param maturityRange
-	 *            the maturity range
+	 * @param maturityRange the maturity range
 	 */
 	public void setMaturityRange(List<String> maturityRange) {
 		this.maturityRange = maturityRange;
@@ -589,8 +596,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets total defect aging.
 	 *
-	 * @param totalDefectAging
-	 *            the total defect aging
+	 * @param totalDefectAging the total defect aging
 	 */
 	public void setTotalDefectAging(List<TotalDefectAgingResponse> totalDefectAging) {
 		this.totalDefectAging = totalDefectAging;
@@ -608,8 +614,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets test case execution.
 	 *
-	 * @param testCaseExecution
-	 *            the test case execution
+	 * @param testCaseExecution the test case execution
 	 */
 	public void setTestCaseExecution(Object testCaseExecution) {
 		this.testCaseExecution = testCaseExecution;
@@ -627,13 +632,11 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets test execution pass.
 	 *
-	 * @param testExecutionPass
-	 *            the test execution pass
+	 * @param testExecutionPass the test execution pass
 	 */
 	public void setTestExecutionPass(Object testExecutionPass) {
 		this.testExecutionPass = testExecutionPass;
 	}
-
 
 	/**
 	 * Gets kanban.
@@ -647,8 +650,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets kanban.
 	 *
-	 * @param kanban
-	 *            the kanban
+	 * @param kanban the kanban
 	 */
 	public void setKanban(Boolean kanban) {
 		this.kanban = kanban;
@@ -666,8 +668,7 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets trend value list closed tickets.
 	 *
-	 * @param trendValueListClosedTickets
-	 *            the trend value list closed tickets
+	 * @param trendValueListClosedTickets the trend value list closed tickets
 	 */
 	public void setTrendValueListClosedTickets(List<DataCount> trendValueListClosedTickets) {
 		this.trendValueListClosedTickets = trendValueListClosedTickets;
@@ -685,21 +686,10 @@ public class KpiElement implements Serializable { // NOPMD
 	/**
 	 * Sets aggregation type.
 	 *
-	 * @param aggregationType
-	 *            the aggregation type
+	 * @param aggregationType the aggregation type
 	 */
 	public void setAggregationType(String aggregationType) {
 		this.aggregationType = aggregationType;
-	}
-
-	/**
-	 * Sets trend value map.
-	 *
-	 * @param trendValueMap
-	 *            the trend value map
-	 */
-	public void setTrendValueMap(Map<String, List<DataCount>> trendValueMap) {
-		this.trendValueMap = trendValueMap;
 	}
 
 	/**
@@ -710,8 +700,16 @@ public class KpiElement implements Serializable { // NOPMD
 	public Map<String, List<DataCount>> getTrendValueMap() {
 		return trendValueMap;
 	}
-	
-	
+
+	/**
+	 * Sets trend value map.
+	 *
+	 * @param trendValueMap the trend value map
+	 */
+	public void setTrendValueMap(Map<String, List<DataCount>> trendValueMap) {
+		this.trendValueMap = trendValueMap;
+	}
+
 	/**
 	 * @return the trendValueKpiFilterList
 	 */
@@ -727,30 +725,6 @@ public class KpiElement implements Serializable { // NOPMD
 	}
 
 	/**
-	 * @param kpiElement
-	 */
-	public KpiElement(KpiElement kpiElement) {
-		this.chartType = kpiElement.getChartType();
-		this.groupId = kpiElement.getGroupId();
-		this.id = kpiElement.getId();
-		this.isDeleted = kpiElement.getIsDeleted();
-		this.kanban = kpiElement.getKanban();
-		this.kpiCategory = kpiElement.getKpiCategory();
-		this.kpiId = kpiElement.getKpiId();
-		this.kpiName = kpiElement.getKpiName();
-		this.kpiSource = kpiElement.getKpiSource();
-		this.kpiUnit = kpiElement.getKpiUnit();
-		this.maxValue =  kpiElement.getMaxValue();
-		this.thresholdValue = kpiElement.getThresholdValue();
-		this.kpiInfo = kpiElement.getKpiInfo();
-		if (null != kpiElement.getValue()) {
-			this.value = kpiElement.getValue();
-		} else {
-			this.value = "undefined";
-		}
-	}
-
-	/**
 	 * @return the maturityMap
 	 */
 	public Map<String, String> getMaturityMap() {
@@ -758,13 +732,12 @@ public class KpiElement implements Serializable { // NOPMD
 	}
 
 	/**
-	 * @param maturityMap
-	 *            the maturityMap to set
+	 * @param maturityMap the maturityMap to set
 	 */
 	public void setMaturityMap(Map<String, String> maturityMap) {
 		this.maturityMap = maturityMap;
 	}
-	
+
 	/**
 	 * @return the IterationKpiFilters
 	 */
@@ -773,13 +746,12 @@ public class KpiElement implements Serializable { // NOPMD
 	}
 
 	/**
-	 * @param filters
-	 *            the filters to set
+	 * @param filters the filters to set
 	 */
 	public void setFilters(IterationKpiFilters filters) {
 		this.filters = filters;
 	}
-	
+
 	public String getSprint() {
 		return sprint;
 	}
@@ -803,6 +775,6 @@ public class KpiElement implements Serializable { // NOPMD
 	public void setExcelData(List<KPIExcelData> excelData) {
 		this.excelData = excelData;
 	}
-	
-	
+
+
 }

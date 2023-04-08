@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +42,16 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -150,15 +154,21 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
-					
+
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getTotalIssues(), issueList);
+
 					List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository
 							.findByStoryIDInAndBasicProjectConfigIdIn(completedIssues,
 									Arrays.asList(basicProjectConfigId));
 					Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
-					issueList.forEach(issue -> issue
+
+					filtersIssuesList.forEach(issue -> issue
 							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));
 
-					resultListMap.put(ISSUES, new ArrayList<>(issueList));
+					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+
 					resultListMap.put(SPRINT, sprintDetails);
 				}
 			}
@@ -229,12 +239,16 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+		List<JiraIssue> issuesExcel = new ArrayList<>();
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
@@ -255,7 +269,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			for (LocalDate date = end; date.isAfter(start); date = date.minusDays(1)) {
 				dateWiseDataCount.put(date.format(YYYY_MM_DD_FORMATTER), new DataCount());
 			}
-			List<JiraIssue> issuesExcel=new ArrayList<>();
 			List<DataCount> data = new ArrayList<>();
 			dateWiseDataCount.forEach((date, dataCount) -> {
 				Map<String, Integer> value = new HashMap<>();
@@ -264,8 +277,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 					typeWiseMap.forEach((type, issues) -> {
 						value.put(type, issues.size());
 						issuesExcel.addAll(issues);
-
-					});	
+					});
 				}
 				dataCount.setValue(value);
 				dataCount.setSProjectName(latestSprint.getProjectFilter().getName());
@@ -275,49 +287,12 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				data.add(dataCount);
 			});
 			trendValueList.add(new DataCount(latestSprint.getProjectFilter().getName(), Lists.reverse(data)));
-			populateValidationDataObject(kpiElement,requestTrackerId,issuesExcel,latestSprint );
-		}
-	}
-
-	/**
-	 * This method check for API request source. If it is Excel it populates the
-	 * validation data node of the KPI element.
-	 * 
-	 * @param kpiElement
-	 *            KpiElement
-	 * @param requestTrackerId
-	 *            request id
-	 * @param issuesExcel
-	 *            list of jiraIssues
-	
-	 * @param sprint
-	 *            unique key
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> issuesExcel,Node sprint) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			Map<String, ValidationData> validationDataMap = new HashMap<>();
-			List<String> types = new ArrayList<>();
-			List<String> jiraIssues = new ArrayList<>();
-
-			
-			for (JiraIssue jiraIssue : issuesExcel) {
-
-				jiraIssues.add(jiraIssue.getNumber());
-				types.add(jiraIssue.getTypeName());
-			}
-			
-			ValidationData validationData = new ValidationData();
-			validationData.setIssues(jiraIssues);
-			validationData.setIssueTypeList(types);
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				String key =sprint.getSprintFilter().getId();
-				validationDataMap.put(key, validationData);
-				kpiElement.setMapOfSprintAndData(validationDataMap);
+				KPIExcelUtility.populateDailyClosureExcelData(excelDataList, issuesExcel, fieldMapping);
 			}
-		
 		}
+		kpiElement.setExcelData(excelDataList);
+		kpiElement.setExcelColumns(KPIExcelColumn.DAILY_CLOSURES.getColumns());
 	}
 
 	@Override

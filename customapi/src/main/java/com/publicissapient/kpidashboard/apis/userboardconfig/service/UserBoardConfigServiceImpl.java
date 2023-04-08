@@ -25,11 +25,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -37,7 +41,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
@@ -50,8 +57,6 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiCategor
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation class for UserBoardConfigService
@@ -81,6 +86,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	@Autowired
+	private ConfigHelperService configHelperService;
+
+	@Autowired
+	private  CacheService cacheService;
 	private static final String ITERATION = "Iteration";
 
 	private static final String BACKLOG = "Backlog";
@@ -92,49 +102,175 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	/**
 	 * This method return user board config if present in db else return a default
 	 * configuration.
-	 * 
+	 *
 	 * @return UserBoardConfigDTO
 	 */
 	public UserBoardConfigDTO getUserBoardConfig() {
-		UserBoardConfig userBoardConfig = userBoardConfigRepository
+		UserBoardConfig existingUserBoardConfig = userBoardConfigRepository
 				.findByUsername(authenticationService.getLoggedInUser());
-		Iterable<KpiMaster> allKPIs = kpiMasterRepository.findAll();
+		Iterable<KpiMaster> allKPIs = configHelperService.loadKpiMaster();
 		Map<String, KpiMaster> kpiMasterMap = StreamSupport.stream(allKPIs.spliterator(), false)
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
-		if (null == userBoardConfig) {
-			UserBoardConfigDTO newUserBoardConfig = new UserBoardConfigDTO();
-			List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
-			setUserBoardConfigBasedOnCategory(newUserBoardConfig, kpiCategoryList, kpiMasterMap);
-			return newUserBoardConfig;
+		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
+		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
+		if (null == existingUserBoardConfig) {
+			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+			return defaultUserBoardConfigDTO;
+		} else {
+			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
+			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)) {
+				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
+						defaultUserBoardConfigDTO.getScrum());
+				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getKanban(),
+						defaultUserBoardConfigDTO.getKanban());
+				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getOthers(),
+						defaultUserBoardConfigDTO.getOthers());
+				return defaultUserBoardConfigDTO;
+			}
+			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
+			return existingUserBoardConfigDTO;
 		}
-		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(userBoardConfig);
-		filterKpis(userBoardConfigDTO, kpiMasterMap);
-		checkKPIAddOrRemoveForExistingUser(userBoardConfigDTO, kpiMasterMap);
-		return userBoardConfigDTO;
+	}
 
+	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
+			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
+		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+
+		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils
+				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
+		if (findFirstUserBoard.isPresent()) {
+			UserBoardConfig finalBoardConfig = findFirstUserBoard.get();
+			List<Board> scrum = finalBoardConfig.getScrum();
+			List<Board> kanban = finalBoardConfig.getKanban();
+			List<Board> others = finalBoardConfig.getOthers();
+			Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
+			CollectionUtils.emptyIfNull(scrum).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+			CollectionUtils.emptyIfNull(kanban).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+			CollectionUtils.emptyIfNull(others).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
+
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getScrum()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getKanban()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
+			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getOthers()).stream()
+					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
+		}
 	}
 
 	/**
-	 * 
-	 * @param userBoardConfigDTO
+	 * check for existing user if any kpi is added or removed from kpi master
+	 *
+	 * @param existingUserBoardConfig
 	 * @param kpiMasterMap
 	 * @return
 	 */
-	private boolean checkKPIAddOrRemoveForExistingUser(UserBoardConfigDTO userBoardConfigDTO,
+	private boolean checkKPIAddOrRemoveForExistingUser(UserBoardConfigDTO existingUserBoardConfig,
 			Map<String, KpiMaster> kpiMasterMap) {
 		Set<String> userKpiIdList = new HashSet<>();
-		userBoardConfigDTO.getScrum().stream().forEach(
-				kpiBoard -> kpiBoard.getKpis().stream().forEach(kpiList -> userKpiIdList.add(kpiList.getKpiId())));
-		userBoardConfigDTO.getKanban().stream().forEach(
-				kpiBoard -> kpiBoard.getKpis().stream().forEach(kpiList -> userKpiIdList.add(kpiList.getKpiId())));
-		userBoardConfigDTO.getOthers().stream().forEach(
-				kpiBoard -> kpiBoard.getKpis().stream().forEach(kpiList -> userKpiIdList.add(kpiList.getKpiId())));
+		getKpiIdListFromExistingUser(existingUserBoardConfig.getScrum(), userKpiIdList);
+		getKpiIdListFromExistingUser(existingUserBoardConfig.getKanban(), userKpiIdList);
+		getKpiIdListFromExistingUser(existingUserBoardConfig.getOthers(), userKpiIdList);
+
 		Set<String> kpiMasterKpiIdList = kpiMasterMap.keySet();
-		return CollectionUtils.containsAny(kpiMasterKpiIdList, userKpiIdList);
+		if (kpiMasterKpiIdList.size() > userKpiIdList.size()) {
+			return !CollectionUtils.containsAll(userKpiIdList, kpiMasterKpiIdList);
+		} else if (kpiMasterKpiIdList.size() < userKpiIdList.size()) {
+			return !CollectionUtils.containsAll(kpiMasterKpiIdList, userKpiIdList);
+		} else {
+			return false;
+		}
 	}
 
 	/**
-	 * 
+	 *
+	 * @param existingUserBoardConfig
+	 * @param userKpiIdList
+	 */
+	private void getKpiIdListFromExistingUser(List<BoardDTO> existingUserBoardConfig, Set<String> userKpiIdList) {
+		existingUserBoardConfig.stream().forEach(kpiBoard -> {
+			kpiBoard.getKpis().removeIf(Objects::isNull);
+			Optional.ofNullable(kpiBoard.getKpis()).get().stream().filter(Objects::nonNull)
+				.forEach(boardKpisDTO -> userKpiIdList.add(Optional.ofNullable(boardKpisDTO.getKpiId()).get()));});
+	}
+
+	/**
+	 * compare existing user board and default user board (KpiMaster).
+	 * checked any new added or remove kpi
+	 *
+	 * @param existingBoardListDTO
+	 * @param defaultBoardListDTO
+	 */
+	private void filtersBoardsAndSetKpisForExistingUser(List<BoardDTO> existingBoardListDTO,
+			List<BoardDTO> defaultBoardListDTO) {
+		defaultBoardListDTO.stream()
+				.forEach(defaultBoardDTO -> existingBoardListDTO.stream().forEach(existingBoardDTO -> {
+					if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId()
+							&& !CollectionUtils.containsAll(defaultBoardDTO.getKpis(), existingBoardDTO.getKpis())) {
+						filtersKPIAndSetKPIsForExistingUser(defaultBoardDTO, existingBoardDTO);
+					}
+					if (defaultBoardDTO.getBoardId() == existingBoardDTO.getBoardId()
+							&& !CollectionUtils.containsAll(existingBoardDTO.getKpis(), defaultBoardDTO.getKpis())) {
+						filtersKPIAndSetKPIsForExistingUser(defaultBoardDTO, existingBoardDTO);
+					}
+				}));
+	}
+
+	/**
+	 * any kpiId added or removed found then we are re place user board config with default BoardDTO.
+	 * order maintain only used of user board config when board is iteration.
+	 * otherwise work on defaultBoardDTO (kpi_master and kpi_category_mapping collections)
+	 *
+	 * @param defaultBoardDTO
+	 * @param existingBoardDTO
+	 */
+	private void filtersKPIAndSetKPIsForExistingUser(BoardDTO defaultBoardDTO, BoardDTO existingBoardDTO) {
+
+
+		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
+		
+		Map<String, BoardKpisDTO> kpiWiseUserBoardConfig = new HashMap<>();
+		existingBoardDTO.getKpis().stream()
+				.forEach(existingKPI -> kpiWiseUserBoardConfig.put(existingKPI.getKpiId(), existingKPI));
+		AtomicInteger iterationOrderSize= new AtomicInteger(2);
+		defaultBoardDTO.getKpis().stream().forEach(defaultKPIList -> {
+			BoardKpisDTO boardKpis = new BoardKpisDTO();
+			boardKpis.setKpiId(defaultKPIList.getKpiId());
+			boardKpis.setKpiName(defaultKPIList.getKpiName());
+			if (kpiWiseUserBoardConfig.get(defaultKPIList.getKpiId()) != null) {
+				BoardKpisDTO existingKPI = kpiWiseUserBoardConfig.get(defaultKPIList.getKpiId());
+				boardKpis.setShown(existingKPI.isShown());
+				boardKpis.setIsEnabled(existingKPI.getIsEnabled());
+				if (defaultBoardDTO.getBoardName().equals(ITERATION)) {
+					iterationOrderSize.getAndIncrement();
+					boardKpis.setOrder(existingKPI.getOrder());
+				} else {
+					boardKpis.setOrder(defaultKPIList.getOrder());
+				}
+			} else {
+				boardKpis.setShown(defaultKPIList.isShown());
+				boardKpis.setIsEnabled(defaultKPIList.getIsEnabled());
+				if (!defaultBoardDTO.getBoardName().equalsIgnoreCase(ITERATION)) {
+					boardKpis.setOrder(defaultKPIList.getOrder());
+				}
+			}
+			boardKpis.setKpiDetail(defaultKPIList.getKpiDetail());
+			boardKpisList.add(boardKpis);
+		});
+		boardKpisList.stream().filter(boardKpisDTO -> boardKpisDTO.getOrder() == 0)
+				.forEach(boardKpisDTO -> boardKpisDTO.setOrder(iterationOrderSize.getAndIncrement()));
+		defaultBoardDTO.setKpis(boardKpisList.stream().sorted(Comparator.comparing(BoardKpisDTO::getOrder)).collect(Collectors.toList()));
+	}
+
+	/**
+	 * set user board config for new or default user from kpi master and kpi category , category mapping.
+	 *
 	 * @param newUserBoardConfig
 	 * @param kpiCategoryList
 	 * @param kpiMasterMap
@@ -176,6 +312,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * prepare boards for as per category and kpi category mappings
 	 *
 	 * @param kpiCategoryBoardId
 	 * @param kpiCategoryList
@@ -197,6 +334,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * set board details and kpi list as per KPI category.
 	 *
 	 * @param kpiCategoryBoardId
 	 * @param kpiCategory
@@ -221,6 +359,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * set board details and kpi list as per Default category like ITERATION , BACKLOG
 	 *
 	 * @param boardId
 	 * @param boardName
@@ -241,6 +380,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * set board details and kpi list as per Default category like DEFAULT_BOARD_NAME.
 	 *
 	 * @param boardId
 	 * @param kanban
@@ -261,6 +401,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * set Kpi details in board for user board config from kpi master.
 	 *
 	 * @param boardKpisList
 	 * @param kpiMaster
@@ -277,6 +418,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * set Kpi details in board for user board config from kpi category mapping
 	 *
 	 * @param boardKpisList
 	 * @param kpiCategoryMapping
@@ -301,7 +443,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * This method convert userboardconfig to its dto
-	 * 
+	 *
 	 * @param userBoardConfig
 	 *            userBoardConfig
 	 * @return UserBoardConfigDTO
@@ -315,6 +457,12 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		return userBoardConfigDTO;
 	}
 
+	/**
+	 * added kpi master details in userboard config
+	 *
+	 * @param userBoardConfigDTO
+	 * @param kpiDetailMap
+	 */
 	private void filterKpis(UserBoardConfigDTO userBoardConfigDTO, Map<String, KpiMaster> kpiDetailMap) {
 		if (userBoardConfigDTO != null) {
 			addKpiDetails(userBoardConfigDTO.getScrum(), kpiDetailMap);
@@ -340,7 +488,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * This method save user board config
-	 * 
+	 *
 	 * @param userBoardConfigDTO
 	 *            userBoardConfigDTO
 	 * @return UserBoardConfigDTO
@@ -366,6 +514,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				userBoardConfigRepository.saveAll(userBoardConfigs);
 			}
 		}
+		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		return convertToUserBoardConfigDTO(boardConfig);
 	}
 
@@ -408,7 +557,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * This method convert userBoardConfigDTO to its userBoardConfig K
-	 * 
+	 *
 	 * @param userBoardConfigDTO
 	 *            userBoardConfigDTO
 	 * @return UserBoardConfig

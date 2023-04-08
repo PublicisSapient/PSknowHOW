@@ -43,13 +43,16 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -173,7 +176,7 @@ public class SonarViolationsKanbanServiceImpl
 	 */
 	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
-		Map<String, ValidationData> validationMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
@@ -198,12 +201,15 @@ public class SonarViolationsKanbanServiceImpl
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
 				mapTmp.get(projectName).setValue(projectWiseDataMap);
-				validationMap.putAll(populateValidationDataObjectForViolations(getRequestTrackerIdKanban(), projectList,
-						violations, versionDate, mapTmp.get(projectName)));
+				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getName(),
+							projectList, violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
+				}
 			}
 		});
 
-		kpiElement.setMapOfSprintAndData(validationMap);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS_KANBAN.getColumns());
 
 	}
 
@@ -234,12 +240,12 @@ public class SonarViolationsKanbanServiceImpl
 			List<String> versionDate) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
-		List<Map<String, Integer>> globalSonarViolationsHowerMap = new ArrayList<>();		history.forEach((keyName, sonarDetails) -> {
+		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
 
-			Map<String, Integer> sonarViolationsHowerMap = new LinkedHashMap<>();
+			Map<String, Object> sonarViolationsHowerMap = new LinkedHashMap<>();
 			evaluateViolations(metricMap.get(Constant.CRITICAL_VIOLATIONS), sonarViolationsHowerMap, CRITICAL);
 			evaluateViolations(metricMap.get(Constant.BLOCKER_VIOLATIONS), sonarViolationsHowerMap, BLOCKER);
 			evaluateViolations(metricMap.get(Constant.MAJOR_VIOLATIONS), sonarViolationsHowerMap, MAJOR);
@@ -247,11 +253,12 @@ public class SonarViolationsKanbanServiceImpl
 			evaluateViolations(metricMap.get(Constant.INFO_VIOLATIONS), sonarViolationsHowerMap, INFO);
 			
 			sonarViolationsHowerMap = sonarViolationsHowerMap.entrySet().stream()
-					.sorted((i1, i2) -> i2.getValue().compareTo(i1.getValue())).collect(Collectors
+					.sorted((i1, i2) -> ((Integer) i2.getValue()).compareTo((Integer) i1.getValue())).collect(Collectors
 							.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 			globalSonarViolationsHowerMap.add(sonarViolationsHowerMap);
 
-			Long sonarViolations = sonarViolationsHowerMap.values().stream().mapToLong(val -> val).sum();
+			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(a -> (Integer) a).mapToLong(val -> val)
+					.sum();
 
 			DataCount dcObj = getDataCountObject(sonarViolations,sonarViolationsHowerMap, projectName, date, projectNodeId);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
@@ -271,7 +278,8 @@ public class SonarViolationsKanbanServiceImpl
 	 * @param valueMap
 	 * @param key
 	 */
-	private void evaluateViolations(Object violations, Map<String, Integer> valueMap, String key) {
+	private void evaluateViolations(Object violations, Map<String, Object> valueMap, String key) {
+
 		if (violations != null) {
 			if (violations instanceof Double) {
 				valueMap.put(key, ((Double) violations).intValue());
@@ -283,7 +291,7 @@ public class SonarViolationsKanbanServiceImpl
 		}
 	}
 
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Integer> sonarViolationsHowerMap, String projectName, String date,
+	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap, String projectName, String date,
 			String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sonarViolations));

@@ -60,11 +60,8 @@ export class JiraConfigComponent implements OnInit {
   sonarCloudVersionList: any[] = [];
   connectionType: any[] = ['Sonar Server', 'Sonar Cloud'];
   selectedConnectionType = '';
-  selectedVersion = '';
   branchList: any[] = [];
   projectKeyList: any[] = [];
-  selectedProjectKey: any;
-  selectedBranch: any;
   disableBranchDropDown = false;
   bambooProjectDataFromAPI: any[] = [];
   bambooBranchDataFromAPI: any[] = [];
@@ -73,7 +70,7 @@ export class JiraConfigComponent implements OnInit {
   bambooPlanKeyForSelectedPlan = '';
   selectedBambooBranchKey: string;
   disableOrganizationKey = false;
-  singleToolAllowed: any[] = ['Jira', 'Zephyr', 'Azure'];
+  singleToolAllowed: any[] = ['Jira', 'Zephyr', 'Azure', 'JiraTest'];
   jenkinsJobNameList: any[] = [];
   azurePipelineList: any[] = [];
   azurePipelineResponseList: any[] = [];
@@ -89,6 +86,20 @@ export class JiraConfigComponent implements OnInit {
   selectedDeploymentProject: any;
   azurePipelineApiVersion = '6.0';
   isLoading = false;
+  testCaseIdentification: any = [
+    {
+      name: 'Select',
+      code: ''
+    },
+    {
+      name: 'CustomField',
+      code: 'CustomField'
+    },
+    {
+      name: 'Labels',
+      code: 'Labels'
+    }
+  ];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -110,7 +121,6 @@ export class JiraConfigComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params['toolName']) {
         this.urlParam = params['toolName'];
-
         // get pre-configured tool data
         if (
           this.sharedService.getSelectedToolConfig() &&
@@ -118,10 +128,10 @@ export class JiraConfigComponent implements OnInit {
         ) {
           this.selectedToolConfig = this.sharedService
             .getSelectedToolConfig()
-            .filter((toolConfig) => toolConfig.toolName === this.urlParam);
+            .filter((toolConfig) => toolConfig.toolName === (this.urlParam));
 
         }
-        this.getConnectionList(this.urlParam);
+        this.getConnectionList(this.urlParam?.toLowerCase() == 'jiratest' ? 'Jira' : this.urlParam);
         this.initializeFields(this.urlParam);
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -185,29 +195,22 @@ export class JiraConfigComponent implements OnInit {
               name: element.planName,
               code: element.planName
             }));
-            console.log(this.bambooPlanList);
             this.hideLoadingOnFormElement('planName');
           } else {
             this.bambooPlanList = [];
-            this.toolForm.controls['planKey'].setValue('');
-            this.toolForm.controls['branchKey'].setValue('');
+            this.toolForm?.controls['planKey'].setValue('');
+            this.toolForm?.controls['branchKey'].setValue('');
             this.bambooBranchList = [];
             this.hideLoadingOnFormElement('planName');
-            if (this.toolForm.controls['jobType'].value.name === 'Build') {
-              this.messenger.add({
-                severity: 'error',
-                summary: data.message,
-              });
-            }
 
           }
         } catch (error) {
           this.bambooPlanList = [];
-          this.toolForm.controls['planKey'].setValue('');
-          this.toolForm.controls['branchKey'].setValue('');
+          this.toolForm?.controls['planKey'].setValue('');
+          this.toolForm?.controls['branchKey'].setValue('');
           this.bambooBranchList = [];
           this.hideLoadingOnFormElement('planName');
-          if (this.toolForm.controls['jobType'].value === 'Build') {
+          if (this.toolForm?.controls['jobType'].value === 'Build') {
             this.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -244,7 +247,7 @@ export class JiraConfigComponent implements OnInit {
           this.hideLoadingOnFormElement('deploymentProject');
         } catch (error) {
           self.deploymentProjectList = [];
-          if (this.toolForm.controls['jobType'].value && this.toolForm.controls['jobType'].value.name === 'Deploy') {
+          if (this.toolForm?.controls['jobType'].value && this.toolForm?.controls['jobType'].value.name === 'Deploy') {
             self.messenger.add({
               severity: 'error',
               summary: error.message,
@@ -380,6 +383,10 @@ export class JiraConfigComponent implements OnInit {
       return this.jobType;
     } else if (id === 'deploymentProject') {
       return this.deploymentProjectList;
+    }else if(id === 'testAutomatedIdentification' 
+    || id === 'testAutomationCompletedIdentification' 
+    || id === 'testRegressionIdentification'){
+      return this.testCaseIdentification;
     }
   }
   getConnectionList(toolName) {
@@ -414,7 +421,7 @@ export class JiraConfigComponent implements OnInit {
           // prefetch boards if projectKey is present
           if (this.urlParam === 'Jira') {
             if (this.toolForm.controls['projectKey'].value) {
-              this.fetchBoards();
+              this.fetchBoards(this);
             }
           }
         }
@@ -437,50 +444,57 @@ export class JiraConfigComponent implements OnInit {
   };
 
   checkBoards = () => {
-    if (!this.boardsData || !this.boardsData.length) {
+    if (this.queryEnabled || (!this.toolForm.controls['projectKey'].value)) {
       return true;
     }
     return false;
   };
 
-  fetchBoards = () => {
-    if (this.selectedConnection && this.selectedConnection.id) {
-      const postData = {};
-      this.showLoadingOnFormElement('boards');
-      // this.isLoading = true;
-      postData['connectionId'] = this.selectedConnection.id;
-      postData['projectKey'] = this.toolForm.controls['projectKey'].value;
-      postData['boardType'] = this.selectedProject['Type'];
-      this.http.getAllBoards(postData).subscribe((response) => {
-        if (response && response['data']) {
-          this.boardsData = response['data'];
-          this.boardsData.forEach((board) => {
-            board['projectKey'] = this.toolForm.controls['projectKey'].value;
-          });
-          // if boards already has value
-          this.toolForm.controls['boards'].value.forEach((val) => {
-            this.boardsData = this.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
-          });
-        } else {
-          this.messenger.add({
-            severity: 'error',
-            summary:
-              'No boards found for the selected Project Key.',
-          });
-          this.boardsData = [];
-          this.toolForm.controls['boards'].setValue([]);
-        }
-        this.hideLoadingOnFormElement('boards');
-        this.isLoading = false;
-      });
-
+  fetchBoards(self) {
+    if (self.selectedConnection && self.selectedConnection.id) {
+      if (self.toolForm.controls['projectKey'].dirty && self.toolForm.controls['projectKey'].value && self.toolForm.controls['projectKey'].value.length) {
+        const postData = {};
+        // self.showLoadingOnFormElement('boards');
+        self.isLoading = true;
+        postData['connectionId'] = self.selectedConnection.id;
+        postData['projectKey'] = self.toolForm.controls['projectKey'].value;
+        postData['boardType'] = self.selectedProject['Type'];
+        self.http.getAllBoards(postData).subscribe((response) => {
+          if (response && response['data']) {
+            self.boardsData = response['data'];
+            self.boardsData.forEach((board) => {
+              board['projectKey'] = self.toolForm.controls['projectKey'].value;
+            });
+            // if boards already has value
+            if (self.toolForm.controls['boards'].value.length) {
+              self.toolForm.controls['boards'].value.forEach((val) => {
+                self.boardsData = self.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
+              });
+            }
+          } else {
+            self.messenger.add({
+              severity: 'error',
+              summary:
+                'No boards found for the selected Project Key.',
+            });
+            self.boardsData = [];
+            self.toolForm.controls['boards'].setValue([]);
+          }
+          // self.hideLoadingOnFormElement('boards');
+          self.isLoading = false;
+        });
+      }
     } else {
-      this.messenger.add({
+      self.toolForm.controls['projectKey'].setValue('');
+      self.messenger.add({
         severity: 'error',
         summary:
           'Select Connection first.',
       });
     }
+  };
+
+  selectJIRAType = (event) => {
   };
 
   onBoardUnselect = (value) => {
@@ -574,20 +588,25 @@ export class JiraConfigComponent implements OnInit {
 
   };
 
-  pipeLineDropdownHandler = (value: any) => {
+  pipeLineDropdownHandler = (value: any, elementId?) => {
     //TODO: Refactor needed.
-    console.log(value);
     if (value) {
-      const selectedJobNameDefinition = this.azurePipelineResponseList.filter(data => data.name === value.name)[0].code;
+      const selectedJobNameDefinition = this.azurePipelineResponseList.filter(data => data.code === value)[0]?.code;
       this.toolForm.controls['jobName'].setValue(selectedJobNameDefinition);
     }
   };
 
-  jobTypeChangeHandler = (value: string) => {
-    value = value['name'];
+  jobTypeChangeHandler = (value: string, elementId?) => {
+    value = value['name'] || value;
     switch (this.urlParam) {
       case 'Bamboo':
         if (value.toLowerCase() === 'build') {
+          if (this.bambooPlanList?.length == 0) {
+            this.messenger.add({
+              severity: 'error',
+              summary: 'No plan details found',
+            });
+          }
           this.hideFormElements(['deploymentProject',]);
           this.showFormElements(['planName', 'planKey', 'branchName', 'branchKey']);
         } else if (value.toLowerCase() === 'deploy') {
@@ -684,7 +703,8 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-  apiVersionHanlder = (version: any) => {
+  apiVersionHandler = (version: any, elementId?) => {
+
     try {
       const selectedConnectionId = this.selectedConnection?.id;
       const organizationKey = this.tool['organizationKey'].value ? this.tool['organizationKey'].value : null;
@@ -704,7 +724,7 @@ export class JiraConfigComponent implements OnInit {
               });
 
               this.hideLoadingOnFormElement('projectKey');
-              this.disableBranchDropDown = this.isVersionSupported(version.name);
+              this.disableBranchDropDown = this.isVersionSupported(version);
             } else {
               this.projectKeyList = [];
               this.branchList = [];
@@ -726,15 +746,15 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-  projectKeyClickHandler = (value: any) => {
+  projectKeyClickHandler = (value: any, elementId?) => {
     try {
       this.showLoadingOnFormElement('branch');
       if (value && this.disableBranchDropDown) {
         this.http
           .getBranchListForProject(
             this.selectedConnection.id,
-            this.toolForm.get('apiVersion').value.name,
-            value.name,
+            this.toolForm.get('apiVersion').value,
+            value,
           )
           .subscribe((data) => {
             if (data.success) {
@@ -768,23 +788,19 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-  branchSelectHandler = (value: any) => {
+  branchSelectHandler = (value: any, elementId?) => {
     console.log(value);
   };
 
-  bambooDeploymentPjojectSelectionHandler = (value: any) => {
-    console.log('deployment project selected called');
-    console.log(value);
-    this.selectedDeploymentProject = value;
-
-
+  bambooDeploymentPjojectSelectionHandler = (value: any, elementId?) => {
+    this.selectedDeploymentProject = this.deploymentProjectList?.filter(x => x.code == value)[0];
   };
 
 
-  bambooPlanSelectHandler = (value: any) => {
+  bambooPlanSelectHandler = (value: any, elementId?) => {
     this.showLoadingOnFormElement('branchName');
     this.bambooPlanKeyForSelectedPlan = [...this.bambooProjectDataFromAPI]
-      .filter((item) => item.projectAndPlanName === value.name)[0]?.jobNameKey;
+    .filter((item) => item.projectAndPlanName === value)[0]?.jobNameKey;
     this.toolForm.controls['planKey'].setValue(this.bambooPlanKeyForSelectedPlan);
     if (this.bambooPlanKeyForSelectedPlan) {
       try {
@@ -817,9 +833,9 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-  bambooBranchSelectHandler = (value: any) => {
+  bambooBranchSelectHandler = (value: any, elementId?) => {
     this.selectedBambooBranchKey = [...this.bambooBranchDataFromAPI]
-      .filter(item => item.branchName === value.name)[0]?.jobBranchKey;
+      .filter(item => item.branchName === value)[0]?.jobBranchKey;
     this.toolForm.controls['branchKey'].setValue(this.selectedBambooBranchKey);
   };
 
@@ -856,21 +872,35 @@ export class JiraConfigComponent implements OnInit {
                 label: 'JIRA Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from JIRA/AZURE.<br />
                Generally all issues name are started with Project key<br /> <i>
-                Impacted : Jira/Azure Collector and all Kpi</i>`
+                Impacted : Jira/Azure Collector and all Kpi</i>`,
+                onFocusOut: this.projectKeyChanged
               },
+              // {
+              //   type: 'button',
+              //   label: 'Fetch Boards',
+              //   id: 'fetchBoardsBtn',
+              //   containerClass: 'p-sm-2 p-d-flex p-ai-center',
+              //   class: 'p-button-raised',
+              //   show: true,
+              //   clickEventHandler: this.fetchBoards,
+              //   disabled: this.checkProjectKey
+              // },
               {
-                type: 'button',
-                label: 'Fetch Boards',
-                id: 'fetchBoardsBtn',
-                containerClass: 'p-col-2 p-d-flex p-ai-center',
-                class: 'p-button-raised',
+                type: 'boolean',
+                label: 'Use Boards',
+                label2: 'Use JQL Query',
+                id: 'queryEnabled',
+                model: 'queryEnabled',
+                onChangeEventHandler: this.jiraMethodChange,
+                validators: [],
+                containerClass: 'p-sm-12',
+                tooltip: ``,
+                disabled: 'false',
                 show: true,
-                clickEventHandler: this.fetchBoards,
-                disabled: this.checkProjectKey
               },
               {
                 type: 'autoComplete',
@@ -878,14 +908,23 @@ export class JiraConfigComponent implements OnInit {
                 id: 'boards',
                 suggestions: 'filteredBoards',
                 validators: ['required'],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 tooltip: `Shows all the boards that are setup in JIRA in a project associated with the selected project key`,
                 filterEventHandler: this.filterBoards,
                 selectEventHandler: this.onBoardSelect,
                 unselectEventHandler: this.onBoardUnselect,
                 show: true,
-                isLoading: false,
+                isLoading: this.isLoading,
                 disabled: this.checkBoards
+              },
+              {
+                type: 'textarea',
+                label: 'JQL Query',
+                id: 'boardQuery',
+                validators: [],
+                containerClass: 'p-sm-12',
+                disabled: 'queryEnabled',
+                show: true,
               }
             ],
           };
@@ -913,7 +952,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Azure Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from AZURE Boards.<br />
             Generally all issues name are started with Project key<br /> <i>
@@ -925,7 +964,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
@@ -939,7 +978,7 @@ export class JiraConfigComponent implements OnInit {
                 id: 'queryEnabled',
                 model: 'queryEnabled',
                 validators: [],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 tooltip: ``,
                 disabled: 'false',
                 show: true,
@@ -949,7 +988,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Board Query',
                 id: 'boardQuery',
                 validators: [],
-                containerClass: 'p-col-12',
+                containerClass: 'p-sm-12',
                 disabled: 'queryEnabled',
                 show: true,
               },
@@ -986,7 +1025,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key*',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `User can get this value from JIRA/AZURE.<br />
               Generally all issues name are started with Project key<br /> <i>
@@ -997,7 +1036,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Label Values to identify Automated Regression Test Cases',
                 id: 'regressionAutomationLabels',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list Label Values to identify Automated Regression Test Cases.
                    Example: "Regression Automation" <br />
@@ -1008,7 +1047,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Folder Path (In-Sprint Automation Coverage)',
                 id: 'inSprintAutomationFolderPath',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list of folders to locate test cases
                   from.Multiple values can be provided in this fields.<br />
@@ -1023,7 +1062,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Folder Path (Regression Automation Coverage)',
                 id: 'regressionAutomationFolderPath',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Specify the list of folders to locate test cases
                   from.Multiple values can be provided in this fields.<br />
@@ -1038,7 +1077,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Automation Field',
                 id: 'testAutomated',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1055,7 +1094,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Values for Automation Exclusion',
                 id: 'canNotAutomatedTestValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Value to identify if test cases can be automated' }}
                   <br /><i>
@@ -1067,7 +1106,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Automation Done Field',
                 id: 'testAutomationStatusLabel',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1082,7 +1121,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Values for Automation Completed',
                 id: 'automatedTestValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Values to identify automated test cases. Multiple values can be provided in this
                   fields.
@@ -1095,7 +1134,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Regression Field (For Automated Test Cases)',
                 id: 'testRegressionLabel',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `JIRA/Azure applications let you add custom fields in addition to the built-in
                   fields.
@@ -1110,7 +1149,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Test Case Regression Field Value',
                 id: 'testRegressionValue',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Values to identify Test Case Regression (For Automated Test Cases). Multiple values can be provided in this fields.
         <br /><i>
@@ -1164,7 +1203,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Organization Key',
                 id: 'organizationKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Organization key is required in case of cloud setup.<br />
               <i>
@@ -1175,10 +1214,9 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.sonarVersionFinalList,
-                changeHandler: this.apiVersionHanlder,
-                model: this.selectedVersion,
+                changeHandler: this.apiVersionHandler,
                 show: true,
                 tooltip: `This property is used in Sonar processor.
               <br /><i>
@@ -1190,12 +1228,11 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.projectKeyList,
                 filterValue: 'true',
                 filterByName: 'name',
                 changeHandler: this.projectKeyClickHandler,
-                model: this.selectedProjectKey,
                 show: true,
                 tooltip: `This property is used in Sonar processor.
               <br /><i>
@@ -1208,13 +1245,12 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 filterValue: 'true',
                 filterByName: 'name',
                 optionsList: this.branchList,
                 changeHandler: this.branchSelectHandler,
-                model: this.selectedBranch,
                 isLoading: false
               },
             ],
@@ -1253,7 +1289,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true
@@ -1263,7 +1299,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Name',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 filterValue: 'true',
                 filterByName: 'name',
                 optionsList: this.jenkinsJobNameList,
@@ -1276,7 +1312,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Parameter Name for Environment',
                 id: 'parameterNameForEnvironment',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: false,
                 show: false,
                 tooltip: `The name of the parameter variable in which environment info/IP is passed.<br />
@@ -1319,7 +1355,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Name',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Job name to access teamcity data.<br />
               <i>
@@ -1358,7 +1394,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true,
@@ -1369,7 +1405,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Deployment Project',
                 id: 'deploymentProject',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.deploymentProjectList,
                 changeHandler: this.bambooDeploymentPjojectSelectionHandler,
                 filterValue: 'true',
@@ -1384,7 +1420,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Plan Name',
                 id: 'planName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.bambooPlanList,
                 changeHandler: this.bambooPlanSelectHandler,
                 filterValue: 'true',
@@ -1398,7 +1434,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Plan Key',
                 id: 'planKey',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: true,
                 show: false
               },
@@ -1407,7 +1443,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branches',
                 id: 'branchName',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.bambooBranchList,
                 filterValue: 'true',
                 filterByName: 'name',
@@ -1420,7 +1456,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch Key',
                 id: 'branchKey',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 disabled: true,
                 show: false
               },
@@ -1467,7 +1503,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access BitBucket data.<br />
               <i>
@@ -1478,7 +1514,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repo Slug',
                 id: 'repoSlug',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Repo Slug to access BitBucket data.<br />
               Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
@@ -1490,7 +1526,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key',
                 id: 'bitbucketProjKey',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Bitbucket project key to access BitBucket data.<br />
               Eg:protocol//domain/<br/>bitbucket/scm/<br/>projectkey/reposlug
@@ -1537,7 +1573,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Gitlab Project Id',
                 id: 'projectId',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: ` GitLab Project Id to access GitLab data.<br />
               <i>
@@ -1548,7 +1584,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access GitLab data.<br />
               <i>
@@ -1590,7 +1626,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Job Type',
                 id: 'jobType',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.jobType,
                 changeHandler: this.jobTypeChangeHandler,
                 show: true
@@ -1600,7 +1636,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: [],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
                 Example: 5.1 <br />
@@ -1613,7 +1649,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Pipeline Name',
                 id: 'azurePipelineName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 optionsList: this.azurePipelineList,
                 changeHandler: this.pipeLineDropdownHandler,
                 show: true
@@ -1623,7 +1659,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Definitions',
                 id: 'jobName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 tooltip: `Please enter Pipeline Id as fetched from Azure Devops Pipeline section<br />
               <i>
                 Impacted : All AzurePipeline based KPIs</i>`,
@@ -1671,7 +1707,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
@@ -1683,7 +1719,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repository Name',
                 id: 'repositoryName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Azure Repository Name.<br />
               <i>
@@ -1694,7 +1730,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access Azure Repository data.<br />
               <i>
@@ -1740,7 +1776,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Repository Name',
                 id: 'repositoryName',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `GitHub Repository Name.<br />
                 <i>
@@ -1751,7 +1787,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
-                containerClass: 'p-col-6',
+                containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Branch name to access GitHub Repository data.<br />
                 <i>
@@ -1762,7 +1798,163 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+      case 'JiraTest':
+        {
+          this.formTitle = 'JiraTest';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'username', header: 'User Name', class: 'long-text' },
+            { field: 'offline', header: 'Is Offline?', class: 'small-text' },
+            {
+              field: 'apiEndPoint',
+              header: 'API Endpoint',
+              class: 'long-text',
+            },
+            { field: 'apiKey', header: 'API Key', class: 'normal' },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+            { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
+            { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+          ];
 
+          this.formTemplate = {
+            group: 'JiraTest',
+            elements: [
+              {
+                type: 'text',
+                label: 'JIRATEST Project Key',
+                id: 'projectKey',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `User can get this value from JIRA/AZURE.<br />
+                Generally all issues name are started with Project key<br /> <i>
+                Impacted : Jira/Azure Collector and all Kpi</i>`
+              },
+              {
+                type: 'array',
+                label: 'Test Case Issue Type',
+                id: 'jiraTestCaseType',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                tooltip: `Issue type of Test Case. Example: "Test", Impacted : Sprint Automation and Regression Automation`,
+                show: true,
+                // disabled: this.checkBoards
+              },
+              {
+                type: 'dropdown',
+                label: 'Test Case Automation Field',
+                id: 'testAutomatedIdentification',
+                validators: [],
+                containerClass: 'p-sm-6',
+                filterValue: 'true',
+                filterByName: 'name',
+                optionsList: this.testCaseIdentification,
+                changeHandler: this.changeHandler,
+                show: true
+              },
+              {
+                type: 'text',
+                label: 'Test Case Automation Custom Field Id',
+                id: 'testAutomated',
+                validators: [],
+                containerClass: 'p-sm-6',
+                show: false,
+                disabled: false,
+                tooltip: `Provide customfield name to identify test case is automatable or not.<br />
+                Example: customfield_13907`
+              },
+              {
+                type: 'array',
+                label: 'Values for Automation',
+                id: 'jiraCanBeAutomatedTestValue',
+                suggestions: 'filteredBoards',
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: `Enter the field labels used in Jira/Azure to identify if a test case can be automated`,
+                show: false,
+                isLoading: false,
+              },
+              {
+                type: 'dropdown',
+                label: 'Automation completed field',
+                id: 'testAutomationCompletedIdentification',
+                validators: [],
+                containerClass: 'p-sm-6',
+                optionsList: this.testCaseIdentification,
+                changeHandler: this.changeHandler,
+                show: true
+              },
+              {
+                type: 'text',
+                label: 'Automation Completed Custom Field Id',
+                id: 'testAutomationCompletedByCustomField',
+                validators: [],
+                containerClass: 'p-sm-6',
+                show: false,
+                disabled: false,
+                tooltip: `Provide customfield name to identify  if a test case is already automated`
+              },
+              {
+                type: 'array',
+                label: 'Values for Automation completed',
+                id: 'jiraAutomatedTestValue',
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: `Enter the field labels used in Jira/Azure to identify if a test case is already automated`,
+                show: false,
+                isLoading: false,
+              },
+              {
+                type: 'dropdown',
+                label: 'Regression test case identifier',
+                id: 'testRegressionIdentification',
+                validators: [],
+                containerClass: 'p-sm-6',
+                optionsList: this.testCaseIdentification,
+                changeHandler: this.changeHandler,
+                tooltip: `Jira/Azure allow addition of filtering data through custom field or labels. It can be used to identify regression test cases`,
+                show: true
+              },
+              {
+                type: 'text',
+                label: 'Regression Test Case Custom Field Id',
+                id: 'testRegressionByCustomField',
+                validators: [],
+                containerClass: 'p-sm-6',
+                show: false,
+                disabled: false,
+                tooltip: `Provide customfield name to identify the test cases part of regression suite`
+              },
+              {
+                type: 'array',
+                label: 'Values for regression test cases',
+                id: 'jiraRegressionTestValue',
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: `Enter the field labels used in Jira/Azure to identify the test cases part of regression suite`,
+                show: false,
+                isLoading: false,
+                // disabled: this.checkBoards
+              },
+              {
+                type: 'array',
+                label: 'Status to identify abandoned Test cases',
+                id: 'testCaseStatus',
+                suggestions: 'filteredBoards',
+                validators: [],
+                containerClass: 'p-sm-6',
+                tooltip: `Select status like "Abandoned", "Deprecated" etc so that these can be excluded from Regression automation coverage, In Sprint automation coverage and Test case without story link KPI`,
+                show: true,
+                isLoading: false,
+              },
+            ],
+          };
+        }
+        break;
     }
 
     const group = {};
@@ -1780,7 +1972,7 @@ export class JiraConfigComponent implements OnInit {
     });
     this.toolForm = new UntypedFormGroup(group);
 
-    if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr') {
+    if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled') {
@@ -1788,59 +1980,83 @@ export class JiraConfigComponent implements OnInit {
               this.toolForm.controls[obj].setValue(
                 this.selectedToolConfig[0][obj],
               );
+              this.toolForm.controls[obj].markAsDirty();
             }
           } else {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
-              this.jiraMethodChange();
+              const fakeEvent = {
+                checked: this.queryEnabled
+              };
+              this.jiraMethodChange(fakeEvent, self);
+
             }
+          }
+        }
+        if(this.urlParam === 'JiraTest'){
+          if(this.toolForm.controls['testAutomatedIdentification']?.value){
+            this.changeHandler(this.toolForm.controls['testAutomatedIdentification']?.value, 'testAutomatedIdentification');
+          }
+          if(this.toolForm.controls['testAutomationCompletedIdentification']?.value){
+            this.changeHandler(this.toolForm.controls['testAutomationCompletedIdentification']?.value, 'testAutomationCompletedIdentification');
+          }
+          if(this.toolForm.controls['testRegressionIdentification']?.value){
+            this.changeHandler(this.toolForm.controls['testRegressionIdentification']?.value, 'testRegressionIdentification');
           }
         }
         // this.tool['projectId'].disable();
         this.isEdit = true;
       }
+
+      if (self.urlParam === 'Jira') {
+        if(this.isEdit) {
+          this.toolForm.controls['queryEnabled'].disable();
+        }
+      }
     }
   }
 
-  jiraMethodChange(event = null) {
+  projectKeyChanged(event, self) {
+    self.fetchBoards(self);
+  }
+
+  jiraMethodChange(event = null, self) {
     this.submitted = false;
     const group = {};
+    if (self.urlParam === 'Jira') {
+      if (event && event.checked) {
+        self.toolForm.controls['boards'].setValue([]);
+        self.toolForm.controls['boards'].clearValidators();
+        self.toolForm.controls['boards'].updateValueAndValidity();
 
-    const formData = {};
-    for (const obj in this.tool) {
-      formData[obj] = this.tool[obj].value;
-    }
+        self.toolForm.controls['boardQuery'].setValidators([Validators.required]);
+        self.toolForm.controls['boardQuery'].updateValueAndValidity();
+      } else {
+        self.toolForm.controls['boards'].setValidators([Validators.required]);
+        self.toolForm.controls['boards'].updateValueAndValidity();
 
-    // if (this.queryEnabled) {
-    //   group['queryEnabled'] = new UntypedFormControl(true);
-    //   if (this.urlParam === 'Azure') {
-    //     group['apiVersion'] = new UntypedFormControl('', [Validators.required]);
-    //   }
-    //   group['projectKey'] = new UntypedFormControl('', [Validators.required]);
-    //   group['boardQuery'] = new UntypedFormControl('', [Validators.required]);
-    //   this.toolForm = new UntypedFormGroup(group);
-    // } else {
-    //   group['queryEnabled'] = new UntypedFormControl(false);
-    //   group['projectKey'] = new UntypedFormControl('', [Validators.required]);
-    //   group['boardQuery'] = new UntypedFormControl('');
-    //   if (this.urlParam === 'Azure') {
-    //     group['apiVersion'] = new UntypedFormControl('', [Validators.required]);
-    //   }
-    //   this.toolForm = new UntypedFormGroup(group);
-    // }
-
-    for (const obj in formData) {
-      if (this.toolForm && this.toolForm.controls[obj]) {
-        this.toolForm.controls[obj].setValue(formData[obj]);
+        self.toolForm.controls['boardQuery'].clearValidators();
+        self.toolForm.controls['boardQuery'].updateValueAndValidity();
       }
     }
 
-    if (this.selectedToolConfig && this.selectedToolConfig.length) {
-      for (const obj in this.selectedToolConfig[0]) {
+    const formData = {};
+    for (const obj in self.tool) {
+      formData[obj] = self.tool[obj].value;
+    }
+
+    for (const obj in formData) {
+      if (self.toolForm && self.toolForm.controls[obj]) {
+        self.toolForm.controls[obj].setValue(formData[obj]);
+      }
+    }
+
+    if (self.selectedToolConfig && self.selectedToolConfig.length) {
+      for (const obj in self.selectedToolConfig[0]) {
         if (obj !== 'queryEnabled') {
-          if (this.toolForm && this.toolForm.controls[obj]) {
-            this.toolForm.controls[obj].setValue(
-              this.selectedToolConfig[0][obj],
+          if (self.toolForm && self.toolForm.controls[obj]) {
+            self.toolForm.controls[obj].setValue(
+              self.selectedToolConfig[0][obj],
             );
           }
         }
@@ -1855,7 +2071,7 @@ export class JiraConfigComponent implements OnInit {
   save() {
     this.submitted = true;
     // return if form is invalid
-    if (this.toolForm.invalid || !this.selectedConnection) {
+    if (this.toolForm.invalid || !this.selectedConnection) { 
       this.messenger.add({
         severity: 'error',
         summary: 'Please fill all fields and select a connection.',
@@ -1866,15 +2082,15 @@ export class JiraConfigComponent implements OnInit {
 
     // TODO: Need to refactor
     if (this.selectedConnection.type === 'Bamboo') {
-      submitData.jobType = this.tool['jobType'].value.name;
+      submitData.jobType = this.tool['jobType'].value;
 
-      if (this.tool['jobType'].value.name === 'Build') {
+      if (this.tool['jobType'].value === 'Build') {
         submitData.jobName = this.tool['planKey'].value;
 
         if (this.tool['branchKey'].value) {
           submitData.branch = this.tool['branchKey'].value;
         }
-      } else if (this.tool['jobType'].value.name === 'Deploy') {
+      } else if (this.tool['jobType'].value === 'Deploy') {
         submitData.deploymentProjectName = this.selectedDeploymentProject.name;
         submitData.deploymentProjectId = this.selectedDeploymentProject.code;
       }
@@ -1917,16 +2133,14 @@ export class JiraConfigComponent implements OnInit {
     let successAlert = '';
     if (this.urlParam === 'Jira') {
       successAlert = 'If Jira processor is run after adding or removing board/s, then all data prior to this change will be deleted and fresh data will be fetched based on the updated list of boards';
-    }
-
+    }    
     if (!this.isEdit) {
 
       for (const obj in submitData) {
         if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
-      }
-
+      } 
       this.http
         .addTool(this.selectedProject.id, submitData)
         .subscribe((response) => {
@@ -1964,7 +2178,7 @@ export class JiraConfigComponent implements OnInit {
     } else {
 
       for (const obj in submitData) {
-        if (submitData[obj].hasOwnProperty('name') && submitData[obj].hasOwnProperty('code')) {
+        if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
       }
@@ -2104,4 +2318,24 @@ export class JiraConfigComponent implements OnInit {
 
   // Preserve original property order
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
+
+  changeHandler = (value:string, elementId) => {
+    value = value['name'] || value;
+    if (value.toLowerCase() === 'customfield' && elementId === 'testAutomatedIdentification') {
+      this.showFormElements(['testAutomated', 'jiraCanBeAutomatedTestValue']);
+    } if (value.toLowerCase() === 'labels' && elementId === 'testAutomatedIdentification') {
+      this.hideFormElements(['testAutomated']);
+      this.showFormElements(['jiraCanBeAutomatedTestValue']);
+    } else if (value.toLowerCase() === 'customfield' && elementId === 'testAutomationCompletedIdentification') {
+      this.showFormElements(['testAutomationCompletedByCustomField', 'jiraAutomatedTestValue']);
+    } else if(value.toLowerCase() === 'labels' && elementId === 'testAutomationCompletedIdentification'){
+      this.hideFormElements(['testAutomationCompletedByCustomField']);
+      this.showFormElements(['jiraAutomatedTestValue']);
+    }else if (value.toLowerCase() === 'customfield' && elementId === 'testRegressionIdentification') {
+      this.showFormElements(['testRegressionByCustomField', 'jiraRegressionTestValue']);
+    }else if (value.toLowerCase() === 'labels' && elementId === 'testRegressionIdentification') {
+      this.hideFormElements(['testRegressionByCustomField']);
+      this.showFormElements(['jiraRegressionTestValue']);
+    }
+  }
 }

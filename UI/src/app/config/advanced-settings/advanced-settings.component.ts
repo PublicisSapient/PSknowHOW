@@ -95,21 +95,6 @@ export class AdvancedSettingsComponent implements OnInit {
     }
   }
 
-  getPreCalculatedConfig() {
-    this.httpService.getPreCalculatedConfig()
-      .subscribe(response => {
-        if (response && response.success) {
-          this.showPreCalculatedDataForScrum = response.data.showPreCalculatedDataForScrum;
-          this.showPreCalculatedDataForKanban = response.data.showPreCalculatedDataForKanban;
-          this.showPrecalculatedConfigSection = true;
-        } else {
-          this.showPrecalculatedConfigSection = false;
-        }
-      },
-        error => {
-          this.showPrecalculatedConfigSection = false;
-        });
-  }
 
   // used to fetch the processors
   getProcessorData() {

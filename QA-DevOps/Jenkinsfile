@@ -1,10 +1,16 @@
 pipeline {
    agent any
+      options {
+        ansiColor('xterm')
+        timeout(time: 120, unit: 'MINUTES')
+    }
       environment {
        select_docker_registry = "${env.DEFAULT_REGISTRY}"
        registryCredId = "DOCKER_REGISTRY_CREDENTIALS"
        selected_environment = "10.148.240.58"
+       opensource_environment = "10.148.240.68"
        credId= "SSH_10.148.240.58"
+       opensourcecredId = "SSH_10.148.240.68"
        awss3credentialsid = "AWS_S3_CREDENTIALS"
        }
    parameters {
@@ -46,7 +52,7 @@ pipeline {
                       }else{
                         env.customapistatus = false
                         echo "There are some commits in Customapi folder for last 24 hrs"
-                      }
+                      }   
 
                 def processorfoldercommits = sh (script: 'git log --since="24 hours ago" -- processors', returnStdout: true)
                       if (processorfoldercommits.isEmpty()) {
@@ -119,6 +125,32 @@ pipeline {
                 }
          }
      }
+     stage('Building Mongodb Docker Image') {
+        when{
+                   expression { env.mongodbstatus == 'false' }
+         }
+        steps {
+                sh """
+                cd mongodb
+                docker build -t mongodb:${env.version} .
+                """
+        }
+     }
+     stage('Push mongo image') {
+              when {
+                 expression { env.mongodbstatus == 'false' }
+              }
+              steps {
+                  withCredentials([usernamePassword(credentialsId: env.registryCredId, passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
+                      sh """
+                          docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${env.select_docker_registry}
+                          docker tag mongodb:${env.version} ${env.select_docker_registry}/speedy/mongodb:${env.version}
+                          docker push ${env.select_docker_registry}/speedy/mongodb:${env.version}
+                          docker logout ${env.select_docker_registry}
+                         """
+                }
+              }
+        }
       stage('Building CUSTOMAPI skipping Unit Test') {
            when{
                    expression { env.customapistatus == 'false' }
@@ -266,7 +298,26 @@ pipeline {
                       }
                }
         }
-     stage('Deploying Application to QA Server') {
+     stage('Deploying Application to 68 Server with OPEN SOURCE DB') {
+           when{
+                expression { env.processorstatus == 'false' || env.customapistatus == 'false' || env.uistatus == 'false' || env.mongodbstatus == 'false' }
+         }
+          steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: env.awss3credentialsid, secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: env.opensourcecredId, passwordVariable: 'SSH_PASSWORD', usernameVariable: 'SSH_USERNAME'],
+                [$class: 'UsernamePasswordMultiBinding',credentialsId: env.registryCredId, passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME']])
+                 {
+                              sh """
+                                 > /tmp/ui_hosts
+                                 echo "[server]" > /tmp/ui_hosts
+                                 echo " ${env.opensource_environment}" >> /tmp/ui_hosts
+                                 cd ansible_deployment/
+                                 ansible-playbook -i /tmp/ui_hosts playbooks/deploy.yaml -e 'edcurl=${edcurl}' -e 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}' -e 'AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}' -e 'ldapurl=${ldapurl}' -e 'DNS_NAME=${env.opensource_environment}' -e 'DEPLOY=OPENSOURCE' -e 'registry_username=${REGISTRY_USERNAME}' -e 'registry_password=${REGISTRY_PASSWORD}' -e 'selected_server=${env.opensource_environment}' -e 'select_docker_registry=${DEFAULT_REGISTRY}' -e 'version=${env.version}' -e 'ansible_ssh_pass=${SSH_PASSWORD}' -e 'ansible_ssh_user=${SSH_USERNAME}'
+                              """
+                }
+            }
+     }
+     stage('Deploying Application to 58 Server with PS DB') {
            when{
                 expression { env.processorstatus == 'false' || env.customapistatus == 'false' || env.uistatus == 'false' || env.mongodbstatus == 'false' }
          }
@@ -280,10 +331,11 @@ pipeline {
                                  echo "[server]" > /tmp/ui_hosts
                                  echo " ${env.selected_environment}" >> /tmp/ui_hosts
                                  cd ansible_deployment/
-                                 ansible-playbook -i /tmp/ui_hosts playbooks/deploy.yaml -e 'edcurl=${edcurl}' -e 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}' -e 'AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}' -e 'ldapurl=${ldapurl}' -e 'DNS_NAME=${env.selected_environment}' -e 'DEPLOY=OPENSOURCE' -e 'registry_username=${REGISTRY_USERNAME}' -e 'registry_password=${REGISTRY_PASSWORD}' -e 'selected_server=${env.selected_environment}' -e 'select_docker_registry=${DEFAULT_REGISTRY}' -e 'version=${env.version}' -e 'ansible_ssh_pass=${SSH_PASSWORD}' -e 'ansible_ssh_user=${SSH_USERNAME}'
+                                 ansible-playbook -i /tmp/ui_hosts playbooks/deploy.yaml -e 'edcurl=${edcurl}' -e 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}' -e 'AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}' -e 'ldapurl=${ldapurl}' -e 'DNS_NAME=${env.selected_environment}' -e 'DEPLOY=PS-INTERNAL' -e 'registry_username=${REGISTRY_USERNAME}' -e 'registry_password=${REGISTRY_PASSWORD}' -e 'selected_server=${env.selected_environment}' -e 'select_docker_registry=${DEFAULT_REGISTRY}' -e 'version=${env.version}' -e 'ansible_ssh_pass=${SSH_PASSWORD}' -e 'ansible_ssh_user=${SSH_USERNAME}'
                               """
                 }
             }
      }
+
    }
 }

@@ -170,7 +170,7 @@ public class ScrumJiraIssueClientImplTest {
 	}
 
 	@Test
-	public void testProcessesJiraIssues() throws URISyntaxException {
+	public void testProcessesJiraIssues() throws URISyntaxException, InterruptedException {
 		when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
 		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
@@ -273,11 +273,6 @@ public class ScrumJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("40");
-		fieldMapping.setJiraAutomatedTestValue(jiraType);
-
-		jiraType = new ArrayList<>();
-		jiraType.add("10");
-		fieldMapping.setJiraCanNotAutomatedTestValue(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Client Testing (UAT)");
@@ -307,11 +302,6 @@ public class ScrumJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
 		fieldMapping.setJiraDod(jiraType);
-		fieldMapping.setJiraTestCaseType(new String[] { "Story" });
-		fieldMapping.setTestAutomated("40");
-		jiraType = new ArrayList<>();
-		jiraType.add("2.1.0");
-		fieldMapping.setTestRegressionValue(jiraType);
 		fieldMapping.setStoryFirstStatus("In Analysis");
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
@@ -358,11 +348,6 @@ public class ScrumJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("40");
-		fieldMapping.setJiraAutomatedTestValue(jiraType);
-
-		jiraType = new ArrayList<>();
-		jiraType.add("10");
-		fieldMapping.setJiraCanNotAutomatedTestValue(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
@@ -413,11 +398,6 @@ public class ScrumJiraIssueClientImplTest {
 		jiraSegData.add("Ready for Testing");
 		fieldMapping.setJiraStatusForQa(jiraSegData);
 		fieldMapping.setDevicePlatform("customfield_18181");
-		fieldMapping.setJiraTestCaseType(new String[] { "Test Case" });
-		fieldMapping.setTestAutomated("40");
-		jiraSegData = new ArrayList<>();
-		jiraSegData.add("2.1.0");
-		fieldMapping.setTestRegressionValue(jiraSegData);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");

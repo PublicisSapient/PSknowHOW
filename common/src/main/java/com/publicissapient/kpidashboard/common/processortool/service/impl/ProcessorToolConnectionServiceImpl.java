@@ -146,6 +146,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setOffline(connection.isOffline());
 		processorToolConnection.setOfflineFilePath(connection.getOfflineFilePath());
 		processorToolConnection.setCloudEnv(connection.isCloudEnv());
+		processorToolConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		processorToolConnection.setRegressionAutomationLabels(toolConfig.getRegressionAutomationLabels());
 		processorToolConnection.setTestAutomationStatusLabel(toolConfig.getTestAutomationStatusLabel());
 		processorToolConnection.setAutomatedTestValue(toolConfig.getAutomatedTestValue());
@@ -161,6 +162,16 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setDeploymentProjectId(toolConfig.getDeploymentProjectId());
 		processorToolConnection.setParameterNameForEnvironment(toolConfig.getParameterNameForEnvironment());
 		processorToolConnection.setVault(connection.isVault());
+		processorToolConnection.setJiraTestCaseType(toolConfig.getJiraTestCaseType());
+		processorToolConnection.setTestAutomatedIdentification(toolConfig.getTestAutomatedIdentification());
+		processorToolConnection.setTestAutomationCompletedIdentification(toolConfig.getTestAutomationCompletedIdentification());
+		processorToolConnection.setTestRegressionIdentification(toolConfig.getTestRegressionIdentification());
+		processorToolConnection.setTestAutomationCompletedByCustomField(toolConfig.getTestAutomationCompletedByCustomField());
+		processorToolConnection.setTestRegressionByCustomField(toolConfig.getTestRegressionByCustomField());
+		processorToolConnection.setJiraAutomatedTestValue(toolConfig.getJiraAutomatedTestValue());
+		processorToolConnection.setJiraRegressionTestValue(toolConfig.getJiraRegressionTestValue());
+		processorToolConnection.setJiraCanBeAutomatedTestValue(toolConfig.getJiraCanBeAutomatedTestValue());
+		processorToolConnection.setTestCaseStatus(toolConfig.getTestCaseStatus());
 		return processorToolConnection;
 	}
 

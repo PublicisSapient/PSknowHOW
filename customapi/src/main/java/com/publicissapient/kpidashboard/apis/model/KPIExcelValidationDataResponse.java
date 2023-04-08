@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Validation Data response. Variables to be added to serve the need of other
@@ -35,70 +35,82 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public class KPIExcelValidationDataResponse {
 
-    private String kpiName;
-    private String kpiId;
-    @JsonProperty("excelData")
-    private List<KPIExcelData> excelData;
+	/**
+	 * The Map of sprint and data.
+	 */
+	@JsonProperty("validationData")
+	/* package */ Map<String, ValidationData> mapOfSprintAndData;
+	private String kpiName;
+	private String kpiId;
+	@JsonProperty("columns")
+	private List<String> excelColumns;
+	@JsonProperty("excelData")
+	private List<KPIExcelData> excelData;
 
-    /**
-     * The Map of sprint and data.
-     */
-    @JsonProperty("validationData")
-    /* package */ Map<String, ValidationData> mapOfSprintAndData;
+	public List<String> getExcelColumns() {
+		return excelColumns;
+	}
 
-    /**
-     * Gets map of sprint and data.
-     *
-     * @return the map of sprint and data
-     */
-    public Map<String, ValidationData> getMapOfSprintAndData() {
-        return mapOfSprintAndData;
-    }
+	public void setExcelColumns(List<String> excelColumns) {
+		this.excelColumns = excelColumns;
+	}
 
-    /**
-     * Sets map of sprint and data.
-     *
-     * @param mapOfSprintAndData the map of sprint and data
-     */
-    public void setMapOfSprintAndData(Map<String, ValidationData> mapOfSprintAndData) {
-        this.mapOfSprintAndData = mapOfSprintAndData;
-    }
+	/**
+	 * Gets map of sprint and data.
+	 *
+	 * @return the map of sprint and data
+	 */
+	public Map<String, ValidationData> getMapOfSprintAndData() {
+		return mapOfSprintAndData;
+	}
 
-    /**
-     * Gets kpi name.
-     *
-     * @return the kpi name
-     */
-    public String getKpiName() {
-        return kpiName;
-    }
+	/**
+	 * Sets map of sprint and data.
+	 *
+	 * @param mapOfSprintAndData
+	 *            the map of sprint and data
+	 */
+	public void setMapOfSprintAndData(Map<String, ValidationData> mapOfSprintAndData) {
+		this.mapOfSprintAndData = mapOfSprintAndData;
+	}
 
-    /**
-     * Sets kpi name.
-     *
-     * @param kpiName the kpi name
-     */
-    public void setKpiName(String kpiName) {
-        this.kpiName = kpiName;
-    }
+	/**
+	 * Gets kpi name.
+	 *
+	 * @return the kpi name
+	 */
+	public String getKpiName() {
+		return kpiName;
+	}
 
-    /**
-     * Gets kpi id.
-     *
-     * @return the kpi id
-     */
-    public String getKpiId() {
-        return kpiId;
-    }
+	/**
+	 * Sets kpi name.
+	 *
+	 * @param kpiName
+	 *            the kpi name
+	 */
+	public void setKpiName(String kpiName) {
+		this.kpiName = kpiName;
+	}
 
-    /**
-     * Sets kpi id.
-     *
-     * @param kpiId the kpi id
-     */
-    public void setKpiId(String kpiId) {
-        this.kpiId = kpiId;
-    }
+	/**
+	 * Gets kpi id.
+	 *
+	 * @return the kpi id
+	 */
+	public String getKpiId() {
+		return kpiId;
+	}
+
+	/**
+	 * Sets kpi id.
+	 *
+	 * @param kpiId
+	 *            the kpi id
+	 */
+	public void setKpiId(String kpiId) {
+		this.kpiId = kpiId;
+	}
 
 	public List<KPIExcelData> getExcelData() {
 		return excelData;
@@ -107,7 +119,5 @@ public class KPIExcelValidationDataResponse {
 	public void setExcelData(List<KPIExcelData> excelData) {
 		this.excelData = excelData;
 	}
-    
-    
 
 }

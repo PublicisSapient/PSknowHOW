@@ -20,7 +20,9 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -93,6 +95,5 @@ public interface KanbanJiraIssueRepoCustom {
 	 * @param fieldsToUnset
 	 */
 	void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
-
 
 }

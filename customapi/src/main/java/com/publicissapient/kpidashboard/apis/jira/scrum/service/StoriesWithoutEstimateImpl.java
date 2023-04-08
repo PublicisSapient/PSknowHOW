@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,7 +48,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -123,12 +123,12 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 		kpiElement.setTrendValueList(dataList);
 
 		if (CollectionUtils.isNotEmpty(dataList)) {
-			Map<String, Integer> howerMap = trendValueList.get(0).getHoverValue();
+			Map<String, Object> howerMap = trendValueList.get(0).getHoverValue();
 			List<DataCount> dataCountList = new ArrayList<>();
 			howerMap.forEach((k, v) -> {
 				DataCount dataCount = new DataCount();
 				dataCount.setData(k);
-				dataCount.setCount(v);
+				dataCount.setCount((Integer) v);
 				dataCountList.add(dataCount);
 
 			});
@@ -166,8 +166,10 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentification()));
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+						fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
@@ -258,7 +260,7 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 				issuesWithoutEstimate.addAll(findIssuesWithoutEstimate(totalIssuesOfSprint));
 			}
 
-			Map<String, Integer> howerValues = new HashMap<>();
+			Map<String, Object> howerValues = new HashMap<>();
 			howerValues.put(STORY_LIST, totalIssuesOfSprint.size());
 			howerValues.put(STORIES_WITHOUT_ESTIMATE_KEY, issuesWithoutEstimate.size());
 

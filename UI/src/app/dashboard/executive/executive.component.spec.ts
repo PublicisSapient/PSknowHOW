@@ -48,6 +48,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { environment } from '../../../environments/environment';
 import { of } from 'rxjs/internal/observable/of';
 import { DropdownModule } from 'primeng/dropdown';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
@@ -1848,6 +1849,7 @@ describe('ExecutiveComponent', () => {
         MaturityComponent,
         FilterComponent,
         DashboardComponent,
+        ExportExcelComponent
       ],
       providers: [
         HelperService,
@@ -1908,11 +1910,31 @@ describe('ExecutiveComponent', () => {
 
   });
 
-  it('download excel functionality', () => {
-    const spy = spyOn(helperService, 'downloadExcel');
-    component.downloadExcel('kpi35', 'Defect Seepage Rate', false);
-    expect(spy).toHaveBeenCalled();
-  });
+    it('download excel functionality', fakeAsync(() => {
+        const excelData = {
+            kpiName: 'Defect Injection Rate',
+            kpiId: 'kpi14',
+            columns: ['sprintName','storyID','issueDescription','linkedDefects'],
+            excelData: [
+                {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    sprintName: 'AP|PI_10|ITR_5| 24 Aug',
+                    storyID: {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        'DTS-17970': 'https://tools.publicis.sapient.com/jira/browse/DTS-17970'
+                    },
+                    issueDescription: 'This is second Story',
+                    linkedDefects: {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        'DTS-18675': 'https://tools.publicis.sapient.com/jira/browse/DTS-18675',
+                    }
+                }]
+        };
+        const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
+        component.iSAdditionalFilterSelected =false;
+        component.downloadExcel('kpi35', 'Defect Seepage Rate', false,false);
+        expect(spy).toHaveBeenCalled();
+    }));
 
   xit('Scrum with filter applied', (done) => {
     const type = 'Scrum';

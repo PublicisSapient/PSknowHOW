@@ -2,6 +2,7 @@ pipeline {
    agent any
    options {
         ansiColor('xterm')
+	timeout(time: 30, unit: 'MINUTES')
     }
     environment {
        awss3credentialsid = "AWS_S3_CREDENTIALS"

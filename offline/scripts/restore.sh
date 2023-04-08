@@ -32,7 +32,7 @@ sudo docker exec -t $mongo /bin/bash -c "mongorestore --port 27017 --username de
 echo "db restore completed"
 cd /app/apps
 sudo docker-compose restart
-mv /KnowHOW5.1.1/scripts/offline-dbbackup.sh /tmp/
+mv /KnowHOW6.0.0/scripts/offline-dbbackup.sh /tmp/
 ( crontab -u root -l; ) | crontab -u root -
 ( crontab -u root -l; echo "0 23 * * 1-7 /tmp/offline-dbbackup.sh" ) | crontab -u root -
 

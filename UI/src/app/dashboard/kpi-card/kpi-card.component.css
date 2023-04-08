@@ -72,6 +72,12 @@
     vertical-align: middle;
     margin-top: -2px;
 }
+
+.kpi-download-icon{
+    height: 24px;
+    cursor: pointer;
+}
+
 ::ng-deep .filter-radioButton {
     margin-right: 5px;
     font-size: 12px;

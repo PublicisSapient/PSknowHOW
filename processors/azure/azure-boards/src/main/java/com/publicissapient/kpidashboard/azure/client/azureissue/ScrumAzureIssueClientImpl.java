@@ -682,6 +682,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureIssueHistory.setProjectKey(azureIssue.getProjectKey());
 		azureIssueHistory.setStoryType(azureIssue.getTypeName());
 		azureIssueHistory.setAdditionalFilters(azureIssue.getAdditionalFilters());
+		azureIssueHistory.setUrl(azureIssue.getUrl());
+		azureIssueHistory.setDescription(azureIssue.getName());
+
 		// This method is not setup method. write it to keep
 		// custom history
 		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);

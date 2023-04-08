@@ -334,6 +334,11 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		if (sonarServer.isCloudEnv()) {
 			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(sonarServer.getAccessToken())), metrics);
+		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
+			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
+					new HttpEntity<>(
+							SonarProcessorUtils.getHeaders(sonarServer.getAccessToken(), true)),
+					metrics);
 		} else {
 			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
 					new HttpEntity<>(
@@ -395,6 +400,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(password)), metrics);
 
+		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
+			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
+					new HttpEntity<>(SonarProcessorUtils.getHeaders(password,true)), metrics);
 		} else {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(username, password)), metrics);
@@ -422,8 +430,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 *            the existing Sonar project
 	 * @param processor
 	 *            the processor
-	 * @param sonarClient
-	 *            the Sonar client
 	 */
 	private void addNewProjects(List<SonarProcessorItem> sonarDetailsList, List<SonarProcessorItem> existingProjectList,
 			SonarProcessor processor) {

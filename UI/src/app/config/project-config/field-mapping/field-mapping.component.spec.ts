@@ -38,6 +38,8 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { environment } from 'src/environments/environment';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { BadgeModule } from 'primeng/badge';
 
 const completeHierarchyData = {
   kanban: [
@@ -646,7 +648,9 @@ describe('FieldMappingComponent', () => {
         AccordionModule,
         ToastModule,
         DialogModule,
-        InputNumberModule
+        InputNumberModule,
+        RadioButtonModule,
+        BadgeModule
       ],
       providers: [
         HttpService,
@@ -809,10 +813,9 @@ describe('FieldMappingComponent', () => {
       code: 'sqd'
     };
     fixture.detectChanges();
-    component.changeControl(event);
+    component.changeControl(event,component.additionalFilterIdentifier);
     fixture.detectChanges();
     expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentMultiValue']).toBeTruthy();
-    expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentSingleValue']).toBeFalsy();
 
     event = {
       originalEvent: {
@@ -820,10 +823,9 @@ describe('FieldMappingComponent', () => {
       },
       value: 'CustomField'
     };
-    component.changeControl(event);
+    component.changeControl(event,component.additionalFilterIdentifier);
     fixture.detectChanges();
     expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentSingleValue']).toBeTruthy();
-    expect(component.fieldMappingForm.controls[component.additionalFilterIdentifier.code + 'IdentMultiValue']).toBeFalsy();
   });
 
   it('should remove additional filter mapping controls on click of remove button', () => {

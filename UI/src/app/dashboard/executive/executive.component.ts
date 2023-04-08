@@ -17,15 +17,17 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
-import { Constants } from 'src/app/model/Constants';
 import { ActivatedRoute } from '@angular/router';
 import { mergeMap } from 'rxjs/operators';
+import * as Excel from 'exceljs';
+import * as fs from 'file-saver';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 declare let require: any;
 
 
@@ -36,6 +38,7 @@ declare let require: any;
 })
 
 export class ExecutiveComponent implements OnInit, OnDestroy {
+    @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
     masterData = <any>{};
     filterData = <any>[];
     sonarKpiData = <any>{};
@@ -116,6 +119,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     previousBoardId: number;
     hierarchyLevel;
     showChart = true;
+    displayModal = false;
+    modalDetails = {
+        header: '',
+        tableHeadings: [],
+        tableValues: []
+    };
+    kpiExcelData;
+    isGlobalDownload: boolean = false;
+    kpiTrendsObj: object = {};
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         this.kanbanActivated = this.service.getSelectedType() === 'Kanban' ? true : false;
         if (this.boardId) {
@@ -149,7 +161,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.kanbanActivated = sharedobject === 'Kanban' ? true : false;
             if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
                 this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.boardId)[0]?.kpis;
-                this.processKpiConfigData();
+                this.processKpiConfigData();  
             }
         });
 
@@ -170,6 +182,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
                     for (const key in this.kpiChartData) {
                         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+                        this.createTrendsData(key);
                     }
                 }
                 this.trendBoxColorObj = { ...x };
@@ -200,6 +213,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
             this.showChart = view;
         }));
+        
+        this.subscriptions.push(this.service.isDownloadExcel.subscribe(isDownload => {
+            this.isGlobalDownload = isDownload;
+            if(this.isGlobalDownload){
+                this.downloadGlobalExcel();
+            }
+        }))
     }
 
     checkIfBoardIdBelongsToSelectedType(globalConfig) {
@@ -222,6 +242,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
+                if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
+                    this.createTrendsData(element.kpiId);
+                }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
             }
@@ -296,6 +319,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.chartColorList = {};
                     this.kpiSelectedFilterObj = {};
                     this.kpiDropdowns = {};
+                    this.kpiTrendsObj = {};
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
                 this.previousBoardId = this.boardId;
@@ -328,6 +352,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 } else if (this.filterData?.length && !$event.makeAPICall) {
                     // alert('no call');
                     this.allKpiArray.forEach(element => {
+                        this.getDropdownArray(element?.kpiId);
                         // For kpi3 and kpi53 generating table column headers and table data
                         if (element.kpiId === 'kpi3' || element.kpiId === 'kpi53') {
                             //generating column headers
@@ -368,10 +393,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
 
     // download excel functionality
-    downloadExcel(kpiId, kpiName, isKanban) {
-        const sprintIncluded = ['CLOSED'];
-        this.helperService.downloadExcel(kpiId, kpiName, isKanban, this.filterApplyData, this.filterData, sprintIncluded);
+    downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
+        this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,this.iSAdditionalFilterSelected);
     }
+
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
@@ -394,7 +419,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Zypher' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Zypher') {
                 groupIdSet.add(obj.groupId);
             }
         });
@@ -419,7 +444,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
         this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Jira' && kpiIdsForCurrentBoard?.includes(obj.kpiId)) {
+            if (!obj.kanban && obj.kpiSource === 'Jira') {
                 groupIdSet.add(obj.groupId);
             }
         });
@@ -777,6 +802,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         this.loaderJiraKanbanArray.splice(this.loaderJiraKanbanArray.indexOf(element.kpiId), 1);
                     });
                 }
+                this.kpiLoader =false;
             });
     }
 
@@ -983,6 +1009,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.showKpiTrendIndicator[kpiId] = false;
 
         }
+        this.createTrendsData(kpiId);
     }
 
     ifKpiExist(kpiId) {
@@ -1040,13 +1067,20 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const idx = this.ifKpiExist(kpiId);
         let trendValueList = [];
         const optionsArr = [];
-
         if (idx != -1) {
             trendValueList = this.allKpiArray[idx]?.trendValueList;
             if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
                 const obj = {};
                 for (let i = 0; i < trendValueList?.length; i++) {
-                    optionsArr?.push(trendValueList[i]?.filter);
+                    for(let key in this.colorObj){
+                        let kpiFilter = trendValueList[i]?.value?.findIndex(x => this.colorObj[key]?.nodeName == x.data);
+                        if(kpiFilter != -1){
+                            let ifExist = optionsArr.findIndex(x=>x == trendValueList[i]?.filter);
+                            if(ifExist == -1){
+                                optionsArr?.push(trendValueList[i]?.filter);
+                            }
+                        }
+                    }
                 }
                 const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
                 if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
@@ -1083,4 +1117,207 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
     }
+    downloadGlobalExcel(){
+        let worksheet;
+        const workbook = new Excel.Workbook();
+        worksheet = workbook.addWorksheet('Kpi Data');
+        // let level = this.service.getSelectedLevel();
+        let trends = this.service.getSelectedTrends();
+        // let firstRow = [level['hierarchyLevelName']];
+        // let headerNames = ["KPI Name"];
+        let headers = [{header: 'KPI Name', key: 'kpiName', width: 30}];
+        for(let i = 0; i<trends.length; i++){
+            // firstRow.push(trends[i]['nodeName']);
+            // headerNames.push("Latest ("+trends[i]['nodeName'] +")");
+            // headerNames.push("Trend ("+trends[i]['nodeName'] +")");
+            // headerNames.push("Maturity ("+trends[i]['nodeName'] +")");
+            let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
+            colorCode = colorCode.slice(1);
+            headers.push({header:"Latest ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_latest', width: 15});
+            headers.push({header:"Trend ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_trend', width: 15});
+            headers.push({header:"Maturity ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_maturity', width: 15});
+            worksheet.getRow(1).getCell((i*3)+2).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
+            worksheet.getRow(1).getCell((i*3)+3).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
+            worksheet.getRow(1).getCell((i*3)+4).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
+        }
+        
+        // worksheet.getRow(1).values = [firstRow[0]];
+        // for(let i = 1; i<firstRow?.length; i++){
+        //     worksheet.mergeCells(1, i+1, 1, i+3);
+        //     worksheet.getCell(worksheet.getColumn(i+1)).value = firstRow[i+1];
+        //     // worksheet.getCell().value = firstRow[i+1];
+        // }
+        // worksheet.getRow(1).values = [...firstRow];
+        // worksheet.getRow(2).values = [...headerNames];
+        worksheet.columns = [...headers];
+        
+        for(let kpi of this.updatedConfigGlobalData){
+            let kpiId = kpi.kpiId;
+            if(this.kpiTrendsObj[kpiId]?.length > 0){
+                let obj = {};
+                obj['kpiName'] = kpi?.kpiName;
+                for(let i = 0; i< this.kpiTrendsObj[kpiId]?.length;i++){
+                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_latest'] = this.kpiTrendsObj[kpiId][i]?.value;
+                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_maturity'] = this.kpiTrendsObj[kpiId][i]?.maturity;
+                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_trend'] = this.kpiTrendsObj[kpiId][i]?.trend;
+                }
+                worksheet.addRow(obj);
+            }
+        }
+       
+
+        worksheet.eachRow(function(row, rowNumber) {
+            if (rowNumber === 1) {
+                row.eachCell({
+                    includeEmpty: true
+                }, function(cell) {
+
+                    cell.font = {
+                        name: 'Arial Rounded MT Bold'
+                    };
+                });
+            }
+            row.eachCell({
+                includeEmpty: true
+            }, function(cell) {
+
+                cell.border = {
+                    top: {
+                        style: 'thin'
+                    },
+                    left: {
+                        style: 'thin'
+                    },
+                    bottom: {
+                        style: 'thin'
+                    },
+                    right: {
+                        style: 'thin'
+                    }
+                };
+            });
+        });
+        // Footer Row
+        worksheet.addRow([]);
+        let footerRow = worksheet.addRow(['* KPIs which do not have any data are not included in the export']);
+        footerRow.getCell(1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {
+                argb: 'FFCCFFE5'
+            }
+        };
+        footerRow.getCell(1).border = {
+            top: {
+                style: 'thin'
+            },
+            left: {
+                style: 'thin'
+            },
+            bottom: {
+                style: 'thin'
+            },
+            right: {
+                style: 'thin'
+            }
+        };
+
+
+        // Merge Cells
+        worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
+       // Generate Excel File with given name
+        workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data as BlobPart], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        fs.saveAs(blob, 'Kpi Data' + '.xlsx');
+    });
+    }
+
+    checkMaturity(item) {
+        let maturity = item.maturity;
+        if (maturity == undefined) {
+          return 'NA';
+        }
+        if (item.value.length >= 5) {
+          const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+          const tempArr = last5ArrItems.filter(x => x.data != 0);
+          if (tempArr.length == 0) {
+            maturity = '--';
+          }
+        } else {
+          maturity = '--';
+        }
+        maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
+        return maturity;
+      }
+
+      checkLatestAndTrendValue(kpiData, item){
+        let latest:string = '';
+        let trend:string = '';
+        
+        if(item?.value?.length > 0){
+            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
+            let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' ? kpiData?.kpiDetail?.kpiUnit : '';
+            latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+        }
+        if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
+            if(kpiData?.kpiDetail?.trendCalculative){
+                let lhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
+                let rhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
+                let lhs = item?.value[item?.value?.length - 1][lhsKey];
+                let rhs = item?.value[item?.value?.length - 1][rhsKey];
+                let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
+                let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
+                if(trendObj){
+                    trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
+                }else{
+                    trend = 'NA'
+                }
+            }else{
+                let lastVal = item?.value[item?.value?.length - 1]?.value;
+                let secondLastVal = item?.value[item?.value?.length - 2]?.value;
+                let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
+                if(secondLastVal > lastVal && !isPositive){
+                    trend = '+ve';
+                }else if(secondLastVal < lastVal && !isPositive){
+                    trend = '-ve';
+                }else if(secondLastVal < lastVal && isPositive){
+                    trend = '+ve';
+                }else if(secondLastVal > lastVal && isPositive){
+                    trend = '-ve';
+                }else {
+                    trend = '-- --';
+                }
+            }
+        }else{
+            trend = 'NA';
+        }
+        return [latest, trend];
+      }
+
+      createTrendsData(kpiId){
+        let enabledKpiObj = this.updatedConfigGlobalData?.filter(x => x.kpiId == kpiId)[0];
+        if(enabledKpiObj && Object.keys(enabledKpiObj)?.length != 0){
+            this.kpiTrendsObj[kpiId] = [];
+            for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
+                if(this.kpiChartData[kpiId][i]?.value?.length > 0){
+                    let trendObj = {};
+                    const [latest, trend] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                    trendObj = {
+                        "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                        "value": latest,
+                        "trend": trend,
+                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
+                                    this.checkMaturity(this.kpiChartData[kpiId][i]) 
+                                    : 'M'+this.kpiChartData[kpiId][i]?.maturity,
+                    };
+                    if(kpiId === 'kpi997'){
+                        trendObj['value'] = 'NA';
+                    }
+                    this.kpiTrendsObj[kpiId]?.push(trendObj);
+                }
+            }
+        }
+      }
 }

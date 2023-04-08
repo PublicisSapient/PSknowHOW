@@ -46,6 +46,7 @@ services:
       - dbname={{ MONGODB_APPLICATION_DATABASE }}
       - dbusername={{ MONGODB_APPLICATION_USER }}
       - dbpassword={{ MONGODB_APPLICATION_PASS }}
+      - JAVA_OPTS{{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     networks:
@@ -89,6 +90,8 @@ services:
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/properties/:/app/properties/
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/offline_data:/app/offline_data
       - /etc/hosts:/etc/hosts
+    environment:
+      - JAVA_OPTS={{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     networks:
@@ -110,6 +113,8 @@ services:
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/certs:/app/certs/
       - /etc/hosts:/etc/hosts
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS={{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     environment:
@@ -131,6 +136,8 @@ services:
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/properties/:/app/properties/
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/offline_data:/app/offline_data
       - /etc/hosts:/etc/hosts
+    environment:
+      - JAVA_OPTS={{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     networks:
@@ -152,6 +159,8 @@ services:
       - {{ INSTALL_DIR }}/{{ PROJECT_NAME }}/certs:/app/certs/
       - /etc/hosts:/etc/hosts
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS={{ JAVA_OPTS }}
     links:
       - MongoDB:mongodb
     networks:

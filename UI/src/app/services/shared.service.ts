@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,7 +30,7 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
@@ -44,6 +44,8 @@ export class SharedService implements OnInit {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
+  iterationCongifData=new BehaviorSubject({});
+  kpiListNewOrder= new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
   private selectedProject;
@@ -56,6 +58,7 @@ export class SharedService implements OnInit {
   public activateKanban;
   public selectedTypeObs = new BehaviorSubject('scrum');
   public boardId = 1;
+  public isDownloadExcel;
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -78,6 +81,8 @@ export class SharedService implements OnInit {
   setNoData = new Subject<boolean>();
   clickedItem = new Subject<any>();
   public xLabelValue: any;
+  selectedLevel:object={};
+  selectedTrends:Array<object> = [];
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.onTabRefresh = new EventEmitter();
@@ -87,12 +92,9 @@ export class SharedService implements OnInit {
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
     this.activateKanban = new EventEmitter();
-    // this.engineeringMaturityExcelData = new EventEmitter();
+    this.isDownloadExcel = new EventEmitter();
   }
 
-
-  ngOnInit() {
-  }
 
   // calls when tab is selected
   selectTab(selectedTab) {
@@ -290,6 +292,21 @@ export class SharedService implements OnInit {
     for (const cookie of cookies) {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
+  }
+   setGlobalDownload(val){
+    this.isDownloadExcel.emit(val);
+  }
+  setSelectedLevel(val){
+    this.selectedLevel = {...val};
+  }
+  getSelectedLevel(){
+    return this.selectedLevel;
+  }
+  setSelectedTrends(values){
+    this.selectedTrends = [...values];
+  }
+  getSelectedTrends(){
+    return this.selectedTrends;
   }
 }
 

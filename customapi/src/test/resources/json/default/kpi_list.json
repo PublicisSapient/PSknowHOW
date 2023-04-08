@@ -3218,12 +3218,54 @@
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi128",
+    "kpiName": "Work Completed",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isSquadSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi75",
     "kpiName": "Estimate vs Actual",
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3261,7 +3303,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3295,7 +3337,7 @@
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 7,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3341,7 +3383,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 8,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3379,7 +3421,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 8,
+    "defaultOrder": 9,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3417,7 +3459,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 10,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3551,5 +3593,79 @@
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
+  },
+  {
+    "kpiId": "kpi130",
+    "kpiName": "Iteration Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Iteration Status KPI gives a representation of delays in the story."
+        },
+        {
+          "type": "paragraph",
+          "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+        }
+      ]
+    },
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi129",
+    "kpiName": "Issues Without Story Link",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "formula": [
+        {
+          "lhs": "Testcases without story link",
+          "rhs": "# of total non-regression test cases without story link"
+        },
+        {
+          "lhs": "Defect Count Without Story Link",
+          "rhs": "# of total defects without Story link"
+        }
+      ],
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
+        },
+        {
+          "type": "paragraph",
+          "value": "This Kpi works only on Project level."
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isSquadSupport": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "3_column",
+    "calculateMaturity": false
   }
 ]

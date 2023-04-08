@@ -96,6 +96,8 @@ import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
 import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -106,9 +108,7 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 
 const initializeAppFactory = (http: HttpClient): () => void  =>{
     if (!environment.production) {
-        return  ()=>{
-           // environment['baseUrl']='localhost:8080';
-        };
+        return  ()=> undefined;
     } else {
         return async () => {
         const env$ = http.get('assets/env.json').pipe(
@@ -158,6 +158,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         GroupedColumnPlusLineChartComponent,
         BacklogComponent,
         TableComponent,
+        ExportExcelComponent,
+        TableComponent,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent
     ],
@@ -186,7 +188,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         InputTextareaModule,
         AccordionModule,
         DialogModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        DragDropModule
     ],
     providers: [
         ExcelService,

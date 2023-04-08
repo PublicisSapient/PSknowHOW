@@ -205,20 +205,13 @@
                   </th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-project>
+              <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                 <tr>
-                  <td class='border-bottom border-right'>
+                  <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
                     <div>{{project['role']}}</div>
                   </td>
-                  <td [attr.colspan]="dynamicCols.length" class='custom-table-cell border-bottom' >
-                    <table class="p-datatable">
-                      <tr *ngFor="let item of project.projects; let isLast = last" class="" [ngClass]="{'border-bottom': !isLast}">
-                        <td *ngFor="let col of dynamicCols" class="p-p-3 border-right">
-                          <span [ngClass]="{'info-block':col.id === 'projectName'}">{{item[col.id]}}</span>
-                        </td>
-                      </tr>
-                    </table>
-                    <!-- {{project[col.id]}} -->
+                  <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols">
+                    <span [ngClass]="{'info-block':col.id === 'projectName'}">{{project[col.id]}}</span>
                   </td>
                 </tr>
               </ng-template>

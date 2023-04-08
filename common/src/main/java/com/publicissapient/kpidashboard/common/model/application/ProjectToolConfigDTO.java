@@ -46,6 +46,7 @@ public class ProjectToolConfigDTO {
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
+	private String connectionName;
 	private String projectId;
 	private String projectKey;
 	private String jobName;
@@ -64,7 +65,7 @@ public class ProjectToolConfigDTO {
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
-	// TestCase Fields
+	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
 	private List<String> automatedTestValue;
@@ -74,6 +75,18 @@ public class ProjectToolConfigDTO {
 	private List<String> testRegressionValue;
 	private List<String> regressionAutomationFolderPath;
 	private List<String> inSprintAutomationFolderPath;
+
+	// TestCase Fields For jira test tool
+	private String[] jiraTestCaseType;
+	private String testAutomatedIdentification;
+	private String testAutomationCompletedIdentification;
+	private String testRegressionIdentification;
+	private String testAutomationCompletedByCustomField;
+	private String testRegressionByCustomField;
+	private List<String> jiraAutomatedTestValue;
+	private List<String> jiraRegressionTestValue;
+	private List<String> jiraCanBeAutomatedTestValue;
+	private List<String> testCaseStatus;
 
 	private String organizationKey;
 	// BambooDeployment

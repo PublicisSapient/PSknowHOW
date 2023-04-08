@@ -29,23 +29,25 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -56,8 +58,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
  * @author Hiren Babariya
  */
 @Component
-public class OpenTicketAgingByPriorityServiceImpl
-		extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
+public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OpenTicketAgingByPriorityServiceImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -79,7 +80,7 @@ public class OpenTicketAgingByPriorityServiceImpl
 	private KpiHelperService kpiHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	@Autowired
 	private FilterHelperService flterHelperService;
 
@@ -101,8 +102,7 @@ public class OpenTicketAgingByPriorityServiceImpl
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			projectList.add(basicProjectConfigId.toString());
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(basicProjectConfigId);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
@@ -124,12 +124,12 @@ public class OpenTicketAgingByPriorityServiceImpl
 		});
 		/** additional filter **/
 		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV,flterHelperService);
+				DEV, flterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
-		
+
 		resultListMap.put(RANGE_TICKET_LIST, kanbanJiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE , NIN));
+				uniqueProjectMap, startDate, endDate, RANGE, NIN));
 
 		resultListMap.put(SUBGROUPCATEGORY, subGroupCategory);
 		return resultListMap;
@@ -210,15 +210,15 @@ public class OpenTicketAgingByPriorityServiceImpl
 
 		String subGroupCategory = (String) resultMap.get(SUBGROUPCATEGORY);
 
-		Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue = KpiDataHelper
-				.createProjectWiseMapKanban((List<KanbanJiraIssue>) resultMap.get(RANGE_TICKET_LIST), subGroupCategory, flterHelperService);
+		Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue = KpiDataHelper.createProjectWiseMapKanban(
+				(List<KanbanJiraIssue>) resultMap.get(RANGE_TICKET_LIST), subGroupCategory, flterHelperService);
 
 		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement);
 	}
 
 	private void kpiWithFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
 		List<String> xAxisRange = customApiConfig.getTotalDefectCountAgingXAxisRange();
@@ -226,7 +226,7 @@ public class OpenTicketAgingByPriorityServiceImpl
 
 		leafNodeList.forEach(node -> {
 			Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-			String projectNodeId =  node.getProjectFilter().getBasicProjectConfigId().toString();
+			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
 			List<KanbanJiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId,
 					new ArrayList<>());
@@ -251,12 +251,14 @@ public class OpenTicketAgingByPriorityServiceImpl
 								priorityList, trendValueMap, node.getProjectFilter().getId(), rangeMonth));
 
 				// Populates data in Excel for validation for tickets created before
-				populateValidationDataObject(kpiElement, requestTrackerId, node.getProjectFilter().getId(), validationDataMap,
+				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getId(), excelData,
 						projectWiseJiraIssueList);
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 
 		});
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.OPEN_TICKET_AGING_BY_PRIORITY.getColumns());
 	}
 
 	/**
@@ -307,7 +309,7 @@ public class OpenTicketAgingByPriorityServiceImpl
 			String rangeMonth) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		Map<String, Long> projectFilterWiseDataMap = new HashMap<>();
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
 			projectWisePriorityList.forEach(priority -> {
 				Long priorityCount = projectWisePriorityCountMap.getOrDefault(priority, 0L);
@@ -319,7 +321,7 @@ public class OpenTicketAgingByPriorityServiceImpl
 		}
 
 		projectFilterWiseDataMap.forEach((priority, value) -> {
-			DataCount dcObj = getDataCountObject(value, projectName, rangeMonth, priority , hoverValueMap);
+			DataCount dcObj = getDataCountObject(value, projectName, rangeMonth, priority, hoverValueMap);
 			trendValueMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dcObj);
 		});
 
@@ -335,13 +337,13 @@ public class OpenTicketAgingByPriorityServiceImpl
 	 * @param
 	 */
 	private DataCount getDataCountObject(Long value, String projectName, String date, String priority,
-			Map<String, Integer> overAllHoverValueMap) {
+			Map<String, Object> overAllHoverValueMap) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
 		dataCount.setKpiGroup(priority);
-		Map<String, Integer> hoverValueMap = new HashMap<>();
+		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (priority.equalsIgnoreCase(CommonConstant.OVERALL)) {
 			dataCount.setHoverValue(overAllHoverValueMap);
 		} else {
@@ -354,31 +356,12 @@ public class OpenTicketAgingByPriorityServiceImpl
 		return dataCount;
 	}
 
-	/**
-	 * populate data for excel
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param projectNodeId
-	 * @param validationDataMap
-	 * @param projectWiseJiraIssueList
-	 */
-	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String projectNodeId,
-			Map<String, ValidationData> validationDataMap, List<KanbanJiraIssue> projectWiseJiraIssueList) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+	public void populateExcelDataObject(String requestTrackerId, String projectNodeId, List<KPIExcelData> excelData,
+			List<KanbanJiraIssue> projectWiseJiraIssueList) {
+
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(
-					projectWiseJiraIssueList.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
-			validationData.setDefectPriorityList(
-					projectWiseJiraIssueList.stream().map(KanbanJiraIssue::getPriority).collect(Collectors.toList()));
-			validationData.setStatus(
-					projectWiseJiraIssueList.stream().map(KanbanJiraIssue::getJiraStatus).collect(Collectors.toList()));
-			validationData.setDateList(projectWiseJiraIssueList.stream()
-					.map(issue -> KpiDataHelper.convertStringToDate(issue.getCreatedDate()).toString())
-					.collect(Collectors.toList()));
-			validationDataMap.put(projectName, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
+			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			KPIExcelUtility.populateOpenTicketByAgeingExcelData(projectName, projectWiseJiraIssueList, excelData);
 		}
 	}
 

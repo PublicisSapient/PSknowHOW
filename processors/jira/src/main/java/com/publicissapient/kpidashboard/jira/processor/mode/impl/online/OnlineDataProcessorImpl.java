@@ -29,9 +29,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -53,6 +53,7 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
@@ -66,8 +67,6 @@ import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -119,9 +118,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	private SubProjectRepository subProjectRepository;
 
 	@Autowired
-	private SprintClient sprintClient;
-
-	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
 
@@ -142,7 +138,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 			Map<String, ProjectConfFieldMapping> onlineLineprojectConfigMap = createProjectConfigMap(
 					getRelevantProjects(projectConfigList), fieldMappingList);
-			MDC.put("OnlineProjectCount", String.valueOf(onlineLineprojectConfigMap.size()));
 			executor = Executors.newFixedThreadPool(jiraProcessorConfig.getThreadPoolSize());
 
 			CountDownLatch latch = new CountDownLatch(onlineLineprojectConfigMap.size());
@@ -167,8 +162,9 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
 									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
-									sprintClient);// NOPMD
+									getExecutionLogContext());// NOPMD
 							executor.execute(worker);
+
 						}
 					}
 				}
@@ -188,6 +184,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			if (executor != null) {
 				executor.shutdown();
 			}
+			destroyLogContext();
+			MDC.clear();
 		}
 		return issueCountMap;
 	}
@@ -304,5 +302,5 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 		return onlineJiraProjects;
 	}
-	
+
 }

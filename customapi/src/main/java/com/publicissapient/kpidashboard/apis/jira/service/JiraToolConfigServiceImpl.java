@@ -111,7 +111,6 @@ public class JiraToolConfigServiceImpl {
 	}
 
 	private HttpEntity<?> getHttpEntity(Connection connection) {
-
 		String username = "";
 		String password = "";
 
@@ -126,7 +125,6 @@ public class JiraToolConfigServiceImpl {
 			password = connection.getPassword() == null ? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
 		}
-
 		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
 		return new HttpEntity<>(headers);
 	}

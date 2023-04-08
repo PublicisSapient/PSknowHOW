@@ -268,10 +268,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		}
 		fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
-		List<String> rejectionList = workflowMap.get(CommonConstant.REJECTION);
-		/*if (CollectionUtils.isNotEmpty(rejectionList)) {
-			fieldMapping.setJiraDefectRejectionStatus(rejectionList.get(0));
-		}*/
 		fieldMapping.setJiraDefectSeepageIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectRemovalStatus(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraDefectRemovalIssueType(issueTypeMap.get(CommonConstant.STORY));
@@ -285,6 +281,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIssueDeliverdStatus(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIntakeToDorIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 		fieldMapping.setResolutionTypeForRejection(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setQaRootCauseValue(valuesToIdentifyMap.get(CommonConstant.QA_ROOT_CAUSE));

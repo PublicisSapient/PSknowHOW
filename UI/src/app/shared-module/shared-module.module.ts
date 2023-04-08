@@ -27,6 +27,7 @@ import { ProjectFilterComponent } from './project-filter/project-filter.componen
 import { NamePipePipe } from './name-pipe.pipe';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
 import { FooterComponent } from './footer/footer.component';
+import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
 
 @NgModule({
   imports: [
@@ -43,13 +44,15 @@ import { FooterComponent } from './footer/footer.component';
     NamePipePipe,
     PageLoaderComponent,
     CalendarModule,
-    FooterComponent
+    FooterComponent,
+    KpiFilterComponent
   ],
   declarations: [
     ProjectFilterComponent,
     NamePipePipe,
     PageLoaderComponent,
-    FooterComponent
+    FooterComponent,
+    KpiFilterComponent
   ]
 })
 export class SharedModuleModule { }
