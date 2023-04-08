@@ -301,15 +301,11 @@ export class FilterComponent implements OnInit {
         this.selectedFilterData.kanban = this.kanban;
         this.selectedFilterData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
         const filterData = this.service.getFilterData();
-        if (!Object.keys(filterData).length || (this.previousType !== this.kanban) || this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'backlog' || this.initFlag) {
             this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData)
                 .subscribe(filterApiData => {
                     this.processFilterData(filterApiData);
                     this.initFlag = false;
                 });
-        } else {
-            this.processFilterData(filterData);
-        }
     }
 
     processFilterData(filterData) {
@@ -448,7 +444,7 @@ export class FilterComponent implements OnInit {
             for (let i = 0; i < selectedProjects?.length; i++) {
                 for (const key in this.additionalFiltersDdn) {
                     if (key == 'sprint') {
-                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
+                        this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['parentId']?.includes(selectedProjects[i])  && x['sprintState']?.toLowerCase() === 'closed')];
                     } else {
                         this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter(x => x['path'][0]?.includes(selectedProjects[i]))];
                     }

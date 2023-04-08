@@ -83,12 +83,17 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
+                        console.log(event?.url?.includes('api/authdetails'), event.headers.has('auth-details-updated'),event.headers.get('auth-details-updated'), localStorage.getItem('authorities'));
                         if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
+                            console.log('---------------------calling auth details------------------------------------');
                             this.httpService.getAuthDetails();
                         }
                     }
                 }),
                 catchError((err) => {
+                console.log("GS oops error tracking start---");
+                console.log(err);
+                console.log("GS oops error tracking end---");
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
@@ -98,19 +103,34 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }
+
+                        if (environment.SSO_LOGIN) {
+                            console.log('Navigating to dashboard');
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
+                        }
                     } else if(err.status === 403){
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
-                        if (httpErrorHandler !== 'local') {
-                            if (requestArea === 'internal') {
-                                if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                    if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
-                                    this.router.navigate(['./dashboard/Error']);
+                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
+                            this.service.clearAllCookies();
+                            console.log('Navigating to dashboard');
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
+                        }else{
+                            if (httpErrorHandler !== 'local') {
+                                if (requestArea === 'internal') {
+                                    if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
+                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        this.router.navigate(['./dashboard/Error']);
+                                        }
+                                        setTimeout(() => {
+                                            this.service.raiseError(err);
+                                        }, 0);
                                     }
-                                    setTimeout(() => {
-                                        this.service.raiseError(err);
-                                    }, 0);
                                 }
                             }
                         }

@@ -16,6 +16,7 @@
  *
  ******************************************************************************/
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sso-auth-failure',
@@ -24,9 +25,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SsoAuthFailureComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  reloadApp() {
+    console.log('Reload App Called');
+    this.router.navigate(['./dashboard/mydashboard']).then(success => {
+      this.clearAllCookies();
+      window.location.reload();
+    });
+  }
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
   }
 
 }

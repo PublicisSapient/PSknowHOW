@@ -284,7 +284,16 @@ export class SharedService {
   setShowTableView(val){
     this.showTableView.next(val);
   }
-  setGlobalDownload(val){
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
+  }
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
   setSelectedLevel(val){

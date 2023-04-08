@@ -41,8 +41,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -51,6 +51,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -112,28 +113,38 @@ public class SprintClientImpl implements SprintClient {
 	 *            sprintDetailsSet
 	 */
 	@Override
-	public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			JiraAdapter jiraAdapter) throws InterruptedException {
+	public synchronized void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
+			JiraAdapter jiraAdapter) {
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
+			log.info("sprintDetailsSet came for saving:{}"+sprintDetailsSet);
 			List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
+			log.info("sprintDetails fetched from db :{}"+dbSprints);
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
-			PSLogData sprintLogData = new PSLogData();
-			for (SprintDetails sprint : sprintDetailsSet) {
+
+			sprintDetailsSet.forEach(sprint -> {
+			  PSLogData sprintLogData = new PSLogData();
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} "
+						+sprint.getSprintID(),sprint.getState(), boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
-					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
+
+					log.info("sprint id {} found in db."+sprint.getSprintID());
+					SprintDetails dbSprintDetails =  dbSprintDetailMap.get(sprint.getSprintID());
 					sprint.setId(dbSprintDetails.getId());
-					// case 1 : same sprint different board id
+					log.info("mongo Id of existing sprint details: {}"+dbSprintDetails.getId());
+					//case 1 : same sprint different board id
+
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
+						log.info("different board id came with same sprintid");
 						fetchReport = true;
 					} // case 2 : sprint state is active or changed which is present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
@@ -146,6 +157,7 @@ public class SprintClientImpl implements SprintClient {
 						fetchReport = false;
 					}
 				} else {
+					log.info("sprint id {} not found in db."+sprint.getSprintID());
 					fetchReport = true;
 				}
 
@@ -155,8 +167,16 @@ public class SprintClientImpl implements SprintClient {
 							dbSprintDetailMap.get(sprint.getSprintID()));
 					sprintToSave.add(sprint);
 				}
+
+			});
+			log.info("sprints going for save or update operation: {}", sprintToSave);
+			try {
+				sprintRepository.saveAll(sprintToSave);
+			}catch (DuplicateKeyException e){
+				log.info("duplicate sprint found."+e.getMessage());
 			}
-			sprintRepository.saveAll(sprintToSave);
+			log.info("{} sprints found", sprintDetailsSet.size());
+
 			sprintLogData.setAction(CommonConstant.SPRINT_DATA);
 			sprintLogData
 					.setSprintListSaved(

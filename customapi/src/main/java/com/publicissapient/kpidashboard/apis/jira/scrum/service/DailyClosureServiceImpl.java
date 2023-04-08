@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -56,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -154,6 +154,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
 					List<JiraIssue> issueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
+
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -162,10 +163,12 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 							.findByStoryIDInAndBasicProjectConfigIdIn(completedIssues,
 									Arrays.asList(basicProjectConfigId));
 					Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
+
 					filtersIssuesList.forEach(issue -> issue
 							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));
 
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+
 					resultListMap.put(SPRINT, sprintDetails);
 				}
 			}
