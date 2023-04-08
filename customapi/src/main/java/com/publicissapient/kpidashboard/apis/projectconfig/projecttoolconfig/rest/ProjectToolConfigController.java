@@ -91,7 +91,6 @@ public class ProjectToolConfigController {
 		final ProjectToolConfig projectToolConfig = modelMapper.map(projectToolDTO, ProjectToolConfig.class);
 		projectToolConfig.setId(null);
 		projectToolConfig.setBasicProjectConfigId(new ObjectId(basicProjectConfigId));
-		projectToolConfig.setMetadataTemplateCode(projectToolDTO.getMetadataTemplateCode());
 		log.info("created and saved new projectToolConfigDTO");
 		return ResponseEntity.status(HttpStatus.OK).body(toolService.saveProjectToolDetails(projectToolConfig));
 	}
