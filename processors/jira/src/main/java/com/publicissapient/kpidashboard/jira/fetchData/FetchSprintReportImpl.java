@@ -502,6 +502,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                     String jsonResponse = jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection);
                     isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
                     startIndex = sprintDetailsList.size();
+                    TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                 } while (!isLast);
                 psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
                 log.info("Fetch Sprint for Board", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -514,6 +515,8 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                     kv(CommonConstant.PSLOGDATA, psLogData));
         } catch (IOException ioe) {
             log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return sprintDetailsList;
     }
