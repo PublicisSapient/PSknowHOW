@@ -7,7 +7,9 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
@@ -23,6 +25,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -38,7 +41,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 @Slf4j
 @Component
@@ -206,6 +214,35 @@ public class JiraCommonService {
             LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
         }
         return cleaned;
+    }
+
+    public void savingIssueLogs(int savedIssuesCount, List<JiraIssue> jiraIssues, Instant startProcessingJiraIssues,
+                                 boolean isEpic, PSLogData psLogData) {
+        PSLogData saveIssueLog = new PSLogData();
+        saveIssueLog.setIssueAndDesc(jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+        saveIssueLog.setTotalSavedIssues(String.valueOf(savedIssuesCount));
+        psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
+        psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
+        psLogData.setSprintListFetched(null);
+        psLogData.setTotalFetchedSprints(null);
+        if (!isEpic) {
+            saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
+            psLogData.setAction(CommonConstant.SAVED_ISSUES);
+            saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
+            log.debug("Saved Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+                    kv(CommonConstant.PSLOGDATA, saveIssueLog));
+            log.info("Processed Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+                    kv(CommonConstant.PSLOGDATA, psLogData));
+        } else {
+            saveIssueLog.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+            psLogData.setAction(CommonConstant.SAVED_EPIC_ISSUES);
+            saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
+            log.debug("Saved Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+                    kv(CommonConstant.PSLOGDATA, saveIssueLog));
+            log.info("Processed Epic Issues for project {}", MDC.get(CommonConstant.PROJECTNAME),
+                    kv(CommonConstant.PSLOGDATA, psLogData));
+
+        }
     }
 
 }

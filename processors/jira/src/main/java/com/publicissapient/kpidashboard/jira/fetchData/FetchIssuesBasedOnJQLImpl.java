@@ -14,6 +14,7 @@ import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -68,12 +70,14 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
 //    @Autowired
 //    private RabbitTemplate template;
-//
-//    @Autowired
-//    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
+    @Autowired
+    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
 
     @Autowired
     private JiraCommonService jiraCommonService;
+
+    @Autowired
+    ValidateData validateData;
 
     @Value("${rabbitmq.exchange.name}")
     String exchange;
@@ -82,7 +86,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     String routingKey;
 
     @Override
-    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws InterruptedException, JSONException {
+    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws JSONException {
 
         List<Issue> totalIssues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
@@ -90,8 +94,13 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         PSLogData psLogData = new PSLogData();
         psLogData.setProjectName(projectConfig.getProjectName());
         int total = 0;
+        int savedIsuesCount = 0;
 
         client=clientIncoming;
+
+        Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+        JiraHelper.setStartDate(jiraProcessorConfig);
+        boolean processorFetchingComplete = false;
 
         try {
             boolean dataExist = false;
@@ -121,6 +130,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
 
             for (int i = 0; hasMore; i += pageSize) {
+                Instant startProcessingJiraIssues = Instant.now();
                 SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
                         userTimeZone, i, dataExist);
                 List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
@@ -130,17 +140,29 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     psLogData.setTotalFetchedIssues(String.valueOf(total));
                 }
 
-//                if (CollectionUtils.isNotEmpty(issues)) {
-//                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
+                if (CollectionUtils.isNotEmpty(issues)) {
+                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
+                    JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
+                    savedIsuesCount += issues.size();
+                    jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
 //                   template.convertAndSend(exchange, routingKey, jiraIssues);
-//                }
+                }
 
                 if (issues.size() < pageSize) {
                     break;
                 }
             }
+            processorFetchingComplete = true;
+        } catch (JSONException e) {
+            log.error("Error while updating Story information in scrum client", e,
+                    kv(CommonConstant.PSLOGDATA, psLogData));
+            lastSavedJiraIssueChangedDateByType.clear();
         } catch (InterruptedException e) {
-        log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+            log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+            lastSavedJiraIssueChangedDateByType.clear();
+            processorFetchingComplete = false;
+        } finally {
+            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig);
         }
         return totalIssues;
     }

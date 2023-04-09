@@ -1,10 +1,12 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -40,7 +42,10 @@ public class SaveData {
     @Autowired
     private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
-    public void saveData(List<JiraIssue> jiraIssuesToSave, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, List<SprintDetails> sprintDetailsToSave, Set<AccountHierarchy> accountHierarchiesToSave, Set<SprintDetails> setForCacheClean, ProjectConfFieldMapping projectConfig){
+    @Autowired
+    private AssigneeDetailsRepository assigneeDetailsRepository;
+
+    public void saveData(List<JiraIssue> jiraIssuesToSave, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, List<SprintDetails> sprintDetailsToSave, Set<AccountHierarchy> accountHierarchiesToSave, AssigneeDetails assigneeDetailsToSave, Set<SprintDetails> setForCacheClean, ProjectConfFieldMapping projectConfig){
 
         boolean dataExist = (jiraIssueRepository
                 .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
@@ -54,6 +59,16 @@ public class SaveData {
             jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
         }
 
+        if(CollectionUtils.isNotEmpty(sprintDetailsToSave)){
+            log.info("Saving Sprint details");
+            sprintRepository.saveAll(sprintDetailsToSave);
+        }
+
+        if(assigneeDetailsToSave!=null) {
+            log.info("Saving assignee details");
+            assigneeDetailsRepository.save(assigneeDetailsToSave);
+        }
+
         if (CollectionUtils.isNotEmpty(accountHierarchiesToSave)) {
             log.info("Saving jira account hierarchies");
             accountHierarchyRepository.saveAll(accountHierarchiesToSave);
@@ -65,11 +80,6 @@ public class SaveData {
             }
 
         }
-
-        if(CollectionUtils.isNotEmpty(sprintDetailsToSave)){
-            sprintRepository.saveAll(sprintDetailsToSave);
-        }
-
 
 
     }

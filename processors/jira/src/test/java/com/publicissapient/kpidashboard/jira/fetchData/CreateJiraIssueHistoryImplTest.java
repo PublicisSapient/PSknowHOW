@@ -65,6 +65,9 @@ public class CreateJiraIssueHistoryImplTest {
 
     JiraIssue jiraIssue;
 
+    List<IssueField> issueFieldList = new ArrayList<>();
+
+
     @Before
     public void setUp() throws URISyntaxException {
 
@@ -87,6 +90,7 @@ public class CreateJiraIssueHistoryImplTest {
     private ProjectConfFieldMapping createProjectConfig(){
         ProjectConfFieldMapping projectConfFieldMapping=ProjectConfFieldMapping.builder().build();
         projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63c04dc7b7617e260763ca4e"));
+        projectConfFieldMapping.setFieldMapping(fieldMapping);
 
         return projectConfFieldMapping;
     }
@@ -115,7 +119,8 @@ public class CreateJiraIssueHistoryImplTest {
         map.put("id", "20810");
         JSONObject value = new JSONObject(map);
         IssueField issueField = new IssueField("20810", "Component", null, value);
-        List<IssueField> issueFields = Arrays.asList(issueField);
+        List<IssueField> issueFields=new ArrayList<>();
+                issueFields.addAll(issueFieldList);
         Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
                 new Visibility(Visibility.Type.ROLE, "abc"), 1l);
         List<Comment> comments = Arrays.asList(comment);
@@ -170,7 +175,6 @@ public class CreateJiraIssueHistoryImplTest {
     }
 
     private void createFieldsMap(boolean sprintStatus) {
-        List<IssueField> issueFieldList = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
         map.put("value", "Client Testing (UAT)");

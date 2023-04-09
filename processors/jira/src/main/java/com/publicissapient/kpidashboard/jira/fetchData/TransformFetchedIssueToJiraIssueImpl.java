@@ -52,23 +52,27 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
     @Autowired
     private AdditionalFilterHelper additionalFilterHelper;
 
-//    @Autowired
-//    private CreateAccountHierarchy createAccountHierarchy;
-//
-//    @Autowired
-//    private FetchSprintReport fetchSprintReport;
-//
-//    @Autowired
-//    private CreateJiraIssueHistoryImpl createJiraIssueHistory;
-//
-//    @Autowired
-//    private SaveData saveData;
+    @Autowired
+    private CreateAccountHierarchy createAccountHierarchy;
+
+    @Autowired
+    private FetchSprintReportImpl fetchSprintReport;
+
+    @Autowired
+    private CreateJiraIssueHistoryImpl createJiraIssueHistory;
+
+    @Autowired
+    private SaveData saveData;
+
+    @Autowired
+    private CreateAssigneeDetails createAssigneeDetails;
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
                                               boolean dataFromBoard) throws JSONException,InterruptedException {
 
         List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
+        List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
 
         if (null == currentPagedJiraRs) {
             log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -76,7 +80,8 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         }
 
         Map<String, String> issueEpics = new HashMap<>();
-        Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
+        Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+        Set<Assignee> assigneeSetToSave = new HashSet<>();
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
         for (Issue issue : currentPagedJiraRs) {
@@ -152,32 +157,42 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
                 processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-                setJiraAssigneeDetails(jiraIssue, assignee);
+                updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
 
                 setEstimates(jiraIssue, issue);
 
                 setDueDates(jiraIssue, issue,fields,fieldMapping);
 
+                JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+
                 if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                     jiraIssuesToSave.add(jiraIssue);
+                    jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
                 }
             }
         }
 
-//        List<JiraIssueCustomHistory> jiraIssueCustomHistoryToSave=createJiraIssueHistory.createIssueCustomHistory(projectConfig,jiraIssuesToSave,currentPagedJiraRs);
-//        Set<SprintDetails> setForCacheClean = new HashSet<>();
-//        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
-//        List<SprintDetails> sprintDetailsList =new ArrayList<>();
-//        //now we will be putting setCacheClean in fetchSprints fn
-//        if (!dataFromBoard) {
-//            sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet,setForCacheClean);
-//        }
-//        saveData.saveData(jiraIssuesToSave,jiraIssueCustomHistoryToSave,sprintDetailsList,createAccountHierarchySet,setForCacheClean,projectConfig);
+        Set<SprintDetails> setForCacheClean = new HashSet<>();
+        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
+        List<SprintDetails> sprintDetailsList =new ArrayList<>();
+        //now we will be putting setCacheClean in fetchSprints fn
+        if (!dataFromBoard) {
+            sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean);
+        }
+        AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
+        saveData.saveData(jiraIssuesToSave,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails,setForCacheClean,projectConfig);
 
         return jiraIssuesToSave;
     }
 
-    private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user) {
+    private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee,
+                                       Set<Assignee> assigneeSetToSave) {
+        if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+            setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave);
+        }
+    }
+
+    private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
         if (user == null) {
             jiraIssue.setOwnersUsername(Collections.<String>emptyList());
             jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -186,13 +201,14 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         } else {
             List<String> assigneeKey = new ArrayList<>();
             List<String> assigneeName = new ArrayList<>();
-            if ((user.getName() == null) || user.getName().isEmpty()) {
+            String assigneeUniqueId = getAssignee(user);
+            if ((assigneeUniqueId == null) || assigneeUniqueId.isEmpty()) {
                 assigneeKey = new ArrayList<>();
                 assigneeName = new ArrayList<>();
             } else {
-                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                assigneeName.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                jiraIssue.setAssigneeId(user.getName());
+                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+                assigneeName.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+                jiraIssue.setAssigneeId(assigneeUniqueId);
             }
             jiraIssue.setOwnersShortName(assigneeName);
             jiraIssue.setOwnersUsername(assigneeName);
@@ -206,9 +222,21 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 jiraIssue.setAssigneeName(user.getDisplayName());
             }
             jiraIssue.setOwnersFullName(assigneeDisplayName);
+            if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
+                    && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
+                assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+            }
         }
     }
 
+    private String getAssignee(User user) {
+        String userId = "";
+        String query = user.getSelf().getQuery();
+        if (StringUtils.isNotEmpty(query) && (query.contains("accountId") || query.contains("username"))) {
+            userId = query.split("=")[1];
+        }
+        return userId;
+    }
 
     private void setIssueTechStoryType(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
                                       Map<String, IssueField> fields) {
@@ -738,7 +766,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
                 // Now sort so we can use the most recent one
                 // yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
-                Collections.sort(sprints, JiraHelper.SPRINT_COMPARATOR);
+                Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
                 setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
 
             } catch (ParseException | JSONException e) {

@@ -10,6 +10,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
@@ -70,6 +71,9 @@ public class CreateMetadataImplTest {
     @Mock
     RestTemplate restTemplate;
 
+    @Mock
+    private FieldMappingRepository fieldMappingRepository;
+
     @InjectMocks
     private CreateMetadataImpl createMetadata;
 
@@ -129,6 +133,8 @@ public class CreateMetadataImplTest {
     @Test
     public void collectMetadata() throws Exception {
 
+        when(fieldMappingRepository.save(any())).thenReturn(null);
+        when(boardMetadataRepository.save(any())).thenReturn(null);
         when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
 
         MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
@@ -144,7 +150,7 @@ public class CreateMetadataImplTest {
         when(metaDataStatusPromise.claim()).thenReturn(statusItr);
 
         MetadataIdentifier metadataIdentifier = createMetaDataIdentifier();
-        when(metadataIdentifierRepository.findByIdAndToolAndIsKanban(any(),any(),any())).thenReturn(metadataIdentifier);
+        when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(),any(),any())).thenReturn(metadataIdentifier);
 
         Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
         PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
@@ -207,7 +213,7 @@ public class CreateMetadataImplTest {
                 valuestoidentify3);
 
         List<Identifier> issuelinkIdentifer = new ArrayList<>();
-        return new MetadataIdentifier(tool, isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+        return new MetadataIdentifier(tool, "Standard Template", "7", isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
                 issuelinkIdentifer, valuestoidentifyIdentifer);
 //        return new MetadataIdentifier(tool,"Dojo template", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
 //                issuelinkIdentifer, valuestoidentifyIdentifer);

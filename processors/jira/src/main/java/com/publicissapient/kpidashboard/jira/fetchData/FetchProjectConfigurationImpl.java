@@ -45,17 +45,17 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     @Autowired
     private ConnectionRepository connectionRepository;
 
-//    @Autowired
-//    FetchIssuesBasedOnJQL fetchIssuesBasedOnJQL;
-//
-//    @Autowired
-//    FetchIssueBasedOnBoard fetchIssueBasedOnBoard;
-//
-//    @Autowired
-//    CreateMetadata createMetadata;
-//
-//    @Autowired
-//    JiraClient jiraClient;
+    @Autowired
+    FetchIssuesBasedOnJQL fetchIssuesBasedOnJQL;
+
+    @Autowired
+    FetchIssueBasedOnBoard fetchIssueBasedOnBoard;
+
+    @Autowired
+    CreateMetadata createMetadata;
+
+    @Autowired
+    JiraClient jiraClient;
 
     private ProcessorJiraRestClient client;
 
@@ -82,8 +82,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
 
     private List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
-//               "63bfa0d5b7617e260763ca21" //project name:bazooka uniliver
-               "641350b3280939593b19b941" //project name:tester
+               "642db8e71b4c1a115a4c1d1c" //project name:pg08_board
+//               "642db01a1b4c1a115a4c1d12" //project name:pg08
        );
     }
 
@@ -109,22 +109,22 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
                     .filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
                     .forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
             projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
-//            try {
-//                for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
-//                    client = jiraClient.getClient(entry);
-//                    createMetadata.collectMetadata(entry.getValue(),client);
-//                    if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
-//                        fetchIssuesBasedOnJQL.fetchIssues(entry,client);
-//                    } else {
-//                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client);
-//                        log.info("issues fetched from board"+issues.size());
-//                    }
-//                }
-//            } catch (InterruptedException | FileNotFoundException e) {
-//                throw new RuntimeException(e);
-//            } catch (JSONException e) {
-//                throw new RuntimeException(e);
-//            }
+            try {
+                for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
+                    client = jiraClient.getClient(entry);
+                    createMetadata.collectMetadata(entry.getValue(),client);
+                    if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
+                        fetchIssuesBasedOnJQL.fetchIssues(entry,client);
+                    } else {
+                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client);
+                        log.info("issues fetched from board"+issues.size());
+                    }
+                }
+            } catch (InterruptedException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
         );
         return projectConfigMap;
