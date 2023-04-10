@@ -819,7 +819,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setEmptyFilter();
     this.service.setSelectedLevel({});
     this.service.setSelectedTrends([]);
-    this.selectedTab='';
+    this.service.setSelectedTab('');
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 

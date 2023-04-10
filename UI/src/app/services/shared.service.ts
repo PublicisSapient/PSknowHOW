@@ -101,6 +101,10 @@ export class SharedService implements OnInit {
     this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
   }
 
+  setSelectedTab(selectedTab) {
+    this.selectedTab = selectedTab;
+  }
+
   // getter for type i.e scrum or kanban
   getSelectedTab() {
     return this.selectedTab;

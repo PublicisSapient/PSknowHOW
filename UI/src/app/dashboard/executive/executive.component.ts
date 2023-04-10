@@ -235,7 +235,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
             }
         }
-        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
+        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event.selectedTab.toLowerCase() !== 'iteration') {
             this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.kpiLoader =true;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
