@@ -65,6 +65,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { SkeletonModule } from 'primeng/skeleton'
 
 
 /******************************************************/
@@ -169,7 +170,8 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         DialogModule,
         FontAwesomeModule,
         DragDropModule,
-        MenuModule
+        MenuModule,
+        SkeletonModule
     ],
     providers: [
         ExcelService,

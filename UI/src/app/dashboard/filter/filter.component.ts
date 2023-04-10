@@ -18,7 +18,6 @@
 
 import { Component, OnInit, ElementRef, ViewChild,HostListener } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -44,28 +43,22 @@ export class FilterComponent implements OnInit {
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
-  headerFixed = false;
   scrollOffset = 150;
   isSuperAdmin = false;
-  id = '';
-  name = '';
   masterData: any = {};
   filterData: any = [];
   shareDataObject: any = {};
   selectedFilterCount = 0;
-  loader: any = {};
   getData: any = [];
   filterRequestData = {};
   filterkeys: any = [];
   selectedFilterData: any = {};
   selectedTab;
-  downloadJson: any = {};
   disableDownloadBtn = false;
   subscriptions: any[] = [];
   filterKpiRequest: any = '';
   kanban = false;
   filterType = 'Default';
-  currentSelectionLabel = '';
   maxDate: Date;
   enginneringMaturityErrorMessage = '';
   showIndicator = false;
@@ -93,7 +86,6 @@ export class FilterComponent implements OnInit {
   showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
-  selectedProjectValueOnIteration: string;
   selectedProjectLastSyncDate: any;
   processorsTracelogs = [];
   processorName = 'jira';
@@ -121,7 +113,7 @@ export class FilterComponent implements OnInit {
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData ={};
-
+  allowMultipleSelection = true;
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -150,7 +142,7 @@ export class FilterComponent implements OnInit {
 
      // added as scrum/kanban moved into nav component
     this.service.onTypeRefresh.subscribe(type=>{
-      this.selectedType(type);
+        this.selectedType(type);
     });
 
     this.subscriptions.push(
@@ -178,6 +170,9 @@ export class FilterComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.service.globalDashConfigData.subscribe(data=>{
+      this.kpiListData = data;
+    });
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.filterForm = new UntypedFormGroup({
       selectedTrendValue: new UntypedFormControl(),
@@ -198,8 +193,6 @@ export class FilterComponent implements OnInit {
     }
     // setting max date user can select in calendar
     this.maxDate = new Date();
-    this.getKpiOrderedList();
-    this.resetFilterApplyObj();
 
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
@@ -273,15 +266,6 @@ export class FilterComponent implements OnInit {
     }
   }
 
-   // for making the header sticky on scroll
-   @HostListener('window:scroll', [])
-   onWindowScroll() {
-     if (this.router.url.indexOf('/Config/') === -1 && this.router.url !== '/dashboard/Maturity' && this.router.url !== '/dashboard/EngineeringMaturity') {
-       this.headerFixed = (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) > this.scrollOffset;
-     } else {
-       this.headerFixed = false;
-     }
-   }
 
   /**create dynamic hierarchy levels for filter dropdown */
   getHierarchyLevels() {
@@ -311,12 +295,19 @@ export class FilterComponent implements OnInit {
   }
 
   selectedType(type) {
+    if(this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
+      this.allowMultipleSelection = false;
+    }else{
+      this.allowMultipleSelection = true;
+    }
+
+    this.selectedFilterArray = [];
+    this.tempParentArray = [];
     if (type === 'Kanban') {
       this.kanban = true;
     } else {
       this.kanban = false;
     }
-    this.resetFilterApplyObj();
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
@@ -327,7 +318,6 @@ export class FilterComponent implements OnInit {
     this.setLevels();
     this.getFilterDataOnLoad();
     this.previousType = this.kanban;
-    // this.service.setSelectedType(type); // Going in infinite loop
 
     const data = {
       url: this.router.url +'/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
@@ -335,7 +325,6 @@ export class FilterComponent implements OnInit {
       version: this.httpService.currentVersion,
     };
     this.ga.setPageLoad(data);
-    this.navigateToSelectedTab();
     this.getKpiOrderedList();
   }
 
@@ -368,8 +357,15 @@ export class FilterComponent implements OnInit {
     this.selectedFilterData.kanban = this.kanban;
     this.selectedFilterData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE']: ['CLOSED'];
     const filterData = this.service.getFilterData();
-    if ( !Object.keys(filterData).length ||this.previousType !== this.kanban ||this.selectedTab?.toLowerCase() == 'iteration' ||this.selectedTab?.toLowerCase() == 'backlog' ||this.initFlag) {
-      this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+    if (
+      !Object.keys(filterData).length ||
+      this.previousType !== this.kanban ||
+      this.selectedTab?.toLowerCase() == 'iteration' ||
+      this.initFlag
+    ) {
+      this.filterKpiRequest = this.httpService
+        .getFilterData(this.selectedFilterData)
+        .subscribe((filterApiData) => {
           this.processFilterData(filterApiData);
           this.initFlag = false;
         });
@@ -402,17 +398,29 @@ export class FilterComponent implements OnInit {
         }
       }
 
-      if (!this.filterForm?.get('selectedTrendValue')?.value ||this.filterForm?.get('selectedTrendValue')?.value?.length == 0 ||
-        (this.takeFiltersFromPreviousTab == false && this.selectedTab?.toLowerCase() !== 'iteration' && this.selectedTab?.toLowerCase() !== 'backlog' && this.selectedTab?.toLowerCase() !== 'maturity') ) {
+      if (
+        !this.filterForm?.get('selectedTrendValue')?.value ||
+        this.filterForm?.get('selectedTrendValue')?.value?.length == 0 ||
+        (this.takeFiltersFromPreviousTab == false &&
+          this.selectedTab?.toLowerCase() !== 'iteration' &&
+          this.selectedTab?.toLowerCase() !== 'maturity')
+      ) {
         this.checkDefaultFilterSelection();
-        if (this.selectedTab?.toLowerCase() !== 'iteration' && this.selectedTab?.toLowerCase() !== 'backlog' && this.selectedTab?.toLowerCase() !== 'maturity') {
+        if (
+          this.selectedTab?.toLowerCase() !== 'iteration' &&
+          this.selectedTab?.toLowerCase() !== 'maturity'
+        ) {
           this.takeFiltersFromPreviousTab = true;
         }
-      } else if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity') {
+      } else if (
+        this.selectedTab?.toLowerCase() === 'iteration' ||
+        this.selectedTab?.toLowerCase() === 'maturity'
+      ) {
         this.checkDefaultFilterSelection();
         this.takeFiltersFromPreviousTab = false;
       } else {
         this.takeFiltersFromPreviousTab = true;
+        this.setTrendValueFilter();
       }
 
       if (this.kanban) {
@@ -473,10 +481,12 @@ export class FilterComponent implements OnInit {
   processMasterData(masterData) {
     this.masterData = masterData;
     this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
-    if (this.selectedTab?.toLowerCase() == 'iteration' ||this.selectedTab?.toLowerCase() == 'backlog') {
+    if (
+      this.selectedTab?.toLowerCase() == 'iteration'
+    ) {
       this.projectIndex = 0;
       this.handleIterationFilters('project', 1);
-    } else {
+    }else {
       this.applyChanges();
     }
   }
@@ -504,14 +514,27 @@ export class FilterComponent implements OnInit {
       for (const key in this.additionalFiltersDdn) {
         this.filteredAddFilters[key] = [];
       }
-      for (let i = 0; i < selectedProjects?.length; i++) {
-        for (const key in this.additionalFiltersDdn) {
-          if (key == 'sprint') {
-            this.filteredAddFilters[key] = [...this.filteredAddFilters[key],...this.additionalFiltersDdn[key]?.filter(
-              (x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
-          } else {
-            this.filteredAddFilters[key] = [...this.filteredAddFilters[key],...this.additionalFiltersDdn[key]?.filter(
-              (x) => x['path'][0]?.includes(selectedProjects[i]))];
+      if(selectedProjects?.length > 0){
+
+        for (let i = 0; i < selectedProjects?.length; i++) {
+          for (const key in this.additionalFiltersDdn) {
+            if (key == 'sprint') {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter(
+                  (x) =>
+                    x['parentId']?.includes(selectedProjects[i]) &&
+                    x['sprintState']?.toLowerCase() == 'closed',
+                ),
+              ];
+            } else {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter((x) =>
+                  x['path'][0]?.includes(selectedProjects[i]),
+                ),
+              ];
+            }
           }
         }
       }
@@ -533,11 +556,22 @@ export class FilterComponent implements OnInit {
   applyChanges(applySource?, filterApplied = true): void {
     let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
-    let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId == selectedLevelId)[0];
-    if (selectedTrendIds?.length > 0) {
-      let selectedTrendValues = [];
-      for (let i = 0; i < selectedTrendIds?.length; i++) {
-        selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds[i])[0]);
+    let selectedLevel = this.hierarchyLevels?.filter(
+      (x) => x.hierarchyLevelId == selectedLevelId,
+    )[0];
+    if (selectedTrendIds != '' || selectedTrendIds?.length > 0) {
+      let selectedTrendValues:any = [];
+      
+      if(Array.isArray(selectedTrendIds)){
+        for (let i = 0; i < selectedTrendIds?.length; i++) {
+          selectedTrendValues.push(
+            this.trendLineValueList?.filter(
+              (x) => x.nodeId == selectedTrendIds[i],
+            )[0],
+          );
+        }
+      }else{
+        selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
 
       this.service.setSelectedLevel(selectedLevel);
@@ -549,12 +583,13 @@ export class FilterComponent implements OnInit {
         this.closeAllDropdowns();
       }
       /**push selected upper level hierarchy in selectedFilterArray */
-      this.selectedFilterArray = [];
-      for (let i = 0;i < this.filterForm?.get('selectedTrendValue')?.value?.length;i++) {
-        const selectedItem = {...this.trendLineValueList?.filter((x) =>x.nodeId == this.filterForm?.get('selectedTrendValue')?.value[i])[0]
-       };
-        selectedItem['additionalFilters'] = [];
-        this.selectedFilterArray.push(selectedItem);
+      this.selectedFilterArray = [...selectedTrendValues];
+      for (
+        let i = 0;
+        i < this.selectedFilterArray?.length;
+        i++
+      ) {
+        this.selectedFilterArray[i]['additionalFilters'] = [];
       }
       this.selectedFilterArray = this.sortAlphabetically(
         this.selectedFilterArray,
@@ -608,21 +643,20 @@ export class FilterComponent implements OnInit {
           isAdditionalFilters = true;
         }
       }
-      this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab,isAdditionalFilters,filterApplied);
-      this.limitSelectedTrendValueListChars();
+
+      this.service.select(
+        this.masterData,
+        this.filterData,
+        this.filterApplyData,
+        this.selectedTab,
+        isAdditionalFilters,
+        filterApplied,
+      );
+
     }
 
   }
 
-  limitSelectedTrendValueListChars() {
-    const selectedTrendNodeValueList: NodeList = document.querySelectorAll('.trend-line-value .ng-value .ng-value-label');
-    for (let i = 0; i < selectedTrendNodeValueList.length; i++) {
-      if ((selectedTrendNodeValueList[i] as HTMLElement).innerText.length > 10) {
-        (selectedTrendNodeValueList[i] as HTMLElement).innerText =
-          (selectedTrendNodeValueList[i] as HTMLElement).innerText.slice(0,10) + '...';
-      }
-    }
-  }
 
   resetAdditionalFiltersToInitialValue() {
     for (let i = 0; i < Object.keys(this.additionalFiltersDdn)?.length; i++) {
@@ -632,8 +666,7 @@ export class FilterComponent implements OnInit {
 
   createFilterApplyData() {
     this.resetFilterApplyObj();
-    let isAdditionalFilterFlag: boolean =
-      this.selectedFilterArray?.filter((item) => item?.additionalFilters?.length > 0)?.length > 0? true : false;
+    let isAdditionalFilterFlag = this.selectedFilterArray?.filter((item) => item?.additionalFilters?.length > 0)?.length > 0? true : false;
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
       if (isAdditionalFilterFlag) {
         const temp = this.selectedFilterArray[i]?.additionalFilters;
@@ -693,8 +726,7 @@ export class FilterComponent implements OnInit {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.service.setSelectedTab(boardDetails?.boardName,boardDetails?.boardId);
-        this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}/${boardDetails?.boardId}`);
+        this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
     }
   }
 
@@ -710,9 +742,8 @@ export class FilterComponent implements OnInit {
           if (response.success === true) {
             this.kpiListData = response.data;
             this.service.setDashConfigData(this.kpiListData);
-            this.navigateToSelectedTab();
-            this.service.changedMainDashboardValueSub.next(this.kpiListData?.scrum[0].boardName);
             this.processKpiList();
+            this.navigateToSelectedTab();
           }
         },
         (error) => {
@@ -724,6 +755,7 @@ export class FilterComponent implements OnInit {
       );
     } else {
       this.processKpiList();
+      this.navigateToSelectedTab();
     }
   }
 
@@ -737,7 +769,7 @@ export class FilterComponent implements OnInit {
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
         default:
-          this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.service.getSelectBoardId())[0]?.kpis;
+          this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase())[0]?.kpis;
       }
       const kpiObj = {};
       let count = 0;
@@ -833,12 +865,6 @@ export class FilterComponent implements OnInit {
   }
   /** get kpi ordered list ends */
 
-  sanitizeDate(date) {
-    return (
-      date.getFullYear() + '/' + (parseInt(date.getMonth()) + 1 < 10 ? '0' + (parseInt(date.getMonth()) + 1) : parseInt(date.getMonth()) + 1) + '/' +
-      (parseInt(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate())
-    );
-  }
 
   setKPIOrder() {
     const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
@@ -891,8 +917,11 @@ export class FilterComponent implements OnInit {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-    this.filterForm?.get('selectedTrendValue').setValue([]);
-    // }
+    if(this.allowMultipleSelection){
+      this.filterForm?.get('selectedTrendValue').setValue([]);
+    }else{
+      this.filterForm?.get('selectedTrendValue').setValue('');
+    }
   }
 
   setMarker() {
@@ -933,8 +962,21 @@ export class FilterComponent implements OnInit {
     return this.filterForm?.controls['selectedLevel']?.value?.toLowerCase();
   }
 
+  setTrendValueFilter(){
+    if(this.allowMultipleSelection){
+      this.filterForm
+      ?.get('selectedTrendValue')
+      .setValue([this.trendLineValueList[0]['nodeId']]);
+    }else{
+      this.filterForm
+      ?.get('selectedTrendValue')
+      .setValue(this.trendLineValueList[0]['nodeId']);
+    }
+  }
+
   checkDefaultFilterSelection() {
-    if (this.selectedTab?.toLowerCase() != 'iteration' && this.selectedTab?.toLowerCase() != 'backlog'
+    if (
+      this.selectedTab?.toLowerCase() != 'iteration'
     ) {
       // for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) { 
         for (let i = 0; i < this.hierarchyLevels?.length; i++) {  
@@ -955,16 +997,15 @@ export class FilterComponent implements OnInit {
       }
 
       if (this.trendLineValueList?.length > 0) {
-        this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-        this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-        this.filterForm?.get('selectedTrendValue').setValue([this.trendLineValueList[0]['nodeId']]);
-      } else {
-        this.filterForm?.get('selectedTrendValue').setValue([]);
-      }
-      if(!this.kanban && this.filterForm?.get('selectedLevel').value.toLowerCase() === 'project'){
-        const selectedProject = localStorage.getItem('filter');
-        this.filterForm?.get('selectedTrendValue')?.setValue([selectedProject]);
-      }
+        this.trendLineValueList = this.sortAlphabetically(
+          this.trendLineValueList,
+        );
+        this.trendLineValueList = this.makeUniqueArrayList(
+          this.trendLineValueList,
+        );
+        this.setTrendValueFilter();
+      } 
+
     } else {
       this.filterForm?.get('selectedLevel').setValue('project');
       this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == 'project');
@@ -1217,7 +1258,7 @@ export class FilterComponent implements OnInit {
         }
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
-        this.service.setSelectedTab(null,null); // doing null bcoz it was landing on previous tab 
+        this.service.setSelectedTab(null); // doing null bcoz it was landing on previous tab 
 
         this.router.navigate(['./authentication/login']);
       }
@@ -1260,7 +1301,6 @@ export class FilterComponent implements OnInit {
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
-      this.processKpiList();
       this.navigateToSelectedTab();
     });
 

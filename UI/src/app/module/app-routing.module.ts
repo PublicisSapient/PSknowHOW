@@ -52,16 +52,16 @@ const routes: Routes = [
       { path: '', redirectTo: 'iteration', pathMatch: 'full'},
       { path: 'Help', component: LandingPageComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'iteration/:boardId', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'backlog/:boardId', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
       {
         path: 'Config',
         // loadChildren: '../config/config.module#ConfigModule'
         loadChildren: () => import('../config/config.module').then(m => m.ConfigModule),
       },
-      { path: ':boardName/:boardId', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
 
     ], canActivate: [AuthGuard]
   },

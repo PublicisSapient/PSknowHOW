@@ -68,6 +68,9 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 	public static final String PLANNED = "Planned";
 	public static final String ACTUAL = "Actual";
 	public static final String ACTUAL_START_DATE = "actualStartDate";
+	public static final String ACTUAL_COMPLETION_DATA = "actualCompletionData";
+	public static final String ISSUE_DELAY = "issueDelay";
+	public static final String DEV_COMPLETION_DATE = "devCompletionDate";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -187,7 +190,7 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 						issueTypes.add(issueType);
 						priorities.add(priority);
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
-						int issueCount = 0;
+						int issueCountActual = 0;
 						Double storyPoint = 0.0;
 						Double originalEstimate = 0.0;
 						int issueCountPlanned = 0;
@@ -212,6 +215,12 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
 												+ jiraIssue.getOriginalEstimateMinutes());
 									}
+									Map<String, Object> resultList = jiraIssueCalculation(fieldMapping, sprintDetails, allIssueHistories, jiraIssue);
+									Map<String, Object> actualCompletionData = (Map<String, Object>) resultList.get(ACTUAL_COMPLETION_DATA);
+									int jiraIssueDelay = (int) resultList.get(ISSUE_DELAY);
+									String devCompletionDate = (String) resultList.get(DEV_COMPLETION_DATE);
+									populateIterationDataForOverAllCompletion(overAllmodalValues, modalValues, jiraIssue,
+										fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 								}
 							} else {
 								// Checking if dueDate is <= sprint End Date for closed sprint
@@ -232,33 +241,18 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
 												+ jiraIssue.getOriginalEstimateMinutes());
 									}
+									Map<String, Object> resultList = jiraIssueCalculation(fieldMapping, sprintDetails, allIssueHistories, jiraIssue);
+									Map<String, Object> actualCompletionData = (Map<String, Object>) resultList.get(ACTUAL_COMPLETION_DATA);
+									int jiraIssueDelay = (int) resultList.get(ISSUE_DELAY);
+									String devCompletionDate = (String) resultList.get(DEV_COMPLETION_DATE);
+									populateIterationDataForOverAllCompletion(overAllmodalValues, modalValues, jiraIssue,
+											fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 								}
 							}
 							// Calculating delay for only completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
-								int jiraIssueDelay = 0;
-								int originalEstimateInDays = 0;
-								issueCount = issueCount + 1;
+								issueCountActual = issueCountActual + 1;
 								overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
-
-								JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
-										.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-												.equals(jiraIssue.getNumber()))
-										.findFirst().orElse(new JiraIssueCustomHistory());
-
-								if (jiraIssue.getOriginalEstimateMinutes() != null)
-									originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
-
-								String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
-								// calling function for cal actual completion days
-								Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
-										sprintDetails, fieldMapping);
-								int actualCompletionInDays = 0;
-
-								if (actualCompletionData.get(ACTUAL_COMPLETION_DAYS) != "-") {
-									actualCompletionInDays = (int) actualCompletionData.get(ACTUAL_COMPLETION_DAYS);
-									jiraIssueDelay = actualCompletionInDays - originalEstimateInDays;
-								}
 
 								if (null != jiraIssue.getStoryPoints()) {
 									storyPoint = storyPoint + jiraIssue.getStoryPoints();
@@ -270,17 +264,15 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 									overAllOriginalEstimateActual.set(0, overAllOriginalEstimateActual.get(0)
 											+ jiraIssue.getOriginalEstimateMinutes());
 								}
-								populateIterationDataForWorkCompleted(overAllmodalValues, modalValues, jiraIssue,
-										fieldMapping, actualCompletionData, jiraIssueDelay, devCompletionDate);
 							}
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData issueCountsPlanned;
 						IterationKpiData issueCountsActual;
 						IterationKpiData delay;
-						issueCountsPlanned = createIterationKpiData(PLANNED,fieldMapping, issueCountPlanned, storyPointPlanned, originalEstimatePlanned,null);
-						issueCountsActual = createIterationKpiData(ACTUAL,fieldMapping, issueCount, storyPoint, originalEstimate,modalValues);
-						delay = createIterationKpiData(DELAY,fieldMapping, issueCountPlanned-issueCount, storyPointPlanned-storyPoint, originalEstimatePlanned-originalEstimate,null);
+						issueCountsPlanned = createIterationKpiData(PLANNED,fieldMapping, issueCountPlanned, storyPointPlanned, originalEstimatePlanned,modalValues);
+						issueCountsActual = createIterationKpiData(ACTUAL,fieldMapping, issueCountActual, storyPoint, originalEstimate,null);
+						delay = createIterationKpiData(DELAY,fieldMapping, issueCountPlanned-issueCountActual, storyPointPlanned-storyPoint, originalEstimatePlanned-originalEstimate,null);
 						data.add(issueCountsPlanned);
 						data.add(issueCountsActual);
 						data.add(delay);
@@ -291,8 +283,8 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 			IterationKpiData overAllIssueCountsPlanned;
 			IterationKpiData overAllIssueCountsActual;
 			IterationKpiData overAllDelay;
-			overAllIssueCountsPlanned = createIterationKpiData(PLANNED,fieldMapping, overAllIssueCountPlanned.get(0), overAllStoryPointsPlanned.get(0), overAllOriginalEstimatePlanned.get(0),null);
-			overAllIssueCountsActual = createIterationKpiData(ACTUAL,fieldMapping, overAllIssueCountActual.get(0), overAllStoryPointsActual.get(0), overAllOriginalEstimateActual.get(0),overAllmodalValues);
+			overAllIssueCountsPlanned = createIterationKpiData(PLANNED,fieldMapping, overAllIssueCountPlanned.get(0), overAllStoryPointsPlanned.get(0), overAllOriginalEstimatePlanned.get(0),overAllmodalValues);
+			overAllIssueCountsActual = createIterationKpiData(ACTUAL,fieldMapping, overAllIssueCountActual.get(0), overAllStoryPointsActual.get(0), overAllOriginalEstimateActual.get(0),null);
 			overAllDelay = createIterationKpiData(DELAY,fieldMapping,overAllIssueCountPlanned.get(0)-overAllIssueCountActual.get(0), overAllStoryPointsPlanned.get(0)-overAllStoryPointsActual.get(0),overAllOriginalEstimatePlanned.get(0)-overAllOriginalEstimateActual.get(0),null);
 			data.add(overAllIssueCountsPlanned);
 			data.add(overAllIssueCountsActual);
@@ -398,6 +390,43 @@ public class OverallCompletionStatusServiceImpl extends JiraKPIService<Integer, 
 		else
 			resultList.put(ACTUAL_START_DATE, "-");
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
+		return resultList;
+	}
+
+	/**
+	 *  To calculate delay, devCompletion date
+	 * @param fieldMapping
+	 * @param sprintDetails
+	 * @param allIssueHistories
+	 * @param jiraIssue
+	 * @return
+	 */
+	private Map<String, Object> jiraIssueCalculation(FieldMapping fieldMapping, SprintDetails sprintDetails, List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue) {
+		int jiraIssueDelay = 0;
+		int originalEstimateInDays = 0;
+		Map<String, Object> resultList = new HashMap<>();
+
+		JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
+				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+						.equals(jiraIssue.getNumber()))
+				.findFirst().orElse(new JiraIssueCustomHistory());
+
+		if (jiraIssue.getOriginalEstimateMinutes() != null)
+			originalEstimateInDays = (jiraIssue.getOriginalEstimateMinutes() / 60) / 8;
+
+		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
+		// calling function for cal actual completion days
+		Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
+				sprintDetails, fieldMapping);
+		int actualCompletionInDays = 0;
+
+		if (actualCompletionData.get(ACTUAL_COMPLETION_DAYS) != "-") {
+			actualCompletionInDays = (int) actualCompletionData.get(ACTUAL_COMPLETION_DAYS);
+			jiraIssueDelay = actualCompletionInDays - originalEstimateInDays;
+		}
+		resultList.put(ISSUE_DELAY,jiraIssueDelay);
+		resultList.put(DEV_COMPLETION_DATE,devCompletionDate);
+		resultList.put(ACTUAL_COMPLETION_DATA,actualCompletionData);
 		return resultList;
 	}
 }
