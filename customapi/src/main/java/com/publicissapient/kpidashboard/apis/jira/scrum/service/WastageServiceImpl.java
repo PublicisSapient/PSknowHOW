@@ -63,7 +63,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final String BLOCKED_TIME = "Blocked Time";
 	private static final String WAITING_TIME = "Waiting Time";
 	private static final String WASTAGE = "Wastage";
-	private static final String HOURS = "Hours";
+
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	@Autowired
@@ -198,8 +198,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 							List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
 									sprintDetail, blockedStatusList, waitStatusList);
-							jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
-							jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
+							jiraIssueWaitedTime = Math.round(waitedTimeAndBlockedTime.get(0));
+							jiraIssueBlockedTime = Math.round(waitedTimeAndBlockedTime.get(1));
 							if (jiraIssueWaitedTime != 0) {
 								waitedTime += jiraIssueWaitedTime;
 								overAllWaitedTime.set(0, overAllWaitedTime.get(0) + jiraIssueWaitedTime);
@@ -213,11 +213,11 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData wastage = new IterationKpiData(WASTAGE,
-								Double.valueOf((waitedTime + blockedTime)), null, null, HOURS, modalValues);
-						IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
-								null, HOURS, null);
-						IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null,
-								null, HOURS, null);
+								Double.valueOf((waitedTime + blockedTime) * 8.0 * 60), null, null, CommonConstant.DAY, modalValues);
+						IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime * 8.0 * 60), null,
+								null, CommonConstant.DAY, null);
+						IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime * 8.0 * 60), null,
+								null, CommonConstant.DAY, null);
 						data.add(wastage);
 						data.add(blocked);
 						data.add(waited);
@@ -226,12 +226,12 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 					}));
 			List<IterationKpiData> data = new ArrayList<>();
 			overAllWastedTime.set(0, overAllWaitedTime.get(0) + overAllBlockedTime.get(0));
-			IterationKpiData overAllWastage = new IterationKpiData(WASTAGE, Double.valueOf(overAllWastedTime.get(0)),
-					null, null, HOURS, overAllmodalValues);
+			IterationKpiData overAllWastage = new IterationKpiData(WASTAGE, Double.valueOf(overAllWastedTime.get(0) * 8.0 * 60),
+					null, null, CommonConstant.DAY, overAllmodalValues);
 			IterationKpiData overAllBlocked = new IterationKpiData(BLOCKED_TIME,
-					Double.valueOf(overAllBlockedTime.get(0)), null, null, HOURS, null);
+					Double.valueOf(overAllBlockedTime.get(0) * 8.0 * 60), null, null, CommonConstant.DAY, null);
 			IterationKpiData overAllWaited = new IterationKpiData(WAITING_TIME,
-					Double.valueOf(overAllWaitedTime.get(0)), null, null, HOURS, null);
+					Double.valueOf(overAllWaitedTime.get(0) * 8.0 * 60), null, null, CommonConstant.DAY, null);
 			data.add(overAllWastage);
 			data.add(overAllBlocked);
 			data.add(overAllWaited);
@@ -295,7 +295,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails,
 					i, sprintDetail, waitedTime);
 		}
-		return Arrays.asList(waitedTime, blockedTime);
+		int waitTimeInDays = waitedTime / 480;
+		int blockTImeInDays = blockedTime / 480;
+		return Arrays.asList(waitTimeInDays, blockTImeInDays);
 	}
 
 	/**
@@ -439,21 +441,10 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
 			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
 		}
-		if ((blockedTime != 0)) {
-			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + "h " + blockedTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setBlockedTime(blockedTime + " h");
-		}
-		if ((waitTime != 0)) {
-			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime / 60 + "h " + waitTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setWaitTime(waitTime + " h");
-		}
-		if ((wastageTime != 0)) {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime / 60 + "h " + wastageTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime + " h"));
-		}
+			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime ) + " d");
+			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime ) + " d");
+			iterationKpiModalValue.setWastage(String.valueOf(wastageTime ) + " d");
+
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
