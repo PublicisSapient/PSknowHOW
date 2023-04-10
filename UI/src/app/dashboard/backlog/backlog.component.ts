@@ -55,7 +55,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
-    this.service.setSelectedType('Scrum');
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
@@ -66,28 +65,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }
     }));
 
-    // used to know whether scrum or kanban is clicked
-    this.subscriptions.push(this.service.onTypeRefresh.subscribe((sharedobject) => {
-      this.getSelectedType(sharedobject);
-      if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-        this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
-        this.processKpiConfigData();
-      }
-    }));
-
-    if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-      this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
-      this.processKpiConfigData();
-    }
-
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
 
-    this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
-      this.noSprints = res;
-    }));
   }
   ngOnInit() {
     this.selectedtype = this.service.getSelectedType();
@@ -150,6 +132,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
     click apply and call kpi
  **/
   receiveSharedData($event) {
+    this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
+    this.processKpiConfigData();
     this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;

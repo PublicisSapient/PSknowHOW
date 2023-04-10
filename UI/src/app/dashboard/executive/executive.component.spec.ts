@@ -1920,12 +1920,12 @@ describe('ExecutiveComponent', () => {
                     sprintName: 'AP|PI_10|ITR_5| 24 Aug',
                     storyID: {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'DTS-17970': 'https://tools.publicis.sapient.com/jira/browse/DTS-17970'
+                        'DTS-17970': 'http://testabc.com/jira/browse/DTS-17970'
                     },
                     issueDescription: 'This is second Story',
                     linkedDefects: {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'DTS-18675': 'https://tools.publicis.sapient.com/jira/browse/DTS-18675',
+                        'DTS-18675': 'http://testabc.com/jira/browse/DTS-18675',
                     }
                 }]
         };

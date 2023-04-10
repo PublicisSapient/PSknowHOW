@@ -27,9 +27,9 @@
   </div>
  
   <div id="wrapper" [ngClass]="{'toggled':isApply}">
-   <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help') && !router.url.split('/').includes('Error')"
-      [ngStyle]="{'height': 'calc(100vh - '+header.offsetHeight+'px)'}"
-      [style.top]="'calc('+header.offsetHeight+'px'+' - '+'0px)'">
+   <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help')"
+      [ngStyle]="{'height': 'calc(100vh - '+header.offsetHeight+'px)', 'top':'calc('+header.offsetHeight+'px'+' - '+'0px)'}"
+>
       <app-nav id="top"></app-nav>
     </div>
     <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') || router.url.split('/').includes('Error') || router.url.split('/').includes('Help') ? '0rem' : ''}">

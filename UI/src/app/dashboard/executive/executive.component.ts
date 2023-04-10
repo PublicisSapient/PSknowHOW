@@ -113,8 +113,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
          this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
-        // used to know whether scrum or kanban is clicked
-        this.subscriptions.push(this.service.onTypeRefresh.subscribe((type) => {
+
+        this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
@@ -122,16 +122,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.processedKPI11Value = {};
             this.selectedBranchFilter = 'Select';
             this.serviceObject = {};
-            this.selectedtype = type;
-            this.kanbanActivated = type === 'Kanban' ? true : false;
+            this.selectedtype = data.selectedType;
+            this.selectedTab=data.selectedTab;
+            this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
         }));
 
-        this.subscriptions.push(this.service.onTabRefresh.subscribe((tab) => {
-            this.selectedTab = tab;
-        }));
 
         this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-            this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase())[0]?.kpis;
+            this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) =>( item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.processKpiConfigData();
         }));
 
@@ -238,7 +236,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
         if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-            this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === $event?.selectedTab.toLowerCase())[0]?.kpis;
+            this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+            this.kpiLoader =true;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
             if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
                 if (this.serviceObject['makeAPICall']) {
@@ -260,8 +259,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     // call kpi request according to tab selected
                     if (this.masterData && Object.keys(this.masterData).length) {
                         this.processKpiConfigData();
-                        if (this.selectedtype === 'Kanban') {
-                            this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase())[0]?.kpis;
+                        if (this.selectedtype.toLowerCase() === 'kanban') {
+                            this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
                             this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);

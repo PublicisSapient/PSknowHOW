@@ -1,6 +1,6 @@
 {
     "id": "5f34748fc9a50d7baba8300a89",
-    "username": "dilip",
+    "username": "testUser",
     "authorities": [
         "ROLE_VIEWER"
     ],
