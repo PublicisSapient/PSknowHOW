@@ -1876,7 +1876,7 @@ describe('ExecutiveComponent', () => {
     component = fixture.componentInstance;
 
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
 
@@ -1937,7 +1937,7 @@ describe('ExecutiveComponent', () => {
 
   xit('Scrum with filter applied', (done) => {
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype =type;
 
     service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
     fixture.detectChanges();
@@ -1953,7 +1953,7 @@ describe('ExecutiveComponent', () => {
 
   xit('kanban without filter applied', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -1967,7 +1967,7 @@ describe('ExecutiveComponent', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.setSelectedTypeOrTabRefresh('Category One','Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -1987,7 +1987,7 @@ describe('ExecutiveComponent', () => {
 
   xit('cycle time priority Sum in kanban', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype =type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -2122,7 +2122,7 @@ describe('ExecutiveComponent', () => {
     spyOn(service,'getSelectedType');
     spyOn(service,'getDashConfigData').and.returnValue(globalData['data']);
     const spy =spyOn(component,'processKpiConfigData');
-    service.onTypeRefresh.emit('Scrum');
+    service.onTypeOrTabRefresh.next({selectedTab:'Caterory One',selectedType:'Scrum'});
     component.kanbanActivated =false;
     fixture.detectChanges();
    expect(component.selectedBranchFilter).toBe('Select');
