@@ -97,7 +97,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
 
-    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
+    const pieChartValues = this.data[0]?.value[0]?.value;
     const colors = this.colors;
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
@@ -106,7 +106,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       }
       )
     }
-
     const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");
     // Build the pie chart
@@ -156,9 +155,22 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
-    this.createSvg();
-    this.createColors();
-    this.drawChart();
+    if (Object.keys(changes)?.length > 0) {
+      if (changes['data']) {
+        if (!changes['data'].firstChange) {
+          this.createSvg();
+          this.createColors();
+          this.drawChart();
+        } else {
+          this.createSvg();
+          this.createColors();
+          this.drawChart();
+        }
+      }
+    } else {
+      d3.select(this.elem).select('#pie').select('svg').remove();
+      this.drawChart();
+    }
   }
 
   ngOnDestroy() {
