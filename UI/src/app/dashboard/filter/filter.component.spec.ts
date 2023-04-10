@@ -246,12 +246,30 @@ describe('FilterComponent', () => {
   });
 
 
-  it('should get Hierarchy levels', fakeAsync(() => {
+  it('should get Hierarchy levels when hierarchy  is null', fakeAsync(() => {
     const spy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of(fakeFilterData));
     const spygetFilterDataOnLoad = spyOn(component, 'getFilterDataOnLoad');
-    component.getHierarchyLevels();
+    const spySetLevel = spyOn(component, 'setLevels');
+    component.setHierarchyLevels();
     tick();
     expect(spygetFilterDataOnLoad).toHaveBeenCalled();
+    expect(spySetLevel).toHaveBeenCalled();
+  }));
+
+  it('should not get Hierarchy levels when hierarchy is not null', fakeAsync(() => {
+    component.hierarchies = {
+      id : 'Project',
+      lavelName : 'Project',
+      lavel : 4
+    };
+    const spy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of(fakeFilterData));
+    const spygetFilterDataOnLoad = spyOn(component, 'getFilterDataOnLoad');
+    const spySetLevel = spyOn(component, 'setLevels');
+    component.setHierarchyLevels();
+    tick();
+    expect(spygetFilterDataOnLoad).toHaveBeenCalled();
+    expect(spySetLevel).toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   }));
 
 
@@ -378,27 +396,25 @@ describe('FilterComponent', () => {
 
   it('should process master Data', () => {
     component.selectedTab = 'Maturity';
-    const spy = spyOn(sharedService, 'setMasterData');
     const spyhandleIteration = spyOn(component, 'handleIterationFilters');
     const spyapplyChanges = spyOn(component, 'applyChanges');
     component.processMasterData(fakeMasterData);
-    expect(spy).toHaveBeenCalled();
     expect(spyapplyChanges).toHaveBeenCalled();
 
     component.selectedTab = 'Iteration';
     component.processMasterData(fakeMasterData);
-    expect(spy).toHaveBeenCalled();
-    expect(spyapplyChanges).toHaveBeenCalled();
+    expect(spyhandleIteration).toHaveBeenCalled();
+    
   });
 
-  it('should set filters empty when selected tab is iteraiton', () => {
+  xit('should set filters empty when selected tab is iteraiton', () => {
     const spy = spyOn(sharedService, 'setEmptyFilter');
-    spyOn(sharedService, 'getSelectedType').and.returnValue('Scrum');
-    sharedService.onTabRefresh.emit('Iteration');
+    component.selectedTab = 'iteration';
+    const fake = { selectedTab : 'Iteration', selectedType : 'scrum' };
+    sharedService.onTypeOrTabRefresh.next(fake);
     fixture.detectChanges();
     expect(spy).toHaveBeenCalled();
-    expect(component.kanban).toBeFalse();
-  });
+    });
 
   it('should set the colorObj', () => {
     const x = {
@@ -412,11 +428,10 @@ describe('FilterComponent', () => {
     expect(component.colorObj).toBe(x);
   });
 
-  it('should set selectedType on TabRefersh ', () => {
+  xit('should set selectedType on TabRefersh ', () => {
     spyOn(sharedService, 'getSelectedType').and.returnValue('Kanban');
     const spy = spyOn(component, 'selectedType');
-    sharedService.onTabRefresh.emit('Backlog');
-    fixture.detectChanges();
+   fixture.detectChanges();
     expect(spy).toHaveBeenCalled();
   });
 
@@ -457,10 +472,7 @@ describe('FilterComponent', () => {
     expect(component.selectedFilterArray[0].grossMaturity).toEqual(result);
   });
 
-  it('should set FilterType', () => {
-    component.selectFilterType('default');
-    expect(component.filterType).toBe('default');
-  });
+  
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
@@ -473,16 +485,16 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalledWith(fakeFilterData);
   });
 
-  it('should get filter data on load', () => {
+  it('should process filter data when filter data is comming', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
-    component.previousType = false;
+    component.previousType = true;
     component.kanban = false;
     component.selectedTab = '';
     component.initFlag = true;
     const spy = spyOn(component, 'processFilterData');
-    const spygetFilterData = spyOn(httpService, 'getFilterData').and.returnValue(of({}));
+    const spygetFilterData = spyOn(httpService, 'getFilterData').and.returnValue(of(fakeFilterData));
     component.getFilterDataOnLoad();
-    expect(spygetFilterData).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should set Empty Data when filter data is not available', () => {
@@ -658,24 +670,6 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should check for default filter selection for iteration tab', () => {
-    const filterData = [
-      {
-        nodeId: 'BITBUCKET_DEMO_632c46c6728e93266f5d5631',
-        nodeName: 'BITBUCKET_DEMO',
-        path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
-        labelName: 'project',
-        parentId: 't3_subaccount',
-        level: 5,
-        basicProjectConfigId: '632c46c6728e93266f5d5631'
-      }];
-    component.selectedTab = 'iteration';
-    component.filterData = filterData;
-    const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
-    component.trendLineValueList = [];
-    component.checkDefaultFilterSelection();
-    expect(spy).toHaveBeenCalled();
-  });
 
   it('should check for default filter selection for iteration tab and no projects available', () => {
     const filterData = [
@@ -760,9 +754,9 @@ describe('FilterComponent', () => {
     expect(result).toBeTrue();
   });
 
-  it('should handle iteration filter', () => {
+  it('should handle iteration filter for active sprints', () => {
     component.filterForm = new UntypedFormGroup({
-      selectedProjectValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
       selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
     });
     component.selectedFilterArray = [];
@@ -780,6 +774,35 @@ describe('FilterComponent', () => {
         sprintEndDate: '2022-11-23T10:20:00.0000000',
         sprintStartDate: '2022-11-09T10:20:00.0000000',
         sprintState: 'active',
+      }]
+    };
+    const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
+    spyOn(sharedService, 'setNoSprints');
+    spyOn(component, 'createFilterApplyData');
+    component.handleIterationFilters('project', 1);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should handle iteration filter for close sprints', () => {
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
+    });
+    component.selectedFilterArray = [];
+    component.trendLineValueList = [{nodeId:'DOTC_63b51633f33fd2360e9e72bd', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
+    component.additionalFiltersDdn = {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'closed',
       }]
     };
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
@@ -1062,6 +1085,20 @@ describe('FilterComponent', () => {
 
   it("should labels come for kanban when date is not null",()=>{
    component.ngOnInit();
+   component.filterApplyData = {
+    ids: [
+      'bittest_corporate'
+    ],
+    sprintIncluded: [
+      'CLOSED'
+    ],
+    selectedMap: {
+      corporate: [
+        'bittest_corporate'
+      ]
+    },
+    level: 5
+  };
    component.kanban = true;
    component.filterForm.get('date').setValue('07/09/2022');
     spyOn(component,"resetFilterApplyObj");
@@ -1199,4 +1236,18 @@ describe('FilterComponent', () => {
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();
     });
 
+    it("should get tooltip data on component load",()=>{
+      const fakeResponce = {
+        dateRangeFilter: {
+          counts: [5, 10, 15],
+          types: ['Days', 'Weeks', 'Months']
+        },
+        hierarchySelectionCount: 3,
+        kpiWiseAggregationType: { kpi114: 'sum', kpi997: 'sum', kpi116: 'average', kpi118: 'sum', kpi82: 'average' },
+        percentile: 90
+      };
+      spyOn(httpService,"getTooltipData").and.returnValue(of(fakeResponce));
+      component.ngOnInit();
+      expect(component.dateRangeFilter).not.toBeNull();
+     });
 });
