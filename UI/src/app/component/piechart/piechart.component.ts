@@ -49,24 +49,9 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
 
 
-  constructor(private viewContainerRef: ViewContainerRef) {
-    this.elem = this.viewContainerRef.element.nativeElement;
-  }
+  constructor(private viewContainerRef: ViewContainerRef) {}
 
-  createSvg(): void {
-    d3.select(this.elem).select('#pie').select('svg').remove();
-    this.svg = d3
-      .select('#pie')
-      .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + 120 + ',' + this.height / 2 + ')',
-      );
-  }
-  //d.Stars.toString()
+
   createColors(): void {
     this.colors = d3
       .scaleOrdinal()
@@ -94,11 +79,12 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   }
   drawChart(): void {
     // Compute the position of each group on the pie:
+    d3.select(this.elem).select('#pie').select('svg').remove();
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
 
     const pieChartValues = this.data[0]?.value[0]?.value;
-    const colors = this.colors;
+
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
         ['title']: property,
@@ -106,10 +92,25 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       }
       )
     }
+    const svg = d3
+      .select(this.elem)
+      .select('#pie')
+      .append('svg')
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g')
+      .attr(
+        'transform',
+        'translate(' + 120 + ',' + this.height / 2 + ')',
+      );
+    this.createColors();
+    const colors = this.colors;
+    console.log(this.pieChartValuesArray);
+
     const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");
     // Build the pie chart
-    this.svg
+    svg
       .selectAll('pieces')
       .data(pie(this.pieChartValuesArray))
       .enter()
@@ -119,7 +120,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
 
-    const foreignObject = this.svg.append("foreignObject")
+    const foreignObject = svg.append("foreignObject")
       .attr("width", 220)
       .attr("height", this.height - (2 * this.margin))
       .style('overflow-y', 'auto')
@@ -140,7 +141,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .style('text-align', 'left');
 
     const tbody = foreignObject
-      .data(this.pieChartValuesArray)
       .append('tbody');
 
     this.pieChartValuesArray.forEach((x, i) => {
@@ -157,26 +157,17 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     // only run when property "data" changed
     if (Object.keys(changes)?.length > 0) {
       if (changes['data']) {
-        if (!changes['data'].firstChange) {
-          this.createSvg();
-          this.createColors();
-          this.drawChart();
-        } else {
-          this.createSvg();
-          this.createColors();
-          this.drawChart();
-        }
+        this.elem = this.viewContainerRef.element.nativeElement;
+        this.drawChart();
       }
-    } else {
-      d3.select(this.elem).select('#pie').select('svg').remove();
-      this.drawChart();
     }
+
   }
 
   ngOnDestroy() {
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#pie').select('svg').remove();
-
+    this.data = [];
     this.pieChartValuesArray = [];
   }
 
