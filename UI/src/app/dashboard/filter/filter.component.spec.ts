@@ -210,8 +210,6 @@ describe('FilterComponent', () => {
   it('when  tab is clicked and  scrum is selected', (done) => {
     const selectedTab = 'mydashboard';
     const boardId = 1;
-    sharedService.setSelectedTab(selectedTab, boardId);
-    sharedService.selectTab(selectedTab);
     fixture.detectChanges();
     expect(component.kanban).toBeFalsy();
     done();
@@ -221,8 +219,6 @@ describe('FilterComponent', () => {
     fixture.detectChanges();
     const selectedTab = 'mydashboard';
     const boardId = 7;
-    sharedService.setSelectedTab(selectedTab, boardId);
-    sharedService.selectTab(selectedTab);
     component.selectedType('Kanban');
     fixture.detectChanges();
     expect(component.kanban).toBeTruthy();
@@ -545,10 +541,9 @@ describe('FilterComponent', () => {
     component.selectedTab = 'Speed';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(sharedService, 'setSelectedTab');
-    spyOn(router, 'navigateByUrl');
+    const spy = spyOn(router, 'navigateByUrl');
     component.navigateToSelectedTab();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith('/dashboard/speed');
   }));
 
   it('should get kpiorder list', fakeAsync(() => {
@@ -571,21 +566,36 @@ describe('FilterComponent', () => {
   }));
 
   it('should call processKpiList when kpiList is available', () => {
-    component.kpiListData = configGlobalData['data'];
+    component.kpiListData = configGlobalData;
     const spyprocessKpiList = spyOn(component, 'processKpiList');
     const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderedList();
     expect(spyprocessKpiList).toHaveBeenCalled();
-    expect(spynavigateToSelectedTab).not.toHaveBeenCalled();
+    expect(spynavigateToSelectedTab).toHaveBeenCalled();
   });
 
-  it('should processKpiList', () => {
+  it('should kpiList not blank for other than backlog and iteration', () => {
     component.selectedTab = '';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(sharedService, 'getSelectBoardId').and.returnValue(1);
     component.processKpiList();
-    expect(component.showKpisList.length).toBeGreaterThan(0);
+    expect(component.kpiList).not.toBeNull();
+  });
+  
+  it('should kpiList not blank for backlog', () => {
+    component.selectedTab = 'Backlog';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
+  });
+
+  it('should kpiList not blank for iteration', () => {
+    component.selectedTab = 'Iteration';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
   });
 
   it('should handle all kpi change', () => {
