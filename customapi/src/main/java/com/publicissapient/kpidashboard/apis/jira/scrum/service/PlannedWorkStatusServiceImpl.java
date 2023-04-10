@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -221,8 +221,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						priorities.add(priority);
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
 						int issueCountActual = 0;
-						Double storyPoint = 0.0;
-						Double originalEstimate = 0.0;
+						Double storyPointActual = 0.0;
+						Double originalEstimateActual = 0.0;
 						int issueCountPlanned = 0;
 						Double storyPointPlanned = 0.0;
 						Double originalEstimatePlanned = 0.0;
@@ -234,17 +234,10 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 										.isBefore(LocalDate.now())) {
 									issueCountPlanned = issueCountPlanned + 1;
 									overAllIssueCountPlanned.set(0, overAllIssueCountPlanned.get(0) + 1);
-									if (null != jiraIssue.getStoryPoints()) {
-										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
-										overAllStoryPointsPlanned.set(0,
-												overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
-									}
-									if (null != jiraIssue.getOriginalEstimateMinutes()) {
-										originalEstimatePlanned = originalEstimatePlanned
-												+ jiraIssue.getOriginalEstimateMinutes();
-										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
-												+ jiraIssue.getOriginalEstimateMinutes());
-									}
+
+									storyPointPlanned = KpiDataHelper.getStoryPoint(overAllStoryPointsPlanned, storyPointPlanned, jiraIssue);
+									originalEstimatePlanned = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimatePlanned,
+											originalEstimatePlanned, jiraIssue);
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
 											sprintDetails, allIssueHistories, jiraIssue);
 									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
@@ -264,17 +257,10 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 												DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
 									issueCountPlanned = issueCountPlanned + 1;
 									overAllIssueCountPlanned.set(0, overAllIssueCountPlanned.get(0) + 1);
-									if (null != jiraIssue.getStoryPoints()) {
-										storyPointPlanned = storyPointPlanned + jiraIssue.getStoryPoints();
-										overAllStoryPointsPlanned.set(0,
-												overAllStoryPointsPlanned.get(0) + jiraIssue.getStoryPoints());
-									}
-									if (null != jiraIssue.getOriginalEstimateMinutes()) {
-										originalEstimatePlanned = originalEstimatePlanned
-												+ jiraIssue.getOriginalEstimateMinutes();
-										overAllOriginalEstimatePlanned.set(0, overAllOriginalEstimatePlanned.get(0)
-												+ jiraIssue.getOriginalEstimateMinutes());
-									}
+
+									storyPointPlanned = KpiDataHelper.getStoryPoint(overAllStoryPointsPlanned, storyPointPlanned, jiraIssue);
+									originalEstimatePlanned = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimatePlanned,
+											originalEstimatePlanned, jiraIssue);
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
 											sprintDetails, allIssueHistories, jiraIssue);
 									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
@@ -293,16 +279,10 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 								issueCountActual = issueCountActual + 1;
 								overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
 
-								if (null != jiraIssue.getStoryPoints()) {
-									storyPoint = storyPoint + jiraIssue.getStoryPoints();
-									overAllStoryPointsActual.set(0,
-											overAllStoryPointsActual.get(0) + jiraIssue.getStoryPoints());
-								}
-								if (null != jiraIssue.getOriginalEstimateMinutes()) {
-									originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-									overAllOriginalEstimateActual.set(0, overAllOriginalEstimateActual.get(0)
-											+ jiraIssue.getOriginalEstimateMinutes());
-								}
+								storyPointActual = KpiDataHelper.getStoryPoint(overAllStoryPointsActual, storyPointActual, jiraIssue);
+								originalEstimateActual = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateActual,
+										originalEstimateActual, jiraIssue);
+
 								if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 										.isAfter(LocalDate.now().minusDays(1))) {
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
@@ -325,8 +305,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						IterationKpiData delayed;
 						issueCountsPlanned = createIterationKpiData(PLANNED_COMPLETION, fieldMapping, issueCountPlanned,
 								storyPointPlanned, originalEstimatePlanned, modalValues);
-						issueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, issueCountActual, storyPoint,
-								originalEstimate, null);
+						issueCountsActual = createIterationKpiData(ACTUAL_COMPLETION, fieldMapping, issueCountActual, storyPointActual,
+								originalEstimateActual, null);
 						delayed = new IterationKpiData(DELAY, (double) getDelayInMinutes(delay), null, null,
 								CommonConstant.DAY, null);
 						data.add(issueCountsPlanned);
@@ -371,7 +351,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 * @param fieldMapping
 	 * @return
 	 */
-	private Map<String, Object> calActualCompletionDays(JiraIssueCustomHistory issueCustomHistory,
+	private Map<String, Object> calStartAndEndDate(JiraIssueCustomHistory issueCustomHistory,
 			SprintDetails sprintDetail, FieldMapping fieldMapping) {
 		List<String> inProgressStatuses = new ArrayList<>();
 		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
@@ -391,56 +371,33 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		// sorting the story history on basis of activityDate
 		filterStorySprintDetails.sort(Comparator.comparing(JiraIssueSprint::getActivityDate));
 
-		// Creating the closed status count of that story.
-		Map<String, Integer> statusCountMap = new HashMap<>();
-
-		createClosedStatusCountMap(filterStorySprintDetails, closedStatus, statusCountMap);
-
-		Set<Integer> distinctValues = new HashSet<>(statusCountMap.values());
-
-		inProgressStatuses = getInProgressStatuses(fieldMapping, inProgressStatuses);
-
+		// Getting inProgress Status
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
+		}
 		LocalDate startDate = null;
-		LocalDate endDate = null;
-		AtomicBoolean isStartDateFound = new AtomicBoolean(false);
-		boolean isEndDateFound = false;
-		int count = 0;
-		int entryCount = 0;
+		LocalDate endDate;
+		boolean isStartDateFound = false;
+
+		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 		for (JiraIssueSprint storySprintDetail : filterStorySprintDetails) {
 			LocalDate activityLocalDate = LocalDate
 					.parse(storySprintDetail.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
 
-			startDate = setStartDate(inProgressStatuses,storySprintDetail,isStartDateFound,startDate,activityLocalDate);
-			// For issue which are having only one closed cycle
-			if(distinctValues.size() == 1 && !isEndDateFound && closedStatus.contains(storySprintDetail.getFromStatus())){
-				endDate = activityLocalDate;
-				isEndDateFound = true;
+			if (inProgressStatuses.contains(storySprintDetail.getFromStatus()) && !isStartDateFound) {
+				startDate = activityLocalDate;
+				isStartDateFound = true;
 			}
-			// For issues which are having more than one closed cycle i.e. reopened & closed in same sprint.
-			if(distinctValues.size() > 1 && !isEndDateFound && closedStatus.contains(storySprintDetail.getFromStatus())){
-				Integer repeated = Collections.max(distinctValues);
-				// we have to take the first close state date of last close cycle
-				if(closedStatus.size() - 1 == entryCount)
-						count = count + 1;
-				else
-					entryCount++;
-				// count will check if last close cycle is reached or not
-				if(count == repeated - 1 ){
-					endDate = activityLocalDate;
-					isEndDateFound = true;
-				}
+
+			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
+				closedStatusDateMap.put(storySprintDetail.getFromStatus(), activityLocalDate);
 			}
 		}
-		resultList.put(ACTUAL_START_DATE,startDate);
+		// Getting the min date of closed status.
+		endDate = closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null);
+		resultList.put(ACTUAL_START_DATE, startDate);
 		resultList.put(ACTUAL_COMPLETE_DATE, endDate);
 		return resultList;
-	}
-
-	private List<String> getInProgressStatuses(FieldMapping fieldMapping, List<String> inProgressStatuses) {
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
-		}
-		return inProgressStatuses;
 	}
 
 	// Filtering the history which happened inside the sprint on basis of activity date
@@ -454,21 +411,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 					.collect(Collectors.toList());
 		}
 		return filterStorySprintDetails;
-	}
-
-	// For creating the creating map of closed status count
-	private void createClosedStatusCountMap(List<JiraIssueSprint> filterStorySprintDetails, Set<String> closedStatus,
-			Map<String, Integer> statusCountMap) {
-		filterStorySprintDetails.stream()
-				.filter(jiraIssueSprint -> closedStatus.contains(jiraIssueSprint.getFromStatus()))
-				.forEach(jiraIssueSprint -> {
-					String fromStatus = jiraIssueSprint.getFromStatus();
-					if (statusCountMap.containsKey(fromStatus)) {
-						statusCountMap.put(fromStatus, statusCountMap.get(fromStatus) + 1);
-					} else {
-						statusCountMap.put(fromStatus, 1);
-					}
-				});
 	}
 
 	/**
@@ -491,7 +433,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
 		// calling function for cal actual completion days
-		Map<String, Object> actualCompletionData = calActualCompletionDays(issueCustomHistory,
+		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory,
 				sprintDetails, fieldMapping);
 
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null && jiraIssue.getDueDate() != null) {
@@ -515,12 +457,4 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		return (dueDate.isAfter(completedDate)) ? potentialDelays * (-1) : potentialDelays;
 	}
 
-	private LocalDate setStartDate(List<String> inProgressStatuses, JiraIssueSprint storySprintDetail,
-								   AtomicBoolean isStartDateFound, LocalDate startDate, LocalDate activityLocalDate) {
-		if (inProgressStatuses.contains(storySprintDetail.getFromStatus()) && !isStartDateFound.get()) {
-			startDate = activityLocalDate;
-			isStartDateFound.set(true);
-		}
-		return startDate;
-	}
 }
