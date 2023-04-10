@@ -252,6 +252,7 @@ public class KPIExcelUtility {
                 excelData.setIssueDesc(checkEmptyName(jiraIssue));
                 excelData.setIssueStatus(jiraIssue.getStatus());
                 excelData.setIssueType(jiraIssue.getTypeName());
+                populateAssignee(jiraIssue, excelData);
                 if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(String.valueOf(jiraIssue.getStoryPoints()));
@@ -728,6 +729,7 @@ public class KPIExcelUtility {
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
                 excelData.setIssueStatus(e.getStatus());
+                populateAssignee(e, excelData);
                 if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
@@ -1215,6 +1217,7 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        populateAssignee(jiraIssue, iterationKpiModalValue);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
@@ -1267,7 +1270,8 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+        populateAssignee(jiraIssue, iterationKpiModalValue);
+        if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
 		}
@@ -1330,6 +1334,7 @@ public class KPIExcelUtility {
         iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
         iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
         iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+        populateAssignee(jiraIssue, iterationKpiModalValue);
         if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
             AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
             Map<String, String> linkedStoriesMap = new HashMap<>();
@@ -1353,6 +1358,21 @@ public class KPIExcelUtility {
         }
         overAllmodalValues.add(iterationKpiModalValue);
     }
+
+    /**
+     *  Method to populate assignee name in kpi's
+     * @param jiraIssue
+     * @param object
+     */
+    public static void populateAssignee(JiraIssue jiraIssue, Object object) {
+        String assigneeName = jiraIssue.getAssigneeName() != null ? jiraIssue.getAssigneeName() : " - ";
+        if (object instanceof IterationKpiModalValue) {
+            ((IterationKpiModalValue) object).setAssignee(assigneeName);
+        } else if (object instanceof KPIExcelData) {
+            ((KPIExcelData) object).setAssignee(assigneeName);
+        }
+    }
+
 
 	public static void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, List<JiraIssue> finalFirstTimePassStoryList,
