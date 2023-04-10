@@ -407,12 +407,12 @@ describe('FilterComponent', () => {
     
   });
 
-  xit('should set filters empty when selected tab is iteraiton', () => {
+  it('should set filters empty when selected tab is iteraiton', () => {
+    component.ngOnInit();
     const spy = spyOn(sharedService, 'setEmptyFilter');
     component.selectedTab = 'iteration';
     const fake = { selectedTab : 'Iteration', selectedType : 'scrum' };
     sharedService.onTypeOrTabRefresh.next(fake);
-    fixture.detectChanges();
     expect(spy).toHaveBeenCalled();
     });
 
@@ -427,15 +427,6 @@ describe('FilterComponent', () => {
     fixture.detectChanges();
     expect(component.colorObj).toBe(x);
   });
-
-  xit('should set selectedType on TabRefersh ', () => {
-    spyOn(sharedService, 'getSelectedType').and.returnValue('Kanban');
-    const spy = spyOn(component, 'selectedType');
-   fixture.detectChanges();
-    expect(spy).toHaveBeenCalled();
-  });
-
-
 
   it('should set isSuperAdmin flag', () => {
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
