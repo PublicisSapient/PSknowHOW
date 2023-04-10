@@ -92,6 +92,8 @@ public class QualityStatusServiceImplTest {
 	private KpiHelperService kpiHelperService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
+
+	private List<JiraIssue> bugList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private SprintDetails sprintDetails = new SprintDetails();
@@ -114,8 +116,11 @@ public class QualityStatusServiceImplTest {
 
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
+
+		bugList = jiraIssueDataFactory.getBugs();
 	}
 
 	private void setMockProjectConfig() {
@@ -144,8 +149,7 @@ public class QualityStatusServiceImplTest {
 		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
-		when(kpiHelperService.getSubTaskDefectsBySprint(any() , any() , anyMap() ,anyMap() , anyList())).thenReturn(
-				new HashMap<>());
+		when(jiraIssueRepository.findLinkedDefects(anyMap() , any() , anyMap())).thenReturn(bugList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))

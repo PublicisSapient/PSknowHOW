@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +84,11 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	public static final String DEFECT_DENSITY = "Defect Density";
 	private static final String TOTAL_ISSUES = "totalIssues";
 
+	private static final String TOTAL_DEFECTS = "totalDefects";
+
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -167,20 +174,35 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssue,
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
 					List<SprintDetails> sprintDetailsList = new ArrayList<>();
 					sprintDetailsList.add(sprintDetails);
-					Map<String, List<JiraIssue>> sprintWiseSubTaskBugMap = kpiHelperService.getSubTaskDefectsBySprint(
-							totalSprintReportStories, totalSprintReportDefects, mapOfFilters, uniqueProjectMap,
-							sprintDetailsList);
+
+					//fetched all defects which is linked to current sprint report stories
+					List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters,
+							totalSprintReportStories, uniqueProjectMap);
+					LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0],
+							DATE_TIME_FORMATTER);
+					LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0],
+							DATE_TIME_FORMATTER);
+					List<JiraIssue> totalBugsCreatedSprintDuration = totalBugs.stream()
+							.filter(jiraIssue -> jiraIssue.getSprintID() != null
+									&& jiraIssue.getSprintID().equals(sprintId)
+									&& DateUtil.isWithinDateRange(LocalDate
+											.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+											sprintStartDate, sprintEndDate))
+							.collect(Collectors.toList());
+
+					// filter defects which is issue type not coming  in sprint report
+					List<JiraIssue> subTaskDefects = totalBugsCreatedSprintDuration.stream()
+							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
+							.collect(Collectors.toList());
+
 					List<JiraIssue> totalIssues = new ArrayList<>();
-					totalIssues.addAll(filtersIssuesList);
-					if(MapUtils.isNotEmpty(sprintWiseSubTaskBugMap)){
-						List<JiraIssue> subTaskBugList = sprintWiseSubTaskBugMap.get(sprintId);
-						totalIssues.addAll(subTaskBugList);
-					}
+					totalIssues.addAll(sprintReportIssueList);
+					totalIssues.addAll(subTaskDefects);
 					resultListMap.put(TOTAL_ISSUES, totalIssues);
 				}
 			}
