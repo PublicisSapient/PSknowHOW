@@ -96,14 +96,14 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
         this.selectedtype = this.service.getSelectedType();
 
-        this.subscription.push(this.service.onTypeRefresh.pipe(distinctUntilChanged(),mergeMap(selectedtype =>{
+        this.subscription.push(this.service.onTypeOrTabRefresh.pipe(distinctUntilChanged(),mergeMap(data =>{
             this.noOfJiraGroups=0;
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
             this.loaderJenkins = false;
             this.loaderJira =false;
-            this.selectedtype = selectedtype;
+            this.selectedtype = data.selectedType;
             this.showNoDataMsg =false;
             return this.service.passDataToDashboard;
         })).pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -120,6 +120,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.subscription.forEach(subscription => subscription.unsubscribe());
     }
     receiveSharedData($event) {
+        console.log('receiveSharedData',$event);
+        
         this.loader =true;
         this.jiraGroups = 0;
         this.showNoDataMsg = false;

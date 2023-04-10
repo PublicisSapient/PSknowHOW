@@ -971,7 +971,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
 }
 
 ::ng-deep .ng-select-container.ng-has-value .ng-placeholder {
-  font-size: 22px; 
+  font-size: 1.4rem;
 }
 
 ::ng-deep .abc .ng-select.ng-select-single .ng-select-container.ng-has-value .ng-placeholder {

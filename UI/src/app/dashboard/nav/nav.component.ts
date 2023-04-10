@@ -54,13 +54,14 @@ export class NavComponent implements OnInit {
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
-    this.selectedType ='scrum';
+    this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
+    this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
     if(this.selectedTab.includes('-')){
       this.selectedTab = this.selectedTab.split('-').join(' ');
     }
-    this.service.setSelectedTab(this.selectedTab);
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
   }
 
 
@@ -83,15 +84,15 @@ export class NavComponent implements OnInit {
   selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
     if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog') && this.selectedType.toLowerCase() !== 'scrum'){
-      this.setSelectedType('Scrum');
+      this.selectedType = 'Scrum';
     }
-    this.service.setSelectedTab(this.selectedTab);
+    this.setSelectedType(this.selectedType);
   }
 
   setSelectedType(type) {
     this.selectedType = type?.toLowerCase();
-    this.service.setSelectedType(type);
-    if (type === 'Kanban') {
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
+    if (type.toLowerCase() === 'kanban') {
       this.kanban = true;
     } else {
       this.kanban = false;
