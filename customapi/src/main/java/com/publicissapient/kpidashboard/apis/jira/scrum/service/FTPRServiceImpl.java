@@ -112,6 +112,20 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				firstTimePassStoryList = Stream.concat(firstTimePassStoryList.stream(), rcaWiseStories.stream())
 						.collect(Collectors.toList());
 			}
+
+			List<JiraIssue> rcaDefectWOMapping = totalDeffects.stream()
+					.filter(defects -> !CollectionUtils.containsAny(
+							projectWiseRCA.get(defects.getBasicProjectConfigId()), defects.getRootCauseList()))
+					.collect(Collectors.toList());
+			// excluding stories with linked defect from FTPR if any RCA is not
+			// maintained in field mapping
+			if (CollectionUtils.isNotEmpty(rcaDefectWOMapping)) {
+				Set<String> listOfStoryId = rcaDefectWOMapping.stream().map(JiraIssue::getDefectStoryID)
+						.flatMap(Set::stream).collect(Collectors.toSet());
+				firstTimePassStoryList = firstTimePassStoryList.stream()
+						.filter(issues -> !(listOfStoryId.contains(issues.getNumber()))).collect(Collectors.toList());
+			}
+
 		}
 		return firstTimePassStoryList;
 	}
