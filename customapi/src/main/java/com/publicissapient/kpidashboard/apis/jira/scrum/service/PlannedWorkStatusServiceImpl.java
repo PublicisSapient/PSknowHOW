@@ -64,7 +64,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -381,17 +380,17 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		boolean isStartDateFound = false;
 
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-		for (JiraIssueSprint storySprintDetail : filterStorySprintDetails) {
+		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
 			LocalDate activityLocalDate = LocalDate
 					.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER);
 
-			if (inProgressStatuses.contains(storySprintDetail.getFromStatus()) && !isStartDateFound) {
+			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
 				startDate = activityLocalDate;
 				isStartDateFound = true;
 			}
 
-			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
-				closedStatusDateMap.put(storySprintDetail.getFromStatus(), activityLocalDate);
+			if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
+				closedStatusDateMap.put(statusUpdationLog.getChangedTo(), activityLocalDate);
 			}
 		}
 		// Getting the min date of closed status.
