@@ -195,17 +195,17 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 							issueCountUnplanned = issueCountUnplanned + 1;
 							overAllIssueCountUnplanned.set(0, overAllIssueCountUnplanned.get(0) + 1);
 
-							storyPointUnplanned = getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
-							originalEstimateUnplanned = getOriginalEstimate(overAllOriginalEstimateUnplanned,
+							storyPointUnplanned = KpiDataHelper.getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
+							originalEstimateUnplanned = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateUnplanned,
 									originalEstimateUnplanned, jiraIssue);
 							// For unplanned completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
 								issueCountCompleted = issueCountCompleted + 1;
 								overAllIssueCountCompleted.set(0, overAllIssueCountCompleted.get(0) + 1);
 
-								storyPointCompleted = getStoryPoint(overAllStoryPointsCompleted, storyPointCompleted,
+								storyPointCompleted = KpiDataHelper.getStoryPoint(overAllStoryPointsCompleted, storyPointCompleted,
 										jiraIssue);
-								originalEstimateCompleted = getOriginalEstimate(overAllOriginalEstimateCompleted,
+								originalEstimateCompleted = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateCompleted,
 										originalEstimateCompleted, jiraIssue);
 							}
 							populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
@@ -246,23 +246,6 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 			kpiElement.setModalHeads(KPIExcelColumn.UNPLANNED_WORK_STATUS.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
-	}
-
-	private Double getOriginalEstimate(List<Double> overAllOriginalEstimate, Double originalEstimate,
-			JiraIssue jiraIssue) {
-		if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-			overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
-		}
-		return originalEstimate;
-	}
-
-	private Double getStoryPoint(List<Double> overAllStoryPoints, Double storyPoint, JiraIssue jiraIssue) {
-		if (null != jiraIssue.getStoryPoints()) {
-			storyPoint = storyPoint + jiraIssue.getStoryPoints();
-			overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
-		}
-		return storyPoint;
 	}
 
 }
