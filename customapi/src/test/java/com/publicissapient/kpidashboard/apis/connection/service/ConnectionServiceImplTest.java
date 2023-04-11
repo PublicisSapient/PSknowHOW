@@ -152,7 +152,7 @@ public class ConnectionServiceImplTest {
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setToolName("Jira");
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5fc0853c410df80001701321"));
-		projectToolConfig.setProjectKey("DTS");
+		projectToolConfig.setProjectKey("TEST");
 		projectToolConfig.setCreatedAt("2020-11-27T04:50:56");
 		projectToolConfig.setUpdatedAt("2020-11-30T04:54:59");
 		projectToolConfig.setQueryEnabled(true);

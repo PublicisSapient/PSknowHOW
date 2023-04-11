@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,6 +56,17 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 @Slf4j
 public class FieldMappingServiceImpl implements FieldMappingService {
 
+	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
+	public static final String JIRA_STORY_POINTS_CUSTOM_FIELD = "jiraStoryPointsCustomField";
+	public static final String ROOT_CAUSE = "rootCause";
+	public static final String JIRA_ISSUE_TYPE_NAMES = "jiraIssueTypeNames";
+	public static final String STORY_FIRST_STATUS = "storyFirstStatus";
+	public static final String EPIC_COST_OF_DELAY = "epicCostOfDelay";
+	public static final String EPIC_RISK_REDUCTION = "epicRiskReduction";
+	public static final String EPIC_USER_BUSINESS_VALUE = "epicUserBusinessValue";
+	public static final String EPIC_WSJF = "epicWsjf";
+	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
+	public static final String EPIC_JOB_SIZE = "epicJobSize";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -85,7 +97,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
 		if (!ObjectId.isValid(projectToolConfigId)) {
-			throw new IllegalArgumentException("Invalid projectToolConfigId");
+			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
 		if (!authorizedProjectsService.ifSuperAdminUser() && !hasProjectAccess(projectToolConfigId)) {
 			throw new AccessDeniedException("Access is denied");
@@ -98,7 +110,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping) {
 
 		if (!ObjectId.isValid(projectToolConfigId)) {
-			throw new IllegalArgumentException("Invalid projectToolConfigId");
+			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
 
 		if (fieldMapping == null) {
@@ -113,12 +125,38 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			fieldMapping.setId(existingFieldMapping.getId());
 			updateJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
 		}
+
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
 		cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 		clearCache();
 		return mapping;
 	}
 
+    @Override
+	public boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping) {
+
+		boolean mappingUpdated = false;
+
+		if (!ObjectId.isValid(projectToolConfigId)) {
+			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
+		}
+
+		if (fieldMapping == null) {
+			throw new IllegalArgumentException("Field mapping can't be null");
+		}
+
+		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
+
+		FieldMapping existingFieldMapping = fieldMappingRepository
+				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
+
+		if (existingFieldMapping != null) {
+			fieldMapping.setId(existingFieldMapping.getId());
+		 mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
+		}
+
+		return mappingUpdated;
+	}
 	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig;
@@ -161,19 +199,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	/**
 	 * Checks if fields are updated.
-	 * 
-	 * @param unsaved
-	 *            object from request
-	 * @param saved
-	 *            object from database
+	 *
+	 * @param unsaved       object from request
+	 * @param saved         object from database
+	 * @param fieldNameList
 	 * @return true or false
 	 */
-	private boolean isMappingUpdated(FieldMapping unsaved, FieldMapping saved) {
+	private boolean isMappingUpdated(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameList) {
 		boolean isUpdated;
-
-		List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", "jiraStoryPointsCustomField",
-				"rootCause", "jiraIssueTypeNames", "storyFirstStatus", "epicCostOfDelay", "epicRiskReduction",
-				"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize", "additionalFilterConfig","jiraDueDateField","jiraDueDateCustomField;");
 
 		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameList);
 
@@ -203,20 +236,16 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	/**
 	 * Checks if fields are updated.
-	 * 
-	 * @param unsaved
-	 *            object from request
-	 * @param saved
-	 *            object from database
+	 *
+	 * @param unsaved             object from request
+	 * @param saved               object from database
+	 * @param fieldNameListKanban
 	 * @return true or false
 	 */
-	private boolean isKanbanMappingUpdated(FieldMapping unsaved, FieldMapping saved) {
+	private boolean isKanbanMappingUpdated(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameListKanban) {
 		boolean isUpdated;
 
-		List<String> fieldNameList = Arrays.asList("jiraStoryPointsCustomField", "rootCause", "jiraIssueTypeNames",
-				"storyFirstStatus");
-
-		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameList);
+		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameListKanban);
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
 			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
@@ -294,9 +323,17 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				.findById(basicProjectConfigId);
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
-			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping))
+
+			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
+						ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
+					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE, "additionalFilterConfig","jiraDueDateField","jiraDueDateCustomField");
+
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
+					STORY_FIRST_STATUS);
+
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
-							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping))) {
+							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
 				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
 						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
 								basicProjectConfigId.toHexString());
@@ -308,8 +345,65 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
 					processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 				}
+
+				Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
+						.findById(fieldMapping.getProjectToolConfigId());
+				saveTemplateCode(projectBasicConfig, projectToolConfigOpt);
+
 			}
 		}
+	}
+
+	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+		if (projectToolConfigOpt.isPresent()) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
+			if (projectBasicConfig.getIsKanban()) {
+				projectToolConfig.setMetadataTemplateCode("9");
+			} else {
+				projectToolConfig.setMetadataTemplateCode("10");
+			}
+
+			toolConfigRepository.save(projectToolConfig);
+		}
+	}
+
+	private boolean compareJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
+								FieldMapping existingFieldMapping) {
+		boolean isUpdated = false;
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
+				.findById(basicProjectConfigId);
+		if (projectBasicConfigOpt.isPresent()) {
+			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
+
+			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
+					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus", EPIC_COST_OF_DELAY,
+					EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus", "jiraDod",
+					"jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment", "jiraStatusForQa",
+					"jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus", "jiraStatusForInProgress",
+					"jiraDevDoneStatus", "jiraDefectSeepageIssueType", "jiraQADefectDensityIssueType",
+					"jiraDefectCountlIssueType", "jiraSprintVelocityIssueType", "jiraDefectRemovalIssueType",
+					"jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType", "jiraTestAutomationIssueType",
+					"jiraIntakeToDorIssueType", "jiraStoryIdentification", "jiraFTPRStoryIdentification",
+					"jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority", "excludeRCAFromFTPR",
+					"workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, "jiraDor",
+					"resolutionTypeForRejection", "jiraDefectRejectionStatus", EPIC_TIME_CRITICALITY, "jiraLiveStatus",
+					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField");
+
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
+					STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
+					"jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType", "kanbanRCACountIssueType",
+					"jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType", "storyPointToHourMapping", EPIC_COST_OF_DELAY,
+					EPIC_RISK_REDUCTION, "jiraIssueEpicType", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE,
+					EPIC_TIME_CRITICALITY);
+
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
+					|| (projectBasicConfig.getIsKanban()
+					&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
+
+				isUpdated = true;
+			}
+		}
+		return isUpdated;
 	}
 
 	/**

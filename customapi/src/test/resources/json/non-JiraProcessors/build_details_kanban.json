@@ -13,7 +13,7 @@
     "endTime" : 1673136156806,
     "duration" : 134806,
     "buildStatus" : "FAILURE",
-    "startedBy" : "shivani chittauri",
+    "startedBy" : "testUser1",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -29,7 +29,7 @@
     "endTime" : 1674086549301,
     "duration" : 128301,
     "buildStatus" : "SUCCESS",
-    "startedBy" : "shivani chittauri",
+    "startedBy" : "testUser1",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -90,7 +90,7 @@
     "endTime" : 1664514494371,
     "duration" : 100391,
     "buildStatus" : "SUCCESS",
-    "startedBy" : "shivani chittauri",
+    "startedBy" : "testUser1",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -121,7 +121,7 @@
     "endTime" : 1664555183377,
     "duration" : 1079613,
     "buildStatus" : "SUCCESS",
-    "startedBy" : "Rishabh Shukla",
+    "startedBy" : "testUser2",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -137,7 +137,7 @@
     "endTime" : 1664553714672,
     "duration" : 552716,
     "buildStatus" : "FAILURE",
-    "startedBy" : "Rishabh Shukla",
+    "startedBy" : "testUser2",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -153,7 +153,7 @@
     "endTime" : 1664552967203,
     "duration" : 461398,
     "buildStatus" : "FAILURE",
-    "startedBy" : "Rishabh Shukla",
+    "startedBy" : "testUser2",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   },
   {
@@ -169,7 +169,7 @@
     "endTime" : 1664552193500,
     "duration" : 233210,
     "buildStatus" : "FAILURE",
-    "startedBy" : "Rishabh Shukla",
+    "startedBy" : "testUser2",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"
   }
 

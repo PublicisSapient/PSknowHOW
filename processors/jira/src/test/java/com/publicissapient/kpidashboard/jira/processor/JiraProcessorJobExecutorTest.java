@@ -140,7 +140,7 @@ public class JiraProcessorJobExecutorTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 
 		projectConfig.setId(new ObjectId("604092b52b424d5e90d39342"));
-		projectConfig.setProjectName("DOJO Transformation Internal");
+		projectConfig.setProjectName("TEST Transformation Internal");
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
@@ -166,7 +166,7 @@ public class JiraProcessorJobExecutorTest {
 
 		projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("604092b52b424d5e90d39344"));
-		projectConfig.setProjectName("Tools-Atlassian Tools Support");
+		projectConfig.setProjectName("Test Tools Support");
 		subProjectConfig = new SubProjectConfig();
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_20810");

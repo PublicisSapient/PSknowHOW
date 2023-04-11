@@ -102,7 +102,7 @@
         "fullName": "something",
         "comment": "add new value in sysparam.properties",
         "changesetId": "dde5f6ce438ab6749a2873d75706bb27071576fa",
-        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/dde5f6ce438ab6749a2873d75706bb27071576fa",
+        "commitUrl": "http://abc.com/projects/janina/repos/api/commits/dde5f6ce438ab6749a2873d75706bb27071576fa",
         "date": "2016-08-25T16:34:36.000+07:00",
         "files": {
           "size": 1,
@@ -123,7 +123,7 @@
         "fullName": "Something",
         "comment": "fix image path",
         "changesetId": "c3dd4c0d232b8b475da24815280d8bf09cdc449f",
-        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/c3dd4c0d232b8b475da24815280d8bf09cdc449f",
+        "commitUrl": "http://abc.com/projects/janina/repos/api/commits/c3dd4c0d232b8b475da24815280d8bf09cdc449f",
         "date": "2016-08-25T13:17:04.000+07:00",
         "files": {
           "size": 4,
@@ -156,7 +156,7 @@
         "fullName": "Something",
         "comment": "Merge branch 'bugfix/BUYER-7671' into release/2.3.0\n",
         "changesetId": "4b499a1b50f9407a68e26382e4ea6c1b904388cd",
-        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/4b499a1b50f9407a68e26382e4ea6c1b904388cd",
+        "commitUrl": "http://abc.com/projects/janina/repos/api/commits/4b499a1b50f9407a68e26382e4ea6c1b904388cd",
         "date": "2016-08-25T17:01:27.000+07:00",
         "files": {
           "size": 0,

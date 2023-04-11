@@ -18,7 +18,7 @@
 
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FieldMappingComponent } from './field-mapping.component';
-import { MessageService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
@@ -656,6 +656,7 @@ describe('FieldMappingComponent', () => {
         HttpService,
         SharedService,
         MessageService,
+        ConfirmationService,
         GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
@@ -741,11 +742,11 @@ describe('FieldMappingComponent', () => {
     expect(component.displayDialog).toBeFalsy();
   });
 
-  it('should save fieldmappings', () => {
+  it('should check for template info popup', () => {
     component.ngOnInit();
     component.save();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
 
@@ -862,7 +863,7 @@ describe('FieldMappingComponent', () => {
     component.ngOnInit();
     component.save();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
 
@@ -872,4 +873,12 @@ describe('FieldMappingComponent', () => {
     tick();
     expect(component.kpiRelationShips.length).toEqual(fakeKpiFieldMappingList.kpiFieldMappingList.length);
   }));
+
+  it('should save field mapping', () => {
+    component.ngOnInit();
+    component.saveFieldMapping("63282cbaf5c740241aff32a1");
+    // fixture.detectChanges();
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    expect(component.fieldMappingForm.valid).toBeTruthy();
+  });
 });

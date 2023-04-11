@@ -19,7 +19,7 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { KanbanFieldMappingComponent } from './kanban-field-mapping.component';
-import { MessageService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
@@ -438,6 +438,7 @@ describe('KanbanFieldMappingComponent', () => {
         HttpService,
         SharedService,
         MessageService,
+        ConfirmationService,
         GetAuthorizationService,
         HttpService,
         { provide: APP_CONFIG, useValue: AppConfig }
@@ -535,7 +536,7 @@ describe('KanbanFieldMappingComponent', () => {
     component.ngOnInit();
     component.save();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
 
@@ -866,7 +867,7 @@ describe('KanbanFieldMappingComponent', () => {
     component.ngOnInit();
     component.save();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/fieldMapping')[0].flush(successResponse);
+    httpMock.match(baseUrl + '/api/tools/' + sharedService.getSelectedToolConfig()[0].id + '/saveMapping')[0].flush(successResponse);
     expect(component.fieldMappingForm.valid).toBeTruthy();
   });
 
