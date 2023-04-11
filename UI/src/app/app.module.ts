@@ -101,6 +101,7 @@ import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
+import { CommentsComponent } from './component/comments/comments.component';
 
 /******************************************************/
 
@@ -141,7 +142,8 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
-        GroupBarChartComponent
+        GroupBarChartComponent,
+        CommentsComponent
     ],
     imports: [
         DropdownModule,

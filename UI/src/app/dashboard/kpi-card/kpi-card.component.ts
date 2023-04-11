@@ -8,6 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./kpi-card.component.css']
 })
 export class KpiCardComponent implements OnInit, OnDestroy {
+  @Input() selectedTab;
   @Input() kpiData: any;
   @Input() trendData: Array<object>;
   @Output() downloadExcel = new EventEmitter<boolean>();
@@ -63,7 +64,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
       }
       const sharedObj = this.service.getFilterObject();
       if (sharedObj) {
-        if (sharedObj.selectedTab === 'Iteration' || sharedObj.selectedTab === 'Backlog') {
+        if (this.selectedTab === 'iteration' || this.selectedTab === 'backlog') {
           this.showCommentIcon = true;
         } else {
           this.showCommentIcon = sharedObj.filterApplyData.selectedMap?.project.length > 0;
@@ -136,77 +137,6 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     } else {
       this.filterMultiSelectOptionsData = {};
     }
-  }
-
-  openComments(){
-    this.selectedFilters = []
-    const sharedObj = this.service.getFilterObject();
-    const selectedTab = this.service.getSelectedTab();
-    if(selectedTab === 'Backlog' || selectedTab === 'Iteration'){
-      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.sprint.length; i++) {
-        this.selectedFilters.push(sharedObj.filterData.filter(data => {
-          return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
-        })[0]);
-      }
-    } else{
-      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.project.length; i++) {
-        this.selectedFilters.push(sharedObj.filterData.filter(data => {
-          return data.nodeId === sharedObj.filterApplyData.selectedMap?.project[i]
-        })[0]);
-      }
-    }
-
-    if(selectedTab === 'Backlog'){
-      const selFil = this.selectedFilters;
-      this.selectedFilters = [];
-      this.selectedFilters.push(sharedObj.filterData.filter(data => {
-        return data.nodeId === selFil[0].parentId[0];
-      })[0]);
-    }
-  }
-
-  submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
-    
-    const reqObj = {
-      node: this.service.getSelectedTab() !== 'Iteration' ? filterData.nodeId : filterData.parentId[0],
-      level: filterData.level,
-      sprintId: this.service.getSelectedTab() === 'Iteration' ? filterData.nodeId : '',
-      kpiId: this.kpiData?.kpiId,
-      commentsInfo: [
-        {
-          commentBy: localStorage.getItem('user_name'),
-          comment: this.commentText
-        }
-      ]
-    }
-    this.http_service.submitComment(reqObj).subscribe((response) => {
-      this.commentText = '';
-      if (this.showAddComment) {
-        this.getComments();
-      }
-    }, error => {
-      console.log(error);
-    });
-  }
-
-  viewAllHandler(){
-    this.commentsList = [];
-    this.displayCommentsList = true;
-    this.getComments();
-  }
-
-  getComments(){
-    this.http_service.getComment(this.service.getSelectedTab(), this.selectedFilters[this.selectedTabIndex], this.kpiData?.kpiId)
-    .subscribe(response => {
-      if(response.data?.CommentsInfo){
-        this.commentsList = response.data.CommentsInfo;
-      }
-      this.showAddComment = false;
-    });
-  }
-
-  commentTabChange(data){
-    this.selectedTabIndex = data.index;
   }
 
   ngOnDestroy() {
