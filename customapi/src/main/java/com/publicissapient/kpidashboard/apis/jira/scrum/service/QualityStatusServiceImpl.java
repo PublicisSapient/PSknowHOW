@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -83,8 +82,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	public static final String DIR = "DIR";
 	public static final String DEFECT_DENSITY = "Defect Density";
 	private static final String TOTAL_ISSUES = "totalIssues";
-
-	private static final String TOTAL_DEFECTS = "totalDefects";
 
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
@@ -181,13 +178,13 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					sprintDetailsList.add(sprintDetails);
 
 					//fetched all defects which is linked to current sprint report stories
-					List<JiraIssue> totalBugs = jiraIssueRepository.findLinkedDefects(mapOfFilters,
+					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
 							totalSprintReportStories, uniqueProjectMap);
 					LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0],
 							DATE_TIME_FORMATTER);
 					LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0],
 							DATE_TIME_FORMATTER);
-					List<JiraIssue> totalBugsCreatedSprintDuration = totalBugs.stream()
+					List<JiraIssue> totalBugsCreatedSprintDuration = linkedDefects.stream()
 							.filter(jiraIssue -> jiraIssue.getSprintID() != null
 									&& jiraIssue.getSprintID().equals(sprintId)
 									&& DateUtil.isWithinDateRange(LocalDate
