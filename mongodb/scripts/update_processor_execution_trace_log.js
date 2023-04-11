@@ -17,11 +17,13 @@ function updateTraceLog(basicProjectConfigId) {
 }
 
 db.getCollection('project_basic_configs').find({
-    "saveAssigneeDetails": {
-        $exists: false
-    }
-}, {
-    saveAssigneeDetails: false
+    $or: [{
+        "saveAssigneeDetails": {
+            $exists: false
+        }
+    }, {
+        "saveAssigneeDetails": false
+    }]
 }).forEach(
     basicProjectConfig => {
         const basicProjectConfigIdDisableToggle = basicProjectConfig._id;
