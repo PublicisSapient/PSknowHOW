@@ -1227,7 +1227,7 @@ describe('FilterComponent', () => {
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();
     });
 
-    it("should get tooltip data on component load",()=>{
+    it('should get tooltip data on component load',()=>{
       const fakeResponce = {
         dateRangeFilter: {
           counts: [5, 10, 15],
@@ -1241,4 +1241,173 @@ describe('FilterComponent', () => {
       component.ngOnInit();
       expect(component.dateRangeFilter).not.toBeNull();
      });
+
+  it('should not make an api call if hierchies alresy available', () => {
+    component.hierarchies = [{
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    }];
+    const spy = spyOn(httpService, 'getAllHierarchyLevels');
+    component.setHierarchyLevels();
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should call applyChagnes on selection of trendValue', () => {
+    const spy = spyOn(component, 'applyChanges');
+    component.initializeFilterForm();
+    component.additionalFiltersArr = [{
+      "level": 5,
+      "hierarchyLevelId": "sprint",
+      "hierarchyLevelName": "Sprint"
+    }];
+    component.onSelectedTrendValueChange(null);
+    expect(spy).toHaveBeenCalled();
+  });
+
+
+  it('should check if need to call  default filter for iteration', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+        "nodeName": "aCjCgoFkxh",
+        "path": [
+          "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+        ],
+        "labelName": "project",
+        "parentId": [
+          "Level3_hierarchyLevelThree"
+        ],
+        "level": 4,
+        "basicProjectConfigId": "64218f1f7b8332581c81169d",
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = true;
+    component.selectedTab = 'Iteration';
+    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    component.checkIfFilterAlreadySelected();
+    expect(spyDefaultFilter).toHaveBeenCalled();
+  });
+
+  it('should check if need to call  default filter for other boards', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+        "nodeName": "aCjCgoFkxh",
+        "path": [
+          "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+        ],
+        "labelName": "project",
+        "parentId": [
+          "Level3_hierarchyLevelThree"
+        ],
+        "level": 4,
+        "basicProjectConfigId": "64218f1f7b8332581c81169d",
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = true;
+    component.kanban= false;
+    component.selectedTab = 'MyDashboard';
+    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    component.checkIfFilterAlreadySelected();
+    expect(spyDefaultFilter).toHaveBeenCalled();
+  });
+
+  it('should check if filter already selected for iteration', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "Level1_hierarchyLevelOne",
+        "nodeName": "Level1",
+        "path": [
+          ""
+        ],
+        "labelName": "hierarchyLevelOne",
+        "level": 1,
+        "parentId": [
+          null
+        ],
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = false;
+    component.selectedTab = 'Iteration';
+    component.initializeFilterForm();
+    component.checkIfFilterAlreadySelected();
+    expect(component.defaultFilterSelection).toBeFalse();
+  });
+
+  it('should check if filter already selected for other board', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "Level1_hierarchyLevelOne",
+        "nodeName": "Level1",
+        "path": [
+          ""
+        ],
+        "labelName": "hierarchyLevelOne",
+        "level": 1,
+        "parentId": [
+          null
+        ],
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = false;
+    component.kanban=false;
+    component.selectedTab = 'Mydashboard';
+    component.initializeFilterForm();
+    component.checkIfFilterAlreadySelected();
+    expect(component.filterForm.get('selectedTrendValue').value[0]).toEqual('Level1_hierarchyLevelOne');
+  });
+
+  it('should navigate To Maturity tab', inject([Router], (router: Router) => {
+    component.selectedTab = 'Maturity';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    const spy = spyOn(router, 'navigateByUrl');
+    const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(false);
+    component.navigateToSelectedTab();
+    expect(spy).toHaveBeenCalledWith('/dashboard/Maturity');
+  }));
+
+  it('should not navigate To Maturity tab', inject([Router], (router: Router) => {
+    component.selectedTab = 'Maturity';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    const spy = spyOn(router, 'navigateByUrl');
+    const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(true);
+    component.navigateToSelectedTab();
+    expect(spy).not.toHaveBeenCalledWith('/dashboard/Maturity');
+  }));
+
 });

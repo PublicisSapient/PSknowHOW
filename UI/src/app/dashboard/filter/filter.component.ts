@@ -630,7 +630,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.kanban = false;
         }
       }
-      let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find((board) =>board.boardName.toLowerCase() === this.selectedTab.toLowerCase()) ||
+      let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find((board) =>board.boardName.toLowerCase() === this.selectedTab.toLowerCase() || board.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')) ||
         this.kpiListData['others']?.find((board) => board.boardName.toLowerCase() === this.selectedTab.toLowerCase());
       if (!boardDetails && this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0) {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
