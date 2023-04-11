@@ -174,8 +174,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
-					List<SprintDetails> sprintDetailsList = new ArrayList<>();
-					sprintDetailsList.add(sprintDetails);
 
 					//fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
