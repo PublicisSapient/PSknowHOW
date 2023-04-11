@@ -27,7 +27,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +52,6 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class JiraIssueClient {// NOPMD //NOSONAR
@@ -289,15 +291,14 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
 	/**
 	 * This method process owner and user details
-	 *
-	 * @param jiraIssue
+	 *  @param jiraIssue
 	 *            JiraIssue Object to set Owner details
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
-	 * 	          assignee details set from JiraIssue
+	 * @param projectConfig
 	 */
-	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
+	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -329,9 +330,32 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
 			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
 					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-				assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
 			}
 		}
+
+	}
+
+	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash)
+					.collect(Collectors.toList());
+			List<String> ownerId = assigneeKey.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueClient::hash)
+					.collect(Collectors.toList());
+			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+			jiraIssue.setOwnersShortName(ownerName);
+			jiraIssue.setOwnersUsername(ownerName);
+			jiraIssue.setOwnersID(ownerId);
+			jiraIssue.setOwnersFullName(ownerFullName);
+		} else {
+			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+		}
+	}
+
+	public static String hash(String input) {
+		return String.valueOf(Objects.hash(input));
 	}
 
 	public String getAssignee(User user) {
