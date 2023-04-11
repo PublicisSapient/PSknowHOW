@@ -340,7 +340,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterData = {};
     this.selectedFilterCount = 0;
     this.selectedFilterData.kanban = this.kanban;
-    this.selectedFilterData['sprintIncluded'] = this.selectedTab?.toLowerCase() === 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     const filterData = this.service.getFilterData();
     if (!Object.keys(filterData).length || this.previousType !== this.kanban) {
       this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
@@ -830,11 +830,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-    if(this.allowMultipleSelection){
-      this.filterForm?.get('selectedTrendValue').setValue([]);
-    }else{
-      this.filterForm?.get('selectedTrendValue').setValue('');
-    }
+    this.filterForm?.get('selectedTrendValue').setValue('');
   }
 
   setMarker() {

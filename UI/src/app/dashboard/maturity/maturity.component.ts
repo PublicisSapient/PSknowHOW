@@ -111,8 +111,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.subscription.forEach(subscription => subscription.unsubscribe());
     }
     receiveSharedData($event) {
-        console.log('receiveSharedData',$event);
-        
         this.loader =true;
         this.jiraGroups = 0;
         this.showNoDataMsg = false;
