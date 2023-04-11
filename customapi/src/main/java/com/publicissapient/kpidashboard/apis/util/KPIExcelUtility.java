@@ -1295,7 +1295,7 @@ public class KPIExcelUtility {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			blankDueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString();
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			iterationKpiModalValue.setPotentialOverallDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
 			if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) >= 0) {
 				if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
@@ -1308,7 +1308,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
-			iterationKpiModalValue.setPotentialOverallDelay("-");
+			iterationKpiModalValue.setPotentialDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
 		if (jiraIssue.getDevDueDate() != null)
