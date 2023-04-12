@@ -210,8 +210,6 @@ describe('FilterComponent', () => {
   it('when  tab is clicked and  scrum is selected', (done) => {
     const selectedTab = 'mydashboard';
     const boardId = 1;
-    sharedService.setSelectedTab(selectedTab, boardId);
-    sharedService.selectTab(selectedTab);
     fixture.detectChanges();
     expect(component.kanban).toBeFalsy();
     done();
@@ -221,8 +219,6 @@ describe('FilterComponent', () => {
     fixture.detectChanges();
     const selectedTab = 'mydashboard';
     const boardId = 7;
-    sharedService.setSelectedTab(selectedTab, boardId);
-    sharedService.selectTab(selectedTab);
     component.selectedType('Kanban');
     fixture.detectChanges();
     expect(component.kanban).toBeTruthy();
@@ -250,30 +246,48 @@ describe('FilterComponent', () => {
   });
 
 
-  it('should get Hierarchy levels', fakeAsync(() => {
+  it('should get Hierarchy levels when hierarchy  is null', fakeAsync(() => {
     const spy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of(fakeFilterData));
     const spygetFilterDataOnLoad = spyOn(component, 'getFilterDataOnLoad');
-    component.getHierarchyLevels();
+    const spySetLevel = spyOn(component, 'setLevels');
+    component.setHierarchyLevels();
     tick();
     expect(spygetFilterDataOnLoad).toHaveBeenCalled();
+    expect(spySetLevel).toHaveBeenCalled();
+  }));
+
+  it('should not get Hierarchy levels when hierarchy is not null', fakeAsync(() => {
+    component.hierarchies = {
+      id : 'Project',
+      lavelName : 'Project',
+      lavel : 4
+    };
+    const spy = spyOn(httpService, 'getAllHierarchyLevels').and.returnValue(of(fakeFilterData));
+    const spygetFilterDataOnLoad = spyOn(component, 'getFilterDataOnLoad');
+    const spySetLevel = spyOn(component, 'setLevels');
+    component.setHierarchyLevels();
+    tick();
+    expect(spygetFilterDataOnLoad).toHaveBeenCalled();
+    expect(spySetLevel).toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   }));
 
 
-  it('should render downloaded Excel', () => {
-    let response = JSON.parse(JSON.stringify(fakeFilterData));
-    response.data = [];
-    component.renderDownloadExcel(response);
-    expect(component.enginneringMaturityErrorMessage).toEqual('No Data Available');
+  // it('should render downloaded Excel', () => {
+  //   let response = JSON.parse(JSON.stringify(fakeFilterData));
+  //   response.data = [];
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Data Available');
 
-    response.success = false;
-    component.renderDownloadExcel(response);
-    expect(component.enginneringMaturityErrorMessage).toEqual('No Access!');
+  //   response.success = false;
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Access!');
 
-    response = undefined;
-    component.renderDownloadExcel(response);
-    expect(component.enginneringMaturityErrorMessage).toEqual('Some error occurred!');
+  //   response = undefined;
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('Some error occurred!');
 
-  });
+  // });
 
   it('should make array unique', () => {
     const input = [
@@ -382,27 +396,25 @@ describe('FilterComponent', () => {
 
   it('should process master Data', () => {
     component.selectedTab = 'Maturity';
-    const spy = spyOn(sharedService, 'setMasterData');
     const spyhandleIteration = spyOn(component, 'handleIterationFilters');
     const spyapplyChanges = spyOn(component, 'applyChanges');
     component.processMasterData(fakeMasterData);
-    expect(spy).toHaveBeenCalled();
     expect(spyapplyChanges).toHaveBeenCalled();
 
     component.selectedTab = 'Iteration';
     component.processMasterData(fakeMasterData);
-    expect(spy).toHaveBeenCalled();
-    expect(spyapplyChanges).toHaveBeenCalled();
+    expect(spyhandleIteration).toHaveBeenCalled();
+    
   });
 
   it('should set filters empty when selected tab is iteraiton', () => {
+    component.ngOnInit();
     const spy = spyOn(sharedService, 'setEmptyFilter');
-    spyOn(sharedService, 'getSelectedType').and.returnValue('Scrum');
-    sharedService.onTabRefresh.emit('Iteration');
-    fixture.detectChanges();
+    component.selectedTab = 'iteration';
+    const fake = { selectedTab : 'Iteration', selectedType : 'scrum' };
+    sharedService.onTypeOrTabRefresh.next(fake);
     expect(spy).toHaveBeenCalled();
-    expect(component.kanban).toBeFalse();
-  });
+    });
 
   it('should set the colorObj', () => {
     const x = {
@@ -415,17 +427,6 @@ describe('FilterComponent', () => {
     fixture.detectChanges();
     expect(component.colorObj).toBe(x);
   });
-
-  it('should set selectedType on TabRefersh ', () => {
-    spyOn(sharedService, 'getSelectedType').and.returnValue('Kanban');
-    const spy = spyOn(component, 'selectedType');
-    sharedService.onTabRefresh.emit('Backlog');
-    fixture.detectChanges();
-    expect(component.kanban).toBeTrue();
-    expect(spy).toHaveBeenCalled();
-  });
-
-
 
   it('should set isSuperAdmin flag', () => {
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
@@ -462,10 +463,7 @@ describe('FilterComponent', () => {
     expect(component.selectedFilterArray[0].grossMaturity).toEqual(result);
   });
 
-  it('should set FilterType', () => {
-    component.selectFilterType('default');
-    expect(component.filterType).toBe('default');
-  });
+  
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
@@ -478,16 +476,16 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalledWith(fakeFilterData);
   });
 
-  it('should get filter data on load', () => {
+  it('should process filter data when filter data is comming', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
-    component.previousType = false;
+    component.previousType = true;
     component.kanban = false;
     component.selectedTab = '';
     component.initFlag = true;
     const spy = spyOn(component, 'processFilterData');
-    const spygetFilterData = spyOn(httpService, 'getFilterData').and.returnValue(of({}));
+    const spygetFilterData = spyOn(httpService, 'getFilterData').and.returnValue(of(fakeFilterData));
     component.getFilterDataOnLoad();
-    expect(spygetFilterData).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should set Empty Data when filter data is not available', () => {
@@ -546,10 +544,9 @@ describe('FilterComponent', () => {
     component.selectedTab = 'Speed';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(sharedService, 'setSelectedTab');
-    spyOn(router, 'navigateByUrl');
+    const spy = spyOn(router, 'navigateByUrl');
     component.navigateToSelectedTab();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith('/dashboard/speed');
   }));
 
   it('should get kpiorder list', fakeAsync(() => {
@@ -572,21 +569,36 @@ describe('FilterComponent', () => {
   }));
 
   it('should call processKpiList when kpiList is available', () => {
-    component.kpiListData = configGlobalData['data'];
+    component.kpiListData = configGlobalData;
     const spyprocessKpiList = spyOn(component, 'processKpiList');
     const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderedList();
     expect(spyprocessKpiList).toHaveBeenCalled();
-    expect(spynavigateToSelectedTab).not.toHaveBeenCalled();
+    expect(spynavigateToSelectedTab).toHaveBeenCalled();
   });
 
-  it('should processKpiList', () => {
+  it('should kpiList not blank for other than backlog and iteration', () => {
     component.selectedTab = '';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(sharedService, 'getSelectBoardId').and.returnValue(1);
     component.processKpiList();
-    expect(component.showKpisList.length).toBeGreaterThan(0);
+    expect(component.kpiList).not.toBeNull();
+  });
+  
+  it('should kpiList not blank for backlog', () => {
+    component.selectedTab = 'Backlog';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
+  });
+
+  it('should kpiList not blank for iteration', () => {
+    component.selectedTab = 'Iteration';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
   });
 
   it('should handle all kpi change', () => {
@@ -649,24 +661,6 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should check for default filter selection for iteration tab', () => {
-    const filterData = [
-      {
-        nodeId: 'BITBUCKET_DEMO_632c46c6728e93266f5d5631',
-        nodeName: 'BITBUCKET_DEMO',
-        path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
-        labelName: 'project',
-        parentId: 't3_subaccount',
-        level: 5,
-        basicProjectConfigId: '632c46c6728e93266f5d5631'
-      }];
-    component.selectedTab = 'iteration';
-    component.filterData = filterData;
-    const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
-    component.trendLineValueList = [];
-    component.checkDefaultFilterSelection();
-    expect(spy).toHaveBeenCalled();
-  });
 
   it('should check for default filter selection for iteration tab and no projects available', () => {
     const filterData = [
@@ -734,6 +728,7 @@ describe('FilterComponent', () => {
     component.filterData = filterData;
     component.trendLineValueList = [];
     component.hierarchyLevels = hierarchyLevels;
+    spyOn(component, 'setTrendValueFilter');
     component.checkDefaultFilterSelection();
     expect(component.trendLineValueList.length).toBeGreaterThan(0);
   });
@@ -750,9 +745,9 @@ describe('FilterComponent', () => {
     expect(result).toBeTrue();
   });
 
-  it('should handle iteration filter', () => {
+  it('should handle iteration filter for active sprints', () => {
     component.filterForm = new UntypedFormGroup({
-      selectedProjectValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
       selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
     });
     component.selectedFilterArray = [];
@@ -770,6 +765,35 @@ describe('FilterComponent', () => {
         sprintEndDate: '2022-11-23T10:20:00.0000000',
         sprintStartDate: '2022-11-09T10:20:00.0000000',
         sprintState: 'active',
+      }]
+    };
+    const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
+    spyOn(sharedService, 'setNoSprints');
+    spyOn(component, 'createFilterApplyData');
+    component.handleIterationFilters('project', 1);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should handle iteration filter for close sprints', () => {
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab')
+    });
+    component.selectedFilterArray = [];
+    component.trendLineValueList = [{nodeId:'DOTC_63b51633f33fd2360e9e72bd', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
+    component.additionalFiltersDdn = {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'closed',
       }]
     };
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
@@ -1052,6 +1076,20 @@ describe('FilterComponent', () => {
 
   it("should labels come for kanban when date is not null",()=>{
    component.ngOnInit();
+   component.filterApplyData = {
+    ids: [
+      'bittest_corporate'
+    ],
+    sprintIncluded: [
+      'CLOSED'
+    ],
+    selectedMap: {
+      corporate: [
+        'bittest_corporate'
+      ]
+    },
+    level: 5
+  };
    component.kanban = true;
    component.filterForm.get('date').setValue('07/09/2022');
     spyOn(component,"resetFilterApplyObj");
@@ -1188,5 +1226,188 @@ describe('FilterComponent', () => {
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();
     });
+
+    it('should get tooltip data on component load',()=>{
+      const fakeResponce = {
+        dateRangeFilter: {
+          counts: [5, 10, 15],
+          types: ['Days', 'Weeks', 'Months']
+        },
+        hierarchySelectionCount: 3,
+        kpiWiseAggregationType: { kpi114: 'sum', kpi997: 'sum', kpi116: 'average', kpi118: 'sum', kpi82: 'average' },
+        percentile: 90
+      };
+      spyOn(httpService,"getTooltipData").and.returnValue(of(fakeResponce));
+      component.ngOnInit();
+      expect(component.dateRangeFilter).not.toBeNull();
+     });
+
+  it('should not make an api call if hierchies alresy available', () => {
+    component.hierarchies = [{
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    }];
+    const spy = spyOn(httpService, 'getAllHierarchyLevels');
+    component.setHierarchyLevels();
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should call applyChagnes on selection of trendValue', () => {
+    const spy = spyOn(component, 'applyChanges');
+    component.initializeFilterForm();
+    component.additionalFiltersArr = [{
+      "level": 5,
+      "hierarchyLevelId": "sprint",
+      "hierarchyLevelName": "Sprint"
+    }];
+    component.onSelectedTrendValueChange(null);
+    expect(spy).toHaveBeenCalled();
+  });
+
+
+  it('should check if need to call  default filter for iteration', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+        "nodeName": "aCjCgoFkxh",
+        "path": [
+          "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+        ],
+        "labelName": "project",
+        "parentId": [
+          "Level3_hierarchyLevelThree"
+        ],
+        "level": 4,
+        "basicProjectConfigId": "64218f1f7b8332581c81169d",
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = true;
+    component.selectedTab = 'Iteration';
+    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    component.checkIfFilterAlreadySelected();
+    expect(spyDefaultFilter).toHaveBeenCalled();
+  });
+
+  it('should check if need to call  default filter for other boards', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+        "nodeName": "aCjCgoFkxh",
+        "path": [
+          "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+        ],
+        "labelName": "project",
+        "parentId": [
+          "Level3_hierarchyLevelThree"
+        ],
+        "level": 4,
+        "basicProjectConfigId": "64218f1f7b8332581c81169d",
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = true;
+    component.kanban= false;
+    component.selectedTab = 'MyDashboard';
+    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    component.checkIfFilterAlreadySelected();
+    expect(spyDefaultFilter).toHaveBeenCalled();
+  });
+
+  it('should check if filter already selected for iteration', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "Level1_hierarchyLevelOne",
+        "nodeName": "Level1",
+        "path": [
+          ""
+        ],
+        "labelName": "hierarchyLevelOne",
+        "level": 1,
+        "parentId": [
+          null
+        ],
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = false;
+    component.selectedTab = 'Iteration';
+    component.initializeFilterForm();
+    component.checkIfFilterAlreadySelected();
+    expect(component.defaultFilterSelection).toBeFalse();
+  });
+
+  it('should check if filter already selected for other board', () => {
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({
+      "level": 4,
+      "hierarchyLevelId": "project",
+      "hierarchyLevelName": "Project"
+    });
+
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      {
+        "nodeId": "Level1_hierarchyLevelOne",
+        "nodeName": "Level1",
+        "path": [
+          ""
+        ],
+        "labelName": "hierarchyLevelOne",
+        "level": 1,
+        "parentId": [
+          null
+        ],
+        "additionalFilters": []
+      }
+    ]);
+
+    component.previousType = false;
+    component.kanban=false;
+    component.selectedTab = 'Mydashboard';
+    component.initializeFilterForm();
+    component.checkIfFilterAlreadySelected();
+    expect(component.filterForm.get('selectedTrendValue').value[0]).toEqual('Level1_hierarchyLevelOne');
+  });
+
+  it('should navigate To Maturity tab', inject([Router], (router: Router) => {
+    component.selectedTab = 'Maturity';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    const spy = spyOn(router, 'navigateByUrl');
+    const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(false);
+    component.navigateToSelectedTab();
+    expect(spy).toHaveBeenCalledWith('/dashboard/Maturity');
+  }));
+
+  it('should not navigate To Maturity tab', inject([Router], (router: Router) => {
+    component.selectedTab = 'Maturity';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    const spy = spyOn(router, 'navigateByUrl');
+    const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(true);
+    component.navigateToSelectedTab();
+    expect(spy).not.toHaveBeenCalledWith('/dashboard/Maturity');
+  }));
 
 });

@@ -780,7 +780,7 @@ describe('MaturityComponent', () => {
 
   it('should set type on TypeRefresh',()=>{
     const spy =spyOn(service,'getSelectedType');
-    service.onTypeRefresh.emit('Kanban');
+    service.onTypeOrTabRefresh.next({selectedTab:'Maturity',selectedType:'Kanban'});
     fixture.detectChanges();
     expect(spy).toHaveBeenCalled();
   });
