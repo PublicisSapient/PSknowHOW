@@ -131,11 +131,11 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 									&& jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
 							.collect(Collectors.toList());
 
-					List<JiraIssue> totalDefects = new ArrayList<>();
-					totalDefects.addAll(filtersIssuesList);
-					totalDefects.addAll(totalSubTaskTaggedToSprint);
+					List<JiraIssue> allIssues = new ArrayList<>();
+					allIssues.addAll(filtersIssuesList);
+					allIssues.addAll(totalSubTaskTaggedToSprint);
 
-					resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(totalDefects));
+					resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(allIssues));
 				}
 			}
 		}
