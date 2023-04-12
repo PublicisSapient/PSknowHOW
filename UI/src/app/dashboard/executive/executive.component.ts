@@ -237,7 +237,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
         if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event.selectedTab.toLowerCase() !== 'iteration') {
             this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
-            this.kpiLoader =true;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
             if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
                 if (this.serviceObject['makeAPICall']) {
@@ -247,6 +246,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiSelectedFilterObj = {};
                     this.kpiDropdowns = {};
                     this.kpiTrendsObj = {};
+                    this.kpiLoader =true;
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
                 this.masterData = $event.masterData;
