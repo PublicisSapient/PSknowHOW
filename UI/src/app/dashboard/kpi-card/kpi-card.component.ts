@@ -8,7 +8,6 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./kpi-card.component.css']
 })
 export class KpiCardComponent implements OnInit, OnDestroy {
-  @Input() selectedTab;
   @Input() kpiData: any;
   @Input() trendData: Array<object>;
   @Output() downloadExcel = new EventEmitter<boolean>();
@@ -31,12 +30,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
   showCommentIcon = false;
-  displayCommentsList: boolean;
-  showAddComment: boolean = false;
-  commentText = '';
-  selectedFilters = [];
-  selectedTabIndex = 0;
-  commentsList = [];
+  selectedTab: string;
 
 
   constructor(private service: SharedService, private http_service: HttpService) {
@@ -63,6 +57,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         }
       }
       const sharedObj = this.service.getFilterObject();
+      this.selectedTab = this.service.getSelectedTab().toLowerCase();
       if (sharedObj) {
         if (this.selectedTab === 'iteration' || this.selectedTab === 'backlog') {
           this.showCommentIcon = true;

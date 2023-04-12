@@ -863,7 +863,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
     getComment(selectedTab, selectedFilter, kpiId){
-        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='Iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='Iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
+        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
     }
 
     submitComment(data): Observable<any> {
