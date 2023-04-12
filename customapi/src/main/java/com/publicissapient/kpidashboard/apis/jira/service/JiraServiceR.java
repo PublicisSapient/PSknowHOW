@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
  * in thread. It is responsible for cache of KPI data at different level.
- *
+ * 
  * @author tauakram
  *
  */
@@ -186,7 +186,7 @@ public class JiraServiceR {
 
 
 	/**
-	 *
+	 * 
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId
@@ -205,7 +205,7 @@ public class JiraServiceR {
 
 	/**
 	 * This class is used to call JIRA based KPIs service in parallel.
-	 *
+	 * 
 	 * @author pankumar8
 	 */
 	public class ParallelJiraServices extends RecursiveAction {
@@ -218,11 +218,11 @@ public class JiraServiceR {
 
 		/*
 		 * @param kpiRequest
-		 *
+		 * 
 		 * @param responseList
-		 *
+		 * 
 		 * @param kpiEle
-		 *
+		 * 
 		 * @param treeAggregatorDetail
 		 */
 		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
@@ -250,7 +250,7 @@ public class JiraServiceR {
 		/**
 		 * This method call by multiple thread, take object of specific KPI and
 		 * call method of these KPIs
-		 *
+		 * 
 		 * @param kpiRequest
 		 *            JIRA KPI request
 		 * @param responseList
@@ -284,7 +284,7 @@ public class JiraServiceR {
 						processTime);
 			}
 		}
-
+		
 	}
 
 }

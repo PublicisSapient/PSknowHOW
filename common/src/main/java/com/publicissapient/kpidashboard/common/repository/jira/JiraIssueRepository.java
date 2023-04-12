@@ -72,7 +72,7 @@ public interface JiraIssueRepository
 	 * This essentially returns the max change date from the collection, based
 	 * on the projectkey and last change date (or default delta change date
 	 * property) available
-	 *
+	 * 
 	 * @param processorId
 	 *            processor id
 	 * @param basicProjectConfigId
@@ -90,7 +90,7 @@ public interface JiraIssueRepository
 	 * This essentially returns the max change date from the collection, based
 	 * on the basicProjectConfigId(projectConfigId from projectConfig) and last
 	 * change date
-	 *
+	 * 
 	 * @param processorId
 	 *            processorId
 	 * @param basicProjectConfigId
@@ -126,12 +126,12 @@ public interface JiraIssueRepository
 	 */
 	@Query(" {'number' : ?0 }")
 	List<JiraIssue> getStoryByNumber(String number);
-
+	
 	List<JiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
 	/**
 	 * Find one document for given basicProjectConfigId.
-	 *
+	 * 
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
 	 * @return JiraIssue
@@ -140,12 +140,12 @@ public interface JiraIssueRepository
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-     *
+	 * 
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
-
+	
 	/*
 	 * Find documents for given numbers and basicProjectConfigId.
 	 * 
@@ -156,6 +156,5 @@ public interface JiraIssueRepository
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
-
 
 }

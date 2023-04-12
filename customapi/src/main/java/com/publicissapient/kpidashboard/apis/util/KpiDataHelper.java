@@ -92,7 +92,7 @@ public final class KpiDataHelper {
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
 	            .collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
-
+		
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
 			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
 				if(CollectionUtils.isNotEmpty(entry.getValue()) && null!=addFilterCategory.get(entry.getKey().toUpperCase())) {

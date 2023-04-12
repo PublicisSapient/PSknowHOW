@@ -164,7 +164,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	/**
 	 * Updates multi objects that matches with basicProjectConfigId and unsets
 	 * the fields provided.
-	 *
+	 * 
 	 * @param basicProjectConfigId
 	 *            config id
 	 * @param fieldsToUnset
@@ -185,8 +185,8 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 */
 	List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
 											   Map<String, Map<String, Object>> uniqueProjectMap);
-
-
+	
+	
 	/**
 	 * Find defects without story link.
 	 *
@@ -196,7 +196,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 *            for not in query
 	 * @return list of feature
 	 */
-
+	
 	List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
 	/**
