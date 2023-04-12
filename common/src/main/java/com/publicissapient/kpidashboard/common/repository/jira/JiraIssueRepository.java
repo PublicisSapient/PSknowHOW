@@ -18,143 +18,120 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.util.List;
-
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import java.util.List;
 
 /**
  * Repository for FeatureCollector.
  */
 @Repository
-public interface JiraIssueRepository
-		extends CrudRepository<JiraIssue, ObjectId>, QuerydslPredicateExecutor<JiraIssue>, JiraIssueRepositoryCustom {
-	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the last change date (or default delta change date property) available
-	 *
-	 * @param processorId
-	 *            Processor ID of source system processor
-	 * @param changeDate
-	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
-	 */
-	@Query
-	List<JiraIssue> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-			String changeDate);
+public interface JiraIssueRepository extends CrudRepository<JiraIssue, ObjectId>, QuerydslPredicateExecutor<JiraIssue>, JiraIssueRepositoryCustom {
+    /**
+     * This essentially returns the max change date from the collection, based
+     * on the last change date (or default delta change date property) available
+     *
+     * @param processorId Processor ID of source system processor
+     * @param changeDate  Last available change date or delta begin date property
+     * @return A single Change Date value that is the maximum value of the
+     * existing collection
+     */
+    @Query
+    List<JiraIssue> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId, String changeDate);
 
-	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the projectkey and last change date (or default delta change date
-	 * property) available
-	 *
-	 * @param processorId
-	 *            Processor ID of source system processor
-	 * @param projectKey
-	 *            projectKey of the project
-	 * @param changeDate
-	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
-	 */
-	@Deprecated
-	@Query
-	List<JiraIssue> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-			String projectKey, String changeDate);
+    /**
+     * This essentially returns the max change date from the collection, based
+     * on the projectkey and last change date (or default delta change date
+     * property) available
+     *
+     * @param processorId Processor ID of source system processor
+     * @param projectKey  projectKey of the project
+     * @param changeDate  Last available change date or delta begin date property
+     * @return A single Change Date value that is the maximum value of the
+     * existing collection
+     */
+    @Deprecated
+    @Query
+    List<JiraIssue> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId, String projectKey, String changeDate);
 
-	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the projectkey and last change date (or default delta change date
-	 * property) available
-	 * 
-	 * @param processorId
-	 *            processor id
-	 * @param basicProjectConfigId
-	 *            config project name
-	 * @param changeDate
-	 *            change date
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
-	 */
-	@Query
-	List<JiraIssue> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
-			ObjectId processorId, String basicProjectConfigId, String changeDate);
+    /**
+     * This essentially returns the max change date from the collection, based
+     * on the projectkey and last change date (or default delta change date
+     * property) available
+     *
+     * @param processorId          processor id
+     * @param basicProjectConfigId config project name
+     * @param changeDate           change date
+     * @return A single Change Date value that is the maximum value of the
+     * existing collection
+     */
+    @Query
+    List<JiraIssue> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId, String basicProjectConfigId, String changeDate);
 
-	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the basicProjectConfigId(projectConfigId from projectConfig) and last
-	 * change date
-	 * 
-	 * @param processorId
-	 *            processorId
-	 * @param basicProjectConfigId
-	 *            projectCOnfigId of project config
-	 * @param typeName
-	 *            issue type
-	 * @param changeDate
-	 *            change date
-	 * @return JiraIssue object
-	 */
-	@Query
-	JiraIssue findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
-			ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
+    /**
+     * This essentially returns the max change date from the collection, based
+     * on the basicProjectConfigId(projectConfigId from projectConfig) and last
+     * change date
+     *
+     * @param processorId          processorId
+     * @param basicProjectConfigId projectCOnfigId of project config
+     * @param typeName             issue type
+     * @param changeDate           change date
+     * @return JiraIssue object
+     */
+    @Query
+    JiraIssue findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
 
-	/**
-	 * Gets feature id by id.
-	 *
-	 * @param issueId
-	 *            the s id
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return the feature id by id
-	 */
-	@Query(fields = "{'issueId' : 1}")
-	List<JiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
+    /**
+     * Gets feature id by id.
+     *
+     * @param issueId              the s id
+     * @param basicProjectConfigId basicProjectConfigId
+     * @return the feature id by id
+     */
+    @Query(fields = "{'issueId' : 1}")
+    List<JiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
-	/**
-	 * Gets story by number.
-	 *
-	 * @param number
-	 *            the s number
-	 * @return the story by number
-	 */
-	@Query(" {'number' : ?0 }")
-	List<JiraIssue> getStoryByNumber(String number);
-	
-	List<JiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
+    /**
+     * Gets story by number.
+     *
+     * @param number the s number
+     * @return the story by number
+     */
+    @Query(" {'number' : ?0 }")
+    List<JiraIssue> getStoryByNumber(String number);
 
-	/**
-	 * Find one document for given basicProjectConfigId.
-	 * 
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return JiraIssue
-	 */
-	JiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId);
+    List<JiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
-	/**
-	 * Deletes all documents that matches with given basicProjectConfigId.
-	 * 
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 */
-	void deleteByBasicProjectConfigId(String basicProjectConfigId);
-	
-	/*
-	 * Find documents for given numbers and basicProjectConfigId.
-	 * 
-	 * @param numberIds
-	 *            List of numbers
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return JiraIssue
-	 */
-	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
+    /**
+     * Find one document for given basicProjectConfigId.
+     *
+     * @param basicProjectConfigId basicProjectConfigId
+     * @return JiraIssue
+     */
+    JiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId);
+
+    /**
+     * Deletes all documents that matches with given basicProjectConfigId.
+     *
+     * @param basicProjectConfigId basicProjectConfigId
+     */
+    void deleteByBasicProjectConfigId(String basicProjectConfigId);
+
+    /*
+     * Find documents for given numbers and basicProjectConfigId.
+     *
+     * @param numberIds
+     *            List of numbers
+     * @param basicProjectConfigId
+     *            basicProjectConfigId
+     * @return JiraIssue
+     */
+    List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
 }

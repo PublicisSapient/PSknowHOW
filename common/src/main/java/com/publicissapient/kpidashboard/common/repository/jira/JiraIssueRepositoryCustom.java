@@ -29,180 +29,181 @@ import java.util.Set;
 /**
  * Repository for FeatureCollector with custom methods.
  */
-@Repository public interface JiraIssueRepositoryCustom {// NOPMD
-	// to avoid tooManyMethods
+@Repository
+public interface JiraIssueRepositoryCustom {// NOPMD
+    // to avoid tooManyMethods
 
-	/**
-	 * Find defect count by rca list.
-	 *
-	 * @param mapOfFilters the map of filters
-	 * @return the list
-	 */
-	List<JiraIssue> findDefectCountByRCA(Map<String, List<String>> mapOfFilters);
+    /**
+     * Find defect count by rca list.
+     *
+     * @param mapOfFilters the map of filters
+     * @return the list
+     */
+    List<JiraIssue> findDefectCountByRCA(Map<String, List<String>> mapOfFilters);
 
-	/**
-	 * Find issues group by sprint list.
-	 *
-	 * @param mapOfFilters        the map of filters
-	 * @param uniqueProjectMap    the unique project map
-	 * @param filterToShowOnTrend the filter to show on trend
-	 * @param individualDevOrQa   the individual dev or qa
-	 * @return key as sprint and list of Story id
-	 */
-	List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
+    /**
+     * Find issues group by sprint list.
+     *
+     * @param mapOfFilters        the map of filters
+     * @param uniqueProjectMap    the unique project map
+     * @param filterToShowOnTrend the filter to show on trend
+     * @param individualDevOrQa   the individual dev or qa
+     * @return key as sprint and list of Story id
+     */
+    List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
+                                                  Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
 
-	List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+    List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
+                                                                Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
+                                                                Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
-	/**
-	 * Find issue by story number list.
-	 *
-	 * @param mapOfFilters           the map of filters
-	 * @param storyNumber            the story number
-	 * @param uniqueProjectMapFolder the unique project map folder
-	 * @return UAT defects or total defects based on uatDefect parameter.
-	 */
-	List<JiraIssue> findIssueByStoryNumber(Map<String, List<String>> mapOfFilters, List<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMapFolder);
+    /**
+     * Find issue by story number list.
+     *
+     * @param mapOfFilters           the map of filters
+     * @param storyNumber            the story number
+     * @param uniqueProjectMapFolder the unique project map folder
+     * @return UAT defects or total defects based on uatDefect parameter.
+     */
+    List<JiraIssue> findIssueByStoryNumber(Map<String, List<String>> mapOfFilters, List<String> storyNumber,
+                                           Map<String, Map<String, Object>> uniqueProjectMapFolder);
 
-	/**
-	 * Find issues by sprint and type list.
-	 *
-	 * @param mapOfFilters     the map of filters
-	 * @param uniqueProjectMap the unique project map
-	 * @return list of feature
-	 */
-	List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+    /**
+     * Find issues by sprint and type list.
+     *
+     * @param mapOfFilters     the map of filters
+     * @param uniqueProjectMap the unique project map
+     * @return list of feature
+     */
+    List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
+                                              Map<String, Map<String, Object>> uniqueProjectMap);
 
-	/**
-	 * Find issues by sprint and type list.
-	 *
-	 * @param mapOfFilters          the map of filters
-	 * @param uniqueProjectMap      the unique project map
-	 * @param uniqueProjectMapNotIn for not in query
-	 * @return list of feature
-	 */
-	List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+    /**
+     * Find issues by sprint and type list.
+     *
+     * @param mapOfFilters          the map of filters
+     * @param uniqueProjectMap      the unique project map
+     * @param uniqueProjectMapNotIn for not in query
+     * @return list of feature
+     */
+    List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
+                                              Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
-	/**
-	 * Find issues by type list.
-	 *
-	 * @param mapOfFilters the map of filters
-	 * @return list of feature
-	 */
-	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
+    /**
+     * Find issues by type list.
+     *
+     * @param mapOfFilters the map of filters
+     * @return list of feature
+     */
+    List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
 
-	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
+    List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
 
-	/**
-	 * Find stories by type list.
-	 *
-	 * @param mapOfFilters        the map of filters
-	 * @param uniqueProjectMap    the unique project map
-	 * @param filterToShowOnTrend the filter to show on trend
-	 * @param individualDevOrQa   the individual dev or qa
-	 * @return list of PredictabilityFeature
-	 */
-	List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
+    /**
+     * Find stories by type list.
+     *
+     * @param mapOfFilters        the map of filters
+     * @param uniqueProjectMap    the unique project map
+     * @param filterToShowOnTrend the filter to show on trend
+     * @param individualDevOrQa   the individual dev or qa
+     * @return list of PredictabilityFeature
+     */
+    List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
+                                            Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
 
-	/**
-	 * Find defect linked with sprint list.
-	 *
-	 * @param mapOfFilters the map of filters
-	 * @return list of defects not linked with stories but sprint is tagged
-	 */
-	List<JiraIssue> findDefectLinkedWithSprint(Map<String, List<String>> mapOfFilters);
+    /**
+     * Find defect linked with sprint list.
+     *
+     * @param mapOfFilters the map of filters
+     * @return list of defects not linked with stories but sprint is tagged
+     */
+    List<JiraIssue> findDefectLinkedWithSprint(Map<String, List<String>> mapOfFilters);
 
-	/**
-	 * This method is used to find stories for a given list of sprints
-	 *
-	 * @param mapOfFilters the map of filters
-	 * @param storyNumber  the story number
-	 * @return list the feature
-	 */
-	List<JiraIssue> findStoriesBySprints(Map<String, List<String>> mapOfFilters, List<String> storyNumber);
+    /**
+     * This method is used to find stories for a given list of sprints
+     *
+     * @param mapOfFilters the map of filters
+     * @param storyNumber  the story number
+     * @return list the feature
+     */
+    List<JiraIssue> findStoriesBySprints(Map<String, List<String>> mapOfFilters, List<String> storyNumber);
 
-	/**
-	 * Find costOfDelay by type list.
-	 *
-	 * @param mapOfFilters the map of filters
-	 * @return list of feature
-	 */
-	List<JiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters);
+    /**
+     * Find costOfDelay by type list.
+     *
+     * @param mapOfFilters the map of filters
+     * @return list of feature
+     */
+    List<JiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters);
 
-	/**
-	 * Updates multi objects that matches with basicProjectConfigId and unsets
-	 * the fields provided.
-	 *
-	 * @param basicProjectConfigId config id
-	 * @param fieldsToUnset        list of fields to unset
-	 */
-	void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
+    /**
+     * Updates multi objects that matches with basicProjectConfigId and unsets
+     * the fields provided.
+     *
+     * @param basicProjectConfigId config id
+     * @param fieldsToUnset        list of fields to unset
+     */
+    void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
 
-	/**
-	 * This method used to find issue based on Project id and used in Regression
-	 * Automation
-	 *
-	 * @param mapOfFilters     the map of filters
-	 * @param uniqueProjectMap the unique project map
-	 * @return list the list
-	 */
-	List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+    /**
+     * This method used to find issue based on Project id and used in Regression
+     * Automation
+     *
+     * @param mapOfFilters     the map of filters
+     * @param uniqueProjectMap the unique project map
+     * @return list the list
+     */
+    List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
+                                               Map<String, Map<String, Object>> uniqueProjectMap);
 
-	/**
-	 * Find defects without story link.
-	 *
-	 * @param mapOfFilters          the map of filters
-	 * @param uniqueProjectMapNotIn for not in query
-	 * @return list of feature
-	 */
+    /**
+     * Find defects without story link.
+     *
+     * @param mapOfFilters          the map of filters
+     * @param uniqueProjectMapNotIn for not in query
+     * @return list of feature
+     */
 
-	List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+    List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
+                                                Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
-	/**
-	 * Find issues filtered by map of filters, type name and defectStoryIds
-	 *
-	 * @param typeName       story type
-	 * @param defectStoryIds stories of the defects
-	 * @return list of jira issues
-	 */
-	List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds);
+    /**
+     * Find issues filtered by map of filters, type name and defectStoryIds
+     *
+     * @param typeName       story type
+     * @param defectStoryIds stories of the defects
+     * @return list of jira issues
+     */
+    List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds);
 
-	List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+    List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
+                                      Map<String, Map<String, Object>> uniqueProjectMap);
 
-	/**
-	 * Finds Feature objects for given filters and date and jira status have as per
-	 * mapStatusCriteria
-	 *
-	 * @param mapOfFilters
-	 * @param uniqueProjectMap
-	 * @param dateFrom
-	 * @param dateTo
-	 * @param range
-	 * @return
-	 */
-	List<JiraIssue> findIssuesByDateAndTypeAndStatus(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range,
-			String mapStatusCriteria, boolean isProductionDefect);
+    /**
+     * Finds Feature objects for given filters and date and jira status have as per
+     * mapStatusCriteria
+     *
+     * @param mapOfFilters
+     * @param uniqueProjectMap
+     * @param dateFrom
+     * @param dateTo
+     * @param range
+     * @return
+     */
+    List<JiraIssue> findIssuesByDateAndTypeAndStatus(Map<String, List<String>> mapOfFilters,
+                                                     Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range,
+                                                     String mapStatusCriteria, boolean isProductionDefect);
 
-	List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
+    List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
 
-	/**
-	 * find linked defects of given stories and filters
-	 *
-	 * @param mapOfFilters
-	 * @param defectsStoryIds
-	 * @param uniqueProjectMap
-	 * @return
-	 */
-	List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+    /**
+     * find linked defects of given stories and filters
+     *
+     * @param mapOfFilters
+     * @param defectsStoryIds
+     * @param uniqueProjectMap
+     * @return
+     */
+    List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
+                                      Map<String, Map<String, Object>> uniqueProjectMap);
 }

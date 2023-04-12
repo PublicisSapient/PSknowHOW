@@ -18,16 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Represents the Excel Data for KPIs
@@ -290,7 +285,7 @@ public class KPIExcelData {
     private Map<String, String> linkedDefectsStory;
 
     @JsonProperty("Size(story point/hours)")
-        private String storyPoint;
+    private String storyPoint;
 
     @JsonProperty("Planned Completion Date (Due Date)")
     private String dueDate;

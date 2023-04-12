@@ -89,8 +89,7 @@ public class RefinementRejectionRateServiceImplTest {
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
         leafNodeList = new ArrayList<>();
-        treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
-                new ArrayList<>(), "hierarchyLevelOne", 5);
+        treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
             leafNodeList.addAll(v);
@@ -133,12 +132,9 @@ public class RefinementRejectionRateServiceImplTest {
     @Test
     public void testFetchKPIDataFromDbData() throws ApplicationException {
 
-        when(kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, customDateRange.getStartDate().toString(),
-                customDateRange.getEndDate().toString())).thenReturn(jiraIssueList);
-        when(kpiHelperService.fetchJiraCustomHistory(leafNodeList, jiraIssueList)).thenReturn(
-                unassignedJiraHistoryDataList);
-        Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
-                customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
+        when(kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString())).thenReturn(jiraIssueList);
+        when(kpiHelperService.fetchJiraCustomHistory(leafNodeList, jiraIssueList)).thenReturn(unassignedJiraHistoryDataList);
+        Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList, customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
         assertNotNull(responseRefinementList);
         assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
         assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
@@ -152,8 +148,7 @@ public class RefinementRejectionRateServiceImplTest {
     @Test
     public void testGetKpiData() throws ApplicationException {
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                treeAggregatorDetail);
+        KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 
         assertNotNull(responseKpiElement);
         assertNotNull(responseKpiElement.getTrendValueList());
