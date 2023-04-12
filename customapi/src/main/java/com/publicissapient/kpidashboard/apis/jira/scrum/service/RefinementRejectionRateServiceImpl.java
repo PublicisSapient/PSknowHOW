@@ -110,9 +110,9 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<DataCount> trendValueList = new ArrayList<>();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
+			if (Filters.PROJECT == filters) {
 				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest, mapTmp);
 			}
 		});
@@ -133,14 +133,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		List<JiraIssue> unAssignedJiraIssues = kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, startDate,
-				endDate);
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = kpiHelperService.fetchJiraCustomHistory(leafNodeList,
-				unAssignedJiraIssues);
-		resultListMap.put(UNASSIGNED_JIRA_ISSUE, unAssignedJiraIssues);
-		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, jiraIssueCustomHistories);
-		return resultListMap;
+		return kpiHelperService.getUnAssignedIssueDataMap(leafNodeList, startDate, endDate);
 
 	}
 
@@ -166,7 +159,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	private void projectWiseLeafNodeValue(List<Node> leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
 			KpiRequest kpiRequest, Map<String, Node> mapTmp) {
 
-		CustomDateRange dateRange = KpiDataHelper.getDayForPastDataHistory(35);
+		CustomDateRange dateRange = KpiDataHelper.getDayForPastDataHistory(customApiConfig.getBacklogDayCount());
 
 		// get start and end date in yyyy-mm-dd format
 		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
@@ -230,7 +223,19 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		kpiElement.setExcelColumns(KPIExcelColumn.REFINEMENT_REJECTION_RATE.getColumns());
 	}
 
-	private Map<String, DateTime> validateUnAssignedJiraIssues(List<JiraIssue> unAssignedJiraIssues,
+	/**
+	 * This Method is used to Iterate over JIRA Issue History record and store the based 
+	 * on last updated Data
+	 * 
+	 * @param unAssignedJiraIssues
+	 * @param readyForRefinementJiraIssues
+	 * @param acceptedInRefinementJiraIssues
+	 * @param rejectedInRefinementJiraIssues
+	 * @param jiraIssueCustomHistories
+	 * @param fieldMapping
+	 * @return
+	 */
+	public Map<String, DateTime> validateUnAssignedJiraIssues(List<JiraIssue> unAssignedJiraIssues,
 			List<JiraIssue> readyForRefinementJiraIssues, List<JiraIssue> acceptedInRefinementJiraIssues,
 			List<JiraIssue> rejectedInRefinementJiraIssues, List<JiraIssueCustomHistory> jiraIssueCustomHistories,
 			FieldMapping fieldMapping) {
@@ -251,6 +256,14 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		return jiraDateMap;
 	}
 
+	/**
+	 * This Method is used to fetch the latest Status from Ready, Accepted & Rejected
+	 * and Activity Date from history and store it in a map
+	 * @param fieldMapping
+	 * @param jiraDateMap
+	 * @param hist
+	 * @return
+	 */
 	private String getStatusAndUpdateJiraDateMap(FieldMapping fieldMapping, Map<String, DateTime> jiraDateMap,
 			JiraIssueCustomHistory hist) {
 		String status = "";
@@ -284,9 +297,14 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		return status;
 	}
 
+	/**
+	 * Create Week Wise map based on the end date(current Date)
+	 * @param endDate
+	 * @return
+	 */
 	private Map<String, String> genrateWeekMap(String endDate) {
 		Map<String, String> weekMap = new LinkedHashMap<>();
-		int weekCount = 5;
+		int weekCount = customApiConfig.getBacklogWeekCount();
 		LocalDate currentDate = LocalDate.parse(endDate);
 		for (int i = weekCount; i > 0; i--) {
 			LocalDate monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
@@ -326,7 +344,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	}
 
 	/**
-	 * Create Week map for last 45 Days
+	 * Create Default Week map for last 45 Days
 	 *
 	 * @return
 	 */
@@ -344,7 +362,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	}
 
 	/**
-	 * Fetch Week Wise record
+	 * Creates a Week wise map to store jira issues datamap
 	 *
 	 * @param resultMapList
 	 * @return
@@ -391,6 +409,12 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	/**
+	 * This method help create Jira issue on category basis for project ID
+	 * @param node
+	 * @param resultMap
+	 * @return
+	 */
 	private Map<String, List<Map<String, Object>>> getProjectWiseDataMap(Node node, Map<String, Object> resultMap) {
 		Map<String, List<Map<String, Object>>> dataMap = new HashMap<>();
 		for (String map : resultMap.keySet()) {

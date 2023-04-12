@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -110,11 +110,8 @@ public class KpiHelperService { // NOPMD
 	private static final String ISSUE_DATA = "issueData";
 	private static final String FIELD_STATUS = "status";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static final String READY_FOR_REFINEMENT_ISSUE = "Ready For Refinement";
-	private static final String ACCEPTED_IN_REFINEMENT_ISSUE = "Accepted In Refinement";
-	private static final String REJECTED_IN_REFINEMENT_ISSUE = "Rejected In Refinement";
-	private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
 	private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";
+	private static final String UNASSIGNED_JIRA_ISSUE = "Unassigned Jira Issue";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -1422,9 +1419,17 @@ public class KpiHelperService { // NOPMD
 
 	}
 
-
-	public List<JiraIssue> fetchUnAssignedJiraIssues(List<Node> leafNodeList, String startDate, String endDate) {
-		List<JiraIssue> unAssignedJiraList = new ArrayList<>();
+	/**
+	 * This method is used to fetch Un-assigned Jira issues and its history details
+	 *
+	 * @param leafNodeList
+	 * @param startDate
+	 * @param endDate
+	 * @param resultListMap
+	 * @return
+	 */
+	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate) {
+		Map<String, Object> resultListMap = new HashMap<>();		
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> projectList = new ArrayList<>();
 
@@ -1433,29 +1438,17 @@ public class KpiHelperService { // NOPMD
 			projectList.add(basicProjectConfigId.toString());
 			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					projectList.stream().distinct().collect(Collectors.toList()));
-
-			unAssignedJiraList.addAll(jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
 		});
-		return unAssignedJiraList;
-	}
 
-	public List<JiraIssueCustomHistory> fetchJiraCustomHistory(List<Node> leafNodeList,
-			List<JiraIssue> unAssignedJiraList) {
-		List<JiraIssueCustomHistory> jiraIssueHistory = new ArrayList<>();
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
+		unAssignedJiraIssues.addAll( jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
+		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.addAll(
+				jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));
 
-		List<String> projectList = new ArrayList<>();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			projectList.add(basicProjectConfigId.toString());
-			List<String> historyData = unAssignedJiraList.stream().map(JiraIssue::getNumber)
-					.collect(Collectors.toList());
-			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), projectList);
-			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), historyData);
-
-			jiraIssueHistory.addAll(jiraIssueCustomHistoryRepository.findCustomHistoryStory(mapOfFilters));
-		});
-		return jiraIssueHistory;
-
+		resultListMap.put(UNASSIGNED_JIRA_ISSUE, unAssignedJiraIssues);
+		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, jiraIssueCustomHistories);
+		return resultListMap;
 	}
 }

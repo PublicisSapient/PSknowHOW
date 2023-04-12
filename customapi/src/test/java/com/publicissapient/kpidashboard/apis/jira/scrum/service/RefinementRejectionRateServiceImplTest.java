@@ -26,16 +26,23 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -77,6 +84,8 @@ public class RefinementRejectionRateServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	KpiHelperService kpiHelperService;
+	@Mock
+	CustomApiConfig customApiConfig;
 	@InjectMocks
 	RefinementRejectionRateServiceImpl refinementRejectionRateService;
 	@Mock
@@ -84,6 +93,8 @@ public class RefinementRejectionRateServiceImplTest {
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiElement kpiElement;
+	private Map<String, DateTime> jiraDateMap;
+//	private FieldMapping fieldMappingData;
 
 	@Before
 	public void setup() throws ApplicationException {
@@ -99,8 +110,8 @@ public class RefinementRejectionRateServiceImplTest {
 
 		leafNodeList = new ArrayList<>();
 		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
-				new ArrayList<>(), "hierarchyLevelOne", 5);
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+				new ArrayList<>(), "hierarchyLevelOne", 10);
+		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 
 			leafNodeList.addAll(v);
 		});
@@ -123,8 +134,15 @@ public class RefinementRejectionRateServiceImplTest {
 		defaultMap.put(REJECTED_IN_REFINEMENT_ISSUE, jiraIssueList);
 		defaultMap.put(ACCEPTED_IN_REFINEMENT_ISSUE, jiraIssueList);
 
-		FieldMapping fieldMapping = new FieldMapping();
-		fieldMappingMap.put(new ObjectId(), fieldMapping);
+		jiraDateMap = new HashMap<>();
+
+		for (JiraIssue jiraissue:jiraIssueList) {
+			jiraDateMap.put(jiraissue.getNumber(), LocalDateTime.now().toDateTime().minusDays((int) Math.random()))	;		
+		}
+
+		for (FieldMapping fieldMap:FieldMappingDataFactory.newInstance(null).getFieldMappings()) {
+			fieldMappingMap.put(fieldMap.getBasicProjectConfigId(),fieldMap);
+		}
 
 		List<Map<String, Object>> dataList = new ArrayList<>();
 		for (String key : defaultMap.keySet()) {
@@ -142,10 +160,9 @@ public class RefinementRejectionRateServiceImplTest {
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 
-		when(kpiHelperService.fetchUnAssignedJiraIssues(leafNodeList, customDateRange.getStartDate().toString(),
-				customDateRange.getEndDate().toString())).thenReturn(jiraIssueList);
-		when(kpiHelperService.fetchJiraCustomHistory(leafNodeList, jiraIssueList))
-				.thenReturn(unassignedJiraHistoryDataList);
+		when(kpiHelperService.getUnAssignedIssueDataMap(leafNodeList, customDateRange.getStartDate().toString(),
+				customDateRange.getEndDate().toString())).thenReturn(refinementList);
+
 		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
 				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
 		assertNotNull(responseRefinementList);
@@ -162,13 +179,19 @@ public class RefinementRejectionRateServiceImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetKpiData() throws ApplicationException {
+		when(customApiConfig.getBacklogDayCount()).thenReturn(35);
+		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(refinementRejectionRateService.fetchKPIDataFromDb(Mockito.any(), Mockito.anyString(),Mockito.anyString(),kpiRequest)).thenReturn(refinementList);
+		
 		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
 				kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());
 		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
+		assertEquals(Arrays.asList(responseKpiElement.getTrendValueList()).size(),1);
 	}
 
 	@Test

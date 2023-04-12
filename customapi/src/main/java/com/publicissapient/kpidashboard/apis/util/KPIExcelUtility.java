@@ -1407,13 +1407,20 @@ public class KPIExcelUtility {
 
     }
 
+    /**
+     * This Method is used to populate Excel Data for Rejection Refinement KPI 
+     * @param excelDataList
+     * @param issuesExcel
+     * @param weekAndTypeMap
+     */
 	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
 			List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap) {
 
 		if (CollectionUtils.isNotEmpty(issuesExcel)) {
 			issuesExcel.forEach(e -> {
-				String week = getWeekName(weekAndTypeMap, e);
-				String status = getStatusName(weekAndTypeMap, e);
+				String week = "";
+				String status = ""; 
+                getStatusNameAndWeekName(weekAndTypeMap, e,status,week);
 				KPIExcelData excelData = new KPIExcelData();
 				Map<String, String> epicLink = new HashMap<>();
 				epicLink.put(e.getNumber(), checkEmptyURL(e));
@@ -1431,31 +1438,23 @@ public class KPIExcelUtility {
 		}
 	}
 
-	private static String getStatusName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
-		String statusName = "";
+    /**
+     * This Method is used for fetching status and Weekname to show the data in excel data record 
+     * @param weekAndTypeMap
+     * @param e
+     * @param statusName
+     * @param weekName
+     */
+	private static void getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e, String statusName, String weekName) {
 		for (String week : weekAndTypeMap.keySet()) {
 			for (String type : weekAndTypeMap.get(week).keySet()) {
 				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
 						statusName = type;
+                        weekName = week;
 					}
 				}
 			}
 		}
-		return statusName;
-	}
-
-	private static String getWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
-		String weekName = "";
-		for (String week : weekAndTypeMap.keySet()) {
-			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
-					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
-						weekName = week;
-					}
-				}
-			}
-		}
-		return weekName;
 	}
 }

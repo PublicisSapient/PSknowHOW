@@ -249,11 +249,12 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteria = new Criteria();
 		Criteria orCriteria = new Criteria();
 		List<Criteria> filter = new ArrayList<>();
-		for (String val : mapOfFilters.keySet()) {
-			Criteria expression = new Criteria();
-			expression.and(val).is(mapOfFilters.get(val));
-			filter.add(expression);
-		}
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+//		for (String val : mapOfFilters.keySet()) {
+//			Criteria expression = new Criteria();
+//			expression.and(val).is(mapOfFilters.get(val));
+//			filter.add(expression);
+//		}
 		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
 		criteria.and(JIRA_CHANGE_DATE).gte(startDate).lte(endDate);
 		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
