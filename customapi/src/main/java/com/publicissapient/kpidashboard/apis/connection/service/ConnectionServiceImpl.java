@@ -577,6 +577,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String passwordFromClient = conn.getPassword();
 		conn.setPassword(encryptStringForDb(passwordFromClient));
 	}
+	private void setEncryptedPatOAuthTokenForDb(Connection conn) {
+		String patOAuthTokenFromClient = conn.getPatOAuthToken();
+		conn.setPatOAuthToken(encryptStringForDb(patOAuthTokenFromClient));
+	}
 
 	private Connection checkConnDetailsSonar(Connection inputConn, Connection currConn, String api) {
 		Connection existingConnection = null;
@@ -596,6 +600,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String typeName = conn.getType();
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
+			setEncryptedPasswordFieldForDb(conn);
+			setEncryptedPatOAuthTokenForDb(conn);
+			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
