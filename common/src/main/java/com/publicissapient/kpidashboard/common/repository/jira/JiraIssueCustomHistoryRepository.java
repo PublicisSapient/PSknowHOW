@@ -18,53 +18,59 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import java.util.List;
+
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 /**
  * Repository for FeatureCollector.
  */
 @Repository
-public interface JiraIssueCustomHistoryRepository
-        extends CrudRepository<JiraIssueCustomHistory, String>, QuerydslPredicateExecutor<JiraIssueCustomHistory>,
-        JiraIssueHistoryCustomQueryRepository {
+public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIssueCustomHistory, String>,
+		QuerydslPredicateExecutor<JiraIssueCustomHistory>, JiraIssueHistoryCustomQueryRepository {
 
-    /**
-     * Find by story id list.
-     *
-     * @param storyID              the story id
-     * @param basicProjectConfigId basicProjectConfigId
-     * @return the list
-     */
-    List<JiraIssueCustomHistory> findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
+	/**
+	 * Find by story id list.
+	 *
+	 * @param storyID
+	 *            the story id
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return the list
+	 */
+	List<JiraIssueCustomHistory> findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
 
-    /**
-     * Find by story id in list.
-     *
-     * @param storyList the story list
-     * @return the list
-     */
-    List<JiraIssueCustomHistory> findByStoryIDIn(List<String> storyList);
+	/**
+	 * Find by story id in list.
+	 *
+	 * @param storyList
+	 *            the story list
+	 * @return the list
+	 */
+	List<JiraIssueCustomHistory> findByStoryIDIn(List<String> storyList);
 
-    /**
-     * Deletes all documents that matches with given projectID.
-     *
-     * @param projectID String projectID
-     */
-    void deleteByBasicProjectConfigId(String projectID);
+	/**
+	 * Deletes all documents that matches with given projectID.
+	 *
+	 * @param projectID
+	 *            String projectID
+	 */
+	void deleteByBasicProjectConfigId(String projectID);
 
-    /**
-     * Find by story id list.
-     *
-     * @param storyID              the story id
-     * @param basicProjectConfigId basicProjectConfigId
-     * @return the list
-     */
-    List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
-                                                                          List<String> basicProjectConfigId);
+	/**
+	 * Find by story id list.
+	 *
+	 * @param storyID
+	 *            the story id
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return the list
+	 */
+	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
+			List<String> basicProjectConfigId);
 
 }

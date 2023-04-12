@@ -426,8 +426,7 @@
             <div class="p-inputgroup">
               <p-chips [style]="{'max-width':'initial','width':'60vw'}"
                        inputId="jiraAcceptedInRefinement" formControlName="jiraAcceptedInRefinement"
-                       placeholder="Enter status for Accepted Tickets In Refinement Process" addOnBlur="true"
-                       pTooltip='<span>
+                       placeholder="Enter status for Accepted Tickets In Refinement Process" addOnBlur="true" pTooltip='<span>
                                                     Definition:
                                                     Status that Defines Jira Issue is Rejected In Refinement. <br>
                                                     Example: Rejected in Refinement
@@ -453,8 +452,7 @@
             <div class="p-inputgroup">
               <p-chips [style]="{'max-width':'initial','width':'60vw'}"
                        inputId="jiraRejectedInRefinement" formControlName="jiraRejectedInRefinement"
-                       placeholder="Enter status for Rejected Tickets In Refinement Process" addOnBlur="true"
-                       pTooltip='<span>
+                       placeholder="Enter status for Rejected Tickets In Refinement Process" addOnBlur="true" pTooltip='<span>
                                                     Definition:
                                                     Status that Defines Jira Issue is Rejected In Refinement. <br>
                                                     Example: Rejected in Refinement
@@ -466,6 +464,7 @@
                       (click)="showDialogToAddValue(false, 'jiraRejectedInRefinement', 'workflow')"></button>
             </div>
           </div>
+
         </div>
       </p-accordionTab>
       <p-accordionTab header="Issue Types Mapping"
@@ -1319,6 +1318,21 @@
                           (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('jiraDevDueDateCustomField') || fieldstoShow.length === 0">
+            <label class="field-title">Dev Due Date <span class="fa fa-info-circle" aria-hidden="true"
+                                                          pTooltip='<span>
+                            Definition:
+                            This field is to track dev due date of issues tagged in the iteration
+                        </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                                          [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText id="jiraDevDueDateCustomField" formControlName="jiraDevDueDateCustomField"
+                     placeholder="Enter Dev Due Date" [style]="{'max-width':'initial','width':'60vw'}">
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(true, 'jiraDevDueDateCustomField', 'fields')"></button>
             </div>
           </div>
         </div>

@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 /**
  * Interface FeatureHistoryCustomQueryRepository.
@@ -30,26 +31,30 @@ import java.util.Map;
 @Repository
 public interface JiraIssueHistoryCustomQueryRepository {
 
-    /**
-     * Find feature custom history story project wise list.
-     *
-     * @param mapOfFilters     the map of filters
-     * @param uniqueProjectMap the unique project map
-     * @return the list
-     */
-    List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap);
+	/**
+	 * Find feature custom history story project wise list.
+	 *
+	 * @param mapOfFilters
+	 *            the map of filters
+	 * @param uniqueProjectMap
+	 *            the unique project map
+	 * @return the list
+	 */
+	List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap);
 
-    /**
-     * find jira issue based on filter and date
-     *
-     * @param mapOfFilters
-     * @param uniqueProjectMap
-     * @param dateFrom
-     * @param dateTo
-     * @return List<JiraIssueCustomHistory>
-     */
-    List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
+	/**
+	 * find jira issue based on filter and date
+	 *
+	 * @param mapOfFilters
+	 * @param uniqueProjectMap
+	 * @param dateFrom
+	 * @param dateTo
+	 * @return List<JiraIssueCustomHistory>
+	 */
+	List<JiraIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
 
-    List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters);
+	List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters);
 
 }
