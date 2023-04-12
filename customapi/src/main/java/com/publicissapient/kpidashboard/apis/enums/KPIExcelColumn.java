@@ -171,7 +171,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage","Assignee")),
 
     QUALITY_STATUS("kpi133",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size","Assignee")),
+            Arrays.asList("Issue Id",  "Issue Type", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size","Assignee")),
 
     UNPLANNED_WORK_STATUS("kpi134",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)","Remaining Estimate","Assignee")),
