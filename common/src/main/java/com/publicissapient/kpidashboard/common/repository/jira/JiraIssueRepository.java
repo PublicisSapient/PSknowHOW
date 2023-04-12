@@ -140,7 +140,7 @@ public interface JiraIssueRepository
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-	 *
+     *
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
 	 */
