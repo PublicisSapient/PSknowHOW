@@ -241,7 +241,7 @@ public class KanbanJiraIssueClientImplTest {
 
     @Test
     public void setJiraAssigneeDetailsTest() {
-        kanbanJiraIssueClient.setJiraAssigneeDetails(getKanbanJiraIssue(), null , null );
+        kanbanJiraIssueClient.setJiraAssigneeDetails(getKanbanJiraIssue(), null , null ,null);
     }
 
     @Test
