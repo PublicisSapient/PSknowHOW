@@ -365,6 +365,11 @@ public enum KPICode {
 	 */
 	WASTAGE("kpi131", KPISource.JIRA.name()),
 
+    /**
+     * First time pass rate
+     */
+    FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name()),
+
 	/**
 	 * Refinement Rejection Rate
 	 */
