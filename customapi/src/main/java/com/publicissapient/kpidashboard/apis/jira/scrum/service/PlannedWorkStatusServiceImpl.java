@@ -211,7 +211,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
 			List<JiraIssue> notCompletedIssuesWithDueDate = allIssuesWithDueDate.stream().filter(jiraIssue -> !allCompletedIssuesList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 			List<IterationPotentialDelay> iterationPotentialDelayList=calculatePotentialDelay(sprintDetails,notCompletedIssuesWithDueDate,fieldMapping);
-			Map<String, IterationPotentialDelay> issueWiseDelay = checkMaxDelayAssigneeWise(notCompletedIssuesWithDueDate,iterationPotentialDelayList,fieldMapping);
+			Map<String, IterationPotentialDelay> issueWiseDelay = checkMaxDelayAssigneeWise(notCompletedIssuesWithDueDate,iterationPotentialDelayList,sprintDetails);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -471,7 +471,17 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(List<JiraIssue> jiraIssueList,
-																					 List<IterationPotentialDelay> issueWiseDelay, FieldMapping fieldMapping) {
+																					 List<IterationPotentialDelay> issueWiseDelay, SprintDetails sprintDetails) {
+		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
+			jiraIssueList = jiraIssueList.stream().filter(jiraIssue -> jiraIssue.getDueDate() != null && DateUtil
+					.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now()))
+					.collect(Collectors.toList());
+		} else {
+			jiraIssueList = jiraIssueList.stream().filter(jiraIssue -> jiraIssue.getDueDate() != null
+					&& DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(
+							DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1)))
+					.collect(Collectors.toList());
+		}
 		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = assigneeWiseJiraIssue(jiraIssueList);
 		List<IterationPotentialDelay> maxDelayList = new ArrayList<>();
 		if (MapUtils.isNotEmpty(assigneeWiseJiraIssue)) {
