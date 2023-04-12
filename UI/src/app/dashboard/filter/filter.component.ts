@@ -671,11 +671,11 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   processKpiList() {
     if (!this.isEmptyObject(this.kpiListData)) {
-      switch (this.selectedTab) {
-        case 'Iteration':
+      switch (this.selectedTab.toLowerCase()) {
+        case 'iteration':
           this.kpiList = this.kpiListData['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
           break;
-        case 'Backlog':
+        case 'backlog':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
         default:
