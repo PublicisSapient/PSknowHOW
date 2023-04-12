@@ -124,7 +124,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 
 		list.add(Aggregation.sort(Sort.Direction.DESC, ACTIVITY_DATE));
-		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STORY_SPRINT_DETAILS).as(STORY_SPRINT_DETAILS));
+		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STORY_SPRINT_DETAILS)
+				.as(STORY_SPRINT_DETAILS));
 		list.add(Aggregation.project(STORY_SPRINT_DETAILS));
 		TypedAggregation<JiraIssueCustomHistory> agg = Aggregation.newAggregation(JiraIssueCustomHistory.class, list);
 

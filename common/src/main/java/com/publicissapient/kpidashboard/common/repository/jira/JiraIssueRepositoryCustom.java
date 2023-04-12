@@ -57,11 +57,12 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return key as sprint and list of Story id
 	 */
 	List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
+			Map<String, Map<String, Object>> uniqueProjectMap,String filterToShowOnTrend,
+			String individualDevOrQa);
 
 	List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+												  Map<String, Map<String, Object>> uniqueProjectMap,String filterToShowOnTrend,
+												  String individualDevOrQa, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
 	/**
 	 * Find issue by story number list.
@@ -128,7 +129,8 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list of PredictabilityFeature
 	 */
 	List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa);
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
+			String individualDevOrQa);
 
 	/**
 	 * Find defect linked with sprint list.
@@ -160,8 +162,8 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	List<JiraIssue> findCostOfDelayByType(Map<String, List<String>> mapOfFilters);
 
 	/**
-	 * Updates multi objects that matches with basicProjectConfigId and unsets the
-	 * fields provided.
+	 * Updates multi objects that matches with basicProjectConfigId and unsets
+	 * the fields provided.
 	 *
 	 * @param basicProjectConfigId
 	 *            config id
@@ -169,6 +171,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 *            list of fields to unset
 	 */
 	void updateByBasicProjectConfigId(String basicProjectConfigId, List<String> fieldsToUnset);
+
 
 	/**
 	 * This method used to find issue based on Project id and used in Regression
@@ -181,7 +184,8 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list the list
 	 */
 	List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+											   Map<String, Map<String, Object>> uniqueProjectMap);
+
 
 	/**
 	 * Find defects without story link.
@@ -193,22 +197,18 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list of feature
 	 */
 
-	List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+	List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
 
 	/**
 	 * Find issues filtered by map of filters, type name and defectStoryIds
-	 * 
-	 * @param typeName
-	 *            story type
-	 * @param defectStoryIds
-	 *            stories of the defects
+	 * @param typeName story type
+	 * @param defectStoryIds stories of the defects
 	 * @return list of jira issues
 	 */
 	List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds);
 
 	List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+										   Map<String, Map<String, Object>> uniqueProjectMap);
 
 	/**
 	 * Finds Feature objects for given filters and date and jira status have as per

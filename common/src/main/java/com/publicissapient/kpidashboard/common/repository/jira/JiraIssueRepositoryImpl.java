@@ -83,7 +83,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
+			String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -103,8 +104,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
-				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
+				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
@@ -266,7 +267,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	@Override
 	public List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
+			String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -291,7 +293,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
-	 *
+	 * 
 	 * @param mapOfFilters
 	 * @param criteria
 	 * @return
@@ -307,7 +309,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
-	 *
+	 * 
 	 * @param uniqueProjectMap
 	 * @return
 	 */
@@ -436,7 +438,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	/**
 	 * This method is used to find stories for a given list of sprints
-	 *
+	 * 
 	 * @param mapOfFilters
 	 *            filters
 	 * @param storyNumber
@@ -577,8 +579,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	@Override
 	public List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
-			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+														 Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
+														 String individualDevOrQa,Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
 
 		Criteria criteria = new Criteria();
 
@@ -606,8 +608,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
-				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
+				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
@@ -630,7 +632,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	/**
 	 * find linked defects of given stories and filters
-	 * 
 	 * @param mapOfFilters
 	 * @param defectsStoryIds
 	 * @param uniqueProjectMap

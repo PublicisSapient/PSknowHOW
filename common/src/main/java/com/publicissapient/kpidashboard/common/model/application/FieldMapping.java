@@ -21,10 +21,10 @@ package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -162,7 +162,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
 
-	// field for In Progress status
+	//field for In Progress status
 	private List<String> jiraStatusForInProgress;
 
 	@Builder.Default
@@ -183,18 +183,18 @@ public class FieldMapping extends BasicModel {
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
 
-	// field for FTPR
+	//field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
 
-	// field for Wasting - wait status
+	//field for Wasting - wait status
 	private List<String> jiraWaitStatus;
 
-	// field for Wasting - block status
+	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
-	// for for JiraDueDate
+	//for for JiraDueDate
 	@Builder.Default
-	private String jiraDueDateField = CommonConstant.DUE_DATE;
+	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
@@ -226,5 +226,6 @@ public class FieldMapping extends BasicModel {
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
 	}
+
 
 }
