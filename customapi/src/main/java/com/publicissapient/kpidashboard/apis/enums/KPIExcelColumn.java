@@ -18,12 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * to order the headings of excel columns
@@ -63,7 +63,7 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
 
-    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee")),
+    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
 
     CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
 
@@ -83,7 +83,7 @@ public enum KPIExcelColumn {
 
     COST_OF_DELAY("kpi113", Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
 
-    DAILY_CLOSURES("kpi125", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Issue Status", "Size(story point/hours)", "Planned Completion Date (Due Date)", "Actual Completion Date", "Remaining Estimate", "Potential Delay(in days)", "Predicted Completion Date", "Assignee")),
+    DAILY_CLOSURES("kpi125", Arrays.asList("Issue ID", "Issue Type",  "Issue Description", "Issue Status", "Size(story point/hours)", "Planned Completion Date (Due Date)", "Actual Completion Date", "Remaining Estimate", "Potential Delay(in days)","Predicted Completion Date","Assignee")),
 
     RELEASE_FREQUENCY("kpi73", Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
@@ -139,43 +139,43 @@ public enum KPIExcelColumn {
             Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
     ISSUES_LIKELY_TO_SPILL("kpi123",
-            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Priority", "Size(story point/hours)", "Issue Status", "Due Date", "Remaining Estimate", "Predicted Completion Date", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Type","Issue Description", "Issue Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Estimate","Predicted Completion Date","Assignee")),
 
     ITERATION_COMMITMENT("kpi120",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Priority", "Due Date", "Original Estimate", "Remaining Estimate", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type" , "Size(story point/hours)","Priority", "Due Date" ,"Original Estimate", "Remaining Estimate","Assignee" )),
 
     ESTIMATE_HYGINE("kpi124",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type","Assignee")),
 
     ITERATION_STATUS("kpi130",
             Arrays.asList("Issue Id", "Issue Type", "Priority", "Issue Description", "Issue Status", "Due Date", "Remaining Hours", "Delay")),
 
     ESTIMATE_VS_ACTUAL("kpi75",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work","Assignee")),
 
     PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
-            new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
-            new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
-            new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Due Date", ""),
-            new KPIExcelColumnInfo("Actual Start Date", ""), new KPIExcelColumnInfo("Dev Completion Date", ""),
-            new KPIExcelColumnInfo("Actual Completion Date", ""), new KPIExcelColumnInfo("Delay(in days)",
-                    "Delay is calculated based on difference between time taken to complete an issue that depends on the Due date and Actual completion date (In Days)"),
-            new KPIExcelColumnInfo("Assignee", ""))),
+			new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
+			new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
+			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Due Date", ""),
+			new KPIExcelColumnInfo("Actual Start Date", ""), new KPIExcelColumnInfo("Dev Completion Date", ""),
+			new KPIExcelColumnInfo("Actual Completion Date", ""), new KPIExcelColumnInfo("Delay(in days)",
+					"Delay is calculated based on difference between time taken to complete an issue that depends on the Due date and Actual completion date (In Days)"),
+            new KPIExcelColumnInfo("Assignee",""))),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate", "Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date", "Predicted Completion Date", "Overall Delay", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date","Predicted Completion Date","Overall Delay","Assignee")),
 
     WASTAGE("kpi131",
-            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage","Assignee")),
 
     QUALITY_STATUS("kpi133",
-            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Linked Stories", "Linked Stories Size", "Assignee")),
+            Arrays.asList("Issue Id",  "Issue Type", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size","Assignee")),
 
     UNPLANNED_WORK_STATUS("kpi134",
-            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)", "Remaining Estimate", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)","Remaining Estimate","Assignee")),
 
     CLOSURES_POSSIBLE_TODAY("kpi122",
-            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Size(story point/hours)", "Issue Status", "Due Date", "Remaining Estimate", "Assignee")),
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate","Assignee")),
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
@@ -185,29 +185,30 @@ public enum KPIExcelColumn {
 
     // @formatter:on
 
-    private final String kpiId;
+    private String kpiId;
 
     private List<String> columns;
-    private List<KPIExcelColumnInfo> kpiExcelColumnInfo;
-
-    KPIExcelColumn(String kpiID, List<Object> columns) {
-        this.kpiId = kpiID;
-        if (columns.get(0) instanceof String) {
-            this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
-        } else {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
-            columns.forEach(o -> {
-                KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
-                kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
-            });
-            this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
-        }
-    }
 
     public List<KPIExcelColumnInfo> getKpiExcelColumnInfo() {
         return kpiExcelColumnInfo;
     }
+
+    private List<KPIExcelColumnInfo> kpiExcelColumnInfo;
+
+	KPIExcelColumn(String kpiID, List<Object> columns) {
+		this.kpiId = kpiID;
+		if (columns.get(0) instanceof String) {
+			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
+			columns.forEach(o -> {
+				KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
+				kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
+			});
+			this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
+		}
+	}
 
     /**
      * Gets kpi id.

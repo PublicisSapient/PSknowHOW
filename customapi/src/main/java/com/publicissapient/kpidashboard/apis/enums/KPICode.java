@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
+
 import java.util.Arrays;
 
 /**
@@ -251,10 +252,9 @@ public enum KPICode {
 	 * Missing workLogs kpi code
 	 */
 	MISSING_WORK_LOGS("kpi115", KPISource.JIRA.name()),
-
+	
 	/**
-	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined
-	 * in Constant.java class
+	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
 	 */
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
 
@@ -286,7 +286,7 @@ public enum KPICode {
 	 * Open Ticket Aging By Priority kpi code
 	 */
 	OPEN_TICKET_AGING_BY_PRIORITY("kpi997", KPISource.JIRAKANBAN.name()),
-
+	
 	/**
 	 * Work Remaining
 	 */
@@ -299,17 +299,17 @@ public enum KPICode {
 	 * Scope Change
 	 */
 	ITERATION_COMMITMENT("kpi120", KPISource.JIRA.name()),
-
+	
 	/**
 	 * Capacity
 	 */
 	CAPACITY("kpi121", KPISource.JIRA.name()),
-
+	
 	/**
-	 * Closure Possible Today
+	 * Closure Possible Today 
 	 */
 	CLOSURE_POSSIBLE_TODAY("kpi122", KPISource.JIRA.name()),
-
+	
 	/**
 	 * Issue Likely to Spill
 	 */
@@ -319,21 +319,22 @@ public enum KPICode {
 	 */
 	PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING("kpi127", KPISource.JIRA.name()),
 	/**
-	 * 
-	 * /** Estimation Hygiene
+	
+	/**
+	 * Estimation Hygiene
 	 */
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
-
+	
 	/**
 	 * Daily Closures
 	 */
 	DAILY_CLOSURES("kpi125", KPISource.JIRA.name()),
-
+	
 	/**
 	 * Created Vs Resolved
 	 */
 	CREATED_VS_RESOLVED_DEFECTS("kpi126", KPISource.JIRA.name()),
-
+	
 	/**
 	 * Invalid kpi code.
 	 */
@@ -371,7 +372,8 @@ public enum KPICode {
 
 	// @formatter:on
 
-	private final String kpiId;
+
+	private String kpiId;
 
 	private String source;
 
