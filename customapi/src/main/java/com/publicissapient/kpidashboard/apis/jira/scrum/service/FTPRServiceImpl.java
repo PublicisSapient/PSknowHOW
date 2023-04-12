@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -226,9 +228,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					completedIssueList.addAll(filtersIssuesList);
 					completedIssueList.addAll(linkedDefects);
 
-					List<JiraIssue> newIssueList = completedIssueList.stream().distinct().collect(Collectors.toList());
+					Collection<JiraIssue> issues = completedIssueList.stream().collect(Collectors.toMap(JiraIssue::getNumber,
+							Function.identity(), (e1, e2) -> e2, LinkedHashMap::new)).values();
 
-					resultListMap.put(ISSUES, new ArrayList<>(newIssueList));
+					resultListMap.put(ISSUES, new ArrayList<>(issues));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
 				}
 			}

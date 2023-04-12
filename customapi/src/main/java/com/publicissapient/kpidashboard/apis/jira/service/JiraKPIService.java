@@ -333,8 +333,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public double roundingOff(double value){
 		return (double)Math.round(value*100)/100;
 	}
-	
-
 
 	/**
 	 *  For Assigning IterationKPiData
