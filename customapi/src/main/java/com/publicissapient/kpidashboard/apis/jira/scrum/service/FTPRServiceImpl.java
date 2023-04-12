@@ -228,8 +228,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					completedIssueList.addAll(filtersIssuesList);
 					completedIssueList.addAll(linkedDefects);
 
-					Collection<JiraIssue> issues = completedIssueList.stream().collect(Collectors.toMap(JiraIssue::getNumber,
-							Function.identity(), (e1, e2) -> e2, LinkedHashMap::new)).values();
+					Collection<JiraIssue> issues = completedIssueList.stream().collect(Collectors
+							.toMap(JiraIssue::getNumber, Function.identity(), (e1, e2) -> e2, LinkedHashMap::new))
+							.values();
 
 					resultListMap.put(ISSUES, new ArrayList<>(issues));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
