@@ -3797,5 +3797,39 @@
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi133",
+    "kpiName": "First Time Pass Rate",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+        },
+        {
+          "type": "paragraph",
+          "value": "It measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
   }
 ]
