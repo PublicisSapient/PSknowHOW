@@ -197,4 +197,5 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
+
 }
