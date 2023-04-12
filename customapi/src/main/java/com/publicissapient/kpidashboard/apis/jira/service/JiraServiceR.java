@@ -73,17 +73,18 @@ public class JiraServiceR {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
 	/**
-	 * This method process scrum JIRA based kpi request, cache data and call service
-	 * in multiple thread.
+	 * This method process scrum JIRA based kpi request, cache data and call
+	 * service in multiple thread.
 	 *
 	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *            JIRA KPI request
+	 *            true if flow for precalculated, false for direct flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
 	 */
 	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
-	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
+	public List<KpiElement> process(KpiRequest kpiRequest)
+			throws EntityNotFoundException {
 
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
@@ -92,7 +93,7 @@ public class JiraServiceR {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
@@ -103,15 +104,15 @@ public class JiraServiceR {
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest,filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+						kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase()
+						.contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
@@ -119,7 +120,7 @@ public class JiraServiceR {
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
 
 				// set filter value to show on trend line. If sub-projects are
 				// in
@@ -158,12 +159,11 @@ public class JiraServiceR {
 	 * @param filteredAccountDataList
 	 * @return
 	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
-		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-		}
+	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,List<AccountHierarchyData> filteredAccountDataList) {
+			kpiHelperService.kpiResolution(kpiRequest.getKpiList());
+			if (!authorizedProjectsService.ifSuperAdminUser()) {
+				filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
+			}
 
 		return filteredAccountDataList;
 	}
@@ -172,16 +172,18 @@ public class JiraServiceR {
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
 	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest,
+			List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
-		} else {
-			projectKeyCache = kpiRequest.getIds();
-		}
+			if (!authorizedProjectsService.ifSuperAdminUser()) {
+				projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
+			} else {
+				projectKeyCache = kpiRequest.getIds();
+			}
 
 		return projectKeyCache;
 	}
+
 
 	/**
 	 *
@@ -191,8 +193,7 @@ public class JiraServiceR {
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projects) {
-		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false)
-				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false).get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& sprintLevel >= kpiRequest.getLevel()) {
@@ -247,8 +248,8 @@ public class JiraServiceR {
 		}
 
 		/**
-		 * This method call by multiple thread, take object of specific KPI and call
-		 * method of these KPIs
+		 * This method call by multiple thread, take object of specific KPI and
+		 * call method of these KPIs
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request

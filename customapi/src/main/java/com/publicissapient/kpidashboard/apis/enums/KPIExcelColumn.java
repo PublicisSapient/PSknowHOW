@@ -179,6 +179,8 @@ public enum KPIExcelColumn {
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
+    FIRST_TIME_PASS_RATE_ITERATION("kpi135", Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
+
     REFINEMENT_REJECTION_RATE("kpi137",
             Arrays.asList("Issue ID", "Issue Description", "Priority", "Status", "Change Date", "Weeks",
                     "Issue Status"));
