@@ -20,10 +20,7 @@ package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;

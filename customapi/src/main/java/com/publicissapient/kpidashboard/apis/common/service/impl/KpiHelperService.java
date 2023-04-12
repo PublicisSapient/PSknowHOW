@@ -664,6 +664,7 @@ public class KpiHelperService { // NOPMD
 		return resultListMap;
 	}
 
+
 	/**
 	 * Convert string to date local date.
 	 *
@@ -674,6 +675,7 @@ public class KpiHelperService { // NOPMD
 	public LocalDate convertStringToDate(String dateString) {
 		return LocalDate.parse(dateString);
 	}
+
 
 	/**
 	 * fetching jira from jiraKanbanhistory for last 15 months and also
