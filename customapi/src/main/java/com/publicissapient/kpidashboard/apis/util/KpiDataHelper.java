@@ -571,4 +571,61 @@ public final class KpiDataHelper {
 		}
 	}
 
+	/**
+	 *  To collect originalEstimate
+	 * @param overAllOriginalEstimate
+	 * @param originalEstimate
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getOriginalEstimate(List<Double> overAllOriginalEstimate, Double originalEstimate,
+									   JiraIssue jiraIssue) {
+		if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+			overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+		}
+		return originalEstimate;
+	}
+
+	/**
+	 *  To collect StoryPoint
+	 * @param overAllStoryPoints
+	 * @param storyPoint
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getStoryPoint(List<Double> overAllStoryPoints, Double storyPoint, JiraIssue jiraIssue) {
+		if (null != jiraIssue.getStoryPoints()) {
+			storyPoint = storyPoint + jiraIssue.getStoryPoints();
+			overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+		}
+		return storyPoint;
+	}
+
+	/**
+	 *  Calculating max delay of each assignee based on max marker
+	 * @param jiraIssue
+	 * @param issueWiseDelay
+	 * @param potentialDelay
+	 * @param overallPotentialDelay
+	 * @return
+	 */
+	public static int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay,
+						   List<Integer> overallPotentialDelay) {
+		int finalDelay = 0;
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()
+		) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			finalDelay = potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
+			overallPotentialDelay.set(0,
+					overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
+		} else {
+			finalDelay = potentialDelay + finalDelay;
+		}
+		return finalDelay;
+	}
+	public static int getDelayInMinutes(int delay) {
+		return delay*60*8;
+	}
+
 }
