@@ -52,7 +52,7 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 
 	/**
 	 * Deletes all documents that matches with given projectID.
-	 *
+	 * 
 	 * @param projectID String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);
@@ -66,6 +66,5 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 */
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 			List<String> basicProjectConfigId);
-
 
 }
