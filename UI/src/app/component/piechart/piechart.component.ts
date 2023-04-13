@@ -51,7 +51,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   constructor(private viewContainerRef: ViewContainerRef) {}
 
-
   createColors(): void {
     this.colors = d3
       .scaleOrdinal()
@@ -83,7 +82,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
 
-    const pieChartValues = this.data[0]?.value[0]?.value;
+    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
 
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
@@ -105,7 +104,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       );
     this.createColors();
     const colors = this.colors;
-    console.log(this.pieChartValuesArray);
 
     const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");

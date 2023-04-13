@@ -997,7 +997,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         const val = this.filterForm.get('selectedSprintValue').value;
         selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
       }
-      this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      if(this?.selectedProjectData){
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (selectedSprint && Object.keys(selectedSprint)?.length > 0) {
