@@ -201,14 +201,15 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
 			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 			List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
-			if (CollectionUtils.isNotEmpty(storySprintDetail)) {
-				for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
-					if (closedStatus.contains(jiraIssueSprint.getFromStatus())) {
-						LocalDate activityDate = LocalDate.parse(
-								jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
-						if (DateUtil.isWithinDateRange(activityDate, sprintStartDate, sprintEndDate)) {
-							closedStatusDateMap.put(jiraIssueSprint.getFromStatus(), activityDate);
+			for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
+				if (closedStatus.contains(jiraIssueSprint.getFromStatus())) {
+					LocalDate activityDate = LocalDate
+							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+					if (DateUtil.isWithinDateRange(activityDate, sprintStartDate, sprintEndDate)) {
+						if (closedStatusDateMap.containsKey(jiraIssueSprint.getFromStatus())) {
+							closedStatusDateMap.clear();
 						}
+						closedStatusDateMap.put(jiraIssueSprint.getFromStatus(), activityDate);
 					}
 				}
 			}
