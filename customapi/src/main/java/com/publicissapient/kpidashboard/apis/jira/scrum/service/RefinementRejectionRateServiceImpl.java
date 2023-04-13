@@ -27,6 +27,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -86,6 +90,12 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+
 	/**
 	 * @return String
 	 */
@@ -133,7 +143,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return kpiHelperService.getUnAssignedIssueDataMap(leafNodeList, startDate, endDate);
+		return getUnAssignedIssueDataMap(leafNodeList, startDate, endDate);
 
 	}
 
@@ -304,7 +314,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 */
 	private Map<String, String> genrateWeekMap(String endDate) {
 		Map<String, String> weekMap = new LinkedHashMap<>();
-		int weekCount = customApiConfig.getBacklogWeekCount();
+		int weekCount = (customApiConfig.getBacklogDayCount()/7);
 		LocalDate currentDate = LocalDate.parse(endDate);
 		for (int i = weekCount; i > 0; i--) {
 			LocalDate monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
@@ -429,5 +439,37 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			dataMap.get(node.getId()).add(subMap);
 		}
 		return dataMap;
+	}
+
+	/**
+	 * This method is used to fetch Un-assigned Jira issues and its history details
+	 *
+	 * @param leafNodeList
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		List<String> projectList = new ArrayList<>();
+
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			projectList.add(basicProjectConfigId.toString());
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					projectList.stream().distinct().collect(Collectors.toList()));
+		});
+
+		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
+		unAssignedJiraIssues.addAll(jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
+		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.addAll(
+				jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));
+
+		resultListMap.put(UNASSIGNED_JIRA_ISSUE, unAssignedJiraIssues);
+		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, jiraIssueCustomHistories);
+		return resultListMap;
 	}
 }

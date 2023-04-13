@@ -3410,5 +3410,28 @@
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
-  }
+  },{
+  "kpiId": "kpi137",
+  "kpiName": "Refinement Rejection Rate",
+  "kpiUnit": "Number",
+  "isDeleted": "False",
+  "defaultOrder": 3,
+  "kpiCategory": "Backlog",
+  "kpiSource": "Jira",
+  "groupId": 2,
+  "thresholdValue": "",
+  "kanban": false,
+  "chartType": "line",
+  "kpiInfo": {
+    "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+  },
+  "xAxisLabel": "Months",
+  "yAxisLabel": "Count",
+  "isPositiveTrend": false,
+  "kpiFilter": "multiSelectDropDown",
+  "showTrend": false,
+  "aggregationCriteria": "sum",
+  "isAdditionalFilterSupport": true,
+  "calculateMaturity": false
+}
 ]

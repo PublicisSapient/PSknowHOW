@@ -1418,37 +1418,4 @@ public class KpiHelperService { // NOPMD
 		}
 
 	}
-
-	/**
-	 * This method is used to fetch Un-assigned Jira issues and its history details
-	 *
-	 * @param leafNodeList
-	 * @param startDate
-	 * @param endDate
-	 * @param resultListMap
-	 * @return
-	 */
-	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate) {
-		Map<String, Object> resultListMap = new HashMap<>();		
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-		List<String> projectList = new ArrayList<>();
-
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			projectList.add(basicProjectConfigId.toString());
-			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-					projectList.stream().distinct().collect(Collectors.toList()));
-		});
-
-		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
-		unAssignedJiraIssues.addAll( jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
-		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-		jiraIssueCustomHistories.addAll(
-				jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));
-
-		resultListMap.put(UNASSIGNED_JIRA_ISSUE, unAssignedJiraIssues);
-		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, jiraIssueCustomHistories);
-		return resultListMap;
-	}
 }

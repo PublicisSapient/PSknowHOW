@@ -1,33 +1,5 @@
 {
-  "kpiList": [
-    {
-      "_id": {
-        "$oid": "642d2c6fb826c222e762db4c"
-      },
-      "kpiId": "kpi137",
-      "kpiName": "Refinement Rejection Rate",
-      "kpiUnit": "%",
-      "isDeleted": "False",
-      "defaultOrder": 3,
-      "kpiCategory": "Backlog",
-      "kpiSource": "Jira",
-      "groupId": 2,
-      "thresholdValue": "",
-      "kanban": false,
-      "chartType": "line",
-      "kpiInfo": {
-        "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
-      },
-      "xAxisLabel": "Weeks",
-      "yAxisLabel": "Count",
-      "isPositiveTrend": false,
-      "kpiFilter": "multiSelectDropDown",
-      "showTrend": false,
-      "aggregationCriteria": "sum",
-      "isAdditionalFilterSupport": true,
-      "calculateMaturity": false
-    }
-  ],
+  "kpiList": [],
   "ids": [
     "Scrum Project_6335363749794a18e8a4479b"
   ],

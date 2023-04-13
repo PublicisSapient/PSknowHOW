@@ -194,9 +194,6 @@ public class CustomApiConfig {// NOPMD
 	@Value("${backlogDayCount}")
 	private int backlogDayCount;
 
-	@Value("${backlogWeekCount}")
-	private int backlogWeekCount;
-
 	public int getPushDataLimit() {
 		return pushDataLimit;
 	}
@@ -211,10 +208,6 @@ public class CustomApiConfig {// NOPMD
 
 	public int getBacklogDayCount() {
 		return this.backlogDayCount;
-	}
-
-	public int getBacklogWeekCount() {
-		return this.backlogWeekCount;
 	}
 
 	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
