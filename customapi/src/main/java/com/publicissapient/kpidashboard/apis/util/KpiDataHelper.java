@@ -602,4 +602,30 @@ public final class KpiDataHelper {
 		return storyPoint;
 	}
 
+	/**
+	 *  Calculating max delay of each assignee based on max marker
+	 * @param jiraIssue
+	 * @param issueWiseDelay
+	 * @param potentialDelay
+	 * @param overallPotentialDelay
+	 * @return
+	 */
+	public static int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay,
+						   List<Integer> overallPotentialDelay) {
+		int finalDelay = 0;
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()
+		) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			finalDelay = potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
+			overallPotentialDelay.set(0,
+					overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
+		} else {
+			finalDelay = potentialDelay + finalDelay;
+		}
+		return finalDelay;
+	}
+	public static int getDelayInMinutes(int delay) {
+		return delay*60*8;
+	}
+
 }
