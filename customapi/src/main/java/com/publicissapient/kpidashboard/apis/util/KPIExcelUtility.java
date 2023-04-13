@@ -65,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.joda.time.DateTime;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -78,6 +79,8 @@ public class KPIExcelUtility {
 
     private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
     private static final DecimalFormat df2 = new DecimalFormat(".##");
+    private static final String STATUS = "Status";
+    private static final String WEEK = "Week";
 
     private KPIExcelUtility() {
     }
@@ -1408,31 +1411,34 @@ public class KPIExcelUtility {
     }
 
     /**
-     * This Method is used to populate Excel Data for Rejection Refinement KPI 
+     * This Method is used to populate Excel Data for Rejection Refinement KPI
+     *
      * @param excelDataList
      * @param issuesExcel
      * @param weekAndTypeMap
+     * @param jiraDateMap
      */
 	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
-			List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap) {
+                                                            List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, Map<String, DateTime> jiraDateMap) {
 
 		if (CollectionUtils.isNotEmpty(issuesExcel)) {
 			issuesExcel.forEach(e -> {
-				String week = "";
-				String status = ""; 
-                getStatusNameAndWeekName(weekAndTypeMap, e,status,week);
+
+                HashMap<String,String> data = getStatusNameAndWeekName(weekAndTypeMap, e);
 				KPIExcelData excelData = new KPIExcelData();
 				Map<String, String> epicLink = new HashMap<>();
 				epicLink.put(e.getNumber(), checkEmptyURL(e));
-				excelData.setChangeDate(LocalDate
-						.parse(e.getChangeDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+				excelData.setChangeDate(
+                        
+                        LocalDate
+						.parse(jiraDateMap.entrySet().stream().filter(f -> f.getKey().equalsIgnoreCase(e.getNumber())).findFirst().get().getValue().toString().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
 						.toString());
 				excelData.setIssueID(epicLink);
 				excelData.setPriority(e.getPriority());
 				excelData.setIssueDesc(e.getName());
 				excelData.setStatus(e.getStatus());
-				excelData.setIssueStatus(status);
-				excelData.setWeeks(week);
+				excelData.setIssueStatus(data.get(STATUS));
+				excelData.setWeeks(data.get(WEEK));
 				excelDataList.add(excelData);
 			});
 		}
@@ -1442,19 +1448,19 @@ public class KPIExcelUtility {
      * This Method is used for fetching status and Weekname to show the data in excel data record 
      * @param weekAndTypeMap
      * @param e
-     * @param statusName
-     * @param weekName
      */
-	private static void getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e, String statusName, String weekName) {
+	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+        HashMap<String,String> data = new HashMap<>();
 		for (String week : weekAndTypeMap.keySet()) {
 			for (String type : weekAndTypeMap.get(week).keySet()) {
 				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
-						statusName = type;
-                        weekName = week;
+                        data.put(STATUS,type);
+                        data.put(WEEK,week);
 					}
 				}
 			}
 		}
+        return data;
 	}
 }
