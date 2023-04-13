@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -78,6 +81,8 @@ public class CreatedVsResolvedServiceImplTest {
 	private static final String SUBGROUPCATEGORY = "subGroupCategory";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 
+	private static final String SPRINT_WISE_SUB_TASK_BUGS = "sprintWiseSubTaskBugs";
+
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
@@ -100,12 +105,18 @@ public class CreatedVsResolvedServiceImplTest {
 	private FilterHelperService filterHelperService;
 	@Mock
 	CustomApiConfig customApiConfig;
+
+	@Mock
+	KpiHelperService kpiHelperService;
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
+	private List<DataCount> trendValues = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 
 	private KpiRequest kpiRequest;
 	@Mock
@@ -143,11 +154,13 @@ public class CreatedVsResolvedServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		// setDataCountList();
 		kpiWiseAggregation.put("created_Vs_Resolved_Defects", "sum");
+		setTreadValuesDataCount();
 
 	}
 
@@ -208,14 +221,19 @@ public class CreatedVsResolvedServiceImplTest {
 		when(createdVsResolvedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findLinkedDefects(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
+		resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, new ArrayList<JiraIssue>());
 
 		try {
 			KpiElement kpiElement = createdVsResolvedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
+			List<DataCountGroup> dataCountList = (List<DataCountGroup>) kpiElement.getTrendValueList();
+			System.out.println(dataCountList);
 
-			assertThat("Created Vs Resolved trend value : ", dataCountList.size(), equalTo(1));
+			assertThat("Created Vs Resolved trend value : ", dataCountList.size(), equalTo(2));
 		} catch (ApplicationException enfe) {
 
 		}
@@ -243,14 +261,15 @@ public class CreatedVsResolvedServiceImplTest {
 		when(createdVsResolvedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 
 		try {
 			KpiElement kpiElement = createdVsResolvedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
+			List<DataCountGroup> dataCountList = (List<DataCountGroup>) kpiElement.getTrendValueList();
 
-			assertThat("Created Vs Resolved trend value : ", dataCountList.size(), equalTo(1));
+			assertThat("Created Vs Resolved trend value : ", dataCountList.size(), equalTo(2));
 		} catch (ApplicationException enfe) {
 
 		}
@@ -259,6 +278,27 @@ public class CreatedVsResolvedServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		assertThat(createdVsResolvedServiceImpl.getQualifierType(), equalTo("CREATED_VS_RESOLVED_DEFECTS"));
+	}
+
+	private void setTreadValuesDataCount() {
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCountValue = new DataCount();
+		dataCountValue.setData(String.valueOf(5L));
+		dataCountValue.setValue(5L);
+		dataCountList.add(dataCountValue);
+		DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
+		trendValues.add(dataCount);
+		trendValueMap.put("Tagged Defects", trendValues);
+		trendValueMap.put("Defects Tagged After Sprint Start", trendValues);
+	}
+
+	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data);
+		dataCount.setMaturity(maturity);
+		dataCount.setMaturityValue(maturityValue);
+		dataCount.setValue(value);
+		return dataCount;
 	}
 
 }

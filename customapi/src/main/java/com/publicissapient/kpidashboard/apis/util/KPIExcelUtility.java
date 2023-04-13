@@ -270,34 +270,38 @@ public class KPIExcelUtility {
     }
 
     /**
-     * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is
-     * present in conditional list then Constant.EXCEL_YES else
-     * Constant.EMPTY_STRING kpi specific
      *
      * @param sprint
      * @param totalStoriesMap
-     * @param conditionStories
+     * @param closedConditionStories
+     * @param createdConditionStories
      * @param kpiExcelData
      */
-    public static void populateCreatedVsResolvedExcelData(String sprint, Map<String, JiraIssue> totalStoriesMap,
-                                                          List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
-        if (MapUtils.isNotEmpty(totalStoriesMap)) {
-            List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
-                    .collect(Collectors.toList());
-            totalStoriesMap.forEach((storyId, jiraIssue) -> {
-                String present = conditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
-                KPIExcelData excelData = new KPIExcelData();
-                excelData.setSprintName(sprint);
-                excelData.setIssueDesc(checkEmptyName(jiraIssue));
-                Map<String, String> storyDetails = new HashMap<>();
-                storyDetails.put(storyId, checkEmptyURL(jiraIssue));
-                excelData.setCreatedDefectId(storyDetails);
-                excelData.setResolvedTickets(present);
+	public static void populateCreatedVsResolvedExcelData(String sprint, Map<String, JiraIssue> totalStoriesMap,
+			List<JiraIssue> closedConditionStories, List<JiraIssue> createdConditionStories,
+			List<KPIExcelData> kpiExcelData) {
+		if (MapUtils.isNotEmpty(totalStoriesMap)) {
+			List<String> closedConditionalList = closedConditionStories.stream().map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+			List<String> createdConditionalList = createdConditionStories.stream().map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+			totalStoriesMap.forEach((storyId, jiraIssue) -> {
+				String present = closedConditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
+				String createdAfterSprint = createdConditionalList.contains(storyId) ? Constant.EXCEL_YES
+						: Constant.EMPTY_STRING;
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprint);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				Map<String, String> storyDetails = new HashMap<>();
+				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
+				excelData.setCreatedDefectId(storyDetails);
+				excelData.setResolvedTickets(present);
+				excelData.setDefectAddedAfterSprintStart(createdAfterSprint);
 
-                kpiExcelData.add(excelData);
-            });
-        }
-    }
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
     public static void populateRegressionAutomationExcelData(String sprintProject,
                                                              Map<String, TestCaseDetails> totalStoriesMap, List<TestCaseDetails> conditionStories,
