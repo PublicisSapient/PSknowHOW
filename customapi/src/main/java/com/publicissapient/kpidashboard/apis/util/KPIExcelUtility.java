@@ -78,6 +78,7 @@ public class KPIExcelUtility {
 
     private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
     private static final DecimalFormat df2 = new DecimalFormat(".##");
+    public static final String TIME = "0d ";
 
     private KPIExcelUtility() {
     }
@@ -1432,17 +1433,17 @@ public class KPIExcelUtility {
         if ((blockedTime != 0)) {
             iterationKpiModalValue.setBlockedTime(CommonUtils.convertIntoDays(blockedTime));
         } else {
-            iterationKpiModalValue.setBlockedTime(CommonUtils.convertIntoDays(blockedTime));
+            iterationKpiModalValue.setBlockedTime(TIME);
         }
         if ((waitTime != 0)) {
             iterationKpiModalValue.setWaitTime(CommonUtils.convertIntoDays(waitTime));
         } else {
-            iterationKpiModalValue.setWaitTime(CommonUtils.convertIntoDays(waitTime));
+            iterationKpiModalValue.setWaitTime(TIME);
         }
         if ((wastageTime != 0)) {
             iterationKpiModalValue.setWastage(CommonUtils.convertIntoDays(wastageTime));
         } else {
-            iterationKpiModalValue.setWastage(CommonUtils.convertIntoDays(wastageTime));
+            iterationKpiModalValue.setWastage(TIME);
         }
         modalValues.add(iterationKpiModalValue);
         overAllmodalValues.add(iterationKpiModalValue);
