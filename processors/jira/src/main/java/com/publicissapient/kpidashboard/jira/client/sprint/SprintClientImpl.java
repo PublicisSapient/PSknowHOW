@@ -311,7 +311,8 @@ public class SprintClientImpl implements SprintClient {
 			}
 		}
 		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
-			request.setRequestProperty("Authorization", "Bearer " + connectionOptional.get().getPatOAuthToken()); // NOSONAR
+			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
+			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
 		}
 		else{
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR

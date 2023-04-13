@@ -558,6 +558,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 	}
 
+	private void setEncryptedPatOAuthTokenForDb(Connection conn) {
+		String patOAuthTokenFromClient = conn.getPatOAuthToken();
+		if (StringUtils.isEmpty(patOAuthTokenFromClient)) {
+			conn.setPatOAuthToken(conn.getType() == null ? "" : conn.getPatOAuthToken());
+		} else {
+			conn.setPatOAuthToken(encryptStringForDb(patOAuthTokenFromClient));
+		}
+	}
+
 	private String encryptStringForDbZephyr(String plainTextAccessToken) {
 		String encryptedString = aesEncryptionService.encrypt(plainTextAccessToken,
 				customApiConfig.getAesEncryptionKey());
@@ -576,10 +585,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private void setEncryptedPasswordFieldForDb(Connection conn) {
 		String passwordFromClient = conn.getPassword();
 		conn.setPassword(encryptStringForDb(passwordFromClient));
-	}
-	private void setEncryptedPatOAuthTokenForDb(Connection conn) {
-		String patOAuthTokenFromClient = conn.getPatOAuthToken();
-		conn.setPatOAuthToken(encryptStringForDb(patOAuthTokenFromClient));
 	}
 
 	private Connection checkConnDetailsSonar(Connection inputConn, Connection currConn, String api) {
@@ -601,7 +606,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
 			setEncryptedPasswordFieldForDb(conn);
-			setEncryptedPatOAuthTokenForDb(conn);
+			if (conn.isBearerToken()) {
+				setEncryptedPatOAuthTokenForDb(conn);
+			}
 			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
