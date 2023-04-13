@@ -964,6 +964,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
+        if(this.selectedProjectData){
+          this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
+        }
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
           this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
@@ -994,7 +997,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         const val = this.filterForm.get('selectedSprintValue').value;
         selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
       }
-      this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      if(this?.selectedProjectData){
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (selectedSprint && Object.keys(selectedSprint)?.length > 0) {
@@ -1064,7 +1069,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId).subscribe((response) => {
         if (response.success) {
-          if(this?.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
+          if(this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
             this.processorsTracelogs = response.data;
         }
           this.showExecutionDate();
