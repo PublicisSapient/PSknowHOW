@@ -3318,38 +3318,9 @@ db.getCollection('kpi_master').insert(
     "boxType": "2_column_big",
     "calculateMaturity": false
   },
-  {
-      "kpiId": "kpi130",
-      "kpiName": "Iteration Status",
-      "maxValue": "",
-      "kpiUnit": "Count",
-      "isDeleted": "False",
-      "defaultOrder": 11,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "kanban": false,
-      "kpiInfo": {
-        "details": [
-          {
-            "type": "paragraph",
-            "value": "Iteration Status KPI gives a representation of delays in the story."
-          },
-          {
-            "type": "paragraph",
-            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
-          }
-        ]
-      },
-      "isAdditionalFilterSupport": false,
-      "kpiFilter": "multiSelectDropDown",
-      "boxType": "2_column",
-      "calculateMaturity": false
-    },
    {
          "kpiId": "kpi132",
-         "kpiName": "Defects by Root Cause",
+         "kpiName": "Defect Count by RCA",
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
@@ -3364,7 +3335,7 @@ db.getCollection('kpi_master').insert(
            "details": [
              {
                "type": "paragraph",
-               "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
+               "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
              },
              {
                "type": "paragraph",
@@ -3550,6 +3521,44 @@ db.getCollection('kpi_master').insert(
      "boxType": "3_column",
      "calculateMaturity": false
   },
+  {
+       "kpiId": "kpi135",
+       "kpiName": "First Time Pass Rate",
+       "maxValue": "",
+       "kpiUnit": "Hours",
+       "isDeleted": "False",
+       "defaultOrder": 14,
+       "kpiCategory": "Iteration",
+       "kpiSource": "Jira",
+       "groupId": 8,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": null,
+       "kpiInfo": {
+               "details": [
+                {
+                    "type": "paragraph",
+                     "value": "FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
+                },
+                {
+                     "type": "paragraph",
+                     "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+                },
+                {
+                   "type": "paragraph",
+                   "value": "First time pass rate (FTPR) = No. of issues closed in a sprint which do not have a return transition or any defects tagged / Total no. of issues closed in the sprint"
+                }
+               ]
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "3_column",
+       "calculateMaturity": false
+    },
   {
     "kpiId": "kpi129",
     "kpiName": "Issues Without Story Link",

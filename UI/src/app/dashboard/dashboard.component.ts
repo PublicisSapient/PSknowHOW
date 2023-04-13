@@ -41,8 +41,6 @@ import { Router } from '@angular/router';
  */
 export class DashboardComponent implements OnInit, AfterContentInit {
   authorized = <boolean>true;
-  headerFixed = <boolean>false;
-  scrollOffset = <number>150;
   isApply = false;
   
   constructor(
@@ -67,23 +65,6 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     });
   }
 
-  // for making the header sticky on scroll
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    if (
-      this.router.url.indexOf('/Config/') === -1 &&
-      this.router.url !== '/dashboard/Maturity' &&
-      this.router.url !== '/dashboard/EngineeringMaturity'
-    ) {
-      this.headerFixed =
-        (window.pageYOffset ||
-          document.documentElement.scrollTop ||
-          document.body.scrollTop ||
-          0) > this.scrollOffset;
-    } else {
-      this.headerFixed = false;
-    }
-  }
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();

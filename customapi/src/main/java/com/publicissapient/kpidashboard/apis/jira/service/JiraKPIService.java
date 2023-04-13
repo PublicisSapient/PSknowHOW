@@ -34,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -256,7 +257,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public void populateIterationDataForPlannedWork(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, Object> actualCompletionData, Map<String,Object> jiraIssueData) {
+			Map<String, Object> actualCompletionData, Map<String,Object> jiraIssueData, Map<String, IterationPotentialDelay> issueWiseDelay) {
 		int originalEstimate = 0;
 		String markerValue = Constant.BLANK;
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
@@ -284,6 +285,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 					? CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes())
 					: "0m");
 		}
+		if (jiraIssue.getRemainingEstimateMinutes() != null) {
+			String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
+			iterationKpiModalValue
+					.setRemainingEstimateMinutes(StringUtils.isNotEmpty(remEstimate) ? remEstimate : "0m");
+		} else {
+			iterationKpiModalValue.setRemainingEstimateMinutes("0m");
+		}
 		if (jiraIssue.getDueDate() != null)
 			iterationKpiModalValue.setDueDate(jiraIssue.getDueDate().substring(0, jiraIssue.getDueDate().indexOf('T')));
 		if (actualCompletionData.get("actualCompleteDate") != null)
@@ -302,6 +310,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		}
 		if(DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isAfter(LocalDate.now().minusDays(1))){
 			markerValue = Constant.GREEN;
+		}
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+		} else {
+			iterationKpiModalValue.setPotentialDelay("-");
+			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
 		iterationKpiModalValue.setMarker(markerValue);
 		modalValues.add(iterationKpiModalValue);
