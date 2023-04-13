@@ -609,7 +609,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": true,
     "lineLegend": "Resolved Defects",
     "barLegend": "Created Defects",
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "radioButton",
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": true,
     "maxValue": "300",
