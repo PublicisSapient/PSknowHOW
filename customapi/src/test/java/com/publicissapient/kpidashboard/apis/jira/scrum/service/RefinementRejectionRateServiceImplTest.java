@@ -154,7 +154,7 @@ public class RefinementRejectionRateServiceImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetKpiData() throws ApplicationException {
-		when(customApiConfig.getBacklogDayCount()).thenReturn(35);
+		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
 				kpiRequest.getKpiList().get(0), treeAggregatorDetail);

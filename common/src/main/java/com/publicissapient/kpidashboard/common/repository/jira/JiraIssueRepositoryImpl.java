@@ -72,7 +72,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
-	private static final String JIRA_CHANGE_DATE = "changeDate";
+	private static final String JIRA_UPDATED_DATE = "updateDate";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -249,14 +249,13 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteria = new Criteria();
 		Criteria orCriteria = new Criteria();
 		List<Criteria> filter = new ArrayList<>();
-		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
-//		for (String val : mapOfFilters.keySet()) {
-//			Criteria expression = new Criteria();
-//			expression.and(val).is(mapOfFilters.get(val));
-//			filter.add(expression);
-//		}
+		for (String val : mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
 		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
-		criteria.and(JIRA_CHANGE_DATE).gte(startDate).lte(endDate);
+		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
 		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
 		Query query = new Query(criteria);
 
