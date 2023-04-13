@@ -24,7 +24,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
@@ -39,84 +39,64 @@ declare let require: any;
 
 export class ExecutiveComponent implements OnInit, OnDestroy {
     @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
-    masterData = <any>{};
-    filterData = <any>[];
-    sonarKpiData = <any>{};
-    jenkinsKpiData = <any>{};
-    zypherKpiData = <any>{};
-    jiraKpiData = <any>{};
-    bitBucketKpiData = <any>{};
-    filterRequestData = {};
-    filterkeys = <any>[];
-    filterApplyData = <any>{};
-    kpiListSonar = <any>{};
-    kpiJenkins = <any>{};
-    kpiZypher = <any>{};
-    kpiJira = <any>{};
-    kpiBitBucket = <any>{};
-    gaugemap = {};
+    masterData;
+    filterData = [];
+    sonarKpiData = {};
+    jenkinsKpiData = {};
+    zypherKpiData = {};
+    jiraKpiData = {};
+    bitBucketKpiData = {};
+    filterApplyData;
+    kpiListSonar;
+    kpiJenkins;
+    kpiZypher;
+    kpiJira;
+    kpiBitBucket;
     loaderJenkins = false;
     faList = faList;
     faChartPie = faChartPie;
-    // loaderJira = false;
-
     loaderJiraArray = [];
     loaderJiraKanbanArray = [];
-
     loaderSonar = false;
     loaderZypher = false;
     loaderBitBucket = false;
     subscriptions: any[] = [];
     noOfFilterSelected = 0;
-    downloadJson = <any>{};
-    jiraKpiRequest = <any>'';
-    sonarKpiRequest = <any>'';
-    zypherKpiRequest = <any>'';
-    jenkinsKpiRequest = <any>'';
-    bitBucketKpiRequest = <any>'';
-    maturityColorCycleTime = <any>['#f5f5f5', '#f5f5f5', '#f5f5f5'];
-    totalDefect = <any>[];
-    tooltip = <any>{};
-    selectedtype = '';
+    jiraKpiRequest;
+    sonarKpiRequest;
+    zypherKpiRequest;
+    jenkinsKpiRequest;
+    bitBucketKpiRequest;
+    maturityColorCycleTime = ['#f5f5f5', '#f5f5f5', '#f5f5f5'];
+    tooltip;
+    selectedtype = 'Scrum';
     configGlobalData;
-    selectedPriorityFilter = <any>{};
-    prioritySum = <any>{};
+    selectedPriorityFilter = {};
     selectedSonarFilter;
     selectedTestExecutionFilterData;
-    sonarFilterData = <any>[];
-    testExecutionFilterData = <any>[];
+    sonarFilterData = [];
+    testExecutionFilterData = [];
     selectedJobFilter = 'Select';
     selectedBranchFilter = 'Select';
     processedKPI11Value = {};
     kanbanActivated = false;
     serviceObject = {};
     isChartView = true;
-    processedARTValue: any = {};
-    processedARTAggValue: any = {};
-    selectedARTFilter = 'All issue types';
-
-    processedRCAValue: any = {};
-    processedRCAAggValue: any = {};
-    selectedRCAFilter = 'All Causes';
-    selectedMTTMFilter = 'Select';
-    processedKPI84Value = {};
     allKpiArray: any = [];
-    colorObj: object = {};
-    chartColorList: object = {};
+    colorObj = {};
+    chartColorList = {};
     kpiSelectedFilterObj = {};
     kpiChartData = {};
     noKpis = false;
     enableByUser = false;
     updatedConfigGlobalData;
-    kpiConfigData: object = {};
+    kpiConfigData = {};
     kpiLoader = true;
     noTabAccess = false;
     trendBoxColorObj: any;
     iSAdditionalFilterSelected = false;
-    kpiDropdowns: object = {};
+    kpiDropdowns = {};
     showKpiTrendIndicator = {};
-    boardId = 1;
-    previousBoardId: number;
     hierarchyLevel;
     showChart = true;
     displayModal = false;
@@ -126,30 +106,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         tableValues: []
     };
     kpiExcelData;
-    isGlobalDownload: boolean = false;
-    kpiTrendsObj: object = {};
+    isGlobalDownload = false;
+    kpiTrendsObj = {};
+    selectedTab= 'iteration';
+
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
-        this.kanbanActivated = this.service.getSelectedType() === 'Kanban' ? true : false;
-        if (this.boardId) {
-            this.previousBoardId = this.boardId;
-        }
+        const selectedTab = window.location.hash.substring(1);
+         this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
 
-
-        this.route.params.subscribe(params => {
-            this.boardId = isNaN(+params['boardId']) ? 1 : +params['boardId'];
-        });
-
-        this.subscriptions.push(this.service.activateKanban.subscribe((value) => {
-            if (value) {
-                this.kanbanActivated = true;
-            } else {
-                this.kanbanActivated = false;
-            }
-        }));
-
-        // used to know whether scrum or kanban is clicked
-        this.service.onTypeRefresh.subscribe((sharedobject) => {
-            // this.loaderJira = false;
+        this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
@@ -157,22 +122,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.processedKPI11Value = {};
             this.selectedBranchFilter = 'Select';
             this.serviceObject = {};
-            this.getSelectedType(sharedobject);
-            this.kanbanActivated = sharedobject === 'Kanban' ? true : false;
-            if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-                this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.boardId)[0]?.kpis;
-                this.processKpiConfigData();  
-            }
-        });
+            this.selectedtype = data.selectedType;
+            this.selectedTab=data.selectedTab;
+            this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+        }));
 
-        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-            this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.boardId)[0]?.kpis;
-            this.processKpiConfigData();
-        }
 
         this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-            this.checkIfBoardIdBelongsToSelectedType(globalConfig);
-            this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.boardId)[0]?.kpis;
+            this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) =>( item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.processKpiConfigData();
         }));
 
@@ -193,16 +150,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
             return this.service.passDataToDashboard;
-        })).subscribe((sharedobject: any) => {
+        }), distinctUntilChanged()).subscribe((sharedobject: any) => {
             // used to get all filter data when user click on apply button in filter
             if (sharedobject?.filterData?.length) {
-                if (!this.helperService.compareFilters(this.serviceObject['filterApplyData'], sharedobject.filterApplyData, this.kanbanActivated) || this.boardId !== this.service.getSelectBoardId()) {
-                    this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-
-
-                    this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-                    this.receiveSharedData(sharedobject);
-                }
+                this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+                this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
+                this.receiveSharedData(sharedobject);
                 this.noTabAccess = false;
             } else {
                 this.noTabAccess = true;
@@ -213,19 +166,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
             this.showChart = view;
         }));
-        
         this.subscriptions.push(this.service.isDownloadExcel.subscribe(isDownload => {
             this.isGlobalDownload = isDownload;
             if(this.isGlobalDownload){
                 this.downloadGlobalExcel();
             }
-        }))
-    }
-
-    checkIfBoardIdBelongsToSelectedType(globalConfig) {
-        if (!globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].find(boardDetails => boardDetails.boardId === this.boardId)) {
-            this.boardId = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'][0]?.boardId;
-        }
+        }));
     }
 
     processKpiConfigData() {
@@ -252,25 +198,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
 
-    getSelectedType(sharedobject) {
-        this.selectedtype = sharedobject;
-    }
     ngOnInit() {
-        this.selectedtype = this.service.getSelectedType();
         if (this.service.getFilterObject()) {
             this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
             this.receiveSharedData(this.service.getFilterObject());
         }
-
-        // this.selectedtype='Scrum';
-
-        this.httpService.getTooltipData()
-            .subscribe(filterData => {
-                if (filterData[0] !== 'error') {
-                    this.tooltip = filterData;
-                }
-            });
-
+        this.httpService.getTooltipData().subscribe(filterData => {
+            if (filterData[0] !== 'error') {
+                this.tooltip = filterData;
+            }
+        });
 
         this.service.getEmptyData().subscribe((val) => {
             if (val) {
@@ -278,7 +215,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             } else {
                 this.noTabAccess = false;
             }
-
         });
     }
 
@@ -286,15 +222,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     // unsubscribing all Kpi Request
     ngOnDestroy() {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    }
-
-    setBoardIdForSelectedTab() {
-        if (!this.service.getDashConfigData()[this.selectedtype.toLowerCase() === 'kanban' ? 'kanban' : 'scrum']?.find(boardDetails => (boardDetails.boardName.toLowerCase() === this.service.getSelectedTab()?.toLowerCase()) ||
-        (boardDetails.boardName.toLowerCase() === this.service.getSelectedTab()?.toLowerCase().split('-').join(' ')) )) {
-            this.boardId = this.service.getDashConfigData()[this.selectedtype.toLowerCase()][0].boardId;
-        } else {
-            this.boardId = this.service.getDashConfigData()[this.selectedtype.toLowerCase() === 'kanban' ? 'kanban' : 'scrum']?.find(boardDetails => boardDetails.boardName.toLowerCase() === this.service.getSelectedTab().toLowerCase()).boardId;
-        }
     }
 
     /**
@@ -308,12 +235,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
             }
         }
-        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0) {
-            this.boardId = this.service.getSelectBoardId();
-            this.setBoardIdForSelectedTab();
-            this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => item.boardId === this.boardId)[0]?.kpis;
+        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event.selectedTab.toLowerCase() !== 'iteration') {
+            this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
-            if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || (this.previousBoardId !== this.boardId) && this.configGlobalData) {
+            if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
                 if (this.serviceObject['makeAPICall']) {
                     this.allKpiArray = [];
                     this.kpiChartData = {};
@@ -321,22 +246,21 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiSelectedFilterObj = {};
                     this.kpiDropdowns = {};
                     this.kpiTrendsObj = {};
+                    this.kpiLoader =true;
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-                this.previousBoardId = this.boardId;
                 this.masterData = $event.masterData;
                 this.filterData = $event.filterData;
                 this.filterApplyData = $event.filterApplyData;
                 this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
                 this.selectedJobFilter = 'Select';
-                this.selectedtype = this.service.getSelectedType();
                 if (this.filterData?.length && $event.makeAPICall) {
                     this.noTabAccess = false;
                     // call kpi request according to tab selected
                     if (this.masterData && Object.keys(this.masterData).length) {
                         this.processKpiConfigData();
-                        if (this.selectedtype === 'Kanban') {
-                            this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => item.boardId === this.boardId)[0]?.kpis;
+                        if (this.selectedtype.toLowerCase() === 'kanban') {
+                            this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
                             this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
@@ -658,7 +582,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         this.jiraKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
-                // this.loaderJira = false;
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     const localVariable = this.helperService.createKpiWiseId(getData);
@@ -726,7 +649,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // post request of Jira(Kanban)
     postJiraKanbanKpi(postData, source): void {
-        // this.loaderJira = true;
         postData.kpiList.forEach(element => {
             this.loaderJiraKanbanArray.push(element.kpiId);
         });
@@ -1136,7 +1058,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       checkLatestAndTrendValue(kpiData, item){
         let latest:string = '';
         let trend:string = '';
-        
         if(item?.value?.length > 0){
             let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
             let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' ? kpiData?.kpiDetail?.kpiUnit : '';
@@ -1153,7 +1074,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if(trendObj){
                     trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
                 }else{
-                    trend = 'NA'
+                    trend = 'NA';
                 }
             }else{
                 let lastVal = item?.value[item?.value?.length - 1]?.value;

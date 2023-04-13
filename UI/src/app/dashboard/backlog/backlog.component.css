@@ -1,12 +1,12 @@
 .text-data {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     color: var(--color-secondary-blue);
     margin: 0;
 }
 
 .text-label {
     color: var(--color-cyan-blue);
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     margin: 0;
 }
 

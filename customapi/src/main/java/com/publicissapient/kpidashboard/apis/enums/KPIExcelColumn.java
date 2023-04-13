@@ -153,23 +153,25 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work","Assignee")),
 
-    PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
+	PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
 			new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
 			new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
-			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Due Date", ""),
-			new KPIExcelColumnInfo("Actual Start Date", ""), new KPIExcelColumnInfo("Dev Completion Date", ""),
-			new KPIExcelColumnInfo("Actual Completion Date", ""), new KPIExcelColumnInfo("Delay(in days)",
+			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Remaining Estimate", ""),
+			new KPIExcelColumnInfo("Due Date", ""), new KPIExcelColumnInfo("Actual Start Date", ""),
+			new KPIExcelColumnInfo("Dev Completion Date", ""), new KPIExcelColumnInfo("Actual Completion Date", ""),
+			new KPIExcelColumnInfo("Delay(in days)",
 					"Delay is calculated based on difference between time taken to complete an issue that depends on the Due date and Actual completion date (In Days)"),
-            new KPIExcelColumnInfo("Assignee",""))),
+			new KPIExcelColumnInfo("Predicted Completion Date", ""),
+			new KPIExcelColumnInfo("Potential Delay(in days)", ""), new KPIExcelColumnInfo("Assignee", ""))),
 
     WORK_REMAINING("kpi119",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date","Predicted Completion Date","Overall Delay","Assignee")),
+            Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date","Predicted Completion Date","Potential Delay(in days)","Assignee")),
 
     WASTAGE("kpi131",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)", "Blocked Time", "Wait Time", "Total Wastage","Assignee")),
 
     QUALITY_STATUS("kpi133",
-            Arrays.asList("Issue Id", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size","Assignee")),
+            Arrays.asList("Issue Id",  "Issue Type", "Issue Description", "Issue Status",  "Priority", "Linked Stories" , "Linked Stories Size","Assignee")),
 
     UNPLANNED_WORK_STATUS("kpi134",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Issue Status", "Size(story point/hours)","Remaining Estimate","Assignee")),
@@ -177,10 +179,11 @@ public enum KPIExcelColumn {
     CLOSURES_POSSIBLE_TODAY("kpi122",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate","Assignee")),
 
-    DEFECT_REOPEN_RATE("kpi135", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
-			"Closed Date", "Reopen Date", "Time taken to reopen")),
+    INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
-    INVALID("INVALID_KPI", Arrays.asList("Invalid"));
+    FIRST_TIME_PASS_RATE_ITERATION("kpi135", Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority"));
+    DEFECT_REOPEN_RATE("kpi135", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
+			"Closed Date", "Reopen Date", "Time taken to reopen"));
 
     // @formatter:on
 

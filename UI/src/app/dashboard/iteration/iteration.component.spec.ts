@@ -2028,7 +2028,7 @@ describe('IterationComponent', () => {
 
     xit('Scrum with filter applied', (done) => {
         const type = 'Scrum';
-        service.setSelectedType(type);
+        service.selectedtype=type;
         // component.selectedtype = 'Scrum';
         console.log('Selected Type ====> ', component.selectedtype);
         service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
@@ -2098,6 +2098,7 @@ describe('IterationComponent', () => {
         component.selectedtype = 'Scrum';
         const spygroupJiraKpi = spyOn(component, 'groupJiraKpi');
         const spycalcBusinessDays = spyOn(component, 'calcBusinessDays');
+        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
         component.receiveSharedData(filterData);
         expect(spycalcBusinessDays).toHaveBeenCalled();
         expect(spygroupJiraKpi).toHaveBeenCalled();
@@ -2336,16 +2337,6 @@ describe('IterationComponent', () => {
         fixture.detectChanges();
         expect(spy).toHaveBeenCalledWith(sharedObject);
         expect(component.noTabAccess).toBeFalse();
-    });
-
-    it('should process kpi config data on onTypeRefresh', () => {
-        spyOn(service, 'getSelectedType');
-        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
-        const spy = spyOn(component, 'processKpiConfigData');
-        service.onTypeRefresh.emit('Scrum');
-        fixture.detectChanges();
-        expect(component.configGlobalData.length).toEqual(1);
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should set the colorObj', () => {
@@ -2611,4 +2602,34 @@ describe('IterationComponent', () => {
         ];
         expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
     });
+
+    it('should evalvate the aggregated expression',()=>{
+        let aggregatedArr = [
+            {
+                "label": "First Time Pass Stories",
+                "value": "8.00",
+                "value1": null,
+                "modalValues": null
+            },
+            {
+                "label": "Total Stories",
+                "value": "9.00",
+                "modalValues": [],
+                "value1": null
+            },
+            {
+                "label": "First Time Pass Rate %",
+                "value": 88.89,
+                "expressions": [
+                    "First Time Pass Stories",
+                    "Total Stories",
+                    "percentage"
+                ],
+                "value1": null,
+                "modalValues": null
+            }
+        ];
+        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        expect(aggregatedArr[2].value).toEqual(88.89);
+    })
 });
