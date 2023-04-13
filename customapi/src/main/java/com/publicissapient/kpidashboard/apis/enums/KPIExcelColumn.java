@@ -181,8 +181,10 @@ public enum KPIExcelColumn {
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
-    FIRST_TIME_PASS_RATE_ITERATION("kpi135", Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority"));
-    DEFECT_REOPEN_RATE("kpi135", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
+			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
+
+	DEFECT_REOPEN_RATE("kpi136", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
 			"Closed Date", "Reopen Date", "Time taken to reopen"));
 
     // @formatter:on

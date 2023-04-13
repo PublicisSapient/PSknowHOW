@@ -193,8 +193,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
 			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
 		double averageTimeToReopen = totalDuration.get(0) > 0 && modalValues.size() > 0
-				? totalDuration.get(0) / modalValues.size()
+				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
+
 		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, jiraIssueList.size());
 		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_TOTAL_DEFECTS)
 				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(jiraIssueList.size())).build();
@@ -271,32 +272,25 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<String>> mapOfFiltersForHistory = new LinkedHashMap<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
 		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
 		Map<String, List<String>> closedStatusListBasicConfigMap = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			Map<String, Object> mapOfProjectFiltersNotin = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<String> defectTypeList = new ArrayList<>(fieldMapping.getJiradefecttype());
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
-			List<String> closedStatusList = (List<String>) CollectionUtils
-					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
-			mapOfProjectFiltersNotin.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(closedStatusList));
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			uniqueProjectMapNotIn.put(basicProjectConfigId.toString(), mapOfProjectFiltersNotin);
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
-				uniqueProjectMap, uniqueProjectMapNotIn);
+				uniqueProjectMap);
 		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssueList);
 
 		List<String> notClosedJiraIssueNumbers = jiraIssueList.stream().map(JiraIssue::getNumber)

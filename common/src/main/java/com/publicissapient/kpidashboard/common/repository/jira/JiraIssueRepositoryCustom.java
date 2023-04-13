@@ -243,5 +243,5 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list of jira issues
 	 */
 	List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters, Map<String,
-			Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+			Map<String, Object>> uniqueProjectMap);
 }

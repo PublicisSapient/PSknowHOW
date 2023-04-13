@@ -79,7 +79,7 @@ public class DefectReopenRateServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi135");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi136");
 		kpiRequest.setLabel("PROJECT");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -96,7 +96,7 @@ public class DefectReopenRateServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		Mockito.doReturn(totalJiraIssueList).when(jiraIssueRepository).findIssuesByFilterAndProjectMapFilter(anyMap(),
-				anyMap(), anyMap());
+				anyMap());
 		Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository)
 				.findByFilterAndFromStatusMap(anyMap(), anyMap());
 		try {
