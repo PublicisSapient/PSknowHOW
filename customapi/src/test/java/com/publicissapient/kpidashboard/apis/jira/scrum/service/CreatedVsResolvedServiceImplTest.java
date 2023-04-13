@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -88,6 +89,8 @@ public class CreatedVsResolvedServiceImplTest {
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -188,6 +191,8 @@ public class CreatedVsResolvedServiceImplTest {
 		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 
 		Map<String, Object> createdVsResolvedListMap = createdVsResolvedServiceImpl.fetchKPIDataFromDb(leafNodeList,
@@ -222,6 +227,8 @@ public class CreatedVsResolvedServiceImplTest {
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
 		when(jiraIssueRepository.findLinkedDefects(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
 				.thenReturn(new ArrayList<>());
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
