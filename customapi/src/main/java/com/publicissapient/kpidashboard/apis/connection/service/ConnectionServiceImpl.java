@@ -640,6 +640,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String typeName = connectionDTO.getType();
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
+			connectionDTO.setPassword("");
+			connectionDTO.setPatOAuthToken("");
+			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:

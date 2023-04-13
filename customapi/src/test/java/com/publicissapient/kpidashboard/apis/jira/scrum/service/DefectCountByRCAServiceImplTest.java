@@ -60,6 +60,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,6 +69,8 @@ public class DefectCountByRCAServiceImplTest {
     private KpiRequest kpiRequest;
     private SprintDetails sprintDetails;
     private List<JiraIssue> storyList = new ArrayList<>();
+
+    private List<JiraIssue> bugList = new ArrayList<>();
     private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
     private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
@@ -110,6 +113,7 @@ public class DefectCountByRCAServiceImplTest {
                 .map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
         JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
         storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
+        bugList = jiraIssueDataFactory.getBugs();
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
                 .newInstance("/json/default/scrum_project_field_mappings.json");
         FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
@@ -128,6 +132,7 @@ public class DefectCountByRCAServiceImplTest {
             when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
             when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
             when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+            when(jiraIssueRepository.findLinkedDefects(anyMap(), any() , anyMap())).thenReturn(bugList);
             KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
             assertNotNull(kpiElement);

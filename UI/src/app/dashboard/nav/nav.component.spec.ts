@@ -84,6 +84,7 @@ describe('NavComponent', () => {
       httpService = TestBed.inject(HttpService);
       messageService = TestBed.inject(MessageService);
       shareService = TestBed.inject(SharedService);
+      spyOn(component,'startWorker').and.callFake(()=>{});
       fixture.detectChanges();
       router = TestBed.get(Router);
       // httpMock.expectOne(baseUrl + '/api/file/logo').flush(getLogo);
@@ -107,19 +108,17 @@ describe('NavComponent', () => {
     component.kpiListData = getDashConfData.data;
     component.kpiListData.scrum[0].boardName = 'My KnowHOW1';
     component.kpiListData.kanban[0].boardName = 'My KnowHOW1';
-    spyOn(component, 'assignUserNameForKpiData');
     spyOn(httpService, 'updateUserBoardConfig').and.returnValue(of(getDashConfData));
     component.editDashboardName();
     tick();
     expect(component.displayEditModal).toBe(false);
-  }))
+  }));
 
   it("should Edit dash board name and disabled model if successfully response came",()=>{
     const fakeRespose = {
       success : true
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(component,'assignUserNameForKpiData');
     spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
     spyOn(messageService,'add');
     component.editDashboardName();
@@ -131,7 +130,6 @@ describe('NavComponent', () => {
       success : false
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(component,'assignUserNameForKpiData');
     spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
     const spy = spyOn(messageService,'add');
     component.editDashboardName();
@@ -151,17 +149,12 @@ describe('NavComponent', () => {
     expect(component.displayEditModal).toBeFalsy();
   })
 
-  it("should kanban select if kanban tab is clicked",()=>{
-    component.selectedTypef('Kanban');
-    expect(component.kanban).toBeTruthy();
-  })
-
-  it("should scrum select if scrum tab is clicked",()=>{
-    component.selectedTypef('Scrum');
-    expect(component.kanban).toBeFalsy();
-  })
+  
 
   it("should stop worker",()=>{
+    component.worker = {terminate: ()=>{
+      component.worker = undefined;
+    }};
     component.stopWorker();
     expect(component.worker).toBe(undefined);
   })

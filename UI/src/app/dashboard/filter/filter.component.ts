@@ -16,9 +16,8 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ElementRef, ViewChild,HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild,HostListener, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -37,64 +36,54 @@ import { first } from 'rxjs/operators';
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.css'],
 })
-export class FilterComponent implements OnInit {
-  headerFixed = <boolean>false;
-  scrollOffset = <number>150;
-  isSuperAdmin = false;
-  id = '';
-  name = '';
-  masterData = <any>{};
-  filterData = <any>[];
-  shareDataObject = <any>{};
-  selectedFilterCount = 0;
-  loader = <any>{};
-  getData = <any>[];
-  filterRequestData = {};
-  filterkeys = <any>[];
-  selectedFilterData = <any>{};
-  selectedTab;
-  downloadJson = <any>{};
-  disableDownloadBtn = <boolean>false;
-  subscriptions: any[] = [];
-  filterKpiRequest = <any>'';
-  kanban = false;
-  people$ = <any>[];
-  filterType = 'Default';
-  currentSelectionLabel = '';
-  maxDate: Date;
-  enginneringMaturityErrorMessage = '';
-  showIndicator = false;
-  toggleDropdown = false;
-  kpiListData: any = {};
-  kpiList: Array<object> = [];
-  showKpisList: Array<object> = [];
-  kpiForm: UntypedFormGroup;
-  activeSprintList: any = [];
-  currentSelectedSprintId: any;
-  noAccessMsg = false;
-
-  filterForm: UntypedFormGroup;
-  toggleFilterDropdown = false;
-  selectedFilterArray: Array<any> = [];
-  faRotateRight: faRotateRight;
-  filterApplyData: object = {};
-  colorObj: object = {};
-  tempParentArray: Array<any> = [];
-  selectedNodes: object = {};
-  selectedNodeLevel = 0;
-  hierarchyLevels = [];
-  trendLineValueList: any = [];
+export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('selector') ngselect: NgSelectComponent;
-  toggleDateDropdown = false;
-  filteredSprints: Array<object> = [];
-  showDropdown: object = {};
-  selectedDateFilter = '';
-  beginningDate;
-
   @ViewChild('toggleButton') toggleButton: ElementRef;
   @ViewChild('drpmenu') drpmenu: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
+
+  isSuperAdmin = false;
+  masterData: any = {};
+  filterData: any = [];
+  shareDataObject: any = {};
+  selectedFilterCount = 0;
+  getData: any = [];
+  filterRequestData = {};
+  filterkeys: any = [];
+  selectedFilterData: any = {};
+  selectedTab;
+  disableDownloadBtn = false;
+  subscriptions: any[] = [];
+  filterKpiRequest: any = '';
+  kanban = false;
+  filterType = 'Default';
+  maxDate = new Date(); // setting max date user can select in calendar
+  showIndicator = false;
+  toggleDropdown = false;
+  kpiListData: any = {};
+  kpiList = [];
+  showKpisList = [];
+  kpiForm: UntypedFormGroup;
+  activeSprintList: any = [];
+  currentSelectedSprintId: any;
+  noAccessMsg = false;
+  filterForm: UntypedFormGroup;
+  toggleFilterDropdown = false;
+  selectedFilterArray: Array<any> = [];
+  faRotateRight: faRotateRight;
+  filterApplyData = {};
+  colorObj = {};
+  tempParentArray: Array<any> = [];
+  selectedNodes = {};
+  selectedNodeLevel = 0;
+  hierarchyLevels = [];
+  trendLineValueList: any = [];
+  toggleDateDropdown = false;
+  filteredSprints = [];
+  showDropdown = {};
+  selectedDateFilter = '';
+  beginningDate;
   selectedProjectLastSyncDate: any;
   processorsTracelogs = [];
   processorName = 'jira';
@@ -102,213 +91,134 @@ export class FilterComponent implements OnInit {
   dateRangeFilter: any;
   selectedDayType = 'Weeks';
   selectedDays: any;
-  previousType: boolean; // to check if Scrum/Kanban selection has changed
+  previousType = false; // to check if Scrum/Kanban selection has changed
   takeFiltersFromPreviousTab: boolean; // to check if previous tab was following the same filter format
-  additionalFiltersArr: Array<object> = [];
-  additionalFiltersDdn: object = {};
-  toggleDropdownObj: object = {};
-  hierarchies: object = {};
-  filteredAddFilters: object = {};
-  initFlag = false;
+  additionalFiltersArr = [];
+  additionalFiltersDdn = {};
+  toggleDropdownObj = {};
+  hierarchies;
+  filteredAddFilters = {};
+  initFlag = true;
   showChart = true;
   iterationConfigData = {};
   kpisNewOrder = [];
   isTooltip = false;
-  projectIndex: number = 0;
+  projectIndex = 0;
   notificationList = [];
-  items: MenuItem[];
+  items: MenuItem[]  = [
+    {
+      label: 'Help',
+      icon: 'fa fa-info-circle',
+      command: () => {
+        this.service.setSideNav(false);
+        this.router.navigate(['/dashboard/Help']);
+      },
+    },
+    {
+      label: 'Logout',
+      icon: 'fas fa-sign-out-alt',
+      command: () => {
+        this.logout();
+      },
+    },
+  ];
   username: string;
   isGuest = false;
   logoImage: any;
-  requestCountMoreThanZero : boolean = false;
+  totalRequestCount = 0;
   selectedProjectData ={};
+  allowMultipleSelection = true;
+  defaultFilterSelection = true;
+
   constructor(
     private service: SharedService,
     private httpService: HttpService,
-    private excelService: ExcelService,
-    private elemRef: ElementRef,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
     private helperService: HelperService,
     private aesEncryption: TextEncryptionService,
-  ) {
-    // this.service.setSelectedType('Scrum');
+  ) { }
+
+  ngOnInit() {
+
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    this.service.setSelectedDateFilter(this.selectedDayType);
+    this.service.setShowTableView(this.showChart);
+    this.getNotification();
+    this.initializeFilterForm();
+    this.toggleFilter();
+    this.initializeUserInfo();
 
     this.subscriptions.push(
-      this.service.onTabRefresh.subscribe((selectedTab) => {
-        this.selectedTab = selectedTab;
-        if (this.selectedTab?.toLowerCase() == 'iteration') {
+      this.service.onTypeOrTabRefresh.subscribe(data => {
+        this.selectedTab = data.selectedTab;
+        if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
-          // this.service.setSelectedType('Scrum'); // Going in infinite loop
         }
         this.projectIndex = 0;
-        const type = this.service.getSelectedType();
-        if (type === 'Scrum') {
-          this.kanban = false;
-        } else {
-          this.kanban = true;
-        }
-        this.selectedType(type);
+        this.selectedType(data.selectedType);
       }),
-    );
 
-     // added as scrum/kanban moved into nav component
-    this.service.onTypeRefresh.subscribe(type=>{
-      if (type === 'Scrum') {
-        this.kanban = false;
-      } else {
-        this.kanban = true;
-      }
-      this.selectedType(type);
-    })
-    
-    this.subscriptions.push(
       this.service.mapColorToProjectObs.subscribe((x) => {
         if (Object.keys(x).length > 0) {
           this.colorObj = x;
         }
       }),
+
+      this.service.globalDashConfigData.subscribe(data => {
+        this.kpiListData = data;
+      }),
+
+      this.service.passEventToNav.subscribe(() => {
+        this.getNotification();
+      }),
+
+      this.service.iterationCongifData.subscribe((iterationDetails) => {
+        this.iterationConfigData = iterationDetails;
+      }),
+
+      this.service.kpiListNewOrder.subscribe((kpiListNewOrder) => {
+        this.kpisNewOrder = kpiListNewOrder;
+      })
     );
+
     this.httpService.getTooltipData().subscribe((filterData) => {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
-        this.filterForm
-          ?.get('date')
-          ?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       }
     });
-    this.getNotification();
-     /*subscribe logo image from service*/
+
      this.service.getLogoImage().subscribe((logoImage) => {
       this.getLogoImage();
     });
-
   }
 
-  ngOnInit() {
-    this.service.setSelectedDateFilter(this.selectedDayType);
+  initializeFilterForm(){
     this.filterForm = new UntypedFormGroup({
       selectedTrendValue: new UntypedFormControl(),
       date: new UntypedFormControl(''),
       selectedLevel: new UntypedFormControl(),
-      selectedProjectValue: new UntypedFormControl(),
       selectedSprintValue: new UntypedFormControl(),
     });
+  }
 
-    if (localStorage.getItem('authorities')) {
-      this.getHierarchyLevels();
-    }
-    this.previousType = false;
-    this.initFlag = true;
+  initializeUserInfo(){
     if (this.getAuthorizationService.checkIfSuperUser()) {
-      // logged in as SuperAdmin
       this.isSuperAdmin = true;
     }
-    // setting max date user can select in calendar
-    this.maxDate = new Date();
-    this.getKpiOrderedList();
-    this.resetFilterApplyObj();
-
-    // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
-    this.service.getClickedItem().subscribe((target) => {
-      if (
-        target &&
-        target !== this.toggleButton?.nativeElement &&
-        target?.closest('.kpi-dropdown') !== this.drpmenu?.nativeElement
-      ) {
-        this.toggleDropdown = false;
-      }
-      if (Object.keys(this.toggleDropdownObj)?.length > 0) {
-        for (const key in this.toggleDropdownObj) {
-          const btn = document.getElementById(key + 'Btn');
-          const dropdown = document.getElementById(key + 'DDn');
-          if (
-            target &&
-            target != btn &&
-            target?.closest('.add-filters-dropdown') !== dropdown
-          ) {
-            this.toggleDropdownObj[key] = false;
-          }
-        }
-      }
-      if (
-        target &&
-        target != this.dateToggleButton?.nativeElement &&
-        target?.closest('.date-filter-dropdown') !==
-          this.dateDrpmenu?.nativeElement
-      ) {
-        this.toggleDateDropdown = false;
-      }
-    });
-
-    const self = this;
-    this.helperService.passMaturityToFilter.subscribe((maturityObj) => {
-      if (this.selectedFilterArray.length) {
-        this.selectedFilterArray.forEach((element) => {
-          element.grossMaturity =
-            'Maturity Score : ' +
-            (maturityObj[element?.nodeName]
-              ? parseFloat(maturityObj[element?.nodeName] + '').toFixed(2)
-              : 'NA');
-        });
-      } else if (self.trendLineValueList.length) {
-        // setTimeout(() => {
-        self.trendLineValueList[0]['grossMaturity'] =
-          'Maturity Score : ' +
-          (maturityObj[self?.trendLineValueList[0]?.nodeName]
-            ? parseFloat(
-                maturityObj[self?.trendLineValueList[0]?.nodeName] + '',
-              ).toFixed(2)
-            : 'NA');
-        // }, 1000)
-      }
-    });
-    this.service.setShowTableView(this.showChart);
-    this.service.iterationCongifData.subscribe((iterationDetails) => {
-      this.iterationConfigData = iterationDetails;
-    });
-
-    this.service.kpiListNewOrder.subscribe((kpiListNewOrder) => {
-      this.kpisNewOrder = kpiListNewOrder;
-    });
-    this.subscriptions.push(
-      this.service.passEventToNav.subscribe(() => {
-        this.getNotification();
-      }),
-    );
-
     this.username = localStorage.getItem('user_name');
+
     let authoritiesArr;
     if (localStorage.getItem('authorities')) {
-      authoritiesArr = this.aesEncryption.convertText(
-        localStorage.getItem('authorities'),
-        'decrypt',
-      );
+      authoritiesArr = this.aesEncryption.convertText(localStorage.getItem('authorities'),'decrypt');
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
     }
-    this.items = [
-      {
-        label: 'Help',
-        icon: 'fa fa-info-circle',
-        command: () => {
-          this.service.setSideNav(false);
-          this.router.navigate(['/dashboard/Help']);
-        },
-      },
-      {
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
-      },
-    ];
     if (!this.isGuest) {
       this.items.unshift({
         label: 'Settings',
@@ -321,46 +231,50 @@ export class FilterComponent implements OnInit {
     }
   }
 
-   // for making the header sticky on scroll
-   @HostListener('window:scroll', [])
-   onWindowScroll() {
-     if (
-       this.router.url.indexOf('/Config/') === -1 &&
-       this.router.url !== '/dashboard/Maturity' &&
-       this.router.url !== '/dashboard/EngineeringMaturity'
-     ) {
-       this.headerFixed =
-         (window.pageYOffset ||
-           document.documentElement.scrollTop ||
-           document.body.scrollTop ||
-           0) > this.scrollOffset;
-     } else {
-       this.headerFixed = false;
-     }
-   }
-
-  /**create dynamic hierarchy levels for filter dropdown */
-  getHierarchyLevels() {
-    this.httpService.getAllHierarchyLevels().subscribe((res) => {
-      if (res.data) {
-        this.hierarchies = res.data;
-        localStorage.setItem(
-          'completeHierarchyData',
-          JSON.stringify(this.hierarchies),
-        );
-        this.setLevels();
-        this.getFilterDataOnLoad();
+  toggleFilter(){
+    // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
+    this.service.getClickedItem().subscribe((target) => {
+      if (target && target !== this.toggleButton?.nativeElement && target?.closest('.kpi-dropdown') !== this.drpmenu?.nativeElement) {
+        this.toggleDropdown = false;
+      }
+      if (Object.keys(this.toggleDropdownObj)?.length > 0) {
+        for (const key in this.toggleDropdownObj) {
+          const btn = document.getElementById(key + 'Btn');
+          const dropdown = document.getElementById(key + 'DDn');
+          if (target && target !== btn && target?.closest('.add-filters-dropdown') !== dropdown) {
+            this.toggleDropdownObj[key] = false;
+          }
+        }
+      }
+      if (target && target !== this.dateToggleButton?.nativeElement && target?.closest('.date-filter-dropdown') !== this.dateDrpmenu?.nativeElement) {
+        this.toggleDateDropdown = false;
       }
     });
+  }
+
+
+  /**create dynamic hierarchy levels for filter dropdown */
+  setHierarchyLevels() {
+    if(!this.hierarchies){
+      this.httpService.getAllHierarchyLevels().subscribe((res) => {
+        if (res.data) {
+          this.hierarchies = res.data;
+          localStorage.setItem('completeHierarchyData',JSON.stringify(this.hierarchies));
+          this.setLevels();
+          this.getFilterDataOnLoad();
+        }
+      });
+    }else{
+      this.setLevels();
+      this.getFilterDataOnLoad();
+    }
   }
 
   setLevels() {
     this.hierarchyLevels = [];
     this.additionalFiltersArr = [];
     const board = this.kanban ? 'kanban' : 'scrum';
-    const projectLevel = this.hierarchies[board]?.filter(
-      (x) => x.hierarchyLevelId == 'project',
-    )[0]?.level;
+    const projectLevel = this.hierarchies[board]?.filter((x) => x.hierarchyLevelId == 'project')[0]?.level;
     for (let i = 0; i < this.hierarchies[board]?.length; i++) {
       if (this.hierarchies[board][i]?.level <= projectLevel) {
         this.hierarchyLevels.push(this.hierarchies[board][i]);
@@ -372,10 +286,16 @@ export class FilterComponent implements OnInit {
   }
 
   selectedType(type) {
-    this.resetFilterApplyObj();
     this.selectedFilterArray = [];
     this.tempParentArray = [];
-    if (type === 'Kanban') {
+
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
+      this.allowMultipleSelection = false;
+    }else{
+      this.allowMultipleSelection = true;
+    }
+
+    if (type.toLowerCase() === 'kanban') {
       this.kanban = true;
     } else {
       this.kanban = false;
@@ -385,28 +305,16 @@ export class FilterComponent implements OnInit {
       this.filterForm?.reset();
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
     }
-    this.setLevels();
-    this.getFilterDataOnLoad();
-    this.previousType = this.kanban;
-    // this.service.setSelectedType(type); // Going in infinite loop
 
     const data = {
-      url:
-        this.router.url +
-        '/' +
-        (this.service.getSelectedType()
-          ? this.service.getSelectedType()
-          : 'Scrum'),
+      url: this.router.url +'/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
       userRole: this.getAuthorizationService.getRole(),
       version: this.httpService.currentVersion,
     };
-    this.ga.setPageLoad(data);
-    // this.navigateToSelectedTab(); issue fixed as going on multiple routes just after login 
-    this.getKpiOrderedList();
-  }
 
-  selectFilterType(type) {
-    this.filterType = type;
+    this.setHierarchyLevels();
+    this.ga.setPageLoad(data);
+    this.getKpiOrderedList();
   }
 
   makeUniqueArrayList(arr) {
@@ -415,18 +323,11 @@ export class FilterComponent implements OnInit {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = [
-          uniqueArray[uniqueArray?.length - 1]['path'],
-        ];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = [
-          uniqueArray[uniqueArray?.length - 1]['parentId'],
-        ];
+        uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+        uniqueArray[uniqueArray?.length - 1]['parentId'] = [ uniqueArray[uniqueArray?.length - 1]['parentId']];
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [
-          ...uniqueArray[idx]?.parentId,
-          arr[i]?.parentId,
-        ];
+        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId,arr[i]?.parentId];
       }
     }
     return uniqueArray;
@@ -439,24 +340,13 @@ export class FilterComponent implements OnInit {
     this.selectedFilterData = {};
     this.selectedFilterCount = 0;
     this.selectedFilterData.kanban = this.kanban;
-    this.selectedFilterData['sprintIncluded'] =
-      this.selectedTab?.toLowerCase() == 'iteration'
-        ? ['CLOSED', 'ACTIVE']
-        : ['CLOSED'];
+    this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     const filterData = this.service.getFilterData();
-    if (
-      !Object.keys(filterData).length ||
-      this.previousType !== this.kanban ||
-      this.selectedTab?.toLowerCase() == 'iteration' ||
-      this.selectedTab?.toLowerCase() == 'backlog' ||
-      this.initFlag
-    ) {
-      this.filterKpiRequest = this.httpService
-        .getFilterData(this.selectedFilterData)
-        .subscribe((filterApiData) => {
-          this.processFilterData(filterApiData);
-          this.initFlag = false;
-        });
+    if (!Object.keys(filterData).length || this.previousType !== this.kanban) {
+      this.filterKpiRequest = this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+        this.processFilterData(filterApiData);
+        this.previousType = this.kanban;
+      });
     } else {
       this.processFilterData(filterData);
     }
@@ -472,64 +362,24 @@ export class FilterComponent implements OnInit {
       /** check if data for additional filters exists in filterData api, if yes create a formControl for the same */
       this.additionalFiltersDdn = {};
       for (let i = 0; i < this.additionalFiltersArr?.length; i++) {
-        let arr = this.filterData.filter(
-          (x) =>
-            x.labelName.toLowerCase() ==
-            this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase(),
-        );
+        let arr = this.filterData.filter((x) => x.labelName.toLowerCase() === this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase());
         if (arr?.length > 0) {
           arr = this.sortAlphabetically(arr);
           arr = this.makeUniqueArrayList(arr);
-          this.additionalFiltersDdn[
-            this.additionalFiltersArr[i]['hierarchyLevelId']
-          ] = arr;
-          this.toggleDropdownObj[
-            this.additionalFiltersArr[i]['hierarchyLevelId']
-          ] = false;
+          this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
+          this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
-            this.createFormGroup(
-              this.additionalFiltersArr[i]['hierarchyLevelId'],
-              arr,
-            );
+            this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'],arr);
           } else {
-            this.createFormGroup(
-              this.additionalFiltersArr[i]['hierarchyLevelId'],
-            );
+            this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId']);
           }
         }
       }
 
-      if (
-        !this.filterForm?.get('selectedTrendValue')?.value ||
-        this.filterForm?.get('selectedTrendValue')?.value?.length == 0 ||
-        (this.takeFiltersFromPreviousTab == false &&
-          this.selectedTab?.toLowerCase() !== 'iteration' &&
-          this.selectedTab?.toLowerCase() !== 'backlog' &&
-          this.selectedTab?.toLowerCase() !== 'maturity')
-      ) {
-        this.checkDefaultFilterSelection();
-        if (
-          this.selectedTab?.toLowerCase() !== 'iteration' &&
-          this.selectedTab?.toLowerCase() !== 'backlog' &&
-          this.selectedTab?.toLowerCase() !== 'maturity'
-        ) {
-          this.takeFiltersFromPreviousTab = true;
-        }
-      } else if (
-        this.selectedTab?.toLowerCase() === 'iteration' ||
-        this.selectedTab?.toLowerCase() === 'backlog' ||
-        this.selectedTab?.toLowerCase() === 'maturity'
-      ) {
-        this.checkDefaultFilterSelection();
-        this.takeFiltersFromPreviousTab = false;
-      } else {
-        this.takeFiltersFromPreviousTab = true;
-      }
+      this.checkIfFilterAlreadySelected();
 
       if (this.kanban) {
-        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${
-          this.selectedDayType
-        }`;
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
       }
 
       if (Object.keys(this.filterData).length !== 0) {
@@ -558,33 +408,12 @@ export class FilterComponent implements OnInit {
     }
   }
 
-  renderDownloadExcel(response) {
-    if (
-      !!response &&
-      response.success &&
-      !!response.data &&
-      response.data.length > 0
-    ) {
-      // this.renderExcelData(response);
-    } else if (
-      !!response &&
-      response.success &&
-      !!response.data &&
-      response.data.length === 0
-    ) {
-      this.enginneringMaturityErrorMessage = 'No Data Available';
-    } else if (!!response && !response.success) {
-      this.enginneringMaturityErrorMessage = 'No Access!';
-    } else {
-      this.enginneringMaturityErrorMessage = 'Some error occurred!';
-    }
-  }
-
   getMasterData() {
     const masterData = this.service.getMasterData();
     if (!Object.keys(masterData).length) {
       this.httpService.getMasterData().subscribe((masterApiData) => {
         if (masterApiData[0] !== 'error') {
+          this.service.setMasterData(JSON.parse(JSON.stringify(masterApiData)));
           this.processMasterData(masterApiData);
         }
       });
@@ -595,14 +424,14 @@ export class FilterComponent implements OnInit {
 
   processMasterData(masterData) {
     this.masterData = masterData;
-    this.service.setMasterData(JSON.parse(JSON.stringify(masterData)));
-    if (
-      this.selectedTab?.toLowerCase() == 'iteration' ||
-      this.selectedTab?.toLowerCase() == 'backlog'
-    ) {
+    if (this.selectedTab?.toLowerCase() === 'iteration') {
       this.projectIndex = 0;
-      this.handleIterationFilters('project', 1);
-    } else {
+      if(this.defaultFilterSelection){
+        this.handleIterationFilters('project', 1);
+      }else{
+        this.handleIterationFilters('project', 2);
+      }
+    }else {
       this.applyChanges();
     }
   }
@@ -626,29 +455,31 @@ export class FilterComponent implements OnInit {
     this.filteredAddFilters = {};
     const selectedLevel = this.filterForm.get('selectedLevel')?.value;
     if (selectedLevel == 'project') {
-      const selectedProjects =
-        this.filterForm?.get('selectedTrendValue')?.value;
+      const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value;
       for (const key in this.additionalFiltersDdn) {
         this.filteredAddFilters[key] = [];
       }
-      for (let i = 0; i < selectedProjects?.length; i++) {
-        for (const key in this.additionalFiltersDdn) {
-          if (key == 'sprint') {
-            this.filteredAddFilters[key] = [
-              ...this.filteredAddFilters[key],
-              ...this.additionalFiltersDdn[key]?.filter(
-                (x) =>
-                  x['parentId']?.includes(selectedProjects[i]) &&
-                  x['sprintState']?.toLowerCase() == 'closed',
-              ),
-            ];
-          } else {
-            this.filteredAddFilters[key] = [
-              ...this.filteredAddFilters[key],
-              ...this.additionalFiltersDdn[key]?.filter((x) =>
-                x['path'][0]?.includes(selectedProjects[i]),
-              ),
-            ];
+      if(selectedProjects?.length > 0){
+
+        for (let i = 0; i < selectedProjects?.length; i++) {
+          for (const key in this.additionalFiltersDdn) {
+            if (key == 'sprint') {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter(
+                  (x) =>
+                    x['parentId']?.includes(selectedProjects[i]) &&
+                    x['sprintState']?.toLowerCase() == 'closed',
+                ),
+              ];
+            } else {
+              this.filteredAddFilters[key] = [
+                ...this.filteredAddFilters[key],
+                ...this.additionalFiltersDdn[key]?.filter((x) =>
+                  x['path'][0]?.includes(selectedProjects[i]),
+                ),
+              ];
+            }
           }
         }
       }
@@ -657,9 +488,7 @@ export class FilterComponent implements OnInit {
 
   onSelectedTrendValueChange($event) {
     this.additionalFiltersArr.forEach((additionalFilter) => {
-      this.filterForm.patchValue({
-        [additionalFilter['hierarchyLevelId']]: null,
-      });
+      this.filterForm.patchValue({[additionalFilter['hierarchyLevelId']]: null});
     });
     this.applyChanges();
   }
@@ -668,17 +497,20 @@ export class FilterComponent implements OnInit {
   applyChanges(applySource?, filterApplied = true): void {
     let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
-    let selectedLevel = this.hierarchyLevels?.filter(
-      (x) => x.hierarchyLevelId == selectedLevelId,
-    )[0];
-    if (selectedTrendIds?.length > 0) {
-      let selectedTrendValues = [];
-      for (let i = 0; i < selectedTrendIds?.length; i++) {
-        selectedTrendValues.push(
-          this.trendLineValueList?.filter(
-            (x) => x.nodeId == selectedTrendIds[i],
-          )[0],
-        );
+    let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId === selectedLevelId)[0];
+    if (selectedTrendIds !== '' || selectedTrendIds?.length > 0) {
+      let selectedTrendValues:any = [];
+
+      if (Array.isArray(selectedTrendIds)) {
+        for (let i = 0; i < selectedTrendIds?.length; i++) {
+          selectedTrendValues.push(
+            this.trendLineValueList?.filter(
+              (x) => x.nodeId === selectedTrendIds[i],
+            )[0],
+          );
+        }
+      }else{
+        selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
 
       this.service.setSelectedLevel(selectedLevel);
@@ -690,75 +522,32 @@ export class FilterComponent implements OnInit {
         this.closeAllDropdowns();
       }
       /**push selected upper level hierarchy in selectedFilterArray */
-      this.selectedFilterArray = [];
-      for (
-        let i = 0;
-        i < this.filterForm?.get('selectedTrendValue')?.value?.length;
-        i++
-      ) {
-        const selectedItem = {
-          ...this.trendLineValueList?.filter(
-            (x) =>
-              x.nodeId == this.filterForm?.get('selectedTrendValue')?.value[i],
-          )[0],
-        };
-        selectedItem['additionalFilters'] = [];
-        this.selectedFilterArray.push(selectedItem);
+      this.selectedFilterArray = [...selectedTrendValues];
+      for (let i = 0; i < this.selectedFilterArray?.length; i++) {
+        this.selectedFilterArray[i]['additionalFilters'] = [];
       }
-      this.selectedFilterArray = this.sortAlphabetically(
-        this.selectedFilterArray,
-      );
+      this.selectedFilterArray = this.sortAlphabetically(this.selectedFilterArray);
       /** add additional filters like sprints, date etc in selectedFilterArray */
-      const isAdditionalFilter = this.additionalFiltersArr?.filter(
-        (x) =>
-          x['hierarchyLevelId'] == applySource ||
-          this.filterForm.get(x['hierarchyLevelId']),
-      );
+      const isAdditionalFilter = this.additionalFiltersArr?.filter((x) => x['hierarchyLevelId'] == applySource || this.filterForm.get(x['hierarchyLevelId']));
       if (isAdditionalFilter?.length > 0) {
-        for (
-          let i = 0;
-          i < Object.keys(this.additionalFiltersDdn)?.length;
-          i++
-        ) {
-          const additionalFilterFormVal = this.filterForm?.get(
-            Object.keys(this.additionalFiltersDdn)[i],
-          )?.value;
+        for (let i = 0;i < Object.keys(this.additionalFiltersDdn)?.length;i++ ) {
+          const additionalFilterFormVal = this.filterForm?.get(Object.keys(this.additionalFiltersDdn)[i])?.value;
           if (additionalFilterFormVal) {
             if (
-              typeof additionalFilterFormVal === 'object' &&
-              Object.keys(additionalFilterFormVal)?.length > 0
-            ) {
-              const selectedAdditionalFilter = this.additionalFiltersDdn[
-                Object.keys(this.additionalFiltersDdn)[i]
-              ]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
+              typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
+              const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
               for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                const parentNodeIdx = this.selectedFilterArray?.findIndex(
-                  (x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0],
-                );
+                const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
                 if (parentNodeIdx >= 0) {
                   this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
-                    [
-                      ...this.selectedFilterArray[parentNodeIdx][
-                        'additionalFilters'
-                      ],
-                      selectedAdditionalFilter[j],
-                    ];
+                    [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'],selectedAdditionalFilter[j]];
                 }
               }
             } else {
-              const selectedAdditionalFilter = this.additionalFiltersDdn[
-                Object.keys(this.additionalFiltersDdn)[i]
-              ]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
-              const parentNodeIdx = this.selectedFilterArray?.findIndex((x) =>
-                selectedAdditionalFilter['path'][0]?.includes(x.nodeId),
-              );
+              const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
+              const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter['path'][0]?.includes(x.nodeId));
               if (parentNodeIdx >= 0) {
-                this.selectedFilterArray[parentNodeIdx]['additionalFilters'] = [
-                  ...this.selectedFilterArray[parentNodeIdx][
-                    'additionalFilters'
-                  ],
-                  selectedAdditionalFilter,
-                ];
+                this.selectedFilterArray[parentNodeIdx]['additionalFilters'] = [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'],selectedAdditionalFilter];
               }
             }
           }
@@ -766,16 +555,10 @@ export class FilterComponent implements OnInit {
       }
 
       if (!applySource) {
-        // for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-        //     this.selectedFilterArray[i]['additionalFilters'] = [];
-        // }
-        // this.resetAdditionalFiltersToInitialValue();
         this.filterAdditionalFilters();
       }
       if (applySource?.toLowerCase() == 'date' && this.kanban) {
-        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${
-          this.selectedDayType
-        }`;
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.toggleDateDropdown = false;
       }
@@ -787,139 +570,73 @@ export class FilterComponent implements OnInit {
           isAdditionalFilters = true;
         }
       }
-      // setTimeout(() => {
-
-      // }, 0);
-
-      this.service.select(
-        this.masterData,
-        this.filterData,
-        this.filterApplyData,
-        this.selectedTab,
-        isAdditionalFilters,
-        filterApplied,
-      );
-
-      this.limitSelectedTrendValueListChars();
-    }
-
-  }
-
-  limitSelectedTrendValueListChars() {
-    const selectedTrendNodeValueList: NodeList = document.querySelectorAll(
-      '.trend-line-value .ng-value .ng-value-label',
-    );
-    for (let i = 0; i < selectedTrendNodeValueList.length; i++) {
-      if (
-        (selectedTrendNodeValueList[i] as HTMLElement).innerText.length > 10
-      ) {
-        (selectedTrendNodeValueList[i] as HTMLElement).innerText =
-          (selectedTrendNodeValueList[i] as HTMLElement).innerText.slice(
-            0,
-            10,
-          ) + '...';
-      }
-    }
-  }
-
-  resetAdditionalFiltersToInitialValue() {
-    for (let i = 0; i < Object.keys(this.additionalFiltersDdn)?.length; i++) {
-      this.filterForm.get(Object.keys(this.additionalFiltersDdn)[i]).reset();
+      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, isAdditionalFilters, filterApplied,);
     }
   }
 
   createFilterApplyData() {
     this.resetFilterApplyObj();
-    let isAdditionalFilterFlag: boolean =
-      this.selectedFilterArray?.filter(
-        (item) => item?.additionalFilters?.length > 0,
-      )?.length > 0
-        ? true
-        : false;
+    let isAdditionalFilterFlag = this.selectedFilterArray?.filter((item) => item?.additionalFilters?.length > 0)?.length > 0? true : false;
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
       if (isAdditionalFilterFlag) {
         const temp = this.selectedFilterArray[i]?.additionalFilters;
         for (let j = 0; j < temp?.length; j++) {
           if (this.filterApplyData['level'] < temp[j].level) {
             this.filterApplyData['level'] = temp[j].level;
-            this.filterApplyData['selectedMap'][temp[j].labelName]?.push(
-              temp[j].nodeId,
-            );
+            this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'] = [];
             this.filterApplyData['ids'].push(temp[j].nodeId);
           } else if (this.filterApplyData['level'] == temp[j].level) {
-            this.filterApplyData['selectedMap'][temp[j].labelName]?.push(
-              temp[j].nodeId,
-            );
+            this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
-          if (
-            temp[j].labelName != 'sprint' ||
-            this.filterApplyData['selectedMap']['sprint']?.length == 0
-          ) {
-            this.filterApplyData['selectedMap']['project'].push(
-              this.selectedFilterArray[i]?.nodeId,
-            );
+          if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
+            this.filterApplyData['selectedMap']['project'].push(this.selectedFilterArray[i]?.nodeId);
           }
         }
       } else {
         this.filterApplyData['level'] = this.selectedFilterArray[i]?.level;
-        this.filterApplyData['selectedMap'][
-          this.selectedFilterArray[i]?.labelName
-        ].push(this.selectedFilterArray[i]?.nodeId);
+        this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
       }
     }
 
-    this.filterApplyData['sprintIncluded'] =
-      this.selectedTab?.toLowerCase() == 'iteration'
-        ? ['CLOSED', 'ACTIVE']
-        : ['CLOSED'];
+    this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration'? ['CLOSED', 'ACTIVE']: ['CLOSED'];
     const dateFilter = this.filterForm?.get('date')?.value;
     if (dateFilter != '' && this.kanban) {
       this.filterApplyData['ids'] = [];
-      this.filterApplyData['selectedMap']['date']?.push(
-        this.selectedDayType.toUpperCase(),
-      );
+      this.filterApplyData['selectedMap']['date']?.push(this.selectedDayType.toUpperCase());
       this.filterApplyData['ids'].push(this.filterForm?.get('date')?.value);
-      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${
-        this.selectedDayType
-      }`;
+      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
     }
   }
 
+  checkIfMaturityTabHidden(){
+    const maturityBoard = this.kpiListData['others']?.find((board) =>
+        board.boardName === 'Kpi Maturity');
+    return (maturityBoard && maturityBoard.kpis[0].shown)  ? false : true;
+  }
+
   navigateToSelectedTab() {
-    if (
-      this.selectedTab !== 'Config' &&
-      this.selectedTab !== 'Maturity' &&
-      Object.keys(this.kpiListData)?.length > 0
-    ) {
-      let boardDetails =
-        this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find(
-          (board) =>
-            board.boardName.toLowerCase() === this.selectedTab.toLowerCase(),
-        ) ||
-        this.kpiListData['others']?.find(
-          (board) =>
-            board.boardName.toLowerCase() === this.selectedTab.toLowerCase(),
-        );
-      if (
-        !boardDetails &&
-        this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0
-      ) {
+    if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
+      if (this.selectedTab === 'Maturity') {
+        if (!this.checkIfMaturityTabHidden()) {
+          this.router.navigateByUrl(
+            `/dashboard/Maturity`,
+          );
+          return;
+        } else {
+          this.selectedTab = 'iteration';
+          this.kanban = false;
+        }
+      }
+      let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find((board) =>board.boardName.toLowerCase() === this.selectedTab.toLowerCase() || board.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')) ||
+        this.kpiListData['others']?.find((board) => board.boardName.toLowerCase() === this.selectedTab.toLowerCase());
+      if (!boardDetails && this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0) {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.service.setSelectedTab(
-        boardDetails?.boardName,
-        boardDetails?.boardId,
-      );
-        this.router.navigateByUrl(
-          `/dashboard/${boardDetails?.boardName
-            .split(' ')
-            .join('-')
-            .toLowerCase()}/${boardDetails?.boardId}`,
-        );
+        this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
     }
   }
 
@@ -935,11 +652,8 @@ export class FilterComponent implements OnInit {
           if (response.success === true) {
             this.kpiListData = response.data;
             this.service.setDashConfigData(this.kpiListData);
-            this.navigateToSelectedTab();
-            this.service.changedMainDashboardValueSub.next(
-              this.kpiListData?.scrum[0].boardName,
-            );
             this.processKpiList();
+            this.navigateToSelectedTab();
           }
         },
         (error) => {
@@ -951,28 +665,21 @@ export class FilterComponent implements OnInit {
       );
     } else {
       this.processKpiList();
+      this.navigateToSelectedTab();
     }
   }
 
   processKpiList() {
     if (!this.isEmptyObject(this.kpiListData)) {
-      switch (this.selectedTab) {
-        case 'Iteration':
-          this.kpiList = this.kpiListData['scrum']
-            .filter((item) => item.boardName.toLowerCase() == 'iteration')[0]
-            ?.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
+      switch (this.selectedTab.toLowerCase()) {
+        case 'iteration':
+          this.kpiList = this.kpiListData['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis.filter((kpi) => kpi.kpiId !== 'kpi121');
           break;
-        case 'Backlog':
-          this.kpiList = this.kpiListData['others'].filter(
-            (item) => item.boardName.toLowerCase() == 'backlog',
-          )?.[0]?.kpis;
+        case 'backlog':
+          this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
         default:
-          this.kpiList = this.kpiListData[
-            this.kanban ? 'kanban' : 'scrum'
-          ].filter(
-            (item) => item.boardId === this.service.getSelectBoardId(),
-          )[0]?.kpis;
+          this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase() || item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' '))[0]?.kpis;
       }
       const kpiObj = {};
       let count = 0;
@@ -1031,19 +738,12 @@ export class FilterComponent implements OnInit {
     }
     const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
     for (let i = 0; i < kpiArray.length; i++) {
-      if (
-        kpiArray[i].boardName.toLowerCase() == this.selectedTab.toLowerCase()
-      ) {
+      if (kpiArray[i].boardName.toLowerCase() == this.selectedTab.toLowerCase()) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [
-            this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'].find(
-              (kpi) => kpi.kpiId === 'kpi121',
-            ),
-            ...this.kpiList,
-          ];
+          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.kpiListData[this.kanban ? 'kanban' 
+          : 'scrum'][i]['kpis'].find((kpi) => kpi.kpiId === 'kpi121'),...this.kpiList];
         } else {
-          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] =
-            this.kpiList;
+          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.kpiList;
         }
       }
     }
@@ -1075,17 +775,6 @@ export class FilterComponent implements OnInit {
   }
   /** get kpi ordered list ends */
 
-  sanitizeDate(date) {
-    return (
-      date.getFullYear() +
-      '/' +
-      (parseInt(date.getMonth()) + 1 < 10
-        ? '0' + (parseInt(date.getMonth()) + 1)
-        : parseInt(date.getMonth()) + 1) +
-      '/' +
-      (parseInt(date.getDate()) < 10 ? '0' + date.getDate() : date.getDate())
-    );
-  }
 
   setKPIOrder() {
     const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
@@ -1128,6 +817,9 @@ export class FilterComponent implements OnInit {
   ngOnDestroy() {
     this.filterApplyData = [];
     this.service.setEmptyFilter();
+    this.service.setSelectedLevel({});
+    this.service.setSelectedTrends([]);
+    this.service.setSelectedTab('');
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -1135,27 +827,19 @@ export class FilterComponent implements OnInit {
     return Object.keys(value).length === 0 && value.constructor === Object;
   }
   handleSelect(event) {
-    this.trendLineValueList = this.filterData?.filter(
-      (x) => x.labelName?.toLowerCase() == event?.toLowerCase(),
-    );
+    this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-    this.filterForm?.get('selectedTrendValue').setValue([]);
-    // }
+    this.filterForm?.get('selectedTrendValue').setValue('');
   }
 
   setMarker() {
     const colorObj = {};
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-      colorObj[this.selectedFilterArray[i].nodeId] =
-        i == 0
-          ? { nodeName: this.selectedFilterArray[i].nodeName, color: '#079FFF' }
-          : i == 1
+      colorObj[this.selectedFilterArray[i].nodeId] = i == 0
+          ? { nodeName: this.selectedFilterArray[i].nodeName, color: '#079FFF' } : i == 1
           ? { nodeName: this.selectedFilterArray[i].nodeName, color: '#cdba38' }
-          : {
-              nodeName: this.selectedFilterArray[i].nodeName,
-              color: '#00E6C3',
-            };
+          : { nodeName: this.selectedFilterArray[i].nodeName, color: '#00E6C3'};
     }
     this.service.setColorObj(colorObj);
   }
@@ -1163,22 +847,15 @@ export class FilterComponent implements OnInit {
   resetFilterApplyObj() {
     this.filterApplyData = {
       ids: [],
-      sprintIncluded:
-        this.selectedTab?.toLowerCase() != 'iteration'
-          ? ['CLOSED']
-          : ['CLOSED', 'ACTIVE'],
+      sprintIncluded: this.selectedTab?.toLowerCase() != 'iteration' ? ['CLOSED'] : ['CLOSED', 'ACTIVE'],
       selectedMap: {},
       level: 0,
     };
     for (let i = 0; i < this.hierarchyLevels?.length; i++) {
-      this.filterApplyData['selectedMap'][
-        this.hierarchyLevels[i]?.hierarchyLevelId
-      ] = [];
+      this.filterApplyData['selectedMap'][this.hierarchyLevels[i]?.hierarchyLevelId] = [];
     }
     for (let i = 0; i < this.additionalFiltersArr?.length; i++) {
-      this.filterApplyData['selectedMap'][
-        this.additionalFiltersArr[i]['hierarchyLevelId']
-      ] = [];
+      this.filterApplyData['selectedMap'][this.additionalFiltersArr[i]['hierarchyLevelId']] = [];
     }
     if (this.kanban) {
       this.filterApplyData['selectedMap']['date'] = [];
@@ -1186,7 +863,7 @@ export class FilterComponent implements OnInit {
   }
 
   sortAlphabetically(objArray) {
-    objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
+    objArray?.sort((a, b) => a.nodeName?.localeCompare(b.nodeName));
     return objArray;
   }
 
@@ -1194,76 +871,55 @@ export class FilterComponent implements OnInit {
     return this.filterForm?.controls['selectedLevel']?.value?.toLowerCase();
   }
 
-  checkDefaultFilterSelection() {
-    if (
-      this.selectedTab?.toLowerCase() != 'iteration' &&
-      this.selectedTab?.toLowerCase() != 'backlog'
-    ) {
-      // for (let i = this.hierarchyLevels?.length - 1; i >= 0; i--) { 
-        for (let i = 0; i < this.hierarchyLevels?.length; i++) {  
-      const arrList = this.filterData?.filter(
-          (x) =>
-            x.labelName?.toLowerCase() ==
-            this.hierarchyLevels[i]?.hierarchyLevelId?.toLowerCase(),
-        );
-        if (arrList?.length == 1) {
-          this.filterForm
-            ?.get('selectedLevel')
-            ?.setValue(this.hierarchyLevels[i]?.hierarchyLevelId);
-          this.trendLineValueList = [...arrList];
-          break;
+  setTrendValueFilter() {
+    if(this.allowMultipleSelection){
+      this.filterForm?.get('selectedTrendValue').setValue([this.trendLineValueList[0]['nodeId']]);
+    }else{
+      this.filterForm?.get('selectedTrendValue').setValue(this.trendLineValueList[0]['nodeId']);
+    }
+  }
+
+  checkIfFilterAlreadySelected() {
+    const selectedLevel = this.service.getSelectedLevel();
+    const selectedTrends = this.service.getSelectedTrends();
+
+    if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog') {
+        if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
+          this.checkDefaultFilterSelection();
         } else {
-          this.filterForm
-            ?.get('selectedLevel')
-            ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
-          this.trendLineValueList = [...arrList];
+          this.defaultFilterSelection = false;
+          this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
+          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+        }
+      } else {
+        if (this.previousType === this.kanban) {
+          this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
+          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+        } else {
+          this.checkDefaultFilterSelection();
         }
       }
-      if (this.trendLineValueList?.length == 0) {
-        this.filterForm
-          ?.get('selectedLevel')
-          ?.setValue(this.hierarchyLevels[4]?.hierarchyLevelId);
-        const arrList = this.filterData?.filter(
-          (x) =>
-            x.labelName?.toLowerCase() ==
-            this.hierarchyLevels[0]?.hierarchyLevelId?.toLowerCase(),
-        );
-        this.trendLineValueList = [...arrList];
-      }
-
-      if (this.trendLineValueList?.length > 0) {
-        this.trendLineValueList = this.sortAlphabetically(
-          this.trendLineValueList,
-        );
-        this.trendLineValueList = this.makeUniqueArrayList(
-          this.trendLineValueList,
-        );
-        this.filterForm
-          ?.get('selectedTrendValue')
-          .setValue([this.trendLineValueList[0]['nodeId']]);
-      } else {
-        this.filterForm?.get('selectedTrendValue').setValue([]);
-      }
     } else {
-      this.filterForm?.get('selectedLevel').setValue('project');
-      this.trendLineValueList = this.filterData?.filter(
-        (x) => x.labelName?.toLowerCase() == 'project',
-      );
+      this.checkDefaultFilterSelection();
+    }
+  }
 
-      if (this.trendLineValueList?.length > 0) {
-        this.trendLineValueList = this.sortAlphabetically(
-          this.trendLineValueList,
-        );
-        this.trendLineValueList = this.makeUniqueArrayList(
-          this.trendLineValueList,
-        );
-        this.filterForm?.get('selectedProjectValue').setValue(this.trendLineValueList[0]['nodeId']);
-          if(this.selectedTab?.toLowerCase() != 'backlog'){
-            this.getProcessorsTraceLogsForProject(this.trendLineValueList[0]?.basicProjectConfigId)
-          }
-      } else {
-        this.filterForm?.get('selectedProjectValue').setValue('');
-      }
+  checkDefaultFilterSelection() {
+    this.defaultFilterSelection = true;
+    this.filterForm?.get('selectedLevel').setValue('project');
+    this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === 'project');
+
+    if (this.trendLineValueList?.length > 0) {
+      this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.setTrendValueFilter();
+      this.service.setSelectedLevel(this.hierarchyLevels[this.hierarchyLevels.length - 1]);
+      this.service.setSelectedTrends([this.trendLineValueList[0]]);
+    } else {
+      this.filterForm?.get('selectedTrendValue').setValue('');
     }
   }
 
@@ -1276,8 +932,7 @@ export class FilterComponent implements OnInit {
   }
 
   isAddFilterDisabled(hierarchyLevelId) {
-    const isProject =
-      this.filterForm?.get('selectedLevel')?.value?.toLowerCase() == 'project';
+    const isProject = this.filterForm?.get('selectedLevel')?.value?.toLowerCase() == 'project';
     let isDisabled = false;
     let projectSelected = 0;
 
@@ -1285,23 +940,13 @@ export class FilterComponent implements OnInit {
       projectSelected = this.selectedFilterArray?.length;
     }
     if (hierarchyLevelId != 'sprint' && isProject) {
-      projectSelected = this.selectedFilterArray?.filter(
-        (selectedFilter) => selectedFilter?.labelName === 'project',
-      )?.length;
+      projectSelected = this.selectedFilterArray?.filter((selectedFilter) => selectedFilter?.labelName === 'project')?.length;
     }
 
     if (hierarchyLevelId == 'sprint') {
-      isDisabled =
-        !isProject ||
-        !this.filteredAddFilters[hierarchyLevelId] ||
-        this.filteredAddFilters[hierarchyLevelId]?.length == 0 ||
-        (isProject && projectSelected == 0);
+      isDisabled = !isProject || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0 || (isProject && projectSelected == 0);
     } else {
-      isDisabled =
-        !isProject ||
-        (isProject && projectSelected !== 1) ||
-        !this.filteredAddFilters[hierarchyLevelId] ||
-        this.filteredAddFilters[hierarchyLevelId]?.length == 0;
+      isDisabled = !isProject || (isProject && projectSelected !== 1) || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0;
     }
     return isDisabled;
   }
@@ -1310,49 +955,33 @@ export class FilterComponent implements OnInit {
     1: onload
     2: onchange */
   handleIterationFilters(level, type) {
-    if (this.filterForm?.get('selectedProjectValue')?.value != '') {
+    if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       let selectedSprint = {};
       let activeSprints = [];
       let closedSprints = [];
       this.service.setNoSprints(false);
-      if (level?.toLowerCase() == 'project') {
-        const selectedProject = this.filterForm?.get(
-          'selectedProjectValue',
-        )?.value;
+      if (level?.toLowerCase() === 'project') {
+        const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-        this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
+        if(this.selectedProjectData){
+          this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
+        }
         this.filteredAddFilters['sprint'] = [];
         if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
-          this.filteredAddFilters['sprint'] = [
-            ...this.additionalFiltersDdn['sprint']?.filter((x) =>
-              x['parentId']?.includes(selectedProject),
-            ),
-          ];
+          this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
         }
 
-        activeSprints = [
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['sprintState']?.toLowerCase() == 'active',
-          ),
-        ];
-        closedSprints = [
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['sprintState']?.toLowerCase() == 'closed',
-          ),
-        ];
+        activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
+        closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
 
         if (activeSprints?.length > 0) {
           selectedSprint = { ...activeSprints[0] };
         } else if (closedSprints?.length > 0) {
           selectedSprint = closedSprints[0];
           for (let i = 0; i < closedSprints?.length; i++) {
-            const sprintEndDateTS1 = new Date(
-              closedSprints[i]['sprintEndDate'],
-            ).getTime();
-            const sprintEndDateTS2 = new Date(
-              selectedSprint['sprintEndDate'],
-            ).getTime();
+            const sprintEndDateTS1 = new Date(closedSprints[i]['sprintEndDate']).getTime();
+            const sprintEndDateTS2 = new Date(selectedSprint['sprintEndDate']).getTime();
             if (sprintEndDateTS1 > sprintEndDateTS2) {
               selectedSprint = closedSprints[i];
             }
@@ -1361,40 +990,31 @@ export class FilterComponent implements OnInit {
           this.selectedFilterArray = [];
           this.service.setNoSprints(true);
         }
-        this.filterForm
-          .get('selectedSprintValue')
-          .setValue(selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(selectedSprint['nodeId']);
       }
+
       if (level?.toLowerCase() == 'sprint') {
         const val = this.filterForm.get('selectedSprintValue').value;
-        selectedSprint = {
-          ...this.filteredAddFilters['sprint']?.filter(
-            (x) => x['nodeId'] == val,
-          )[0],
-        };
+        selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
       }
+      if(this?.selectedProjectData){
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      }
+      this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (selectedSprint && Object.keys(selectedSprint)?.length > 0) {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(selectedSprint);
         this.createFilterApplyData();
-        this.service.select(
-          this.masterData,
-          this.filterData,
-          this.filterApplyData,
-          this.selectedTab,
-        );
+        this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
       } else {
-        if (type == 1) {
+        if (type === 1) {
           if (this.projectIndex < this.trendLineValueList?.length) {
-            this.filterForm
-              ?.get('selectedProjectValue')
-              ?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
+            this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
             this.handleIterationFilters('project', 1);
           } else {
             this.projectIndex = 0;
-            this.filterForm
-              ?.get('selectedProjectValue')
-              ?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+            this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
           }
         }
       }
@@ -1405,9 +1025,7 @@ export class FilterComponent implements OnInit {
     let dateString = 'N/A';
     const selectedSprint = this.filterForm?.get('selectedSprintValue')?.value;
     if (selectedSprint) {
-      const obj = this.filteredAddFilters['sprint']?.filter(
-        (x) => x['nodeId'] == selectedSprint,
-      )[0];
+      const obj = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == selectedSprint)[0];
 
       if (obj) {
         let d;
@@ -1416,11 +1034,7 @@ export class FilterComponent implements OnInit {
         } else {
           d = new Date(obj['sprintEndDate']);
         }
-        dateString = [
-          this.pad(d.getDate()),
-          this.pad(d.getMonth() + 1),
-          d.getFullYear(),
-        ].join('/');
+        dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
       }
     }
     return dateString;
@@ -1436,10 +1050,7 @@ export class FilterComponent implements OnInit {
 
   removeItem(hierarchyLevelId, nodeId) {
     const hierarchy = this.filterForm.get(hierarchyLevelId);
-    if (
-      typeof hierarchy?.value === 'object' &&
-      Object.keys(hierarchy?.value)?.length > 0
-    ) {
+    if (typeof hierarchy?.value === 'object' && Object.keys(hierarchy?.value)?.length > 0) {
       this.filterForm.get(hierarchyLevelId).get(nodeId).setValue(false);
     } else {
       this.filterForm.get(hierarchyLevelId).setValue('');
@@ -1449,20 +1060,16 @@ export class FilterComponent implements OnInit {
   }
 
   removeNode(nodeId: string) {
-    this.selectedFilterArray = this.selectedFilterArray.filter(
-      (node) => node.nodeId !== nodeId,
-    );
+    this.selectedFilterArray = this.selectedFilterArray.filter((node) => node.nodeId !== nodeId);
     const selectedNode = this.selectedFilterArray.map((node) => node.nodeId);
     this.filterForm.get('selectedTrendValue').setValue(selectedNode);
     this.applyChanges(null, false);
   }
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
-    this.httpService
-      .getProcessorsTraceLogsForProject(basicProjectConfigId)
-      .subscribe((response) => {
+    this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId).subscribe((response) => {
         if (response.success) {
-          if(this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
+          if(this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId){
             this.processorsTracelogs = response.data;
         }
           this.showExecutionDate();
@@ -1475,10 +1082,9 @@ export class FilterComponent implements OnInit {
         }
       });
   }
+
   findTraceLogForTool() {
-    return this.processorsTracelogs.find(
-      (ptl) => ptl['processorName'].toLowerCase() == this.processorName,
-    );
+    return this.processorsTracelogs.find((ptl) => ptl['processorName'].toLowerCase() == this.processorName);
   }
 
   showExecutionDate() {
@@ -1490,7 +1096,7 @@ export class FilterComponent implements OnInit {
 
   checkIfBtnDisabled(hierarchyLevelId) {
     let isDisabled = true;
-    if (hierarchyLevelId == 'sprint') {
+    if (hierarchyLevelId === 'sprint') {
       for (const item in this.filterForm?.get(hierarchyLevelId)?.value) {
         if (this.filterForm?.get(hierarchyLevelId)?.value[item]) {
           isDisabled = null;
@@ -1503,9 +1109,7 @@ export class FilterComponent implements OnInit {
   }
 
   getLevelName(id) {
-    const name = this.hierarchyLevels?.filter(
-      (x) => x.hierarchyLevelId == id,
-    )[0]?.hierarchyLevelName;
+    const name = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId == id)[0]?.hierarchyLevelName;
     return name;
   }
 
@@ -1520,15 +1124,12 @@ export class FilterComponent implements OnInit {
   }
 
   getNotification() {
-    this.httpService
-      .getAccessRequestsNotifications()
-      .subscribe((response: NotificationResponseDTO) => {
+    this.totalRequestCount  = 0 ;
+    this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
         if (response && response.success) {
           if (response.data?.length) {
             this.notificationList = [...response.data].map((obj) => {
-              if(obj.count > 0 ){
-                this.requestCountMoreThanZero = true;
-              }
+                this.totalRequestCount = this.totalRequestCount + obj.count;
               return {
                 label: obj.type + ' : ' + obj.count,
                 icon: '',
@@ -1561,8 +1162,6 @@ export class FilterComponent implements OnInit {
         }
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
-        this.service.setSelectedTab(null,null); // doing null bcoz it was landing on previous tab 
-
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1570,10 +1169,7 @@ export class FilterComponent implements OnInit {
 
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
-    if (
-      this.getAuthorizationService.checkIfSuperUser() ||
-      this.getAuthorizationService.checkIfProjectAdmin()
-    ) {
+    if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
       switch (type) {
         case 'Project Access Request':
           this.service.setSideNav(false);
@@ -1581,9 +1177,7 @@ export class FilterComponent implements OnInit {
           break;
         case 'User Access Request':
           this.service.setSideNav(false);
-          this.router.navigate([
-            '/dashboard/Config/Profile/GrantNewUserAuthRequests',
-          ]);
+          this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
           break;
         default:
       }
@@ -1594,10 +1188,7 @@ export class FilterComponent implements OnInit {
 
     /*Rendered the logo image */
     getLogoImage() {
-      this.httpService
-        .getUploadedImage()
-        .pipe(first())
-        .subscribe((data) => {
+      this.httpService.getUploadedImage().pipe(first()).subscribe((data) => {
           if (data['image']) {
             this.logoImage = 'data:image/png;base64,' + data['image'];
           } else {
@@ -1605,4 +1196,14 @@ export class FilterComponent implements OnInit {
           }
         });
     }
+
+  /** when user clicks on Back to dashboard or logo*/
+   navigateToDashboard(){
+    this.httpService.getShowHideKpi().subscribe(response =>{
+      this.service.setDashConfigData(response.data);
+      this.kpiListData = response.data;
+      this.getNotification();
+      this.navigateToSelectedTab();
+    });
+   }
 }

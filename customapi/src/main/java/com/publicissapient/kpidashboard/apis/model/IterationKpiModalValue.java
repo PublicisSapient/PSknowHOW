@@ -99,5 +99,14 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Dev Due Date")
 	private String devDueDate;
 	private String marker;
+	@JsonProperty("Assignee")
+	private String assignee;
+	@JsonProperty("First Time Pass")
+	private String firstTimePass;
+	@JsonProperty("Linked Defect")
+	private Map<String, String> linkedDefefect;
+	@JsonProperty("Defect Priority")
+	private Map<String, String> linkedDefefectPriority;
+
 
 }

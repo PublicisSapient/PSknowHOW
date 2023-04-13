@@ -66,7 +66,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-
+import { SkeletonModule } from 'primeng/skeleton';
 
 /******************************************************/
 
@@ -173,7 +173,8 @@ import { CommentsComponent } from './component/comments/comments.component';
         FontAwesomeModule,
         DragDropModule,
         OverlayPanelModule,
-        MenuModule
+        MenuModule,
+        SkeletonModule
     ],
     providers: [
         ExcelService,

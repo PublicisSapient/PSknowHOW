@@ -28,6 +28,8 @@ import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,4 +57,18 @@ public class BuildDeployFields {
 	@Min(value = 0, message = "The duration must be positive.")
 	@JsonProperty("duration")
 	private Long duration;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		BuildDeployFields that = (BuildDeployFields) o;
+		return jobName.equals(that.jobName) && number.equals(that.number);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(jobName, number);
+	}
+
 }

@@ -16,7 +16,7 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<div>
+<div *ngIf="!noKpis else noKpiTemplate">
   <div id="message"></div>
   <ng-container *ngIf="!noProjects else noProjectsTemplate">
     <ng-container *ngIf="!noSprints else noSprintsTemplate">
@@ -64,7 +64,8 @@
                                   (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
                                     convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
                                     <span
-                                      [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
+                                      [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                      || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                       *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                       {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                     </span>
@@ -163,6 +164,13 @@
     </div>
   </ng-template>
 </div>
+
+<ng-template #noKpiTemplate>
+  <div class="no-kpi-template">
+    <app-no-access [selectedTab]="'Iteration'" [userEnable]='enableByUser'></app-no-access>
+  </div>
+</ng-template>
+
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
     {{modalDetails['header']}}
@@ -197,7 +205,8 @@
 
               <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
-                  <a [href]="k.value" class="p-d-block text-blue" target="_blank">{{k.key}}</a>
+                  <a [href]="k.value" class="p-d-block text-blue" target="_blank" *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
+                  <ng-template #showText> {{k.value}}<br></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>

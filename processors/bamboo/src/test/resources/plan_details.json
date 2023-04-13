@@ -1,9 +1,5 @@
 {
   "expand": "plans",
-  "link": {
-    "href": "https://tools.publicis.sapient.com/bamboo/rest/api/latest/plan",
-    "rel": "self"
-  },
   "plans": {
     "size": 222,
     "expand": "plan",

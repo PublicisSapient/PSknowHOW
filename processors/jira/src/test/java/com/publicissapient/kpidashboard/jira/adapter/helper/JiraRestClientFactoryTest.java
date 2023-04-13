@@ -69,9 +69,9 @@ public class JiraRestClientFactoryTest {
     @Mock
     private AesEncryptionService aesEncryptionService;
 
-    private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-    private static final String AES_ENCRYPTED_PASSWORD = "DqxbAHmXRuo6o8/OJhSz0Q==";
-    private static final String USERNAME = "admin";
+    private static final String PLAIN_TEXT_PASSWORD = "TestPassword";
+    private static final String AES_ENCRYPTED_PASSWORD = "testEncryptedPassword";
+    private static final String USERNAME = "test";
 
 
     @BeforeEach
@@ -103,24 +103,24 @@ public class JiraRestClientFactoryTest {
 
     @Test
     public void cacheRestClient() throws Exception {
-        Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
+        Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://localhost:9090/");
         PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = new ResponseEntity<>("Success",HttpStatus.OK);
-        Mockito.when(restTemplate.exchange(new URI("http://10.123.45.678:9090/api/cache/clearCache/GenericCache"),
+        Mockito.when(restTemplate.exchange(new URI("http://localhost:9090/api/cache/clearCache/GenericCache"),
                 HttpMethod.GET, entity, String.class)).thenReturn(response);
         assertEquals(false, jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE));
     }
     @Test
     public void cacheRestClientResponseNull() throws Exception {
-        Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
+        Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://localhost:9090/");
         PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<?> entity = new HttpEntity<>(headers);
-        Mockito.when(restTemplate.exchange(new URI("http://10.123.45.678:9090/api/cache/clearCache/GenericCache"),
+        Mockito.when(restTemplate.exchange(new URI("http://localhost:9090/api/cache/clearCache/GenericCache"),
                 HttpMethod.GET, entity, String.class)).thenReturn(null);
         assertEquals(false, jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE));
     }
@@ -129,14 +129,14 @@ public class JiraRestClientFactoryTest {
         jiraInfo = JiraInfo.builder().build();
         jiraInfo.setUsername(USERNAME);
         jiraInfo.setPassword(AES_ENCRYPTED_PASSWORD);
-        jiraInfo.setJiraConfigBaseUrl("https://tools.publicis.sapient.com/jira/");
+        jiraInfo.setJiraConfigBaseUrl("https://www.abc.com//jira/");
     }
 
     private void prepareJiraInfoProxyURL(){
         jiraInfo = JiraInfo.builder().build();
         jiraInfo.setUsername(USERNAME);
         jiraInfo.setPassword(AES_ENCRYPTED_PASSWORD);
-        jiraInfo.setJiraConfigBaseUrl("https://tools.publicis.sapient.com/jira/");
+        jiraInfo.setJiraConfigBaseUrl("https://www.abc.com/jira/");
         jiraInfo.setJiraConfigProxyPort("8888");
         jiraInfo.setJiraConfigProxyUrl("https://user.proxyurl.com");
     }

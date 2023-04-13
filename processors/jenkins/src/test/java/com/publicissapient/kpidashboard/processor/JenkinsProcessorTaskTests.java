@@ -174,7 +174,7 @@ public class JenkinsProcessorTaskTests {
 		build.setNumber("1");
 		build.setBuildUrl("JOB1_1_URL");
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
-		build.setStartedBy("Akshat");
+		build.setStartedBy("TestUser");
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
 		task.execute(jenkinsProcessor);
@@ -367,7 +367,7 @@ public class JenkinsProcessorTaskTests {
 		build.setNumber(number);
 		build.setBuildUrl(url);
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
-		build.setStartedBy("Akshat");
+		build.setStartedBy("TestUser");
 		return build;
 	}
 

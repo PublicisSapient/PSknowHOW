@@ -86,7 +86,7 @@ public class BitBucketServerClientTest {
 		String serverResponse = getServerResponse("/bitbucket-server/stashresponse.json");
 		
 		BitbucketRepo repo = new BitbucketRepo();
-		repo.setRepoUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		repo.setRepoUrl("http://localhost:9999/scm/testproject/test.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
 		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
@@ -94,8 +94,8 @@ public class BitBucketServerClientTest {
 		projectBasicConfig.setSaveAssigneeDetails(true);
 		projectBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		connectionDetail.setBranch("release/core-r4.4");
-		connectionDetail.setPassword("020892BE903C15F566C09DAFEA800619");
-		connectionDetail.setUrl("http://localhost:9999/scm/testproject/comp-proj.git");
+		connectionDetail.setPassword("testPassword");
+		connectionDetail.setUrl("http://localhost:9999/scm/testproject/test.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
 		String restUri = new BitBucketServerURIBuilder(repo, config,connectionDetail).build();

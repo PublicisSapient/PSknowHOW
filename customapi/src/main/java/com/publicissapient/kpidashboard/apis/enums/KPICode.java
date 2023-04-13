@@ -341,14 +341,19 @@ public enum KPICode {
 	INVALID("INVALID_KPI", "Invalid"),
 
 	/**
-	 * Overall Completion Status
+	 * Planned Work Status
 	 */
-	OVERALL_COMPLETION_STATUS("kpi128", KPISource.JIRA.name()),
+	PLANNED_WORK_STATUS("kpi128", KPISource.JIRA.name()),
 
 	/**
 	 * Quality Status
 	 */
 	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
+
+	/**
+	 * Unplanned Work Status
+	 */
+	UNPLANNED_WORK_STATUS("kpi134", KPISource.JIRA.name()),
 
 	/**
 	 * Issues Without Story Link
@@ -358,7 +363,12 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi131", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name()),
+
+	/**
+	 * First time pass rate
+	 */
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name());
 
 	// @formatter:on
 

@@ -226,7 +226,6 @@ export class ConnectionListComponent implements OnInit {
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'offline', header: 'Is Offline?', class: 'small-text' },
         { field: 'apiEndPoint', header: 'API Endpoint', class: 'long-text' },
-        { field: 'patOAuthToken', header: 'PAT OAuth Token', class: 'long-text' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
         { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
@@ -656,7 +655,6 @@ export class ConnectionListComponent implements OnInit {
   }
 
   editConnection(connection) {
-    console.log('edit connection:',connection);
     this.connection = { ...connection };
     this.connectionDialog = true;
     this.isNewlyConfigAdded = false;
@@ -805,7 +803,7 @@ export class ConnectionListComponent implements OnInit {
           }
         });
       }
-    }      
+    }
     /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
         this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
@@ -845,7 +843,6 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
       }
     }
-    console.log(this.basicConnectionForm.controls['privateKey'].value, this.basicConnectionForm.controls['privateKey'].status);
     if(field === 'bearerToken') {
       if (event.checked) {
         this.basicConnectionForm.controls['patOAuthToken'].enable();
