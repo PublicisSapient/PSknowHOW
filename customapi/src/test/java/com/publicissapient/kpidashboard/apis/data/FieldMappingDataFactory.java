@@ -48,7 +48,7 @@ public class FieldMappingDataFactory {
 
 		FieldMappingDataFactory factory = new FieldMappingDataFactory();
 		factory.createObjectMapper();
-        factory.init(FILE_PATH_FIELD_MAPPING);
+        factory.init(filePath);
 		return factory;
 	}
 
