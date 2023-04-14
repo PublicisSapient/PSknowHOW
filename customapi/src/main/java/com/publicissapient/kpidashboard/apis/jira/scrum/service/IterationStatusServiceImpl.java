@@ -68,7 +68,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
  * This class fetches the daily closure on Iteration dashboard. Trend analysis
@@ -109,9 +108,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private JiraIssueRepository jiraIssueRepository;
 
 	@Autowired
-	private SprintRepository sprintRepository;
-
-	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Override
@@ -150,8 +146,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		if (null != leafNode) {
 			LOGGER.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 
 				Set<SprintIssue> compIssues = sprintDetails.getCompletedIssues();

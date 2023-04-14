@@ -25,6 +25,8 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -71,6 +73,10 @@ public class JiraServiceR {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
+	@Autowired
+	private SprintRepository sprintRepository;
+	private SprintDetails sprintDetails;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call
@@ -121,6 +127,8 @@ public class JiraServiceR {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
+
+				fetchSprintDetails(Arrays.stream(kpiRequest.getIds()).findFirst().orElse(null));
 
 				// set filter value to show on trend line. If sub-projects are
 				// in
@@ -285,6 +293,14 @@ public class JiraServiceR {
 			}
 		}
 		
+	}
+
+	public void fetchSprintDetails(String sprintId) {
+		sprintDetails = sprintRepository.findBySprintID(sprintId);
+	}
+
+	public SprintDetails getCurrentSprintDetails() {
+		return sprintDetails;
 	}
 
 }

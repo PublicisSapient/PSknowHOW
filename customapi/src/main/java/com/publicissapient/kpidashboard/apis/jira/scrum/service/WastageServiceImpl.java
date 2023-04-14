@@ -67,7 +67,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
@@ -90,9 +89,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -130,8 +126,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (null != leafNode) {
 			LOGGER.info("Wastage -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
