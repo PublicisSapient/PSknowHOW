@@ -24,11 +24,12 @@ import {
   HostListener,
   Output,
   Renderer2,
+  ViewChild,
 } from '@angular/core';
 import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,9 +41,12 @@ import { Router } from '@angular/router';
  Route the path from app-route and redirect to dashboard
  */
 export class DashboardComponent implements OnInit, AfterContentInit {
-  authorized = <boolean>true;
+  @ViewChild('header',{ static: true }) header;
+  authorized = true;
   isApply = false;
-  
+  headerStyle;
+  sideNavStyle;
+
   constructor(
     public cdRef: ChangeDetectorRef,
     public router: Router,
@@ -51,6 +55,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     private httpService: HttpService,
     private renderer: Renderer2,
   ) {
+    this.sideNavStyle ={toggled:this.isApply};
     this.renderer.listen('document', 'click', (e: Event) => {
       // setting document click event data to identify outside click for show/hide kpi filter
       this.service.setClickedItem(e?.target);
@@ -62,7 +67,18 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     // this.authorized = this.getAuth.checkAuth();
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
+      this.sideNavStyle ={toggled:this.isApply};
     });
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.setPageContentWrapperHeight();
+      }
+    });
+  }
+
+  setPageContentWrapperHeight(){
+    this.headerStyle={height: 'calc(100vh - '+this.header.offsetHeight+'px)',top:'calc('+this.header.offsetHeight+'px'+' - '+'0px)'};
   }
 
 
