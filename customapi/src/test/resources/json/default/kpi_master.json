@@ -3415,7 +3415,7 @@
   "kpiName": "Refinement Rejection Rate",
   "kpiUnit": "Number",
   "isDeleted": "False",
-  "defaultOrder": 3,
+  "defaultOrder": 4,
   "kpiCategory": "Backlog",
   "kpiSource": "Jira",
   "groupId": 2,
@@ -3428,10 +3428,10 @@
   "xAxisLabel": "Months",
   "yAxisLabel": "Count",
   "isPositiveTrend": false,
-  "kpiFilter": "multiSelectDropDown",
+  "kpiFilter": "",
   "showTrend": false,
   "aggregationCriteria": "sum",
-  "isAdditionalFilterSupport": true,
+  "isAdditionalFilterSupport": false,
   "calculateMaturity": false
 }
 ]

@@ -3633,7 +3633,7 @@ db.getCollection('kpi_master').insert(
 		"kpiName": "Refinement Rejection Rate",
 		"kpiUnit": "Number",
 		"isDeleted": "False",
-		"defaultOrder": 3,
+		"defaultOrder": 4,
 		"kpiCategory": "Backlog",
 		"kpiSource": "Jira",
 		"groupId": 2,
