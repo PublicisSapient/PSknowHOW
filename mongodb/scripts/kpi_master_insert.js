@@ -3656,10 +3656,10 @@ db.getCollection('kpi_master').insert(
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 1,
     "kpiCategory": "Kpi Maturity",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
   }
-]
+]);
