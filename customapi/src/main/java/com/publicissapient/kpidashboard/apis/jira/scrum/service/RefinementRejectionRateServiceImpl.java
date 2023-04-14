@@ -209,10 +209,10 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 				getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : weekAndTypeMap.entrySet()) {
 					String week = entry.getKey();
-					double ready = weekAndTypeMap.get(week).get(READY_FOR_REFINEMENT_ISSUE).size();
+//					double ready = weekAndTypeMap.get(week).get(READY_FOR_REFINEMENT_ISSUE).size();
 					double accepted = weekAndTypeMap.get(week).get(ACCEPTED_IN_REFINEMENT_ISSUE).size();
 					double rejected = weekAndTypeMap.get(week).get(REJECTED_IN_REFINEMENT_ISSUE).size();
-					double total = ready + rejected + accepted;
+					double total = rejected + accepted;
 					double refinementRate = 0;
 					if (accepted > 0 || rejected > 0 && total > 0) {
 						refinementRate = (rejected / total) * 100;
