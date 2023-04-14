@@ -6,10 +6,10 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -79,6 +79,18 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     ValidateData validateData;
 
+    @Autowired
+    private CreateAccountHierarchy createAccountHierarchy;
+
+    @Autowired
+    private FetchSprintReportImpl fetchSprintReport;
+
+    @Autowired
+    private SaveData saveData;
+
+    @Autowired
+    private CreateAssigneeDetails createAssigneeDetails;
+
     @Value("${rabbitmq.exchange.name}")
     String exchange;
 
@@ -101,7 +113,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
         JiraHelper.setStartDate(jiraProcessorConfig);
         boolean processorFetchingComplete = false;
-
+        ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
         try {
             boolean dataExist = false;
             if (projectConfig.isKanban()) {
@@ -115,8 +127,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             }
 
 
-            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-                    projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
 
             Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
 
@@ -128,6 +139,10 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             int pageSize = jiraCommonService.getPageSize();
             boolean hasMore = true;
             String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
+
+            int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+            boolean latestDataFetched=false;
+            Set<SprintDetails> setForCacheClean = new HashSet<>();
 
             for (int i = 0; hasMore; i += pageSize) {
                 Instant startProcessingJiraIssues = Instant.now();
@@ -141,11 +156,29 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                 }
 
                 if (CollectionUtils.isNotEmpty(issues)) {
-                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, false);
+                    List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
+                    Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+                    Set<Assignee> assigneeSetToSave = new HashSet<>();
+                    boolean dataFromBoard =false;
+                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
+                    Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
+                    List<SprintDetails> sprintDetailsList =new ArrayList<>();
+                    //now we will be putting setCacheClean in fetchSprints fn
+                    if (!dataFromBoard) {
+                        sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean);
+                    }
+                    AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
+                    saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
                     JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
                     savedIsuesCount += issues.size();
                     jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
 //                   template.convertAndSend(exchange, routingKey, jiraIssues);
+                }
+
+                if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+                    latestDataFetched = jiraCommonService.cleanCache();
+                    setForCacheClean.clear();
+                    log.info("latest sprint fetched cache cleaned.");
                 }
 
                 if (issues.size() < pageSize) {
@@ -157,12 +190,13 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             log.error("Error while updating Story information in scrum client", e,
                     kv(CommonConstant.PSLOGDATA, psLogData));
             lastSavedJiraIssueChangedDateByType.clear();
+            processorFetchingComplete = false;
         } catch (InterruptedException e) {
             log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
             lastSavedJiraIssueChangedDateByType.clear();
             processorFetchingComplete = false;
         } finally {
-            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig);
+            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
         }
         return totalIssues;
     }

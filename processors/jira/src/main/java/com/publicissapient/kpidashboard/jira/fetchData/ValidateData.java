@@ -32,13 +32,7 @@ public class ValidateData {
     @Autowired
     private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
-    @Autowired
-    private JiraProcessorConfig jiraProcessorConfig;
-
-    public void check(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData, Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, ProjectConfFieldMapping projectConfig){
-
-        ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-                projectConfig);
+    public void check(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData, Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, ProjectConfFieldMapping projectConfig, ProcessorExecutionTraceLog processorExecutionTraceLog){
 
         boolean isAttemptSuccess=isAttemptSuccess(total,savedCount,processorFetchingComplete,psLogData);
         psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
@@ -46,7 +40,7 @@ public class ValidateData {
             lastSavedJiraIssueChangedDateByType.clear();
             processorExecutionTraceLog.setLastSuccessfulRun(null);
             psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
-            log.error("Error in Fetching Issues through board", kv(CommonConstant.PSLOGDATA, psLogData));
+            log.error("Error in Fetching Issues", kv(CommonConstant.PSLOGDATA, psLogData));
         } else {
             processorExecutionTraceLog
                     .setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
@@ -98,27 +92,6 @@ public class ValidateData {
                 processorExecutionTraceLog.getProcessorName(), processorExecutionTraceLog.getBasicProjectConfigId(),
                 processorExecutionTraceLog.getExecutionEndedAt(), processorExecutionTraceLog.isExecutionSuccess(),
                 kv(CommonConstant.PSLOGDATA, traceLog));
-    }
-
-    private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
-        List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-                .getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
-        ProcessorExecutionTraceLog processorExecutionTraceLog = null;
-
-        if (CollectionUtils.isNotEmpty(traceLogs)) {
-            processorExecutionTraceLog = traceLogs.get(0);
-            if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
-                    .isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-                processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-            }
-        } else {
-            processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-            processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-            processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
-            processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-            processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-        }
-        return processorExecutionTraceLog;
     }
 
 }

@@ -61,7 +61,7 @@ public class FetchIssuesBasedOnBoardImplTest {
     @Mock
     private JiraIssueRepository jiraIssueRepository;
 
-    @Mock
+
     private ProcessorJiraRestClient client;
 
     @Mock
@@ -156,11 +156,11 @@ public class FetchIssuesBasedOnBoardImplTest {
 //                .client(httpClient)
 //                .sessionRestClient(sessionRestClient).build();
 //        CustomAsynchronousIssueRestClient issueRestClient1=mock(CustomAsynchronousIssueRestClient.class,withSettings().useConstructor(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),metadataRestClient,httpClient,sessionRestClient).defaultAnswer(CALLS_REAL_METHODS));
-        PowerMockito.whenNew(CustomAsynchronousIssueRestClient.class).withArguments(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),any(),httpClient,sessionRestClient).thenReturn(issueRestClient);
+//        PowerMockito.whenNew(CustomAsynchronousIssueRestClient.class).withArguments(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),any(),httpClient,sessionRestClient).thenReturn(issueRestClient);
         when(client.getCustomIssueClient()).thenReturn(issueRestClient);
         Set<String> stringSet=new HashSet<>();
         stringSet.add("*all,-attachment,-worklog,-comment,-votes,-watches");
-//        when(issueRestClient.searchBoardIssue("11856","updatedDate>='2022-08-31 14:26' order by updatedDate desc",30,0,stringSet)).thenReturn(promisedRs);
+        when(issueRestClient.searchBoardIssue("11856","updatedDate>='2022-08-31 14:26' order by updatedDate desc",30,0,stringSet)).thenReturn(promisedRs);
         when(issueRestClient.searchBoardIssue(anyString(),anyString(),anyInt(),anyInt(),anySet())).thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();

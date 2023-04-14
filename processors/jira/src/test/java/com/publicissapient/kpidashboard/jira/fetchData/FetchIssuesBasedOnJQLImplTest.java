@@ -119,6 +119,8 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
         when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
+        when(jiraCommonService.cleanCache()).thenReturn(true);
+        when(jiraProcessorConfig.getSprintCountForCacheClean()).thenReturn(15);
         when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
                 .thenReturn(promisedRs);

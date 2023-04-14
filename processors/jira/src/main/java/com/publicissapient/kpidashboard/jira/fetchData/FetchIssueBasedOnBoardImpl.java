@@ -6,9 +6,8 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -71,8 +70,13 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
     private FetchSprintReport fetchSprintReport;
 
     @Autowired
+    private CreateAccountHierarchy createAccountHierarchy;
+
+    @Autowired
     private SaveData saveData;
 
+    @Autowired
+    private CreateAssigneeDetails createAssigneeDetails;
     @Autowired
     ValidateData validateData;
 
@@ -91,12 +95,9 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
         JiraHelper.setStartDate(jiraProcessorConfig);
         boolean processorFetchingComplete = false;
         client=clientIncoming;
+        ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
 
         try {
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
-            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean);
-            saveData.saveData(null,null,sprintDetailsList,null,null,setForCacheClean,projectConfig);
-
             boolean dataExist = false;
             if (projectConfig.isKanban()) {
                 dataExist = (kanbanJiraRepo
@@ -108,13 +109,21 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
                 psLogData.setKanban("false");
             }
 
-            ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-                    projectConfig);
+            Set<SprintDetails> setForCacheClean = new HashSet<>();
+            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean);
+            saveData.saveData(null,null,sprintDetailsList,null,null);
+
+
             //write get logic to fetch last successful updated date.
             String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
             String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
             List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+
+            int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+            boolean latestDataFetched=false;
+
             for (BoardDetails board : boardDetailsList) {
+                Instant startProcessingJiraIssues = Instant.now();
                 psLogData.setBoardId(board.getBoardId());
                 int boardTotal = 0;
                 int pageSize = jiraCommonService.getPageSize();
@@ -132,10 +141,23 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
                     }
 
                     if (CollectionUtils.isNotEmpty(issues)) {
-                        List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, true);
+                        List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
+                        Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+                        Set<Assignee> assigneeSetToSave = new HashSet<>();
+                        boolean dataFromBoard =true;
+                        List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
+                        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
+                        AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
+                        saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
                         JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
                         savedIsuesCount += issues.size();
-//                   template.convertAndSend(exchange, routingKey, jiraIssues);
+                        jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
+                    }
+
+                    if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+                        latestDataFetched = jiraCommonService.cleanCache();
+                        setForCacheClean.clear();
+                        log.info("latest sprint fetched cache cleaned.");
                     }
 
                     if (issues.size() < pageSize) {
@@ -154,7 +176,7 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
             lastSavedJiraIssueChangedDateByType.clear();
             processorFetchingComplete = false;
         } finally {
-            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig);
+            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
         }
         return totalIssues;
     }
@@ -163,27 +185,6 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
         LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
         ldt = ldt.minusDays(30);
         return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
-    }
-
-    private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
-        List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-                .getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
-        ProcessorExecutionTraceLog processorExecutionTraceLog = null;
-
-        if (CollectionUtils.isNotEmpty(traceLogs)) {
-            processorExecutionTraceLog = traceLogs.get(0);
-            if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
-                    .isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-                processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-            }
-        } else {
-            processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-            processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-            processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
-            processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-            processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-        }
-        return processorExecutionTraceLog;
     }
 
     public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,

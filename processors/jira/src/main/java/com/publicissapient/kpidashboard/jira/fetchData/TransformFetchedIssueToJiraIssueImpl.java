@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static com.publicissapient.kpidashboard.jira.fetchData.JiraHelper.*;
@@ -69,10 +70,9 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                              boolean dataFromBoard) throws JSONException,InterruptedException {
+                                              boolean dataFromBoard, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, Set<SprintDetails> sprintDetailsSet,Set<Assignee> assigneeSetToSave) throws JSONException, InterruptedException {
 
         List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
-        List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
 
         if (null == currentPagedJiraRs) {
             log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -80,107 +80,163 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         }
 
         Map<String, String> issueEpics = new HashMap<>();
-        Set<SprintDetails> sprintDetailsSet=new HashSet<>();
-        Set<Assignee> assigneeSetToSave = new HashSet<>();
+
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
+        FieldMapping fieldMapping = projectConfig.getFieldMapping();
+
+        if (null == fieldMapping) {
+            return jiraIssuesToSave;
+        }
+        Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+//        for (Issue issue : currentPagedJiraRs) {
+//
+//            String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
+//            String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
+//
+//            JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
+//
+//            Map<String, IssueField> fields = buildFieldMap(issue.getFields());
+//
+//            IssueType issueType = issue.getIssueType();
+//            User assignee = issue.getAssignee();
+//
+//            IssueField epic = fields.get(fieldMapping.getEpicName());
+//            IssueField sprint = fields.get(fieldMapping.getSprintName());
+//
+//            //set URL to jiraIssue
+//            setURL(issue.getKey(),jiraIssue,projectConfig);
+//
+//            // Add RCA to JiraIssue
+//            setRCA(fieldMapping, issue, jiraIssue, fields);
+//
+//            // Add device platform filed to issue
+//            setDevicePlatform(fieldMapping, jiraIssue, fields);
+//
+//            // Add UAT/Third Party identification field to JiraIssue
+//            setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+//
+//            if (issueTypeNames.contains(
+//                    JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
+//                // collectorId
+//                jiraIssue.setProcessorId(jiraProcessorId);
+//
+//                // ID
+//                jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
+//
+//                // Type
+//                jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
+//                jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+//
+//                setDefectIssueType(jiraIssue, issueType, fieldMapping);
+//
+//                // Label
+//                jiraIssue.setLabels(getLabelsList(issue));
+//                processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
+//
+//                // Set project specific details
+//                setProjectSpecificDetails(projectConfig, jiraIssue, issue);
+//
+//                // Set additional filters
+//                setAdditionalFilters(jiraIssue, issue, projectConfig);
+//
+//                setStoryLinkWithDefect(issue, jiraIssue);
+//
+//                // ADD QA identification field to feature
+//                setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+//                setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+//
+//                setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
+//                jiraIssue.setAffectedVersions(getAffectedVersions(issue));
+//                setIssueEpics(issueEpics, epic, jiraIssue);
+//
+//                setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
+//
+//                processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
+//
+//                updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
+//
+//                setEstimates(jiraIssue, issue);
+//
+//                setDueDates(jiraIssue, issue,fields,fieldMapping);
+//
+//                JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+//
+//                if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+//                    jiraIssuesToSave.add(jiraIssue);
+//                    jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
+//                }
+//            }
+//        }
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Callable<JiraIssue>> callables = new ArrayList<>();
+
         for (Issue issue : currentPagedJiraRs) {
-            FieldMapping fieldMapping = projectConfig.getFieldMapping();
+            Callable<JiraIssue> callable = () -> {
+                String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
+                String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 
-            if (null == fieldMapping) {
-                return jiraIssuesToSave;
-            }
-            Set<String> issueTypeNames = new HashSet<>();
-            for (String issueTypeName : fieldMapping.getJiraIssueTypeNames()) {
-                issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
-            }
-            String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-            String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
+                JiraIssue jiraIssue = getJiraIssue(projectConfig, issueId);
+                Map<String, IssueField> fields = buildFieldMap(issue.getFields());
+                IssueType issueType = issue.getIssueType();
+                User assignee = issue.getAssignee();
+                IssueField epic = fields.get(fieldMapping.getEpicName());
+                IssueField sprint = fields.get(fieldMapping.getSprintName());
+                setURL(issue.getKey(), jiraIssue, projectConfig);
+                setRCA(fieldMapping, issue, jiraIssue, fields);
+                setDevicePlatform(fieldMapping, jiraIssue, fields);
+                setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
-            JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
-
-            Map<String, IssueField> fields = buildFieldMap(issue.getFields());
-
-            IssueType issueType = issue.getIssueType();
-            User assignee = issue.getAssignee();
-
-            IssueField epic = fields.get(fieldMapping.getEpicName());
-            IssueField sprint = fields.get(fieldMapping.getSprintName());
-
-            //set URL to jiraIssue
-            setURL(issue.getKey(),jiraIssue,projectConfig);
-
-            // Add RCA to JiraIssue
-            setRCA(fieldMapping, issue, jiraIssue, fields);
-
-            // Add device platform filed to issue
-            setDevicePlatform(fieldMapping, jiraIssue, fields);
-
-            // Add UAT/Third Party identification field to JiraIssue
-            setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-
-            if (issueTypeNames.contains(
-                    JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
-                // collectorId
-                jiraIssue.setProcessorId(jiraProcessorId);
-
-                // ID
-                jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
-
-                // Type
-                jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
-                jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
-
-                setDefectIssueType(jiraIssue, issueType, fieldMapping);
-
-                // Label
-                jiraIssue.setLabels(getLabelsList(issue));
-                processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
-
-                // Set project specific details
-                setProjectSpecificDetails(projectConfig, jiraIssue, issue);
-
-                // Set additional filters
-                setAdditionalFilters(jiraIssue, issue, projectConfig);
-
-                setStoryLinkWithDefect(issue, jiraIssue);
-
-                // ADD QA identification field to feature
-                setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-                setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-
-                setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
-                jiraIssue.setAffectedVersions(getAffectedVersions(issue));
-                setIssueEpics(issueEpics, epic, jiraIssue);
-
-                setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
-
-                processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
-
-                updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
-
-                setEstimates(jiraIssue, issue);
-
-                setDueDates(jiraIssue, issue,fields,fieldMapping);
-
-                JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
-
-                if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-                    jiraIssuesToSave.add(jiraIssue);
-                    jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
+                if (issueTypeNames.contains(
+                        JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
+                    jiraIssue.setProcessorId(jiraProcessorId);
+                    jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
+                    jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
+                    jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+                    setDefectIssueType(jiraIssue, issueType, fieldMapping);
+                    jiraIssue.setLabels(getLabelsList(issue));
+                    processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
+                    setProjectSpecificDetails(projectConfig, jiraIssue, issue);
+                    setAdditionalFilters(jiraIssue, issue, projectConfig);
+                    setStoryLinkWithDefect(issue, jiraIssue);
+                    setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+                    setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+                    setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
+                    jiraIssue.setAffectedVersions(getAffectedVersions(issue));
+                    setIssueEpics(issueEpics, epic, jiraIssue);
+                    setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
+                    processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
+                    updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
+                    setEstimates(jiraIssue, issue);
+                    setDueDates(jiraIssue, issue,fields,fieldMapping);
+                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+                    if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+                        jiraIssuesToSave.add(jiraIssue);
+                        jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
+                    }
                 }
-            }
+                return jiraIssue;
+            };
+            callables.add(callable);
         }
 
-        Set<SprintDetails> setForCacheClean = new HashSet<>();
-        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
-        List<SprintDetails> sprintDetailsList =new ArrayList<>();
-        //now we will be putting setCacheClean in fetchSprints fn
-        if (!dataFromBoard) {
-            sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean);
-        }
-        AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
-        saveData.saveData(jiraIssuesToSave,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails,setForCacheClean,projectConfig);
+        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
+
+//        for (Future<JiraIssue> future : futures) {
+//            JiraIssue jiraIssue;
+//            try {
+//                jiraIssue = future.get();
+//            } catch (ExecutionException e) {
+//                throw new RuntimeException(e);
+//            }
+//            jiraIssuesToSave.add(jiraIssue);
+//        }
+
+        executor.shutdown();
 
         return jiraIssuesToSave;
     }

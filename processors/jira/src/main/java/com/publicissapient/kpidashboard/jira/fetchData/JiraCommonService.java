@@ -1,23 +1,21 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -62,6 +60,9 @@ public class JiraCommonService {
 
     @Autowired
     private AesEncryptionService aesEncryptionService;
+
+    @Autowired
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
     public int getPageSize() {
         return jiraProcessorConfig.getPageSize();
@@ -243,6 +244,27 @@ public class JiraCommonService {
                     kv(CommonConstant.PSLOGDATA, psLogData));
 
         }
+    }
+
+    public ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
+        List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
+                .getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
+        ProcessorExecutionTraceLog processorExecutionTraceLog = null;
+
+        if (CollectionUtils.isNotEmpty(traceLogs)) {
+            processorExecutionTraceLog = traceLogs.get(0);
+            if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
+                    .isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+                processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+            }
+        } else {
+            processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+            processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
+            processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
+            processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+            processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+        }
+        return processorExecutionTraceLog;
     }
 
 }
