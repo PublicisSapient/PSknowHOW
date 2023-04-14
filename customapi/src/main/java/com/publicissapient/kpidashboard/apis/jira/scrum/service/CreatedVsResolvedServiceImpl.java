@@ -473,7 +473,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					.findFirst().orElse(new JiraIssueCustomHistory());
 			JiraIssueSprint issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("T")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.reduce((a, b) -> b).get();
 			if (fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.getFromStatus()))
