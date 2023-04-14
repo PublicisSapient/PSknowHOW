@@ -196,10 +196,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			if(connection.getPatOAuthToken()!=null){
+			if(StringUtils.isNotEmpty(connection.getPatOAuthToken())){
 				isValid = testConnectionWithBearerToken(apiUrl, connection.getPatOAuthToken());
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			}else{
+			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
