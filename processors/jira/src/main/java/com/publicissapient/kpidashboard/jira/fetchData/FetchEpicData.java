@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public interface FetchEpicData {
     List<Issue> fetchEpic(Map.Entry<String, ProjectConfFieldMapping> entry, String boardId, ProcessorJiraRestClient clientIncoming) throws InterruptedException;
 }

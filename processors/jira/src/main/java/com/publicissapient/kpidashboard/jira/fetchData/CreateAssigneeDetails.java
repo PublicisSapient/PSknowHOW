@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
-@Service
 public interface CreateAssigneeDetails {
     AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave);
 }
