@@ -64,6 +64,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final String WAITING_TIME = "Waiting Time";
 	private static final String WASTAGE = "Wastage";
 	private static final String HOURS = "Hours";
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
