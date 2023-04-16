@@ -252,6 +252,7 @@ public class KPIExcelUtility {
                 excelData.setIssueDesc(checkEmptyName(jiraIssue));
                 excelData.setIssueStatus(jiraIssue.getStatus());
                 excelData.setIssueType(jiraIssue.getTypeName());
+                populateAssignee(jiraIssue, excelData);
                 if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(String.valueOf(jiraIssue.getStoryPoints()));
@@ -728,6 +729,7 @@ public class KPIExcelUtility {
                 excelData.setIssueID(epicLink);
                 excelData.setIssueDesc(e.getName());
                 excelData.setIssueStatus(e.getStatus());
+                populateAssignee(e, excelData);
                 if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
                         fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
                     excelData.setStoryPoint(Optional.ofNullable(e.getStoryPoints()).orElse(0.0).toString());
@@ -1215,6 +1217,7 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        populateAssignee(jiraIssue, iterationKpiModalValue);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
@@ -1267,7 +1270,8 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+        populateAssignee(jiraIssue, iterationKpiModalValue);
+        if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
 		}
@@ -1291,7 +1295,7 @@ public class KPIExcelUtility {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			blankDueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString();
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			iterationKpiModalValue.setPotentialOverallDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			iterationKpiModalValue.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
 			if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) >= 0) {
 				if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
@@ -1304,7 +1308,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
-			iterationKpiModalValue.setPotentialOverallDelay("-");
+			iterationKpiModalValue.setPotentialDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
 		if (jiraIssue.getDevDueDate() != null)
@@ -1330,6 +1334,7 @@ public class KPIExcelUtility {
         iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
         iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
         iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+        populateAssignee(jiraIssue, iterationKpiModalValue);
         if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
             AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
             Map<String, String> linkedStoriesMap = new HashMap<>();
@@ -1353,4 +1358,52 @@ public class KPIExcelUtility {
         }
         overAllmodalValues.add(iterationKpiModalValue);
     }
+
+    /**
+     *  Method to populate assignee name in kpi's
+     * @param jiraIssue
+     * @param object
+     */
+    public static void populateAssignee(JiraIssue jiraIssue, Object object) {
+        String assigneeName = jiraIssue.getAssigneeName() != null ? jiraIssue.getAssigneeName() : " - ";
+        if (object instanceof IterationKpiModalValue) {
+            ((IterationKpiModalValue) object).setAssignee(assigneeName);
+        } else if (object instanceof KPIExcelData) {
+            ((KPIExcelData) object).setAssignee(assigneeName);
+        }
+    }
+
+
+	public static void populateIterationDataForFirstTimePassRate(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, List<JiraIssue> finalFirstTimePassStoryList,
+			Set<String> storiesWithDefect, List<JiraIssue> totalDeffects) {
+
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+
+		if (CollectionUtils.isNotEmpty(storiesWithDefect) && storiesWithDefect.contains(jiraIssue.getNumber())) {
+
+			Map<String, String> linkedDefects = new HashMap<>();
+			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefects.putIfAbsent(defect.getNumber(), defect.getUrl()));
+
+			iterationKpiModalValue.setLinkedDefefect(linkedDefects);
+
+			Map<String, String> linkedDefectsPriority = new HashMap<>();
+			totalDeffects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
+			iterationKpiModalValue.setLinkedDefefectPriority(linkedDefectsPriority);
+		}
+
+		if (CollectionUtils.isNotEmpty(finalFirstTimePassStoryList)
+				&& finalFirstTimePassStoryList.contains(jiraIssue)) {
+			iterationKpiModalValue.setFirstTimePass("Y");
+		}
+
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
+
+	}
 }

@@ -20,10 +20,14 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -53,9 +59,11 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -73,9 +81,11 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	public static final String UNLINKED_DEFECTS = "Unlinked Defects";
 	public static final String DIR = "DIR";
 	public static final String DEFECT_DENSITY = "Defect Density";
-	private static final String STORY_LIST = "Storylist";
+	private static final String TOTAL_ISSUES = "totalIssues";
 
 	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
+
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -122,7 +132,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 
-		List<String> sprintList = new ArrayList<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 
@@ -130,18 +141,64 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-			sprintList.add(sprintId);
+			List<String> defectType = new ArrayList<>();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
 			if (null != sprintDetails) {
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+						.orElse(Collections.emptyList());
+				Set<String> totalSprintReportDefects = new HashSet<>();
+				Set<String> totalSprintReportStories = new HashSet<>();
+				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
+					if (defectTypes.contains(sprintIssue.getTypeName())) {
+						totalSprintReportDefects.add(sprintIssue.getNumber());
+					} else {
+						totalSprintReportStories.add(sprintIssue.getNumber());
+					}
+				});
+
+				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(defectType));
+				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
+				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+						Collections.singletonList(basicProjectConfigId));
+
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
 					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssue,
 							basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
-					resultListMap.put(STORY_LIST, new ArrayList<>(filtersIssuesList));
+
+					//fetched all defects which is linked to current sprint report stories
+					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
+							totalSprintReportStories, uniqueProjectMap);
+					LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0],
+							DATE_TIME_FORMATTER);
+					LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0],
+							DATE_TIME_FORMATTER);
+					List<JiraIssue> totalBugsCreatedSprintDuration = linkedDefects.stream()
+							.filter(jiraIssue -> jiraIssue.getSprintID() != null
+									&& jiraIssue.getSprintID().equals(sprintId)
+									&& DateUtil.isWithinDateRange(LocalDate
+											.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+											sprintStartDate, sprintEndDate))
+							.collect(Collectors.toList());
+
+					// filter defects which is issue type not coming  in sprint report
+					List<JiraIssue> subTaskDefects = totalBugsCreatedSprintDuration.stream()
+							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
+							.collect(Collectors.toList());
+
+					List<JiraIssue> totalIssues = new ArrayList<>();
+					totalIssues.addAll(sprintReportIssueList);
+					totalIssues.addAll(subTaskDefects);
+					resultListMap.put(TOTAL_ISSUES, totalIssues);
 				}
 			}
 
@@ -175,8 +232,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, startDate, endDate, kpiRequest);
 
-		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(STORY_LIST))) {
-			List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(STORY_LIST);
+		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(TOTAL_ISSUES))) {
+			List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
@@ -191,6 +248,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 					.orElse(Collections.emptyList());
+			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			Map<String, JiraIssue> totalStoriesMap =  totalJiraIssues.stream().collect(Collectors.toMap(
 					JiraIssue::getNumber, Function.identity()));
 			List<JiraIssue> allDefects = totalJiraIssues.stream()

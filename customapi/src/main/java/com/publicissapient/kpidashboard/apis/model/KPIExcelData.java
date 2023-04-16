@@ -307,6 +307,7 @@ public class KPIExcelData {
     @JsonProperty("Actual Completion Date")
     private String actualCompletionDate;
 
-
+    @JsonProperty("Assignee")
+    private String assignee;
 
 }

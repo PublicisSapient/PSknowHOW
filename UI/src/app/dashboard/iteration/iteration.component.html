@@ -205,7 +205,8 @@
 
               <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
-                  <a [href]="k.value" class="p-d-block text-blue" target="_blank">{{k.key}}</a>
+                  <a [href]="k.value" class="p-d-block text-blue" target="_blank" *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
+                  <ng-template #showText> {{k.value}}<br></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>
