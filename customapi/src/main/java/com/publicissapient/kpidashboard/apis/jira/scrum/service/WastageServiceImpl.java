@@ -308,30 +308,25 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		for (int i = 0; i < storySprintDetails.size(); i++) {
 			JiraIssueSprint entry = storySprintDetails.get(i);
 
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList,
-					storySprintDetails, i, sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails,
-					i, sprintDetail, waitedTime);
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, storySprintDetails, i,
+					sprintDetail, blockedTime);
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails, i,
+					sprintDetail, waitedTime);
 		}
-
-		resultList.add( calculateBlockandwaitTimeinDays(waitedTime));
+		resultList.add(calculateBlockandwaitTimeinDays(waitedTime));
 		resultList.add(calculateBlockandwaitTimeinDays(blockedTime));
 		return resultList;
-
 	}
 
-	private int calculateBlockandwaitTimeinDays(int blockedTime) {
-
-		int blockTimeinMin = (blockedTime / 24) * 8 * 60;
-		int remainingBlocktimeInMin = (blockedTime % 24) * 60;
-		if (remainingBlocktimeInMin >= 480) {
-			blockTimeinMin = blockTimeinMin + 480;
+	private int calculateBlockandwaitTimeinDays(int timeInHours) {
+		int timeInMin = (timeInHours / 24) * 8 * 60;
+		int remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
 		} else {
-			blockTimeinMin = blockTimeinMin + remainingBlocktimeInMin;
+			timeInMin = timeInMin + remainingTimeInMin;
 		}
-
-		return blockTimeinMin;
-
+		return timeInMin;
 	}
 
 
@@ -382,18 +377,18 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		int hours;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = Hours.hoursBetween(entryActivityDate,  nextEntryActivityDate).getHours()
+				hours = Hours.hoursBetween(entryActivityDate, nextEntryActivityDate).getHours()
 						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate);
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate,  nextEntryActivityDate).getHours()
+				hours = Hours.hoursBetween(sprintStartDate, nextEntryActivityDate).getHours()
 						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate);
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = Hours.hoursBetween(entryActivityDate,  sprintEndDate).getHours()
+				hours = Hours.hoursBetween(entryActivityDate, sprintEndDate).getHours()
 						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate);
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate,  sprintEndDate).getHours()
+				hours = Hours.hoursBetween(sprintStartDate, sprintEndDate).getHours()
 						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
@@ -407,21 +402,21 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					hours = Hours.hoursBetween(entryActivityDate,  DateTime.now()).getHours()
+					hours = Hours.hoursBetween(entryActivityDate, DateTime.now()).getHours()
 							- minusHoursOfWeekEndDays(entryActivityDate, DateTime.now());
 				} else {
 
-					hours = Hours.hoursBetween(entryActivityDate,  sprintEndDate).getHours()
+					hours = Hours.hoursBetween(entryActivityDate, sprintEndDate).getHours()
 							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate);
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				DateTime currDate = DateTime.now();
-				hours = Hours.hoursBetween(sprintStartDate,  currDate).getHours()
-				- minusHoursOfWeekEndDays(sprintStartDate, currDate);
+				hours = Hours.hoursBetween(sprintStartDate, currDate).getHours()
+						- minusHoursOfWeekEndDays(sprintStartDate, currDate);
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate,  sprintEndDate).getHours()
+				hours = Hours.hoursBetween(sprintStartDate, sprintEndDate).getHours()
 						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
@@ -452,7 +447,5 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			return 0;
 		}
 	}
-
-	// used for populating the Excel file
 
 }
