@@ -209,7 +209,6 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 				getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : weekAndTypeMap.entrySet()) {
 					String week = entry.getKey();
-//					double ready = weekAndTypeMap.get(week).get(READY_FOR_REFINEMENT_ISSUE).size();
 					double accepted = weekAndTypeMap.get(week).get(ACCEPTED_IN_REFINEMENT_ISSUE).size();
 					double rejected = weekAndTypeMap.get(week).get(REJECTED_IN_REFINEMENT_ISSUE).size();
 					double total = rejected + accepted;
@@ -279,17 +278,13 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			JiraIssueCustomHistory hist) {
 		String status = "";
 		String fromStatus = "";
-		String toStatus = "";
 		DateTime changeDate = LocalDateTime.now().toDateTime();
 		int count = 0;
 		for (JiraIssueSprint story : hist.getStorySprintDetails()) {
 			if (count == 0) {
-				fromStatus = story.getFromStatus();
 				changeDate = story.getActivityDate();
 			} else {
-				toStatus = fromStatus;
 				fromStatus = story.getFromStatus();
-
 				if (fieldMapping.getJiraReadyForRefinement().contains(fromStatus)) {
 					status = READY_FOR_REFINEMENT_ISSUE;
 					changeDate = story.getActivityDate();
@@ -388,23 +383,27 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 					if (null != jiraDateMap.get(issue.getNumber())) {
 						jiraDate = jiraDateMap.get(issue.getNumber()).toLocalDate();
 					}
-					if (null != jiraDate) {
-						LocalDate monday = (jiraDate).withDayOfWeek(DateTimeConstants.MONDAY);
-						LocalDate sunday = (jiraDate).withDayOfWeek(DateTimeConstants.SUNDAY);
-						String value = monday + " to " + sunday;
-						String weekVal = "";
-						for (String week : weekMap.keySet()) {
-							if (weekMap.get(week).equalsIgnoreCase(value)) {
-								weekVal = week;
-								break;
-							}
-						}
-						if (null != weekVal && !weekVal.isEmpty()) {
-							dataMap.get(weekVal).get(sub).add(issue);
-						}
-					}
+					genrateWeekAndPopulateJiraDateMap(dataMap, weekMap, sub, issue, jiraDate);
 
 				})));
+	}
+
+	private void genrateWeekAndPopulateJiraDateMap(Map<String, Map<String, List<JiraIssue>>> dataMap, Map<String, String> weekMap, String sub, JiraIssue issue, LocalDate jiraDate) {
+		if (null != jiraDate) {
+			LocalDate monday = jiraDate.withDayOfWeek(DateTimeConstants.MONDAY);
+			LocalDate sunday = jiraDate.withDayOfWeek(DateTimeConstants.SUNDAY);
+			String value = monday + " to " + sunday;
+			String weekVal = "";
+			for (String week : weekMap.keySet()) {
+				if (weekMap.get(week).equalsIgnoreCase(value)) {
+					weekVal = week;
+					break;
+				}
+			}
+			if (null != weekVal && !weekVal.isEmpty()) {
+				dataMap.get(weekVal).get(sub).add(issue);
+			}
+		}
 	}
 
 	/**
