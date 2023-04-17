@@ -30,6 +30,7 @@ import { AccessGuard } from '../services/access.guard';
 import { LandingPageComponent } from '../dashboard/landing-page/landing-page.component';
 import { GuestGuard } from '../services/guest.guard';
 import { BacklogComponent } from '../dashboard/backlog/backlog.component';
+import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -55,6 +56,7 @@ const routes: Routes = [
       { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'milestone', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
       {
         path: 'Config',

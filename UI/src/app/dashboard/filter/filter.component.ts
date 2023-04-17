@@ -203,6 +203,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       date: new UntypedFormControl(''),
       selectedLevel: new UntypedFormControl(),
       selectedSprintValue: new UntypedFormControl(),
+      selectedRelease : new UntypedFormControl(),
     });
   }
 
@@ -289,7 +290,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'milestone'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -677,6 +678,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           break;
         case 'backlog':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
+        case 'milestone':
+          this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'milestone')?.[0]?.kpis;
           break;
         default:
           this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase() || item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' '))[0]?.kpis;
@@ -1205,5 +1208,19 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.getNotification();
       this.navigateToSelectedTab();
     });
+   }
+
+   handleMilestoneFilter(){
+    const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
+    this.filteredAddFilters['release'] = []
+    this.filterForm?.get('selectedRelease')?.setValue('');
+    if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
+      this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) =>x['parentId']?.includes(selectedProject))];
+    }
+    if(this.filteredAddFilters && this.filteredAddFilters['release'].length >0){
+     this.filterForm.get('selectedRelease').setValue(this.filteredAddFilters['release'][0]['nodeId']);
+    } else{
+      this.filterForm.get('selectedRelease').setValue('');
+    }
    }
 }
