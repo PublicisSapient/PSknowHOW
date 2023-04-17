@@ -3609,7 +3609,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 2,
@@ -3627,16 +3627,6 @@ db.getCollection('kpi_master').insert(
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi989",
-    "kpiName": "Kpi Maturity",
-    "isDeleted": "False",
-    "defaultOrder": 1,
-    "kpiCategory": "Kpi Maturity",
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "kanban": false
   },
   {
     "kpiId":"kpi136",
@@ -3659,5 +3649,15 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport":true,
     "hideOverallFilter" : true,
     "calculateMaturity":false
+  },
+  {
+    "kpiId": "kpi989",
+    "kpiName": "Kpi Maturity",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Kpi Maturity",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false
   }
 ]);
