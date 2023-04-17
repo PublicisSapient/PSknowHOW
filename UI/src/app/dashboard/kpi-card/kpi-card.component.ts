@@ -57,7 +57,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         }
       }
       const sharedObj = this.service.getFilterObject();
-      this.selectedTab = this.service.getSelectedTab().toLowerCase();
+      this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
       if (sharedObj) {
         if (this.selectedTab === 'iteration' || this.selectedTab === 'backlog') {
           this.showCommentIcon = true;

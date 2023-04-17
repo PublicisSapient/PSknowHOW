@@ -27,7 +27,7 @@ export class CommentsComponent implements OnInit {
   openComments(){
     this.selectedFilters = []
     const sharedObj = this.service.getFilterObject();
-    if(this.selectedTab === 'backlog' || this.selectedTab === 'iteration'){
+    if(this.selectedTab === 'iteration'){
       for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.sprint.length; i++) {
         this.selectedFilters.push(sharedObj.filterData.filter(data => {
           return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
@@ -39,14 +39,6 @@ export class CommentsComponent implements OnInit {
           return data.nodeId === sharedObj.filterApplyData.selectedMap?.project[i]
         })[0]);
       }
-    }
-
-    if(this.selectedTab === 'backlog'){
-      const selFil = this.selectedFilters;
-      this.selectedFilters = [];
-      this.selectedFilters.push(sharedObj.filterData.filter(data => {
-        return data.nodeId === selFil[0].parentId[0];
-      })[0]);
     }
   }
 
