@@ -1,4 +1,4 @@
-name: Echo Hello World
+name: Actions Name
 
 on:
   push:
@@ -13,4 +13,4 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Echo Hello World
-      run: echo "Hello World"
+      run: echo "Hello ${{ github.actor }} you are beautiful"
