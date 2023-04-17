@@ -213,7 +213,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '100',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 100,
                         hoverValue: {
                             'FTP Stories': 9,
@@ -223,7 +223,7 @@ describe('ExecutiveComponent', () => {
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     },
@@ -277,7 +277,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '70',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 70,
                         hoverValue: {
                             'FTP Stories': 14,
@@ -287,7 +287,7 @@ describe('ExecutiveComponent', () => {
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     }
@@ -384,7 +384,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '0',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 0,
                         hoverValue: {
                             Defects: 0,
@@ -394,7 +394,7 @@ describe('ExecutiveComponent', () => {
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     },
@@ -452,7 +452,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '59',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 58.54,
                         hoverValue: {
                             Defects: 12,
@@ -462,7 +462,7 @@ describe('ExecutiveComponent', () => {
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     }
@@ -556,7 +556,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '0',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 0,
                         hoverValue: {
                             'Escaped Defects': 0,
@@ -566,7 +566,7 @@ describe('ExecutiveComponent', () => {
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     },
@@ -624,7 +624,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '0',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 0,
                         hoverValue: {
                             'Escaped Defects': 0,
@@ -634,7 +634,7 @@ describe('ExecutiveComponent', () => {
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     }
@@ -694,7 +694,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {
                                     P2: 0,
@@ -746,7 +746,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '12',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 12,
                                 hoverValue: {
                                     P2: 0,
@@ -769,7 +769,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {
                                     P2: 0
@@ -813,7 +813,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 0,
                                 hoverValue: {
                                     P2: 0
@@ -834,7 +834,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {
                                     P3: 0
@@ -878,7 +878,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '3',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 3,
                                 hoverValue: {
                                     P3: 3
@@ -899,7 +899,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {
                                     P4: 0
@@ -943,7 +943,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '9',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 9,
                                 hoverValue: {
                                     P4: 9
@@ -1032,7 +1032,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '4',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 3.67,
                                 hoverValue: {},
                                 kpiGroup: 'Overall',
@@ -1068,7 +1068,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '5',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 5.18,
                                 hoverValue: {},
                                 kpiGroup: 'Overall',
@@ -1088,7 +1088,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Bug',
@@ -1124,7 +1124,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '1',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 1.43,
                                 hoverValue: {},
                                 kpiGroup: 'Bug',
@@ -1144,7 +1144,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Change request',
@@ -1180,7 +1180,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Change request',
@@ -1200,7 +1200,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Enabler Story',
@@ -1236,7 +1236,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Enabler Story',
@@ -1256,7 +1256,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Epic',
@@ -1292,7 +1292,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '0',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 0,
                                 hoverValue: {},
                                 kpiGroup: 'Epic',
@@ -1312,7 +1312,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '4',
                                 sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                                 value: 3.67,
                                 hoverValue: {},
                                 kpiGroup: 'Story',
@@ -1348,7 +1348,7 @@ describe('ExecutiveComponent', () => {
                             {
                                 data: '8',
                                 sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                                 value: 7.8,
                                 hoverValue: {},
                                 kpiGroup: 'Story',
@@ -1396,7 +1396,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '1',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 1,
                         hoverValue: {
                             resolvedDefects: 0,
@@ -1406,7 +1406,7 @@ describe('ExecutiveComponent', () => {
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         lineValue: 0,
                         sprojectName: 'Scrum Project'
@@ -1468,7 +1468,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '20',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 20,
                         hoverValue: {
                             resolvedDefects: 14,
@@ -1478,7 +1478,7 @@ describe('ExecutiveComponent', () => {
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         lineValue: 14,
                         sprojectName: 'Scrum Project'
@@ -1523,7 +1523,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '0.0',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 0,
                         hoverValue: {
                             'Estimated Hours': 0,
@@ -1533,7 +1533,7 @@ describe('ExecutiveComponent', () => {
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         lineValue: 68,
                         sprojectName: 'Scrum Project'
@@ -1595,7 +1595,7 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '50.0',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 50,
                         hoverValue: {
                             'Estimated Hours': 50,
@@ -1605,7 +1605,7 @@ describe('ExecutiveComponent', () => {
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         lineValue: 139,
                         sprojectName: 'Scrum Project'
@@ -1641,14 +1641,14 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '22.0',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 22,
                         hoverValue: {},
                         sprintIds: [
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     },
@@ -1697,14 +1697,14 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '33.0',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 33,
                         hoverValue: {},
                         sprintIds: [
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     }
@@ -1739,14 +1739,14 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '61',
                         sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS |Test1 |ITR_1|OpenSource_Scrum Project',
+                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
                         value: 61,
                         hoverValue: {},
                         sprintIds: [
                             '40203_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS |Test1 |ITR_1|OpenSource_Scrum Project'
+                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     },
@@ -1795,14 +1795,14 @@ describe('ExecutiveComponent', () => {
                     {
                         data: '116',
                         sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'DTS| Test1|PI_10|Opensource_Scrum Project',
+                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
                         value: 116,
                         hoverValue: {},
                         sprintIds: [
                             '40345_Scrum Project_6335363749794a18e8a4479b'
                         ],
                         sprintNames: [
-                            'DTS| Test1|PI_10|Opensource_Scrum Project'
+                            'TEST| Test1|PI_10|Opensource_Scrum Project'
                         ],
                         sprojectName: 'Scrum Project'
                     }
@@ -1876,7 +1876,7 @@ describe('ExecutiveComponent', () => {
     component = fixture.componentInstance;
 
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
 
@@ -1902,7 +1902,6 @@ describe('ExecutiveComponent', () => {
 
   it('check whether scrum', (done) => {
     const type = 'Scrum';
-    component.getSelectedType(type);
     component.selectedtype = 'Scrum';
     fixture.detectChanges();
     expect(component.selectedtype).toBe(type);
@@ -1921,12 +1920,12 @@ describe('ExecutiveComponent', () => {
                     sprintName: 'AP|PI_10|ITR_5| 24 Aug',
                     storyID: {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'DTS-17970': 'https://tools.publicis.sapient.com/jira/browse/DTS-17970'
+                        'TEST-17970': 'http://testabc.com/jira/browse/TEST-17970'
                     },
                     issueDescription: 'This is second Story',
                     linkedDefects: {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'DTS-18675': 'https://tools.publicis.sapient.com/jira/browse/DTS-18675',
+                        'TEST-18675': 'http://testabc.com/jira/browse/TEST-18675',
                     }
                 }]
         };
@@ -1938,7 +1937,7 @@ describe('ExecutiveComponent', () => {
 
   xit('Scrum with filter applied', (done) => {
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype =type;
 
     service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
     fixture.detectChanges();
@@ -1954,7 +1953,7 @@ describe('ExecutiveComponent', () => {
 
   xit('kanban without filter applied', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -1968,7 +1967,7 @@ describe('ExecutiveComponent', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.setSelectedTypeOrTabRefresh('Category One','Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -1988,19 +1987,16 @@ describe('ExecutiveComponent', () => {
 
   xit('cycle time priority Sum in kanban', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype =type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
     httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
     httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
     httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
+ component.getPriorityColor(0);
 
-    component.selectedPriorityFilter.kpi53 = [{ data: 'P3 - Major' }];
-    component.getPriorityColor(0);
-
-    expect(component.prioritySum['openTriage']).toBe(1);
-    done();
+   done();
 
   }));
 
@@ -2023,13 +2019,7 @@ describe('ExecutiveComponent', () => {
     done();
   });
 
-  it('boardId should belong to selectedType',()=>{
-    component.boardId = 7;
-    component.kanbanActivated = false;
-    const globalConfig = globalData.data;
-    component.checkIfBoardIdBelongsToSelectedType(globalConfig);
-    expect(component.boardId).toEqual(1);
-  });
+
 
   it('should process kpi config Data',()=>{
     component.configGlobalData =  configGlobalData;
@@ -2128,23 +2118,19 @@ describe('ExecutiveComponent', () => {
   });
 
 
-  it('should process kpi config data on onTypeRefresh',()=>{
+  it('should refresh values onTypeRefresh',()=>{
     spyOn(service,'getSelectedType');
     spyOn(service,'getDashConfigData').and.returnValue(globalData['data']);
     const spy =spyOn(component,'processKpiConfigData');
-    service.onTypeRefresh.emit('Scrum');
+    service.onTypeOrTabRefresh.next({selectedTab:'Caterory One',selectedType:'Scrum'});
     component.kanbanActivated =false;
-    component.boardId =1;
     fixture.detectChanges();
-    expect(component.configGlobalData.length).toEqual(1);
-    expect(spy).toHaveBeenCalled();
+   expect(component.selectedBranchFilter).toBe('Select');
   });
 
   it('should set noTabAccess to true when no filterData', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    spyOn(service, 'getSelectBoardId').and.returnValue(1);
     component.kanbanActivated = false;
-    spyOn(component, 'setBoardIdForSelectedTab');
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -2196,7 +2182,6 @@ describe('ExecutiveComponent', () => {
       selectedTab: 'My Test1',
       isAdditionalFilters: false
     };
-    component.previousBoardId = 2;
     component.receiveSharedData(event);
     expect(component.noTabAccess).toBe(true);
 
@@ -2204,8 +2189,6 @@ describe('ExecutiveComponent', () => {
 
   it('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    spyOn(service, 'getSelectBoardId').and.returnValue(1);
-    spyOn(component, 'setBoardIdForSelectedTab');
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -2270,7 +2253,6 @@ describe('ExecutiveComponent', () => {
       makeAPICall: true
     };
     component.kanbanActivated = false;
-    component.previousBoardId = 2;
     component.selectedtype = 'Scrum';
 
     const spyJenkins = spyOn(component, 'groupJenkinsKpi');
@@ -2845,31 +2827,31 @@ describe('ExecutiveComponent', () => {
                 {
                     "data": "27.33",
                     "value": 27.33,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "0.15",
                     "value": 0.15,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "8.66",
                     "value": 8.66,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "93.86",
                     "value": 93.86,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "15.1",
                     "value": 15.1,
-                    
+
                     "sprojectName": "EU"
                 }
             ],
@@ -2889,31 +2871,31 @@ describe('ExecutiveComponent', () => {
                 {
                     "data": "27.33",
                     "value": 27.33,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "0.15",
                     "value": 0.15,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "8.66",
                     "value": 8.66,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "93.86",
                     "value": 93.86,
-                    
+
                     "sprojectName": "EU"
                 },
                 {
                     "data": "15.1",
                     "value": 15.1,
-                    
+
                     "sprojectName": "EU"
                 }
             ],

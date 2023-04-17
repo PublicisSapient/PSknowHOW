@@ -22,6 +22,7 @@ import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWis
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +33,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.Collections;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -64,11 +64,11 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 @Component
 public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -188,7 +188,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<IterationPotentialDelay> iterationPotentialDelayList=calculatePotentialDelay(sprintDetails,allIssues,fieldMapping);
-			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,Function.identity(),(e1,e2)->e2, LinkedHashMap::new));
+			Map<String, IterationPotentialDelay> issueWiseDelay = checkMaxDelayAssigneeWise(allIssues,iterationPotentialDelayList,fieldMapping);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -232,7 +232,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 							originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
 							overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
 						}
-						delay=checkDelay(jiraIssue,issueWiseDelay,delay,overallPotentialDelay,fieldMapping);
+						delay=checkDelay(jiraIssue,issueWiseDelay,delay,overallPotentialDelay);
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					modalValues = reverseSortModalValue(modalValues);
@@ -285,10 +285,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		IterationKpiData issueCounts;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			issueCounts = new IterationKpiData(storyPointLabel, Double.valueOf(issueCount), storyPoint, null, "",
+			issueCounts = new IterationKpiData(storyPointLabel, Double.valueOf(issueCount), roundingOff(storyPoint), null, "",
 					CommonConstant.SP, modalValues);
 		} else {
-			issueCounts = new IterationKpiData(originalEstimateLabel, Double.valueOf(issueCount), originalEstimate,
+			issueCounts = new IterationKpiData(originalEstimateLabel, Double.valueOf(issueCount), roundingOff(originalEstimate),
 					null, "", CommonConstant.DAY, modalValues);
 		}
 		return issueCounts;
@@ -314,12 +314,9 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay,
-			List<Integer> overallPotentialDelay, FieldMapping fieldMapping) {
+						   List<Integer> overallPotentialDelay) {
 		int finalDelay = 0;
-		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && null != fieldMapping
-				&& org.apache.commons.collections.CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
-				&& fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus())
-
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()
 		) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			finalDelay = potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
@@ -329,6 +326,42 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			finalDelay = potentialDelay + finalDelay;
 		}
 		return finalDelay;
+	}
+
+
+	private LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(List<JiraIssue> jiraIssueList,
+			List<IterationPotentialDelay> issueWiseDelay, FieldMapping fieldMapping) {
+		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = assigneeWiseJiraIssue(jiraIssueList);
+		List<IterationPotentialDelay> maxDelayList = new ArrayList<>();
+		if (MapUtils.isNotEmpty(assigneeWiseJiraIssue)) {
+			for (List<JiraIssue> jiraIssues : assigneeWiseJiraIssue.values()) {
+				List<IterationPotentialDelay> delayList = new ArrayList<>();
+				for (JiraIssue jiraIssue : jiraIssues) {
+					issueWiseDelay.stream()
+							.filter(iterationPotentialDelay -> iterationPotentialDelay.getIssueId()
+									.equalsIgnoreCase(jiraIssue.getNumber()) && null != fieldMapping
+									&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
+									&& fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+							.forEach(delayList::add);
+				}
+
+				if (CollectionUtils.isNotEmpty(delayList)) {
+					// fetch the maximum delayed story of each assignee
+					// and set the marker in the original IterationPotentialDelay list
+					maxDelayList.add(
+							delayList.stream().max(Comparator.comparing(IterationPotentialDelay::getPotentialDelay))
+									.orElse(new IterationPotentialDelay()));
+				}
+			}
+			if (CollectionUtils.isNotEmpty(maxDelayList)) {
+				maxDelayList.stream()
+						.forEach(iterationPotentialDelay -> issueWiseDelay.stream()
+								.filter(issue -> issue.equals(iterationPotentialDelay))
+								.forEach(issue -> issue.setMaxMarker(true)));
+			}
+		}
+		return issueWiseDelay.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,
+				Function.identity(), (e1, e2) -> e2, LinkedHashMap::new));
 	}
 
 	/**
@@ -342,9 +375,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
 			List<JiraIssue> allIssues, FieldMapping fieldMapping) {
 		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
-		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = allIssues.stream()
-				.filter(jiraIssue -> jiraIssue.getAssigneeId() != null)
-				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
+		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = assigneeWiseJiraIssue(allIssues);
 
 		if (MapUtils.isNotEmpty(assigneeWiseJiraIssue)) {
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
@@ -367,6 +398,11 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 		}
 		return iterationPotentialDelayList;
+	}
+
+	private Map<String, List<JiraIssue>> assigneeWiseJiraIssue(List<JiraIssue> allIssues) {
+		return allIssues.stream().filter(jiraIssue -> jiraIssue.getAssigneeId() != null)
+				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
 	}
 
 }

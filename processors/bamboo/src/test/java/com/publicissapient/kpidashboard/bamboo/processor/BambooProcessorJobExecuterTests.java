@@ -176,7 +176,7 @@ public class BambooProcessorJobExecuterTests {
 		BAMBOOSAMPLESERVER2.setUsername("does");
 		BAMBOOSAMPLESERVER2.setPassword(null);
 		BAMBOOSAMPLESERVER2.setJobType("deploy");
-		BAMBOOSAMPLESERVER2.setDeploymentProjectName("KnowHowDeployemnt");
+		BAMBOOSAMPLESERVER2.setDeploymentProjectName("TestDep");
 		BAMBOOSAMPLESERVER2.setDeploymentProjectId("190709761");
 
 		pt.add(BAMBOOSAMPLESERVER);
@@ -199,8 +199,8 @@ public class BambooProcessorJobExecuterTests {
 		deployment.setDeploymentStatus(DeploymentStatus.IN_PROGRESS);
 		deployment.setJobId("190709761");
 		deployment.setNumber("189988914");
-		deployment.setJobName("KnowHowDeployemnt");
-		deployment.setDeployedBy("Akshat");
+		deployment.setJobName("TestDep");
+		deployment.setDeployedBy("user1");
 
 
 		deployment1.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
@@ -212,8 +212,8 @@ public class BambooProcessorJobExecuterTests {
 		deployment1.setDeploymentStatus(DeploymentStatus.SUCCESS);
 		deployment1.setJobId("190709761");
 		deployment1.setNumber("189988914");
-		deployment1.setJobName("KnowHowDeployemnt");
-		deployment1.setDeployedBy("Shivani");
+		deployment1.setJobName("TestDep");
+		deployment1.setDeployedBy("user2");
 
 
 		deployment2.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
@@ -225,8 +225,8 @@ public class BambooProcessorJobExecuterTests {
 		deployment2.setDeploymentStatus(DeploymentStatus.IN_PROGRESS);
 		deployment2.setJobId("190709761");
 		deployment2.setNumber("189988914");
-		deployment2.setJobName("KnowHowDeployemnt");
-		deployment2.setDeployedBy("Hiren");
+		deployment2.setJobName("TestDep");
+		deployment2.setDeployedBy("user3");
 
 
 		deployment3.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
@@ -239,7 +239,7 @@ public class BambooProcessorJobExecuterTests {
 		deployment3.setDeploymentStatus(DeploymentStatus.SUCCESS);
 		deployment3.setJobId("190709761");
 		deployment3.setNumber("189988914");
-		deployment3.setJobName("KnowHowDeployemnt");
+		deployment3.setJobName("TestDep");
 		queuedDeploymentList.add(deployment);
 		deploymentList.add(deployment);
 		deploymentList.add(deployment1);

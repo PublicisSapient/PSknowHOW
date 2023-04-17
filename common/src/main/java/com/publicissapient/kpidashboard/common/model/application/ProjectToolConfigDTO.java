@@ -95,4 +95,6 @@ public class ProjectToolConfigDTO {
 
 	private String parameterNameForEnvironment;
 
+	//template ID
+	private String metadataTemplateCode;
 }

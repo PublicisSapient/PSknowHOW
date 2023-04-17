@@ -1,7 +1,7 @@
 {
   "expand": "branches",
   "link": {
-    "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC/branch",
+    "href": "/bamboo/rest/api/latest/plan/COOP-CC/branch",
     "rel": "self"
   },
   "branches": {
@@ -16,7 +16,7 @@
         "shortKey": "CC232",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC232",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC232",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -31,7 +31,7 @@
         "shortKey": "CC231",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC231",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC231",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -46,7 +46,7 @@
         "shortKey": "CC227",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC227",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC227",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -61,7 +61,7 @@
         "shortKey": "CC230",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC230",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC230",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -76,7 +76,7 @@
         "shortKey": "CC229",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC229",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC229",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -91,7 +91,7 @@
         "shortKey": "CC228",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC228",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC228",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -106,7 +106,7 @@
         "shortKey": "CC226",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC226",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC226",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -121,7 +121,7 @@
         "shortKey": "CC225",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC225",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC225",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -136,7 +136,7 @@
         "shortKey": "CC224",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC224",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC224",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -151,7 +151,7 @@
         "shortKey": "CC223",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC223",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC223",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -166,7 +166,7 @@
         "shortKey": "CC222",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC222",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC222",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -181,7 +181,7 @@
         "shortKey": "CC214",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC214",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC214",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -196,7 +196,7 @@
         "shortKey": "CC171",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC171",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC171",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -211,7 +211,7 @@
         "shortKey": "CC68",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC68",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC68",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -226,7 +226,7 @@
         "shortKey": "CC220",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC220",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC220",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -241,7 +241,7 @@
         "shortKey": "CC219",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC219",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC219",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -256,7 +256,7 @@
         "shortKey": "CC218",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC218",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC218",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -271,7 +271,7 @@
         "shortKey": "CC217",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC217",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC217",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -286,7 +286,7 @@
         "shortKey": "CC216",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC216",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC216",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -301,7 +301,7 @@
         "shortKey": "CC215",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC215",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC215",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -316,7 +316,7 @@
         "shortKey": "CC213",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC213",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC213",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -331,7 +331,7 @@
         "shortKey": "CC212",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC212",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC212",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -346,7 +346,7 @@
         "shortKey": "CC211",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC211",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC211",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -361,7 +361,7 @@
         "shortKey": "CC210",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC210",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC210",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -376,7 +376,7 @@
         "shortKey": "CC208",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC208",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC208",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -391,7 +391,7 @@
         "shortKey": "CC207",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC207",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC207",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -406,7 +406,7 @@
         "shortKey": "CC206",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC206",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC206",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -421,7 +421,7 @@
         "shortKey": "CC205",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC205",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC205",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -436,7 +436,7 @@
         "shortKey": "CC204",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC204",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC204",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -451,7 +451,7 @@
         "shortKey": "CC202",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC202",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC202",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -466,7 +466,7 @@
         "shortKey": "CC201",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC201",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC201",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -481,7 +481,7 @@
         "shortKey": "CC200",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC200",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC200",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -496,7 +496,7 @@
         "shortKey": "CC199",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC199",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC199",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -511,7 +511,7 @@
         "shortKey": "CC198",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC198",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC198",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -526,7 +526,7 @@
         "shortKey": "CC197",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC197",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC197",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -541,7 +541,7 @@
         "shortKey": "CC196",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC196",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC196",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -556,7 +556,7 @@
         "shortKey": "CC195",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC195",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC195",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -571,7 +571,7 @@
         "shortKey": "CC165",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC165",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC165",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -586,7 +586,7 @@
         "shortKey": "CC194",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC194",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC194",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -601,7 +601,7 @@
         "shortKey": "CC193",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC193",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC193",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -616,7 +616,7 @@
         "shortKey": "CC191",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC191",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC191",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -631,7 +631,7 @@
         "shortKey": "CC190",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC190",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC190",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -646,7 +646,7 @@
         "shortKey": "CC189",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC189",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC189",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -661,7 +661,7 @@
         "shortKey": "CC188",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC188",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC188",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -676,7 +676,7 @@
         "shortKey": "CC187",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC187",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC187",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -691,7 +691,7 @@
         "shortKey": "CC186",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC186",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC186",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -706,7 +706,7 @@
         "shortKey": "CC185",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC185",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC185",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -721,7 +721,7 @@
         "shortKey": "CC184",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC184",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC184",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -736,7 +736,7 @@
         "shortKey": "CC183",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC183",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC183",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -751,7 +751,7 @@
         "shortKey": "CC182",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC182",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC182",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -766,7 +766,7 @@
         "shortKey": "CC181",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC181",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC181",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -781,7 +781,7 @@
         "shortKey": "CC180",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC180",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC180",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -796,7 +796,7 @@
         "shortKey": "CC159",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC159",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC159",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -811,7 +811,7 @@
         "shortKey": "CC179",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC179",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC179",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -826,7 +826,7 @@
         "shortKey": "CC178",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC178",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC178",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -841,7 +841,7 @@
         "shortKey": "CC177",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC177",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC177",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -856,7 +856,7 @@
         "shortKey": "CC176",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC176",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC176",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -871,7 +871,7 @@
         "shortKey": "CC175",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC175",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC175",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -886,7 +886,7 @@
         "shortKey": "CC174",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC174",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC174",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -901,7 +901,7 @@
         "shortKey": "CC173",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC173",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC173",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -916,7 +916,7 @@
         "shortKey": "CC172",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC172",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC172",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -931,7 +931,7 @@
         "shortKey": "CC170",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC170",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC170",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -946,7 +946,7 @@
         "shortKey": "CC169",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC169",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC169",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -961,7 +961,7 @@
         "shortKey": "CC168",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC168",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC168",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -976,7 +976,7 @@
         "shortKey": "CC167",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC167",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC167",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -991,7 +991,7 @@
         "shortKey": "CC166",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC166",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC166",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1006,7 +1006,7 @@
         "shortKey": "CC164",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC164",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC164",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1021,7 +1021,7 @@
         "shortKey": "CC163",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC163",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC163",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1036,7 +1036,7 @@
         "shortKey": "CC162",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC162",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC162",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1051,7 +1051,7 @@
         "shortKey": "CC161",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC161",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC161",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1066,7 +1066,7 @@
         "shortKey": "CC70",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC70",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC70",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1081,7 +1081,7 @@
         "shortKey": "CC160",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC160",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC160",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1096,7 +1096,7 @@
         "shortKey": "CC158",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC158",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC158",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1111,7 +1111,7 @@
         "shortKey": "CC157",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC157",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC157",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1126,7 +1126,7 @@
         "shortKey": "CC156",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC156",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC156",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1141,7 +1141,7 @@
         "shortKey": "CC155",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC155",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC155",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1156,7 +1156,7 @@
         "shortKey": "CC154",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC154",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC154",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1171,7 +1171,7 @@
         "shortKey": "CC153",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC153",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC153",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1186,7 +1186,7 @@
         "shortKey": "CC152",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC152",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC152",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1201,7 +1201,7 @@
         "shortKey": "CC151",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC151",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC151",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1216,7 +1216,7 @@
         "shortKey": "CC150",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC150",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC150",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1231,7 +1231,7 @@
         "shortKey": "CC149",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC149",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC149",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1246,7 +1246,7 @@
         "shortKey": "CC148",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC148",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC148",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1261,7 +1261,7 @@
         "shortKey": "CC147",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC147",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC147",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1276,7 +1276,7 @@
         "shortKey": "CC146",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC146",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC146",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1291,7 +1291,7 @@
         "shortKey": "CC145",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC145",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC145",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1306,7 +1306,7 @@
         "shortKey": "CC143",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC143",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC143",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1321,7 +1321,7 @@
         "shortKey": "CC142",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC142",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC142",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1336,7 +1336,7 @@
         "shortKey": "CC141",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC141",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC141",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1351,7 +1351,7 @@
         "shortKey": "CC140",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC140",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC140",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1366,7 +1366,7 @@
         "shortKey": "CC139",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC139",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC139",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1381,7 +1381,7 @@
         "shortKey": "CC138",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC138",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC138",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1396,7 +1396,7 @@
         "shortKey": "CC137",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC137",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC137",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1411,7 +1411,7 @@
         "shortKey": "CC136",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC136",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC136",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1426,7 +1426,7 @@
         "shortKey": "CC135",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC135",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC135",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1441,7 +1441,7 @@
         "shortKey": "CC134",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC134",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC134",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1456,7 +1456,7 @@
         "shortKey": "CC133",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC133",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC133",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1471,7 +1471,7 @@
         "shortKey": "CC132",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC132",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC132",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1486,7 +1486,7 @@
         "shortKey": "CC131",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC131",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC131",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1501,7 +1501,7 @@
         "shortKey": "CC130",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC130",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC130",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1516,7 +1516,7 @@
         "shortKey": "CC129",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC129",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC129",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1531,7 +1531,7 @@
         "shortKey": "CC128",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC128",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC128",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1546,7 +1546,7 @@
         "shortKey": "CC127",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC127",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC127",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1561,7 +1561,7 @@
         "shortKey": "CC126",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC126",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC126",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1576,7 +1576,7 @@
         "shortKey": "CC125",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC125",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC125",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1591,7 +1591,7 @@
         "shortKey": "CC124",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC124",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC124",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1606,7 +1606,7 @@
         "shortKey": "CC122",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC122",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC122",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1621,7 +1621,7 @@
         "shortKey": "CC123",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC123",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC123",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1636,7 +1636,7 @@
         "shortKey": "CC121",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC121",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC121",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1651,7 +1651,7 @@
         "shortKey": "CC120",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC120",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC120",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1666,7 +1666,7 @@
         "shortKey": "CC119",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC119",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC119",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1681,7 +1681,7 @@
         "shortKey": "CC118",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC118",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC118",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1696,7 +1696,7 @@
         "shortKey": "CC117",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC117",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC117",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1711,7 +1711,7 @@
         "shortKey": "CC116",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC116",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC116",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1726,7 +1726,7 @@
         "shortKey": "CC115",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC115",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC115",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1741,7 +1741,7 @@
         "shortKey": "CC114",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC114",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC114",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1756,7 +1756,7 @@
         "shortKey": "CC113",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC113",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC113",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1771,7 +1771,7 @@
         "shortKey": "CC112",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC112",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC112",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1786,7 +1786,7 @@
         "shortKey": "CC111",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC111",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC111",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1801,7 +1801,7 @@
         "shortKey": "CC110",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC110",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC110",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1816,7 +1816,7 @@
         "shortKey": "CC109",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC109",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC109",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1831,7 +1831,7 @@
         "shortKey": "CC108",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC108",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC108",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1846,7 +1846,7 @@
         "shortKey": "CC107",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC107",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC107",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1861,7 +1861,7 @@
         "shortKey": "CC106",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC106",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC106",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1876,7 +1876,7 @@
         "shortKey": "CC105",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC105",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC105",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1891,7 +1891,7 @@
         "shortKey": "CC104",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC104",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC104",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1906,7 +1906,7 @@
         "shortKey": "CC103",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC103",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC103",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1921,7 +1921,7 @@
         "shortKey": "CC102",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC102",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC102",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1936,7 +1936,7 @@
         "shortKey": "CC101",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC101",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC101",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1951,7 +1951,7 @@
         "shortKey": "CC100",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC100",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC100",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1966,7 +1966,7 @@
         "shortKey": "CC99",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC99",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC99",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1981,7 +1981,7 @@
         "shortKey": "CC98",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC98",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC98",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -1996,7 +1996,7 @@
         "shortKey": "CC97",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC97",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC97",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2011,7 +2011,7 @@
         "shortKey": "CC96",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC96",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC96",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2026,7 +2026,7 @@
         "shortKey": "CC59",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC59",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC59",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2041,7 +2041,7 @@
         "shortKey": "CC95",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC95",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC95",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2056,7 +2056,7 @@
         "shortKey": "CC94",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC94",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC94",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2071,7 +2071,7 @@
         "shortKey": "CC93",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC93",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC93",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2086,7 +2086,7 @@
         "shortKey": "CC92",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC92",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC92",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2101,7 +2101,7 @@
         "shortKey": "CC91",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC91",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC91",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2116,7 +2116,7 @@
         "shortKey": "CC90",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC90",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC90",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2131,7 +2131,7 @@
         "shortKey": "CC89",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC89",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC89",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2146,7 +2146,7 @@
         "shortKey": "CC88",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC88",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC88",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2161,7 +2161,7 @@
         "shortKey": "CC87",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC87",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC87",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2176,7 +2176,7 @@
         "shortKey": "CC86",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC86",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC86",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2191,7 +2191,7 @@
         "shortKey": "CC85",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC85",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC85",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2206,7 +2206,7 @@
         "shortKey": "CC84",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC84",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC84",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2221,7 +2221,7 @@
         "shortKey": "CC83",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC83",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC83",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2236,7 +2236,7 @@
         "shortKey": "CC81",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC81",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC81",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2251,7 +2251,7 @@
         "shortKey": "CC80",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC80",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC80",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2266,7 +2266,7 @@
         "shortKey": "CC79",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC79",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC79",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2281,7 +2281,7 @@
         "shortKey": "CC78",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC78",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC78",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2296,7 +2296,7 @@
         "shortKey": "CC77",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC77",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC77",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2311,7 +2311,7 @@
         "shortKey": "CC76",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC76",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC76",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2326,7 +2326,7 @@
         "shortKey": "CC74",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC74",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC74",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2341,7 +2341,7 @@
         "shortKey": "CC73",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC73",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC73",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2356,7 +2356,7 @@
         "shortKey": "CC72",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC72",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC72",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2371,7 +2371,7 @@
         "shortKey": "CC71",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC71",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC71",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2386,7 +2386,7 @@
         "shortKey": "CC69",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC69",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC69",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2401,7 +2401,7 @@
         "shortKey": "CC67",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC67",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC67",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2416,7 +2416,7 @@
         "shortKey": "CC65",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC65",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC65",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2431,7 +2431,7 @@
         "shortKey": "CC64",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC64",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC64",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2446,7 +2446,7 @@
         "shortKey": "CC63",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC63",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC63",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2461,7 +2461,7 @@
         "shortKey": "CC62",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC62",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC62",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2476,7 +2476,7 @@
         "shortKey": "CC61",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC61",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC61",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2491,7 +2491,7 @@
         "shortKey": "CC60",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC60",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC60",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2506,7 +2506,7 @@
         "shortKey": "CC58",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC58",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC58",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2521,7 +2521,7 @@
         "shortKey": "CC57",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC57",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC57",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2536,7 +2536,7 @@
         "shortKey": "CC56",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC56",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC56",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2551,7 +2551,7 @@
         "shortKey": "CC55",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC55",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC55",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2566,7 +2566,7 @@
         "shortKey": "CC54",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC54",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC54",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2581,7 +2581,7 @@
         "shortKey": "CC53",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC53",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC53",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2596,7 +2596,7 @@
         "shortKey": "CC52",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC52",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC52",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2611,7 +2611,7 @@
         "shortKey": "CC51",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC51",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC51",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2626,7 +2626,7 @@
         "shortKey": "CC50",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC50",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC50",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2641,7 +2641,7 @@
         "shortKey": "CC49",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC49",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC49",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2656,7 +2656,7 @@
         "shortKey": "CC48",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC48",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC48",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2671,7 +2671,7 @@
         "shortKey": "CC47",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC47",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC47",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2686,7 +2686,7 @@
         "shortKey": "CC46",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC46",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC46",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2701,7 +2701,7 @@
         "shortKey": "CC45",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC45",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC45",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2716,7 +2716,7 @@
         "shortKey": "CC44",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC44",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC44",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2731,7 +2731,7 @@
         "shortKey": "CC43",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC43",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC43",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2746,7 +2746,7 @@
         "shortKey": "CC42",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC42",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC42",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2761,7 +2761,7 @@
         "shortKey": "CC41",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC41",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC41",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2776,7 +2776,7 @@
         "shortKey": "CC40",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC40",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC40",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2791,7 +2791,7 @@
         "shortKey": "CC39",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC39",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC39",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2806,7 +2806,7 @@
         "shortKey": "CC38",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC38",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC38",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2821,7 +2821,7 @@
         "shortKey": "CC37",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC37",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC37",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2836,7 +2836,7 @@
         "shortKey": "CC35",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC35",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC35",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2851,7 +2851,7 @@
         "shortKey": "CC36",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC36",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC36",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2866,7 +2866,7 @@
         "shortKey": "CC29",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC29",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC29",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2881,7 +2881,7 @@
         "shortKey": "CC34",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC34",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC34",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2896,7 +2896,7 @@
         "shortKey": "CC32",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC32",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC32",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2911,7 +2911,7 @@
         "shortKey": "CC26",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC26",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC26",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2926,7 +2926,7 @@
         "shortKey": "CC31",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC31",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC31",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2941,7 +2941,7 @@
         "shortKey": "CC30",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC30",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC30",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2956,7 +2956,7 @@
         "shortKey": "CC28",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC28",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC28",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2971,7 +2971,7 @@
         "shortKey": "CC23",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC23",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC23",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -2986,7 +2986,7 @@
         "shortKey": "CC17",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC17",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC17",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3001,7 +3001,7 @@
         "shortKey": "CC9",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC9",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC9",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3016,7 +3016,7 @@
         "shortKey": "CC27",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC27",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC27",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -3031,7 +3031,7 @@
         "shortKey": "CC24",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC24",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC24",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3046,7 +3046,7 @@
         "shortKey": "CC19",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC19",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC19",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3061,7 +3061,7 @@
         "shortKey": "CC22",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC22",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC22",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3076,7 +3076,7 @@
         "shortKey": "CC21",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC21",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC21",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3091,7 +3091,7 @@
         "shortKey": "CC20",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC20",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC20",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3106,7 +3106,7 @@
         "shortKey": "CC18",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC18",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC18",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3121,7 +3121,7 @@
         "shortKey": "CC10",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC10",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC10",
           "rel": "self"
         },
         "workflowType": "manual",
@@ -3136,7 +3136,7 @@
         "shortKey": "CC16",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC16",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC16",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3151,7 +3151,7 @@
         "shortKey": "CC15",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC15",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC15",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3166,7 +3166,7 @@
         "shortKey": "CC14",
         "enabled": true,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC14",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC14",
           "rel": "self"
         },
         "workflowType": "branches",
@@ -3181,7 +3181,7 @@
         "shortKey": "CC25",
         "enabled": false,
         "link": {
-          "href": "https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC25",
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC25",
           "rel": "self"
         },
         "workflowType": "manual",

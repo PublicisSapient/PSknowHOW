@@ -16,28 +16,70 @@
  *
  ******************************************************************************/
 
-header{
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: position 10s;
-  -ms-transition: position 10s;
-  -o-transition: position 10s;
-  transition: all 0.5s ease;
+.header {
+  border: 1px solid #a3a3a3;
+  background-color: var(--color-white);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1080;
+  left: 0;
 }
 
-.sticky {
-    position: sticky;
-    width: 100%;
-    left: 0;
-    top: 0;
-    z-index: 1080;
-    animation: smoothScroll 0.5s forwards;
+.main-body-wrapper {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+.main-body {
+  width: 100%;
+}
+
+.aside {
+  max-width: fit-content;
+  transition: all 0.5s;
+  background-color: yellow;
 }
 
 @keyframes smoothScroll {
-	0% {
-		transform: translateY(-40px);
-	}
-	100% {
-		transform: translateY(0px);
-	}
+  0% {
+    transform: translateY(-40px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
+
+
+
+#wrapper {
+  padding-left: 0;
+}
+
+#sidebar-wrapper {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  width: 5rem;
+  height: 100%;
+  margin-left: -250px; 
+  box-shadow: 0px 3px 6px #00000029; 
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 16rem;
+}
+
+#page-content-wrapper {
+  width: 100%;
+  padding-left: 5rem;
+}
+
+
+
+#wrapper.toggled #page-content-wrapper {
+  padding-left: 16rem;
+}
+
+

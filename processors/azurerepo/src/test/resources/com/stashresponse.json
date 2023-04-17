@@ -4,13 +4,13 @@
 		{
 			"commitId": "771baf27bf8796adebe30e46cb7a0da50c68457f",
 			"author": {
-				"name": "Arti Patel",
-				"email": "arti.patel@publicissapient.com",
+				"name": "Test User",
+				"email": "testUser@test.com",
 				"date": "2020-06-05T10:42:24Z"
 					},
 			"committer": {
-				"name": "Arti Patel",
-				"email": "arti.patel@publicissapient.com",
+				"name": "Test User",
+				"email": "testUser@test.com",
 				"date": "2020-06-05T10:42:24Z"
 					},
 			"comment": "Merged PR 2: Updated test file master",
@@ -20,20 +20,20 @@
 				"Edit": 1,
 				"Delete": 0
 					},
-			"url": "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/git/repositories/17a61eb1-2860-4609-bf01-b6a8769c8a69/commits/771baf27bf8796adebe30e46cb7a0da50c68457f",
-			"remoteUrl": "https://dev.azure.com/sundeepm/AzureSpeedy/_git/AzureSpeedy/commit/771baf27bf8796adebe30e46cb7a0da50c68457f"
+			"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/git/repositories/17a61eb1-2860-4609-bf01-b6a8769c8a69/commits/771baf27bf8796adebe30e46cb7a0da50c68457f",
+			"remoteUrl": "https://test.com/testUser/testRepo/_git/testRepo/commit/771baf27bf8796adebe30e46cb7a0da50c68457f"
 		},
 		
 		{
 			"commitId": "23efbc7eb9d78ccb4ce638e3f8128028618ab431",
 			"author": {
-				"name": "Arti Patel",
-				"email": "arti.patel@publicissapient.com",
+				"name": "Test User",
+				"email": "testUser@test.com",
 				"date": "2020-06-05T10:40:10Z"
 					},
 			"committer": {
-				"name": "Arti Patel",
-				"email": "arti.patel@publicissapient.com",
+				"name": "Test User",
+				"email": "testUser@test.com",
 				"date": "2020-06-05T10:40:10Z"
 					},
 			"comment": "Updated test file",
@@ -42,8 +42,8 @@
 				"Edit": 1,
 				"Delete": 0
 					},
-			"url": "https://dev.azure.com/sundeepm/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/git/repositories/17a61eb1-2860-4609-bf01-b6a8769c8a69/commits/23efbc7eb9d78ccb4ce638e3f8128028618ab431",
-			"remoteUrl": "https://dev.azure.com/sundeepm/AzureSpeedy/_git/AzureSpeedy/commit/23efbc7eb9d78ccb4ce638e3f8128028618ab431"
+			"url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/git/repositories/17a61eb1-2860-4609-bf01-b6a8769c8a69/commits/23efbc7eb9d78ccb4ce638e3f8128028618ab431",
+			"remoteUrl": "https://test.com/testUser/testRepo/_git/testRepo/commit/23efbc7eb9d78ccb4ce638e3f8128028618ab431"
 		}
 	]
 }

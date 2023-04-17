@@ -15,6 +15,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import org.apache.commons.collections.MapUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -76,8 +77,9 @@ public class DeployServiceImplTest {
 				.findByNumberAndJobNameAndBasicProjectConfigId(Mockito.anyString(), Mockito.anyString(), Mockito.any());
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails = new ArrayList<>();
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
+				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList, pushDataDetails);
 		Assert.assertEquals(0, deployFailedRecords);
 		Assert.assertEquals(2, deploymentList.size());
 	}
@@ -97,8 +99,9 @@ public class DeployServiceImplTest {
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails = new ArrayList<>();
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
+				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList, pushDataDetails);
 		Assert.assertEquals(2, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
 		Assert.assertEquals(2,
@@ -129,12 +132,13 @@ public class DeployServiceImplTest {
 		errorsMap.put("number", "number should be in digits");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Deployment> deploymentList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectBasicConfigId,
-				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList);
-		Assert.assertEquals(2, deployFailedRecords);
+				pushBuildDeployCorrectData.getDeployments(), deploymentList, errorDataList, pushDataDetails);
+		Assert.assertEquals(1, deployFailedRecords);
 		Assert.assertEquals(0, deploymentList.size());
-		Assert.assertEquals(2,
+		Assert.assertEquals(1,
 				errorDataList.stream()
 						.filter(buildDeployErrorData -> MapUtils.isNotEmpty(buildDeployErrorData.getErrors()))
 						.collect(Collectors.toList()).size());

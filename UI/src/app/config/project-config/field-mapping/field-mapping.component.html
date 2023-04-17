@@ -46,6 +46,25 @@
 
                 <div class="p-p-0">
                     <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('storyFirstStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Story First Status <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
+                                                    Definition:
+                                                    Default status when a Story is opened.   <br>
+                                                    Example: Open<hr>
+                                                    KPI Impacted:
+                                                    Jira Processor History
+                                                    </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="storyFirstStatus" formControlName="storyFirstStatus"
+                                placeholder="Enter Story Created Status"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'storyFirstStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDefectCreatedStatus') || fieldstoShow.length === 0">
                         <label class="field-title">Defect Created Status <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
@@ -803,11 +822,14 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('defectPriority') || fieldstoShow.length === 0">
-                        <label class="field-title">Defect priority to exclude from FTPR <span class="fa fa-info-circle"
+                        <label class="field-title">Defect priority exclusion from Quality KPIs <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                     Definition:
-                                    This field is used to identify if a defect is raised by FTPR <hr>
-                                    KPI Impacted : First Time Pass Rate Kpi.
+                                    The defects tagged to priority values selected in this field on Mappings screen will be excluded from: <br />
+                                    1. FTPR (Quality and Iteration Dashboard) <br/>
+                                    2. Defect Injection Rate (Quality Status) <br />
+                                    3. Defect Density (Quality Status) <br />
+                                    4. Quality Status (Iteration Dashboard) <br />
                                     </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
                                 [escape]="false" tooltipPosition="top"></span></label>
                         <p-multiSelect id="defectPriority" [options]="selectedPriority" placeholder="Select Priority"
@@ -818,11 +840,14 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('excludeRCAFromFTPR') || fieldstoShow.length === 0">
-                        <label class="field-title">RCA values to exclude from FTPR <span class="fa fa-info-circle"
+                        <label class="field-title">Defect RCA exclusion from Quality KPIs <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                 Definition:
-                                Provide RCA values against which the tagged defects will be excluded from FTPR <br>
-                                Example: Coding, Requirements etc </span>' tooltipPosition="top" tooltipEvent="hover"
+                                The defects tagged to RCA values selected in this field on Mappings screen will be excluded from: <br />
+                                1. FTPR (Quality and Iteration Dashboard) <br/>
+                                2. Defect Injection Rate (Quality Status) <br/>
+                                3. Defect Density (Quality Status) <br />
+                                4. Quality Status (Iteration Dashboard)</span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
                         <div class="p-inputgroup">
                             <p-chips [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}"
@@ -1349,3 +1374,10 @@
         </div>
     </p-footer>
 </p-dialog>
+
+<p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
+    </p-footer>
+</p-confirmDialog>

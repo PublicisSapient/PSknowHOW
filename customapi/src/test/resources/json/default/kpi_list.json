@@ -3561,6 +3561,90 @@
     "kpiFilter": "multiSelectDropDown"
   },
   {
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 12,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "definition": "Quality Status gives the information about defects linked/unlinked with the story and Defect density",
+      "formula": [
+        {
+          "lhs": "Defect Density",
+          "operator": "division",
+          "operands": [
+            "All defects added to the Sprint (post sprint start) and linked to stories",
+            "Storypoint of all linked stories"
+          ]
+        }
+      ],
+      "details": [
+        {
+          "type": "paragraph",
+          "value": " Defect density - DEFECT DENSITY measures the total number of defects against the size of a story"
+        },
+        {
+          "type": "paragraph",
+          "value": "Story related defects - All defects added to the Sprint and linked to stories (post sprint start)"
+        },
+        {
+          "type": "paragraph",
+          "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
+        }
+
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column"
+  },
+  {
+    "kpiId": "kpi134",
+    "kpiName": "Unplanned Work Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Unplanned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isSquadSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi127",
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
@@ -3702,6 +3786,40 @@
         {
           "type": "paragraph",
           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi133",
+    "kpiName": "First Time Pass Rate",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+        },
+        {
+          "type": "paragraph",
+          "value": "It measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
         }
       ]
     },

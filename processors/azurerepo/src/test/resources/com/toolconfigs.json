@@ -6,7 +6,7 @@
 		"toolName": "AzureRepository",
 		"apiVersion": "5.1",
 		"branch": "master",
-		"repositoryName": "AzureSpeedy",
+		"repositoryName": "testRepo",
 		"connectionId":"5eeb00c3c4cf29def8a6c389"
 	}
 ]

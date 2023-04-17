@@ -657,7 +657,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
+				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
 
 				setEstimates(jiraIssue, issue);
 
@@ -710,13 +710,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
 			}
 			assigneeDetailsRepository.save(assigneeDetails);
-		}
-	}
-
-	private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee,
-			Set<Assignee> assigneeSetToSave) {
-		if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-			setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave);
 		}
 	}
 
@@ -1780,8 +1773,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	private void setURL(String ticketNumber, JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		Boolean cloudEnv = connectionOptional.isPresent()?connectionOptional.map(Connection::isCloudEnv).get():Boolean.FALSE;
+		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
 		baseUrl= baseUrl + (baseUrl.endsWith("/") ? "" : "/");
 		if(cloudEnv){
 			baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;

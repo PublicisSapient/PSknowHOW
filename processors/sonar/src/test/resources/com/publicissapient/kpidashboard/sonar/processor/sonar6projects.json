@@ -7,15 +7,15 @@
     {
       "organization": "default-organization",
       "id": "AVu3b-MAphY78UZXuYHp",
-      "key": "com.publicissapient.kpidashboard.sonar:TestProject",
-      "name": "com.publicissapient.kpidashboard.sonar:TestProject",
+      "key": "testPackage.sonar:TestProject",
+      "name": "testPackage.sonar:TestProject",
       "qualifier": "TRK"
     },
     {
       "organization": "default-organization",
       "id": "BVx3b-MAphY78UZXuYHp",
-      "key": "com.publicissapient.kpidashboard.sonar:AnotherTestProject",
-      "name": "com.publicissapient.kpidashboard.sonar:AnotherTestProject",
+      "key": "testPackage.sonar:AnotherTestProject",
+      "name": "testPackage.sonar:AnotherTestProject",
       "qualifier": "TRK"
     }
   ]

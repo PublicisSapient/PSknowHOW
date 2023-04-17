@@ -10,7 +10,7 @@
         "finishDate": "2021-07-05T00:00:00Z",
         "timeFrame": "past"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/47b459dc-6563-4264-a88c-c44480774a79"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/47b459dc-6563-4264-a88c-c44480774a79"
     },
     {
       "id": "12e4100d-6356-4712-9d3c-39c86bdc5a06",
@@ -21,7 +21,7 @@
         "finishDate": "2021-07-27T00:00:00Z",
         "timeFrame": "past"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/12e4100d-6356-4712-9d3c-39c86bdc5a06"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/12e4100d-6356-4712-9d3c-39c86bdc5a06"
     },
     {
       "id": "047c37af-eeb9-4667-b9b5-e0bd8b3eaf05",
@@ -32,7 +32,7 @@
         "finishDate": "2021-08-10T00:00:00Z",
         "timeFrame": "past"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/047c37af-eeb9-4667-b9b5-e0bd8b3eaf05"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/047c37af-eeb9-4667-b9b5-e0bd8b3eaf05"
     },
     {
       "id": "7610d6eb-b088-4e9a-ae64-89f3b716cdf4",
@@ -43,7 +43,7 @@
         "finishDate": "2021-08-24T00:00:00Z",
         "timeFrame": "past"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/7610d6eb-b088-4e9a-ae64-89f3b716cdf4"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/7610d6eb-b088-4e9a-ae64-89f3b716cdf4"
     },
     {
       "id": "2ce248fb-a193-4a15-a1e8-d0e20c1871e2",
@@ -54,7 +54,7 @@
         "finishDate": "2021-09-07T00:00:00Z",
         "timeFrame": "current"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/2ce248fb-a193-4a15-a1e8-d0e20c1871e2"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/2ce248fb-a193-4a15-a1e8-d0e20c1871e2"
     },
     {
       "id": "e6ee261f-b2b2-4b2e-a0f9-209a616dd738",
@@ -65,7 +65,7 @@
         "finishDate": null,
         "timeFrame": "future"
       },
-      "url": "https://dev.azure.com/mampacch/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/e6ee261f-b2b2-4b2e-a0f9-209a616dd738"
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/e6ee261f-b2b2-4b2e-a0f9-209a616dd738"
     }
   ]
 }

@@ -478,7 +478,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 		existingConnection.setConnectionName(connection.getConnectionName());
 		existingConnection.setConsumerKey(connection.getConsumerKey());
-		existingConnection.setIsOAuth(connection.getIsOAuth());
 		if (StringUtils.isNotEmpty(connection.getPassword())) {
 			existingConnection.setPassword(connection.getPassword());
 		}
@@ -499,6 +498,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setConnPrivate(connection.isConnPrivate());
 		existingConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
+		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
+		existingConnection.setBearerToken(connection.isBearerToken());
 	}
 
 	private void saveConnection(Connection conn) {
@@ -557,6 +558,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 	}
 
+	private void setEncryptedPatOAuthTokenForDb(Connection conn) {
+		String patOAuthTokenFromClient = conn.getPatOAuthToken();
+		if (StringUtils.isEmpty(patOAuthTokenFromClient)) {
+			conn.setPatOAuthToken(conn.getType() == null ? "" : conn.getPatOAuthToken());
+		} else {
+			conn.setPatOAuthToken(encryptStringForDb(patOAuthTokenFromClient));
+		}
+	}
+
 	private String encryptStringForDbZephyr(String plainTextAccessToken) {
 		String encryptedString = aesEncryptionService.encrypt(plainTextAccessToken,
 				customApiConfig.getAesEncryptionKey());
@@ -595,6 +605,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String typeName = conn.getType();
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
+			setEncryptedPasswordFieldForDb(conn);
+			if (conn.isBearerToken()) {
+				setEncryptedPatOAuthTokenForDb(conn);
+			}
+			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
@@ -639,6 +654,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String typeName = connectionDTO.getType();
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
+			connectionDTO.setPassword("");
+			connectionDTO.setPatOAuthToken("");
+			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
