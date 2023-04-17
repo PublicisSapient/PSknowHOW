@@ -36,7 +36,7 @@ export class TestConnectionService {
       username,
       password: password ? this.rsa.encrypt(password) : '',
       vault,
-      patOAuthToken
+      patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : ''
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
