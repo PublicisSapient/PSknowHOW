@@ -12,5 +12,5 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Echo Hello World
+    - name: Read this message
       run: echo "Hello ${{ github.actor }} you are beautiful"
