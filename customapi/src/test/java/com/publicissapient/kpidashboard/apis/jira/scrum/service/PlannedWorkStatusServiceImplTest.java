@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -35,7 +36,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -66,9 +66,9 @@ public class PlannedWorkStatusServiceImplTest {
 	@InjectMocks
 	private PlannedWorkStatusServiceImpl plannedWorkStatusService;
 	@Mock
-	private SprintRepository sprintRepository;
-	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private JiraServiceR jiraService;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -120,7 +120,7 @@ public class PlannedWorkStatusServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);
@@ -145,7 +145,7 @@ public class PlannedWorkStatusServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		sprintDetails.setState(SprintDetails.SPRINT_STATE_ACTIVE);
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);
@@ -178,7 +178,7 @@ public class PlannedWorkStatusServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);

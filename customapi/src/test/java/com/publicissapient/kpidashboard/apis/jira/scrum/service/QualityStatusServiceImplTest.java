@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -47,13 +47,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -67,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QualityStatusServiceImplTest {
@@ -86,10 +83,9 @@ public class QualityStatusServiceImplTest {
 	private CustomApiConfig customApiConfig;
 
 	@Mock
-	private SprintRepository sprintRepository;
-
-	@Mock
 	private KpiHelperService kpiHelperService;
+	@Mock
+	private JiraServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 
@@ -146,16 +142,13 @@ public class QualityStatusServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		when(jiraIssueRepository.findLinkedDefects(anyMap() , any() , anyMap())).thenReturn(bugList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(qualityStatusServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
 			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

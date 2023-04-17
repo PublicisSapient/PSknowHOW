@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +58,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClosurePossibleTodayServiceImplTest {
@@ -81,7 +81,7 @@ public class ClosurePossibleTodayServiceImplTest {
 	private ClosurePossibleTodayServiceImpl closurePossibleTodayServiceImpl;
 
 	@Mock
-	private SprintRepository sprintRepository;
+	private JiraServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -122,7 +122,7 @@ public class ClosurePossibleTodayServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		sprintDetails.setState("ACTIVE");
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

@@ -3,21 +3,19 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -29,7 +27,6 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -39,8 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ArrayList;;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +71,7 @@ public class IterationStatusServiceImplTest {
     private IterationStatusServiceImpl iterationStatusServiceImpl;
 
     @Mock
-    private SprintRepository sprintRepository;
+    private JiraServiceR jiraService;
 
     private List<JiraIssue> storyList = new ArrayList<>();
     private List<JiraIssueCustomHistory> historyList = new ArrayList<>();
@@ -132,14 +128,11 @@ public class IterationStatusServiceImplTest {
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-        when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
         when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any())).thenReturn(historyList);
 
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-                .thenReturn(kpiRequestTrackerId);
-        when(iterationStatusServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
         try {
             KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
@@ -157,14 +150,10 @@ public class IterationStatusServiceImplTest {
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
         sprintDetails.setState("ACTIVE");
-        when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
         when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any())).thenReturn(historyList);
 
-        String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-                .thenReturn(kpiRequestTrackerId);
-        when(iterationStatusServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
         try {
             KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);

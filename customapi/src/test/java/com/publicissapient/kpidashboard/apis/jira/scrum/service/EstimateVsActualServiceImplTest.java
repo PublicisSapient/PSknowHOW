@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -65,7 +66,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EstimateVsActualServiceImplTest {
@@ -87,9 +87,8 @@ public class EstimateVsActualServiceImplTest {
 
 	@InjectMocks
 	private EstimateVsActualServiceImpl estimateActualServiceImpl;
-
 	@Mock
-	private SprintRepository sprintRepository;
+	private JiraServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -140,7 +139,7 @@ public class EstimateVsActualServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

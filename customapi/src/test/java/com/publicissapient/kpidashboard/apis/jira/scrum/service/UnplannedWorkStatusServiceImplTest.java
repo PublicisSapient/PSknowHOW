@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +52,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UnplannedWorkStatusServiceImplTest {
@@ -65,7 +65,7 @@ public class UnplannedWorkStatusServiceImplTest {
 	@InjectMocks
 	private UnplannedWorkStatusServiceImpl unplannedWorkStatusService;
 	@Mock
-	private SprintRepository sprintRepository;
+	private JiraServiceR jiraService;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -114,7 +114,7 @@ public class UnplannedWorkStatusServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
@@ -145,7 +145,7 @@ public class UnplannedWorkStatusServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		Map<String, Object> returnMap = unplannedWorkStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);

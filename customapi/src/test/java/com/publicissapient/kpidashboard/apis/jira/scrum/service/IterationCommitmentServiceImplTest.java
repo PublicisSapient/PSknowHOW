@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -64,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IterationCommitmentServiceImplTest {
@@ -85,7 +85,7 @@ public class IterationCommitmentServiceImplTest {
 	private IterationCommitmentServiceImpl iterationCommitmentServiceImpl;
 
 	@Mock
-	private SprintRepository sprintRepository;
+	private JiraServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -134,7 +134,7 @@ public class IterationCommitmentServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

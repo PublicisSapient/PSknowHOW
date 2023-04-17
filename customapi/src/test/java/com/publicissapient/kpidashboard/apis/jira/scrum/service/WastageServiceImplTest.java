@@ -41,7 +41,6 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -59,6 +58,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WastageServiceImplTest {
@@ -78,9 +78,9 @@ public class WastageServiceImplTest {
 	private WastageServiceImpl wastageServiceImpl;
 
 	@Mock
-	private SprintRepository sprintRepository;
-	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private JiraServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
@@ -133,7 +133,7 @@ public class WastageServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);
@@ -160,7 +160,7 @@ public class WastageServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		sprintDetails.setState("ACTIVE");
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(jiraIssueCustomHistoryList);
