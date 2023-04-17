@@ -401,6 +401,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			}
 
 			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
+				if (closedStatusDateMap.containsKey(storySprintDetail.getFromStatus())) {
+					closedStatusDateMap.clear();
+				}
 				closedStatusDateMap.put(storySprintDetail.getFromStatus(), activityLocalDate);
 			}
 		}
