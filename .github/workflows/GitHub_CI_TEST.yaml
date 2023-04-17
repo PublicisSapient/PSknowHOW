@@ -14,3 +14,9 @@ jobs:
       
     - name: Read this message
       run: echo "Hello ${{ github.actor }} you are beautiful"
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: deploy steps
+      run: echo "Deploying on test env"
