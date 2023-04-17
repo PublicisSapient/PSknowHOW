@@ -6,21 +6,17 @@ import {
 
 import { KpiCardComponent } from './kpi-card.component';
 import { SharedService } from 'src/app/services/shared.service';
-import { HttpService } from 'src/app/services/http.service';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 
 describe('KpiCardComponent', () => {
   let component: KpiCardComponent;
   let fixture: ComponentFixture<KpiCardComponent>;
   let sharedService: SharedService;
-  // let httpMock;
-  let http_service: HttpService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ KpiCardComponent ],
-      providers: [SharedService, HttpService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [SharedService]
     })
     .compileComponents();
   });
@@ -29,8 +25,6 @@ describe('KpiCardComponent', () => {
     fixture = TestBed.createComponent(KpiCardComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
-    http_service = TestBed.inject(HttpService);
-    // httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
 

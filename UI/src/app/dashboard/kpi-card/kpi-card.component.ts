@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
-import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-kpi-card',
@@ -33,7 +32,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   selectedTab: string;
 
 
-  constructor(private service: SharedService, private http_service: HttpService) {
+  constructor(private service: SharedService) {
   }
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
