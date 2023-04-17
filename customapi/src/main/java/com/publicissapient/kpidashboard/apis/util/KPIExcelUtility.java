@@ -753,14 +753,15 @@ public class KPIExcelUtility {
 					excelData.setPotentialDelay("-");
 					excelData.setPredictedCompletionDate("-");
 				}
-				if (completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList())
-						.contains(e.getNumber())) {
-					excelData.setActualCompletionDate(LocalDate
-							.parse(e.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
-							.toString());
-				} else {
-					excelData.setActualCompletionDate("-");
-				}
+                Optional<JiraIssue> completedJiraIssue = completedIssue.stream()
+                        .filter(jiraIssue -> jiraIssue.getNumber().equals(e.getNumber()))
+                        .findFirst();
+
+                if (completedJiraIssue.isPresent()) {
+                    excelData.setActualCompletionDate(completedJiraIssue.get().getUpdateDate());
+                } else {
+                    excelData.setActualCompletionDate("-");
+                }
                 excelDataList.add(excelData);
             });
         }
