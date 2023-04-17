@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -97,7 +96,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request) {
-
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		if (StringUtils.isBlank(authCookie.getValue())) {
 			return null;
@@ -105,23 +103,25 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		String token = authCookie.getValue();
 
-		UserTokenData data = null;
-
-		data = userTokenReopository.findByUserToken(token);
-
-		if (null == data) {
-			return null;
-		}
+		/*
+		 * UserTokenData data = null;
+		 * 
+		 * data = userTokenReopository.findByUserToken(token);
+		 * 
+		 * if (null == data) { return null; }
+		 */
 
 		try {
-			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
-					.getBody();
-			String username = claims.getSubject();
-			Collection<? extends GrantedAuthority> authorities = getAuthorities(
-					claims.get(ROLES_CLAIM, Collection.class));
-			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
-					authorities);
-			authentication.setDetails(claims.get(DETAILS_CLAIM));
+			PreAuthenticatedAuthenticationToken authentication = null;
+			if (StringUtils.isNotBlank(token)) {
+				Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+						.getBody();
+				String username = claims.getSubject();
+				Collection<? extends GrantedAuthority> authorities = getAuthorities(
+						claims.get(ROLES_CLAIM, Collection.class));
+				authentication = new PreAuthenticatedAuthenticationToken(username, null, authorities);
+				authentication.setDetails(claims.get(DETAILS_CLAIM));
+			}
 
 			return authentication;
 
