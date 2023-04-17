@@ -1,0 +1,16 @@
+name: Echo Hello World
+
+on:
+  push:
+    branches: [ DTS-24498_GitHubActions ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Echo Hello World
+      run: echo "Hello World"
