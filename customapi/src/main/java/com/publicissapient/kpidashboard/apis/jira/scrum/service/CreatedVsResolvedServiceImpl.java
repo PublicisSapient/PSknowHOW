@@ -485,12 +485,12 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
-			JiraIssueSprint issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
+			Optional<JiraIssueSprint> issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
 							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
-					.reduce((a, b) -> b).get();
-			if (fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.getFromStatus()))
+					.reduce((a, b) -> b);
+			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getFromStatus()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;
