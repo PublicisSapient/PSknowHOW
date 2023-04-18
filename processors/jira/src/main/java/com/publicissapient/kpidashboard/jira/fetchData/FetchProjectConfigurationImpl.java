@@ -57,6 +57,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
     @Autowired
     JiraClient jiraClient;
 
+    @Autowired
+    NotificationHandler notificationHandler;
+
     private ProcessorJiraRestClient client;
 
    @Override
@@ -82,8 +85,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
 
     private List<String> getProjectsBasicConfigIds() {
        return Arrays.asList(
-               "642db8e71b4c1a115a4c1d1c" //project name:pg08_board
-//               "642db01a1b4c1a115a4c1d12" //project name:pg08
+//               "642db8e71b4c1a115a4c1d1c" //project name:pg08_board
+               "643661f3782abe746ac0069d" //project name:pg
        );
     }
 
