@@ -692,13 +692,14 @@ public class OnlineAdapter implements JiraAdapter {
                         projectConfig, boardId);
 
                 addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
-
-                sprint.setCompletedIssues(completedIssues);
-                sprint.setNotCompletedIssues(notCompletedIssues);
-                sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
-                sprint.setPuntedIssues(puntedIssues);
-                sprint.setAddedIssues(addedIssues);
-                sprint.setTotalIssues(totalIssues);
+                if(sprint != null) {
+                    sprint.setCompletedIssues(completedIssues);
+                    sprint.setNotCompletedIssues(notCompletedIssues);
+                    sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
+                    sprint.setPuntedIssues(puntedIssues);
+                    sprint.setAddedIssues(addedIssues);
+                    sprint.setTotalIssues(totalIssues);
+                }
 
             } catch (ParseException pe) {
                 log.error("Parser exception when parsing statuses", pe);
@@ -940,8 +941,6 @@ public class OnlineAdapter implements JiraAdapter {
 			log.error("Malformed url for loading epic data", mfe, kv(CommonConstant.PSLOGDATA, logData));
 		} catch (IOException ioe) {
 			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, logData));
-		} catch (InterruptedException ie){
-			log.error("interrupted exception while fetching epic", ie.getCause());
 		}
 		return getEpicIssuesQuery(epicList, logData);
 	}
@@ -954,9 +953,9 @@ public class OnlineAdapter implements JiraAdapter {
                 JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
                 if (null != obj) {
                     valuesJson = (JSONArray) obj.get("values");
+                    getEpic(valuesJson, epicList);
+                    isLast = Boolean.valueOf(obj.get("isLast").toString());
                 }
-                getEpic(valuesJson, epicList);
-                isLast = Boolean.valueOf(obj.get("isLast").toString());
             } catch (ParseException pe) {
                 log.error("Parser exception when parsing statuses", pe);
             }
