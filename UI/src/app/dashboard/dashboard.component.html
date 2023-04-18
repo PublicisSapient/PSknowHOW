@@ -26,9 +26,9 @@
     </div>
   </div>
  
-  <div id="wrapper" [ngClass]="{'toggled':isApply}">
+  <div id="wrapper" [ngClass]="sideNavStyle">
    <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help') && !router.url.split('/').includes('Error')"
-      [ngStyle]="{'height': 'calc(100vh - '+header.offsetHeight+'px)', 'top':'calc('+header.offsetHeight+'px'+' - '+'0px)'}"
+      [ngStyle]="headerStyle"
 >
       <app-nav id="top"></app-nav>
     </div>
