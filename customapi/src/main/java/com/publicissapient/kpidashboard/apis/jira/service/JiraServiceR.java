@@ -25,7 +25,11 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +81,12 @@ public class JiraServiceR {
 	@Autowired
 	private SprintRepository sprintRepository;
 	private SprintDetails sprintDetails;
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private List<JiraIssue> jiraIssueList;
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call
@@ -128,7 +138,12 @@ public class JiraServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
 
-				fetchSprintDetails(Arrays.stream(kpiRequest.getIds()).findFirst().orElse(null));
+				if (null != origRequestedKpis.get(0).getKpiCategory() && !origRequestedKpis.get(0).getKpiCategory().isEmpty() &&
+						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
+					fetchSprintDetails(Arrays.stream(kpiRequest.getIds()).findFirst().orElse(null));
+					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+				}
 
 				// set filter value to show on trend line. If sub-projects are
 				// in
@@ -301,6 +316,22 @@ public class JiraServiceR {
 
 	public SprintDetails getCurrentSprintDetails() {
 		return sprintDetails;
+	}
+
+	public void fetchJiraIssues(String basicProjectConfigId) {
+		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
+		return jiraIssueList;
+	}
+
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
+		return jiraIssueCustomHistoryList;
 	}
 
 }

@@ -381,4 +381,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getCurrentSprintDetails();
 	}
 
+	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
+		return jiraService.getJiraIssuesForCurrentSprint().stream().filter(jiraIssue ->
+				numbersList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+	}
+
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass(List<String> numbersList) {
+		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint().stream().filter(jiraIssueCustomHistory ->
+				numbersList.contains(jiraIssueCustomHistory.getStoryID())).collect(Collectors.toList());
+	}
+
 }

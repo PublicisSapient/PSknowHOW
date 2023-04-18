@@ -48,7 +48,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -132,10 +131,9 @@ public class DailyClosureServiceImplTest {
         String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
         String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
         when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
-        when(jiraIssueRepository
-                .findByNumberInAndBasicProjectConfigId(Mockito.anyList(), Mockito.anyString())).thenReturn(jiraIssues);
-        when(jiraIssueHistoryRepository
-                .findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(), Mockito.anyList())).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
+        when(jiraService
+                .getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
         Map<String, Object> defectDataListMap = dailyClosureService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
                 kpiRequest);
         assertNotNull(defectDataListMap);
@@ -148,7 +146,7 @@ public class DailyClosureServiceImplTest {
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
         when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
-        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);

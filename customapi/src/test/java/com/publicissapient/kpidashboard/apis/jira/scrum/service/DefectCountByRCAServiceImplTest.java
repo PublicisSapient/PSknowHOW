@@ -130,7 +130,7 @@ public class DefectCountByRCAServiceImplTest {
                     .thenReturn(kpiRequestTrackerId);
             when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
             when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-            when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+            when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
             when(jiraIssueRepository.findLinkedDefects(anyMap(), any() , anyMap())).thenReturn(bugList);
             KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
@@ -149,7 +149,7 @@ public class DefectCountByRCAServiceImplTest {
         String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
         String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
         when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
-        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
         Map<String, Object> returnMap = defectCountByRCAService.fetchKPIDataFromDb(leafNodeList, startDate,
                 endDate, kpiRequest);
         assertNotNull(returnMap);

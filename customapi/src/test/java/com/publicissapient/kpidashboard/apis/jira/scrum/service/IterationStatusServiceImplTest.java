@@ -129,8 +129,8 @@ public class IterationStatusServiceImplTest {
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
         when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
-        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
-        when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any())).thenReturn(historyList);
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(historyList);
 
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         try {
@@ -151,8 +151,8 @@ public class IterationStatusServiceImplTest {
 
         sprintDetails.setState("ACTIVE");
         when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
-        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
-        when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(any(), any())).thenReturn(historyList);
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(historyList);
 
         try {
             KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

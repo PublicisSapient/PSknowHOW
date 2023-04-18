@@ -23,7 +23,6 @@ import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWis
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -67,8 +66,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -94,11 +91,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String DATE = "date";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -150,7 +142,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Daily Closure -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -158,8 +149,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> totalIssueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(totalIssues, basicProjectConfigId);
+					List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), totalIssueList);
@@ -167,14 +157,11 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 					resultListMap.put(SPRINT, sprintDetails);
 				}
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					List<JiraIssue> completedIssueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
+					List<JiraIssue> completedIssueList = getJiraIssuesFromBaseClass(completedIssues);
 					Set<JiraIssue> filtersCompletedIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
-					List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository
-							.findByStoryIDInAndBasicProjectConfigIdIn(completedIssues,
-									Arrays.asList(basicProjectConfigId));
+					List<JiraIssueCustomHistory> completedJiraIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(completedIssues);
 					Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
 					filtersCompletedIssuesList.forEach(issue -> issue
 							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));

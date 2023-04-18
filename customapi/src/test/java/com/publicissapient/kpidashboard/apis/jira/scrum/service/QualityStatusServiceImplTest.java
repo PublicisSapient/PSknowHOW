@@ -143,7 +143,7 @@ public class QualityStatusServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 
 		when(jiraIssueRepository.findLinkedDefects(anyMap() , any() , anyMap())).thenReturn(bugList);
 

@@ -41,7 +41,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -66,8 +65,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 /**
  * This class fetches the daily closure on Iteration dashboard. Trend analysis
@@ -104,12 +101,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String OVERALL = "Overall";
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -145,7 +136,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 
@@ -163,11 +153,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 				issuesList.addAll(completedIssues);
 				issuesList.addAll(issuesNotCompleted);
 
-				List<JiraIssue> totalJiraIssues = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(issuesList,
-						basicProjectConfigId);
+				List<JiraIssue> totalJiraIssues = getJiraIssuesFromBaseClass(issuesList);
 
-				List<JiraIssueCustomHistory> totalJiraIssuesHistory = jiraIssueCustomHistoryRepository
-						.findByStoryIDInAndBasicProjectConfigIdIn(issuesList, Arrays.asList(basicProjectConfigId));
+				List<JiraIssueCustomHistory> totalJiraIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(issuesList);
 
 				Map<String, JiraIssue> jiraOpenIssueMap;
 				Map<String, JiraIssue> jiraIssueMap = new HashMap<>();
