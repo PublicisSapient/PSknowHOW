@@ -24,10 +24,14 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 
+import java.util.List;
+
 /**
  * Interface for global_config collection
  */
 @Repository
 public interface GlobalConfigRepository extends MongoRepository<GlobalConfig, ObjectId> {
+
+    List<GlobalConfig> findAllByOrderByIdDesc();
 
 }
