@@ -114,7 +114,7 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	@Override
 	public synchronized void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			JiraAdapter jiraAdapter) {
+			JiraAdapter jiraAdapter) throws InterruptedException {
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -162,7 +162,11 @@ public class SprintClientImpl implements SprintClient {
 				}
 
 				if (fetchReport) {
-					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					try {
+						TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
 					getSprintReport(sprint, jiraAdapter, projectConfig, boardId,
 							dbSprintDetailMap.get(sprint.getSprintID()));
 					sprintToSave.add(sprint);
@@ -176,23 +180,6 @@ public class SprintClientImpl implements SprintClient {
 				log.info("duplicate sprint found."+e.getMessage());
 			}
 			log.info("{} sprints found", sprintDetailsSet.size());
-
-			sprintLogData.setAction(CommonConstant.SPRINT_DATA);
-			sprintLogData
-					.setSprintListSaved(
-							sprintToSave.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-			sprintLogData
-					.setSprintListFetched(
-							sprintDetailsSet.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
 		}
 	}
 
@@ -331,13 +318,7 @@ public class SprintClientImpl implements SprintClient {
 			}
 		}
 
-		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
-			request.setRequestProperty("Authorization", "Bearer " + connectionOptional.get().getPatOAuthToken()); // NOSONAR
-		}
-		else{
-			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		}
-
+		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
@@ -367,7 +348,7 @@ public class SprintClientImpl implements SprintClient {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		String serverURL = jiraProcessorConfig.getJiraSprintByBoardUrlApi();
 		serverURL = serverURL.replace("{startAtIndex}", String.valueOf(startIndex)).replace("{boardId}", boardId);
-		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
 

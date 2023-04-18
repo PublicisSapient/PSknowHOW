@@ -157,7 +157,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
 					List<JiraIssue> completedIssueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
-					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 					Set<JiraIssue> filtersCompletedIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
@@ -165,9 +164,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 							.findByStoryIDInAndBasicProjectConfigIdIn(completedIssues,
 									Arrays.asList(basicProjectConfigId));
 					Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
-					filtersIssuesList.forEach(issue -> issue
-							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));
-					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT, sprintDetails);
 					filtersCompletedIssuesList.forEach(issue -> issue
 							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));
