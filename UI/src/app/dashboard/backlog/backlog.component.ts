@@ -73,7 +73,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
   ngOnInit() {
     this.selectedtype = this.service.getSelectedType();
-    if (this.service.getFilterObject()) {
+    const sharedObject = this.service.getFilterObject();
+    if(sharedObject && sharedObject?.selectedTab?.toLowerCase() === 'backlog') {
       this.receiveSharedData(this.service.getFilterObject());
     }
 
