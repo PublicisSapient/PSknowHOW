@@ -105,7 +105,7 @@ public class DailyClosureServiceImplTest {
         SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
         sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
         JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
-        jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.findIssueInTypeNames(Arrays.asList("Closed"));
+        jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
         projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
         projectConfig.setProjectName("Scrum Project");

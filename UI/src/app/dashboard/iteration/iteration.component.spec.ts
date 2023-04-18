@@ -151,8 +151,8 @@ describe('IterationComponent', () => {
             "data": [
                 {
                     "label": "Issues at Risk",
-                    "value": '6.00',
-                    "value1": '14.00',
+                    "value": 6,
+                    "value1": 14,
                     "unit": "",
                     "modalValues": [
                         {
@@ -213,7 +213,7 @@ describe('IterationComponent', () => {
                 },
                 {
                     "label": "Story Point",
-                    "value": '19.00',
+                    "value": 19,
                     "unit": "SP",
                     "value1": null,
                     "modalValues": null

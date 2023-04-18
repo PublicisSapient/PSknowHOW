@@ -509,6 +509,7 @@ describe('FilterComponent', () => {
       }
   ];
 
+  spyOn(component,'checkIfFilterAlreadySelected');
     component.additionalFiltersArr = additionalFiltersArr;
     const spy = spyOn(sharedService, 'setFilterData');
     const spycreateFormGroup = spyOn(component, 'createFormGroup');
@@ -770,7 +771,7 @@ describe('FilterComponent', () => {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project', 1);
+    component.handleIterationFilters('project');
     expect(spy).toHaveBeenCalled();
   });
 
@@ -799,7 +800,7 @@ describe('FilterComponent', () => {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project', 1);
+    component.handleIterationFilters('project');
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1292,7 +1293,7 @@ describe('FilterComponent', () => {
 
     component.previousType = true;
     component.selectedTab = 'Iteration';
-    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    let spyDefaultFilter = spyOn(component, 'findProjectWhichHasData');
     component.checkIfFilterAlreadySelected();
     expect(spyDefaultFilter).toHaveBeenCalled();
   });
