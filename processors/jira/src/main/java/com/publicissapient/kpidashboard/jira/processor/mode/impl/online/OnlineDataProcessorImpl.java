@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapterFactory;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
@@ -55,7 +56,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifie
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
-import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -124,7 +124,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
-
+	@Autowired
+	private OnlineAdapterFactory onlineAdapterFactory;
 	/**
 	 * Validates and collects Jira issues using JIA API for projects with onlinemode
 	 * 
@@ -159,9 +160,9 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 						Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
 						if (connectionOptional.isPresent()) {
 							Connection conn = connectionOptional.get();
-							client = getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
+							client = getProcessorRestClient(projectConfigList, entry, isOauth, conn);
 
-							JiraAdapter jiraAdapter = new OnlineAdapter(jiraProcessorConfig, client,
+							JiraAdapter jiraAdapter = onlineAdapterFactory.getOnlineAdapter(jiraProcessorConfig, client,
 									aesEncryptionService, toolCredentialProvider);
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
@@ -192,7 +193,19 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 		return issueCountMap;
 	}
 
-	private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList, Map.Entry<String, ProjectConfFieldMapping> entry, boolean isOauth, Connection conn) {
+	private ProcessorJiraRestClient getProcessorRestClient(List<ProjectBasicConfig> projectConfigList,
+														   Map.Entry<String, ProjectConfFieldMapping> entry,
+														   boolean isOauth, Connection conn){
+		if(conn.isCustomClientProvided()){
+			return jiraRestClientFactory.getSpnegoSamlClient();
+		}else{
+			return getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
+		}
+	}
+
+	private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList,
+															   Map.Entry<String, ProjectConfFieldMapping> entry,
+															   boolean isOauth, Connection conn) {
 		ProcessorJiraRestClient client;
 
 		String username = "";

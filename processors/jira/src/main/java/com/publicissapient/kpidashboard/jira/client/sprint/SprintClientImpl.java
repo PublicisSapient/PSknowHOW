@@ -197,7 +197,7 @@ public class SprintClientImpl implements SprintClient {
 		return sd;
 	}
 
-	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
@@ -227,7 +227,7 @@ public class SprintClientImpl implements SprintClient {
 		return sprintDetailsList;
 	}
 
-	private boolean populateSprintDetailsList(String sprintReportObj,List<SprintDetails> sprintDetailsSet,
+	public boolean populateSprintDetailsList(String sprintReportObj,List<SprintDetails> sprintDetailsSet,
 								ProjectConfFieldMapping projectConfig,String boardId) {
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
@@ -322,7 +322,7 @@ public class SprintClientImpl implements SprintClient {
 	}
 
 
-	private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
+	public URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();

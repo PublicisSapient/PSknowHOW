@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -27,6 +29,7 @@ import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -58,6 +61,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -106,6 +110,8 @@ public class OnlineAdapter implements JiraAdapter {
 	private ProcessorJiraRestClient client;
 
 	private ToolCredentialProvider toolCredentialProvider;
+
+	private Map<String,String> authorizationHeader;
 
 	public OnlineAdapter() {
 	}
@@ -383,16 +389,15 @@ public class OnlineAdapter implements JiraAdapter {
 				String username = connectionOptional.map(Connection::getUsername).orElse(null);
 				URL url = getUrl(projectConfig, username);
 				URLConnection connection;
-
 				connection = url.openConnection();
-				userTimeZone = getUserTimeZone(getDataFromServer(projectConfig, (HttpURLConnection) connection));
+				userTimeZone = parseUserTimeZone(getDataFromServer(projectConfig, (HttpURLConnection) connection));
 			}
 		} catch (RestClientException rce) {
 			log.error("Client exception when loading statuses", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading statuses", mfe);
-		} catch (IOException ioe) {
+		} catch (Exception ioe) {
 			log.error("IOException", ioe);
 		}
 
@@ -400,7 +405,7 @@ public class OnlineAdapter implements JiraAdapter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getUserTimeZone(String timezoneObj) {
+	public String parseUserTimeZone(String timezoneObj) {
 		String userTimeZone = StringUtils.EMPTY;
 		if (StringUtils.isNotBlank(timezoneObj)) {
 			try {
@@ -422,7 +427,7 @@ public class OnlineAdapter implements JiraAdapter {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
+	public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
 			throws IOException {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -459,6 +464,25 @@ public class OnlineAdapter implements JiraAdapter {
 		return sb.toString();
 	}
 
+	public String getDataFromSpnegoServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
+			throws IOException {
+		HttpURLConnection request = connection;
+
+		request.setRequestProperty("Cookie", "Basic Cookie Store"); // NOSONAR
+		request.connect();
+		StringBuilder sb = new StringBuilder();
+		try (InputStream in = (InputStream) request.getContent();
+			 BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+			int cp;
+			while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);
+			}
+		} catch (IOException ie) {
+			log.error("Read exception when connecting to server {}", ie);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Checks if Jira credentails are empty
 	 *
@@ -485,7 +509,7 @@ public class OnlineAdapter implements JiraAdapter {
 	 * @throws MalformedURLException
 	 *             when URL not constructed properly
 	 */
-	private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
+	public URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
@@ -545,7 +569,7 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 	}
 
-	private URL getSprintReportUrl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId)
+	public URL getSprintReportUrl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -560,7 +584,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 	}
 	
-	private void getReport(String sprintReportObj,SprintDetails sprint,ProjectConfFieldMapping projectConfig,
+	public void getReport(String sprintReportObj,SprintDetails sprint,ProjectConfFieldMapping projectConfig,
 								 SprintDetails dbSprintDetails,String boardId) {
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray completedIssuesJson = new JSONArray();
@@ -852,7 +876,7 @@ public class OnlineAdapter implements JiraAdapter {
 		return getEpicIssuesQuery(epicList, projectConfig);
 	}
 
-	private boolean populateData(String sprintReportObj, List<String> epicList) {
+	public boolean populateData(String sprintReportObj, List<String> epicList) {
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray valuesJson = new JSONArray();
@@ -879,7 +903,7 @@ public class OnlineAdapter implements JiraAdapter {
 		});
 	}
 
-	private URL getEpicUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
+	public URL getEpicUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();

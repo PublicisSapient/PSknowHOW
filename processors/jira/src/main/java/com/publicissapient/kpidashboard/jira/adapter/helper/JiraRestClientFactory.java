@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.adapter.helper;
 
 import java.io.IOException;
 import java.net.Authenticator;
+import java.net.CookieStore;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -35,6 +36,9 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.kerberos.client.KerberosRestTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -54,6 +59,8 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.Processo
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
+
+import javax.ws.rs.GET;
 
 @Component
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {
@@ -235,6 +242,20 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 			LOGGER.debug("Exception", e);
 		}
+
+		return client;
+	}
+
+	public ProcessorJiraRestClient getSpnegoSamlClient() {
+		ProcessorJiraRestClient client = null;
+		/**/
+		BasicCookieStore basicCookieStore = new BasicCookieStore();
+		HttpClient httpClient = HttpClientBuilder.create().setDefaultCookieStore(basicCookieStore).build();
+		KerberosRestTemplate restTemplate = new KerberosRestTemplate("","",httpClient);
+		String response = restTemplate.getForObject("samlendpointurl", String.class);
+		StringBuilder cookieHeaderBuilder = new StringBuilder();
+		basicCookieStore.getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie).append(";"));
+		client = new ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(URI.create("jiraurl"),cookieHeaderBuilder.toString(),jiraProcessorConfig);
 
 		return client;
 	}

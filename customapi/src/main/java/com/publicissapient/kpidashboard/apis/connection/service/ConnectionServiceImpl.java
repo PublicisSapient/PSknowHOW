@@ -573,6 +573,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void setEncryptedPasswordFieldForDb(Connection conn) {
 		String passwordFromClient = conn.getPassword();
+		//TODO
 		conn.setPassword(encryptStringForDb(passwordFromClient));
 	}
 

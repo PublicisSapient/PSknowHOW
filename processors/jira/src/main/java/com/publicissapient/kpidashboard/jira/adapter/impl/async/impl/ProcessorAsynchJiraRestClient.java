@@ -27,6 +27,7 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRes
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Map;
 
 public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient implements ProcessorJiraRestClient {
 

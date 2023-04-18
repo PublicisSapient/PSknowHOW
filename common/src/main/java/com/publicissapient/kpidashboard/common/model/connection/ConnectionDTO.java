@@ -66,6 +66,7 @@ public class ConnectionDTO {
 	private String updatedBy;
 	private List<String> connectionUser;
 	private boolean vault;//GS requirement
+	private boolean customClientProvided;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;

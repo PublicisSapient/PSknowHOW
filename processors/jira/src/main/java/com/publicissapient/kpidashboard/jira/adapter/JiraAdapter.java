@@ -121,6 +121,4 @@ public interface JiraAdapter {
 			SprintDetails sprint, SprintDetails dbSprintDetails);
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId);
-
-
 }

@@ -67,7 +67,7 @@ public class JiraToolConfigServiceImpl {
 		return responseList;
 	}
 
-	private void fetchBoardDetailsRestAPICall(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
+	public void fetchBoardDetailsRestAPICall(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
 			String baseUrl, HttpEntity<?> httpEntity) {
 		long startAt = 0;
 		long nextPageIndex = startAt;

@@ -69,6 +69,7 @@ public class Connection extends BasicModel{
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
+	private boolean customClientProvided;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
