@@ -338,8 +338,8 @@ describe('MyprofileComponent', () => {
     },
     {
       level: 3,
-      hierarchyLevelId: 'account',
-      hierarchyLevelName: 'Account Name',
+      hierarchyLevelId: 'dummyaccount',
+      hierarchyLevelName: 'dummyAccount Name',
       suggestions: [
         {
           name: 'A1',
@@ -487,8 +487,8 @@ describe('MyprofileComponent', () => {
     },
     {
       level: 4,
-      hierarchyLevelId: 'subaccount',
-      hierarchyLevelName: 'Subaccount',
+      hierarchyLevelId: 'dummysubaccount',
+      hierarchyLevelName: 'dummySubaccount',
       suggestions: [
         {
           name: 'Level4',

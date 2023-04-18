@@ -115,13 +115,6 @@ describe('LoginComponent', () => {
   });
 
 
-  it('remember me with saved value', waitForAsync(() => {
-    fixture.detectChanges();
-    localStorage.setItem('SpeedyUser', 'fakeUser');
-    localStorage.setItem('SpeedyPassword', aesEncryption.convertText('fakeUserPswd', 'encrypt'));
-    component.rememberMe();
-    expect(component.rememberMeCheckbox).toBeTruthy();
-  }));
 
   it('invalid form should not call login', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('');
@@ -186,12 +179,6 @@ describe('LoginComponent', () => {
     expect(component.loginConfig).toEqual(failValues)
   })
 
-  it("should remember for speed user",()=>{
-    component.ngOnInit();
-    localStorage.setItem('SpeedyUser',"abc@gmail.com");
-    component.rememberMe();
-    expect(component.rememberMeCheckbox).toBeTruthy();
-  })
 
   it("should redirect to profile if user email is blank",()=>{
     localStorage.setItem('user_email',"");
@@ -222,11 +209,5 @@ describe('LoginComponent', () => {
    expect(localStorage.setItem).toHaveBeenCalled();
   })
 
-  it("should remove SpeedyUser if remembercheckbox is false ",()=>{
-    component.rememberMeCheckbox = false;
-    spyOn(localStorage,"removeItem");
-    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
-   expect(localStorage.removeItem).toHaveBeenCalled();
-  })
 
 });

@@ -1182,9 +1182,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         localStorage.removeItem('user_name');
         localStorage.removeItem('authorities');
         localStorage.removeItem('projectsAccess');
-        if (localStorage.getItem('loginType') === 'AD') {
-          localStorage.removeItem('SpeedyPassword');
-        }
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.router.navigate(['./authentication/login']);

@@ -670,7 +670,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project1',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -689,7 +689,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -710,19 +710,19 @@ describe('FilterComponent', () => {
       {
         id: '63244d35d1d9f4caf85056f9',
         level: 3,
-        hierarchyLevelId: 'account',
-        hierarchyLevelName: 'Account Name'
+        hierarchyLevelId: 'dummyaccount',
+        hierarchyLevelName: 'dummyAccount Name'
       },
       {
         id: '63244d35d1d9f4caf85056fa',
         level: 4,
-        hierarchyLevelId: 'subaccount',
-        hierarchyLevelName: 'Subaccount'
+        hierarchyLevelId: 'dummysubaccount',
+        hierarchyLevelName: 'dummySubaccount'
       },
       {
         level: 5,
-        hierarchyLevelId: 'project',
-        hierarchyLevelName: 'Project'
+        hierarchyLevelId: 'dummyproject',
+        hierarchyLevelName: 'dummyProject'
       }
     ];
     component.selectedTab = '';

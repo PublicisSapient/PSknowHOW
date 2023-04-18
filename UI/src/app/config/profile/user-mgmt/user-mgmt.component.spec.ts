@@ -84,7 +84,6 @@ describe('UserManagementComponent', () => {
 
   it('Test happy flow', () => {
     localStorage.setItem('user_email', 'validuseremailsetatlogin@ps.com');
-    localStorage.setItem('SpeedyPassword', 'Test123@123');
     component.changePasswordForm.controls['oldpassword'].setValue('Test123@123');
     component.changePasswordForm.controls['password'].setValue('Qwerty@123');
     component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');

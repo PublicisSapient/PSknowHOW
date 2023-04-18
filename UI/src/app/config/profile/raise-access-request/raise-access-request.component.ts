@@ -142,9 +142,6 @@ export class RaiseAccessRequestComponent implements OnInit {
           localStorage.removeItem('user_name');
           localStorage.removeItem('authorities');
           localStorage.removeItem('projectsAccess');
-          if (localStorage.getItem('loginType') === 'AD') {
-            localStorage.removeItem('SpeedyPassword');
-          }
 
           this.router.navigate(['./authentication/login']);
         }

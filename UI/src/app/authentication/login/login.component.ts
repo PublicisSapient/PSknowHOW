@@ -38,7 +38,6 @@ export class LoginComponent implements OnInit {
     returnUrl: string;
     error = '';
     sessionMsg = '';
-    rememberMeCheckbox = false;
     adLogin = true;
     loginConfig = {};
 
@@ -72,7 +71,6 @@ export class LoginComponent implements OnInit {
 
         });
 
-        this.rememberMe();
         /* get return url from route parameters or default to '/' */
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
@@ -100,15 +98,7 @@ export class LoginComponent implements OnInit {
  return this.adLoginForm.controls;
 }
 
-    rememberMe() {
-        if (localStorage.getItem('SpeedyUser') !== null) {
-            this.rememberMeCheckbox = true;
-            this.loginForm.controls['username'].setValue(localStorage.getItem('SpeedyUser'));
-            this.loginForm.controls['password'].setValue(this.aesEncryption.convertText(localStorage.getItem('SpeedyPassword'), 'decrypt'));
-        } else {
-            this.rememberMeCheckbox = false;
-        }
-    }
+   
 
     onSubmit(loginType) {
         this.submitted = true;
@@ -172,16 +162,8 @@ export class LoginComponent implements OnInit {
 
         } else if (data['status'] === 200) {
             /*After successfully login redirect form to dashboard router(Executive page)*/
-            if (loginType === 'standard') {
-                localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(password, 'encrypt'));
-            }
             localStorage.setItem('loginType', loginType);
             this.adLogin = loginType;
-            if (this.rememberMeCheckbox) {
-                localStorage.setItem('SpeedyUser', username);
-            } else {
-                localStorage.removeItem('SpeedyUser');
-            }
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);
             } else {

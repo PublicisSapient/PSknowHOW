@@ -84,7 +84,6 @@ export class RegisterComponent implements OnInit {
                         // After successfully registration redirect form to dashboard router(Executive page)
 
                         this.success = data.message;
-                        localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(this.f.password.value, 'encrypt'));
                         this.router.navigate(['./dashboard/']);
                     } else {
                         this.error = data.message;
