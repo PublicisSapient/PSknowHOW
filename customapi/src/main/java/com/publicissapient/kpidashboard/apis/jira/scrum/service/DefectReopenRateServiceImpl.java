@@ -58,9 +58,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-	private static final String DEFECT_REOPEN_RATE = "Defect Reopen Rate";
-	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopen/Total Defects";
-	private static final String AVERAGE_TIME_REOPEN = "Average Time to Reopen";
+	private static final String DEFECT_REOPEN_RATE = "Reopen Rate";
+	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopened /Total Defects";
+	private static final String AVERAGE_TIME_REOPEN = "Avg. Time to Reopen";
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
 	private static final String PROJECT_CLOSED_STATUS_MAP = "PROJECT_CLOSED_STATUS_MAP";
@@ -131,6 +131,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, JiraIssueCustomHistory> reopenJiraHistoryMap = reopenJiraHistory.stream()
 				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
 		Set<String> filters = new LinkedHashSet<>();
+		filters.add(OVERALL);
 		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<Double> overAllDuration = Arrays.asList(0.0);
@@ -170,7 +171,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
 		});
-		filters.add(OVERALL);
 		addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration);
 		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
@@ -222,8 +222,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				.valueOf(TimeUnit.DAYS.convert(reopenTimeMillis - closedTimeMillis, TimeUnit.MILLISECONDS));
 		return IterationKpiModalValue.builder().issueId(issue.getNumber()).issueURL(issue.getUrl())
 				.description(issue.getName()).priority(issue.getPriority()).issueStatus(issue.getStatus())
-				.closedDate(DateUtil.stringToLocalDate(closedTime.toString(), DateUtil.TIME_FORMAT).toString())
-				.reopenDate(DateUtil.stringToLocalDate(reopenTime.toString(), DateUtil.TIME_FORMAT).toString())
+				.closedDate(closedTime.toLocalDate().toString()).reopenDate(reopenTime.toLocalDate().toString())
 				.durationToReopen(duration + "d").build();
 	}
 
@@ -279,7 +278,10 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			List<String> defectTypeList = new ArrayList<>(fieldMapping.getJiradefecttype());
+			List<String> defectTypeList = new ArrayList<>();
+			if (fieldMapping.getJiradefecttype() != null) {
+				defectTypeList.addAll(fieldMapping.getJiradefecttype());
+			}
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
