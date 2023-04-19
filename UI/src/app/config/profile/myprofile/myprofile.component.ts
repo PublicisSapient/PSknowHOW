@@ -35,7 +35,7 @@ export class MyprofileComponent implements OnInit {
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
   userName = this.sharedService.getCurrentUserDetails('user_name') ? this.sharedService.getCurrentUserDetails('user_name') : '--';
-  authorities = this.sharedService.getCurrentUserDetails('authorities');
+  authorities = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
 
 
   userRole = this.authorities && JSON.parse(this.authorities).length ? JSON.parse(this.authorities).join(',') : '--';
