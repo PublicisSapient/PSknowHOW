@@ -51,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -62,7 +63,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefectCountByStatusServiceImplTest {
@@ -78,9 +78,6 @@ public class DefectCountByStatusServiceImplTest {
 	DefectCountByStatusServiceImpl defectCountByStatusService;
 
 	@Mock
-	private SprintRepository sprintRepository;
-
-	@Mock
 	JiraIssueRepository jiraIssueRepository;
 
 	@Mock
@@ -88,6 +85,9 @@ public class DefectCountByStatusServiceImplTest {
 
 	@Mock
 	ConfigHelperService configHelperService;
+
+	@Mock
+	JiraServiceR jiraServiceR;
 
 	@Test
 	public void testGetCalculateKPIMetrics() {
@@ -130,9 +130,9 @@ public class DefectCountByStatusServiceImplTest {
 			String kpiRequestTrackerId = "Jira-Excel-RCA-track001";
 			when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 					.thenReturn(kpiRequestTrackerId);
-			when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
+			when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
 			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-			when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+			when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -150,8 +150,8 @@ public class DefectCountByStatusServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
+		when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		Map<String, Object> returnMap = defectCountByStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);
