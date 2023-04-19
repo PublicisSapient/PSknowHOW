@@ -22,7 +22,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://10.148.240.58'
+  baseUrl: '//customapi:8080'
 };
 
 /*
