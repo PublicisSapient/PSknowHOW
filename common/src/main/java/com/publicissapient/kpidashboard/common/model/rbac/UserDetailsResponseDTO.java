@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.common.model.rbac;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,15 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDetailsResponseDTO {
 
+	@JsonProperty("user_name")
 	private String userName;
 
+	@JsonProperty("user_email")
 	private String userEmail;
 
+	@JsonProperty("authorities")
 	private List<String> authorities;
 
+	@JsonProperty("projectsAccess")
 	private List<RoleWiseProjects> projectsAccess;
 }
