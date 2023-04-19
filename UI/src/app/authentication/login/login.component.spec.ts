@@ -45,6 +45,7 @@ describe('LoginComponent', () => {
   let httpMock;
   let httpreq;
   let httpService;
+  let sharedService;
   let encryption;
   let aesEncryption;
   const fakeLogin = {
@@ -103,6 +104,7 @@ describe('LoginComponent', () => {
       fixture = TestBed.createComponent(LoginComponent);
       component = fixture.componentInstance;
       httpService = TestBed.get(HttpService);
+      sharedService = TestBed.get(SharedService);
       encryption = TestBed.get(RsaEncryptionService);
       httpMock = TestBed.get(HttpTestingController);
       aesEncryption = TestBed.get(TextEncryptionService);
@@ -181,32 +183,26 @@ describe('LoginComponent', () => {
 
 
   it("should redirect to profile if user email is blank",()=>{
-    localStorage.setItem('user_email',"");
-    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    sharedService.setCurrentUserDetails('user_email',"");
+    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
     component.redirectToProfile();
     expect(component.redirectToProfile).toBeTruthy()
   })
 
   it("should redirect on profile for superadmin",()=>{
-    localStorage.setItem('user_email',"abc@gmail.com");
-    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    sharedService.setCurrentUserDetails('user_email',"abc@gmail.com");
+    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
     spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
     const respo = component.redirectToProfile();
     expect(respo).toBeFalsy();
   })
 
   it("should not redirect on profile if not superadmin",()=>{
-    localStorage.setItem('user_email',"abc@gmail.com");
-    localStorage.setItem('projectsAccess',undefined);
+    sharedService.setCurrentUserDetails('user_email',"abc@gmail.com");
+    sharedService.setCurrentUserDetails('projectsAccess',undefined);
     spyOn(aesEncryption,'convertText').and.returnValue("[\"NOT_SUPERADMIN\"]")
     component.redirectToProfile();
     expect(component.redirectToProfile).toBeTruthy()
-  })
-
-  it("should set SpeedyPassword in localstorage",()=>{
-    spyOn(localStorage,"setItem");
-    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
-   expect(localStorage.setItem).toHaveBeenCalled();
   })
 
 
