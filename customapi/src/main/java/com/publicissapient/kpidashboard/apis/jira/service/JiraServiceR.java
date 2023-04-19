@@ -169,7 +169,9 @@ public class JiraServiceR {
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
-
+			sprintDetails = null;
+			jiraIssueList = null;
+			jiraIssueCustomHistoryList = null;
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
