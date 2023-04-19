@@ -55,8 +55,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -70,10 +68,6 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	private static final String OVERALL = "Overall";
 	@Autowired
 	ConfigHelperService configHelperService;
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -106,15 +100,12 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Estimation Hygiene -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
