@@ -20,11 +20,12 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { GetAuthService } from './getauth.service';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-    constructor(private router: Router, private getAuth: GetAuthService) { }
+    constructor(private router: Router, private getAuth: GetAuthService,private sharedService : SharedService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         if (localStorage.getItem('authorities')) {

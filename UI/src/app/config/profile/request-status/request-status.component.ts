@@ -32,7 +32,7 @@ export class RequestStatusComponent implements OnInit {
   requestStatusData = {};
   requestStatusList = [];
   dataLoading = <boolean>false;
-  userName = localStorage.getItem('user_name');
+  userName = this.sharedService.getCurrentUserDetails('user_name');
   constructor(private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService, private sharedService: SharedService) { }
 
   ngOnInit() {

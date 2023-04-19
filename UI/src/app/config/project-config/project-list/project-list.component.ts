@@ -70,7 +70,7 @@ export class ProjectListComponent implements OnInit {
   /* Assign role along with project Id */
   roleAccessAssign() {
     const projectsAccess = !!localStorage.getItem('projectsAccess') && localStorage.getItem('projectsAccess') !== 'undefined' && localStorage.getItem('projectsAccess') !== 'null' ? JSON.parse(localStorage.getItem('projectsAccess')) : [];
-    const decryptedText = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
+    const decryptedText = this.sharedService.getCurrentUserDetails('authorities');
     this.authorities = !!decryptedText && decryptedText !== 'undefined' && decryptedText !== 'null' ? JSON.parse(decryptedText) : [];
     if (projectsAccess.length) {
       projectsAccess.forEach(projectAccess => {

@@ -131,7 +131,7 @@
      if (!this.kpiListData['username']) {
        delete this.kpiListData['id'];
      }
-     this.kpiListData['username'] = (localStorage.getItem('user_name'));
+     this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
    }
      //update the changes to api
    updateData() {

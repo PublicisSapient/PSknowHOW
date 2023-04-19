@@ -144,6 +144,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.getCurrentUserDetails();
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
@@ -211,11 +212,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    this.username = localStorage.getItem('user_name');
+    this.username = this.service.getCurrentUserDetails('user_name');
 
     let authoritiesArr;
-    if (localStorage.getItem('authorities')) {
-      authoritiesArr = this.aesEncryption.convertText(localStorage.getItem('authorities'),'decrypt');
+    if (this.service.getCurrentUserDetails('authorities')) {
+      authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
@@ -439,7 +440,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (!this.kpiListData['username']) {
       delete this.kpiListData['id'];
     }
-    this.kpiListData['username'] = localStorage.getItem('user_name');
+    this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
   closeAllDropdowns() {
@@ -1227,5 +1228,16 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.getNotification();
       this.navigateToSelectedTab();
     });
+   }
+
+   getCurrentUserDetails(){
+    this.httpService.getCurrentUserDetails().subscribe(details=>{
+   
+      if(details['success']){
+        console.log("details : ",details['data'])
+        this.service.setCurrentUserDetails(details['data']);
+      }
+    });
+    
    }
 }

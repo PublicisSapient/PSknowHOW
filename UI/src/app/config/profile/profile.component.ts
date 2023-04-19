@@ -19,6 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 
 declare let $: any;
 
@@ -32,7 +33,7 @@ export class ProfileComponent implements OnInit {
     isProjectAdmin = false;
     changePswdDisabled = false;
     adLogin = false;
-    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router) {
+    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {
     }
     ngOnInit() {
         if (this.getAuthorizationService.checkIfSuperUser()) {
@@ -44,7 +45,7 @@ export class ProfileComponent implements OnInit {
             this.isProjectAdmin = true;
         }
 
-        if (!localStorage.getItem('user_email')) {
+        if (!this.sharedService.getCurrentUserDetails('user_email')) {
             this.changePswdDisabled = true;
         }
 

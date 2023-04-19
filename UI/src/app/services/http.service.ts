@@ -30,6 +30,7 @@ import { RsaEncryptionService } from '../services/rsa.encryption.service';
 import { TextEncryptionService } from './text.encryption.service';
 import { NotificationResponseDTO } from '../model/NotificationDTO.model';
 import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/userAccessApprovalDTO.model';
+import { SharedService } from './shared.service';
 @Injectable({
     providedIn: 'root'
 }
@@ -136,7 +137,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
+    private currentUserDetailsURL = ""
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService,private sharedService : SharedService) { }
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
@@ -307,7 +309,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** POST: Change the password for loggedin user*/
     changePassword(oldpassword, password): Observable<any> {
-        const postData = { oldPassword: oldpassword, password, email: localStorage.getItem('user_email'), user: localStorage.getItem('user_name') };
+        const postData = { oldPassword: oldpassword, password, email: this.sharedService.getCurrentUserDetails('user_email'), user: this.sharedService.getCurrentUserDetails('user_name')};
         return this.http.post(this.changePasswordUrl, postData).pipe(tap(res => {
         }));
     }
@@ -879,5 +881,18 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getMappingTemplateFlag(toolID,data){
         return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
+    }
+
+    getCurrentUserDetails(){
+    //   return this.http.get<any>(this.currentUserDetailsURL);
+    return of({
+        success : true,
+        data : {
+            authorities :  ["ROLE_SUPERADMIN"],
+            projectsAccess  : [],
+            user_email: "knowledgesharing@publicissapient.com",
+            user_name : "brahma",
+        }
+     })
     }
 }

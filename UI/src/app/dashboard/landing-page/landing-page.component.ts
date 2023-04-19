@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 declare let require: any;
 
@@ -32,7 +33,7 @@ export class LandingPageComponent implements OnInit {
   newUsers: any = 0;
   isProducer: Boolean = false;
 
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService,private sharedService : SharedService) { }
 
   ngOnInit(): void {
 
@@ -63,7 +64,7 @@ export class LandingPageComponent implements OnInit {
 
   save() {
     const postObj = this.voiceForm.value;
-    postObj['username'] = localStorage.getItem('user_name');
+    postObj['username'] = this.sharedService.getCurrentUserDetails('user_name');
     this.httpService.submitFeedbackData(postObj).subscribe((response) => {
       if(response.message){
         this.isFeedbackSubmitted = true;

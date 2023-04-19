@@ -80,6 +80,7 @@ export class SharedService implements OnInit {
   selectedLevel = {};
   selectedTrends = [];
   public isSideNav;
+  public currentUserDetails : any = {};
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -294,6 +295,17 @@ export class SharedService implements OnInit {
   setSideNav(flag) {
     this.isSideNav.emit(flag);
   }
+
+  setCurrentUserDetails(details){
+    this.currentUserDetails = details;
+  }
+
+  getCurrentUserDetails(key){
+    if(this.currentUserDetails.hasOwnProperty(key)){
+      return this.currentUserDetails[key] ;
+     }
+  }
+
 }
 
 

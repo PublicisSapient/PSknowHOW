@@ -283,7 +283,7 @@ export class ToolMenuComponent implements OnInit {
     const postData = {
       basicProjectConfigId: projectDetails['id'],
       projectName: projectDetails['Project'],
-      userName: localStorage.getItem('user_name')
+      userName: this.sharedService.getCurrentUserDetails('user_name')
     };
 
     this.http.generateToken(postData).subscribe(response =>{

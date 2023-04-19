@@ -21,6 +21,7 @@ import { UntypedFormGroup } from '@angular/forms';
 import { HttpService } from '../../../services/http.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 
 declare let $: any;
 
@@ -41,11 +42,11 @@ export class RaiseAccessRequestComponent implements OnInit {
   requestData = {};
   raiseRequestResponse = {};
   roleSelected = false;
-  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router) { }
+  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router,private sharedService : SharedService) { }
 
   ngOnInit() {
     this.getRolesList();
-    this.requestData['username'] = localStorage.getItem('user_name');
+    this.requestData['username'] = this.sharedService.getCurrentUserDetails('user_name');
     this.requestData['status'] = 'Pending';
     this.requestData['reviewComments'] = '';
     this.requestData['role'] = '';
