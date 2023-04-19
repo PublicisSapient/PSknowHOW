@@ -32,6 +32,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,7 @@ public class JiraServiceR {
 
 	@Autowired
 	private SprintRepository sprintRepository;
-	private SprintDetails sprintDetails;
+	private List<SprintDetails> sprintDetails;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -138,9 +139,9 @@ public class JiraServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
 
-				if (null != origRequestedKpis.get(0).getKpiCategory() && !origRequestedKpis.get(0).getKpiCategory().isEmpty() &&
+				if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory()) &&
 						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
-					fetchSprintDetails(Arrays.stream(kpiRequest.getIds()).findFirst().orElse(null));
+					fetchSprintDetails(kpiRequest.getIds());
 					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 				}
@@ -310,12 +311,12 @@ public class JiraServiceR {
 		
 	}
 
-	public void fetchSprintDetails(String sprintId) {
-		sprintDetails = sprintRepository.findBySprintID(sprintId);
+	public void fetchSprintDetails(String[] sprintId) {
+		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).collect(Collectors.toList()));
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
-		return sprintDetails;
+		return sprintDetails.get(0);
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId) {
