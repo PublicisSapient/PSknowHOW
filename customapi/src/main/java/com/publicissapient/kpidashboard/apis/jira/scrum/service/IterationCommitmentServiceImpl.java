@@ -58,8 +58,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -76,12 +74,6 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 	private static final String SCOPE_REMOVED = "Scope removed";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -117,10 +109,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Scope Change -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> puntedIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
@@ -134,16 +123,14 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 				// Adding issues which were added before sprint start and later removed form sprint or dropped.
 				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(puntedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getPuntedIssues(), issueList);
 					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(new ArrayList<>(addedIssues),
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(new ArrayList<>(addedIssues));
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									new HashSet<>(), issueList);
@@ -151,8 +138,8 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
 				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
-							new ArrayList<>(completeAndIncompleteIssues), basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(
+							new ArrayList<>(completeAndIncompleteIssues));
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
 									issueList);
