@@ -201,7 +201,7 @@ public class AccountHierarchyServiceImpl
 	}
 
 	private Map<String, SprintDetails> fetchSprintDetailsOf(List<String> sprintIds) {
-		List<SprintDetails> sprintDetailsList = sprintRepository.findBySprintIDIn(sprintIds);
+		List<SprintDetails> sprintDetailsList = sprintRepository.findBySprintIDInGetStatus(sprintIds);
 
 		return sprintDetailsList.stream().collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 	}

@@ -53,8 +53,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
@@ -69,12 +67,6 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -110,15 +102,12 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(notCompletedIssues, basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(notCompletedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);

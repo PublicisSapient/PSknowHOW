@@ -22,7 +22,6 @@ import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWis
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,9 +65,6 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDela
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -87,16 +83,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
 
 	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
-
-	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -129,23 +116,17 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Work Remaining -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(notCompletedIssues, basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(notCompletedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);
-					List<JiraIssueCustomHistory> issueHistoryList = jiraIssueCustomHistoryRepository
-							.findByStoryIDInAndBasicProjectConfigIdIn(
-									issueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
-									Collections.singletonList(basicProjectConfigId));
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
+									issueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
 					resultListMap.put(ISSUE_CUSTOM_HISTORY, issueHistoryList);
