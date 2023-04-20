@@ -330,10 +330,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					List<JiraIssue> totalIssues = allJiraIssue.stream()
 							.filter(element -> availableIssues.contains(element.getNumber()))
 							.collect(Collectors.toList());
-					List<JiraIssue> totalSubTask = allSubTaskBugs.stream()
-							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-									&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-							.collect(Collectors.toList());
+					List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs, sd);
 					totalIssues.addAll(totalSubTask);
 					List<JiraIssue> completedIssues = getCompletedIssues(
 							allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
@@ -466,6 +463,18 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails) {
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		List<JiraIssue> subTaskTaggedWithSprint = allSubTasks.stream()
+				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+						&& jiraIssue.getSprintIdList().contains(sprintDetails.getSprintID().split("_")[0]))
+				.collect(Collectors.toList());
+		return subTaskTaggedWithSprint.stream()
+				.filter(jiraIssue -> sprintEndDate
+						.isAfter(LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				.collect(Collectors.toList());
 	}
 
 	/**
