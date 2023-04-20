@@ -3694,7 +3694,7 @@
     "calculateMaturity": false,
     "kanban": false
   }
-  },{
+  ,{
   "kpiId": "kpi137",
   "kpiName": "Refinement Rejection Rate",
   "kpiUnit": "Number",
