@@ -34,12 +34,12 @@ export class MyprofileComponent implements OnInit {
   emailSubmitted = false;
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
-  userName = this.sharedService.getCurrentUserDetails('user_name') ? this.sharedService.getCurrentUserDetails('user_name') : '--';
+  userName : string 
   authorities = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
 
 
   userRole = this.authorities && JSON.parse(this.authorities).length ? JSON.parse(this.authorities).join(',') : '--';
-  userEmail = this.sharedService.getCurrentUserDetails('user_email') ? this.sharedService.getCurrentUserDetails('user_email') : '--';
+  userEmail : string
   userEmailConfigured = false;
   message: string;
   dataLoading = false;
@@ -63,10 +63,14 @@ export class MyprofileComponent implements OnInit {
     if ((!this.isSuperAdmin) && (localStorage.getItem('projectsAccess') === 'undefined' || !JSON.parse(localStorage.getItem('projectsAccess')).length)) {
       this.noAccess = true;
     }
-
-    if (this.sharedService.getCurrentUserDetails('user_email')) {
-      this.emailConfigured = true;
-    }
+   
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.userName = details['user_name'] ? details['user_name'] : '--';
+      this.userEmail = details['user_email'] ? details['user_email'] : '--';
+      if (details['user_email']) {
+        this.emailConfigured = true;
+      }
+    })
 
     if (!!localStorage.projectsAccess && JSON.parse(localStorage.projectsAccess).length) {
       const accessList = JSON.parse(localStorage.projectsAccess);
@@ -143,7 +147,7 @@ export class MyprofileComponent implements OnInit {
           this.dataLoading = false;
           if (response && response['success']) {
             this.userEmail = response['data'].emailAddress;
-            localStorage.setItem('user_email', this.userEmail);
+            this.sharedService.setCurrentUserDetails({user_email: this.userEmail})
             this.userEmailConfigured = true;
             this.profile.changePswdDisabled = false;
             this.message = '';

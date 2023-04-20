@@ -134,7 +134,7 @@ export class LoginComponent implements OnInit {
     }
 
     redirectToProfile() {
-        if (!localStorage.getItem('user_email') || localStorage.getItem('user_email') === '') {
+        if (!this.sharedService.getCurrentUserDetails('user_email') || this.sharedService.getCurrentUserDetails('user_email') === '') {
             return true;
         }
         const decryptedText = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject} from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, mapTo, tap } from 'rxjs/operators';
@@ -137,8 +137,15 @@ import { SharedService } from './shared.service';
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
-    private currentUserDetailsURL = ""
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService,private sharedService : SharedService) { }
+    private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData'
+    userName : string;
+    userEmail : string;
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService,private sharedService : SharedService) { 
+        this.sharedService.currentUserDetails.subscribe(details=>{
+            this.userName = details['user_name'];
+            this.userEmail = details['user_email'];
+          })
+    }
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
@@ -270,11 +277,11 @@ import { SharedService } from './shared.service';
         /* Send request to server and store token and username in localstore for authentication */
         return this.http.post<any>(loginUrl, postData, httpOptions)
             .pipe(tap(res => {
-                localStorage.setItem('user_name', username);
-                localStorage.setItem('user_email', res.body['user_email']);
-                localStorage.setItem('projectsAccess', JSON.stringify(res.body['projectsAccess']));
+                this.sharedService.setCurrentUserDetails({user_name: username});
+                this.sharedService.setCurrentUserDetails({user_email: res.body['user_email']});
+                 localStorage.setItem('projectsAccess', JSON.stringify(res.body['projectsAccess']));
                 localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(res.body['authorities']), 'encrypt'));
-            }),
+           }),
                 catchError(this.handleError<object>('errorData', ['error'])));
     }
 
@@ -286,8 +293,8 @@ import { SharedService } from './shared.service';
             .pipe(tap(res => {
                 if (res !== 'email' && res !== 'username' && res !== 'password') {
 
-                    localStorage.setItem('user_name', username);
-                    localStorage.setItem('user_email', email);
+                    this.sharedService.setCurrentUserDetails({user_name: username});
+                    this.sharedService.setCurrentUserDetails({user_email: email});
                     if(res['authorities']?.length > 0){
                         localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify([...res['authorities']]), 'encrypt'));
                     }
@@ -309,7 +316,7 @@ import { SharedService } from './shared.service';
 
     /** POST: Change the password for loggedin user*/
     changePassword(oldpassword, password): Observable<any> {
-        const postData = { oldPassword: oldpassword, password, email: this.sharedService.getCurrentUserDetails('user_email'), user: this.sharedService.getCurrentUserDetails('user_name')};
+        const postData = { oldPassword: oldpassword, password, email: this.userEmail, user: this.userName};
         return this.http.post(this.changePasswordUrl, postData).pipe(tap(res => {
         }));
     }
@@ -884,15 +891,6 @@ import { SharedService } from './shared.service';
     }
 
     getCurrentUserDetails(){
-    //   return this.http.get<any>(this.currentUserDetailsURL);
-    return of({
-        success : true,
-        data : {
-            authorities :  ["ROLE_SUPERADMIN"],
-            projectsAccess  : [],
-            user_email: "knowledgesharing@publicissapient.com",
-            user_name : "brahma",
-        }
-     })
+      return this.http.get<any>(this.currentUserDetailsURL);
     }
 }

@@ -32,11 +32,15 @@ export class RequestStatusComponent implements OnInit {
   requestStatusData = {};
   requestStatusList = [];
   dataLoading = <boolean>false;
-  userName = this.sharedService.getCurrentUserDetails('user_name');
+  userName : string;
   constructor(private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService, private sharedService: SharedService) { }
 
   ngOnInit() {
-    this.getRequests();
+   
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.userName = details['user_name'];
+      this.getRequests();
+    })
   }
 
   getRequests() {

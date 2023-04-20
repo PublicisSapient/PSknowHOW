@@ -384,7 +384,9 @@ export class ConnectionListComponent implements OnInit {
     this.getConnectionList();
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
-    this.currentUser = this.sharedService.getCurrentUserDetails('user_name') ? this.sharedService.getCurrentUserDetails('user_name') : '';
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.currentUser = details['user_name'] ? details['user_name'] : '';
+    })
     this.getZephyrUrl();
   }
 

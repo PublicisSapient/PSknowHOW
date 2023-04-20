@@ -46,7 +46,9 @@ export class RaiseAccessRequestComponent implements OnInit {
 
   ngOnInit() {
     this.getRolesList();
-    this.requestData['username'] = this.sharedService.getCurrentUserDetails('user_name');
+   this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.requestData['username']  = details['user_name'];
+    })
     this.requestData['status'] = 'Pending';
     this.requestData['reviewComments'] = '';
     this.requestData['role'] = '';

@@ -44,10 +44,13 @@ export class ProfileComponent implements OnInit {
         if(this.getAuthorizationService.checkIfProjectAdmin()) {
             this.isProjectAdmin = true;
         }
-
-        if (!this.sharedService.getCurrentUserDetails('user_email')) {
-            this.changePswdDisabled = true;
-        }
+         
+       
+        this.sharedService.currentUserDetailsObs.subscribe(details=>{
+            if (!details['user_email']) {
+                    this.changePswdDisabled = true;
+                }
+          })
 
         this.adLogin = localStorage.loginType === 'AD';
     }

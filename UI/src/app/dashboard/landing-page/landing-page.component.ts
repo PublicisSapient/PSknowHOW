@@ -32,6 +32,7 @@ export class LandingPageComponent implements OnInit {
   totalUsers: any = 0;
   newUsers: any = 0;
   isProducer: Boolean = false;
+  userName : string;
 
   constructor(private httpService: HttpService,private sharedService : SharedService) { }
 
@@ -42,6 +43,10 @@ export class LandingPageComponent implements OnInit {
     this.getCategory();
     // this.getAccountSummary();
     // this.getTotalUsersCount();
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.userName = details['user_name'];
+    })
+
   }
 
   // handleChange(e) {
@@ -64,7 +69,7 @@ export class LandingPageComponent implements OnInit {
 
   save() {
     const postObj = this.voiceForm.value;
-    postObj['username'] = this.sharedService.getCurrentUserDetails('user_name');
+    postObj['username'] = this.userName;
     this.httpService.submitFeedbackData(postObj).subscribe((response) => {
       if(response.message){
         this.isFeedbackSubmitted = true;

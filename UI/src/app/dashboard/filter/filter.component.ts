@@ -143,6 +143,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.service.currentUserDetailsObs.subscribe(details=>{
+      this.username = details['user_name'];
+    })
 
     this.getCurrentUserDetails();
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
@@ -212,7 +215,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    this.username = this.service.getCurrentUserDetails('user_name');
+    // this.username = this.service.getCurrentUserDetails('user_name');
 
     let authoritiesArr;
     if (this.service.getCurrentUserDetails('authorities')) {
@@ -1179,10 +1182,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.httpService.logout().subscribe((getData) => {
       if (!(getData !== null && getData[0] === 'error')) {
         this.helperService.isKanban = false;
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_name');
-        localStorage.removeItem('authorities');
-        localStorage.removeItem('projectsAccess');
+        // localStorage.removeItem('auth_token');
+        // localStorage.removeItem('user_name');
+        // localStorage.removeItem('authorities');
+        // localStorage.removeItem('projectsAccess');
+        localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.router.navigate(['./authentication/login']);
@@ -1232,9 +1236,8 @@ export class FilterComponent implements OnInit, OnDestroy {
 
    getCurrentUserDetails(){
     this.httpService.getCurrentUserDetails().subscribe(details=>{
-   
+      
       if(details['success']){
-        console.log("details : ",details['data'])
         this.service.setCurrentUserDetails(details['data']);
       }
     });
