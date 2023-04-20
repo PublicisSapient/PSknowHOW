@@ -127,7 +127,7 @@ describe('LoginComponent', () => {
 
   xit('valid form with correct username pswd', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.flush(fakeLogin);
@@ -138,7 +138,7 @@ describe('LoginComponent', () => {
   // 0 status
   it('Internal server error login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error('');
@@ -149,7 +149,7 @@ describe('LoginComponent', () => {
   // 404 status
   it('Unauthorized login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error(fakeInvalidLogin, fakeInvalidLogin);
