@@ -21,6 +21,7 @@ import { ProfileComponent } from './profile.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ProfileModule', () => {
   let fixture: ComponentFixture<ProfileComponent>;
@@ -32,7 +33,7 @@ describe('ProfileModule', () => {
     TestBed.configureTestingModule({
       declarations : [ProfileComponent],
       imports : [RouterTestingModule],
-      providers : [GetAuthorizationService]
+      providers : [GetAuthorizationService,SharedService]
 
     }).compileComponents();
     profileModule = new ProfileModule();

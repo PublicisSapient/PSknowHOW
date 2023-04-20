@@ -10,6 +10,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { environment } from 'src/environments/environment';
 import { of,throwError } from 'rxjs';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('AdSettingsComponent', () => {
   let component: AdSettingsComponent;
@@ -18,6 +19,7 @@ describe('AdSettingsComponent', () => {
   const baseUrl = environment.baseUrl;
   let httpMock;
   let msgService;
+  let shared ;
 
   const fakeLoginSettings = {
     message: 'types of authentication config',
@@ -50,6 +52,7 @@ describe('AdSettingsComponent', () => {
       providers: [
         HttpService,
         MessageService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -62,6 +65,7 @@ describe('AdSettingsComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
     msgService = TestBed.inject(MessageService);
+    shared = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 

@@ -48,7 +48,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
 import { GetAuthorizationService } from '../services/get-authorization.service';
-
+import { SharedService } from '../services/shared.service';
 describe('ConfigComponent', () => {
   let component: ConfigComponent;
   let fixture: ComponentFixture<ConfigComponent>;
@@ -86,7 +86,7 @@ describe('ConfigComponent', () => {
         ScrumKanbanPipe,
         // TextMaskPipe,
       ],
-      providers: [MessageService, ConfirmationService, GetAuthorizationService]
+      providers: [MessageService, ConfirmationService, GetAuthorizationService,SharedService]
     })
       .compileComponents();
   });

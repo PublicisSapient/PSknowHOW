@@ -59,7 +59,7 @@ describe('ResetPasswordComponent', () => {
       ],
       declarations: [ResetPasswordComponent,
         RegisterComponent, DashboardComponent],
-      providers: [HttpService, SharedService,
+      providers: [HttpService, SharedService
         , { provide: APP_CONFIG, useValue: AppConfig }
 
       ],
