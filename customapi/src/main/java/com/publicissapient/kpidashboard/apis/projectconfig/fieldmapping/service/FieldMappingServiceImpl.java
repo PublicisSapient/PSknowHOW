@@ -387,7 +387,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority", "excludeRCAFromFTPR",
 					"workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, "jiraDor",
 					"resolutionTypeForRejection", "jiraDefectRejectionStatus", EPIC_TIME_CRITICALITY, "jiraLiveStatus",
-					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField");
+					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
+					"jiraRejectedInRefinement","jiraAcceptedInRefinement","jiraReadyForRefinement");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
 					STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
