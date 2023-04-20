@@ -757,14 +757,15 @@ public class KPIExcelUtility {
 					excelData.setPotentialDelay("-");
 					excelData.setPredictedCompletionDate("-");
 				}
-				if (completedIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toList())
-						.contains(e.getNumber())) {
-					excelData.setActualCompletionDate(LocalDate
-							.parse(e.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
-							.toString());
-				} else {
-					excelData.setActualCompletionDate("-");
-				}
+                Optional<JiraIssue> completedJiraIssue = completedIssue.stream()
+                        .filter(jiraIssue -> jiraIssue.getNumber().equals(e.getNumber()))
+                        .findFirst();
+
+                if (completedJiraIssue.isPresent()) {
+                    excelData.setActualCompletionDate(completedJiraIssue.get().getUpdateDate());
+                } else {
+                    excelData.setActualCompletionDate("-");
+                }
                 excelDataList.add(excelData);
             });
         }
@@ -1313,7 +1314,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 
 		} else {
-			iterationKpiModalValue.setPotentialDelay("-");
+			iterationKpiModalValue.setPotentialOverallDelay("-");
 			iterationKpiModalValue.setPredictedCompletionDate("-");
 		}
 		if (jiraIssue.getDevDueDate() != null)
@@ -1410,7 +1411,7 @@ public class KPIExcelUtility {
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
 
-    }
+	}
 
     /**
      * This Method is used to populate Excel Data for Rejection Refinement KPI
