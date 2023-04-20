@@ -437,6 +437,13 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { }
       },
       {
+        kpiId: 'kpi136',
+        kpiName: 'Defect Count by Status',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
         kpiId: 'kpi989',
         kpiName: 'Kpi Maturity',
         type: ['Other'],
