@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -230,7 +231,11 @@ public class KpiHelperServiceTest {
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(leafNodeList, kpiRequest);
+		Map<ObjectId, List<String>> projectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
+				node -> node.getProjectFilter().getBasicProjectConfigId(),
+				Collectors.collectingAndThen(Collectors.toList(),
+						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(projectWiseSprintsForFilter, kpiRequest);
 		assertEquals(2, resultMap.size());
 	}
 

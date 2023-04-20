@@ -409,13 +409,13 @@ public class KpiHelperService { // NOPMD
 	 * Fetch sprint velocity data from db map. based upon kpi request and leaf
 	 * node list
 	 *
-	 * @param leafNodeList
+	 * @param projectWiseSprintsForFilter
 	 *            the leaf node list
 	 * @param kpiRequest
 	 *            the kpi request
 	 * @return map
 	 */
-	public Map<String, Object> fetchSprintVelocityDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
+	public Map<String, Object> fetchSprintVelocityDataFromDb(Map<ObjectId, List<String>> projectWiseSprintsForFilter, KpiRequest kpiRequest) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -427,12 +427,12 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> closedStatusMap = new HashMap<>();
 		Map<String, List<String>> typeNameMap = new HashMap<>();
 
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+		projectWiseSprintsForFilter.entrySet().forEach(entry -> {
+			ObjectId basicProjectConfigId = entry.getKey();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			sprintList.add(leaf.getSprintFilter().getId());
+			sprintList.addAll(entry.getValue());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
