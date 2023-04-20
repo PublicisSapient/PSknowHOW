@@ -137,10 +137,10 @@ export class LoginComponent implements OnInit {
         if (!this.sharedService.getCurrentUserDetails('user_email') || this.sharedService.getCurrentUserDetails('user_email') === '') {
             return true;
         }
-        const decryptedText = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
+        const decryptedText = this.aesEncryption.convertText(this.sharedService.getCurrentUserDetails('authorities'), 'decrypt');
         if (decryptedText && JSON.parse(decryptedText).includes('ROLE_SUPERADMIN')) {
             return false;
-        } else if (localStorage.getItem('projectsAccess') === 'undefined' || !localStorage.getItem('projectsAccess').length) {
+        } else if (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length) {
             return true;
         }
 

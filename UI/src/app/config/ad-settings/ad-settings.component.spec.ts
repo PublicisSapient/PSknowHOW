@@ -93,7 +93,7 @@ describe('AdSettingsComponent', () => {
       success: true,
       data: {
         username: 'test-username',
-        password: 'dummypassword',
+        password: '***',
         host: 'test-host-name',
         port: 639,
         rootDn: 'test-root',
@@ -108,7 +108,7 @@ describe('AdSettingsComponent', () => {
   it("should adsetting form valid",()=>{
     component.initializeFields();
     component.adSettingsForm.controls['username'].setValue("abc@gmail.com")
-    component.adSettingsForm.controls['password'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['password'].setValue("***")
     component.adSettingsForm.controls['host'].setValue("abc@gmail.com")
     component.adSettingsForm.controls['port'].setValue("abc@gmail.com")
     component.adSettingsForm.controls['rootDn'].setValue("abc@gmail.com")
