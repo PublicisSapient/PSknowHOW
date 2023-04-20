@@ -3609,7 +3609,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 2,
@@ -3629,11 +3629,35 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+	 "kpiId": "kpi136",
+	 "kpiName": "Defect Count by Status",
+	 "maxValue": "",
+	 "kpiUnit": "Count",
+	 "isDeleted": "False",
+	 "defaultOrder": 13,
+	 "kpiCategory": "Iteration",
+	 "kpiSource": "Jira",
+	 "groupId": 8,
+	 "thresholdValue": "",
+	 "kanban": false,"chartType": "pieChart",
+	 "kpiInfo": {
+	   "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
+	   },
+	 "xAxisLabel": "",
+	 "yAxisLabel": "",
+	 "isPositiveTrend": true,
+	 "showTrend": false,
+	 "isAdditionalFilterSupport": false,
+	 "kpiFilter": "dropdown",
+	 "boxType": "chart",
+	 "calculateMaturity": false
+  },
+  {
     "kpiId":"kpi137",
     "kpiName":"Defect Reopen Rate",
     "kpiUnit":"Hours",
     "isDeleted":"False",
-    "defaultOrder":3,
+    "defaultOrder":2,
     "kpiCategory":"Backlog",
     "kpiSource":"Jira",
     "groupId":2,
@@ -3649,31 +3673,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport":true,
     "hideOverallFilter" : true,
     "calculateMaturity":false
-  },
-  {
-     "kpiId": "kpi136",
-     "kpiName": "Defect Count by Status",
-     "maxValue": "",
-     "kpiUnit": "Count",
-     "isDeleted": "False",
-     "defaultOrder": 13,
-     "kpiCategory": "Iteration",
-     "kpiSource": "Jira",
-     "groupId": 8,
-     "thresholdValue": "",
-     "kanban": false,"chartType": "pieChart",
-     "kpiInfo": {
-       "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
-       },
-     "xAxisLabel": "",
-     "yAxisLabel": "",
-     "isPositiveTrend": true,
-     "showTrend": false,
-     "isAdditionalFilterSupport": false,
-     "kpiFilter": "dropdown",
-     "boxType": "chart",
-     "calculateMaturity": false
-   },
+  }
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",

@@ -59,7 +59,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Reopen Rate";
-	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopened /Total Defects";
+	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopened /Total";
 	private static final String AVERAGE_TIME_REOPEN = "Avg. Time to Reopen";
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
@@ -126,6 +126,11 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				.get(JIRA_REOPEN_HISTORY);
 		Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
 				.get(PROJECT_CLOSED_STATUS_MAP);
+		boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
+				.allMatch(closedStatusList -> closedStatusList.isEmpty());
+		if (closedStatusConfigEmpty) {
+			return;
+		}
 		Map<String, List<JiraIssue>> priorityWiseTotalStory = totalDefects.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getPriority));
 		Map<String, JiraIssueCustomHistory> reopenJiraHistoryMap = reopenJiraHistory.stream()
