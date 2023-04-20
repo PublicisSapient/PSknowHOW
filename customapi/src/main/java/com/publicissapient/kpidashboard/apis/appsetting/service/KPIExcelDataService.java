@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -638,7 +639,8 @@ public class KPIExcelDataService {
 							kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
 							kpiElement.setKpiCategory(masterList.stream()
 									.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
-									.map(KpiMaster::getKpiCategory).findFirst().orElse(""));
+									.map(KpiMaster::getKpiCategory)
+									.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
 
 							kpiElementList.add(kpiElement);
 						});
@@ -652,7 +654,8 @@ public class KPIExcelDataService {
 				kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
 				kpiElement.setKpiCategory(masterList.stream()
 						.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
-						.map(KpiMaster::getKpiCategory).findFirst().orElse(""));
+						.map(KpiMaster::getKpiCategory)
+						.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
 
 				kpiElementList.add(kpiElement);
 
