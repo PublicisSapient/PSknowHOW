@@ -306,14 +306,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.filterForm?.reset();
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
     }
-<<<<<<< HEAD
-
-    this.setLevels();
-    this.getFilterDataOnLoad();
-    this.previousType = this.kanban;
-    // this.service.setSelectedType(type); // Going in infinite loop
-=======
->>>>>>> 90b55e4725f804fe7c460df0757ac7711fc09a0f
 
     const data = {
       url: this.router.url +'/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
