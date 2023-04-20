@@ -72,6 +72,8 @@ public class Connection extends BasicModel{
 	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
 	private boolean bearerToken;
+	private String repoOwnerName;
+	private String repositoryName;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;

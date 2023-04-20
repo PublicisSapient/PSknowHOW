@@ -97,4 +97,6 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private String metadataTemplateCode;
+	//workflows Name for github Action processor
+	private String workflowsName;
 }
