@@ -1,7 +1,7 @@
 <div *ngIf="!noKpis else noKpiTemplate" class="backlog-screen">
   <div id="message"></div>
   <ng-container *ngIf="!noSprints else noSprintsTemplate">
-    <div *ngIf="selectedtype === 'Scrum'">
+    <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix"></div>
       <div class="right-container col">
         <div class="p-grid justify-content-start p-pt-3">

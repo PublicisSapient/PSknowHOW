@@ -108,7 +108,6 @@ describe('NavComponent', () => {
     component.kpiListData = getDashConfData.data;
     component.kpiListData.scrum[0].boardName = 'My KnowHOW1';
     component.kpiListData.kanban[0].boardName = 'My KnowHOW1';
-    spyOn(component, 'assignUserNameForKpiData');
     spyOn(httpService, 'updateUserBoardConfig').and.returnValue(of(getDashConfData));
     component.editDashboardName();
     tick();
@@ -120,7 +119,6 @@ describe('NavComponent', () => {
       success : true
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(component,'assignUserNameForKpiData');
     spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
     spyOn(messageService,'add');
     component.editDashboardName();
@@ -132,7 +130,6 @@ describe('NavComponent', () => {
       success : false
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(component,'assignUserNameForKpiData');
     spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
     const spy = spyOn(messageService,'add');
     component.editDashboardName();
@@ -152,15 +149,7 @@ describe('NavComponent', () => {
     expect(component.displayEditModal).toBeFalsy();
   })
 
-  it("should kanban select if kanban tab is clicked",()=>{
-    component.selectedTypef('Kanban');
-    expect(component.kanban).toBeTruthy();
-  })
-
-  it("should scrum select if scrum tab is clicked",()=>{
-    component.selectedTypef('Scrum');
-    expect(component.kanban).toBeFalsy();
-  })
+  
 
   it("should stop worker",()=>{
     component.worker = {terminate: ()=>{
