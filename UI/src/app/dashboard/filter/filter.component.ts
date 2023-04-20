@@ -218,8 +218,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     // this.username = this.service.getCurrentUserDetails('user_name');
 
     let authoritiesArr;
-    if (this.service.getCurrentUserDetails('authorities')) {
-      authoritiesArr = this.service.getCurrentUserDetails('authorities');
+    if (localStorage.getItem('authorities')) {
+      authoritiesArr = localStorage.getItem('authorities');
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
@@ -1182,10 +1182,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.httpService.logout().subscribe((getData) => {
       if (!(getData !== null && getData[0] === 'error')) {
         this.helperService.isKanban = false;
-        // localStorage.removeItem('auth_token');
-        // localStorage.removeItem('user_name');
-        // localStorage.removeItem('authorities');
-        // localStorage.removeItem('projectsAccess');
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);

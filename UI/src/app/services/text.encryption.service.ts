@@ -7,7 +7,7 @@
 
 
  export class TextEncryptionService {
-    enKey = '6v9y$B&E';
+    enc = '6v9y$B&E';
     convertText(plainText: string, conversion: string) {
         let conversionOutput;
 
@@ -15,9 +15,9 @@
             return;
         }
         if (conversion=='encrypt') {
-            conversionOutput = CryptoJS.AES.encrypt(plainText.trim(), this.enKey.trim()).toString();
+            conversionOutput = CryptoJS.AES.encrypt(plainText.trim(), this.enc.trim()).toString();
         } else {
-            conversionOutput = CryptoJS.AES.decrypt(plainText.trim(), this.enKey.trim()).toString(CryptoJS.enc.Utf8);
+            conversionOutput = CryptoJS.AES.decrypt(plainText.trim(), this.enc.trim()).toString(CryptoJS.enc.Utf8);
         }
 
         return conversionOutput;
