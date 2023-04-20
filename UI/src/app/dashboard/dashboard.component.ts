@@ -64,6 +64,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   }
 
   ngOnInit() {
+    this.setPageContentWrapperHeight();
     // this.authorized = this.getAuth.checkAuth();
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
@@ -78,7 +79,9 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   }
 
   setPageContentWrapperHeight(){
-    this.headerStyle={height: 'calc(100vh - '+this.header.offsetHeight+'px)',top:'calc('+this.header.offsetHeight+'px'+' - '+'0px)'};
+    setTimeout(()=>{
+      this.headerStyle={height: 'calc(100vh - '+this.header.nativeElement.offsetHeight+'px)',top:'calc('+this.header.nativeElement.offsetHeight+'px'+' - '+'0px)'};
+    },0);
   }
 
 
