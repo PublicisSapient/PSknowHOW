@@ -710,7 +710,7 @@
     ],
     "puntedIssues" : [
       {
-        "number" : "TEST-19485",
+        "number" : "TEST-17908",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "Open",
