@@ -70,6 +70,11 @@ public class Connection extends BasicModel{
 	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
 	private boolean customClientProvided;
+	private String jaasConfigFilePath;
+	private String krb5ConfigFilePath;
+	private String jaasUser;
+	private String userPrincipal;
+	private String samlEndPoint;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;

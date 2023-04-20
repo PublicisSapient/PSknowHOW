@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.jira.adapter.helper.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapterFactory;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import org.apache.commons.collections4.CollectionUtils;
@@ -160,10 +161,11 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 						Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
 						if (connectionOptional.isPresent()) {
 							Connection conn = connectionOptional.get();
-							client = getProcessorRestClient(projectConfigList, entry, isOauth, conn);
+							KerberosClient krb5Client = new KerberosClient();
+							client = getProcessorRestClient(projectConfigList, entry, isOauth, conn, krb5Client);
 
 							JiraAdapter jiraAdapter = onlineAdapterFactory.getOnlineAdapter(jiraProcessorConfig, client,
-									aesEncryptionService, toolCredentialProvider);
+									aesEncryptionService, toolCredentialProvider, krb5Client);
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
@@ -195,9 +197,11 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 	private ProcessorJiraRestClient getProcessorRestClient(List<ProjectBasicConfig> projectConfigList,
 														   Map.Entry<String, ProjectConfFieldMapping> entry,
-														   boolean isOauth, Connection conn){
+														   boolean isOauth, Connection conn, KerberosClient krb5Client){
 		if(conn.isCustomClientProvided()){
-			return jiraRestClientFactory.getSpnegoSamlClient();
+			krb5Client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(),
+					conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+			return jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
 		}else{
 			return getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
 		}

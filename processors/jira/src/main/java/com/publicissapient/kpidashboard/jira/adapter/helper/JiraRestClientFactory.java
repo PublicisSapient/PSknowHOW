@@ -246,17 +246,11 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 		return client;
 	}
 
-	public ProcessorJiraRestClient getSpnegoSamlClient() {
+	public ProcessorJiraRestClient getSpnegoSamlClient(KerberosClient kerberosClient) {
 		ProcessorJiraRestClient client = null;
-		/**/
-		BasicCookieStore basicCookieStore = new BasicCookieStore();
-		HttpClient httpClient = HttpClientBuilder.create().setDefaultCookieStore(basicCookieStore).build();
-		KerberosRestTemplate restTemplate = new KerberosRestTemplate("","",httpClient);
-		String response = restTemplate.getForObject("samlendpointurl", String.class);
-		StringBuilder cookieHeaderBuilder = new StringBuilder();
-		basicCookieStore.getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie).append(";"));
-		client = new ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(URI.create("jiraurl"),cookieHeaderBuilder.toString(),jiraProcessorConfig);
-
+		kerberosClient.login();
+		client = new ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(
+				URI.create(kerberosClient.getJiraHost()), kerberosClient.getCookies(), jiraProcessorConfig);
 		return client;
 	}
 

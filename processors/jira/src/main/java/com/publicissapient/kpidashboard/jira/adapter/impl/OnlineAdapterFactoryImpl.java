@@ -9,6 +9,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
+import com.publicissapient.kpidashboard.jira.adapter.helper.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
@@ -32,9 +33,9 @@ public class OnlineAdapterFactoryImpl implements  OnlineAdapterFactory{
 
     public JiraAdapter getOnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
                                         AesEncryptionService aesEncryptionService
-                                        , ToolCredentialProvider toolCredentialProvider){
+                                        , ToolCredentialProvider toolCredentialProvider, KerberosClient krb5Client){
         JiraAdapter jiraAdapter = new OnlineAdapter(jiraProcessorConfig, client,
-                aesEncryptionService, toolCredentialProvider);
+                aesEncryptionService, toolCredentialProvider, krb5Client);
 
         return jiraAdapter;
     }

@@ -39,6 +39,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.adapter.helper.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -49,6 +50,9 @@ import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -111,7 +115,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 	private ToolCredentialProvider toolCredentialProvider;
 
-	private Map<String,String> authorizationHeader;
+	private KerberosClient krb5Client;
 
 	public OnlineAdapter() {
 	}
@@ -125,11 +129,12 @@ public class OnlineAdapter implements JiraAdapter {
 	 *            aesEncryptionService
 	 */
 	public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider) {
+			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider, KerberosClient krb5Client) {
 		this.jiraProcessorConfig = jiraProcessorConfig;
 		this.client = client;
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
+		this.krb5Client = krb5Client;
 	}
 
 	/**
@@ -388,9 +393,7 @@ public class OnlineAdapter implements JiraAdapter {
 				Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 				String username = connectionOptional.map(Connection::getUsername).orElse(null);
 				URL url = getUrl(projectConfig, username);
-				URLConnection connection;
-				connection = url.openConnection();
-				userTimeZone = parseUserTimeZone(getDataFromServer(projectConfig, (HttpURLConnection) connection));
+				userTimeZone = parseUserTimeZone(getDataFromClient(projectConfig, url));
 			}
 		} catch (RestClientException rce) {
 			log.error("Client exception when loading statuses", rce);
@@ -464,11 +467,43 @@ public class OnlineAdapter implements JiraAdapter {
 		return sb.toString();
 	}
 
-	public String getDataFromSpnegoServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
-			throws IOException {
-		HttpURLConnection request = connection;
+	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean spenagoClient = connectionOptional.map(Connection::isCustomClientProvided).orElse(false);
+		if(spenagoClient){
+			HttpUriRequest request = RequestBuilder.get().
+					setUri(url.toString())
+					.setHeader(HttpHeaders.ACCEPT,"application/json")
+					.setHeader(HttpHeaders.CONTENT_TYPE,"application/json")
+					.build();
+			return krb5Client.getResponse(request);
+		}else{
+			return getDataFromServer(url, connectionOptional);
+		}
+	}
 
-		request.setRequestProperty("Cookie", "Basic Cookie Store"); // NOSONAR
+	public String getDataFromServer(URL url, Optional<Connection> connectionOptional)
+			throws IOException {
+		HttpURLConnection request = (HttpURLConnection) url.openConnection();
+
+		String username = null;
+		String password = null;
+
+		if(connectionOptional.isPresent()) {
+			Connection conn = connectionOptional.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+
+			} else {
+				username = connectionOptional.map(Connection::getUsername).orElse(null);
+				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			}
+		}
+		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
@@ -553,10 +588,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 			if (null != jiraToolConfig) {
 				URL url = getSprintReportUrl(projectConfig, sprintId,boardId);
-				URLConnection connection;
-
-				connection = url.openConnection();
-				getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection),sprint,projectConfig,dbSprintDetails,boardId);
+				getReport(getDataFromClient(projectConfig, url),sprint,projectConfig,dbSprintDetails,boardId);
 			}
 		log.info("End sprint report api. Sprint Id : {} , Board Id : {}",sprintId,boardId);
 		} catch (RestClientException rce) {
@@ -855,9 +887,7 @@ public class OnlineAdapter implements JiraAdapter {
 				int startIndex = 0;
 				do {
 					URL url = getEpicUrl(projectConfig, boardId, startIndex);
-					URLConnection connection;
-					connection = url.openConnection();
-					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
+					String jsonResponse = getDataFromClient(projectConfig, url);
 					isLast = populateData(jsonResponse, epicList);
 					startIndex = epicList.size();
 					TimeUnit.MILLISECONDS.sleep(500);

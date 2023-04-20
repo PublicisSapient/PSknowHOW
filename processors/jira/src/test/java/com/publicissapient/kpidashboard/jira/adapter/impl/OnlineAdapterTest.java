@@ -48,7 +48,7 @@ public class OnlineAdapterTest {
     private ToolCredentialProvider toolCredentialProvider = Mockito.mock(ToolCredentialProvider.class);
 
     ProcessorJiraRestClient client = Mockito.mock(ProcessorJiraRestClient.class);
-    OnlineAdapter onlineAdapter = new OnlineAdapter(jiraProcessorConfig, client, aesEncryptionService, toolCredentialProvider);
+    OnlineAdapter onlineAdapter = new OnlineAdapter(jiraProcessorConfig, client, aesEncryptionService, toolCredentialProvider, null);
 
     ProjectConfFieldMapping projectConfFieldMapping;
 

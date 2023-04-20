@@ -66,7 +66,8 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
      * @param jiraProcessorConfig Jira processor config
      * @return ProcessorJiraRestClient
      */
-    public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies, JiraProcessorConfig jiraProcessorConfig) {
+    public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies,
+                                                                   JiraProcessorConfig jiraProcessorConfig) {
         return create(serverUri, new SpnegoAuthenticationHandler(authCookies), jiraProcessorConfig);
     }
 }

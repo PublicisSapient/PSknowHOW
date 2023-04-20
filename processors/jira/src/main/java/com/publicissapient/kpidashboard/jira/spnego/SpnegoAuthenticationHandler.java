@@ -15,6 +15,6 @@ public class SpnegoAuthenticationHandler implements AuthenticationHandler {
 
     @Override
     public void configure(Request.Builder builder) {
-        builder.setHeader(COOKIE_HEADER,authCookies);
+        builder.setHeader(COOKIE_HEADER, authCookies);
     }
 }
