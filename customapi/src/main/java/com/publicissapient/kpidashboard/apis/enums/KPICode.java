@@ -295,6 +295,7 @@ public enum KPICode {
 	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
 
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
@@ -363,7 +364,12 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi131", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name()),
+
+	/**
+	 * First time pass rate
+	 */
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name());
 
 	// @formatter:on
 

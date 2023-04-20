@@ -65,6 +65,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { SkeletonModule } from 'primeng/skeleton'
 
 
 /******************************************************/
@@ -195,7 +196,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DialogModule,
         FontAwesomeModule,
         DragDropModule,
-        MenuModule
+        MenuModule,
+        SkeletonModule
     ],
     providers: [
         ExcelService,

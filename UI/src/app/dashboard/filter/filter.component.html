@@ -8,13 +8,12 @@
    <div class="f"
    *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
       <div id="Filters" #filterDiv class="tabs p-p-2 p-d-flex p-align-end p-jc-between flex-wrap p-align-center">
-         <div class="filter-nav p-justify-between"
-            *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog'">
+         <div class="filter-nav p-justify-between">
             <form [formGroup]="filterForm">
                <div class="p-d-flex p-justify-between p-align-center">
                   <div class="p-d-flex p-align-end">
                      <!-- Aggregation level -->
-                     <div class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
+                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
                            id="Filter-Aggregation-Level" class="p-pb-0">
@@ -24,12 +23,12 @@
                         </ng-select>
                      </div>
                      <!-- Trend line value -->
-                     <div class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(up to ' + (this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount) + ')'"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
                            [closeOnSelect]="false"
-                           [maxSelectedItems]="this.selectedTab?.toLowerCase() === 'maturity' ? 1 : heirarchyCount"
+                           [maxSelectedItems]="3"
                            class="trend-line-value p-pb-0" [clearable]="false">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
@@ -47,8 +46,26 @@
                            </ng-template>
                         </ng-select>
                      </div>
+                     <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="min-width: 289px;">
+                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
+                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : onSelectedTrendValueChange()"
+                           class="trend-line-value p-pb-0">
+                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
+                           </ng-option>
+                        </ng-select>
+                     </div>
+                     <div *ngIf="selectedTab?.toLowerCase() === 'iteration'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
+                     <ng-select  formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
+                        (change)="handleIterationFilters('sprint')" placeholder="Sprint" [clearable]="false"
+                        class="p-pb-0">
+                        <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
+                           {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
+                        </ng-option>
+                     </ng-select>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity'">
+                  </div>
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration'">
                      <!-- Date filter start -->
                      <div *ngIf="kanban && selectedDateFilter !== ''"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -127,34 +144,9 @@
                      <!-- additional filters end -->
                   </div>
                </div>
-
             </form>
          </div>
-         <form [formGroup]="filterForm"
-            *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'backlog'"
-            class="p-d-flex p-align-center">
-            <!-- project -->
-            <div class="form-check filter-box p-col-lg trend-line-container abc iteration-selected-project">
-               <ng-select formControlName="selectedProjectValue" [dropdownPosition]="'bottom'"
-                  (change)="handleIterationFilters('project', 2)" placeholder="Project" [clearable]="false"
-                  class="p-pb-0">
-                  <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                  </ng-option>
-               </ng-select>
-            </div>
-            <!-- sprint -->
-
-            <div class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint"
-               *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
-               <ng-select formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-                  (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false"
-                  class="p-pb-0">
-                  <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
-                     {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
-                  </ng-option>
-               </ng-select>
-            </div>
-         </form>
+  
          <div class="p-d-flex p-align-center">
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
                <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data</h4>
@@ -220,10 +212,10 @@
   
    <div class="p-d-flex">
       <div class="back-btn-wraper">
-      <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-         <button  class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
+            <button class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         </div>
       </div>
-     </div>
       <div class="username-btn-wraper" role="button">
          <div class="profile-budge cursor-pointer" (click)="menu.toggle($event)">
             {{username}}
@@ -236,7 +228,6 @@
 
 <div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
    <div class="filter-nav">
-
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration'">
          <ul class="p-m-0 p-pl-0 p-d-flex flex-wrap">
             <!-- *ngIf="!kanban"-->
@@ -244,12 +235,8 @@
                <li class="selectedfilter p-mr-5">
                   <div class="selected-node">
                      <div class="selected-node-label"><span class="align-list-marker"></span>{{item?.nodeName?.length
-                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <!-- <span
-                           *ngIf="router.url !== '/dashboard/Maturity'">
-                           ( {{ item.grossMaturity }} )
-                           </span> -->
-                           <span class="remove-node p-l-1" (click)="removeNode(item.nodeId)"
-                              *ngIf="selectedFilterArray.length > 1">x</span>
+                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
+                           (click)="removeNode(item.nodeId)" *ngIf="selectedFilterArray.length > 1">x</span>
                      </div>
                      <div class="p-d-flex p-ml-2" *ngIf="item?.additionalFilters?.length > 0">
                         <div class="p-d-flex p-align-center" (mouseover)="showDropdown[item?.nodeId] = true"

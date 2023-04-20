@@ -36,11 +36,8 @@ export class SharedService {
   public passEventToNav;
   public allProjectsData;
   public sharedObject;
-  public onTabRefresh;
-  public onTypeRefresh;
   public globalDashConfigData;
   public selectedTab;
-  public selectedTabObs: any = new Subject();
   public selectedtype;
   public title = <any>{};
   public logoImage;
@@ -56,8 +53,6 @@ export class SharedService {
   public engineeringMaturityExcelData;
   public suggestionsData: any = [];
   private passServerRole= new BehaviorSubject<boolean>(false);
-  public activateKanban;
-  public selectedTypeObs = new BehaviorSubject('scrum');
   public boardId = 1;
   public isDownloadExcel;
 
@@ -73,7 +68,7 @@ export class SharedService {
   mapColorToProjectObs = this.mapColorToProject.asObservable();
   selectedFilterOption = new BehaviorSubject<any>({});
   selectedFilterOptionObs = this.selectedFilterOption.asObservable();
-  noSprints = new Subject<any>();
+  noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new Subject<any>();
   noProjectsObs = this.noProjects.asObservable();
@@ -82,47 +77,37 @@ export class SharedService {
   setNoData = new Subject<boolean>();
   clickedItem = new Subject<any>();
   public xLabelValue: any;
-  selectedLevel:object={};
-  selectedTrends:Array<object> = [];
+  selectedLevel = {};
+  selectedTrends = [];
   public isSideNav;
+  public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
-    this.onTabRefresh = new EventEmitter();
-    this.onTypeRefresh = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.activateKanban = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
   }
 
 
-  // calls when tab is selected
-  selectTab(selectedTab) {
-    this.onTabRefresh.emit(selectedTab);
-  }
-  // setter for tab i.e executive etc
-  setSelectedTab(selectedTab, boardId) {
-    this.selectedTab = selectedTab;
-    this.boardId = boardId;
-    this.selectedTabObs.next(selectedTab);
+  ngOnInit() {
   }
 
-  getSelectBoardId() {
-    return this.boardId;
+  setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
+    this.selectedtype = selectedType;
+    this.selectedTab = selectedTab;
+    this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
   }
+
+  setSelectedTab(selectedTab) {
+    this.selectedTab = selectedTab;
+  }
+
   // getter for type i.e scrum or kanban
   getSelectedTab() {
     return this.selectedTab;
-  }
-  // setter for tab i.e Scrum/Kanban
-  setSelectedType(selectedtype) {
-    this.selectedtype = selectedtype;
-    this.onTypeRefresh.emit(selectedtype);
-    this.activateKanban.emit(selectedtype === 'Kanban' ? true : false);
-    this.selectedTypeObs.next(selectedtype.toLowerCase());
   }
 
   // getter for tab i.e Scrum/Kanban
@@ -307,7 +292,7 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values){
-    this.selectedTrends = [...values];
+    this.selectedTrends = values;
   }
   getSelectedTrends(){
     return this.selectedTrends;

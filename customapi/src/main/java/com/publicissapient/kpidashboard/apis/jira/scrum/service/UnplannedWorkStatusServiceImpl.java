@@ -56,8 +56,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -69,11 +67,6 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 	private static final String OVERALL = "Overall";
 	public static final String OVERALL_UNPLANNED = "Overall Unplanned";
 	public static final String COMPLETED = "Completed";
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -109,17 +102,14 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Unplanned Work Status -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -195,17 +185,17 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 							issueCountUnplanned = issueCountUnplanned + 1;
 							overAllIssueCountUnplanned.set(0, overAllIssueCountUnplanned.get(0) + 1);
 
-							storyPointUnplanned = getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
-							originalEstimateUnplanned = getOriginalEstimate(overAllOriginalEstimateUnplanned,
+							storyPointUnplanned = KpiDataHelper.getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
+							originalEstimateUnplanned = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateUnplanned,
 									originalEstimateUnplanned, jiraIssue);
 							// For unplanned completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
 								issueCountCompleted = issueCountCompleted + 1;
 								overAllIssueCountCompleted.set(0, overAllIssueCountCompleted.get(0) + 1);
 
-								storyPointCompleted = getStoryPoint(overAllStoryPointsCompleted, storyPointCompleted,
+								storyPointCompleted = KpiDataHelper.getStoryPoint(overAllStoryPointsCompleted, storyPointCompleted,
 										jiraIssue);
-								originalEstimateCompleted = getOriginalEstimate(overAllOriginalEstimateCompleted,
+								originalEstimateCompleted = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateCompleted,
 										originalEstimateCompleted, jiraIssue);
 							}
 							populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
@@ -246,23 +236,6 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 			kpiElement.setModalHeads(KPIExcelColumn.UNPLANNED_WORK_STATUS.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
-	}
-
-	private Double getOriginalEstimate(List<Double> overAllOriginalEstimate, Double originalEstimate,
-			JiraIssue jiraIssue) {
-		if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-			overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
-		}
-		return originalEstimate;
-	}
-
-	private Double getStoryPoint(List<Double> overAllStoryPoints, Double storyPoint, JiraIssue jiraIssue) {
-		if (null != jiraIssue.getStoryPoints()) {
-			storyPoint = storyPoint + jiraIssue.getStoryPoints();
-			overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
-		}
-		return storyPoint;
 	}
 
 }

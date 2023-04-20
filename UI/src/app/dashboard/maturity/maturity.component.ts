@@ -81,10 +81,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
     noKpi = false;
     noOfJiraGroups = 0;
     loader= false;
-    showNoDataMsg:boolean = false;
+    showNoDataMsg = false;
     noDataForFilter = false;
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
-
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
         }));
@@ -93,25 +92,17 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.noDataForFilter = data;
             this.receiveSharedData(this.service.getFilterObject());
         }));
-
         this.selectedtype = this.service.getSelectedType();
 
-        this.subscription.push(this.service.onTypeRefresh.pipe(distinctUntilChanged(),mergeMap(selectedtype =>{
-            this.noOfJiraGroups=0;
+        this.subscription.push(this.service.onTypeOrTabRefresh.pipe(distinctUntilChanged()).subscribe(data => {
+            this.noOfJiraGroups = 0;
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
             this.loaderJenkins = false;
-            this.loaderJira =false;
-            this.selectedtype = selectedtype;
-            this.showNoDataMsg =false;
-            return this.service.passDataToDashboard;
-        })).pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-            if (this.router.url === '/dashboard/Maturity') {
-                if (sharedobject) {
-                    this.receiveSharedData(sharedobject);
-                }
-            }
+            this.loaderJira = false;
+            this.selectedtype = data.selectedType;
+            this.showNoDataMsg = false;
         }));
 
     }
@@ -154,8 +145,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.service.selectTab('Maturity');
-
         this.selectedtype = this.service.getSelectedType();
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;

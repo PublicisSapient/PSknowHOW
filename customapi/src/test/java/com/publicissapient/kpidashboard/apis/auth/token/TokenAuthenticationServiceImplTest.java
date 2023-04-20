@@ -71,8 +71,7 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReoposit
 public class TokenAuthenticationServiceImplTest {
 
 	private static final String USERNAME = "username";
-	private static final String AUTHORIZATION = "Authorization";
-	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
+
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 
 	@InjectMocks

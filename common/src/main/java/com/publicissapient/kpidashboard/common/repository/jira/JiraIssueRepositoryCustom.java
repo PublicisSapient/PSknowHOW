@@ -224,4 +224,15 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 			String mapStatusCriteria, boolean isProductionDefect);
 
 	List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
+
+	/**
+	 * find linked defects of given stories and filters
+	 *
+	 * @param mapOfFilters
+	 * @param defectsStoryIds
+	 * @param uniqueProjectMap
+	 * @return
+	 */
+	List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
+			Map<String, Map<String, Object>> uniqueProjectMap);
 }

@@ -163,9 +163,10 @@ public class JiraToolConfigServiceImpl {
 					: restAPIUtils.decryptPassword(connection.getPassword());
 		}
 
-		if(connection.getPatOAuthToken()!=null){
-			headers = restAPIUtils.getHeadersForPAT(connection.getPatOAuthToken());
-		}else {
+		if (connection.getPatOAuthToken() != null) {
+			String patOAuthToken = restAPIUtils.decryptPassword(connection.getPatOAuthToken());
+			headers = restAPIUtils.getHeadersForPAT(patOAuthToken);
+		} else {
 			headers = restAPIUtils.getHeaders(username, password);
 		}
 		return new HttpEntity<>(headers);
