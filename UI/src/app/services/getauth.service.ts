@@ -18,11 +18,14 @@
 
 
 import { Injectable } from '@angular/core';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class GetAuthService {
     stopListening: Function;
     private authenthicate;
+
+    constructor(private sharedService : SharedService){}
 
     checkAuth() {
         const user_name = this.getToken();

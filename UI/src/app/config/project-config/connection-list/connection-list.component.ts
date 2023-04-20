@@ -23,6 +23,7 @@ import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-connection-list',
@@ -376,14 +377,16 @@ export class ConnectionListComponent implements OnInit {
   zephyrUrl = '';
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private rsa: RsaEncryptionService, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
-    , private authorization: GetAuthorizationService) { }
+    , private authorization: GetAuthorizationService,private sharedService : SharedService) { }
 
   ngOnInit(): void {
     this.roleAccessAssign();
     this.getConnectionList();
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
-    this.currentUser = localStorage && localStorage.getItem('user_name') ? localStorage.getItem('user_name') : '';
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.currentUser = details['user_name'] ? details['user_name'] : '';
+    })
     this.getZephyrUrl();
   }
 

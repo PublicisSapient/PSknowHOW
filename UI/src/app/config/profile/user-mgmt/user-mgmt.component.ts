@@ -81,9 +81,6 @@ export class UserMgmtComponent implements OnInit {
         response => {
           if (response.success) {
             this.success = 'Password changed successfully';
-            if (localStorage.getItem('loginType') === 'standard') {
-              localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(this.f.password.value, 'encrypt'));
-            }
             this.messageService.add({ severity: 'success', summary: `Password changed successfully` });
           } else {
             this.error = 'Change password request failed!';

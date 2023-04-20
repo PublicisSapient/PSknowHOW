@@ -46,11 +46,15 @@ export class ToolMenuComponent implements OnInit {
   isAssigneeSwitchChecked : boolean = false;
   isAssigneeSwitchDisabled : boolean = false;
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  userName : string;
   constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
 
   }
 
   ngOnInit(): void {
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      this.userName = details['user_name'];
+    })
     this.projectTypeOptions = [
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
@@ -283,7 +287,7 @@ export class ToolMenuComponent implements OnInit {
     const postData = {
       basicProjectConfigId: projectDetails['id'],
       projectName: projectDetails['Project'],
-      userName: localStorage.getItem('user_name')
+      userName: this.userName
     };
 
     this.http.generateToken(postData).subscribe(response =>{

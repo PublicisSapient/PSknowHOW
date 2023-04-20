@@ -38,10 +38,14 @@
     kpiChangesObj = {};
     loader = false;
     kpiToBeHidden;
+    userName : string;
      constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService) {
      }
      ngOnInit() {
          this.getKpisData();
+         this.service.currentUserDetailsObs.subscribe(details=>{
+          this.userName = details['user_name'];
+        })
     }
     getKpisData() {
        // api integration to get kpis data
@@ -131,7 +135,7 @@
      if (!this.kpiListData['username']) {
        delete this.kpiListData['id'];
      }
-     this.kpiListData['username'] = (localStorage.getItem('user_name'));
+     this.kpiListData['username'] = this.userName;
    }
      //update the changes to api
    updateData() {

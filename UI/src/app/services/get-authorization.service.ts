@@ -18,12 +18,13 @@
 
 import { Injectable } from '@angular/core';
 import { TextEncryptionService } from './text.encryption.service';
+import { SharedService } from './shared.service';
 @Injectable({
   providedIn: 'root'
 })
 export class GetAuthorizationService {
 
-  constructor(private aesEncryption: TextEncryptionService) { }
+  constructor(private aesEncryption: TextEncryptionService,private sharedService : SharedService) { }
 
   checkIfSuperUser() {
     let decryptedText;

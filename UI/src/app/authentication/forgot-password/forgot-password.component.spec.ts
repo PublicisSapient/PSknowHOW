@@ -31,6 +31,7 @@ import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ForgotPasswordComponent', () => {
   let component: ForgotPasswordComponent;
@@ -38,6 +39,7 @@ describe('ForgotPasswordComponent', () => {
   const baseUrl = environment.baseUrl;
   let httpMock;
   let httpService;
+  let sharedService;
   const fakeError = { message: 'logError', success: false };
   const fakeSuccess = { message: 'success', success: true };
   const fakeHttp0 = { status : 0};
@@ -58,7 +60,7 @@ describe('ForgotPasswordComponent', () => {
       ],
       declarations: [ForgotPasswordComponent,
         RegisterComponent, DashboardComponent],
-      providers: [HttpService
+      providers: [HttpService, SharedService,
         , { provide: APP_CONFIG, useValue: AppConfig }
 
       ],
@@ -71,6 +73,7 @@ describe('ForgotPasswordComponent', () => {
     fixture = TestBed.createComponent(ForgotPasswordComponent);
     component = fixture.componentInstance;
     httpService = TestBed.get(HttpService);
+    sharedService = TestBed.get(SharedService);
     httpMock = TestBed.get(HttpTestingController);
     fixture.detectChanges();
   });
