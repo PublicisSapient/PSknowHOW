@@ -38,12 +38,14 @@ import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
 import { TestConnectionService } from 'src/app/services/test-connection.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
   let fixture: ComponentFixture<ConnectionListComponent>;
   let httpMock;
   let httpService;
+  let sharedService;
   const baseUrl = environment.baseUrl;
   let testConnectionService;
   const connectionTableData = [
@@ -992,6 +994,7 @@ describe('ConnectionListComponent', () => {
         HttpService,
         ConfirmationService,
         RsaEncryptionService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -1002,6 +1005,7 @@ describe('ConnectionListComponent', () => {
     fixture = TestBed.createComponent(ConnectionListComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
+    sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
     testConnectionService = TestBed.inject(TestConnectionService);
     fixture.detectChanges();

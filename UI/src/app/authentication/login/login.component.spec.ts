@@ -191,7 +191,7 @@ describe('LoginComponent', () => {
 
   it("should redirect on profile for superadmin",()=>{
     sharedService.setCurrentUserDetails('user_email',"abc@gmail.com");
-    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
+    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify([]));
     spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
     const respo = component.redirectToProfile();
     expect(respo).toBeFalsy();
