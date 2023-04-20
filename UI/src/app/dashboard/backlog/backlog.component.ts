@@ -639,6 +639,40 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return aggregatedArr;
   }
 
+  generateExcel() {
+    let tableData = {
+      columns: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      tableData.columns.push(colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader);
+    });
+
+    this.modalDetails['tableValues'].forEach(colData => {
+      let obj = {};
+      for(let key in colData){
+        if(this.typeOf(colData[key])){
+          obj[key] = [];
+          for(let y in colData[key]){
+            obj[key].push({text: y, hyperlink: colData[key][y]})
+          }
+        }else if(key == 'Issue Id'){
+          obj['Issue Id'] = {};
+          obj['Issue Id'][colData[key]] = colData['Issue URL'];
+        }else{
+          obj[key] = colData[key]
+        }
+      }
+      tableData.excelData.push(obj);
+    });
+    let kpiData = this.excelService.generateExcelModalData(tableData);
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  }
+
+  typeOf(value) {
+    return typeof value === 'object' && value !== null;
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
