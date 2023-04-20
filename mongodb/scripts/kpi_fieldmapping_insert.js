@@ -438,6 +438,13 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi136',
+        kpiName: 'Defect Count by Status',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
+        kpiId: 'kpi137',
         kpiName: 'Defect Reopen Rate',
 		kpiSource: 'Jira',
         type: ['Other'],

@@ -3318,7 +3318,7 @@ db.getCollection('kpi_master').insert(
     "boxType": "2_column_big",
     "calculateMaturity": false
   },
-   {
+  {
          "kpiId": "kpi132",
          "kpiName": "Defect Count by RCA",
          "maxValue": "",
@@ -3629,7 +3629,7 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId":"kpi136",
+    "kpiId":"kpi137",
     "kpiName":"Defect Reopen Rate",
     "kpiUnit":"Hours",
     "isDeleted":"False",
@@ -3650,6 +3650,30 @@ db.getCollection('kpi_master').insert(
     "hideOverallFilter" : true,
     "calculateMaturity":false
   },
+  {
+     "kpiId": "kpi136",
+     "kpiName": "Defect Count by Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 13,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,"chartType": "pieChart",
+     "kpiInfo": {
+       "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
+       },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isAdditionalFilterSupport": false,
+     "kpiFilter": "dropdown",
+     "boxType": "chart",
+     "calculateMaturity": false
+   },
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
