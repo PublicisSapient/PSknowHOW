@@ -185,8 +185,7 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         MessageService,
         TextEncryptionService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig },
-        {provide: LocationStrategy, useClass: PathLocationStrategy}
+        { provide: APP_CONFIG, useValue: AppConfig }
     ],
     bootstrap: [AppComponent]
 })
