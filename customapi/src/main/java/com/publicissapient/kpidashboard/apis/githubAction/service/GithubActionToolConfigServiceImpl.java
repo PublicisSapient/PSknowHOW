@@ -1,7 +1,5 @@
 package com.publicissapient.kpidashboard.apis.githubAction.service;
 
-import com.publicissapient.kpidashboard.apis.bamboo.model.BambooBranchesResponseDTO;
-import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.githubAction.model.GithubActionWorkflowsDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -9,7 +7,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -47,21 +44,21 @@ public class GithubActionToolConfigServiceImpl {
 
 
 
-    public List<GithubActionWorkflowsDTO> getGitHubWorkFlowList(String connectionId) {
+    public List<GithubActionWorkflowsDTO> getGitHubWorkFlowList(String connectionId, String repoName) {
 
         List<GithubActionWorkflowsDTO> responseDTOList = new ArrayList<>();
         Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
         if (optConnection.isPresent()) {
             Connection connection = optConnection.get();
             String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
-            String repositoryName = connection.getRepositoryName() == null ? null : connection.getRepositoryName().trim();
-            String repositoryOwner = connection.getRepoOwnerName() == null ? null : connection.getRepoOwnerName().trim();
+            String repositoryName = repoName;
+            String repositoryOwner = connection.getUsername() == null ? null : connection.getUsername().trim();
             String accessToken = connection.getAccessToken() == null ? null
                     : aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey());
 
-            String url = baseUrl + RESOURCE_JOBS_ENDPOINT;
+            String url = baseUrl +"/"+ repositoryOwner + "/" + repositoryName + RESOURCE_JOBS_ENDPOINT;
 
-            HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(accessToken, true));
+            HttpEntity<?> httpEntity = new HttpEntity<>(RestAPIUtils.getHeaders(accessToken, true));
             try {
 
                 ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
@@ -69,18 +66,19 @@ public class GithubActionToolConfigServiceImpl {
                 if (response.getStatusCode() == HttpStatus.OK) {
                     JSONParser respParser = new JSONParser();
                     JSONObject object = (JSONObject) respParser.parse(response.getBody());
-                    JSONObject workflow = (JSONObject) object.get(WORKFLOWS);
-                    Long size = (Long) workflow.get("size");
-                    if (size > 0) {
-                        /*for (Object job : restAPIUtils.getJsonArrayFromJSONObj(workflow, BRANCH)) {
+                    JSONArray workflows = restAPIUtils.getJsonArrayFromJSONObj(object, WORKFLOWS);
+
+                        for (Object job : workflows) {
                             GithubActionWorkflowsDTO githubActionWorkflowsDTO = new GithubActionWorkflowsDTO();
                             final String workflowId = restAPIUtils.convertToString((JSONObject) job, ID);
-                            final String branchName = restAPIUtils.convertToString((JSONObject) job, PATH);
-                            githubActionWorkflowsDTO.setWorkflowName(branchName);
+                            final String path = restAPIUtils.convertToString((JSONObject) job, PATH);
+                            int jobIndex = path.indexOf(WORKFLOWS);
+                            String jobName = path.substring(jobIndex + 10, path.length() - 5);
+                            githubActionWorkflowsDTO.setWorkflowName(jobName);
                             githubActionWorkflowsDTO.setWorkflowID(workflowId);
                             responseDTOList.add(githubActionWorkflowsDTO);
-                        }*/
-                    }
+                        }
+
                 } else {
                     String statusCode = response.getStatusCode().toString();
                     log.error("Error while fetching getJenkinsJobNameList from {}. with status {}", url,

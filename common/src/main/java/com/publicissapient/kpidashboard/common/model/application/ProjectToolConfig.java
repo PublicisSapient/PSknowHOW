@@ -97,7 +97,7 @@ public class ProjectToolConfig extends BasicModel {
 
 	//template ID
 	private String metadataTemplateCode;
-	//workflows Name for github Action processor
-	private String workflowsName;
+	//workflows ID for github Action processor
+	private String workflowID;
 
 }
