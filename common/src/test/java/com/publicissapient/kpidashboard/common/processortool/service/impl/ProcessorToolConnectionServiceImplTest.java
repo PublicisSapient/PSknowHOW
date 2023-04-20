@@ -80,14 +80,14 @@ public class ProcessorToolConnectionServiceImplTest {
 		c1.setType("jsa");
 		c1.setBaseUrl("");
 		c1.setUsername("does");
-		c1.setPassword("fdaaa");
+		c1.setPassword("dummyPassword");
 		Connection c2 = new Connection();
 		c2.setId(new ObjectId("5f9014743cb73ce896167659"));
 		c2.setConnectionName("dummy2");
 		c2.setType("aj");
 		c2.setBaseUrl("");
 		c2.setUsername("does");
-		c2.setPassword("fdaaa");
+		c2.setPassword("dummyPassword1");
 		connectionList.add(c1);
 		connectionList.add(c2);
 

@@ -29,7 +29,7 @@ describe('AdSettingsComponent', () => {
       },
       adServerDetail: {
         username: 'testUser',
-        password: '',
+        password: '****',
         host: 'testhost.net',
         port: 639,
         rootDn: 'DC=global,DC=testhost,DC=net',

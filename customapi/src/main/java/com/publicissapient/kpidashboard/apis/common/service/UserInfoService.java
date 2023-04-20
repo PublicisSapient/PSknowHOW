@@ -20,9 +20,11 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 
@@ -130,4 +132,11 @@ public interface UserInfoService {
 	ServiceResponse deleteUser(String username);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
+
+	/**
+	 * get user details for profile screen and response will be same as login api
+	 * @param request
+	 * @return
+	 */
+	UserDetailsResponseDTO getUserInfoByToken(HttpServletRequest request);
 }
