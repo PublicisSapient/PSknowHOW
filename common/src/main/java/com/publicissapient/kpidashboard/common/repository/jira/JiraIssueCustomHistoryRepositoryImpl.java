@@ -184,18 +184,4 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
-
-	@Override
-	public List<JiraIssueCustomHistory> findCustomHistoryStory(Map<String, List<String>> mapOfFilters) {
-		Criteria criteria = new Criteria();
-		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
-			if (CollectionUtils.isNotEmpty(entry.getValue())) {
-				criteria = criteria.and(entry.getKey()).in(entry.getValue());
-			}
-		}
-		Query query = new Query(criteria);
-		return operations.find(query, JiraIssueCustomHistory.class);
-	}
-
-
 }
