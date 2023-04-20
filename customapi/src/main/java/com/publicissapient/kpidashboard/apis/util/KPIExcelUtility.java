@@ -1452,5 +1452,57 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
-
+    /**
+     * Common method to populate modal window of Iteration KPI's
+     * @param overAllModalValues
+     * @param modalValues
+     * @param jiraIssue
+     * @param fieldMapping
+     * @param modalObjectMap
+     */
+	public static void populateIterationKPI(List<IterationKpiModalValue> overAllModalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, FieldMapping fieldMapping,
+			Map<String, IterationKpiModalValue> modalObjectMap) {
+		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
+		jiraIssueModalObject.setIssueId(jiraIssue.getNumber());
+		jiraIssueModalObject.setIssueURL(jiraIssue.getUrl());
+		jiraIssueModalObject.setDescription(jiraIssue.getName());
+		jiraIssueModalObject.setIssueStatus(jiraIssue.getStatus());
+		jiraIssueModalObject.setIssueType(jiraIssue.getTypeName());
+		jiraIssueModalObject.setPriority(jiraIssue.getPriority());
+		KPIExcelUtility.populateAssignee(jiraIssue, jiraIssueModalObject);
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			jiraIssueModalObject.setIssueSize(jiraIssue.getStoryPoints().toString());
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			String originalEstimate = CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes());
+			jiraIssueModalObject.setIssueSize(originalEstimate);
+		}
+		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				: "-");
+		if (jiraIssue.getOriginalEstimateMinutes() != null) {
+			jiraIssueModalObject
+					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
+		} else {
+			jiraIssueModalObject.setOriginalEstimateMinutes("0d");
+		}
+		if (jiraIssue.getRemainingEstimateMinutes() != null) {
+			String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
+			jiraIssueModalObject.setRemainingEstimateMinutes(remEstimate);
+			jiraIssueModalObject.setRemainingTimeInDays(remEstimate);
+		} else {
+			jiraIssueModalObject.setRemainingEstimateMinutes(Constant.DASH);
+		}
+		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
+		if (jiraIssue.getDevDueDate() != null)
+			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
+		else
+			jiraIssueModalObject.setDevDueDate(Constant.DASH);
+		modalValues.add(jiraIssueModalObject);
+		overAllModalValues.add(jiraIssueModalObject);
+	}
 }
