@@ -56,7 +56,7 @@ public class GithubActionToolConfigServiceImpl {
             String accessToken = connection.getAccessToken() == null ? null
                     : aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey());
 
-            String url = baseUrl +"/"+ repositoryOwner + "/" + repositoryName + RESOURCE_JOBS_ENDPOINT;
+            String url = baseUrl +"/repos/"+ repositoryOwner + "/" + repositoryName + RESOURCE_JOBS_ENDPOINT;
 
             HttpEntity<?> httpEntity = new HttpEntity<>(RestAPIUtils.getHeaders(accessToken, true));
             try {
