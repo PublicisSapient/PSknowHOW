@@ -95,6 +95,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String BACKLOG = "Backlog";
 
+	private static final String MILESTONE = "Milestone";
+
 	private static final String KPI_MATURITY = "Kpi Maturity";
 
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
@@ -282,6 +284,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<BoardDTO> scrumBoards = new ArrayList<>();
 		List<String> defaultKpiCategory = new ArrayList<>();
 		defaultKpiCategory.add(ITERATION);
+		defaultKpiCategory.add(MILESTONE);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
@@ -304,6 +307,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		newUserBoardConfig.setKanban(kanbanBoards);
 
 		List<BoardDTO> otherBoards = new ArrayList<>();
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), MILESTONE,
+				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
