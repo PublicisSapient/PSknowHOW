@@ -25,7 +25,14 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
@@ -71,6 +78,16 @@ public class JiraServiceR {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
+	@Autowired
+	private SprintRepository sprintRepository;
+	private List<SprintDetails> sprintDetails;
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private List<JiraIssue> jiraIssueList;
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call
@@ -122,6 +139,13 @@ public class JiraServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
 
+				if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory()) &&
+						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
+					fetchSprintDetails(kpiRequest.getIds());
+					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+				}
+
 				// set filter value to show on trend line. If sub-projects are
 				// in
 				// selection then show sub-projects on trend line else show
@@ -145,7 +169,9 @@ public class JiraServiceR {
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
-
+			sprintDetails = null;
+			jiraIssueList = null;
+			jiraIssueCustomHistoryList = null;
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -285,6 +311,30 @@ public class JiraServiceR {
 			}
 		}
 		
+	}
+
+	public void fetchSprintDetails(String[] sprintId) {
+		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).collect(Collectors.toList()));
+	}
+
+	public SprintDetails getCurrentSprintDetails() {
+		return sprintDetails.get(0);
+	}
+
+	public void fetchJiraIssues(String basicProjectConfigId) {
+		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
+		return jiraIssueList;
+	}
+
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
+		return jiraIssueCustomHistoryList;
 	}
 
 }

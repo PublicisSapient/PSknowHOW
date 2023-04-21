@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -56,6 +54,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -264,6 +264,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			List<JiraIssue> totalStoryList = new ArrayList<>();
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			Map<String, List<String>> projectWisePriority = new HashMap<>();
@@ -313,8 +315,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					overAllFTPS.set(0, overAllFTPS.get(0) + 1);
 				}
 
-				KPIExcelUtility.populateIterationDataForFirstTimePassRate(overAllmodalValues, modalValues, jiraIssue,
-						ftprStory, listOfStory, allDefects);
+				KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+				setKPISpecificData(modalObjectMap, listOfStory, allDefects, ftprStory, jiraIssue);
 
 			}
 
@@ -378,6 +380,28 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			}
 		}));
 		totalJiraIssues.removeIf(issue -> storyIdsWithDefect.contains(issue.getNumber()));
+	}
+
+	private void setKPISpecificData(Map<String, IterationKpiModalValue> modalObjectMap, Set<String> listOfStory,
+			List<JiraIssue> allDefects, List<JiraIssue> ftprStory, JiraIssue jiraIssue) {
+		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
+		if (CollectionUtils.isNotEmpty(listOfStory) && listOfStory.contains(jiraIssue.getNumber())) {
+
+			Map<String, String> linkedDefects = new HashMap<>();
+			allDefects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefects.putIfAbsent(defect.getNumber(), defect.getUrl()));
+
+			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
+
+			Map<String, String> linkedDefectsPriority = new HashMap<>();
+			allDefects.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
+					.forEach(defect -> linkedDefectsPriority.putIfAbsent(defect.getNumber(), defect.getPriority()));
+			jiraIssueModalObject.setLinkedDefefectPriority(linkedDefectsPriority);
+		}
+
+		if (CollectionUtils.isNotEmpty(ftprStory) && ftprStory.contains(jiraIssue)) {
+			jiraIssueModalObject.setFirstTimePass("Y");
+		}
 	}
 
 }
