@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -59,11 +60,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -96,6 +92,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
 	private static final String TAGGED_DEFECTS_CREATED_AFTER_SPRINT = "Added Defects";
 	private static final String TAGGED_DEFECTS = "Total Defects";
+	private static final String CLOSED = "CLOSED";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -380,16 +377,18 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			List<JiraIssue> totalCreatedIssues = new ArrayList<>();
 			List<JiraIssue> totalCreatedIssuesAfter = new ArrayList<>();
 			List<JiraIssue> totalClosedIssues = new ArrayList<>();
-			LocalDate sprintStartDate = LocalDate.parse(node.getSprintFilter().getStartDate().split("\\.")[0],
-					DATE_TIME_FORMATTER);
-			LocalDate sprintEndDate = LocalDate.parse(node.getSprintFilter().getEndDate().split("\\.")[0],
-					DATE_TIME_FORMATTER);
+
+			Optional<String> jiraSprintStartDate = sprintDetails.stream()
+					.filter(sd -> sd.getSprintID().equalsIgnoreCase(currentSprintComponentId))
+					.map(SprintDetails::getActivatedDate).findFirst();
+			String sprintStartDate = jiraSprintStartDate.isPresent() ? jiraSprintStartDate.get()
+					: node.getSprintFilter().getStartDate();
 			if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
 				totalCreatedIssues = sprintWiseCreatedIssues.get(currentNodeIdentifier);
 				totalCreatedIssuesAfter = totalCreatedIssues.stream()
-						.filter(jiraIssue -> DateUtil.isWithinDateRange(
-								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
-								sprintStartDate, sprintEndDate))
+						.filter(jiraIssue -> LocalDate
+								.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+								.isAfter(LocalDate.parse(sprintStartDate.split("\\.")[0], DATE_TIME_FORMATTER)))
 						.collect(Collectors.toList());
 				totalClosedIssues = sprintWiseClosedIssues.get(currentNodeIdentifier);
 			}
@@ -466,7 +465,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails) {
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+				? LocalDate.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		List<JiraIssue> subTaskTaggedWithSprint = allSubTasks.stream()
 				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
 						&& jiraIssue.getSprintIdList().contains(sprintDetails.getSprintID().split("_")[0]))
