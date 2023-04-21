@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -120,7 +121,8 @@ public class FTPRServiceImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setExcludeRCAFromFTPR(Arrays.asList("coding"));
 		fieldMapping.setJiraFTPRStoryIdentification(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectRejectionStatus("Duplicate");
+		fieldMapping.setJiraDefectRejectionStatus("");
+		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid","Duplicate","Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatus(Arrays.asList("Closed"));
 		fieldMapping.setDefectPriority(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);

@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -148,6 +149,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
@@ -169,7 +172,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
 							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
+						KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
