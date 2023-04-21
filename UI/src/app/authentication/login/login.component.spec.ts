@@ -183,14 +183,14 @@ describe('LoginComponent', () => {
 
 
   it("should redirect to profile if user email is blank",()=>{
-    sharedService.setCurrentUserDetails('user_email',"");
+    sharedService.setCurrentUserDetails({user_email:""});
     localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
     component.redirectToProfile();
     expect(component.redirectToProfile).toBeTruthy()
   })
 
   it("should redirect on profile for superadmin",()=>{
-    sharedService.setCurrentUserDetails('user_email',"abc@gmail.com");
+    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
     localStorage.setItem('projectsAccess',JSON.stringify([]));
     spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
     const respo = component.redirectToProfile();
@@ -198,7 +198,7 @@ describe('LoginComponent', () => {
   })
 
   it("should not redirect on profile if not superadmin",()=>{
-    sharedService.setCurrentUserDetails('user_email',"abc@gmail.com");
+    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
     localStorage.setItem('projectsAccess',undefined);
     spyOn(aesEncryption,'convertText').and.returnValue("[\"NOT_SUPERADMIN\"]")
     component.redirectToProfile();

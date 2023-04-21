@@ -29,12 +29,15 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { ProfileComponent } from '../profile.component';
 import { environment } from 'src/environments/environment';
 import { TextEncryptionService } from '../../../services/text.encryption.service';
+import { SharedService } from 'src/app/services/shared.service';
+import { of } from 'rxjs';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
   let httpService;
   let httpMock;
   let aesEncryption;
+  let shared;
   const baseUrl = environment.baseUrl;
   const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
   const hierarchyData = [
@@ -644,10 +647,10 @@ describe('MyprofileComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         HttpClientTestingModule,
-        RouterTestingModule
+        RouterTestingModule,
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, TextEncryptionService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, TextEncryptionService, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
@@ -658,6 +661,7 @@ describe('MyprofileComponent', () => {
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
     aesEncryption = TestBed.inject(TextEncryptionService);
+    shared = TestBed.inject(SharedService);
 
     let localStore = {};
 
@@ -671,10 +675,8 @@ describe('MyprofileComponent', () => {
 
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
 
-    localStorage.setItem('projectsAccess', '[{"role":"ROLE_SUPERADMIN","projects":[]}]');
-    localStorage.setItem('user_email', 'a@b.c');
-    localStorage.setItem('user_name', 'SUPERADMIN');
-    localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_SUPERADMIN"]', 'encrypt'));
+    localStorage.setItem('projectsAccess', '[{"role":"DUMMY","projects":[]}]');
+    localStorage.setItem('authorities', aesEncryption.convertText('["DUMMY"]', 'encrypt'));
     fixture.detectChanges();
   });
 
@@ -683,29 +685,21 @@ describe('MyprofileComponent', () => {
   });
 
   it('should set email', () => {
+    component.ngOnInit();
+    shared.currentUserDetails.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
+    spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
     component.userEmailForm.controls['email'].setValue('someemail@abc.com');
     component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
-    localStorage.setItem('user_name', 'SUPERADMIN');
+    spyOn(httpService,'changeEmail').and.returnValue(of(successResponse))
     component.setEmail();
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/users/SUPERADMIN/updateEmail')[0].flush(successResponse);
-    expect(component.userEmailForm.valid).toBeTruthy();
-    expect(component.message).toBe('');
+    expect(component.userEmailConfigured).toBeTruthy();
   });
 
   it('should group projects role-wise', () => {
-    localStorage.setItem('projectsAccess', '[{"role":"ROLE_PROJECT_VIEWER","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"ROLE_PROJECT_ADMIN","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]');
-    component.ngOnInit();
+    component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'))
     fixture.detectChanges();
     expect(Object.keys(component.roleBasedProjectList).length).toEqual(4);
   });
 
-  /*afterAll(() => {
-    console.log('-=-=-=-=-=-=-=-=-=Clean styles from DOM-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
-    const head: HTMLHeadElement = document.getElementsByTagName('head')[0];
-    const styles = document.getElementsByTagName('style');
-    for (let i = 0; i < styles.length; i++) {
-      head.removeChild(styles[i]);
-    }
-  });*/
 });

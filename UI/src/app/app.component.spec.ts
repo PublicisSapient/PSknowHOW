@@ -79,7 +79,6 @@ describe('AppComponent', () => {
   });
 
   xit('should check for authorization', (done) => {
-    localStorage.setItem('user_name', user_name);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     app.ngOnInit();

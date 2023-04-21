@@ -198,8 +198,7 @@ describe('FilterComponent', () => {
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.setItem('user_name', 'Fake user name');
-    localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_PROJECT_ADMIN"]', 'encrypt'));
+    localStorage.setItem('authorities', aesEncryption.convertText('["DUMMY"]', 'encrypt'));
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -532,13 +531,13 @@ describe('FilterComponent', () => {
   });
 
   it('should  assign UserName For KpiData', () => {
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue('dummy user')
     component.kpiListData = {
       username: undefined,
       id: 1
     };
-    spyOn(localStorage, 'getItem').and.returnValue('project_admin');
     component.assignUserNameForKpiData();
-    expect(component.kpiListData.username).toBe('project_admin');
+    expect(component.kpiListData.username).toBe('dummy user');
   });
 
   it('should navigate To Selected Tab', inject([Router], (router: Router) => {

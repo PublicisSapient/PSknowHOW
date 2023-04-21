@@ -60,7 +60,7 @@ describe('ForgotPasswordComponent', () => {
       ],
       declarations: [ForgotPasswordComponent,
         RegisterComponent, DashboardComponent],
-      providers: [HttpService, SharedService,
+      providers: [HttpService,SharedService
         , { provide: APP_CONFIG, useValue: AppConfig }
 
       ],

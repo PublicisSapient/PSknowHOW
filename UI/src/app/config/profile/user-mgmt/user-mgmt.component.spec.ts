@@ -34,6 +34,7 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('UserManagementComponent', () => {
   let component: UserMgmtComponent;
@@ -63,7 +64,7 @@ describe('UserManagementComponent', () => {
       ],
       declarations: [UserMgmtComponent],
       providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, MessageService
+        HttpService, MessageService,SharedService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
@@ -83,7 +84,6 @@ describe('UserManagementComponent', () => {
   });
 
   it('Test happy flow', () => {
-    localStorage.setItem('user_email', 'validuseremailsetatlogin@ps.com');
     component.changePasswordForm.controls['oldpassword'].setValue('Test123@123');
     component.changePasswordForm.controls['password'].setValue('Qwerty@123');
     component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');
@@ -94,17 +94,7 @@ describe('UserManagementComponent', () => {
     // expect(component.success).toBe('Password changed succesfully');
   });
 
-  /*it('Test error flow', () => {
-    localStorage.setItem('user_email', 'validuseremailsetatlogin@ps.com');
-    component.changePasswordForm.controls['oldpassword'].setValue('Qwerty@123');
-    component.changePasswordForm.controls['password'].setValue('Qwerty@123');
-    component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');
-    component.onSubmit();
-    fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/changePassword')[0].flush(failureResponse);
-    expect(component.changePasswordForm.valid).toBeTruthy();
-    expect(component.error).toBe('Change password request failed! Please try again with valid password');
-  });*/
+
 
   it('Test password and confirm password are same', () => {
     fixture.detectChanges();
