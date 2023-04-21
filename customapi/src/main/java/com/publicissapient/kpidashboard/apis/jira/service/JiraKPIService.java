@@ -39,6 +39,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
     public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     @Autowired
     private CacheService cacheService;
+	@Autowired
+	private JiraServiceR jiraService;
 
     /**
      * Gets qualifier type
@@ -372,6 +375,20 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 					null, "", CommonConstant.DAY, modalvalue);
 		}
 		return iterationKpiData;
+	}
+
+	public SprintDetails getSprintDetailsFromBaseClass() {
+		return jiraService.getCurrentSprintDetails();
+	}
+
+	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
+		return jiraService.getJiraIssuesForCurrentSprint().stream().filter(jiraIssue ->
+				numbersList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+	}
+
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass(List<String> numbersList) {
+		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint().stream().filter(jiraIssueCustomHistory ->
+				numbersList.contains(jiraIssueCustomHistory.getStoryID())).collect(Collectors.toList());
 	}
 
 }

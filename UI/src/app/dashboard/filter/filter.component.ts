@@ -129,6 +129,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedProjectData ={};
   allowMultipleSelection = true;
   defaultFilterSelection = true;
+  selectedSprint={};
 
   constructor(
     private service: SharedService,
@@ -427,11 +428,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.masterData = masterData;
     if (this.selectedTab?.toLowerCase() === 'iteration') {
       this.projectIndex = 0;
-      if(this.defaultFilterSelection){
-        this.handleIterationFilters('project', 1);
-      }else{
-        this.handleIterationFilters('project', 2);
-      }
+        this.handleIterationFilters('project');
     }else {
       this.applyChanges();
     }
@@ -823,6 +820,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setSelectedLevel({});
     this.service.setSelectedTrends([]);
     this.service.setSelectedTab('');
+    this.service.setFilterData({});
+    this.service.selectedtype='';
+    this.initializeFilterForm();
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -889,7 +889,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
-          this.checkDefaultFilterSelection();
+          this.findProjectWhichHasData();
         } else {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
@@ -906,7 +906,11 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      this.checkDefaultFilterSelection();
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog') {
+        this.findProjectWhichHasData();
+      }else{
+        this.checkDefaultFilterSelection();
+      }
     }
   }
 
@@ -954,72 +958,93 @@ export class FilterComponent implements OnInit, OnDestroy {
     return isDisabled;
   }
 
+  findProjectWhichHasData() {
+    this.defaultFilterSelection = true;
+    this.filterForm?.get('selectedLevel').setValue('project');
+    this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === 'project');
+    let projectIndex = 0;
+    if (this.trendLineValueList?.length > 0) {
+      this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+
+      for (let i = 0; i < this.trendLineValueList.length; i++) {
+        projectIndex = i;
+        this.selectedProjectData = this.trendLineValueList[projectIndex];
+        this.checkIfProjectHasData();
+        if (Object.keys(this.selectedSprint).length > 0) {
+          break;
+        }
+      }
+
+      if (projectIndex < this.trendLineValueList?.length) {
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+      } else {
+        this.projectIndex = 0;
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+      }
+      this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+    }
+  }
+
+  checkIfProjectHasData(){
+    let activeSprints = [];
+    let closedSprints = [];
+    this.selectedSprint={};
+    const selectedProject = this.selectedProjectData['nodeId'];
+    this.filteredAddFilters['sprint'] = [];
+    if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
+      this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
+    }
+    activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
+    closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
+    if (activeSprints?.length > 0) {
+      this.selectedSprint = { ...activeSprints[0] };
+    } else if (closedSprints?.length > 0) {
+      this.selectedSprint = closedSprints[0];
+      for (let i = 0; i < closedSprints?.length; i++) {
+        const sprintEndDateTS1 = new Date(closedSprints[i]['sprintEndDate']).getTime();
+        const sprintEndDateTS2 = new Date(this.selectedSprint['sprintEndDate']).getTime();
+        if (sprintEndDateTS1 > sprintEndDateTS2) {
+          this.selectedSprint = closedSprints[i];
+        }
+      }
+    } else {
+      this.selectedFilterArray = [];
+      this.selectedSprint={};
+      this.service.setNoSprints(true);
+    }
+  }
+
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level, type) {
+  handleIterationFilters(level) {
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
-      let selectedSprint = {};
-      let activeSprints = [];
-      let closedSprints = [];
       this.service.setNoSprints(false);
       if (level?.toLowerCase() === 'project') {
         const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
-        if(this.selectedProjectData){
-          this.getProcessorsTraceLogsForProject(this.selectedProjectData['basicProjectConfigId']);
-        }
-        this.filteredAddFilters['sprint'] = [];
-        if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
-          this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) =>x['parentId']?.includes(selectedProject))];
-        }
-
-        activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
-        closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-
-        if (activeSprints?.length > 0) {
-          selectedSprint = { ...activeSprints[0] };
-        } else if (closedSprints?.length > 0) {
-          selectedSprint = closedSprints[0];
-          for (let i = 0; i < closedSprints?.length; i++) {
-            const sprintEndDateTS1 = new Date(closedSprints[i]['sprintEndDate']).getTime();
-            const sprintEndDateTS2 = new Date(selectedSprint['sprintEndDate']).getTime();
-            if (sprintEndDateTS1 > sprintEndDateTS2) {
-              selectedSprint = closedSprints[i];
-            }
-          }
-        } else {
-          this.selectedFilterArray = [];
-          this.service.setNoSprints(true);
-        }
-        this.filterForm.get('selectedSprintValue').setValue(selectedSprint['nodeId']);
+        this.checkIfProjectHasData();
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
       }
 
       if (level?.toLowerCase() == 'sprint') {
         const val = this.filterForm.get('selectedSprintValue').value;
-        selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
+        this.selectedSprint = {...this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == val)[0]};
       }
       if(this?.selectedProjectData){
         this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
       }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
-      if (selectedSprint && Object.keys(selectedSprint)?.length > 0) {
+      if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.selectedFilterArray = [];
-        this.selectedFilterArray.push(selectedSprint);
+        this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
         this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
-      } else {
-        if (type === 1) {
-          if (this.projectIndex < this.trendLineValueList?.length) {
-            this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[++this.projectIndex]?.nodeId);
-            this.handleIterationFilters('project', 1);
-          } else {
-            this.projectIndex = 0;
-            this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
-          }
-        }
       }
     }
   }

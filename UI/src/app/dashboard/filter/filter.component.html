@@ -57,7 +57,7 @@
                      </div>
                      <div *ngIf="selectedTab?.toLowerCase() === 'iteration'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
                      <ng-select  formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-                        (change)="handleIterationFilters('sprint', 2)" placeholder="Sprint" [clearable]="false"
+                        (change)="handleIterationFilters('sprint')" placeholder="Sprint" [clearable]="false"
                         class="p-pb-0">
                         <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
                            {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
@@ -155,7 +155,7 @@
                </div>
             </form>
          </div>
-  
+
          <div class="p-d-flex p-align-center">
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
                <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data</h4>
@@ -218,7 +218,7 @@
       </div>
 
    </div>
-  
+
    <div class="p-d-flex">
       <div class="back-btn-wraper">
          <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
