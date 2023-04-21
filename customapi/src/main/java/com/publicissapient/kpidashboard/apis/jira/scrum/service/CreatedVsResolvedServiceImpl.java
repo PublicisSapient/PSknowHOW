@@ -378,10 +378,10 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			List<JiraIssue> totalCreatedIssuesAfter = new ArrayList<>();
 			List<JiraIssue> totalClosedIssues = new ArrayList<>();
 
-			Optional<String> jiraSprintStartDate = sprintDetails.stream()
-					.filter(sd -> sd.getSprintID().equalsIgnoreCase(currentSprintComponentId))
-					.map(SprintDetails::getActivatedDate).findFirst();
-			String sprintStartDate = jiraSprintStartDate.isPresent() ? jiraSprintStartDate.get()
+			Optional<SprintDetails> jiraSprint = sprintDetails.stream()
+					.filter(sd -> sd.getSprintID().equalsIgnoreCase(currentSprintComponentId)).findFirst();
+			String sprintStartDate = jiraSprint.isPresent() && jiraSprint.get().getActivatedDate() != null
+					? jiraSprint.get().getActivatedDate()
 					: node.getSprintFilter().getStartDate();
 			if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
 				totalCreatedIssues = sprintWiseCreatedIssues.get(currentNodeIdentifier);
