@@ -45,13 +45,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -144,6 +145,8 @@ public class PlannedWorkStatusServiceImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		storyList.stream().filter(jiraIssue -> jiraIssue.getNumber().equals("TEST-17768")).findFirst().get()
+				.setDueDate(String.valueOf(LocalDate.now().plusDays(3) + "T00:00:00.000Z"));
 		sprintDetails.setState(SprintDetails.SPRINT_STATE_ACTIVE);
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
