@@ -3631,7 +3631,7 @@ db.getCollection('kpi_master').insert(
 {
 		"kpiId": "kpi137",
 		"kpiName": "Refinement Rejection Rate",
-		"kpiUnit": "Number",
+		"kpiUnit": "%",
 		"isDeleted": "False",
 		"defaultOrder": 4,
 		"kpiCategory": "Backlog",
@@ -3643,7 +3643,7 @@ db.getCollection('kpi_master').insert(
 		"kpiInfo": {
 		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
 		},
-		"xAxisLabel": "Months",
+		"xAxisLabel": "Weeks",
 		"yAxisLabel": "Count",
 		"isPositiveTrend": false,
 		"kpiFilter": "",
