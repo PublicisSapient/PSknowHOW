@@ -133,7 +133,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		return mapping;
 	}
 
-	@Override
+    @Override
 	public boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping) {
 
 		boolean mappingUpdated = false;
@@ -153,13 +153,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		if (existingFieldMapping != null) {
 			fieldMapping.setId(existingFieldMapping.getId());
-			mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping,
-					existingFieldMapping);
+		 mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
 		}
 
 		return mappingUpdated;
 	}
-
 	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig;
@@ -203,10 +201,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	/**
 	 * Checks if fields are updated.
 	 *
-	 * @param unsaved
-	 *            object from request
-	 * @param saved
-	 *            object from database
+	 * @param unsaved       object from request
+	 * @param saved         object from database
 	 * @param fieldNameList
 	 * @return true or false
 	 */
@@ -242,10 +238,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	/**
 	 * Checks if fields are updated.
 	 *
-	 * @param unsaved
-	 *            object from request
-	 * @param saved
-	 *            object from database
+	 * @param unsaved             object from request
+	 * @param saved               object from database
 	 * @param fieldNameListKanban
 	 * @return true or false
 	 */
@@ -318,8 +312,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * Checks if fields are updated and then unset changeDate in jira
-	 * collections.
+	 * Checks if fields are updated and then unset changeDate in jira collections.
 	 * 
 	 * @param basicProjectConfigId
 	 * @param fieldMapping
@@ -338,11 +331,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
 					"jiraDueDateCustomField");
 
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
-					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS);
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
+					STORY_FIRST_STATUS);
 
-			if ((!projectBasicConfig.getIsKanban()
-					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
 							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
 				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
@@ -365,8 +357,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
-	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig,
-			Optional<ProjectToolConfig> projectToolConfigOpt) {
+	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
 		if (projectToolConfigOpt.isPresent()) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
 			if (projectBasicConfig.getIsKanban()) {
@@ -380,7 +371,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private boolean compareJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
-			FieldMapping existingFieldMapping) {
+								FieldMapping existingFieldMapping) {
 		boolean isUpdated = false;
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
 				.findById(basicProjectConfigId);
@@ -388,31 +379,29 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
 			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus",
-					EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus",
-					"jiraDod", "jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment",
-					"jiraStatusForQa", "jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus",
-					"jiraStatusForInProgress", "jiraDevDoneStatus", "jiraDefectSeepageIssueType",
-					"jiraQADefectDensityIssueType", "jiraDefectCountlIssueType", "jiraSprintVelocityIssueType",
-					"jiraDefectRemovalIssueType", "jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType",
-					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification",
-					"jiraFTPRStoryIdentification", "jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority",
-					"excludeRCAFromFTPR", "workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE,
-					EPIC_WSJF, "jiraDor", "resolutionTypeForRejection", "jiraDefectRejectionStatus",
-					EPIC_TIME_CRITICALITY, "jiraLiveStatus", EPIC_JOB_SIZE, "additionalFilterConfig",
-					"jiraDueDateField", "jiraDueDateCustomField");
+					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus", EPIC_COST_OF_DELAY,
+					EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus", "jiraDod",
+					"jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment", "jiraStatusForQa",
+					"jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus", "jiraStatusForInProgress",
+					"jiraDevDoneStatus", "jiraDefectSeepageIssueType", "jiraQADefectDensityIssueType",
+					"jiraDefectCountlIssueType", "jiraSprintVelocityIssueType", "jiraDefectRemovalIssueType",
+					"jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType", "jiraTestAutomationIssueType",
+					"jiraIntakeToDorIssueType", "jiraStoryIdentification", "jiraFTPRStoryIdentification",
+					"jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority", "excludeRCAFromFTPR",
+					"workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, "jiraDor",
+					"resolutionTypeForRejection", "jiraDefectRejectionStatus", EPIC_TIME_CRITICALITY, "jiraLiveStatus",
+					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField");
 
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
-					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",
-					"jiraTicketRejectedStatus", "jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType",
-					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType",
-					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "jiraIssueEpicType",
-					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE, EPIC_TIME_CRITICALITY);
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
+					STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
+					"jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType", "kanbanRCACountIssueType",
+					"jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType", "storyPointToHourMapping", EPIC_COST_OF_DELAY,
+					EPIC_RISK_REDUCTION, "jiraIssueEpicType", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE,
+					EPIC_TIME_CRITICALITY);
 
-			if ((!projectBasicConfig.getIsKanban()
-					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
+			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
-							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
+					&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
 
 				isUpdated = true;
 			}
