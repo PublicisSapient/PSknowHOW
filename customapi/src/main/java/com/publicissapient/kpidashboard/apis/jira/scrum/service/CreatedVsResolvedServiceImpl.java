@@ -20,9 +20,20 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -32,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import io.swagger.models.auth.In;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -50,11 +60,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -87,6 +92,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
 	private static final String TAGGED_DEFECTS_CREATED_AFTER_SPRINT = "Added Defects";
 	private static final String TAGGED_DEFECTS = "Total Defects";
+	private static final String CLOSED = "CLOSED";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -319,10 +325,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					List<JiraIssue> totalIssues = allJiraIssue.stream()
 							.filter(element -> availableIssues.contains(element.getNumber()))
 							.collect(Collectors.toList());
-					List<JiraIssue> totalSubTask = allSubTaskBugs.stream()
-							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-									&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-							.collect(Collectors.toList());
+					List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs, sd);
 					totalIssues.addAll(totalSubTask);
 					List<JiraIssue> completedIssues = getCompletedIssues(
 							allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
@@ -371,16 +374,18 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			List<JiraIssue> totalCreatedIssues = new ArrayList<>();
 			List<JiraIssue> totalCreatedIssuesAfter = new ArrayList<>();
 			List<JiraIssue> totalClosedIssues = new ArrayList<>();
-			LocalDate sprintStartDate = LocalDate.parse(node.getSprintFilter().getStartDate().split("\\.")[0],
-					DATE_TIME_FORMATTER);
-			LocalDate sprintEndDate = LocalDate.parse(node.getSprintFilter().getEndDate().split("\\.")[0],
-					DATE_TIME_FORMATTER);
+
+			Optional<SprintDetails> jiraSprint = sprintDetails.stream()
+					.filter(sd -> sd.getSprintID().equalsIgnoreCase(currentSprintComponentId)).findFirst();
+			String sprintStartDate = jiraSprint.isPresent() && jiraSprint.get().getActivatedDate() != null
+					? jiraSprint.get().getActivatedDate()
+					: node.getSprintFilter().getStartDate();
 			if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
 				totalCreatedIssues = sprintWiseCreatedIssues.get(currentNodeIdentifier);
 				totalCreatedIssuesAfter = totalCreatedIssues.stream()
-						.filter(jiraIssue -> DateUtil.isWithinDateRange(
-								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
-								sprintStartDate, sprintEndDate))
+						.filter(jiraIssue -> LocalDate
+								.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+								.isAfter(LocalDate.parse(sprintStartDate.split("\\.")[0], DATE_TIME_FORMATTER)))
 						.collect(Collectors.toList());
 				totalClosedIssues = sprintWiseClosedIssues.get(currentNodeIdentifier);
 				populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, node, totalCreatedIssues,
@@ -471,6 +476,20 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails) {
+		LocalDate sprintEndDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+				? LocalDate.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		List<JiraIssue> subTaskTaggedWithSprint = allSubTasks.stream()
+				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+						&& jiraIssue.getSprintIdList().contains(sprintDetails.getSprintID().split("_")[0]))
+				.collect(Collectors.toList());
+		return subTaskTaggedWithSprint.stream()
+				.filter(jiraIssue -> sprintEndDate
+						.isAfter(LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 *
 	 * @param totalSubTask
@@ -488,12 +507,12 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
-			JiraIssueSprint issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
+			Optional<JiraIssueSprint> issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
 							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
-					.reduce((a, b) -> b).get();
-			if (fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.getFromStatus()))
+					.reduce((a, b) -> b);
+			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getFromStatus()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;
