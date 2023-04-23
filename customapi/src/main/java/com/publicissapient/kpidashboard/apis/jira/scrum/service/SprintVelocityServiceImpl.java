@@ -166,7 +166,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 											.skip(customApiConfig.getSprintCountForFilters()).limit(4)
 											.collect(Collectors.toList()))));
 			Map<String, Object> otherSprintsListMap = kpiHelperService
-					.fetchSprintVelocityDataFromDb(projectWiseSprintsForFilter, kpiRequest);
+					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest);
 			resultListMap.put("previous_Sprint_velocity", otherSprintsListMap.get(SPRINTVELOCITYKEY));
 			resultListMap.put("previous_Sprint_wise_details", otherSprintsListMap.get(SPRINT_WISE_SPRINTDETAILS));
 		}
@@ -277,9 +277,13 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(),
 					node.getProjectFilter().getBasicProjectConfigId().toString());
 			if (averageVelocity > 0) {
-				avgVelocityCount.set(avgVelocityCount.get() + 1);
 				dataCount.setLineValue(String.valueOf(Math.round(averageVelocity)));
 				dataCount.setValue(String.valueOf(Math.round(sprintVelocityForCurrentLeaf)));
+				Map<String, Object> hoverValue = new HashMap<>();
+				hoverValue.put("averageVelocity", String.valueOf(Math.round(averageVelocity)));
+				hoverValue.put("velocity", String.valueOf(Math.round(sprintVelocityForCurrentLeaf)));
+				dataCount.setHoverValue(hoverValue);
+				avgVelocityCount.set(avgVelocityCount.get() + 1);
 			}
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
@@ -296,7 +300,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		sprintVelocityMap.entrySet().forEach(velocityMap -> {
 			if (velocityMap.getKey().getKey().equals(basicProjId)) {
 				count.set(count.get() + 1);
-				if (avgVelocityCount > count.get()) {
+				if (count.get() > avgVelocityCount ) {
 					validCount.set(validCount.get() + 1);
 					sumVelocity.set(sumVelocity.get() + velocityMap.getValue());
 				}
