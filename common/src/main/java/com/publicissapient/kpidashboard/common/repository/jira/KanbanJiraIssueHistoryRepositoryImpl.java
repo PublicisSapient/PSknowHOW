@@ -35,7 +35,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 /**
@@ -130,7 +129,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 			history.setCreatedDate(result.getId().getCreatedDate());
 			history.setPriority(result.getId().getPriority());
 			history.setEstimate(result.getId().getEstimate());
-			history.setHistoryDetails(result.getHistoryDetails());
+			history.setStatusUpdationLog(result.getStatusUpdationLog());
 			history.setUrl(result.getId().getUrl());
 			resultList.add(history);
 		});

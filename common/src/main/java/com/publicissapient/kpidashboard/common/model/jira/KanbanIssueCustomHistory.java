@@ -85,6 +85,13 @@ public class KanbanIssueCustomHistory extends BasicModel {
 
 	private List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 
+	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> assigneeUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> priorityUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> labelUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> dueDateUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
+
 	private String url;
 	private String description;
 
@@ -94,7 +101,7 @@ public class KanbanIssueCustomHistory extends BasicModel {
 		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID +", url=" + url + ",storyType=" + storyType
 				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + ", storySprintDetails=" + historyDetails + "]";
+				+ ", projectComponentId=" + projectComponentId + "]";
 	}
 
 	@Override

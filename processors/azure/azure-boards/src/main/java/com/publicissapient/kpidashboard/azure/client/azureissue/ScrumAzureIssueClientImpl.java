@@ -127,6 +127,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Autowired
+	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
+
 	private final Map<String, com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value> sprintPathsMap = new HashMap<>();
 
 	@Override
@@ -394,7 +397,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
+				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 
 				// Placeholder for Test Automated field mapping.
 
@@ -675,7 +678,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private void setAzureIssueHistory(JiraIssueCustomHistory azureIssueHistory, JiraIssue azureIssue, Value issue,
-									  FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
+									  FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
 
 		azureIssueHistory.setProjectID(azureIssue.getProjectName());
 		azureIssueHistory.setProjectComponentId(azureIssue.getProjectID());
@@ -687,7 +690,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		// This method is not setup method. write it to keep
 		// custom history
-		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
+		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 		
 		azureIssueHistory.setBasicProjectConfigId(azureIssue.getBasicProjectConfigId());
 	}
@@ -707,7 +710,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *            Project Config
 	 */
 	private void processAzureIssueHistory(JiraIssueCustomHistory azureIssueCustomHistory, JiraIssue azureIssue,
-										  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
+			Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig,
+			Map<String, Object> fieldsMap) {
 
 		String issueId = AzureProcessorUtil.deodeUTF8String(issue.getId());
 		AzureServer server = prepareAzureServer(projectConfig);
@@ -721,16 +725,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 
 		if (null == azureIssueCustomHistory.getStoryID()) {
-			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping);
+			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping, fieldsMap);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
 				azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 			}
-			DateTime dateTime = new DateTime(
-					AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 
-			List<JiraIssueSprint> listIssueSprint = getChangeLog(azureIssue, valueList, dateTime, fieldMapping);
-			azureIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap);
+
 		}
 
 	}
@@ -751,16 +753,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory azureIssueCustomHistory, JiraIssue azureIssue, Value issue,
 								 List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList,
-								 FieldMapping fieldMapping) {
+								 FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
 
 		DateTime dateTime = new DateTime(
 				AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 		azureIssueCustomHistory.setCreatedDate(dateTime);
 
-		List<JiraIssueSprint> listIssueSprint = getChangeLog(azureIssue, valueList, dateTime, fieldMapping);
-
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
-		azureIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap);
 		// estimate
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {

@@ -78,6 +78,14 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	private List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
 
+	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> assigneeUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> priorityUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> fixVersionUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> labelUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> dueDateUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
+
 	private List<AdditionalFilter> additionalFilters;
 
 	private String url;
@@ -88,7 +96,7 @@ public class JiraIssueCustomHistory extends BasicModel {
 		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType=" + storyType
 				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + ", storySprintDetails=" + storySprintDetails + "]";
+				+ ", projectComponentId=" + projectComponentId + "]";
 	}
 
 }
