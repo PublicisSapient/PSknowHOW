@@ -25,8 +25,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 @Slf4j
 public class ScrumHandleAzureIssueHistory {
 
-	public static final String NEW_VALUE = "oldValue";
-	public static final String OLD_VALUE = "newValue";
+	public static final String NEW_VALUE = "newValue";
+	public static final String OLD_VALUE = "oldValue";
 	public static final String DISPLAY_NAME = "displayName";
 
 	private List<JiraHistoryChangeLog> getJiraFieldChangeLogFromAdditionProps(List<Value> updateValueList,
@@ -200,6 +200,7 @@ public class ScrumHandleAzureIssueHistory {
 
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
+		System.out.println(updateValueList);
 		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);
