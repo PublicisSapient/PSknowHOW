@@ -70,7 +70,7 @@ export class SharedService implements OnInit {
   selectedFilterOptionObs = this.selectedFilterOption.asObservable();
   noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
-  noProjects = new Subject<any>();
+  noProjects = new BehaviorSubject<boolean>(false);
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<boolean>(true);
   showTableViewObs = this.showTableView.asObservable();
@@ -195,7 +195,10 @@ export class SharedService implements OnInit {
     this.sharedObject.selectedTab = selectedTab;
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
-    this.passDataToDashboard.emit(this.sharedObject);
+    //emit once navigation complete
+    setTimeout(()=>{
+      this.passDataToDashboard.emit(this.sharedObject);
+    },0);
   }
 
   /** KnowHOW Lite */

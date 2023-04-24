@@ -207,3 +207,13 @@
 	left: 40%;
 	pointer-events: none;
   }
+
+  .no-projects{
+    height: 400px;
+    margin: 20px;
+    border-radius: 7px;
+	background-color: white;
+}
+.no-projects h2{
+    color: var(--color-black);
+}
