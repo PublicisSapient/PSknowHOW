@@ -15,8 +15,8 @@ import java.util.List;
 @Slf4j
 public class FieldMappingDataFactory {
 
-    private static final String FILE_PATH_FIELD_MAPPING = "/json/default/field_mappings.json";
-    private List<FieldMapping> fieldMappings;
+    private static final String FILE_PATH_FIELD_MAPPING = "/onlinedata/azure/scrumfieldmapping.json";
+    private FieldMapping fieldMappings;
     private ObjectMapper mapper;
 
     public FieldMappingDataFactory() {
@@ -36,7 +36,7 @@ public class FieldMappingDataFactory {
             String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_FIELD_MAPPING : filePath;
 
             fieldMappings = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<FieldMapping>>() {
+                    new TypeReference<FieldMapping>() {
                     });
         } catch (IOException e) {
             log.error("Error in reading field mappings from file = " + filePath, e);
@@ -53,27 +53,9 @@ public class FieldMappingDataFactory {
         }
     }
 
-    public List<FieldMapping> getFieldMappings() {
+    public FieldMapping getFieldMappings() {
         return fieldMappings;
     }
 
-    public FieldMapping findById(String id) {
 
-        return fieldMappings.stream().filter(fieldMapping -> fieldMapping.getId().toHexString().equals(id)).findFirst()
-                .orElse(null);
-    }
-
-    public FieldMapping findByToolConfigId(String toolConfigId) {
-
-        return fieldMappings.stream()
-                .filter(fieldMapping -> fieldMapping.getProjectToolConfigId().toHexString().equals(toolConfigId))
-                .findFirst().orElse(null);
-    }
-
-    public FieldMapping findByBasicProjectConfigId(String basicProjectConfigId) {
-
-        return fieldMappings.stream().filter(
-                        fieldMapping -> fieldMapping.getBasicProjectConfigId().toHexString().equals(basicProjectConfigId))
-                .findFirst().orElse(null);
-    }
 }

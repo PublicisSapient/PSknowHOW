@@ -1,10 +1,9 @@
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
-
 import com.publicissapient.kpidashboard.azure.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.*;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,16 +14,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URISyntaxException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScrumHandleAzureIssueHistoryTest {
+public class KanbanHandleAzureIssueHistoryTest {
     @InjectMocks
-    private ScrumHandleAzureIssueHistory handleJiraHistory;
+    private KanbanHandleAzureIssueHistory handleJiraHistory;
 
     @Mock
-    private JiraIssueCustomHistory jiraIssueCustomHistory;
+    private KanbanIssueCustomHistory jiraIssueCustomHistory;
 
     @Mock
     private FieldMapping fieldMapping;
@@ -34,7 +35,7 @@ public class ScrumHandleAzureIssueHistoryTest {
     @Before
     public void setUp() throws URISyntaxException {
 
-        jiraIssueCustomHistory = new JiraIssueCustomHistory();
+        jiraIssueCustomHistory = new KanbanIssueCustomHistory();
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
                 .newInstance("/onlinedata/azure/scrumfieldmapping.json");
         fieldMapping = fieldMappingDataFactory.getFieldMappings();
@@ -100,7 +101,6 @@ public class ScrumHandleAzureIssueHistoryTest {
         Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getFixVersionUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 0);
         Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 0);

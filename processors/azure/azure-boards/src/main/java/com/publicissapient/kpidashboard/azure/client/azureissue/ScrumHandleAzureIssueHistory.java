@@ -200,7 +200,6 @@ public class ScrumHandleAzureIssueHistory {
 
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
 			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
-		System.out.println(updateValueList);
 		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);
