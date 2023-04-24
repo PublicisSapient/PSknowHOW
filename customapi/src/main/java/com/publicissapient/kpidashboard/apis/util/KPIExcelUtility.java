@@ -275,16 +275,22 @@ public class KPIExcelUtility {
 	 *
 	 * @param sprint
 	 * @param totalStoriesMap
-	 * @param conditionStories
+	 * @param closedConditionStories
+	 * @param createdConditionStories
 	 * @param kpiExcelData
 	 */
 	public static void populateCreatedVsResolvedExcelData(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
+			List<JiraIssue> closedConditionStories, List<JiraIssue> createdConditionStories,
+			List<KPIExcelData> kpiExcelData) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-			List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
+			List<String> closedConditionalList = closedConditionStories.stream().map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+			List<String> createdConditionalList = createdConditionStories.stream().map(JiraIssue::getNumber)
 					.collect(Collectors.toList());
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
-				String present = conditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
+				String present = closedConditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
+				String createdAfterSprint = createdConditionalList.contains(storyId) ? Constant.EXCEL_YES
+						: Constant.EMPTY_STRING;
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
@@ -292,6 +298,7 @@ public class KPIExcelUtility {
 				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
 				excelData.setCreatedDefectId(storyDetails);
 				excelData.setResolvedTickets(present);
+				excelData.setDefectAddedAfterSprintStart(createdAfterSprint);
 
 				kpiExcelData.add(excelData);
 			});
