@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -261,12 +262,12 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
 					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, SP, overAllmodalValues);
 			LOGGER.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
-			double strength = Math.round(overAllStoryPoints.get(0) / avgVelocity);
+			double strength = (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
 			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
 					null);
 			LOGGER.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
 			IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-					overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0)), null, null, DAYS, null);
+					(double)Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null, DAYS, null);
 			data.add(overAllIssues);
 			data.add(backLogStrength);
 			data.add(averageOverAllCycleTime);

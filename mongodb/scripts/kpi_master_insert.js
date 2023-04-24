@@ -3664,7 +3664,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi138",
-    "kpiName": "Backlog Readiness Efficiency",
+    "kpiName": "Backlog Readiness",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",

@@ -74,7 +74,7 @@ public class SprintVelocityServiceHelperTest {
 		Pair<String, String> currentNodeIdent = Pair.of("6335363749794a18e8a4479b",
 				"38294_Scrum Project_6335363749794a18e8a4479b");
 		Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(
-				currentSprintLeafVelocityMap, currentNodeIdent, sprintWiseIssue, fieldMapping)>0 );
+				currentSprintLeafVelocityMap, currentNodeIdent, new HashMap<Pair<String, String>, List<JiraIssue>>(), fieldMapping)>0 );
 	}
 
 }
