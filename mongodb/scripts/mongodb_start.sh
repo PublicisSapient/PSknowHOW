@@ -50,7 +50,10 @@ function running_js()
 	
 	echo "############ Inserting KPI Master on Date `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_master_insert.js
-	
+
+    echo "########## add default kpi column config ############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_column_config_insert.js
+
 	echo "########### User defined Kpi category  ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_category_insert.js
 	
@@ -112,8 +115,6 @@ echo "########## insert jira test tool added for existing user using testing fie
      echo "########## add custom template code for existing projects ############"
           mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
 
-  echo "########## add default kpi column config ############"
-  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_column_config_insert.js
 }
 
 function cron_service()
