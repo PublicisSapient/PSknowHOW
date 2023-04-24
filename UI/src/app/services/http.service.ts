@@ -136,6 +136,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
+    private gitActionWorkflowNameUrl = this.baseUrl + '/api/githubAction/workflowName';
+
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -879,5 +881,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     getMappingTemplateFlag(toolID,data){
         return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
+    }
+    
+    /** Get workflow name list for Github Action tool */
+    getGitActionWorkFlowName(data){
+        return this.http.post(`${this.gitActionWorkflowNameUrl}/${data.connectionID}`,data);
     }
 }
