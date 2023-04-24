@@ -54,7 +54,7 @@ public class CommentsServiceImplTest {
 		kpiId = "kpi12";
 		commentBy = "testUser";
 		comment = "More data required";
-		TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+		TIME_FORMAT = "dd-MMM-YYYY";
 		date = dateTimeFormatter(new Date(), TIME_FORMAT);
 	}
 
