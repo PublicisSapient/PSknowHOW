@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class GithubActionController {
 
 
     @PostMapping(value = "/githubAction/workflowName/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ServiceResponse getGithubActionWorkflows(@PathVariable String connectionId,  @PathVariable GithubActionRepoDTO repoName) {
+    public ServiceResponse getGithubActionWorkflows(@PathVariable String connectionId,  @RequestBody GithubActionRepoDTO repoName) {
         ServiceResponse response;
         List<GithubActionWorkflowsDTO> workFlowList = githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName.getRepositoryName());
         if (CollectionUtils.isEmpty(workFlowList)) {
