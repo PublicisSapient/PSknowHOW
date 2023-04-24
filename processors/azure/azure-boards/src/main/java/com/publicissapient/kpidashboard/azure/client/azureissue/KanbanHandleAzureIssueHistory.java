@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -64,9 +65,11 @@ public class KanbanHandleAzureIssueHistory {
 		return jiraHistoryChangeLog;
 	}
 
-	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList) {
+	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, KanbanJiraIssue jiraIssue, FieldMapping fieldMapping) {
 
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
+		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
+		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
 		if (CollectionUtils.isNotEmpty(updateValueList)) {
 			for (Value history : updateValueList) {
 				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
@@ -81,7 +84,8 @@ public class KanbanHandleAzureIssueHistory {
 					jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(
 							AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 					fieldHistoryLog.add(jiraHistoryChangeLog);
-
+					setIndividualDetails(jiraIssue, jiraStatusForDevelopment, jiraStatusForQa,
+							changelogItem.getSystemState().getNewValue());
 				}
 			}
 		}
@@ -198,9 +202,32 @@ public class KanbanHandleAzureIssueHistory {
 		return "";
 	}
 
+	private void setIndividualDetails(KanbanJiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
+									  List<String> jiraStatusForQa, String status) {
+		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
+				&& jiraStatusForDevelopment.stream().anyMatch(status::equalsIgnoreCase)
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setDeveloperId(jiraIssue.getAssigneeId());
+			jiraIssue.setDeveloperName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET
+					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
+
+		}
+		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
+				&& jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setQaId(jiraIssue.getAssigneeId());
+			jiraIssue.setQaName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET + jiraIssue.getAssigneeId()
+					+ AzureConstants.CLOSED_BRACKET);
+
+		}
+	}
 	public void setJiraIssueCustomHistoryUpdationLog(KanbanIssueCustomHistory jiraIssueCustomHistory,
-			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
-		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList);
+			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap, KanbanJiraIssue jiraIssue) {
+		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList, jiraIssue, fieldMapping);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,

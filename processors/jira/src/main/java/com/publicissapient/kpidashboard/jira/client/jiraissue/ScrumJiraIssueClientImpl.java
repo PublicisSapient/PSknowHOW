@@ -1309,7 +1309,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			}
 			List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 					fieldMapping);
-//			jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+			jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		}
 
 	}
@@ -1331,7 +1331,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
 				fieldMapping);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-//		jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+		jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
 		// estimate

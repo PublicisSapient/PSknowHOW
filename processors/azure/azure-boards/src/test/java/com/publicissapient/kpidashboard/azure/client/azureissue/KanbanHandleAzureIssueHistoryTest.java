@@ -1,9 +1,11 @@
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
-import com.publicissapient.kpidashboard.azure.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.azureboards.updates.*;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,11 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.publicissapient.kpidashboard.azure.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.azureboards.updates.*;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KanbanHandleAzureIssueHistoryTest {
@@ -32,6 +34,8 @@ public class KanbanHandleAzureIssueHistoryTest {
 
     private List<Value> changeLogList = new ArrayList<>();
 
+    KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
+
     @Before
     public void setUp() throws URISyntaxException {
 
@@ -43,6 +47,10 @@ public class KanbanHandleAzureIssueHistoryTest {
         SystemIterationPath systemIterationId = new SystemIterationPath();
         systemIterationId.setOldValue("2");
         systemIterationId.setNewValue("1");
+        SystemState systemState = new SystemState();
+        systemState.setOldValue("In Progress");
+        systemState.setNewValue("In Testing");
+        fields.setSystemState(systemState);
         fields.setSystemIterationPath(systemIterationId);
         SystemChangedDate systemChangedDate = new SystemChangedDate();
         systemChangedDate.setNewValue("2021-07-06T09:20:00.28Z");
@@ -53,10 +61,9 @@ public class KanbanHandleAzureIssueHistoryTest {
         changeLogList.add(changelogGroup);
 
         Fields fields1 = new Fields();
-        SystemState systemState = new SystemState();
-
-        systemState.setNewValue("In Progress");
-        fields1.setSystemState(systemState);
+        SystemState systemState1 = new SystemState();
+        systemState1.setNewValue("In Progress");
+        fields1.setSystemState(systemState1);
         Map<String, Object> subMap = new HashMap<>();
         subMap.put("newValue", "2021-07-06T09:20:00.28Z");
         subMap.put("oldValue", "2021-07-05T09:20:00.28Z");
@@ -75,19 +82,21 @@ public class KanbanHandleAzureIssueHistoryTest {
         changelogGroup2.setFields(fields1);
         changeLogList.add(changelogGroup2);
 
+        jiraIssue.setAssigneeId("1");
+        jiraIssue.setAssigneeName("test");
 
     }
 
     @Test
     public void testSetJiraFieldChangeLog1() {
         HashMap fieldsMap = new HashMap<>();
-        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fieldsMap);
-        Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
-        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 1);
+        handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fieldsMap, jiraIssue);
+        Assert.assertEquals(2, jiraIssueCustomHistory.getStatusUpdationLog().size());
+        Assert.assertEquals(1, jiraIssueCustomHistory.getAssigneeUpdationLog().size());
+        Assert.assertEquals(1, jiraIssueCustomHistory.getLabelUpdationLog().size());
+        Assert.assertEquals(1, jiraIssueCustomHistory.getPriorityUpdationLog().size());
+        Assert.assertEquals(1, jiraIssueCustomHistory.getSprintUpdationLog().size());
+        Assert.assertEquals(1, jiraIssueCustomHistory.getDueDateUpdationLog().size());
 
     }
 
@@ -97,13 +106,13 @@ public class KanbanHandleAzureIssueHistoryTest {
             changeLogList.clear();
         HashMap fieldsMap = new HashMap<>();
         handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
-                fieldsMap);
-        Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getLabelUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 0);
-        Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 0);
+                fieldsMap, jiraIssue);
+        Assert.assertEquals(0, jiraIssueCustomHistory.getStatusUpdationLog().size());
+        Assert.assertEquals(0, jiraIssueCustomHistory.getAssigneeUpdationLog().size());
+        Assert.assertEquals(0, jiraIssueCustomHistory.getLabelUpdationLog().size());
+        Assert.assertEquals(0, jiraIssueCustomHistory.getPriorityUpdationLog().size());
+        Assert.assertEquals(0, jiraIssueCustomHistory.getDueDateUpdationLog().size());
+        Assert.assertEquals(0, jiraIssueCustomHistory.getSprintUpdationLog().size());
     }
 
 }
