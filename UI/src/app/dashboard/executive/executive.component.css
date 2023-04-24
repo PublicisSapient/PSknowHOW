@@ -33,7 +33,7 @@
 }
 
 .no-projects{
-    height: 400px;
+    height: calc(100vh - 138px);
     margin: 20px;
     border-radius: 7px;
     background-color: white;
