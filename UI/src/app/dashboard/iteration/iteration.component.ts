@@ -30,6 +30,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { Table } from 'primeng/table';
 
 declare let require: any;
 
@@ -40,6 +41,7 @@ declare let require: any;
 })
 export class IterationComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
+  @ViewChild('table') tableComponent: Table;
   subscriptions: any[] = [];
   masterData = <any>{};
   filterData = <any>[];
@@ -79,6 +81,9 @@ export class IterationComponent implements OnInit, OnDestroy {
   trendBoxColorObj: any;
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   noProjects = false;
+  tableColumnData= {};
+  tableColumnForm={};
+  excludeColumnFilter=[];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -674,6 +679,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   handleArrowClick(kpi, label, tableValues) {
+    this.tableComponent.clear();
     this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
     if (this.allKpiArray[idx]?.modalHeads) {
@@ -683,9 +689,30 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority','Linked Stories'];
+    this.generateTableColumnData();
   }
 
-  generateExcel() {
+
+
+
+  generateTableColumnData(){
+    this.modalDetails['tableHeadings'].forEach(colName =>{
+      this.tableColumnData[colName?.kpiColumn ? colName?.kpiColumn : colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName?.kpiColumn ? colName?.kpiColumn : colName]))].map(colData => ({name:colData,value:colData}));
+      this.tableColumnForm[colName?.kpiColumn ? colName?.kpiColumn : colName]= [];
+    });
+
+    this.tableComponent.sortMode = 'multiple';
+    this.tableComponent.multiSortMeta = [{field: 'Assignee', order: 1},{field: 'Due Date', order: -1}];
+  }
+
+  generateExcel(exportMode) {
+    let excelData = [];
+    if (exportMode === 'all') {
+      excelData = this.modalDetails['tableValues'];
+    } else {
+      excelData = this.tableComponent?.filteredValue ?  this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+    }
     let tableData = {
       columns: [],
       excelData: []
@@ -694,7 +721,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       tableData.columns.push(colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader);
     });
 
-    this.modalDetails['tableValues'].forEach(colData => {
+    excelData.forEach(colData => {
       let obj = {};
       for(let key in colData){
         if(this.typeOf(colData[key])){

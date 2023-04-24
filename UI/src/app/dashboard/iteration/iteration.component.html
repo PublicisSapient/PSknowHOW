@@ -174,18 +174,47 @@
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
     {{modalDetails['header']}}
-    <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
-      class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
+    <div class="export-button">
+      <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+        class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+    </div>
+
   </p-header>
   <div class="dialog-body p-mb-4">
-    <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img">
+    <p-table #table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img" [globalFilterFields]="modalDetails['tableHeadings']">
       <ng-template pTemplate="header">
         <tr>
-          <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item?.kpiColumn ? item?.kpiColumn : item}} <span
-              *ngIf="item?.columnInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true" pTooltip='<div class="inner-content">
-                {{item.columnInfo}}
-            </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span></th>
+          <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;">
+            <div class="table-head">
+              <span [ngStyle]="{'width':'max-content','margin-right': '2rem'}">{{item?.kpiColumn ? item?.kpiColumn : item}} <span
+                  *ngIf="item?.columnInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true" pTooltip='<div class="inner-content">
+                                                    {{item.columnInfo}}
+                                                </div>' [escape]="false" tooltipPosition="bottom"
+                  tooltipStyleClass="inner-wraper"></span></span>
+              <div class="p-d-flex">
+                <p-columnFilter *ngIf="!excludeColumnFilter.includes(item?.kpiColumn ? item?.kpiColumn : item)"
+                  [field]="item?.kpiColumn ? item?.kpiColumn : item" matchMode="in" [showMenu]="false" [showMatchModes]="false"
+                  [showOperator]="false" [showAddButton]="false" [showClearButton]="false" [showApplyButton]="false"
+                  [style]="{'margin-top':'2px'}">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                    <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"
+                      [options]="this.tableColumnData[item?.kpiColumn ? item?.kpiColumn : item]"
+                      [placeholder]="'Select '+ (item?.kpiColumn ? item?.kpiColumn : item)" (onChange)="filter($event.value)"
+                      [optionValue]="'value'" [optionLabel]="'name'"
+                      [ngModel]="tableColumnForm[item?.kpiColumn ? item?.kpiColumn : item]">
+                      <ng-template pTemplate="selectedItems">
+                        <i class="pi pi-filter-icon pi-filter" style="font-size: 1.1rem"></i>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+                <p-sortIcon [pSortableColumn]="item?.kpiColumn ? item?.kpiColumn : item"
+                  [field]="item?.kpiColumn ? item?.kpiColumn : item"></p-sortIcon>
+              </div>
+            </div>
+          </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>

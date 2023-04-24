@@ -2440,6 +2440,7 @@ describe('IterationComponent', () => {
           ['Logged Work']: '0 hrs',
           ['Original Estimate']: '0 hrs',
         };
+        component.tableComponent.clear = ()=>{};
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
     });
@@ -2483,7 +2484,7 @@ describe('IterationComponent', () => {
         };
 
         const spyGenerateExcel = spyOn(excelService,'generateExcel');
-        component.generateExcel();
+        component.generateExcel('all');
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
