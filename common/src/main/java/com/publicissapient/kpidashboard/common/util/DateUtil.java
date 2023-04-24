@@ -56,7 +56,7 @@ public class DateUtil {
 
 	public static final String ZERO_TIME_ZONE_FORMAT = "T00:00:00.000Z";
 
-
+	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -182,5 +182,27 @@ public class DateUtil {
 
 	public static long convertStringToLong(String date) {
 		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
+	}
+
+	public static String dateConverter(String dateTime, final String fromFormat) {
+		String strDate = null;
+		Date date = dateTimeParser(dateTime, fromFormat);
+		if (date != null) {
+			strDate = dateTimeFormatter(date, DISPLAY_DATE_FORMAT);
+		}
+		return strDate;
+	}
+
+	public static String dateTimeConverter(DateTime dateTime, final String fromFormat) {
+		String strDate = null;
+		if (dateTime != null) {
+			strDate = dateTimeFormatter(dateTime, DISPLAY_DATE_FORMAT);
+		}
+		return strDate;
+	}
+
+	public static String dateTimeFormatter(DateTime dateTime, final String format) {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		return formatter.format(dateTime);
 	}
 }

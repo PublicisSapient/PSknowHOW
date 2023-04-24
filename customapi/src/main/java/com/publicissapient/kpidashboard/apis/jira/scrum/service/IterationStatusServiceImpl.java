@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -483,7 +484,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		iterationStatus.setPriority(issueObject.getPriority());
 		iterationStatus.setIssueDescription(issueObject.getName());
 		iterationStatus.setIssueStatus(issueObject.getStatus());
-		iterationStatus.setDueDate(issueObject.getDueDate());
+//		iterationStatus.setDueDate(issueObject.getDueDate());
+		iterationStatus.setDueDate(DateUtil.dateConverter(issueObject.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC));
 		if (issueObject.getRemainingEstimateMinutes() != null) {
 			iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
 		}
