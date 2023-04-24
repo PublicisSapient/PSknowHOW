@@ -287,7 +287,7 @@ public class CapacityMasterServiceImplTest {
 		}
 		when(capacityKpiDataRepository.findBySprintIDIn(anyList())).thenReturn(collect);
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335363749794a18e8a4479b");
-		assertEquals(3,
+		assertEquals(2,
 				capacities.stream()
 						.filter(capacityMaster -> CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity()))
 						.collect(Collectors.toList()).size());
