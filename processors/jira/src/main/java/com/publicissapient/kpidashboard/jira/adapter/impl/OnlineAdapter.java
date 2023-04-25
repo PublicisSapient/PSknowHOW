@@ -656,7 +656,7 @@ public class OnlineAdapter implements JiraAdapter {
         boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
         String serverURL = jiraProcessorConfig.getJiraVersionApi();
         if (isCloudEnv) {
-            serverURL = jiraProcessorConfig.getJiraCloudSprintReportApi();
+            serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
         }
         serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
         String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
@@ -973,11 +973,9 @@ public class OnlineAdapter implements JiraAdapter {
                    // sprintReportLog.setUrl(url.toString());
                     URLConnection connection = url.openConnection();
                     parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
-                    
                    // sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
                 }
-               /* log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),
-                        kv(CommonConstant.PSLOGDATA, sprintReportLog));*/
+
             } catch (RestClientException rce) {
                // log.error("Client exception when loading sprint report " + rce, kv(CommonConstant.PSLOGDATA, sprintReportLog));
                 throw rce;

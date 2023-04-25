@@ -18,8 +18,11 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,10 +89,14 @@ public class OnlineAdapterTest {
     public void getVersion(){
         RestClientException exception =Mockito.mock(RestClientException.class);
         Mockito.when(client.getProjectClient()).thenThrow(exception);
+        Mockito.when(jiraProcessorConfig.getJiraVersionApi()).thenReturn("abc");
+       // jiraProcessorConfig.setJiraCloudVersionApi("abc");
 
         Mockito.when(exception.getStatusCode()).thenReturn(status);
         Mockito.when(status.isPresent()).thenReturn(false);
-        assertNotNull(onlineAdapter.getVersions("TEST"));
+        List<ProjectVersion> projectVersionList= new ArrayList<>();
+        onlineAdapter.getVersion(projectConfFieldMapping,projectVersionList);
+        assertNotNull(projectVersionList);
     }
 
     private void prepareProjectConfigData(){
@@ -101,6 +108,7 @@ public class OnlineAdapterTest {
    		conn.get().setApiEndPoint("rest/api/2/");
    		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
    		jiraConfig.setConnection(conn);
+        jiraConfig.setProjectKey("TEST");
 
         projectConfFieldMapping.setJira(jiraConfig);
 

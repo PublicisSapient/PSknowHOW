@@ -138,6 +138,10 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				projectRelease.setConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
 				saveKanbanAccountHierarchy(kanbanAccountHierarchy,confFieldMapping,projectRelease);
 				projectReleaseRepo.save(projectRelease);
+				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.JIRAKANBAN_KPI_CACHE);
 			}
 			else if (null != accountHierarchy) {
 				ProjectRelease projectRelease = projectReleaseRepo
@@ -149,7 +153,10 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				projectRelease.setConfigId(accountHierarchy.getBasicProjectConfigId());
 				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping,projectRelease);
 				projectReleaseRepo.save(projectRelease);
-				cleanCache();
+				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.JIRA_KPI_CACHE);
 			}
 			psLogData.setProjectVersion(projectVesion);
 			log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -189,6 +196,12 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 							hierarchy.setCreatedDate(LocalDateTime.now());
 							setToSave.add(hierarchy);
 						}
+						else if(!exHiery.equals(hierarchy)){
+							exHiery.setBeginDate(hierarchy.getBeginDate());
+							exHiery.setEndDate(hierarchy.getEndDate());
+							exHiery.setReleaseState(hierarchy.getReleaseState());
+							setToSave.add(exHiery);
+						}
 					}
 				});
 			}
@@ -213,6 +226,12 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 					if (null == exHiery) {
 						hierarchy.setCreatedDate(LocalDateTime.now());
 						setToSave.add(hierarchy);
+					}
+					else if(!exHiery.equals(hierarchy)){
+						exHiery.setBeginDate(hierarchy.getBeginDate());
+						exHiery.setEndDate(hierarchy.getEndDate());
+						exHiery.setReleaseState(hierarchy.getReleaseState());
+						setToSave.add(exHiery);
 					}
 				}
 			});

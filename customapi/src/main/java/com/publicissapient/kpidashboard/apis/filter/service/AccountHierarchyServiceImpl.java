@@ -110,27 +110,23 @@ public class AccountHierarchyServiceImpl
 	private AccountFilteredData getAccountFilteredResponse(AccountHierarchy acc, int level) {
 		AccountFilteredData data = null;
 		if (null != acc) {
-			data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
-					.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
-					.sprintState(acc.getSprintState()).sprintStartDate(acc.getBeginDate())
-					.sprintEndDate(acc.getEndDate()).level(level).build();
-
+			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
+				data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
+						.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
+						.releaseState(acc.getReleaseState()).releaseStartDate(acc.getBeginDate())
+						.releaseEndDate(acc.getEndDate()).level(level).build();
+			} else {
+				data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
+						.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
+						.sprintState(acc.getSprintState()).sprintStartDate(acc.getBeginDate())
+						.sprintEndDate(acc.getEndDate()).level(level).build();
+			}
 			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				data.setBasicProjectConfigId(acc.getBasicProjectConfigId());
 			}
-			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
-				data.setReleaseState(acc.getReleaseState());
-				data.setReleaseStartDate(acc.getBeginDate());
-				data.setReleaseEndDate(acc.getEndDate());
-				data.setSprintEndDate(null);
-				data.setSprintStartDate(null);
-				data.setSprintState(null);
-			}
 		}
-
 		return data;
 	}
-
 
 
 	/**

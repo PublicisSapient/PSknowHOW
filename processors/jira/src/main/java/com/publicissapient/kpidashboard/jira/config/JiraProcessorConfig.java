@@ -69,4 +69,5 @@ public class JiraProcessorConfig {
 	private boolean considerStartDate;
 	private long subsequentApiCallDelayInMilli;
 	private String jiraVersionApi;
+	private String jiraCloudVersionApi;
 }
