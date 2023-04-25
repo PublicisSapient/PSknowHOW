@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -64,8 +65,10 @@ public class ScrumHandleAzureIssueHistory {
 		return jiraHistoryChangeLog;
 	}
 
-	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList) {
+	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, JiraIssue jiraIssue, FieldMapping fieldMapping) {
 
+		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
+		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(updateValueList)) {
 			for (Value history : updateValueList) {
@@ -81,12 +84,29 @@ public class ScrumHandleAzureIssueHistory {
 					jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(AzureProcessorUtil.getFormattedDate(
 							AzureProcessorUtil.deodeUTF8String(changelogItem.getSystemChangedDate().getNewValue()))));
 					fieldHistoryLog.add(jiraHistoryChangeLog);
+					setIndividualDetails(jiraIssue, jiraStatusForDevelopment, jiraStatusForQa,
+							changelogItem.getSystemState().getNewValue());
 
 				}
 			}
 		}
 
 		return fieldHistoryLog;
+	}
+
+	public String getModifiedSprintsPath(String sprintPath) {
+		String finalSprintPath = org.apache.commons.lang3.StringUtils.EMPTY;
+		String separator = "\\";
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(sprintPath)) {
+			int sepPos = sprintPath.indexOf(separator);
+			if (sepPos == -1) {
+				finalSprintPath = sprintPath;
+			} else {
+				finalSprintPath = sprintPath.substring(sepPos + separator.length());
+			}
+
+		}
+		return finalSprintPath;
 	}
 
 	private List<JiraHistoryChangeLog> getIterationChangeLog(List<Value> updateValueList) {
@@ -100,10 +120,10 @@ public class ScrumHandleAzureIssueHistory {
 				if (changelogItem != null && changelogItem.getSystemIterationPath() != null) {
 					JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
 					String oldValue = changelogItem.getSystemIterationPath().getOldValue() != null
-							? changelogItem.getSystemIterationPath().getOldValue()
+							? getModifiedSprintsPath(changelogItem.getSystemIterationPath().getOldValue())
 							: "";
 					String newValue = changelogItem.getSystemIterationPath().getNewValue() != null
-							? changelogItem.getSystemIterationPath().getNewValue()
+							? getModifiedSprintsPath(changelogItem.getSystemIterationPath().getNewValue())
 							: "";
 					jiraHistoryChangeLog.setChangedFrom(oldValue);
 					jiraHistoryChangeLog.setChangedTo(newValue);
@@ -198,9 +218,33 @@ public class ScrumHandleAzureIssueHistory {
 		return "";
 	}
 
+	private void setIndividualDetails(JiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
+									  List<String> jiraStatusForQa, String status) {
+		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
+				&& jiraStatusForDevelopment.stream().anyMatch(status::equalsIgnoreCase)
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setDeveloperId(jiraIssue.getAssigneeId());
+			jiraIssue.setDeveloperName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET
+					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
+
+		}
+		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
+				&& jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setQaId(jiraIssue.getAssigneeId());
+			jiraIssue.setQaName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET + jiraIssue.getAssigneeId()
+					+ AzureConstants.CLOSED_BRACKET);
+
+		}
+	}
+
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
-			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
-		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList);
+			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap, JiraIssue jiraIssue) {
+		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList, jiraIssue, fieldMapping);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,

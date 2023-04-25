@@ -731,7 +731,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 			}
 
-			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap);
+			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
 
 		}
 
@@ -760,7 +760,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureIssueCustomHistory.setCreatedDate(dateTime);
 
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
-		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap);
+		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
 		// estimate
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {

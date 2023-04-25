@@ -65,7 +65,8 @@ public class KanbanHandleAzureIssueHistory {
 		return jiraHistoryChangeLog;
 	}
 
-	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, KanbanJiraIssue jiraIssue, FieldMapping fieldMapping) {
+	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, KanbanJiraIssue jiraIssue,
+			FieldMapping fieldMapping) {
 
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
 		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
@@ -93,6 +94,21 @@ public class KanbanHandleAzureIssueHistory {
 		return fieldHistoryLog;
 	}
 
+	public String getModifiedSprintsPath(String sprintPath) {
+		String finalSprintPath = org.apache.commons.lang3.StringUtils.EMPTY;
+		String separator = "\\";
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(sprintPath)) {
+			int sepPos = sprintPath.indexOf(separator);
+			if (sepPos == -1) {
+				finalSprintPath = sprintPath;
+			} else {
+				finalSprintPath = sprintPath.substring(sepPos + separator.length());
+			}
+
+		}
+		return finalSprintPath;
+	}
+
 	private List<JiraHistoryChangeLog> getIterationChangeLog(List<Value> updateValueList) {
 
 		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
@@ -104,10 +120,10 @@ public class KanbanHandleAzureIssueHistory {
 				if (changelogItem != null && changelogItem.getSystemIterationPath() != null) {
 					JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
 					String oldValue = changelogItem.getSystemIterationPath().getOldValue() != null
-							? changelogItem.getSystemIterationPath().getOldValue()
+							? getModifiedSprintsPath(changelogItem.getSystemIterationPath().getOldValue())
 							: "";
 					String newValue = changelogItem.getSystemIterationPath().getNewValue() != null
-							? changelogItem.getSystemIterationPath().getNewValue()
+							? getModifiedSprintsPath(changelogItem.getSystemIterationPath().getNewValue())
 							: "";
 					jiraHistoryChangeLog.setChangedFrom(oldValue);
 					jiraHistoryChangeLog.setChangedTo(newValue);
@@ -203,7 +219,7 @@ public class KanbanHandleAzureIssueHistory {
 	}
 
 	private void setIndividualDetails(KanbanJiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
-									  List<String> jiraStatusForQa, String status) {
+			List<String> jiraStatusForQa, String status) {
 		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
 				&& jiraStatusForDevelopment.stream().anyMatch(status::equalsIgnoreCase)
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
@@ -214,8 +230,7 @@ public class KanbanHandleAzureIssueHistory {
 					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
 
 		}
-		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
-				&& jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
+		if (CollectionUtils.isNotEmpty(jiraStatusForQa) && jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
 
@@ -225,8 +240,10 @@ public class KanbanHandleAzureIssueHistory {
 
 		}
 	}
+
 	public void setJiraIssueCustomHistoryUpdationLog(KanbanIssueCustomHistory jiraIssueCustomHistory,
-			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap, KanbanJiraIssue jiraIssue) {
+			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap,
+			KanbanJiraIssue jiraIssue) {
 		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList, jiraIssue, fieldMapping);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);
