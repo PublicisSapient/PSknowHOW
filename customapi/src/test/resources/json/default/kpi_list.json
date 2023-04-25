@@ -76,13 +76,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-175",
-      "175-125",
-      "125-75",
-      "75-25",
-      "25-"
-    ]
+    "maturityRange": ["-175","175-125","125-75","75-25","25-"]
   },
   {
     "kpiId": "kpi82",
@@ -93,7 +87,7 @@
     "defaultOrder": 2,
     "kpiSource": "Jira",
     "groupId": 1,
-    "thresholdValue": "",
+    "thresholdValue": "75",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -162,13 +156,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-25",
-      "25-50",
-      "50-75",
-      "75-90",
-      "90-"
-    ]
+    "maturityRange": ["-25","25-50","50-75","75-90","90-"]
   },
   {
     "kpiId": "kpi111",
@@ -179,7 +167,7 @@
     "defaultOrder": 3,
     "kpiSource": "Jira",
     "groupId": 1,
-    "thresholdValue": "",
+    "thresholdValue": "25",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -251,13 +239,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-90",
-      "90-60",
-      "60-25",
-      "25-10",
-      "10-"
-    ]
+    "maturityRange": ["-90","90-60","60-25","25-10","10-"]
   },
   {
     "kpiId": "kpi35",
@@ -336,13 +318,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-90",
-      "90-75",
-      "75-50",
-      "50-25",
-      "25-"
-    ]
+    "maturityRange": ["-90","90-75","75-50","50-25","25-"]
   },
   {
     "kpiId": "kpi34",
@@ -357,14 +333,14 @@
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of the development team ability to remove defects prior to release",
+      "definition": "DEFECT REMOVAL EFFICIENCY gives a measure of efficiency of the development team in closing defects raised because of new functionalities within the iteration",
       "formula": [
         {
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects fixed in a sprint",
-            "Total no. of defects reported in a sprint"
+            "No. of defects tagged to stories in the iteration that are fixed",
+            "Total no. of defects tagged to stories in a iteration"
           ]
         }
       ],
@@ -421,13 +397,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-25",
-      "25-50",
-      "50-75",
-      "75-90",
-      "90-"
-    ]
+    "maturityRange": ["-25","25-50","50-75","75-90","90-"]
   },
   {
     "kpiId": "kpi37",
@@ -506,13 +476,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-75",
-      "75-50",
-      "50-30",
-      "30-10",
-      "10-"
-    ]
+    "maturityRange": ["-75","75-50","50-30","30-10","10-"]
   },
   {
     "kpiId": "kpi28",
@@ -628,15 +592,15 @@
         "operator": "<"
       },
       {
-        "type": "Neutral",
+        "type": "Upwards",
         "lhs": "value",
         "rhs": "lineValue",
-        "operator": "<"
+        "operator": "="
       },
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],
@@ -721,13 +685,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi16",
@@ -802,13 +760,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi17",
@@ -879,14 +831,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi38",
@@ -1000,14 +946,8 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-100",
-      "100-50",
-      "50-30",
-      "30-10",
-      "10-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-100","100-50","50-30","30-10","10-"]
   },
   {
     "kpiId": "kpi116",
@@ -1087,14 +1027,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-50",
-      "50-30",
-      "30-20",
-      "20-10",
-      "10-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-50","50-30","30-20","20-10","10-"]
   },
   {
     "kpiId": "kpi70",
@@ -1172,13 +1106,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi40",
@@ -1217,7 +1145,7 @@
     "defaultOrder": 18,
     "kpiSource": "Jira",
     "groupId": 2,
-    "thresholdValue": "10",
+    "thresholdValue": "85",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -1282,13 +1210,7 @@
     "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-40",
-      "40-60",
-      "60-75",
-      "75-90",
-      "90-"
-    ]
+    "maturityRange": ["-40","40-60","60-75","75-90","90-"]
   },
   {
     "kpiId": "kpi5",
@@ -1307,15 +1229,29 @@
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "Sprint Predictability signifies who stable is a team's velocity such that it can be used in forecasting milestones in future",
+      "definition": "Sprint Predictability signifies how stable is a team's velocity such that it can be used in forecasting milestones in future",
       "formula": [
         {
           "lhs": "Sprint Predictability for a sprint",
           "operator": "division",
           "operands": [
-            "sprint velocity in last sprint.",
-            "sprint velocity in last 5 sprint"
+            "sprint velocity of the targeted sprint.",
+            "average sprint velocity of previous 3 sprints"
           ]
+        }
+      ],
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "If previous 3 sprints are not available, then Predictability of targeted sprint will be 100"
+        },
+        {
+          "type": "paragraph",
+          "value": "If only previous 2 sprints are available, then it is calculating average of 2 sprints"
+        },
+        {
+          "type": "paragraph",
+          "value": "If only one previous sprint is available, then it is calculating as targeted sprint velocity divided by previous sprint velocity"
         }
       ]
     },
@@ -1324,7 +1260,7 @@
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "average",
-    "isAdditionalFilterSupport": false,
+    "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
   {
@@ -1376,11 +1312,11 @@
         },
         {
           "type": "paragraph",
-          "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog"
+          "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog. The capacity is defined in KnowHOW"
         },
         {
           "type": "paragraph",
-          "value": "Logged Work: The amount of time team has logged within a Sprint"
+          "value": "Logged Work: The amount of time team has logged within a Sprint. It is derived as sum of all logged work against issues tagged to a Sprint in Jira"
         }
       ]
     },
@@ -1467,14 +1403,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-10",
-      "10-8",
-      "8-5",
-      "5-3",
-      "3-"
-    ]
+    "hideOverallFilter" : false,
+    "maturityRange": ["-10","10-8","8-5","5-3","3-"]
   },
   {
     "kpiId": "kpi84",
@@ -1540,14 +1470,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-16",
-      "16-8",
-      "8-4",
-      "4-2",
-      "2-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-16","16-8","8-4","4-2","2-"]
   },
   {
     "kpiId": "kpi11",
@@ -1611,14 +1535,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-2",
-      "2-4",
-      "4-8",
-      "8-16",
-      "16-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-2","2-4","4-8","8-16","16-"]
   },
   {
     "kpiId": "kpi8",
@@ -1684,14 +1602,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-45",
-      "45-30",
-      "30-15",
-      "15-5",
-      "5-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-45","45-30","30-15","15-5","5-"]
   },
   {
     "kpiId": "kpi3",
@@ -1732,7 +1644,12 @@
         {
           "type": "paragraph",
           "value": "Each of the KPIs are calculated in 'Days' . Lower the time, better is the speed & efficiency of that phase"
+        },
+        {
+          "type": "paragraph",
+          "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
+
       ],
       "maturityLevels": [
         {
@@ -1857,53 +1774,23 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
+    "maturityRange": ["-60","60-45","45-30","30-10","10-"],
+
+    "maturityLevel": [{
+      "level": "LeadTime",
+      "range": ["-60", "60-45", "45-30", "30-10", "10-"]
+    },
       {
         "level": "Intake-DoR",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
+        "range": ["-30", "30-20", "20-10", "10-5", "5-"]
       },
       {
         "level": "DoR-DoD",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
+        "range": ["-20", "20-10", "10-7", "7-3", "3-"]
       },
       {
         "level": "DoD-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
+        "range": ["-30", "30-15", "15-5", "5-2", "2-"]
       }
     ]
   },
@@ -1977,13 +1864,7 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-1",
-      "1-2",
-      "2-5",
-      "5-10",
-      "10-"
-    ]
+    "maturityRange": ["-1","1-2","2-5","5-10","10-"]
   },
   {
     "kpiId": "kpi73",
@@ -2022,14 +1903,7 @@
     "showTrend": true,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "maturityRange": [
-      "-1",
-      "1-2",
-      "2-5",
-      "5-10",
-      "10-"
-    ]
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi113",
@@ -2113,7 +1987,7 @@
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],
@@ -2169,7 +2043,7 @@
       {
         "type": "Downwards",
         "lhs": "value",
-        "erhs": "lineValue",
+        "rhs": "lineValue",
         "operator": ">"
       }
     ],
@@ -2367,13 +2241,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi62",
@@ -2444,14 +2312,8 @@
     "showTrend": true,
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi64",
@@ -2561,14 +2423,8 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-100",
-      "100-50",
-      "50-30",
-      "30-10",
-      "10-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-100","100-50","50-30","30-10","10-"]
   },
   {
     "kpiId": "kpi71",
@@ -2646,13 +2502,7 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-20",
-      "20-40",
-      "40-60",
-      "60-80",
-      "80-"
-    ]
+    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
   },
   {
     "kpiId": "kpi49",
@@ -2764,14 +2614,8 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-45",
-      "45-30",
-      "30-15",
-      "15-5",
-      "5-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-45","45-30","30-15","15-5","5-"]
   },
   {
     "kpiId": "kpi65",
@@ -2837,14 +2681,8 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
-    "maturityRange": [
-      "-2",
-      "2-4",
-      "4-8",
-      "8-16",
-      "16-"
-    ]
+    "hideOverallFilter" : true,
+    "maturityRange": ["-2","2-4","4-8","8-16","16-"]
   },
   {
     "kpiId": "kpi53",
@@ -3010,53 +2848,23 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
+    "maturityRange": ["-60","60-45","45-30","30-10","10-"],
+
+    "maturityLevel": [{
+      "level": "LeadTime",
+      "range": ["-60", "60-45", "45-30", "30-10", "10-"]
+    },
       {
         "level": "Open-Triage",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
+        "range": ["-30", "30-20", "20-10", "10-5", "5-"]
       },
       {
         "level": "Triage-Complete",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
+        "range": ["-20", "20-10", "10-7", "7-3", "3-"]
       },
       {
         "level": "Complete-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
+        "range": ["-30", "30-15", "15-5", "5-2", "2-"]
       }
     ]
   },
@@ -3142,7 +2950,7 @@
     "kpiId": "kpi121",
     "kpiName": "Capacity",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "",
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Iteration",
@@ -3155,7 +2963,7 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Planned capacity is the development team's available time represented in Hours."
+          "value": "Planned capacity is the development team's available time."
         },
         {
           "type": "paragraph",
@@ -3185,22 +2993,55 @@
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
+      "definition": "Work Remaining KPI illustrates the remaining work in the iteration in terms of No. of Issues/ Size of Work (in SP) and in terms of Remaining Hours required to complete pending work.",
       "details": [
         {
           "type": "paragraph",
-          "value": "Work Remaining KPI gives a depiction of the pending work in an iteration from three available dimensions"
+          "value": "In addition, it also shows the potential delay because of all pending stories. Potential delay and predicted completion date can be seen for each issue as well"
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are not completed based on DOD in the iteration."
+          "value": "For the KPI to reflect meaningful info, "
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues not completed based on DOD in the iteration"
+          "value": "1. Update Due date on each issue"
         },
         {
           "type": "paragraph",
-          "value": "Hours - Sum of remaining hours as mentioned in Jira of all issues not completed based on DOD in the iteration"
+          "value": "2. Update remaining estimate on each issue"
+        },
+        {
+          "type": "paragraph",
+          "value": "3. Ensure issues are assigned to the correct person."
+        },
+        {
+          "type": "paragraph",
+          "value": "4. For any stories spilled, update the due date so that is falls between the active iteration."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issues that show up in the KPI are based on the ‘Issues not completed’ list in Sprint report in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are not completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues not completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Hours - Sum of remaining hours of all incomplete issues in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue finishing in the last two days of the iteration are marked in AMBER"
+        },
+        {
+          "type": "paragraph",
+          "value": "Issues finishing post iteration are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3219,9 +3060,9 @@
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Work Completed",
+    "kpiName": "Planned Work Status",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "Count",
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Iteration",
@@ -3234,15 +3075,43 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Work Completed KPI gives a depiction of the work completed in an iteration from two available dimensions"
+          "value": "Planned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",
-          "value": "Issue count - Total no. of issues that are completed based on DOD in the iteration."
+          "value": "For the KPI to reflect meaningful info,"
         },
         {
           "type": "paragraph",
-          "value": "Story Points - Sum of story points of all issues completed based on DOD in the iteration"
+          "value": "Map all ‘In Progress status’ in mappings for your project."
+        },
+        {
+          "type": "paragraph",
+          "value": "Ensure Original Estimate & Due Date is added to all issues in a sprint."
+        },
+        {
+          "type": "paragraph",
+          "value": "Assignees should be kept up to date in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+        },
+        {
+          "type": "paragraph",
+          "value": "Planned work is based on 'Due Date'."
+        },
+        {
+          "type": "paragraph",
+          "value": "Issue count - Total no. of issues that are completed."
+        },
+        {
+          "type": "paragraph",
+          "value": "Story Points - Sum of story points of all issues that are completed"
+        },
+        {
+          "type": "paragraph",
+          "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
         },
         {
           "type": "paragraph",
@@ -3314,11 +3183,14 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potential not get completed. It also represents the corresponding size of work likely to spill."
+          "value": "Issues likely to spill gives intelligence to the team about number of issues that could potentially not get completed. This prediction is based on the the Predicted Completion date i.e if Predicted completion completion date > Sprint end date for an issue, it is considered to be potential spill."
         },
         {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text":"Predicted completion date logic is detailed at",
+            "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+          }
         }
       ]
     },
@@ -3328,7 +3200,7 @@
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
@@ -3348,23 +3220,14 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of iteration."
+          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of an iteration. An issue is included as a possible closure based on the calculation of Predicted completion date."
         },
         {
-          "type": "paragraph",
-          "value": "An issues is included as a possible closure based on 2 criteria"
-        },
-        {
-          "type": "paragraph",
-          "value": "1. If the remaining hours of an issues is less than 8 hrs OR"
-        },
-        {
-          "type": "paragraph",
-          "value": "2. If an issue is in Testing status (as defined in KnowHOW)"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of KPI is Jira and KnowHOW"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text":"Predicted completion date logic is detailed at",
+            "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+          }
         }
       ]
     },
@@ -3374,12 +3237,12 @@
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "2_column",
     "calculateMaturity": false
   },
   {
     "kpiId": "kpi120",
-    "kpiName": "Scope Change",
+    "kpiName": "Iteration Commitment",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
@@ -3394,11 +3257,11 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Scope change KPI highlights change in iteration scope since the start of iteration."
+          "value": "Iteration commitment illustrates the scope of work committed by the team at the beginning of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "It showcases added as well as removed issue count and the corresponding story points"
+          "value": "The KPI also shows the scope added and removed during the iteration. Scope is shown both in terms of issue count and size of work (Story points)"
         },
         {
           "type": "paragraph",
@@ -3412,7 +3275,7 @@
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column_big",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
@@ -3454,23 +3317,23 @@
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi125",
-    "kpiName": "Daily Closures",
+    "kpiId": "kpi132",
+    "kpiName": "Defect Count by RCA",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 10,
+    "defaultOrder": 13,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "stackedColumn",
+    "chartType": "pieChart",
     "kpiInfo": {
       "details": [
         {
           "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of no. of issues closed on a daily basis."
+          "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
         },
         {
           "type": "paragraph",
@@ -3482,83 +3345,14 @@
         }
       ]
     },
-    "xAxisLabel": "Days",
-    "yAxisLabel": "Count",
+    "xAxisLabel": "",
+    "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "dropdown",
     "boxType": "chart",
     "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi79",
-    "kpiName": "Test Cases Without Story Link",
-    "maxValue": "5000",
-    "kpiUnit": "",
-    "isDeleted": "False",
-    "defaultOrder": 1,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Zypher",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "progress-bar",
-    "kpiInfo": {
-      "formula": [
-        {
-          "lhs": "Testcases without story link",
-          "rhs": "# of total non-regression test cases without story link"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi80",
-    "kpiName": "Defects Without Story Link",
-    "maxValue": "500",
-    "kpiUnit": "",
-    "isDeleted": "False",
-    "defaultOrder": 2,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Jira",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "progress-bar",
-    "kpiInfo": {
-      "formula": [
-        {
-          "lhs": "Defect Count Without Story Link",
-          "rhs": "# of total defects without Story link"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "This Kpi works only on Project level."
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "kpiFilter": "multiSelectDropDown"
   },
   {
     "kpiId": "kpi133",
@@ -3566,7 +3360,7 @@
     "maxValue": "",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 12,
+    "defaultOrder": 13,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3576,38 +3370,39 @@
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-      "definition": "Quality Status gives the information about defects linked/unlinked with the story and Defect density",
-      "formula": [
-        {
-          "lhs": "Defect Density",
-          "operator": "division",
-          "operands": [
-            "All defects added to the Sprint (post sprint start) and linked to stories",
-            "Storypoint of all linked stories"
-          ]
-        }
-      ],
+      "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
       "details": [
         {
           "type": "paragraph",
-          "value": " Defect density - DEFECT DENSITY measures the total number of defects against the size of a story"
+          "value": "The KPI shows:"
         },
         {
           "type": "paragraph",
-          "value": "Story related defects - All defects added to the Sprint and linked to stories (post sprint start)"
+          "value": "1. Linked defects to story"
         },
         {
           "type": "paragraph",
-          "value": "Unlinked defects -  All defects added to the Sprint and not tagged to a story (post sprint start)"
+          "value": "2. Defect Injection Rate"
+        },
+        {
+          "type": "paragraph",
+          "value": "3. Defect Density"
+        },
+        {
+          "type": "paragraph",
+          "value": "4. Unlinked defects"
+        },
+        {
+          "type": "paragraph",
+          "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
         }
-
       ]
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
     "isPositiveTrend": true,
+    "kpiFilter": "",
     "showTrend": false,
-    "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column"
   },
   {
@@ -3627,7 +3422,7 @@
       "details": [
         {
           "type": "paragraph",
-          "value": "Unplanned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
+          "value": "Unplanned Work status keep track of the issues which doesn't have due date."
         },
         {
           "type": "paragraph",
@@ -3645,66 +3440,121 @@
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi127",
-    "kpiName": "Production Defects Ageing",
-    "kpiUnit": "Number",
-    "isDeleted": "False",
-    "defaultOrder": 3,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Jira",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "line",
-    "kpiInfo": {
-      "definition": "Production Defects ageing KPI groups all the production defects which are not closed from those created in last 15 months in standard buckets that are  <1 Month, 1-3 Month, 3-6 Month, 6-12 Month, > 12 Month. These defects can be filtered based on 'Priority'. The KPI measures the effectiveness of Defect Backlog prioritization and is useful for Product Owner, Scrum Master and the development team"
-    },
-    "xAxisLabel": "Months",
-    "yAxisLabel": "Count",
-    "isPositiveTrend": false,
-    "kpiFilter": "multiSelectDropDown",
-    "showTrend": false,
-    "aggregationCriteria": "sum",
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
-  },
-  {
-    "kpiId": "kpi989",
-    "kpiName": "Kpi Maturity",
-    "isDeleted": "False",
-    "defaultOrder": 1,
-    "kpiCategory": "Kpi Maturity",
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false,
-    "kanban": false
-  },
-  {
-    "kpiId": "kpi130",
-    "kpiName": "Iteration Status",
+    "kpiId": "kpi125",
+    "kpiName": "Daily Closures",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 11,
+    "defaultOrder": 10,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
+    "chartType": "GroupBarChart",
     "kpiInfo": {
       "details": [
         {
           "type": "paragraph",
-          "value": "Iteration Status KPI gives a representation of delays in the story."
+          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
         }
       ]
     },
+    "xAxisLabel": "Days",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi131",
+    "kpiName": "Wastage",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 12,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Wastage KPI gives a depiction of total time an issue was not being worked upon in the iteration by anyone in the team after moving to in progress."
+        },
+        {
+          "type": "paragraph",
+          "value": "Blocked time - Total time when any issue type is waiting for input from internal team or external stakeholders."
+        },
+        {
+          "type": "paragraph",
+          "value": "Wait time : Total time when any issue is in statuses similar to Ready for testing, ready for deployment etc."
+        },
+        {
+          "type": "paragraph",
+          "value": "Wastage - Sum of Blocked time and Wait time hours as mentioned in Jira of all issues in the iteration which is either block or in wait"
+        },
+        {
+          "type": "paragraph",
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "2_column",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi135",
+    "kpiName": "First Time Pass Rate",
+    "maxValue": "",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
+        },
+        {
+          "type": "paragraph",
+          "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+        },
+        {
+          "type": "paragraph",
+          "value": "First time pass rate (FTPR) = No. of issues closed in a sprint which do not have a return transition or any defects tagged / Total no. of issues closed in the sprint"
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
     "calculateMaturity": false
   },
   {
@@ -3753,83 +3603,90 @@
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi131",
-    "kpiName": "Wastage",
-    "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiId": "kpi127",
+    "kpiName": "Production Defects Ageing",
+    "kpiUnit": "Number",
     "isDeleted": "False",
     "defaultOrder": 3,
-    "kpiCategory": "Iteration",
+    "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 8,
+    "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": null,
+    "chartType": "line",
     "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Wastage KPI gives a depiction of total time an issue was not being worked upon in the iteration by anyone in the team after moving to in progress."
-        },
-        {
-          "type": "paragraph",
-          "value": "Blocked time - Total time when any issue type is waiting for input from internal team or external stakeholders."
-        },
-        {
-          "type": "paragraph",
-          "value": "Wait time : Total time when any issue is in statuses similar to Ready for testing, ready for deployment etc."
-        },
-        {
-          "type": "paragraph",
-          "value": "Wastage - Sum of Blocked time and Wait time hours as mentioned in Jira of all issues in the iteration which is either block or in wait"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-        }
-      ]
+      "definition": "Production Defects ageing KPI groups all the production defects which are not closed from those created in last 15 months in standard buckets that are  <1 Month, 1-3 Month, 3-6 Month, 6-12 Month, > 12 Month. These defects can be filtered based on 'Priority'. The KPI measures the effectiveness of Defect Backlog prioritization and is useful for Product Owner, Scrum Master and the development team"
     },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
     "kpiFilter": "multiSelectDropDown",
-    "boxType": "3_column",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi133",
-    "kpiName": "First Time Pass Rate",
+    "kpiId": "kpi136",
+    "kpiName": "Defect Count by Status",
     "maxValue": "",
-    "kpiUnit": "Hours",
+    "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 14,
+    "defaultOrder": 13,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
-    "kanban": false,
-    "chartType": null,
+    "kanban": false,"chartType": "pieChart",
     "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
-        },
-        {
-          "type": "paragraph",
-          "value": "It measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
-        }
-      ]
+      "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiSelectDropDown",
-    "boxType": "3_column",
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi130",
+    "kpiName": "Iteration Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Iteration Status KPI gives a representation of delays in the story."
+        },
+        {
+          "type": "paragraph",
+          "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+        }
+      ]
+    },
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi989",
+    "kpiName": "Kpi Maturity",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Kpi Maturity",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false
   }
 ]
