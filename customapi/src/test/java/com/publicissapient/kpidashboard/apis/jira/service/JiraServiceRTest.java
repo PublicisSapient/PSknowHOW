@@ -146,7 +146,7 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(4, false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(4,"project" ,false)).thenReturn("project");
 
 		setRcaKpiElement();
 
