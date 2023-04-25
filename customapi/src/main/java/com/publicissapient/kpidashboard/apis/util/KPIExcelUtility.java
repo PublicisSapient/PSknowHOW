@@ -1257,6 +1257,23 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
 				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
 				: "-");
+		jiraIssueModalObject.setChangeDate((StringUtils.isNotEmpty(jiraIssue.getChangeDate()))
+				? jiraIssue.getChangeDate().split("T")[0]
+				: "-");
+		jiraIssueModalObject.setCreatedDate((StringUtils.isNotEmpty(jiraIssue.getCreatedDate()))
+				? jiraIssue.getCreatedDate().split("T")[0]
+				: "-");
+		jiraIssueModalObject.setUpdatedDate((StringUtils.isNotEmpty(jiraIssue.getUpdateDate()))
+				? jiraIssue.getUpdateDate().split("T")[0]
+				: "-");
+		jiraIssueModalObject.setLabels(jiraIssue.getLabels());
+		jiraIssueModalObject.setRootCauseList(jiraIssue.getRootCauseList());
+		jiraIssueModalObject.setOwnersFullName(jiraIssue.getOwnersFullName());
+		jiraIssueModalObject.setSprintName(jiraIssue.getSprintName());
+		jiraIssueModalObject.setResolution(jiraIssue.getResolution());
+		if (!jiraIssue.getReleaseVersions().isEmpty()) {
+			jiraIssueModalObject.setReleaseName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
+		}
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			jiraIssueModalObject
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
