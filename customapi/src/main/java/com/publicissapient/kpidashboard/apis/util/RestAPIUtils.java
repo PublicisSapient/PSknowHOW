@@ -51,6 +51,25 @@ public class RestAPIUtils {
 	}
 
 	/**
+	 * Creates HTTP Headers.
+	 *
+	 * @param header  http header
+	 *
+	 * @param key
+	 *            key
+	 * @param value
+	 *            value
+	 * @return HttpHeaders the http header
+	 */
+	public HttpHeaders addHeaders(HttpHeaders header, String key, String value) {
+		if(null != header) {
+			header = new HttpHeaders();
+		}
+		header.add(key, value);
+		return header;
+	}
+
+	/**
 	 * Converts json Array to string response body.
 	 *
 	 * @param responseBody

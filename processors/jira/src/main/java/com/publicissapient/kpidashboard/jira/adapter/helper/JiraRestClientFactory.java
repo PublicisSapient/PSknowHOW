@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jira.adapter.helper;
 
 import java.io.IOException;
 import java.net.Authenticator;
-import java.net.CookieStore;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -34,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -55,8 +55,6 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.Processo
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
-
-import javax.ws.rs.GET;
 
 @Component
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {

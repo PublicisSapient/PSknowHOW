@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
-import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -29,7 +27,6 @@ import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -39,7 +36,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
-import com.publicissapient.kpidashboard.jira.adapter.helper.KerberosClient;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -65,9 +62,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -469,7 +464,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		boolean spenagoClient = connectionOptional.map(Connection::isCustomClientProvided).orElse(false);
+		boolean spenagoClient = connectionOptional.map(Connection::isJaasKrbAuth).orElse(false);
 		if(spenagoClient){
 			HttpUriRequest request = RequestBuilder.get().
 					setUri(url.toString())

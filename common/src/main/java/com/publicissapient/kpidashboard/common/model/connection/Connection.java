@@ -69,7 +69,7 @@ public class Connection extends BasicModel{
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
-	private boolean customClientProvided;
+	private boolean jaasKrbAuth;
 	private String jaasConfigFilePath;
 	private String krb5ConfigFilePath;
 	private String jaasUser;

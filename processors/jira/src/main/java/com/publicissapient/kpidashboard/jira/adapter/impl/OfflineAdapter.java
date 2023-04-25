@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +150,11 @@ public class OfflineAdapter implements JiraAdapter {
 
     @Override
     public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) {
+        return null;
+    }
+
+    @Override
+    public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
         return null;
     }
 
