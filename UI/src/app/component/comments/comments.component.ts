@@ -18,6 +18,8 @@ export class CommentsComponent implements OnInit {
   selectedFilters = [];
   selectedTabIndex = 0;
   commentsList = [];
+  commentError = false;
+  dataLoaded = false;
 
   constructor(private service: SharedService, private http_service: HttpService) { }
 
@@ -25,7 +27,8 @@ export class CommentsComponent implements OnInit {
   }
 
   openComments(){
-    this.selectedFilters = []
+    this.selectedFilters = [];
+    this.selectedTabIndex = 0;
     const sharedObj = this.service.getFilterObject();
     if(this.selectedTab === 'iteration'){
       for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.sprint.length; i++) {
@@ -58,6 +61,7 @@ export class CommentsComponent implements OnInit {
     }
     this.http_service.submitComment(reqObj).subscribe((response) => {
       this.commentText = '';
+      this.commentError = false;
       if (this.showAddComment) {
         this.getComments();
       }
@@ -73,16 +77,26 @@ export class CommentsComponent implements OnInit {
   }
 
   getComments(){
+    this.dataLoaded = false;
     this.http_service.getComment(this.selectedTab, this.selectedFilters[this.selectedTabIndex], this.kpiId)
     .subscribe(response => {
       if(response.data?.CommentsInfo){
         this.commentsList = response.data.CommentsInfo;
       }
       this.showAddComment = false;
+      this.dataLoaded = true;
     });
   }
 
   commentTabChange(data){
     this.selectedTabIndex = data.index;
+  }
+
+  commentChanged() {
+    if (this.commentText.length == 500) {
+      this.commentError = true;
+    } else {
+      this.commentError = false;
+    }
   }
 }
