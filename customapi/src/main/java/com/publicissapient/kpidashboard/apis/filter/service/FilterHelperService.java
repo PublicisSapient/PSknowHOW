@@ -597,6 +597,18 @@ public class FilterHelperService {
 		return hierarchyId;
 	}
 
+	public String getHierarachyLevelId(int level, String label, boolean isKanban) {
+		String hierarchyId = CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
+		Map<String, HierarchyLevel> map = getHierarchyLevelMap(isKanban);
+
+		if (MapUtils.isNotEmpty(map)) {
+			hierarchyId = map.values().stream().filter(hlevel -> (hlevel.getLevel() == level)&& (hlevel.getHierarchyLevelId().equalsIgnoreCase(label)))
+					.map(HierarchyLevel::getHierarchyLevelId).findFirst()
+					.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		}
+		return hierarchyId;
+	}
+
 	public String getFirstHierarachyLevel() {
 		return getHierarachyLevelId(1, true);
 	}
