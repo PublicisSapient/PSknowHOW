@@ -65,9 +65,9 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
 
-    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
+    CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Defect added after Sprint Start", "Resolved")),
 
-    CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
+    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),
 
@@ -141,7 +141,7 @@ public enum KPIExcelColumn {
             Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
 
     ISSUES_LIKELY_TO_SPILL("kpi123",
-            Arrays.asList("Issue Id", "Issue Type","Issue Description", "Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Estimate","Predicted Completion Date","Assignee")),
+            Arrays.asList("Issue Id", "Issue Type","Issue Description", "Issue Priority", "Size(story point/hours)","Issue Status","Due Date", "Remaining Estimate","Predicted Completion Date","Assignee")),
 
     ITERATION_COMMITMENT("kpi120",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type" , "Size(story point/hours)","Priority", "Due Date" ,"Original Estimate", "Remaining Estimate","Assignee" )),
