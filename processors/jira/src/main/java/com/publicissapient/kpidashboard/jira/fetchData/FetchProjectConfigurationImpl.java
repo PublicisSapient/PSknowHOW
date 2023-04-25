@@ -11,6 +11,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -59,6 +60,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
 
     @Autowired
     NotificationHandler notificationHandler;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private ProcessorJiraRestClient client;
 

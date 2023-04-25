@@ -92,86 +92,6 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 .map(String::toLowerCase)
                 .collect(Collectors.toSet());
 
-//        for (Issue issue : currentPagedJiraRs) {
-//
-//            String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-//            String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
-//
-//            JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
-//
-//            Map<String, IssueField> fields = buildFieldMap(issue.getFields());
-//
-//            IssueType issueType = issue.getIssueType();
-//            User assignee = issue.getAssignee();
-//
-//            IssueField epic = fields.get(fieldMapping.getEpicName());
-//            IssueField sprint = fields.get(fieldMapping.getSprintName());
-//
-//            //set URL to jiraIssue
-//            setURL(issue.getKey(),jiraIssue,projectConfig);
-//
-//            // Add RCA to JiraIssue
-//            setRCA(fieldMapping, issue, jiraIssue, fields);
-//
-//            // Add device platform filed to issue
-//            setDevicePlatform(fieldMapping, jiraIssue, fields);
-//
-//            // Add UAT/Third Party identification field to JiraIssue
-//            setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-//
-//            if (issueTypeNames.contains(
-//                    JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
-//                // collectorId
-//                jiraIssue.setProcessorId(jiraProcessorId);
-//
-//                // ID
-//                jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
-//
-//                // Type
-//                jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
-//                jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
-//
-//                setDefectIssueType(jiraIssue, issueType, fieldMapping);
-//
-//                // Label
-//                jiraIssue.setLabels(getLabelsList(issue));
-//                processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
-//
-//                // Set project specific details
-//                setProjectSpecificDetails(projectConfig, jiraIssue, issue);
-//
-//                // Set additional filters
-//                setAdditionalFilters(jiraIssue, issue, projectConfig);
-//
-//                setStoryLinkWithDefect(issue, jiraIssue);
-//
-//                // ADD QA identification field to feature
-//                setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-//                setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-//
-//                setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
-//                jiraIssue.setAffectedVersions(getAffectedVersions(issue));
-//                setIssueEpics(issueEpics, epic, jiraIssue);
-//
-//                setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
-//
-//                processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
-//
-//                updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
-//
-//                setEstimates(jiraIssue, issue);
-//
-//                setDueDates(jiraIssue, issue,fields,fieldMapping);
-//
-//                JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
-//
-//                if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-//                    jiraIssuesToSave.add(jiraIssue);
-//                    jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
-//                }
-//            }
-//        }
-
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         List<Callable<JiraIssue>> callables = new ArrayList<>();
 
@@ -224,7 +144,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             callables.add(callable);
         }
 
-        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
+//        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
 
 //        for (Future<JiraIssue> future : futures) {
 //            JiraIssue jiraIssue;

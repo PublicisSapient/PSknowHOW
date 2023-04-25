@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.kafka.producer;
+package com.publicissapient.kpidashboard.common.kafka.producer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 
 /**
@@ -45,18 +44,13 @@ import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
  */
 @Component
 public class NotificationEventProducer {
-	@Autowired
-	private KafkaTemplate<String, Object> kafkaTemplate;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationEventProducer.class);
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 
-	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic) {
-		if (customApiConfig.isNotificationSwitch()) {
+	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate) {
+		if (notificationSwitch) {
 			try {
 			LOGGER.info(
 					"Notification Switch is on. Sending message now.....");

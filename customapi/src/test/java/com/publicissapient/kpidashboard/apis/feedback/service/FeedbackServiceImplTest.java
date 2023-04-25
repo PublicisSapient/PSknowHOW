@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,8 @@ import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 
 /**
  * @author sanbhand1
@@ -43,7 +46,10 @@ public class FeedbackServiceImplTest {
 	
 	@Mock
     private CommonService commonService;
-	
+
+	@Mock
+	private NotificationService notificationService;
+
 	@Mock
 	private AuthenticationRepository authenticationRepository;
 

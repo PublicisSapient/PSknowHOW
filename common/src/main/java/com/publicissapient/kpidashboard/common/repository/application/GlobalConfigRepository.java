@@ -32,6 +32,4 @@ import java.util.List;
 @Repository
 public interface GlobalConfigRepository extends MongoRepository<GlobalConfig, ObjectId> {
 
-    List<GlobalConfig> findAllByOrderByIdDesc();
-
 }

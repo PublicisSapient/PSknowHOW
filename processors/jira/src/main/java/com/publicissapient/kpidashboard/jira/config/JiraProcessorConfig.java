@@ -77,6 +77,4 @@ public class JiraProcessorConfig {
 	private Map<String, String> notificationSubject;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
-	@Value("${analytics.switch}")
-	private boolean analyticsSwitch;
 }
