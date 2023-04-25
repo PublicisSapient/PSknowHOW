@@ -136,7 +136,10 @@ public class FilterHelperService {
 					.stream()
 					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
 							&& node.getAccountHierarchy().getSprintState() != null
-							&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))) {
+							&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
+			|| data.getNode()
+					.stream()
+					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 				hierarchyData.add(data);
 			}
 		});

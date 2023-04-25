@@ -990,7 +990,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = getKanbanAccountHierarchy();
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = JiraIssueClientUtil.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 
 		for (KanbanJiraIssue kanbanJiraIssue : jiraIssueList) {
@@ -1060,16 +1060,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 	}
 
-	/**
-	 * Fetches all saved kanban account hierarchy.
-	 *
-	 * @return Map<Pair < String, String>, KanbanAccountHierarchy>
-	 */
-	private Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy() {
-		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-	}
 
 	/**
 	 * set RCA root cause values

@@ -18,42 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.Field;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Project;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-import io.atlassian.util.concurrent.Promise;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Service;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,7 +47,47 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.stereotype.Service;
+
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Field;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.atlassian.jira.rest.client.api.domain.Project;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import io.atlassian.util.concurrent.Promise;
 
 /**
  * Default JIRA client which interacts with Java JIRA API to extract data for
@@ -644,6 +649,21 @@ public class OnlineAdapter implements JiraAdapter {
 
     }
 
+    private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
+            throws MalformedURLException {
+
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+        String serverURL = jiraProcessorConfig.getJiraVersionApi();
+        if (isCloudEnv) {
+            serverURL = jiraProcessorConfig.getJiraCloudSprintReportApi();
+        }
+        serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+
+    }
+
     private void getReport(String sprintReportObj, SprintDetails sprint, ProjectConfFieldMapping projectConfig,
                            SprintDetails dbSprintDetails, String boardId) {
         if (StringUtils.isNotBlank(sprintReportObj)) {
@@ -941,6 +961,62 @@ public class OnlineAdapter implements JiraAdapter {
 			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, logData));
 		}
 		return getEpicIssuesQuery(epicList, logData);
+	}
+
+    @Override
+    public void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionList) {
+            try {
+                JiraToolConfig jiraToolConfig = projectConfig.getJira();
+                if (null != jiraToolConfig) {
+                    Instant start = Instant.now();
+                    URL url = getVersionUrl(projectConfig);
+                   // sprintReportLog.setUrl(url.toString());
+                    URLConnection connection = url.openConnection();
+                    parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
+                    
+                   // sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+                }
+               /* log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),
+                        kv(CommonConstant.PSLOGDATA, sprintReportLog));*/
+            } catch (RestClientException rce) {
+               // log.error("Client exception when loading sprint report " + rce, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+                throw rce;
+            } catch (MalformedURLException mfe) {
+                //log.error("Malformed url for loading sprint report", mfe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+            } catch (IOException ioe) {
+               // log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+            }
+
+    }
+
+	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			try {
+				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+						ProjectVersion projectVersion = new ProjectVersion();
+						projectVersion.setId(
+								Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+						projectVersion.setName(getOptionalString((JSONObject) values, "name"));
+						projectVersion
+								.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+						projectVersion
+								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+						if (getOptionalString((JSONObject) values, "startDate") != null) {
+							projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+						}
+						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+						}
+						projectVersionDetailList.add(projectVersion);
+					});
+				}
+			} catch (Exception pe) {
+				log.error("Parser exception when parsing versions", pe);
+			}
+
+		}
 	}
 
     private boolean populateData(String sprintReportObj, List<String> epicList) {

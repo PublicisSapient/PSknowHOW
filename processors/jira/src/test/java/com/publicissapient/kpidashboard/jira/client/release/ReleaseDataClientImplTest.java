@@ -48,7 +48,7 @@ public class ReleaseDataClientImplTest {
     private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo =Mockito.mock(KanbanAccountHierarchyRepository.class);
     private ProjectReleaseRepo projectReleaseRepo =Mockito.mock(ProjectReleaseRepo.class);
     @InjectMocks
-    ReleaseDataClientImpl releaseDataClient =new ReleaseDataClientImpl(jiraAdapter,projectReleaseRepo,accountHierarchyRepository,kanbanAccountHierarchyRepo);
+    ReleaseDataClientImpl releaseDataClient;
 
 
     ProjectConfFieldMapping scrumProjectMapping = ProjectConfFieldMapping.builder().build();

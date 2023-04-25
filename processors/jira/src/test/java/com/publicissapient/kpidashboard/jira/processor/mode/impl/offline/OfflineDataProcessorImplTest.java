@@ -116,7 +116,7 @@ public class OfflineDataProcessorImplTest {
     private JiraAdapter jiraAdapter = Mockito.mock(JiraAdapter.class);
     private ProjectReleaseRepo projectReleaseRepo =Mockito.mock(ProjectReleaseRepo.class);
     @InjectMocks
-    ReleaseDataClientImpl releaseData =new ReleaseDataClientImpl(jiraAdapter,projectReleaseRepo,accountHierarchyRepository,kanbanAccountHierarchyRepo);
+    ReleaseDataClientImpl releaseData ;
 
     List<FieldMapping> fieldMappingList = new ArrayList<>();
     List<JiraIssueOfflineFileTraceLogs> traceLogsList = new ArrayList<>();

@@ -270,9 +270,9 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 
 	private void collectReleaseData(JiraAdapter jiraClient, ProjectConfFieldMapping projectConfig) {
 		long releaseDataStart = System.currentTimeMillis();
-		ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraClient, projectReleaseRepo,
+		/*ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraClient, projectReleaseRepo,
 				accountHierarchyRepository, kanbanAccountHierarchyRepo);
-		releaseData.processReleaseInfo(projectConfig);
+		releaseData.processReleaseInfo(projectConfig);*/
 		long end = System.currentTimeMillis();
 		log.info("Jira-Feature Collector Release ends at: %s", end);
 		long timeTaken = end - releaseDataStart;

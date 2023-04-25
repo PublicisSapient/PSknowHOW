@@ -20,55 +20,63 @@ package com.publicissapient.kpidashboard.jira.client.release;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import org.springframework.stereotype.Service;
 
 /**
  * The type Release data client. Store Release data for the projects in
  * persistence store
  */
+@Service
+@Data
 @Slf4j
 public class ReleaseDataClientImpl implements ReleaseDataClient {
 
-	private final JiraAdapter jiraAdapter;
-	private final ProjectReleaseRepo projectReleaseRepo;
-	private final AccountHierarchyRepository accountHierarchyRepository;
-	private final KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
-
-	/**
-	 * Creates object
-	 * 
-	 * @param jiraAdapter                Jira Adapter instance
-	 * @param projectReleaseRepo         Project release repository
-	 * @param accountHierarchyRepository Account Hierarchy Respository
-	 * @param kanbanAccountHierarchyRepo Kanban Account Hierarchy Respository
-	 */
-	public ReleaseDataClientImpl(JiraAdapter jiraAdapter, ProjectReleaseRepo projectReleaseRepo,
-			AccountHierarchyRepository accountHierarchyRepository,
-			KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo) {
-
-		this.accountHierarchyRepository = accountHierarchyRepository;
-		this.kanbanAccountHierarchyRepo = kanbanAccountHierarchyRepo;
-		this.projectReleaseRepo = projectReleaseRepo;
-		this.jiraAdapter = jiraAdapter;
-	}
+	@Autowired
+	JiraAdapter jiraAdapter;
+	@Autowired
+	ProjectReleaseRepo projectReleaseRepo;
+	@Autowired
+	AccountHierarchyRepository accountHierarchyRepository;
+	@Autowired
+	KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
+	@Autowired
+	private HierarchyLevelService hierarchyLevelService;
+	@Autowired
+	private JiraRestClientFactory jiraRestClientFactory;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig) {
@@ -79,7 +87,6 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 		psLogData.setProjectKey(projectKey);
 		psLogData.setKanban(String.valueOf(isKanban));
 		log.info("Start Fetching Release Data", kv(CommonConstant.PSLOGDATA, psLogData));
-		String projectName = projectConfig.getProjectName();
 		try {
 			if (isKanban) {
 				List<KanbanAccountHierarchy> kanbanAccountHierarchyList = kanbanAccountHierarchyRepo
@@ -88,7 +95,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				KanbanAccountHierarchy kanbanAccountHierarchy = CollectionUtils.isNotEmpty(kanbanAccountHierarchyList)
 						? kanbanAccountHierarchyList.get(0)
 						: null;
-				saveProjectRelease(projectKey, isKanban, projectName, null, kanbanAccountHierarchy, psLogData);
+				saveProjectRelease(projectConfig, isKanban,null, kanbanAccountHierarchy, psLogData);
 			} else {
 				List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
 						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
@@ -96,7 +103,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
 						? accountHierarchyList.get(0)
 						: null;
-				saveProjectRelease(projectKey, isKanban, projectName, accountHierarchy, null, psLogData);
+				saveProjectRelease(projectConfig, isKanban, accountHierarchy, null, psLogData);
 			}
 		} catch (Exception ex) {
 			log.error("No hierarchy data found not processing for Version data",
@@ -105,37 +112,42 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 
 	}
 
+
 	/**
-	 * @param projectKey
+	 * @param confFieldMapping
 	 * @param isKanban
-	 * @param projectName
 	 * @param accountHierarchy
 	 * @param kanbanAccountHierarchy
 	 * @param psLogData
 	 */
-	private void saveProjectRelease(String projectKey, boolean isKanban, String projectName,
-			AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
-		List<Version> versions = jiraAdapter.getVersions(projectKey.toUpperCase());
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, boolean isKanban,
+									AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
+		List<ProjectVersion> projectVersionList = new ArrayList<>();
+		jiraAdapter.getVersion(confFieldMapping, projectVersionList);
 		List<String> projectVesion = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(versions)) {
+		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (isKanban && null != kanbanAccountHierarchy) {
 				ProjectRelease projectRelease = projectReleaseRepo
 						.findByConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
 				projectRelease = projectRelease == null ? new ProjectRelease() : projectRelease;
-				projectRelease.setListProjectVersion(convertToProjectVersions(versions, projectVesion));
+				projectRelease.setListProjectVersion(projectVersionList);
 				projectRelease.setProjectName(kanbanAccountHierarchy.getNodeId());
 				projectRelease.setProjectId(kanbanAccountHierarchy.getNodeId());
 				projectRelease.setConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
+				saveKanbanAccountHierarchy(kanbanAccountHierarchy,confFieldMapping,projectRelease);
 				projectReleaseRepo.save(projectRelease);
-			} else if (null != accountHierarchy) {
+			}
+			else if (null != accountHierarchy) {
 				ProjectRelease projectRelease = projectReleaseRepo
 						.findByConfigId(accountHierarchy.getBasicProjectConfigId());
 				projectRelease = projectRelease == null ? new ProjectRelease() : projectRelease;
-				projectRelease.setListProjectVersion(convertToProjectVersions(versions, projectVesion));
+				projectRelease.setListProjectVersion(projectVersionList);
 				projectRelease.setProjectName(accountHierarchy.getNodeId());
 				projectRelease.setProjectId(accountHierarchy.getNodeId());
 				projectRelease.setConfigId(accountHierarchy.getBasicProjectConfigId());
+				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping,projectRelease);
 				projectReleaseRepo.save(projectRelease);
+				cleanCache();
 			}
 			psLogData.setProjectVersion(projectVesion);
 			log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -143,23 +155,143 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 		}
 	}
 
-	/**
-	 * Converts object
-	 *
-	 * @param currentPagedJiraRs
-	 * @param logProjectVesion
-	 * @return project version
-	 */
-	private List<ProjectVersion> convertToProjectVersions(List<Version> currentPagedJiraRs, List<String> logProjectVesion) {
-		List<ProjectVersion> projectVersionList = new ArrayList<>();
-		currentPagedJiraRs.forEach(version -> {
-			logProjectVesion
-					.add(String.valueOf(version.getId()));
-			projectVersionList.add(new ProjectVersion(version.getId(), version.getName(), version.getDescription(),
-					version.isArchived(), version.isReleased(), version.getReleaseDate()));
-
-		});
-		return projectVersionList;
+	private void saveScrumAccountHierarchy(AccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
+										   ProjectRelease projectRelease) {
+		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = JiraIssueClientUtil
+				.getAccountHierarchy(accountHierarchyRepository);
+		Set<AccountHierarchy> setToSave = new HashSet<>();
+		if (projectData != null) {
+			List<AccountHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease,
+					projectConfig.getProjectBasicConfig(), projectData);
+			setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
+		}
+		if (CollectionUtils.isNotEmpty(setToSave)) {
+			accountHierarchyRepository.saveAll(setToSave);
+		}
 	}
+
+	private void saveKanbanAccountHierarchy(KanbanAccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
+			ProjectRelease projectRelease) {
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingHierarchy = JiraIssueClientUtil
+				.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
+		Set<KanbanAccountHierarchy> setToSave = new HashSet<>();
+		if (projectData != null) {
+			List<KanbanAccountHierarchy> hierarchyForRelease = createKanbanHierarchyForRelease(projectRelease,
+					projectConfig.getProjectBasicConfig(), projectData);
+			if (CollectionUtils.isNotEmpty(hierarchyForRelease)) {
+				hierarchyForRelease.forEach(hierarchy -> {
+					if (StringUtils.isNotBlank(hierarchy.getParentId())) {
+						KanbanAccountHierarchy exHiery = existingHierarchy
+								.get(Pair.of(hierarchy.getNodeId(), hierarchy.getPath()));
+						if (null == exHiery) {
+							hierarchy.setCreatedDate(LocalDateTime.now());
+							setToSave.add(hierarchy);
+						}
+					}
+				});
+			}
+		}
+		if (CollectionUtils.isNotEmpty(setToSave)) {
+			kanbanAccountHierarchyRepo.saveAll(setToSave);
+		}
+	}
+
+	/**
+	 * @param setToSave
+	 * @param accountHierarchy
+	 * @param existingHierarchy
+	 */
+	private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, List<AccountHierarchy> accountHierarchy,
+										   Map<Pair<String, String>, AccountHierarchy> existingHierarchy) {
+		if(CollectionUtils.isNotEmpty(accountHierarchy)){
+			accountHierarchy.forEach(hierarchy->{
+				if (StringUtils.isNotBlank(hierarchy.getParentId())) {
+					AccountHierarchy exHiery = existingHierarchy
+							.get(Pair.of(hierarchy.getNodeId(), hierarchy.getPath()));
+					if (null == exHiery) {
+						hierarchy.setCreatedDate(LocalDateTime.now());
+						setToSave.add(hierarchy);
+					}
+				}
+			});
+		}
+		
+	}
+
+	private List<AccountHierarchy> createScrumHierarchyForRelease(ProjectRelease projectRelease, ProjectBasicConfig projectBasicConfig,
+																  AccountHierarchy projectHierarchy) {
+		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
+				.getFullHierarchyLevels(projectBasicConfig.isKanban());
+		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+		List<AccountHierarchy>  accountHierarchies= new ArrayList<>();
+		try {
+			projectRelease.getListProjectVersion().stream().forEach(projectVersion -> {
+				AccountHierarchy accountHierarchy = new AccountHierarchy();
+				accountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
+				accountHierarchy.setIsDeleted(JiraConstants.FALSE);
+				accountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
+				String versionName = projectVersion.getName()+ JiraConstants.COMBINE_IDS_SYMBOL+projectRelease.getProjectName().split(JiraConstants.COMBINE_IDS_SYMBOL)[0];
+				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
+						+ projectRelease.getProjectId();
+				accountHierarchy.setNodeId(versionId);
+				accountHierarchy.setNodeName(versionName);
+				accountHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())?projectVersion.getStartDate().toString():null);
+				accountHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())?projectVersion.getReleaseDate().toString():null);
+				accountHierarchy.setReleaseState((projectVersion.isReleased()))
+				accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
+						.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
+				accountHierarchy.setParentId(projectHierarchy.getNodeId());
+				accountHierarchies.add(accountHierarchy);
+			});
+
+		} catch (Exception e) {
+			log.error("Jira Processor Failed to get Account Hierarchy data {}", e);
+		}
+		return accountHierarchies;
+	}
+
+	private List<KanbanAccountHierarchy> createKanbanHierarchyForRelease(ProjectRelease projectRelease, ProjectBasicConfig projectBasicConfig,
+																   KanbanAccountHierarchy projectHierarchy) {
+		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
+				.getFullHierarchyLevels(projectBasicConfig.isKanban());
+		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+		List<KanbanAccountHierarchy>  accountHierarchies= new ArrayList<>();
+		try {
+			projectRelease.getListProjectVersion().stream().forEach(projectVersion -> {
+				KanbanAccountHierarchy kanbanAccountHierarchy = new KanbanAccountHierarchy();
+				kanbanAccountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
+				kanbanAccountHierarchy.setIsDeleted(JiraConstants.FALSE);
+				kanbanAccountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
+				String versionName = projectVersion.getName()+ JiraConstants.COMBINE_IDS_SYMBOL+projectRelease.getProjectName().split(JiraConstants.COMBINE_IDS_SYMBOL)[0];
+				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
+						+ projectRelease.getProjectId();
+				kanbanAccountHierarchy.setNodeId(versionId);
+				kanbanAccountHierarchy.setNodeName(versionName);
+				kanbanAccountHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())?projectVersion.getStartDate().toString():null);
+				kanbanAccountHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())?projectVersion.getReleaseDate().toString():null);
+				kanbanAccountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
+						.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
+				kanbanAccountHierarchy.setParentId(projectHierarchy.getNodeId());
+				accountHierarchies.add(kanbanAccountHierarchy);
+			});
+
+		} catch (Exception e) {
+			log.error("Jira Processor Failed to get Account Hierarchy data {}", e);
+		}
+		return accountHierarchies;
+	}
+
+	private boolean cleanCache() {
+		boolean accountHierarchyCleaned = jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+		boolean kpiDataCleaned = jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.JIRA_KPI_CACHE);
+		return accountHierarchyCleaned && kpiDataCleaned;
+	}
+
 
 }

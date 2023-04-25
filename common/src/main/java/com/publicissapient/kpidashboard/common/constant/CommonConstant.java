@@ -122,6 +122,8 @@ public final class CommonConstant {
 	public static final String HIERARCHY_LEVEL_NAME_PROJECT = "Project";
 	public static final String HIERARCHY_LEVEL_ID_SPRINT = "sprint";
 	public static final String HIERARCHY_LEVEL_NAME_SPRINT = "Sprint";
+	public static final String HIERARCHY_LEVEL_ID_RELEASE = "release";
+	public static final String HIERARCHY_LEVEL_NAME_RELEASE = "Release";
 
 	public static final String ADDITIONAL_FILTER_VALUE_ID_SEPARATOR = "_";
 

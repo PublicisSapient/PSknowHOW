@@ -27,10 +27,10 @@ import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
@@ -154,6 +154,11 @@ public class OfflineAdapter implements JiraAdapter {
     @Override
     public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException{
         return null;
+    }
+
+    @Override
+    public void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionDetailList) {
+        return;
     }
 
 }

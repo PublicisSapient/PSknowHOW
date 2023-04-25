@@ -88,6 +88,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 
 	private MetadataIdentifierRepository metadataIdentifierRepository;
 
+	private ReleaseDataClientImpl releaseDataClient;
+
 	private JiraRestClientFactory jiraRestClientFactory;
 
 	private ExecutionLogContext executionLogContext;
@@ -178,7 +180,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
 							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
 							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory, ExecutionLogContext executionLogContext) //NOPMD
+							  JiraRestClientFactory jiraRestClientFactory, ReleaseDataClientImpl releaseDataClient,ExecutionLogContext executionLogContext) //NOPMD
 	{
 		this.latch = latch;
 		this.jiraAdapter = jiraAdapter;
@@ -192,6 +194,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.jiraRestClientFactory = jiraRestClientFactory;
+		this.releaseDataClient=releaseDataClient;
 		this.executionLogContext=executionLogContext;
 	}
 
@@ -212,9 +215,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 */
 	private void collectReleaseData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		Instant start = Instant.now();
-		ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraAdapter, projectReleaseRepo,
-				accountHierarchyRepository, kanbanAccountHierarchyRepo);
-		releaseData.processReleaseInfo(projectConfig);
+		releaseDataClient.setJiraAdapter(jiraAdapter);
+		releaseDataClient.processReleaseInfo(projectConfig);
 		psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
 		psLogData.setAction(CommonConstant.RELEASE_DATA);
 		log.info("Time Taken to process release data", kv(CommonConstant.PSLOGDATA, psLogData));

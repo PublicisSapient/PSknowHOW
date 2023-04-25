@@ -25,10 +25,10 @@ import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -143,6 +143,8 @@ public interface JiraAdapter {
 			SprintDetails sprint, SprintDetails dbSprintDetails);
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
+
+	void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionList);
 
 
 }
