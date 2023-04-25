@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,7 +46,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeValidationDataForKanban;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -331,9 +331,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 				CycleTime cycleTime = new CycleTime();
 				cycleTime.setIntakeTime(new DateTime(jiraIssueCustomHistory.getCreatedDate()));
 				leadTimeValidationDataForKanban.setIntakeDate(DateTime.parse(jiraIssueCustomHistory.getCreatedDate()));
-				jiraIssueCustomHistory.getHistoryDetails()
-						.forEach(kanbanIssueHistory -> updateCycleTimeValidationData(triaged, completed, live,
-								leadTimeValidationDataForKanban, cycleTime, kanbanIssueHistory));
+				jiraIssueCustomHistory.getStatusUpdationLog()
+						.forEach(jiraHistoryChangeLog -> updateCycleTimeValidationData(triaged, completed, live,
+								leadTimeValidationDataForKanban, cycleTime, jiraHistoryChangeLog));
 				setCycleTimeAsPerFilter(openToTriageTime, triageToCompleteTime, completeToLiveTime, openToLiveTime,
 						cycleTime);
 				leadTimeList.add(leadTimeValidationDataForKanban);
@@ -393,18 +393,18 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 
 	private void updateCycleTimeValidationData(List<String> triaged, List<String> completed, String live,
 			LeadTimeValidationDataForKanban leadTimeValidationDataForKanban, CycleTime cycleTime,
-			KanbanIssueHistory history) {
-		if (cycleTime.getReadyTime() == null && CollectionUtils.emptyIfNull(triaged).contains(history.getStatus())) {
-			cycleTime.setReadyTime(new DateTime(history.getActivityDate()));
-			leadTimeValidationDataForKanban.setTriageDate(DateTime.parse(history.getActivityDate()));
+			JiraHistoryChangeLog history) {
+		if (cycleTime.getReadyTime() == null && CollectionUtils.emptyIfNull(triaged).contains(history.getChangedTo())) {
+			cycleTime.setReadyTime(new DateTime(history.getUpdatedOn()));
+			leadTimeValidationDataForKanban.setTriageDate(new DateTime(history.getUpdatedOn()));
 		}
-		if (CollectionUtils.emptyIfNull(completed).contains(history.getStatus())) {
-			cycleTime.setDeliveryTime(new DateTime(history.getActivityDate()));
-			leadTimeValidationDataForKanban.setCompletedDate(DateTime.parse(history.getActivityDate()));
+		if (CollectionUtils.emptyIfNull(completed).contains(history.getChangedTo())) {
+			cycleTime.setDeliveryTime(new DateTime(history.getUpdatedOn()));
+			leadTimeValidationDataForKanban.setCompletedDate(new DateTime(history.getUpdatedOn()));
 		}
-		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(history.getStatus())) {
-			cycleTime.setLiveTime(new DateTime(history.getActivityDate()));
-			leadTimeValidationDataForKanban.setLiveDate(DateTime.parse(history.getActivityDate()));
+		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(history.getChangedTo())) {
+			cycleTime.setLiveTime(new DateTime(history.getUpdatedOn()));
+			leadTimeValidationDataForKanban.setLiveDate(new DateTime(history.getUpdatedOn()));
 		}
 	}
 
