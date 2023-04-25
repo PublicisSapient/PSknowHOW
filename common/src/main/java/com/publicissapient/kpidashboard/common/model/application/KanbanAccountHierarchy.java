@@ -59,6 +59,7 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 	private ObjectId basicProjectConfigId;
 	private String isDeleted;
 	private String path;
+	private String releaseState;
 	private LocalDateTime createdDate;
 	
 

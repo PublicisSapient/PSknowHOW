@@ -118,6 +118,14 @@ public class AccountHierarchyServiceImpl
 			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 				data.setBasicProjectConfigId(acc.getBasicProjectConfigId());
 			}
+			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
+				data.setReleaseState(acc.getReleaseState());
+				data.setReleaseStartDate(acc.getBeginDate());
+				data.setReleaseEndDate(acc.getEndDate());
+				data.setSprintEndDate(null);
+				data.setSprintStartDate(null);
+				data.setSprintState(null);
+			}
 		}
 
 		return data;

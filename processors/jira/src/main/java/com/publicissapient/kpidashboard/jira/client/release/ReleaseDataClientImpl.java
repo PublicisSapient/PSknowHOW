@@ -64,6 +64,8 @@ import org.springframework.stereotype.Service;
 @Data
 @Slf4j
 public class ReleaseDataClientImpl implements ReleaseDataClient {
+	private static final String RELEASED="Released";
+	private static final String UNRELEASED="Unreleased";
 
 	@Autowired
 	JiraAdapter jiraAdapter;
@@ -239,7 +241,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				accountHierarchy.setNodeName(versionName);
 				accountHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())?projectVersion.getStartDate().toString():null);
 				accountHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())?projectVersion.getReleaseDate().toString():null);
-				accountHierarchy.setReleaseState((projectVersion.isReleased()))
+				accountHierarchy.setReleaseState((projectVersion.isReleased())?RELEASED:UNRELEASED);
 				accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 						.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
 				accountHierarchy.setParentId(projectHierarchy.getNodeId());
@@ -271,6 +273,7 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 						+ projectRelease.getProjectId();
 				kanbanAccountHierarchy.setNodeId(versionId);
 				kanbanAccountHierarchy.setNodeName(versionName);
+				kanbanAccountHierarchy.setReleaseState((projectVersion.isReleased())?RELEASED:UNRELEASED);
 				kanbanAccountHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())?projectVersion.getStartDate().toString():null);
 				kanbanAccountHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())?projectVersion.getReleaseDate().toString():null);
 				kanbanAccountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
