@@ -595,6 +595,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
+          this.filterApplyData['label'] = temp[j]?.labelName;
           if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
             this.filterApplyData['selectedMap']['project'].push(this.selectedFilterArray[i]?.nodeId);
           }
@@ -603,6 +604,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterApplyData['level'] = this.selectedFilterArray[i]?.level;
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
+        this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
       }
     }
 
@@ -861,6 +863,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       sprintIncluded: this.selectedTab?.toLowerCase() != 'iteration' ? ['CLOSED'] : ['CLOSED', 'ACTIVE'],
       selectedMap: {},
       level: 0,
+      label : ''
     };
     for (let i = 0; i < this.hierarchyLevels?.length; i++) {
       this.filterApplyData['selectedMap'][this.hierarchyLevels[i]?.hierarchyLevelId] = [];

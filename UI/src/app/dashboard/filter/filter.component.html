@@ -49,7 +49,7 @@
                      <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
-                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project', 2) : (selectedTab?.toLowerCase() === 'milestone') ? handleMilestoneFilter() : onSelectedTrendValueChange()"
+                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'milestone') ? handleMilestoneFilter() : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
