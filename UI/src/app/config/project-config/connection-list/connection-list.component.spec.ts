@@ -579,10 +579,10 @@ describe('ConnectionListComponent', () => {
       password: undefined,
       pat: undefined,
       privateKey: undefined,
-      type: 'Azure',
+      type: 'Jira',
       username: undefined,
     };
-    component.onChangeConnection(fakeEvent);
+    component.onChangeConnection();
     fixture.detectChanges();
     expect(component.selectedConnectionType).toBe(fakeEvent.type);
     expect(component.testConnectionMsg).toBe('');

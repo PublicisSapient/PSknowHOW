@@ -17,13 +17,35 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
-
+interface JiraConnectionField {
+  'type': string,
+  'connectionName': string,
+  'cloudEnv': boolean,
+  'baseUrl': string,
+  'username': string,
+  'vault': boolean,
+  'password': string,
+  'bearerToken': boolean,
+  'patOAuthToken': string,
+  'apiEndPoint': string,
+  'isOAuth': boolean,
+  'privateKey': string,
+  'consumerKey': string,
+  'offline': string,
+  'connPrivate': string,
+  'jaasKrbAuth': boolean,
+  'jaasConfigFilePath': string,
+  'krb5ConfigFilePath': string,
+  'jaasUser': string,
+  'samlEndPoint': string,
+  'jiraAuthType': string
+}
 @Component({
   selector: 'app-connection-list',
   templateUrl: './connection-list.component.html',
@@ -35,8 +57,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private'],
-       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint']
     },
     {
       connectionType: 'Azure',
@@ -59,14 +81,14 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password','Password', 'API End Point', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','password', 'apiEndPoint', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'connPrivate']
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username','Use vault password', 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username','vault', 'password', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'accessToken', 'connPrivate']
     },
     {
       connectionType: 'Jenkins',
@@ -77,8 +99,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password','Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault','password', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
     },
     {
       connectionType: 'Teamcity',
@@ -120,25 +142,25 @@ export class ConnectionListComponent implements OnInit {
           field: 'consumerKey',
           isEnabled: false
         }
-        ],
-          vault: [
-            {
-              field: 'password',
-              isEnabled: false
-            },
-            {
-              field: 'accessToken',
-              isEnabled: false
-            },
-            {
-              field: 'pat',
-              isEnabled: false
-            },
-            {
-              field:'apiKey',
-              isEnabled: false
-            }
-          ]
+      ],
+      vault: [
+        {
+          field: 'password',
+          isEnabled: false
+        },
+        {
+          field: 'accessToken',
+          isEnabled: false
+        },
+        {
+          field: 'pat',
+          isEnabled: false
+        },
+        {
+          field: 'apiKey',
+          isEnabled: false
+        }
+      ]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -178,23 +200,23 @@ export class ConnectionListComponent implements OnInit {
       ],
       isOAuth: [],
       vault: [
-              {
-                field: 'password',
-                isEnabled: false
-              },
-              {
-                field: 'accessToken',
-                isEnabled: false
-              },
-              {
-                field: 'pat',
-                isEnabled: false
-              },
-              {
-                field:'apiKey',
-                isEnabled: false
-              }
-          ]
+        {
+          field: 'password',
+          isEnabled: false
+        },
+        {
+          field: 'accessToken',
+          isEnabled: false
+        },
+        {
+          field: 'pat',
+          isEnabled: false
+        },
+        {
+          field: 'apiKey',
+          isEnabled: false
+        }
+      ]
     }
   };
 
@@ -357,6 +379,54 @@ export class ConnectionListComponent implements OnInit {
   isRoleViewer = false;
   currentUser = '';
   zephyrUrl = '';
+  jiraForm: FormGroup<any> = new FormGroup({});
+  jiraAuthDdwn = [{
+    'label': 'Basic Authentication',
+    'key': 'basic'
+  }, {
+    'label': 'Vault Credentials',
+    'key': 'vault'
+  }, {
+    'label': 'Bearer Token Authentication',
+    'key': 'bearerToken',
+  },
+  {
+    'label': "Oauth Authentication",
+    'key': 'isOAuth'
+  },
+  {
+    'label': "SPNEGO Authentication",
+    'key': 'jaasKrbAuth'
+  }];
+  jiraVaultDdwn = [{
+    'label': 'Cred Vault',
+    'key': 'credVault'
+  }];
+
+  jiraConnectionFields: JiraConnectionField = {
+    'type': 'Jira',
+    'cloudEnv': false,
+    'connectionName': '',
+    'baseUrl': '',
+    'username': '',
+    'apiEndPoint': '',
+    'vault': false,
+    'bearerToken': false,
+    'isOAuth': false,
+    'jaasKrbAuth': false,
+    'password': '',
+    'patOAuthToken': '',
+    'privateKey': '',
+    'consumerKey': '',
+    'jaasConfigFilePath': '',
+    'krb5ConfigFilePath': '',
+    'jaasUser': '',
+    'samlEndPoint': '',
+    'offline': '',
+    'connPrivate': '',
+    'jiraAuthType': ''
+  }
+  jiraConnectionDialog: boolean;
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private rsa: RsaEncryptionService, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
     , private authorization: GetAuthorizationService) { }
@@ -368,6 +438,92 @@ export class ConnectionListComponent implements OnInit {
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
     this.currentUser = localStorage && localStorage.getItem('user_name') ? localStorage.getItem('user_name') : '';
     this.getZephyrUrl();
+    this.initializeForms(this.jiraConnectionFields);
+  }
+
+  initializeForms(connection, isEdit?) {
+    for (let key in connection) {
+      this.jiraForm.controls[key] = new FormControl(connection[key])
+    }
+    if (isEdit) {
+      if (connection['vault']) {
+        this.jiraForm.controls['jiraAuthType'].setValue('vault');
+      } else if (connection['bearerToken']) {
+        this.jiraForm.controls['jiraAuthType'].setValue('bearerToken');
+      } else if (connection['isOAuth']) {
+        this.jiraForm.controls['jiraAuthType'].setValue('isOAuth');
+      } else if (connection['jaasKrbAuth']) {
+        this.jiraForm.controls['jiraAuthType'].setValue('jaasKrbAuth');
+      } else {
+        this.jiraForm.controls['jiraAuthType'].setValue('basic');
+      }
+    }
+  }
+
+  onChangeAuthType(event) {
+    switch (event) {
+      case 'vault':
+        this.jiraForm.controls['vault'].setValue(true);
+        this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].setValue('');
+        break;
+      case 'bearerToken':
+        this.jiraForm.controls['bearerToken'].setValue(true);
+        this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].setValue('');
+        break;
+      case 'isOAuth':
+        this.jiraForm.controls['isOAuth'].setValue(true);
+        this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].setValue('');
+        break;
+      case 'jaasKrbAuth':
+        this.jiraForm.controls['jaasKrbAuth'].setValue(true);
+        this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].setValue('');
+        break;
+      default:
+        this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].setValue('');
+        break;
+    }
   }
 
   getZephyrUrl() {
@@ -427,24 +583,29 @@ export class ConnectionListComponent implements OnInit {
     this.basicConnectionForm = this.formBuilder.group(this.fieldsObj);
   }
 
-  onChangeConnection(connection) {
-    this.selectedConnectionType = connection.type;
+  onChangeConnection() {
+    this.connection['type'] = this.selectedConnectionType;
     this.connectionTypeFieldsAssignment();
     this.defaultEnableDisableSwitch();
     this.testConnectionMsg = '';
   }
 
   createConnection() {
-    this.connection = { type: this.selectedConnectionType, connPrivate: true };
-    this.submitted = false;
-    this.connectionDialog = true;
-    this.isNewlyConfigAdded = true;
-    this.selectedConnectionType = this.addEditConnectionFieldsNlabels[0].connectionType;
-    this.connection.type = this.addEditConnectionFieldsNlabels[0].connectionType;
-    this.disableConnectionTypeDropDown = false;
-    this.connectionTypeFieldsAssignment();
-    this.defaultEnableDisableSwitch();
-    this.disableEnableCheckBox();
+    if (this.selectedConnectionType?.toLowerCase() === 'jira') {
+      this.jiraConnectionDialog = true;
+      this.isNewlyConfigAdded = true;
+    } else {
+      this.connection = { type: this.selectedConnectionType, connPrivate: true };
+      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
+      this.submitted = false;
+      this.connectionDialog = true;
+      this.isNewlyConfigAdded = true;
+      this.disableConnectionTypeDropDown = false;
+      this.connectionTypeFieldsAssignment();
+      this.defaultEnableDisableSwitch();
+      this.disableEnableCheckBox();
+
+    }
   }
 
   deleteConnection(connection) {
@@ -548,20 +709,25 @@ export class ConnectionListComponent implements OnInit {
   saveConnection() {
     const reqData = {};
     this.submitted = true;
-    if (this.basicConnectionForm.invalid) {
+    if (this.jiraForm.invalid && this.basicConnectionForm.invalid) {
       return;
     }
-
-    this.addEditConnectionFieldsNlabels.forEach(data => {
-      if (!!this.connection.type && !!data.connectionType && (this.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
-        data.inputFields.forEach(inputField => {
-          // reqData[inputField] = this.connection[inputField];
-          if (this.basicConnectionForm.value[inputField] !== undefined && this.basicConnectionForm.value[inputField] !== '' && this.basicConnectionForm.value[inputField] !== 'undefined') {
-            reqData[inputField] = this.basicConnectionForm.value[inputField];
-          }
-        });
+    if (this.connection?.type?.toLowerCase() == 'jira') {
+      for (let key in this.jiraForm.controls) {
+        reqData[key] = this.jiraForm.controls[key]?.value;
       }
-    });
+    } else {
+      this.addEditConnectionFieldsNlabels.forEach(data => {
+        if (!!this.connection.type && !!data.connectionType && (this.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
+          data.inputFields.forEach(inputField => {
+            // reqData[inputField] = this.connection[inputField];
+            if (this.basicConnectionForm.value[inputField] !== undefined && this.basicConnectionForm.value[inputField] !== '' && this.basicConnectionForm.value[inputField] !== 'undefined') {
+              reqData[inputField] = this.basicConnectionForm.value[inputField];
+            }
+          });
+        }
+      });
+    }
 
     if (!!this.connection['id']) {
       reqData['id'] = this.connection['id'];
@@ -634,17 +800,22 @@ export class ConnectionListComponent implements OnInit {
 
   editConnection(connection) {
     this.connection = { ...connection };
-    this.connectionDialog = true;
     this.isNewlyConfigAdded = false;
     this.selectedConnectionType = this.connection.type;
-    this.disableConnectionTypeDropDown = true;
     this.connectionTypeFieldsAssignment();
-    this.defaultEnableDisableSwitch();
-    this.disableEnableCheckBox();
-    if (connection.type.toLowerCase() == 'bitbucket' && connection.cloudEnv == true) {
-      this.checkBitbucketValue(true, 'cloudEnv', connection.type.toLowerCase());
-    } else if (connection.type.toLowerCase() == 'zephyr') {
-      this.checkZephyr();
+    if (connection.type?.toLowerCase() == 'jira') {
+      this.jiraConnectionDialog = true;
+      this.initializeForms(this.connection, true)
+    } else {
+      this.connectionDialog = true;
+      this.disableConnectionTypeDropDown = true;
+      this.defaultEnableDisableSwitch();
+      this.disableEnableCheckBox();
+      if (connection.type.toLowerCase() == 'bitbucket' && connection.cloudEnv == true) {
+        this.checkBitbucketValue(true, 'cloudEnv', connection.type.toLowerCase());
+      } else if (connection.type.toLowerCase() == 'zephyr') {
+        this.checkZephyr();
+      }
     }
   }
 
@@ -658,6 +829,7 @@ export class ConnectionListComponent implements OnInit {
 
   hideDialog() {
     this.connectionDialog = false;
+    this.jiraConnectionDialog = false;
     this.submitted = false;
     this.isNewlyConfigAdded = false;
     this.testConnectionMsg = '';
@@ -737,7 +909,7 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
     }
-    if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
+    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
     }
@@ -808,20 +980,26 @@ export class ConnectionListComponent implements OnInit {
   testConnection() {
     this.testingConnection = true;
     const reqData = {};
-    this.addEditConnectionFieldsNlabels.forEach(data => {
-      if (!!this.connection.type && !!data.connectionType && (this.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
-        data.inputFields.forEach(inputField => {
-          if (this.basicConnectionForm.value[inputField] !== undefined && this.basicConnectionForm.value[inputField] !== '' && this.basicConnectionForm.value[inputField] !== 'undefined') {
-            reqData[inputField] = this.basicConnectionForm.value[inputField];
-          }
-        });
+    if (this.connection?.type?.toLowerCase() == 'jira') {
+      for (let key in this.jiraForm.controls) {
+        reqData[key] = this.jiraForm.controls[key]?.value;
       }
-    });
+    } else {
+      this.addEditConnectionFieldsNlabels.forEach(data => {
+        if (!!this.connection.type && !!data.connectionType && (this.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
+          data.inputFields.forEach(inputField => {
+            if (this.basicConnectionForm.value[inputField] !== undefined && this.basicConnectionForm.value[inputField] !== '' && this.basicConnectionForm.value[inputField] !== 'undefined') {
+              reqData[inputField] = this.basicConnectionForm.value[inputField];
+            }
+          });
+        }
+      });
+    }
 
     if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
       reqData['baseUrl'] = this.basicConnectionForm.controls['baseUrl']['value'];
     }
-    if(reqData['vault'] == true){
+    if (reqData['vault'] == true) {
       reqData['password'] = '';
       reqData['pat'] = '';
       reqData['accessToken'] = '';
@@ -1048,13 +1226,13 @@ export class ConnectionListComponent implements OnInit {
 
   checkBitbucketValue(event, field, type) {
     /** to add information besides username and password labels for bitbucket when isCloudEnv = true */
-    if(type == 'bitbucket'){
+    if (type == 'bitbucket') {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
-      if(this.basicConnectionForm.controls['cloudEnv'].value){
+      if (this.basicConnectionForm.controls['cloudEnv'].value) {
         bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Is Connection Private'];
-      }else{
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password','Password', 'API End Point', 'Is Connection Private'];
+      } else {
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
       tempArr[index] = bitbucketObj;
@@ -1064,8 +1242,8 @@ export class ConnectionListComponent implements OnInit {
 
   checkZephyr() {
     /** to add information besides username and password labels for bitbucket when isCloudEnv = true */
-    if(this.connection['type']?.toLowerCase() == 'zephyr'){
-      if(this.connection['vault'] == true && this.connection['cloudEnv'] == true){
+    if (this.connection['type']?.toLowerCase() == 'zephyr') {
+      if (this.connection['vault'] == true && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
         this.basicConnectionForm.controls['apiEndPoint'].setValue('');
@@ -1076,7 +1254,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      }else if(this.connection['vault'] == true && this.connection['cloudEnv'] == false){
+      } else if (this.connection['vault'] == true && this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
         this.basicConnectionForm.controls['username'].enable();
@@ -1084,7 +1262,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      }else if(this.connection['vault'] == false && this.connection['cloudEnv'] == true){
+      } else if (this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
         this.basicConnectionForm.controls['apiEndPoint'].setValue('');
@@ -1094,7 +1272,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken']?.enable();
-      }else{
+      } else {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
         this.basicConnectionForm.controls['username'].enable();
@@ -1105,27 +1283,27 @@ export class ConnectionListComponent implements OnInit {
     }
   }
   enableDisableFieldsOnIsCloudSwithChange() {
-    if(this.connection['type']?.toLowerCase() == 'sonar'){
-      if(this.connection['vault'] == true && this.connection['cloudEnv'] == true){
+    if (this.connection['type']?.toLowerCase() == 'sonar') {
+      if (this.connection['vault'] == true && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      }else if(this.connection['vault'] == true && this.connection['cloudEnv'] == false){
+      } else if (this.connection['vault'] == true && this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['username'].enable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-      }else if(this.connection['vault'] == false && this.connection['cloudEnv'] == true){
+      } else if (this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['username'].setValue('');
         this.basicConnectionForm.controls['username'].disable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken']?.enable();
-      }else{
+      } else {
         this.basicConnectionForm.controls['username'].enable();
         this.basicConnectionForm.controls['password'].enable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
