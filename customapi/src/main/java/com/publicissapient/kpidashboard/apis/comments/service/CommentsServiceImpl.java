@@ -29,7 +29,7 @@ public class CommentsServiceImpl implements CommentsService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
 
-	public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String TIME_FORMAT = "dd-MMM-YYYY";
 
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
