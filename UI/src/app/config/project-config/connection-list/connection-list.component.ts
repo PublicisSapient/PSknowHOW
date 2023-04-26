@@ -808,6 +808,7 @@ export class ConnectionListComponent implements OnInit {
       this.jiraConnectionDialog = true;
       this.initializeForms(this.connection, true)
     } else {
+      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
       this.connectionDialog = true;
       this.disableConnectionTypeDropDown = true;
       this.defaultEnableDisableSwitch();
@@ -1011,7 +1012,7 @@ export class ConnectionListComponent implements OnInit {
 
     switch (this.connection.type) {
       case 'Jira':
-        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
+        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['jaasKrbAuth'], reqData['jaasConfigFilePath'], reqData['krb5ConfigFilePath'],reqData['jaasUser'], reqData['samlEndPoint']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
