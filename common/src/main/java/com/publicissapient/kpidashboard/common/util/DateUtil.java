@@ -195,14 +195,10 @@ public class DateUtil {
 
 	public static String dateTimeConverter(DateTime dateTime, final String fromFormat) {
 		String strDate = null;
+		Date dateTimeData = dateTimeParser(dateTime.toString(fromFormat), fromFormat);
 		if (dateTime != null) {
-			strDate = dateTimeFormatter(dateTime, DISPLAY_DATE_FORMAT);
+			strDate = dateTimeFormatter(dateTimeData, DISPLAY_DATE_FORMAT);
 		}
 		return strDate;
-	}
-
-	public static String dateTimeFormatter(DateTime dateTime, final String format) {
-		SimpleDateFormat formatter = new SimpleDateFormat(format);
-		return formatter.format(dateTime);
 	}
 }

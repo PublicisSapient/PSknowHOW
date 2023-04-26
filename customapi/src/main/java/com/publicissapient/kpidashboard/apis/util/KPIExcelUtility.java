@@ -820,7 +820,6 @@ public class KPIExcelUtility {
 				excelData.setProjectName(projectName);
 				excelData.setReleaseName(pv.getDescription());
 				excelData.setReleaseDesc(pv.getName());
-//				excelData.setReleaseEndDate(pv.getReleaseDate().toString(DATE_YEAR_MONTH_FORMAT));
 				excelData.setReleaseEndDate(DateUtil.dateTimeConverter(pv.getReleaseDate(),DATE_YEAR_MONTH_FORMAT));
 				excelData.setMonth(pv.getReleaseDate().toString(MONTH_YEAR_FORMAT));
 				kpiExcelData.add(excelData);
