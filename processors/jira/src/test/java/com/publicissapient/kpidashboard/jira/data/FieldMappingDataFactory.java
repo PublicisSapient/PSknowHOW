@@ -85,13 +85,6 @@ public class FieldMappingDataFactory {
 				.orElse(null);
 	}
 
-	public FieldMapping findByToolConfigId(String toolConfigId) {
-
-		return fieldMappings.stream()
-				.filter(fieldMapping -> fieldMapping.getProjectToolConfigId().toHexString().equals(toolConfigId))
-				.findFirst().orElse(null);
-	}
-
 	public FieldMapping findByBasicProjectConfigId(String basicProjectConfigId) {
 
 		return fieldMappings.stream().filter(

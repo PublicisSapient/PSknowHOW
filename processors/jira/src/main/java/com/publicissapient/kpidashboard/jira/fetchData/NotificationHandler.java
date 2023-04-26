@@ -113,7 +113,6 @@ public class NotificationHandler {
     public void sendEmailWithoutKafka(String key, String value, String projectBasicConfigId) {
 
         List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-        emailAddresses.add("guptapurushottam123@gmail.com");
         Map<String, String> additionalData=new HashMap<>();
         additionalData.put(key,value);
         Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
