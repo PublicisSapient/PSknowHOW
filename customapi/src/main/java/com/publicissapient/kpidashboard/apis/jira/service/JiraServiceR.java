@@ -318,7 +318,7 @@ public class JiraServiceR {
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
-		return sprintDetails.get(0);
+		return sprintDetails.stream().findFirst().orElse(null);
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId) {

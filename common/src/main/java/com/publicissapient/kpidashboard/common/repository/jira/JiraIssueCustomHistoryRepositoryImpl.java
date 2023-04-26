@@ -184,4 +184,34 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
+																																		 Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
+
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("storySprintDetails.story.fromStatus"));
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssueCustomHistory.class);
+
+	}
+
+
 }
