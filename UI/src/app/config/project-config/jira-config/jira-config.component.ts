@@ -2225,6 +2225,9 @@ export class JiraConfigComponent implements OnInit {
     }else{
       delete submitData['metadataTemplateCode'];
     }
+    if(this.urlParam === 'GitHubAction'){
+      submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj=> obj.code === submitData['workflowID'])[0]?.name || "";
+    }
 
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
@@ -2457,7 +2460,7 @@ export class JiraConfigComponent implements OnInit {
       this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
+        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
         if(selectedTemplate?.templateName === 'Custom Template'){
           this.toolForm.get('metadataTemplateCode').disable();
         }
