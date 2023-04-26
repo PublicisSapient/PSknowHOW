@@ -58,6 +58,8 @@ public class DateUtil {
 
 	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
 
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
+	
 	private DateUtil() {
 		// to prevent creation on object
 	}
@@ -184,20 +186,28 @@ public class DateUtil {
 		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}
 
-	public static String dateConverter(String dateTime, final String fromFormat) {
-		String strDate = null;
-		Date date = dateTimeParser(dateTime, fromFormat);
-		if (date != null) {
-			strDate = dateTimeFormatter(date, DISPLAY_DATE_FORMAT);
-		}
-		return strDate;
-	}
-
 	public static String dateTimeConverter(DateTime dateTime, final String fromFormat) {
 		String strDate = null;
 		Date dateTimeData = dateTimeParser(dateTime.toString(fromFormat), fromFormat);
 		if (dateTime != null) {
 			strDate = dateTimeFormatter(dateTimeData, DISPLAY_DATE_FORMAT);
+		}
+		return strDate;
+	}
+
+	public static String localDateTimeConverter(LocalDate dateTime) {
+		String strDate = null;
+		Date dateTimeData = Date.from(dateTime.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		if (dateTime != null) {
+			strDate = dateTimeFormatter(dateTimeData, DISPLAY_DATE_FORMAT);
+		}
+		return strDate;
+	}
+
+	public static String dateConverter(Date dateTime) {
+		String strDate = null;
+		if (dateTime != null) {
+			strDate = dateTimeFormatter(dateTime, DISPLAY_DATE_FORMAT);
 		}
 		return strDate;
 	}

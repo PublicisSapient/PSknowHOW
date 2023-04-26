@@ -417,7 +417,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
+		dataCount.setDate(DateUtil.dateTimeConverter(date,DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		dataCount.setSubFilter(label);
 		dataCount.setKpiGroup(status);
 		dataCount.setGroupBy(DATE);

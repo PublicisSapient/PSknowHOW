@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -215,7 +216,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 					durationList.add(duration);
 				}
 			}
-			String date = monday + WEEK_SEPERATOR + sunday;
+			String date = DateUtil.dateTimeConverter(monday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR + DateUtil.dateTimeConverter(sunday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT); 
+//					monday + WEEK_SEPERATOR + sunday;
 			Double valueForCurrentLeaf = ObjectUtils.defaultIfNull(AggregationUtils.average(durationList), 0.0d);
 			if (null != valueForCurrentLeaf) {
 				valueForCurrentLeafList.add(valueForCurrentLeaf);

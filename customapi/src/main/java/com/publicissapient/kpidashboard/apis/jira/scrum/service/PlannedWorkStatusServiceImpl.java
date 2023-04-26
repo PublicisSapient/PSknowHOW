@@ -18,32 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -73,6 +47,31 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 @Component
 public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -548,13 +547,13 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			Map<String, Object> actualCompletionData) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		String markerValue = Constant.BLANK;
-		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateConverter((String) jiraIssueData.get(DEV_COMPLETION_DATE),"yyyy-MM-dd"));
+		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter((String) jiraIssueData.get(DEV_COMPLETION_DATE),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
-			jiraIssueModalObject.setActualCompletionDate(DateUtil.dateConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setActualCompletionDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setActualCompletionDate(" - ");
 		if (actualCompletionData.get(ACTUAL_START_DATE) != null) {
-			jiraIssueModalObject.setActualStartDate(DateUtil.dateConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setActualStartDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		} else
 			jiraIssueModalObject.setActualStartDate(" - ");
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
@@ -569,7 +568,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		} else {
 			jiraIssueModalObject.setPotentialDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");

@@ -484,7 +484,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		iterationStatus.setPriority(issueObject.getPriority());
 		iterationStatus.setIssueDescription(issueObject.getName());
 		iterationStatus.setIssueStatus(issueObject.getStatus());
-		iterationStatus.setDueDate(DateUtil.dateConverter(issueObject.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC));
+		iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC,DateUtil.DISPLAY_DATE_FORMAT));
 		if (issueObject.getRemainingEstimateMinutes() != null) {
 			iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
 		}

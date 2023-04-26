@@ -18,20 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -53,6 +39,19 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -182,7 +181,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalVal.setPriority(iterationStatus.getPriority());
 		iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
 		iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-		iterationKpiModalVal.setDueDate(DateUtil.dateConverter(iterationStatus.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC));
+		iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC,DateUtil.DISPLAY_DATE_FORMAT));
 		if (iterationStatus.getRemainingEstimateMinutes() != null)
 			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
 		else

@@ -303,7 +303,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 
 		} else {
 			jiraIssueModalObject.setPotentialDelay("-");

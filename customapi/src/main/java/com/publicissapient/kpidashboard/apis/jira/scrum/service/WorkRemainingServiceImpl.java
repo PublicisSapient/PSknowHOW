@@ -393,7 +393,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	private void setKpiSpecificData(SprintDetails sprintDetails, Map<String, IterationKpiModalValue> modalObjectMap,
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue, String devCompletionDate) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
-		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateConverter(devCompletionDate,"yyyy-MM-dd"));
+		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter(devCompletionDate,DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		String markerValue = Constant.BLANK;
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
@@ -407,7 +407,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			} else {
 				markerValue = Constant.RED;
 			}
-			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");

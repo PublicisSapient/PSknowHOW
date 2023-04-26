@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -142,7 +143,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 					LocalDate monday = weeks[0];
 					LocalDate sunday = weeks[1];
 
-					String date = monday + " to " + sunday;
+					String date = DateUtil.dateTimeConverter(monday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 					Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = sunday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);

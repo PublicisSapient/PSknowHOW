@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -327,28 +328,28 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
-				excelDataLoader.put(formatDate(currentDate), commitForDay);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), commitForDay);
 				dataCount.setValue(commitForDay);
 				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
 			} else {
-				excelDataLoader.put(formatDate(currentDate), 0l);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), 0l);
 				dataCount.setValue(0l);
 				hoverValues.put(NO_CHECKIN, 0);
 
 			}
 			if (mergeCountForRepo != null && mergeCountForRepo.get(currentDate) != null) {
 				Long mergeForDay = mergeCountForRepo.get(currentDate);
-				mergeRequestExcelDataLoader.put(formatDate(currentDate), mergeForDay);
+				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
 				dataCount.setLineValue(mergeForDay);
 				hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			} else {
-				mergeRequestExcelDataLoader.put(formatDate(currentDate), 0l);
+				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), 0l);
 				dataCount.setLineValue(0l);
 				hoverValues.put(NO_MERGE, 0);
 
 			}
-			dataCount.setDate(formatDate(currentDate));
+			dataCount.setDate(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT));
 			dataCount.setHoverValue(hoverValues);
 			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);

@@ -18,27 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -63,6 +42,27 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -715,8 +715,7 @@ public class KPIExcelUtility {
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
 						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-//						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DATE_YEAR_MONTH_FORMAT));
-						epicEndDate = DateUtil.dateConverter(epic.getChangeDate(),DATE_YEAR_MONTH_FORMAT);
+						epicEndDate = DateUtil.dateTimeConverter(epic.getChangeDate(),DATE_YEAR_MONTH_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 					}
 					excelData.setMonth(month);
 					excelData.setEpicEndDate(epicEndDate);
@@ -748,7 +747,7 @@ public class KPIExcelUtility {
 				}
 				String date ="-";
 				if(StringUtils.isNotEmpty(e.getDueDate())){
-					date = DateUtil.dateConverter(e.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+					date = DateUtil.dateTimeConverter(e.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC,DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setDueDate(date);
 				if (e.getRemainingEstimateMinutes() != null) {
@@ -758,7 +757,7 @@ public class KPIExcelUtility {
 				if (issueWiseDelay.containsKey(e.getNumber())) {
 					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
 					excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-					excelData.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
+					excelData.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				} else {
 					excelData.setPotentialDelay("-");
 					excelData.setPredictedCompletionDate("-");
@@ -767,7 +766,7 @@ public class KPIExcelUtility {
 						.filter(jiraIssue -> jiraIssue.getNumber().equals(e.getNumber())).findFirst();
 
 				if (completedJiraIssue.isPresent()) {
-					excelData.setActualCompletionDate(DateUtil.dateConverter(completedJiraIssue.get().getUpdateDate(),"yyyy-MM-dd"));
+					excelData.setActualCompletionDate(DateUtil.dateTimeConverter(completedJiraIssue.get().getUpdateDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 				} else {
 					excelData.setActualCompletionDate("-");
 				}
@@ -796,7 +795,7 @@ public class KPIExcelUtility {
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
 						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-						epicEndDate = DateUtil.dateConverter(epic.getChangeDate(),DATE_YEAR_MONTH_FORMAT);
+						epicEndDate = DateUtil.dateTimeConverter(epic.getChangeDate(),DATE_YEAR_MONTH_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 					}
 					excelData.setMonth(month);
 					excelData.setEpicEndDate(epicEndDate);
@@ -828,8 +827,11 @@ public class KPIExcelUtility {
 		if (deploymentFrequencyInfo != null) {
 			for (int i = 0; i < deploymentFrequencyInfo.getJobNameList().size(); i++) {
 				KPIExcelData excelData = new KPIExcelData();
+				DateTimeFormatter formatter =
+						DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT, Locale.US);
+				LocalDateTime date = LocalDateTime.parse(deploymentFrequencyInfo.getDeploymentDateList().get(i), formatter);
 				excelData.setProjectName(projectName);
-				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
+				excelData.setDate(DateUtil.localDateTimeConverter(date.toLocalDate()));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
 				excelData.setMonth(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
@@ -999,7 +1001,7 @@ public class KPIExcelUtility {
 				excelData.setPriority(defect.getPriority());
 				String date = Constant.EMPTY_STRING;
 				if (defect.getCreatedDate() != null) {
-					date = DateUtil.dateConverter(defect.getCreatedDate(),DATE_FORMAT_PRODUCTION_DEFECT_AGEING);
+					date = DateUtil.dateTimeConverter(defect.getCreatedDate(),DATE_FORMAT_PRODUCTION_DEFECT_AGEING,DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setCreatedDate(date);
 				excelData.setIssueDesc(checkEmptyName(defect));
@@ -1019,7 +1021,7 @@ public class KPIExcelUtility {
 				excelData.setProject(projectName);
 				excelData.setTicketIssue(storyMap);
 				excelData.setPriority(kanbanIssues.getPriority());
-				excelData.setCreatedDate(DateUtil.dateConverter(kanbanIssues.getCreatedDate(),DateUtil.TIME_FORMAT));
+				excelData.setCreatedDate(DateUtil.dateTimeConverter(kanbanIssues.getCreatedDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 				excelData.setIssueStatus(kanbanIssues.getJiraStatus());
 				kpiExcelData.add(excelData);
 			});
@@ -1068,7 +1070,7 @@ public class KPIExcelUtility {
 				if (kpiId.equalsIgnoreCase(KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId())) {
 					excelData.setPriority(field);
 				}
-				excelData.setCreatedDate(DateUtil.dateConverter(kanbanJiraIssue.getCreatedDate(),DateUtil.TIME_FORMAT));
+				excelData.setCreatedDate(DateUtil.dateTimeConverter(kanbanJiraIssue.getCreatedDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 				excelData.setDayWeekMonth(date);
 				excelDataList.add(excelData);
 			});
@@ -1261,7 +1263,7 @@ public class KPIExcelUtility {
 		}
 		String date = "-";
 		if(StringUtils.isNotEmpty(jiraIssue.getDueDate())){
-			date = DateUtil.dateConverter(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC);
+			date = DateUtil.dateTimeConverter(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC,DateUtil.DISPLAY_DATE_FORMAT);
 		}
 		jiraIssueModalObject.setDueDate(date);
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
@@ -1279,7 +1281,7 @@ public class KPIExcelUtility {
 		}
 		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
-			jiraIssueModalObject.setDevDueDate(DateUtil.dateConverter(jiraIssue.getDevDueDate(),"yyyy-MM-dd"));
+			jiraIssueModalObject.setDevDueDate(DateUtil.dateTimeConverter(jiraIssue.getDevDueDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
 		modalValues.add(jiraIssueModalObject);
