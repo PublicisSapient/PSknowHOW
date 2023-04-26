@@ -3411,7 +3411,7 @@
     "calculateMaturity": false,
     "kanban": false
   },{
-  "kpiId": "kpi137",
+  "kpiId": "kpi138",
   "kpiName": "Refinement Rejection Rate",
   "kpiUnit": "%",
   "isDeleted": "False",
