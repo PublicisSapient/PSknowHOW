@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,6 +42,8 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -1298,7 +1302,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * exclude defects with priority and RCA
-	 * 
+	 *
 	 * @param allDefects
 	 * @param projectWisePriority
 	 * @param projectWiseRCA
@@ -1371,5 +1375,42 @@ public class KpiHelperService { // NOPMD
 			}
 		}
 	}
+
+	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
+														  List<JiraIssueCustomHistory> storiesHistory) {
+
+		firstTimePassStories.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
+
+	}
+
+	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
+		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
+				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
+		if (jiraIssueCustomHistory == null) {
+			return false;
+		} else {
+
+			List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
+			Collections.sort(storySprintDetails, Comparator.comparing(JiraIssueSprint::getActivityDate));
+
+			JiraIssueSprint latestClosedStatusDetail = storySprintDetails.stream()
+					.filter(statusHistory -> statusHistory.getFromStatus().equals(issue.getJiraStatus())).findFirst()
+					.orElse(null);
+
+			if (latestClosedStatusDetail != null) {
+				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
+						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
+				DateTime latestClosedStatusTime = latestClosedStatusDetail.getActivityDate();
+				return storySprintDetails.stream()
+						.filter(statusHistory -> statusHistory.getActivityDate().isAfter(latestClosedStatusTime))
+						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getFromStatus()));
+			}
+			return false;
+		}
+
+	}
+
 
 }

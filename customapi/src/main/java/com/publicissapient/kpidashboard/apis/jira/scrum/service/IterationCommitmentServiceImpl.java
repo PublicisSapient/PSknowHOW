@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +59,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -76,12 +75,6 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 	private static final String SCOPE_REMOVED = "Scope removed";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -117,10 +110,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Scope Change -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> puntedIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
@@ -134,16 +124,14 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 				// Adding issues which were added before sprint start and later removed form sprint or dropped.
 				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(puntedIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(puntedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getPuntedIssues(), issueList);
 					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(new ArrayList<>(addedIssues),
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(new ArrayList<>(addedIssues));
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									new HashSet<>(), issueList);
@@ -151,8 +139,8 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
 				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
-							new ArrayList<>(completeAndIncompleteIssues), basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(
+							new ArrayList<>(completeAndIncompleteIssues));
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
 									issueList);
@@ -200,12 +188,10 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 
 		if(CollectionUtils.isNotEmpty(initialIssues)) {
 			LOGGER.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId, initialIssues.size());
-			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseInitialIssues = initialIssues.stream().collect(
-					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<Integer> overAllInitialIssueCount = Arrays.asList(0);
 			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, typeAndStatusWiseInitialIssues, iterationKpiValues,
+			setScopeChange(issueTypes, statuses, initialIssues, iterationKpiValues,
 					overAllInitialIssueCount, overAllInitialIssueSp, overAllInitialmodalValues, INITIAL_COMMITMENT,
 					fieldMapping, overAllOriginalEstimate);
 			IterationKpiData overAllInitialCount = setIterationKpiData(fieldMapping, overAllInitialIssueCount,
@@ -215,12 +201,10 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 
 		if (CollectionUtils.isNotEmpty(addedIssues)) {
 			LOGGER.info("Scope Change -> request id : {} added jira Issues : {}", requestTrackerId, addedIssues.size());
-			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseAddedIssues = addedIssues.stream().collect(
-					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<Integer> overAllAddedIssueCount = Arrays.asList(0);
 			List<Double> overAllAddedIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, typeAndStatusWiseAddedIssues, iterationKpiValues,
+			setScopeChange(issueTypes, statuses, addedIssues, iterationKpiValues,
 					overAllAddedIssueCount, overAllAddedIssueSp, overAllAddmodalValues, SCOPE_ADDED,
 					fieldMapping, overAllOriginalEstimate);
 			IterationKpiData overAllAddedCount = setIterationKpiData(fieldMapping, overAllAddedIssueCount,
@@ -231,12 +215,10 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
 			LOGGER.info("Scope Change -> request id : {} punted jira Issues : {}", requestTrackerId,
 					puntedIssues.size());
-			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWisePuntedIssues = puntedIssues.stream().collect(
-					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<Integer> overAllPunIssueCount = Arrays.asList(0);
 			List<Double> overAllPunIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			setScopeChange(issueTypes, statuses, typeAndStatusWisePuntedIssues, iterationKpiValues,
+			setScopeChange(issueTypes, statuses, puntedIssues, iterationKpiValues,
 					overAllPunIssueCount, overAllPunIssueSp, overAllRemovedmodalValues, SCOPE_REMOVED,
 					fieldMapping, overAllOriginalEstimate);
 			IterationKpiData overAllPuntedCount = setIterationKpiData(fieldMapping, overAllPunIssueCount,
@@ -261,10 +243,14 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	private void setScopeChange(Set<String> issueTypes, Set<String> statuses,
-			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues,
+								List<JiraIssue> allIssues,
 			List<IterationKpiValue> iterationKpiValues, List<Integer> overAllIssueCount, List<Double> overAllIssueSp,
 			List<IterationKpiModalValue> overAllmodalValues, String label,
 								FieldMapping fieldMapping, List<Double> overAllOriginalEstimate) {
+		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
+				Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
+		//Creating map of modal Objects
+		Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 		typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 			statusWiseIssue.forEach((status, issues) -> {
 				issueTypes.add(issueType);
@@ -274,7 +260,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 				double storyPoints = 0;
 				Double originalEstimate = 0.0;
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
+					KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
 					issueCount = issueCount + 1;
 					if (null != jiraIssue.getStoryPoints()) {
 						storyPoints = storyPoints + jiraIssue.getStoryPoints();

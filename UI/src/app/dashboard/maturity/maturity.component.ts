@@ -81,10 +81,11 @@ export class MaturityComponent implements OnInit, OnDestroy {
     noKpi = false;
     noOfJiraGroups = 0;
     loader= false;
-    showNoDataMsg:boolean = false;
+    showNoDataMsg = false;
     noDataForFilter = false;
+    noProjects =false;
+    isKanban = false;
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
-
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
         }));
@@ -93,25 +94,17 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.noDataForFilter = data;
             this.receiveSharedData(this.service.getFilterObject());
         }));
-
         this.selectedtype = this.service.getSelectedType();
 
-        this.subscription.push(this.service.onTypeRefresh.pipe(distinctUntilChanged(),mergeMap(selectedtype =>{
-            this.noOfJiraGroups=0;
+        this.subscription.push(this.service.onTypeOrTabRefresh.pipe(distinctUntilChanged()).subscribe(data => {
+            this.noOfJiraGroups = 0;
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;
             this.loaderJenkins = false;
-            this.loaderJira =false;
-            this.selectedtype = selectedtype;
-            this.showNoDataMsg =false;
-            return this.service.passDataToDashboard;
-        })).pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-            if (this.router.url === '/dashboard/Maturity') {
-                if (sharedobject) {
-                    this.receiveSharedData(sharedobject);
-                }
-            }
+            this.loaderJira = false;
+            this.selectedtype = data?.selectedType;
+            this.showNoDataMsg = false;
         }));
 
     }
@@ -128,12 +121,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.filterData = $event?.filterData;
             this.filterApplyData = $event?.filterApplyData;
             this.loaderMaturity = true;
-            const isKanban = this.selectedtype.toLowerCase() === 'kanban';
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === isKanban).map(kpi => kpi.kpiId);
-            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0){
+            this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
+            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
+            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype){
                 // this.drawAreaChart(null, null);
                 // this.chart(null);
-                if (this.selectedtype.toLowerCase() === 'scrum') {
+                if (this.selectedtype?.toLowerCase() === 'scrum') {
                     this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                     this.groupZypherKpi(kpiIdsForCurrentBoard);
                     this.groupBitBucketKpi(kpiIdsForCurrentBoard);
@@ -154,14 +147,16 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.service.selectTab('Maturity');
-
         this.selectedtype = this.service.getSelectedType();
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;
                 this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration');
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
             }));
+            this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
+                this.noProjects = res;
+                 this.isKanban= this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+              }));
 
         if (this.service.getFilterObject()) {
             this.receiveSharedData(this.service.getFilterObject());

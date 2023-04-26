@@ -5,7 +5,7 @@
     "sprintName": "KnowHOW|PI_10|ITR_6| 07th Sep",
     "originalSprintId": "38296",
     "state": "CLOSED",
-    "startDate": "2022-09-07T14:08:00.000Z",
+    "startDate": "2022-08-07T14:08:00.000Z",
     "endDate": "2022-09-27T17:00:00.000Z",
     "completeDate": "2022-09-28T02:52:29.666Z",
     "activatedDate": "2022-09-07T14:08:51.092Z",
@@ -710,7 +710,7 @@
     ],
     "puntedIssues" : [
       {
-        "number" : "TEST-19485",
+        "number" : "TEST-17908",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "Open",
@@ -748,7 +748,7 @@
     ],
     "totalIssues" : [
       {
-        "number" : "TEST-19485",
+        "number" : "TEST-9485",
         "originBoardId" : "11856",
         "priority" : "P4 - Minor",
         "status" : "Open",

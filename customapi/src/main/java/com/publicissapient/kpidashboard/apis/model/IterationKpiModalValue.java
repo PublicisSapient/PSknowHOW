@@ -101,5 +101,21 @@ public class IterationKpiModalValue implements Serializable {
 	private String marker;
 	@JsonProperty("Assignee")
 	private String assignee;
+	@JsonProperty("First Time Pass")
+	private String firstTimePass;
+	@JsonProperty("Linked Defect")
+	private Map<String, String> linkedDefefect;
+	@JsonProperty("Defect Priority")
+	private Map<String, String> linkedDefefectPriority;
+
+	// Added for Defect Reopen Rate - submohan1
+	@JsonProperty("Closed Date")
+	private String closedDate;
+	@JsonProperty("Reopen Date")
+	private String reopenDate;
+	@JsonProperty("Time taken to reopen")
+	private String durationToReopen;
+	// end for Defect Reopen Rate - submohan1
+
 
 }

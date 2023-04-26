@@ -1876,7 +1876,7 @@ describe('ExecutiveComponent', () => {
     component = fixture.componentInstance;
 
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
 
@@ -1902,8 +1902,8 @@ describe('ExecutiveComponent', () => {
 
   it('check whether scrum', (done) => {
     const type = 'Scrum';
-    component.getSelectedType(type);
     component.selectedtype = 'Scrum';
+    spyOn(httpService,'postKpi').and.returnValue(of(fakeJiraGroupId1));
     fixture.detectChanges();
     expect(component.selectedtype).toBe(type);
     done();
@@ -1938,7 +1938,7 @@ describe('ExecutiveComponent', () => {
 
   xit('Scrum with filter applied', (done) => {
     const type = 'Scrum';
-    service.setSelectedType(type);
+    service.selectedtype =type;
 
     service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
     fixture.detectChanges();
@@ -1954,7 +1954,7 @@ describe('ExecutiveComponent', () => {
 
   xit('kanban without filter applied', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype=type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -1968,15 +1968,15 @@ describe('ExecutiveComponent', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.setSelectedTypeOrTabRefresh('Category One','Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
-    httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
-    httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
-    httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
-    httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
-    httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
-
-    // fixture.detectChanges();
+    fixture.detectChanges();
+    spyOn(httpService,'postKpiKanban').and.returnValue(of(fakejiraKanban));
+    // httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
+    // httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
+    // httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
+    // httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
+    // httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
     expect(component.selectedtype).toBe(type);
     done();
 
@@ -1988,19 +1988,16 @@ describe('ExecutiveComponent', () => {
 
   xit('cycle time priority Sum in kanban', ((done) => {
     const type = 'Kanban';
-    service.setSelectedType(type);
+    service.selectedtype =type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
     httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
     httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
     httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
+ component.getPriorityColor(0);
 
-    component.selectedPriorityFilter.kpi53 = [{ data: 'P3 - Major' }];
-    component.getPriorityColor(0);
-
-    expect(component.prioritySum['openTriage']).toBe(1);
-    done();
+   done();
 
   }));
 
@@ -2008,28 +2005,25 @@ describe('ExecutiveComponent', () => {
 
   it('color acc to maturity check ', waitForAsync(() => {
     const returnBlue = component.returnColorAccToMaturity(0);
+    spyOn(component,'receiveSharedData');
     expect(returnBlue).toBe('#44739f');
     // done();
   }));
 
   it('color acc to maturity check array', (done) => {
     component.colorAccToMaturity('1-2-3');
+    spyOn(component,'receiveSharedData');
     expect(component.maturityColorCycleTime[0]).toBe('#44739f');
     done();
   });
 
   it('should create', (done) => {
+    spyOn(component,'receiveSharedData');
     expect(component).toBeTruthy();
     done();
   });
 
-  it('boardId should belong to selectedType',()=>{
-    component.boardId = 7;
-    component.kanbanActivated = false;
-    const globalConfig = globalData.data;
-    component.checkIfBoardIdBelongsToSelectedType(globalConfig);
-    expect(component.boardId).toEqual(1);
-  });
+
 
   it('should process kpi config Data',()=>{
     component.configGlobalData =  configGlobalData;
@@ -2128,23 +2122,19 @@ describe('ExecutiveComponent', () => {
   });
 
 
-  it('should process kpi config data on onTypeRefresh',()=>{
+  it('should refresh values onTypeRefresh',()=>{
     spyOn(service,'getSelectedType');
     spyOn(service,'getDashConfigData').and.returnValue(globalData['data']);
     const spy =spyOn(component,'processKpiConfigData');
-    service.onTypeRefresh.emit('Scrum');
+    service.onTypeOrTabRefresh.next({selectedTab:'Caterory One',selectedType:'Scrum'});
     component.kanbanActivated =false;
-    component.boardId =1;
     fixture.detectChanges();
-    expect(component.configGlobalData.length).toEqual(1);
-    expect(spy).toHaveBeenCalled();
+   expect(component.selectedBranchFilter).toBe('Select');
   });
 
   it('should set noTabAccess to true when no filterData', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    spyOn(service, 'getSelectBoardId').and.returnValue(1);
     component.kanbanActivated = false;
-    spyOn(component, 'setBoardIdForSelectedTab');
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -2196,7 +2186,6 @@ describe('ExecutiveComponent', () => {
       selectedTab: 'My Test1',
       isAdditionalFilters: false
     };
-    component.previousBoardId = 2;
     component.receiveSharedData(event);
     expect(component.noTabAccess).toBe(true);
 
@@ -2204,8 +2193,6 @@ describe('ExecutiveComponent', () => {
 
   it('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    spyOn(service, 'getSelectBoardId').and.returnValue(1);
-    spyOn(component, 'setBoardIdForSelectedTab');
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -2270,7 +2257,6 @@ describe('ExecutiveComponent', () => {
       makeAPICall: true
     };
     component.kanbanActivated = false;
-    component.previousBoardId = 2;
     component.selectedtype = 'Scrum';
 
     const spyJenkins = spyOn(component, 'groupJenkinsKpi');

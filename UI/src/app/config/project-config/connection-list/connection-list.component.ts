@@ -588,6 +588,10 @@ export class ConnectionListComponent implements OnInit {
       reqData['password'] = this.rsa.encrypt(this.connection['password']);
     }
 
+    if (!!this.connection['patOAuthToken']) {
+          reqData['patOAuthToken'] = this.rsa.encrypt(this.connection['patOAuthToken']);
+    }
+
     if (!!this.connection['pat']) {
       reqData['pat'] = this.rsa.encrypt(this.connection['pat']);
     }
