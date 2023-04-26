@@ -31,14 +31,17 @@ public class MongoConfig {
     @Value("${spring.data.mongodb.password}")
     private String password;
 
-    @Autowired
-    private AesEncryptionService aesEncryptionService;
-
-    @Autowired
-    private AzurePipelineConfig azurePipelineConfig;
-
+    /**
+     * This method create mongoClient
+     *
+     * @param aesEncryptionService
+     * 		aesEncryptionService
+     * @param azurePipelineConfig
+     * 		azurePipelineConfig
+     * @return mongo client
+     */
     @Bean
-    public MongoClient mongoClient() {
+    public MongoClient mongoClient(AesEncryptionService aesEncryptionService, AzurePipelineConfig azurePipelineConfig) {
         password = aesEncryptionService.decrypt(password, azurePipelineConfig.getAesEncryptionKey());
         MongoCredential credential = MongoCredential.createCredential(user, database, password.toCharArray());
         MongoClientSettings settings = MongoClientSettings.builder()
