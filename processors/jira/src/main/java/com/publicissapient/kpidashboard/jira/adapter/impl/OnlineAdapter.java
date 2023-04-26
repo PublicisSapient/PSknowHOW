@@ -36,6 +36,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -46,6 +47,9 @@ import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -59,7 +63,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -107,6 +110,8 @@ public class OnlineAdapter implements JiraAdapter {
 
 	private ToolCredentialProvider toolCredentialProvider;
 
+	private KerberosClient krb5Client;
+
 	public OnlineAdapter() {
 	}
 
@@ -119,11 +124,12 @@ public class OnlineAdapter implements JiraAdapter {
 	 *            aesEncryptionService
 	 */
 	public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider) {
+			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider, KerberosClient krb5Client) {
 		this.jiraProcessorConfig = jiraProcessorConfig;
 		this.client = client;
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
+		this.krb5Client = krb5Client;
 	}
 
 	/**
@@ -382,17 +388,14 @@ public class OnlineAdapter implements JiraAdapter {
 				Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 				String username = connectionOptional.map(Connection::getUsername).orElse(null);
 				URL url = getUrl(projectConfig, username);
-				URLConnection connection;
-
-				connection = url.openConnection();
-				userTimeZone = getUserTimeZone(getDataFromServer(projectConfig, (HttpURLConnection) connection));
+				userTimeZone = parseUserTimeZone(getDataFromClient(projectConfig, url));
 			}
 		} catch (RestClientException rce) {
 			log.error("Client exception when loading statuses", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading statuses", mfe);
-		} catch (IOException ioe) {
+		} catch (Exception ioe) {
 			log.error("IOException", ioe);
 		}
 
@@ -400,7 +403,7 @@ public class OnlineAdapter implements JiraAdapter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getUserTimeZone(String timezoneObj) {
+	public String parseUserTimeZone(String timezoneObj) {
 		String userTimeZone = StringUtils.EMPTY;
 		if (StringUtils.isNotBlank(timezoneObj)) {
 			try {
@@ -422,7 +425,7 @@ public class OnlineAdapter implements JiraAdapter {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
+	public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
 			throws IOException {
 		HttpURLConnection request = connection;
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -459,6 +462,57 @@ public class OnlineAdapter implements JiraAdapter {
 		return sb.toString();
 	}
 
+	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean spenagoClient = connectionOptional.map(Connection::isJaasKrbAuth).orElse(false);
+		if(spenagoClient){
+			HttpUriRequest request = RequestBuilder.get().
+					setUri(url.toString())
+					.setHeader(HttpHeaders.ACCEPT,"application/json")
+					.setHeader(HttpHeaders.CONTENT_TYPE,"application/json")
+					.build();
+			return krb5Client.getResponse(request);
+		}else{
+			return getDataFromServer(url, connectionOptional);
+		}
+	}
+
+	public String getDataFromServer(URL url, Optional<Connection> connectionOptional)
+			throws IOException {
+		HttpURLConnection request = (HttpURLConnection) url.openConnection();
+
+		String username = null;
+		String password = null;
+
+		if(connectionOptional.isPresent()) {
+			Connection conn = connectionOptional.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+
+			} else {
+				username = connectionOptional.map(Connection::getUsername).orElse(null);
+				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			}
+		}
+		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		request.connect();
+		StringBuilder sb = new StringBuilder();
+		try (InputStream in = (InputStream) request.getContent();
+			 BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+			int cp;
+			while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);
+			}
+		} catch (IOException ie) {
+			log.error("Read exception when connecting to server {}", ie);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Checks if Jira credentails are empty
 	 *
@@ -485,7 +539,7 @@ public class OnlineAdapter implements JiraAdapter {
 	 * @throws MalformedURLException
 	 *             when URL not constructed properly
 	 */
-	private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
+	public URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
@@ -529,10 +583,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 			if (null != jiraToolConfig) {
 				URL url = getSprintReportUrl(projectConfig, sprintId,boardId);
-				URLConnection connection;
-
-				connection = url.openConnection();
-				getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection),sprint,projectConfig,dbSprintDetails,boardId);
+				getReport(getDataFromClient(projectConfig, url),sprint,projectConfig,dbSprintDetails,boardId);
 			}
 		log.info("End sprint report api. Sprint Id : {} , Board Id : {}",sprintId,boardId);
 		} catch (RestClientException rce) {
@@ -545,7 +596,7 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 	}
 
-	private URL getSprintReportUrl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId)
+	public URL getSprintReportUrl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -560,7 +611,7 @@ public class OnlineAdapter implements JiraAdapter {
 
 	}
 	
-	private void getReport(String sprintReportObj,SprintDetails sprint,ProjectConfFieldMapping projectConfig,
+	public void getReport(String sprintReportObj,SprintDetails sprint,ProjectConfFieldMapping projectConfig,
 								 SprintDetails dbSprintDetails,String boardId) {
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray completedIssuesJson = new JSONArray();
@@ -831,9 +882,7 @@ public class OnlineAdapter implements JiraAdapter {
 				int startIndex = 0;
 				do {
 					URL url = getEpicUrl(projectConfig, boardId, startIndex);
-					URLConnection connection;
-					connection = url.openConnection();
-					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
+					String jsonResponse = getDataFromClient(projectConfig, url);
 					isLast = populateData(jsonResponse, epicList);
 					startIndex = epicList.size();
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -852,7 +901,7 @@ public class OnlineAdapter implements JiraAdapter {
 		return getEpicIssuesQuery(epicList, projectConfig);
 	}
 
-	private boolean populateData(String sprintReportObj, List<String> epicList) {
+	public boolean populateData(String sprintReportObj, List<String> epicList) {
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray valuesJson = new JSONArray();
@@ -879,7 +928,7 @@ public class OnlineAdapter implements JiraAdapter {
 		});
 	}
 
-	private URL getEpicUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
+	public URL getEpicUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();

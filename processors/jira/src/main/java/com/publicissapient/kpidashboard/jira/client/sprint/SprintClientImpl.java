@@ -178,7 +178,7 @@ public class SprintClientImpl implements SprintClient {
 	public void createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter) {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		boardDetailsList.forEach(boardDetails -> {
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId());
+			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId(), jiraAdapter);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
@@ -197,7 +197,7 @@ public class SprintClientImpl implements SprintClient {
 		return sd;
 	}
 
-	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, JiraAdapter jiraAdapter) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
@@ -206,9 +206,7 @@ public class SprintClientImpl implements SprintClient {
 				int startIndex = 0;
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
-					URLConnection connection;
-					connection = url.openConnection();
-					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
+					String jsonResponse = jiraAdapter.getDataFromClient(projectConfig, url);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
 					TimeUnit.MILLISECONDS.sleep(500);
@@ -227,7 +225,7 @@ public class SprintClientImpl implements SprintClient {
 		return sprintDetailsList;
 	}
 
-	private boolean populateSprintDetailsList(String sprintReportObj,List<SprintDetails> sprintDetailsSet,
+	public boolean populateSprintDetailsList(String sprintReportObj,List<SprintDetails> sprintDetailsSet,
 								ProjectConfFieldMapping projectConfig,String boardId) {
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
@@ -322,7 +320,7 @@ public class SprintClientImpl implements SprintClient {
 	}
 
 
-	private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
+	public URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();

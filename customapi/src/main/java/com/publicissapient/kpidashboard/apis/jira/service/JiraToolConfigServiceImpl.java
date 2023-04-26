@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.bson.types.ObjectId;
@@ -67,7 +69,7 @@ public class JiraToolConfigServiceImpl {
 		return responseList;
 	}
 
-	private void fetchBoardDetailsRestAPICall(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
+	public void fetchBoardDetailsRestAPICall(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
 			String baseUrl, HttpEntity<?> httpEntity) {
 		long startAt = 0;
 		long nextPageIndex = startAt;
@@ -101,6 +103,47 @@ public class JiraToolConfigServiceImpl {
 		} while (isLast);
 	}
 
+	public void fetchBoardDetailsRestAPICa(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
+											 String baseUrl, HttpEntity<?> httpEntity) {
+		long nextPageIndex = 0;
+		boolean isLast = false;
+		do {
+			try {
+				String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_JIRA_BOARD_ENDPOINT).toString(),
+						boardRequestDTO.getProjectKey(), nextPageIndex, boardRequestDTO.getBoardType());
+
+				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+
+				if (response.getStatusCode() == HttpStatus.OK) {
+					isLast = ss(response.getBody(), responseList);
+					nextPageIndex = responseList.size();
+				} else {
+					String statusCode = response.getStatusCode().toString();
+					log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
+					break;
+				}
+
+
+			} catch (Exception exception) {
+				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),
+						exception.getMessage());
+			}
+		} while (isLast);
+	}
+
+	private boolean ss(String response, List<BoardDetailsDTO> responseList) throws JsonProcessingException {
+		boolean isLast = true;
+		JiraBoardListResponse jiraBoardListResponse = mapper.readValue(response,
+				JiraBoardListResponse.class);
+		if (!jiraBoardListResponse.getIsLast().equalsIgnoreCase("true")) {
+			isLast = true;
+		} else {
+			isLast = false;
+		}
+		setBoardListResponse(responseList, jiraBoardListResponse);
+		return isLast;
+	}
+
 	private void setBoardListResponse(List<BoardDetailsDTO> responseList, JiraBoardListResponse jiraBoardListResponse) {
 		jiraBoardListResponse.getValues().stream().forEach(jiraBoardValueResponse -> {
 			BoardDetailsDTO boardDetailsDTO = new BoardDetailsDTO();
@@ -115,19 +158,28 @@ public class JiraToolConfigServiceImpl {
 		String username = "";
 		String password = "";
 
-		if (connection.isVault()){
+		HttpHeaders headers = new HttpHeaders();
+		if(connection.isJaasKrbAuth()){
+			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
+					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
+					connection.getBaseUrl());
+			client.login();
+			password = client.getCookies();
+			headers = restAPIUtils.addHeaders(headers, "Cookie" , password);
+		} else if (connection.isVault()){
 			ToolCredential credential = toolCredentialProvider.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
 			if (credential != null){
 				username = credential.getUsername();
 				password = credential.getPassword();
 			}
+			headers = restAPIUtils.getHeaders(username, password);
 		} else {
 			username = connection.getUsername() == null ? null : connection.getUsername().trim();
 			password = connection.getPassword() == null ? null
 					: restAPIUtils.decryptPassword(connection.getPassword());
+			headers = restAPIUtils.getHeaders(username, password);
 		}
 
-		HttpHeaders headers = restAPIUtils.getHeaders(username, password);
 		return new HttpEntity<>(headers);
 	}
 }

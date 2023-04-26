@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -53,6 +55,8 @@ public class TestConnectionServiceImplTest {
 
 	Connection conn = new Connection();
 
+	KerberosClient client;
+
 	@Before
 	public void setup() {
 		when(customApiConfig.getRsaPrivateKey()).thenReturn("rsaKey");
@@ -69,6 +73,16 @@ public class TestConnectionServiceImplTest {
 	@Test
 	public void validateConnectionJira() {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
+		assertThat("status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test(expected = RestClientException.class)
+	public void validateConnectionJiraSaml() {
+		conn.setJaasKrbAuth(true);
+		client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(), conn.getJaasUser(),
+				conn.getSamlEndPoint(), conn.getBaseUrl());
+		when(client.login()).thenReturn("true");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}

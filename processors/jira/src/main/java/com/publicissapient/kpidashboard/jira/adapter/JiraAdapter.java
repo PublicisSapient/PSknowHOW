@@ -29,6 +29,8 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public interface JiraAdapter {
@@ -122,5 +124,5 @@ public interface JiraAdapter {
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId);
 
-
+	String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException;
 }
