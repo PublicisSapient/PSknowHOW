@@ -547,13 +547,13 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			Map<String, Object> actualCompletionData) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		String markerValue = Constant.BLANK;
-		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter((String) jiraIssueData.get(DEV_COMPLETION_DATE),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter((String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
-			jiraIssueModalObject.setActualCompletionDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+			jiraIssueModalObject.setActualCompletionDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setActualCompletionDate(" - ");
 		if (actualCompletionData.get(ACTUAL_START_DATE) != null) {
-			jiraIssueModalObject.setActualStartDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+			jiraIssueModalObject.setActualStartDate(DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else
 			jiraIssueModalObject.setActualStartDate(" - ");
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
@@ -568,7 +568,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else {
 			jiraIssueModalObject.setPotentialDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");

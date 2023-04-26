@@ -18,33 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeComparator;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -69,8 +42,33 @@ import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
-
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This service reflects the logic for the number of check-ins in master
@@ -328,28 +326,28 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
-				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), commitForDay);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), commitForDay);
 				dataCount.setValue(commitForDay);
 				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
 			} else {
-				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), 0l);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
 				dataCount.setValue(0l);
 				hoverValues.put(NO_CHECKIN, 0);
 
 			}
 			if (mergeCountForRepo != null && mergeCountForRepo.get(currentDate) != null) {
 				Long mergeForDay = mergeCountForRepo.get(currentDate);
-				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
+				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
 				dataCount.setLineValue(mergeForDay);
 				hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			} else {
-				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT), 0l);
+				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
 				dataCount.setLineValue(0l);
 				hoverValues.put(NO_MERGE, 0);
 
 			}
-			dataCount.setDate(DateUtil.dateTimeConverter(currentDate,YYYYMMDD,DateUtil.DISPLAY_DATE_FORMAT));
+			dataCount.setDate(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT));
 			dataCount.setHoverValue(hoverValues);
 			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);
