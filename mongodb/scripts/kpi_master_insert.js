@@ -609,7 +609,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": true,
     "lineLegend": "Resolved Defects",
     "barLegend": "Created Defects",
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "radioButton",
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": true,
     "maxValue": "300",
@@ -3676,6 +3676,28 @@ db.getCollection('kpi_master').insert(
      "boxType": "chart",
      "calculateMaturity": false
    },
+  {
+    "kpiId":"kpi137",
+    "kpiName":"Defect Reopen Rate",
+    "kpiUnit":"Hours",
+    "isDeleted":"False",
+    "defaultOrder":2,
+    "kpiCategory":"Backlog",
+    "kpiSource":"Jira",
+    "groupId":2,
+    "thresholdValue":"",
+    "kanban":false,
+    "kpiInfo": {
+      "definition":"Defect reopen rate measures number of defects reopened out of the total number of defects raised."
+    },
+    "isPositiveTrend":false,
+    "kpiFilter":"dropdown",
+    "showTrend":false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport":true,
+    "hideOverallFilter" : true,
+    "calculateMaturity":false
+  }
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
