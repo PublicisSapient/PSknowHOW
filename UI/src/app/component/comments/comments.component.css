@@ -17,19 +17,12 @@
 }
 
 :host ::ng-deep.p-overlaypanel .p-overlaypanel-close{
-        /* background: #3F51B5; */
-    /* color: #ffffff; */
     width: 1rem;
     height: 1rem;
-    /* transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; */
-    /* border-radius: 50%; */
     position: absolute;
-    /* top: -1.25rem; */
-    /* right: -1.25rem; */
     top: -0.5rem;
     right: -0.5rem;
     border-radius: 2px;
-    /* background-color: black; */
     border: none;
 }
 
@@ -43,6 +36,10 @@
 
 ::ng-deep .p-tabview .p-tabview-panels{
     padding: 0px;
+}
+
+::ng-deep .p-overlaypanel:after, .p-overlaypanel:before{
+    content: none !important;
 }
 
 .comment{
