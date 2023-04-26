@@ -1234,7 +1234,20 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
-      this.navigateToSelectedTab();
+      this.selectedFilterData.kanban = this.kanban;
+      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+        this.previousType = this.kanban;
+        this.filterData = filterApiData['data'];
+        const selectedLevel = this.service.getSelectedLevel();
+        if(Object.keys(selectedLevel).length > 0){
+          this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() ===selectedLevel['hierarchyLevelId'].toLowerCase());
+          this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+        }
+        this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
+        this.navigateToSelectedTab();
+      });
     });
    }
 }
