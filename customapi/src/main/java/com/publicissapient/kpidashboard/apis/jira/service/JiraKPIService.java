@@ -182,8 +182,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalVal.setPriority(iterationStatus.getPriority());
 		iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
 		iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-//		iterationKpiModalVal.setDueDate(
-//				DateUtil.stringToLocalDate(iterationStatus.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString());
 		iterationKpiModalVal.setDueDate(DateUtil.dateConverter(iterationStatus.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC));
 		if (iterationStatus.getRemainingEstimateMinutes() != null)
 			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());

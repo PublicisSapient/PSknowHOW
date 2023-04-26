@@ -407,7 +407,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			} else {
 				markerValue = Constant.RED;
 			}
-//			jiraIssueModalObject.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");

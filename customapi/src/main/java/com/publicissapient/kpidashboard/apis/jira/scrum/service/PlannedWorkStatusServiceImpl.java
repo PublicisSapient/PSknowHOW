@@ -550,12 +550,10 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		String markerValue = Constant.BLANK;
 		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateConverter((String) jiraIssueData.get(DEV_COMPLETION_DATE),"yyyy-MM-dd"));
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
-//			jiraIssueModalObject.setActualCompletionDate(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString());
 			jiraIssueModalObject.setActualCompletionDate(DateUtil.dateConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),"yyyy-MM-dd"));
 		else
 			jiraIssueModalObject.setActualCompletionDate(" - ");
 		if (actualCompletionData.get(ACTUAL_START_DATE) != null) {
-//			jiraIssueModalObject.setActualStartDate(actualCompletionData.get(ACTUAL_START_DATE).toString());
 			jiraIssueModalObject.setActualStartDate(DateUtil.dateConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),"yyyy-MM-dd"));
 		} else
 			jiraIssueModalObject.setActualStartDate(" - ");
@@ -571,7 +569,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-//			jiraIssueModalObject.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 			jiraIssueModalObject.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
 		} else {
 			jiraIssueModalObject.setPotentialDelay("-");

@@ -750,9 +750,6 @@ public class KPIExcelUtility {
 				if(StringUtils.isNotEmpty(e.getDueDate())){
 					date = DateUtil.dateConverter(e.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC);
 				}
-//				excelData.setDueDate((StringUtils.isNotEmpty(e.getDueDate()))
-//						? DateUtil.stringToLocalDate(e.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
-//						: "-");
 				excelData.setDueDate(date);
 				if (e.getRemainingEstimateMinutes() != null) {
 					String remEstimate = CommonUtils.convertIntoDays(e.getRemainingEstimateMinutes());
@@ -761,7 +758,6 @@ public class KPIExcelUtility {
 				if (issueWiseDelay.containsKey(e.getNumber())) {
 					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(e.getNumber());
 					excelData.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-//					excelData.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
 					excelData.setPredictedCompletionDate(DateUtil.dateConverter(iterationPotentialDelay.getPredictedCompletedDate(),"yyyy-MM-dd"));
 				} else {
 					excelData.setPotentialDelay("-");
@@ -771,7 +767,6 @@ public class KPIExcelUtility {
 						.filter(jiraIssue -> jiraIssue.getNumber().equals(e.getNumber())).findFirst();
 
 				if (completedJiraIssue.isPresent()) {
-//					excelData.setActualCompletionDate(completedJiraIssue.get().getUpdateDate());
 					excelData.setActualCompletionDate(DateUtil.dateConverter(completedJiraIssue.get().getUpdateDate(),"yyyy-MM-dd"));
 				} else {
 					excelData.setActualCompletionDate("-");
@@ -801,7 +796,6 @@ public class KPIExcelUtility {
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
 						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-//						epicEndDate = dateTime.toString();
 						epicEndDate = DateUtil.dateConverter(epic.getChangeDate(),DATE_YEAR_MONTH_FORMAT);
 					}
 					excelData.setMonth(month);
@@ -1005,11 +999,6 @@ public class KPIExcelUtility {
 				excelData.setPriority(defect.getPriority());
 				String date = Constant.EMPTY_STRING;
 				if (defect.getCreatedDate() != null) {
-					DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-							.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
-							.optionalEnd().toFormatter();
-//					LocalDateTime dateTime = LocalDateTime.parse(defect.getCreatedDate(), formatter);
-//					date = dateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_PRODUCTION_DEFECT_AGEING));
 					date = DateUtil.dateConverter(defect.getCreatedDate(),DATE_FORMAT_PRODUCTION_DEFECT_AGEING);
 				}
 				excelData.setCreatedDate(date);
@@ -1030,7 +1019,6 @@ public class KPIExcelUtility {
 				excelData.setProject(projectName);
 				excelData.setTicketIssue(storyMap);
 				excelData.setPriority(kanbanIssues.getPriority());
-//				excelData.setCreatedDate(LocalDate.parse(kanbanIssues.getCreatedDate().split("T")[0]).toString());
 				excelData.setCreatedDate(DateUtil.dateConverter(kanbanIssues.getCreatedDate(),DateUtil.TIME_FORMAT));
 				excelData.setIssueStatus(kanbanIssues.getJiraStatus());
 				kpiExcelData.add(excelData);
@@ -1080,7 +1068,6 @@ public class KPIExcelUtility {
 				if (kpiId.equalsIgnoreCase(KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId())) {
 					excelData.setPriority(field);
 				}
-//				excelData.setCreatedDate(LocalDate.parse(kanbanJiraIssue.getCreatedDate().split("T")[0]).toString());
 				excelData.setCreatedDate(DateUtil.dateConverter(kanbanJiraIssue.getCreatedDate(),DateUtil.TIME_FORMAT));
 				excelData.setDayWeekMonth(date);
 				excelDataList.add(excelData);
@@ -1276,9 +1263,6 @@ public class KPIExcelUtility {
 		if(StringUtils.isNotEmpty(jiraIssue.getDueDate())){
 			date = DateUtil.dateConverter(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC);
 		}
-//		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
-//				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
-//				: "-");
 		jiraIssueModalObject.setDueDate(date);
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			jiraIssueModalObject
@@ -1295,7 +1279,6 @@ public class KPIExcelUtility {
 		}
 		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
-//			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
 			jiraIssueModalObject.setDevDueDate(DateUtil.dateConverter(jiraIssue.getDevDueDate(),"yyyy-MM-dd"));
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
