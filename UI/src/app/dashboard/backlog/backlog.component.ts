@@ -52,6 +52,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     tableHeadings: [],
     tableValues: []
   };
+  noProjects = false;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -106,6 +107,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
 
   });
+
+  this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+    this.noProjects = res;
+  }));
 }
   processKpiConfigData(){
     this.kpiConfigData = {};
