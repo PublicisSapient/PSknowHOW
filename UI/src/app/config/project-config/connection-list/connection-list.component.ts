@@ -572,11 +572,11 @@ export class ConnectionListComponent implements OnInit {
     this.addEditConnectionFieldsNlabels.forEach(connectionObj => {
       if (!!this.selectedConnectionType && !!connectionObj.connectionType && this.selectedConnectionType.toLowerCase() === connectionObj.connectionType.toLowerCase()) {
         connectionObj.inputFields.forEach(field => {
-          if (!this.isNewlyConfigAdded && this.nonMendatoryFieldsOnEditConnection.indexOf(field) > -1) {
-            this.fieldsObj[field] = [{ value: '', disabled: false }];
-          } else {
-            this.fieldsObj[field] = [{ value: '', disabled: false }, Validators.required];
-          }
+            if (!this.isNewlyConfigAdded && this.nonMendatoryFieldsOnEditConnection.indexOf(field) > -1) {
+              this.fieldsObj[field] = [{ value: '', disabled: false }];
+            } else {
+              this.fieldsObj[field] = [{ value: '', disabled: false }, Validators.required];
+            }
         });
       }
     });
@@ -591,21 +591,22 @@ export class ConnectionListComponent implements OnInit {
   }
 
   createConnection() {
+    this.connection = { type: this.selectedConnectionType, connPrivate: true };
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
       this.isNewlyConfigAdded = true;
+      this.basicConnectionForm.controls['type'].setValue(this.connection.type);
     } else {
-      this.connection = { type: this.selectedConnectionType, connPrivate: true };
-      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
       this.submitted = false;
       this.connectionDialog = true;
       this.isNewlyConfigAdded = true;
       this.disableConnectionTypeDropDown = false;
       this.connectionTypeFieldsAssignment();
+      this.basicConnectionForm.controls['type'].setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
-
     }
+    
   }
 
   deleteConnection(connection) {
