@@ -93,8 +93,6 @@ public class CustomApiConfig {// NOPMD
 	@Value("${filter.date.range.show:true}")
 	private boolean showDateRangeFilter;
 
-	private String rsaPrivateKey;
-
 	@Value("${testconnection.jiraApi}")
 	private String jiraTestConnection;
 
@@ -613,25 +611,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setMaxPendingRequestsPerUsername(Integer maxPendingRequestsPerUsername) {
 		this.maxPendingRequestsPerUsername = maxPendingRequestsPerUsername;
-	}
-
-	/**
-	 * Gets rsa private key.
-	 *
-	 * @return the rsa private key
-	 */
-	public String getRsaPrivateKey() {
-		return rsaPrivateKey;
-	}
-
-	/**
-	 * Sets rsa private key.
-	 *
-	 * @param rsaPrivateKey
-	 *            the rsa private key
-	 */
-	public void setRsaPrivateKey(String rsaPrivateKey) {
-		this.rsaPrivateKey = rsaPrivateKey;
 	}
 
 	public String getZephyrTestConnection() {

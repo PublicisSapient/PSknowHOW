@@ -18,34 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BAMBOO;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BITBUCKET;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITHUB;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITLAB;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JENKINS;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JIRA;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_SONAR;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_TEAMCITY;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ZEPHYR;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -58,10 +30,20 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.publicissapient.kpidashboard.apis.constant.Constant.*;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -75,8 +57,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private static final String CONNECTION_EMPTY_MSG = "Connection name cannot be empty";
 	private static final String ERROR_MSG = "A connection with same details already exists. Connection name is ";
-	@Autowired
-	private RsaEncryptionService rsaEncryptionService;
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -392,33 +372,21 @@ public class ConnectionServiceImpl implements ConnectionService {
 			try {
 				switch (inputConn.getType()) {
 				case TOOL_SONAR:
-					String accessToken = rsaEncryptionService.decrypt(inputConn.getAccessToken(),
-							customApiConfig.getRsaPrivateKey());
-					String accessTokenExistsSonar = aesEncryptionService.decrypt(currConn.getAccessToken(),
-							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = accessToken.equals(accessTokenExistsSonar);
-					break;
 				case TOOL_ZEPHYR:
-					String accessTokenExistsZephyr = aesEncryptionService.decrypt(currConn.getAccessToken(),
-							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = inputConn.getAccessToken().equals(accessTokenExistsZephyr);
-					break;
 				case TOOL_GITLAB:
-					String gitAccessToken = rsaEncryptionService.decrypt(inputConn.getAccessToken(),
-							customApiConfig.getRsaPrivateKey());
+					String accessToken = inputConn.getAccessToken();
 					String accessTokenExists = aesEncryptionService.decrypt(currConn.getAccessToken(),
 							customApiConfig.getAesEncryptionKey());
-					accessTokenSimilarity = gitAccessToken.equals(accessTokenExists);
+					accessTokenSimilarity = accessToken.equals(accessTokenExists);
 					break;
 				case TOOL_AZUREREPO:
-					String pat = rsaEncryptionService.decrypt(inputConn.getPat(), customApiConfig.getRsaPrivateKey());
+					String pat = inputConn.getPat();
 					String patExists = aesEncryptionService.decrypt(currConn.getPat(),
 							customApiConfig.getAesEncryptionKey());
 					accessTokenSimilarity = pat.equals(patExists);
 					break;
 				case TOOL_JENKINS:
-					String apiKey = rsaEncryptionService.decrypt(inputConn.getApiKey(),
-							customApiConfig.getRsaPrivateKey());
+					String apiKey = inputConn.getApiKey();
 					String apiKeyExists = aesEncryptionService.decrypt(currConn.getApiKey(),
 							customApiConfig.getAesEncryptionKey());
 					accessTokenSimilarity = apiKey.equals(apiKeyExists);
@@ -525,9 +493,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	private String encryptStringForDb(String rasEncryptedStringFromClient) {
-		String plainText = rsaEncryptionService.decrypt(rasEncryptedStringFromClient,
-				customApiConfig.getRsaPrivateKey());
-		String encryptedString = aesEncryptionService.encrypt(plainText, customApiConfig.getAesEncryptionKey());
+		String encryptedString = aesEncryptionService.encrypt(rasEncryptedStringFromClient,
+				customApiConfig.getAesEncryptionKey());
 		return encryptedString == null ? "" : encryptedString;
 	}
 

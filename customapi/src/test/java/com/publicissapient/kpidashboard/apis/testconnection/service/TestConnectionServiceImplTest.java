@@ -28,8 +28,6 @@ import com.publicissapient.kpidashboard.apis.connection.service.TestConnectionSe
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
-
 /**
  * @author sansharm13
  *
@@ -43,9 +41,6 @@ public class TestConnectionServiceImplTest {
 	CustomApiConfig customApiConfig;
 
 	@Mock
-	RsaEncryptionService rsaEncryptionService;
-
-	@Mock
 	UrlValidator urlValidator;
 
 	@Mock
@@ -55,7 +50,6 @@ public class TestConnectionServiceImplTest {
 
 	@Before
 	public void setup() {
-		when(customApiConfig.getRsaPrivateKey()).thenReturn("rsaKey");
 		conn.setUsername("user");
 		conn.setConnectionName("connection name");
 		conn.setBaseUrl("https://abc.com/");
@@ -155,7 +149,6 @@ public class TestConnectionServiceImplTest {
 		conn.setApiEndPoint("/bitbucket/rest/api/1.0");
 		conn.setUsername("test_auto_user10");
 		conn.setPassword("testPassword");
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn("decryptKey");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
@@ -176,7 +169,6 @@ public class TestConnectionServiceImplTest {
 		conn.setApiEndPoint("/bitbucket/rest/api/1.0/");
 		conn.setUsername("test");
 		conn.setPassword("testPassword");
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn("decryptKey");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
@@ -187,7 +179,6 @@ public class TestConnectionServiceImplTest {
 		conn.setApiEndPoint("/bitbucket/rest/api/1.0/");
 		conn.setUsername("test");
 		conn.setPassword("test");
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn(null);
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
@@ -243,7 +234,6 @@ public class TestConnectionServiceImplTest {
 		conn.setBaseUrl("https://abc.com/gitlab");
 		conn.setAccessToken("testAccessToken");
 		when(customApiConfig.getGitlabTestConnection()).thenReturn("api/v4/projects");
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn("decryptKey");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
 				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
@@ -257,7 +247,6 @@ public class TestConnectionServiceImplTest {
 		conn.setBaseUrl("https://abc.com/gitlab");
 		conn.setAccessToken("testAccessToken");
 		when(customApiConfig.getGitlabTestConnection()).thenReturn("api/v4/projects");
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn("decryptKey");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
 				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
