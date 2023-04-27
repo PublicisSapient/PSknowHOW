@@ -213,7 +213,7 @@ jobs:
             - Status of unit test of non_azure_processor is :        ${{steps.testnonazure.outcome}}
             - Status of Sonarqube report of processor is :            ${{steps.Sonarprocessor.outcome}}
             - Status of Sonarqube report of customapi is :           ${{steps.Sonarcustomapi.outcome}}
-            - click on the link for further details https://github.com/rapkalya/KnowHow/actions/runs/${{ github.run_id }} 
+            - click on the link for further details https://github.com/KnowHow/actions/runs/${{ github.run_id }} 
     # comma-separated string, send email to
           to: 
     # from email name
