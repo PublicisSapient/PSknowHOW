@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -60,7 +59,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
@@ -77,9 +75,9 @@ public class KPIExcelUtility {
 	private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
 	private static final String DATE_YEAR_MONTH_FORMAT = "dd-MMM-yy";
 
-	private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
-	private static final DecimalFormat df2 = new DecimalFormat(".##");
-	public static final String TIME = "0d ";
+    private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
+    private static final DecimalFormat df2 = new DecimalFormat(".##");
+    public static final String TIME = "0d ";
     private static final String STATUS = "Status";
     private static final String WEEK = "Week";
 
@@ -152,28 +150,27 @@ public class KPIExcelUtility {
 		}
 	}
 
-
-    public static void populateFTPRExcelData(String sprint, List<String> storyIds, List<JiraIssue> ftprStories,
-                                             List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
-        List<String> collect = ftprStories.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(storyIds)) {
-            storyIds.forEach(story -> {
-                KPIExcelData excelData = new KPIExcelData();
-                excelData.setSprintName(sprint);
-                if (MapUtils.isNotEmpty(issueData)) {
-                    JiraIssue jiraIssue = issueData.get(story);
-                    if (null != jiraIssue) {
-                        excelData.setIssueDesc(checkEmptyName(jiraIssue));
-                        Map<String, String> storyId = new HashMap<>();
-                        storyId.put(story, checkEmptyURL(jiraIssue));
-                        excelData.setStoryId(storyId);
-                    }
-                }
-                excelData.setFirstTimePass(collect.contains(story) ? Constant.EXCEL_YES : Constant.EMPTY_STRING);
-                kpiExcelData.add(excelData);
-            });
-        }
-    }
+	public static void populateFTPRExcelData(String sprint, List<String> storyIds, List<JiraIssue> ftprStories,
+			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
+		List<String> collect = ftprStories.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(storyIds)) {
+			storyIds.forEach(story -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprint);
+				if (MapUtils.isNotEmpty(issueData)) {
+					JiraIssue jiraIssue = issueData.get(story);
+					if (null != jiraIssue) {
+						excelData.setIssueDesc(checkEmptyName(jiraIssue));
+						Map<String, String> storyId = new HashMap<>();
+						storyId.put(story, checkEmptyURL(jiraIssue));
+						excelData.setStoryId(storyId);
+					}
+				}
+				excelData.setFirstTimePass(collect.contains(story) ? Constant.EXCEL_YES : Constant.EMPTY_STRING);
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
 	/**
 	 * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is
@@ -1344,5 +1341,47 @@ public class KPIExcelUtility {
 			}
 		}
 		return data;
+	}
+
+	public static void populateIterationDataForWastage(List<IterationKpiModalValue> overAllmodalValues,
+													   List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime,
+													   FieldMapping fieldMapping) {
+		int wastageTime = blockedTime + waitTime;
+		int originalEstimate = 0;
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		KPIExcelUtility.populateAssignee(jiraIssue, iterationKpiModalValue);
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
+		}
+		if ((blockedTime != 0)) {
+			iterationKpiModalValue.setBlockedTime(CommonUtils.convertIntoDays(blockedTime));
+		} else {
+			iterationKpiModalValue.setBlockedTime(TIME);
+		}
+		if ((waitTime != 0)) {
+			iterationKpiModalValue.setWaitTime(CommonUtils.convertIntoDays(waitTime));
+		} else {
+			iterationKpiModalValue.setWaitTime(TIME);
+		}
+		if ((wastageTime != 0)) {
+			iterationKpiModalValue.setWastage(CommonUtils.convertIntoDays(wastageTime));
+		} else {
+			iterationKpiModalValue.setWastage(TIME);
+		}
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
 	}
 }
