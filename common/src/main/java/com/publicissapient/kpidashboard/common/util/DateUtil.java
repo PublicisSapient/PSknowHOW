@@ -18,6 +18,11 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
+import com.publicissapient.kpidashboard.common.model.application.Week;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -30,12 +35,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
-
-import lombok.extern.slf4j.Slf4j;
-
-import com.publicissapient.kpidashboard.common.model.application.Week;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 /**
  * @author narsingh9
