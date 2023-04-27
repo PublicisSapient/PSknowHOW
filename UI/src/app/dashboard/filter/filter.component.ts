@@ -1061,6 +1061,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedField = this.filterForm?.get(formfield)?.value;
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
+
+        if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+          return dateString;
+        }
   
         if (obj) {
           let d;

@@ -69,7 +69,7 @@
                         (change)="handleMilestoneFilter('release')" placeholder="Release" [clearable]="false"
                         class="p-pb-0">
                         <ng-option *ngFor="let item of filteredAddFilters['release']" [value]="item.nodeId">
-                           {{item.nodeName}}{{item.releaseState?.toLowerCase() === 'active'? ' (Released)' : ' (UnReleased)'}}
+                           {{item.nodeName}}{{item.releaseState?.toLowerCase() === 'released'? ' (RELEASED)' : ' (UNRELEASED)'}}
                         </ng-option>
                      </ng-select>
                   </div>
