@@ -457,19 +457,16 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { }
       },
       {
-        "kpiId": "kpi139",
-        "kpiName": "Refinement Rejection Rate",
-        "kpiSource: 'Jira',
-        "type": [
-          "Other"
-        ],
-        "fieldNames": {
-          "Workflow Status Mapping": [
-            "jiraReadyForRefinement",
-            "jiraAcceptedInRefinement",
-            "jiraRejectedInRefinement"
+        kpiId: 'kpi139',
+        kpiName: 'Refinement Rejection Rate',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames: {
+          'Workflow Status Mapping': [
+            'jiraReadyForRefinement',
+            'jiraAcceptedInRefinement',
+            'jiraRejectedInRefinement'
           ]
         }
       }
-
 	  ]);
