@@ -82,8 +82,6 @@ public class TestConnectionServiceImplTest {
 		conn.setJaasKrbAuth(true);
 		client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(), conn.getJaasUser(),
 				conn.getSamlEndPoint(), conn.getBaseUrl());
-//		when(client.login(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-//				ArgumentMatchers.anyString())).thenReturn("true");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
