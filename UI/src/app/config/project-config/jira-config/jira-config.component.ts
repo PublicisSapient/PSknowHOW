@@ -102,6 +102,7 @@ export class JiraConfigComponent implements OnInit {
   ];
 
   jiraTemplate : any[];
+  gitActionWorkflowNameList : any[];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -133,7 +134,7 @@ export class JiraConfigComponent implements OnInit {
             .filter((toolConfig) => toolConfig.toolName === (this.urlParam));
 
         }
-        this.getConnectionList(this.urlParam?.toLowerCase() == 'jiratest' ? 'Jira' : this.urlParam);
+        this.getConnectionList(this.urlParam);
         this.initializeFields(this.urlParam);
         this.getJiraTemplate();
       } else {
@@ -313,6 +314,11 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'Jira') {
       this.isLoading = false;
     }
+
+    if(this.urlParam === 'GitHubAction'){
+      this.hideFormElements(['workflowID','jobType'])
+      this.toolForm.reset();
+    }
   }
 
   enableDisableOrganizationKey(cloudEnv) {
@@ -380,17 +386,27 @@ export class JiraConfigComponent implements OnInit {
     || id === 'testAutomationCompletedIdentification'
     || id === 'testRegressionIdentification'){
       return this.testCaseIdentification;
+    }else if(id === 'workflowID'){
+      return this.gitActionWorkflowNameList;
     }
   }
   getConnectionList(toolName) {
     this.loading = true;
-    // this.isLoading = true;
-    this.http.getAllConnectionTypeBased(toolName).subscribe((response) => {
+    let finalToolName = "";
+    if(toolName === 'jiratest'){
+      finalToolName = 'Jira';
+    }else if(toolName === 'GitHubAction'){
+      finalToolName = 'GitHub';
+    }else{
+      finalToolName = toolName;
+    }
+
+    this.http.getAllConnectionTypeBased(finalToolName).subscribe((response) => {
       this.loading = false;
       if (response && response['success']) {
         this.connections = response['data'];
         if (this.selectedToolConfig && this.selectedToolConfig.length) {
-          if (this.isSingleToolAllowed(toolName)) {
+          if (this.isSingleToolAllowed(finalToolName)) {
             this.selectedConnection = this.connections.filter(
               (connection) =>
                 connection.id === this.selectedToolConfig[0].connectionId,
@@ -624,7 +640,13 @@ export class JiraConfigComponent implements OnInit {
         } else if (value.toLowerCase() === 'deploy') {
           this.showFormElements(['parameterNameForEnvironment']);
         }
-
+        break;
+      case 'GitHubAction':
+        if(value.toLowerCase() === 'build'){
+          this.showFormElements(['workflowID']);
+        } else{
+         this.hideFormElements(['workflowID']);
+        }
         break;
     }
   };
@@ -1804,6 +1826,66 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+        case 'GitHubAction':
+          {
+            this.formTitle = 'GitHub Action';
+            this.connectionTableCols = [
+              {
+                field: 'connectionName',
+                header: 'Connection Name',
+                class: 'long-text',
+              },
+              { field: 'username', header: 'User Name', class: 'normal' },
+              { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+            ];
+  
+            this.configuredToolTableCols = [
+              { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
+              {field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
+              { field: 'jobType', header: 'Job Type', class: 'long-text' },
+            ];
+  
+            this.formTemplate = {
+              group: 'GitHub Action',
+              elements: [
+                {
+                  type: 'text',
+                  label: 'Repository Name',
+                  id: 'repositoryName',
+                  validators: ['required'],
+                  containerClass: 'p-sm-6',
+                  show: true,
+                  tooltip: `GitHub Repository Name.<br / <i>Impacted : All GitHub Repository based KPIs</i>`,
+                  onFocusOut : this.getGitActionWorkflowName
+                },
+                {
+                  type: 'dropdown',
+                  label: 'Job Type',
+                  id: 'jobType',
+                  containerClass: 'p-sm-6',
+                  optionsList: this.jobType,
+                  changeHandler: this.jobTypeChangeHandler,
+                  validators: ['required'],
+                  show: false,
+                  isLoading: false
+                },
+                {
+                  type: 'dropdown',
+                  label: 'WorkFlow Name',
+                  id: 'workflowID',
+                  containerClass: 'p-sm-6',
+                  optionsList: this.gitActionWorkflowNameList,
+                  changeHandler: ()=>true,
+                  filterValue: 'true',
+                  filterByName: 'name',
+                  optionLabel: 'name',
+                  show: false,
+                  isLoading: false
+                },
+              ]
+            };
+          }
+          break;
       case 'JiraTest':
         {
           this.formTitle = 'JiraTest';
@@ -2143,6 +2225,9 @@ export class JiraConfigComponent implements OnInit {
     }else{
       delete submitData['metadataTemplateCode'];
     }
+    if(this.urlParam === 'GitHubAction'){
+      submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj=> obj.code === submitData['workflowID'])[0]?.name || "";
+    }
 
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
@@ -2375,11 +2460,43 @@ export class JiraConfigComponent implements OnInit {
       this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
+        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
         if(selectedTemplate?.templateName === 'Custom Template'){
           this.toolForm.get('metadataTemplateCode').disable();
         }
       }
     })
   }
+
+  getGitActionWorkflowName(event, self){
+    if(!self.selectedConnection?.id || event.target.value === ''){
+      self.hideFormElements(['jobType','workflowID'])
+      self.showPrompt('error',"Please fill all fields and select a connection.");
+      return;
+    }else{
+      self.showFormElements(['jobType'])
+    }
+    self.gitActionWorkflowNameList = [];
+    const postJson = {connectionID : self.selectedConnection?.id,repositoryName:event.target.value};
+    self.http.getGitActionWorkFlowName(postJson).subscribe(resp=>{
+      if(resp && resp['success']){
+        self.gitActionWorkflowNameList = resp['data'].map(option=>{
+          return {'name' : option['workflowName'],'code':option['workflowID']}
+        })
+      }else{
+        self.showPrompt('error',"No Workflow list found.");
+      }
+    })
+
+  }
+ 
+  /** Generic method for showing notification prompt */
+  showPrompt(type,msg){
+    this.messenger.add({
+      severity: type,
+      summary: msg,
+    });
+  }
+
+  
 }
