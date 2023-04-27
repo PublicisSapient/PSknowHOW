@@ -804,7 +804,7 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should set Date', () => {
+  it('should ge format date based on iteration/milestone', () => {
     component.filteredAddFilters = {
       sprint: [
         {
@@ -827,12 +827,26 @@ describe('FilterComponent', () => {
       selectedSprintValue: new UntypedFormControl('38998_DEMO_SONAR_63284960fdd20276d60e4df5')
     });
 
-    let result = component.getDate('start');
+    let result = component.getFormatDateBasedOnIterationAndMilestone('start','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
     expect(result).toBe('07/09/2022');
 
-    result = component.getDate('end');
-    expect(result).toBe('27/09/2022');
+    let result2 = component.getFormatDateBasedOnIterationAndMilestone('end','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
+    expect(result2).toBe('27/09/2022');
   });
+
+  it("should call formatted date for iteration",()=>{
+    component.selectedTab = 'iteration';
+    const spy = spyOn(component,"getFormatDateBasedOnIterationAndMilestone");
+    component.getDate('start');
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it("should call formatted date for milestone",()=>{
+    component.selectedTab = 'milestone';
+    const spy = spyOn(component,"getFormatDateBasedOnIterationAndMilestone");
+    component.getDate('start');
+    expect(spy).toHaveBeenCalled();
+  })
 
 
   it('should remove sprint', () => {

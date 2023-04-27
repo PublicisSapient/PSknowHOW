@@ -436,7 +436,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.selectedTab?.toLowerCase() === 'iteration') {
       this.projectIndex = 0;
         this.handleIterationFilters('project');
-    }else {
+    }else if(this.selectedTab?.toLowerCase() === 'milestone'){
+        this.handleMilestoneFilter('project');
+    }else  {
       this.applyChanges();
     }
   }
@@ -469,21 +471,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         for (let i = 0; i < selectedProjects?.length; i++) {
           for (const key in this.additionalFiltersDdn) {
             if (key == 'sprint') {
-              this.filteredAddFilters[key] = [
-                ...this.filteredAddFilters[key],
-                ...this.additionalFiltersDdn[key]?.filter(
-                  (x) =>
-                    x['parentId']?.includes(selectedProjects[i]) &&
-                    x['sprintState']?.toLowerCase() == 'closed',
-                ),
-              ];
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) &&  x['sprintState']?.toLowerCase() == 'closed')];
             } else {
-              this.filteredAddFilters[key] = [
-                ...this.filteredAddFilters[key],
-                ...this.additionalFiltersDdn[key]?.filter((x) =>
-                  x['path'][0]?.includes(selectedProjects[i]),
-                ),
-              ];
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key],...this.additionalFiltersDdn[key]?.filter((x) =>x['path'][0]?.includes(selectedProjects[i]))];
             }
           }
         }
@@ -509,10 +499,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (Array.isArray(selectedTrendIds)) {
         for (let i = 0; i < selectedTrendIds?.length; i++) {
           selectedTrendValues.push(
-            this.trendLineValueList?.filter(
-              (x) => x.nodeId === selectedTrendIds[i],
-            )[0],
-          );
+            this.trendLineValueList?.filter( (x) => x.nodeId === selectedTrendIds[i] )[0]);
         }
       }else{
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
@@ -878,7 +865,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   sortAlphabetically(objArray) {
     objArray?.sort((a, b) => a.nodeName?.localeCompare(b.nodeName));
-    return objArray;
+    return objArray; 
   }
 
   getTrendLevelArray() {
@@ -1061,21 +1048,31 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getDate(type) {
-    let dateString = 'N/A';
-    const selectedSprint = this.filterForm?.get('selectedSprintValue')?.value;
-    if (selectedSprint) {
-      const obj = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == selectedSprint)[0];
-
-      if (obj) {
-        let d;
-        if (type == 'start') {
-          d = new Date(obj['sprintStartDate']);
-        } else {
-          d = new Date(obj['sprintEndDate']);
-        }
-        dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
-      }
+    if (this.selectedTab.toLowerCase() === 'iteration') {
+      return this.getFormatDateBasedOnIterationAndMilestone(type, 'sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
+    } else {
+      return this.getFormatDateBasedOnIterationAndMilestone(type, 'release', "selectedRelease", "releaseStartDate", "releaseEndDate");
     }
+  }
+
+  /** Get formated start/end date for Iteration and Milestone   */
+  getFormatDateBasedOnIterationAndMilestone(type,filteredAddFiltersKey,formfield,startDateField,endDateField){
+    let dateString = 'N/A';
+    const selectedField = this.filterForm?.get(formfield)?.value;
+      if (selectedField) {
+        const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
+  
+        if (obj) {
+          let d;
+          if (type == 'start') {
+            d = new Date(obj[startDateField]);
+          } else {
+            d = new Date(obj[endDateField]);
+          }
+          dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
+        }
+      }
+
     return dateString;
   }
 
@@ -1259,17 +1256,29 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
    }
 
-   handleMilestoneFilter(){
+   handleMilestoneFilter(level){
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
-    this.filterForm?.get('selectedRelease')?.setValue('');
+    if(level === 'project'){
+      this.filterForm?.get('selectedRelease')?.setValue('');
+    }
+    
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
-      this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) =>x['parentId']?.includes(selectedProject))];
+      this.filteredAddFilters['release'] = this.additionalFiltersDdn['release']?.filter((x) =>x['parentId'][0]?.includes(selectedProject));
     }
     if(this.filteredAddFilters && this.filteredAddFilters['release'].length >0){
-     this.filterForm.get('selectedRelease').setValue(this.filteredAddFilters['release'][0]['nodeId']);
+      if(level === 'project'){
+        this.filterForm.get('selectedRelease').setValue(this.filteredAddFilters['release'][0]['nodeId']);
+      }
+      this.service.setNoRelease(false);
+     this.selectedFilterArray = [];
+     this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel=> rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
+     this.createFilterApplyData();
+     this.service.select(this.masterData,this.filterData,this.filterApplyData,this.selectedTab);
     } else{
-      this.filterForm.get('selectedRelease').setValue('');
+      this.filterForm.controls['selectedRelease'].reset();
+      this.service.setNoRelease(true);
     }
+    
    }
 }

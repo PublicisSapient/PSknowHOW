@@ -81,6 +81,8 @@ export class SharedService implements OnInit {
   selectedTrends = [];
   public isSideNav;
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  noRelease = new BehaviorSubject<any>(false);
+  noReleaseObs = this.noRelease.asObservable();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -296,6 +298,10 @@ export class SharedService implements OnInit {
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
+  }
+
+  setNoRelease(value){
+    this.noRelease.next(value)
   }
 }
 
