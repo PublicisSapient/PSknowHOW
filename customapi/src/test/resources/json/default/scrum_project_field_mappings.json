@@ -183,9 +183,6 @@
       "In Investigation",
       "Open"
     ],
-    "jiraDefectClosedStatus": [
-      "Closed"
-    ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 
     "8"
