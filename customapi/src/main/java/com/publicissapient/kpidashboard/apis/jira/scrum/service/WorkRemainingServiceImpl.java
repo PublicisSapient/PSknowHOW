@@ -200,7 +200,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 										.equals(jiraIssue.getNumber()))
 								.findFirst().orElse(new JiraIssueCustomHistory());
 						String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
-						KPIExcelUtility.populateIterationKPI(finalOverAllmodalValues,finalmodalValues,jiraIssue,fieldMapping,modalObjectMap);
+						KPIExcelUtility.populateWorkRemainingWithPCD(finalOverAllmodalValues, finalmodalValues,
+								jiraIssue, fieldMapping, issueWiseDelay, sprintDetails, devCompletionDate);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getRemainingEstimateMinutes()) {

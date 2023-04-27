@@ -28,14 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -69,8 +65,6 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String LOGGED_WORK = "Logged Work";
 	private static final String OVERALL = "Overall";
 	private static final String HOURS = "Hours";
-	@Autowired
-	private ConfigHelperService configHelperService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -144,10 +138,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
-			//Creating map of modal Objects
-			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
+
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 
@@ -163,7 +154,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				int logWorkData = 0;
 
 				for (JiraIssue jiraIssue : issues) {
-					KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null);
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
 						overAllOrigEst.set(0, overAllOrigEst.get(0) + jiraIssue.getOriginalEstimateMinutes());

@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -165,8 +164,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
-			//Creating map of modal Objects
-			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
+
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -209,11 +207,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 								blockedTime += jiraIssueBlockedTime;
 								overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
 							}
-							IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
-							jiraIssueModalObject.setBlockedTime(CommonUtils.convertIntoDays(jiraIssueBlockedTime));
-							jiraIssueModalObject.setWaitTime(CommonUtils.convertIntoDays(jiraIssueWaitedTime));
-							jiraIssueModalObject.setWastage(CommonUtils.convertIntoDays(jiraIssueBlockedTime+jiraIssueWaitedTime));
-							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+							KPIExcelUtility.populateIterationDataForWastage(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
+									jiraIssueWaitedTime, fieldMapping);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData wastage = new IterationKpiData(WASTAGE,

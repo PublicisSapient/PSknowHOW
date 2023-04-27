@@ -244,8 +244,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 										delay = KpiDataHelper.checkDelay(jiraIssue, issueWiseDelay, delay,
 												overallDelay);
 									}
-									KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
-									setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue, jiraIssueData, actualCompletionData);
+									populateIterationDataForPlannedWork(overAllmodalValues, modalValues, jiraIssue,
+											fieldMapping, actualCompletionData, jiraIssueData, issueWiseDelay);
 								}
 							} else {
 								// Checking if dueDate is <= sprint End Date for closed sprint
@@ -271,8 +271,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 										delay = KpiDataHelper.checkDelay(jiraIssue, issueWiseDelay, delay,
 												overallDelay);
 									}
-									KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
-									setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue, jiraIssueData, actualCompletionData);
+									populateIterationDataForPlannedWork(overAllmodalValues, modalValues, jiraIssue,
+											fieldMapping, actualCompletionData, jiraIssueData, issueWiseDelay);
 								}
 							}
 							// Calculating actual work status for only completed issues
@@ -295,8 +295,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 										delay += KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
 										overallDelay.set(0, overallDelay.get(0) + KpiDataHelper.getDelayInMinutes(jiraIssueDelay));
 									}
-									KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
-									setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue, jiraIssueData, actualCompletionData);
+									populateIterationDataForPlannedWork(overAllmodalValues, modalValues, jiraIssue,
+											fieldMapping, actualCompletionData, jiraIssueData, issueWiseDelay);
 								}
 							}
 						}

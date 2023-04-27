@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,6 +246,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 					.orElse(Collections.emptyList());
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
+			Map<String, JiraIssue> totalStoriesMap =  totalJiraIssues.stream().collect(Collectors.toMap(
+					JiraIssue::getNumber, Function.identity()));
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			allDefects=KpiHelperService.excludePriorityAndRCA(allDefects,projectWisePriority,projectWiseRCA);
@@ -263,7 +266,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 				for (JiraIssue jiraIssue : allDefects) {
 					createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, overAlllinkedmodalValues,
-							linkedDefectList, unlinkedDefectList, jiraIssue, endDate, startDate, totalJiraIssues,
+							linkedDefectList, unlinkedDefectList, jiraIssue, endDate, startDate, totalStoriesMap,
 							fieldMapping );
 				}
 				
@@ -364,27 +367,23 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
 			List<IterationKpiModalValue> overAlllinkedmodalValues, List<JiraIssue> linkedDefect,
 			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, String endDate, String startDate,
-			List<JiraIssue> totalJiraIssues, FieldMapping fieldMapping ) {
-		Map<String, JiraIssue> totalStoriesMap =  totalJiraIssues.stream().collect(Collectors.toMap(
-				JiraIssue::getNumber, Function.identity()));
-		//Creating map of modal Objects
-		Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(totalJiraIssues);
+			Map<String, JiraIssue> totalStoriesMap, FieldMapping fieldMapping ) {
 		try {
 			if (checkIssueCreatedInSprintDuration(jiraIssue, startDate, endDate)) {
 				if (CollectionUtils.isNotEmpty(jiraIssue.getDefectStoryID())) {
 					List<JiraIssue> linkedJiraIssueStoryList = new ArrayList<>();
 					filtersLinkedStories(overAllUnlinkedmodalValues, unlinkedDefect, jiraIssue, totalStoriesMap, fieldMapping,
-							linkedJiraIssueStoryList,modalObjectMap);
+							linkedJiraIssueStoryList);
 					if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
 						linkedDefect.add(jiraIssue);
-						KPIExcelUtility.populateIterationKPI(overAlllinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, linkedJiraIssueStoryList, true);
+						KPIExcelUtility.populateIterationDataForQualityStatus(overAlllinkedmodalValues, jiraIssue, true, fieldMapping,
+								linkedJiraIssueStoryList);
 					}
 
 				} else {
 					unlinkedDefect.add(jiraIssue);
-					KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-					setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false);
+					KPIExcelUtility.populateIterationDataForQualityStatus(overAllUnlinkedmodalValues, jiraIssue, false, null,
+							new ArrayList<>());
 				}
 			}
 		} catch (ParseException e) {
@@ -405,13 +404,13 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 */
 	private void filtersLinkedStories(List<IterationKpiModalValue> overAllUnlinkedmodalValues, List<JiraIssue> unlinkedDefect,
 			JiraIssue jiraIssue, Map<String, JiraIssue> totalStoriesMap, FieldMapping fieldMapping,
-			List<JiraIssue> linkedJiraIssueStoryList,Map<String, IterationKpiModalValue> modalObjectMap) {
+			List<JiraIssue> linkedJiraIssueStoryList) {
 		jiraIssue.getDefectStoryID()
 				.forEach(storyNumber -> totalStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
 					if (fieldMapping.getJiradefecttype().contains(linkedJiraIssueStory.getTypeName())) {
 						unlinkedDefect.add(jiraIssue);
-						KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false);
+						KPIExcelUtility.populateIterationDataForQualityStatus(overAllUnlinkedmodalValues, jiraIssue,
+								false, null, new ArrayList<>());
 					} else {
 						linkedJiraIssueStoryList.add(linkedJiraIssueStory);
 					}
@@ -434,32 +433,5 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				|| dateFormat.parse(jiraIssue.getCreatedDate()).equals(dateFormat.parse(startDate)))
 				|| (dateFormat.parse(jiraIssue.getCreatedDate()).before(dateFormat.parse(endDate))
 						&& dateFormat.parse(jiraIssue.getCreatedDate()).after(dateFormat.parse(startDate)));
-	}
-
-	private void setKpiSpecificData(JiraIssue jiraIssue, FieldMapping fieldMapping,
-			Map<String, IterationKpiModalValue> modalObjectMap, List<JiraIssue> linkedJiraIssueStoryList,
-			boolean estimationFlag) {
-		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
-		if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
-			AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
-			Map<String, String> linkedStoriesMap = new HashMap<>();
-			linkedJiraIssueStoryList.forEach(linkedStory -> {
-				linkedStoriesMap.put(linkedStory.getNumber(), linkedStory.getUrl());
-				if (estimationFlag) {
-					if (null != linkedStory.getStoryPoints()
-							&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						storyPoint.updateAndGet(v -> v + linkedStory.getStoryPoints());
-					}
-					if (null != linkedStory.getOriginalEstimateMinutes()
-							&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) && fieldMapping
-									.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-						storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
-					}
-				}
-			});
-			jiraIssueModalObject.setLinkedStories(linkedStoriesMap);
-			jiraIssueModalObject.setLinkedStoriesSize(storyPoint.get().toString());
-		}
 	}
 }

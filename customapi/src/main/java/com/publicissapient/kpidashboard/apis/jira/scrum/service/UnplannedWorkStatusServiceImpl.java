@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -157,8 +156,6 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		if (CollectionUtils.isNotEmpty(allIssuesWithoutDueDate)) {
 			LOGGER.info("Unplanned Work Status -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssuesWithoutDueDate.size());
-			//Creating map of modal Objects
-			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssuesWithoutDueDate.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName,
 							Collectors.groupingBy(JiraIssue::getPriority)));
@@ -201,7 +198,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 								originalEstimateCompleted = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateCompleted,
 										originalEstimateCompleted, jiraIssue);
 							}
-							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+							populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData issueCountsPlanned;
