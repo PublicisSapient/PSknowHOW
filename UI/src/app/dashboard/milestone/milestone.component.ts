@@ -125,11 +125,11 @@ export class MilestoneComponent implements OnInit {
         if (this.masterData && Object.keys(this.masterData).length) {
           if (this.selectedtype !== 'Kanban') {
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-            // const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0])[0];
-            // const today = new Date().toISOString().split('T')[0];
-            // const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
-            // this.timeRemaining = this.calcBusinessDays(today, endDate);
-            // this.service.iterationCongifData.next({daysLeft: this.timeRemaining});
+            const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
+            const today = new Date().toISOString().split('T')[0];
+            const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+            this.timeRemaining = this.calcBusinessDays(today, endDate);
+            this.service.iterationCongifData.next({daysLeft: this.timeRemaining});
             this.groupJiraKpi(kpiIdsForCurrentBoard);
           }
         }
