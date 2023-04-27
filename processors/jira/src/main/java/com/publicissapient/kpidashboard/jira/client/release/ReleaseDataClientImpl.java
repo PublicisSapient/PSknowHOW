@@ -231,7 +231,6 @@ public class ReleaseDataClientImpl implements ReleaseDataClient {
 				}
 			});
 		}
-		
 	}
 
 	/**
