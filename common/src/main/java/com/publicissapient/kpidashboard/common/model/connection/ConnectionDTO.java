@@ -45,9 +45,11 @@ public class ConnectionDTO {
 	private String type;
 	private String connectionName;
 	private boolean cloudEnv;
+	private boolean accessTokenEnabled;
 	private String baseUrl;
 	private String username;
 	private String password;
+	private String patOAuthToken;
 	private String apiEndPoint;
 	private String consumerKey;
 	private String privateKey;
@@ -66,6 +68,8 @@ public class ConnectionDTO {
 	private String updatedBy;
 	private List<String> connectionUser;
 	private boolean vault;//GS requirement
+	private boolean bearerToken; // Kurig requirement
+	private String jiraAuthType;
 	private boolean jaasKrbAuth;
 	private String jaasConfigFilePath;
 	private String krb5ConfigFilePath;
