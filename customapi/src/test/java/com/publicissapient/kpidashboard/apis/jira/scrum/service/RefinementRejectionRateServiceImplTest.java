@@ -104,7 +104,7 @@ public class RefinementRejectionRateServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 		
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi138");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi139");
 		kpiRequest.setLabel("PROJECT");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();

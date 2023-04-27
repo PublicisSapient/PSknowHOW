@@ -3410,8 +3410,9 @@
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
-  },{
-  "kpiId": "kpi138",
+  },
+  {
+  "kpiId": "kpi139",
   "kpiName": "Refinement Rejection Rate",
   "kpiUnit": "%",
   "isDeleted": "False",

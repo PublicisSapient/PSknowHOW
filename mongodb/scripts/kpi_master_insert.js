@@ -3628,8 +3628,8 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
-{
-		"kpiId": "kpi137",
+  {
+		"kpiId": "kpi139",
 		"kpiName": "Refinement Rejection Rate",
 		"kpiUnit": "%",
 		"isDeleted": "False",
@@ -3651,7 +3651,7 @@ db.getCollection('kpi_master').insert(
 		"aggregationCriteria": "sum",
 		"isAdditionalFilterSupport": false,
 		"calculateMaturity": false
-	},
+  },
   {
      "kpiId": "kpi136",
      "kpiName": "Defect Count by Status",
