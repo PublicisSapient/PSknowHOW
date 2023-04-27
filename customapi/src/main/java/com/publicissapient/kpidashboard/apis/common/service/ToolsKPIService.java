@@ -14,6 +14,7 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -577,8 +578,13 @@ public abstract class ToolsKPIService<R, S> {
 				values = dataCounts.stream().map(val -> (R) val.getValue()).collect(Collectors.toList());
 			}
 			R aggValue = calculateAggValue(kpiName, dataCounts, values,kpiId);
-			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-					String.valueOf(aggValue));
+			if (StringUtils.isNotEmpty(kpiId) && kpiId.equalsIgnoreCase("kpi118")) {
+				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+						String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size()));
+			} else {
+				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+						String.valueOf(aggValue));
+			}
 		}
 		return maturityValue;
 	}
