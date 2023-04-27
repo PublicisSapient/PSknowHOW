@@ -77,14 +77,13 @@ public class TestConnectionServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
-	@Test(expected = RestClientException.class)
+	@Test
 	public void validateConnectionJiraSaml() {
 		conn.setJaasKrbAuth(true);
 		client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(), conn.getJaasUser(),
 				conn.getSamlEndPoint(), conn.getBaseUrl());
-		when(client.login()).thenReturn("true");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
-		assertThat("status: ", response.getSuccess(), equalTo(true));
+		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
 
 	@Test

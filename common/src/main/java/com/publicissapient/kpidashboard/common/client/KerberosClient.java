@@ -147,9 +147,14 @@ public class KerberosClient {
 
     /**
      * This method fetch login cookies necessary to establish connection with spnego jira client
+     * @param samlTokenStartString
+     * @param samlTokenEndString
+     * @param samlUrlStartString
+     * @param samlUrlEndString
      * @return login response
      */
-    public String login(){
+	public String login(String samlTokenStartString, String samlTokenEndString, String samlUrlStartString,
+			String samlUrlEndString) {
         try {
             String loginURL = this.samlEndPoint + this.jiraHost;
             setKerberosProperties();
@@ -158,7 +163,8 @@ public class KerberosClient {
             Subject serviceSubject = lc.getSubject();
             PrivilegedAction<String> action = ()-> {
                 try {
-                    return loginCall(loginURL);
+					return loginCall(loginURL, samlTokenStartString, samlTokenEndString, samlUrlStartString,
+							samlUrlEndString);
                 } catch (IOException e) {
                     throw new RestClientException("error while logging in"+e.getMessage());
                 }
@@ -172,20 +178,26 @@ public class KerberosClient {
 
     /**
      * This method execute login call with http client
-     * @param loginURL loginURL
+     * @param loginURL
+     * @param samlTokenStartString
+     * @param samlTokenEndString
+     * @param samlUrlStartString
+     * @param samlUrlEndString
      * @return login response
      * @throws IOException
      */
-    private String loginCall(String loginURL) throws IOException {
+	private String loginCall(String loginURL, String samlTokenStartString, String samlTokenEndString,
+			String samlUrlStartString, String samlUrlEndString) throws IOException {
         HttpUriRequest getRequest = RequestBuilder.get().setUri(loginURL).build();
         HttpResponse response =  this.loginHttpClient.execute(getRequest);
         HttpEntity entity = response.getEntity();
         String loginResponse =  EntityUtils.toString(entity, "UTF-8");
         if(null != loginResponse && !loginResponse.equalsIgnoreCase("")){
             log.debug("login response : {}",loginResponse);
-            generateSamlCookies(loginResponse);
-        }else {
-            loginResponse = null;
+			generateSamlCookies(loginResponse, samlTokenStartString, samlTokenEndString, samlUrlStartString,
+					samlUrlEndString);
+		} else {
+			loginResponse = null;
         }
         clearKerberosProperties();
         return loginResponse;
@@ -193,12 +205,17 @@ public class KerberosClient {
 
     /**
      * This method generate the cookies required for connection
-     * @param loginResponse loginResponse
+     * @param loginResponse
+     * @param samlTokenStartString
+     * @param samlTokenEndString
+     * @param samlUrlStartString
+     * @param samlUrlEndString
      * @throws IOException
      */
-    public void generateSamlCookies(String loginResponse) throws IOException {
-        String samlToken = extractString(loginResponse,"<input type=\"hidden\" name=\"SAMLResponse\" value=\"","\"/>");
-        String samlURL = extractString(loginResponse, "<form method=\"post\" action=\"","\">");
+	public void generateSamlCookies(String loginResponse, String samlTokenStartString, String samlTokenEndString,
+			String samlUrlStartString, String samlUrlEndString) throws IOException {
+        String samlToken = extractString(loginResponse,samlTokenStartString,samlTokenEndString);
+        String samlURL = extractString(loginResponse, samlUrlStartString,samlUrlEndString);
         log.debug("Saml Token extracted from login response: {}", samlToken);
         log.debug("Saml URL extracted from login response: {}", samlURL);
         HttpUriRequest postRequest = RequestBuilder.post().setUri(samlURL)

@@ -64,9 +64,10 @@ public class ConnectionDTO {
 	private boolean offline;
 	private String offlineFilePath;
 	private String createdBy;
+	private String createdAt;
 	private boolean connPrivate;
 	private String updatedBy;
-	private List<String> connectionUser;
+	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
 	private boolean bearerToken; // Kurig requirement
 	private String jiraAuthType;

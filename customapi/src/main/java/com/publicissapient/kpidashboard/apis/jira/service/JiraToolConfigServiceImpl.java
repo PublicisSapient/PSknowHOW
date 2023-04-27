@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
@@ -54,6 +55,9 @@ public class JiraToolConfigServiceImpl {
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
+	@Autowired
+	CustomApiConfig customApiConfig;
+	
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
 		List<BoardDetailsDTO> responseList = new ArrayList<>();
@@ -163,7 +167,8 @@ public class JiraToolConfigServiceImpl {
 			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
 					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
 					connection.getBaseUrl());
-			client.login();
+			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
+					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
 			password = client.getCookies();
 			headers = restAPIUtils.addHeaders(headers, "Cookie" , password);
 		} else if (connection.isVault()){
