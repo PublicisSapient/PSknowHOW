@@ -83,7 +83,7 @@ export class NavComponent implements OnInit {
   // call when user is seleting tab
   selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog') && this.selectedType.toLowerCase() !== 'scrum'){
+    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'milestone') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }
     this.setSelectedType(this.selectedType);

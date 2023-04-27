@@ -91,6 +91,30 @@ describe('FilterComponent', () => {
     }],
   }
 
+  const releaseList = [{ 
+    labelName: "release",
+    level: 5,
+    nodeId: "844_DOTC_63b51633f33fd2360e9e72bd",
+    nodeName: "KnowHow 6.7.0",
+    parentId: ["DOTC_63b51633f33fd2360e9e72bd"],
+    path: "DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne",
+    releaseEndDate: "2023-05-14T19:11:00.0000000",
+    releaseStartDate: "2023-04-17T19:11:00.0000000",
+    releaseState: "RELEASED",
+  },
+  {
+    labelName: "release",
+    level: 5,
+    nodeId: "934_DOTC_63b51633f33fd2360e9e72bd",
+    nodeName: "KnowHow 6.8.0",
+    parentId: ["DOTC_63b51633f33fd2360e9e72bd"],
+    path: "DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne",
+    releaseEndDate: "2023-04-11T11:52:00.0000000",
+    releaseStartDate: "2023-01-04T16:04:03.6900000",
+    releaseState: "UNRELEASED",
+  }
+]
+
   const selectedFilterArray = [
     {
       additionalFilters: {
@@ -1431,5 +1455,36 @@ describe('FilterComponent', () => {
     component.navigateToSelectedTab();
     expect(spy).not.toHaveBeenCalledWith('/dashboard/Maturity');
   }));
+
+  it("should get project which have atleast one release",()=>{
+    component.additionalFiltersDdn['release'] = releaseList;
+    component.selectedProjectData['nodeId'] = "844_DOTC_63b51633f33fd2360e9e72bd";
+    component.initializeFilterForm();
+    component.checkIfProjectHasRelease();
+    expect(component.selectedRelease).not.toBeNull();
+  })
+
+  it('should filter release when project dropdown value change',()=>{
+    const spyFunct = spyOn(component,'checkIfProjectHasRelease');
+    spyOn(component,'createFilterApplyData')
+    component.additionalFiltersDdn['release'] = releaseList;
+    component.trendLineValueList = [
+      {
+        nodeId: "DOTC_63b51633f33fd2360e9e72bd",
+        nodeName: "KnowHOW|PI_10|ITR_6| 07th Sep_Scrum Project",
+        sprintStartDate: "2022-09-07T19:38:00.0000000",
+        sprintEndDate: "2022-09-27T22:30:00.0000000",
+        path: "Scrum Project_6335363749794a18e8a4479b###Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+        labelName: "sprint",
+        parentId: ["DOTC_63b51633f33fd2360e9e72bd"],
+        sprintState: "CLOSED",
+        level: 5
+    },
+    ]
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
+    component.handleMilestoneFilter('project');
+    expect(spyFunct).toHaveBeenCalled();
+  })
 
 });
