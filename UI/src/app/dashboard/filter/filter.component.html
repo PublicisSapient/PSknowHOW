@@ -162,7 +162,7 @@
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
+                  #toggleButton [ngClass]="{'active': toggleDropdown,'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
                   Show/Hide
                </div>
                <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
@@ -279,7 +279,7 @@
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown}" (click)="toggleDropdown = !toggleDropdown">
+                  #toggleButton [ngClass]="{'active': toggleDropdown,'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
                   Show/Hide
                </div>
                <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
@@ -316,7 +316,7 @@
             <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
                *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
-               id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart}"
+               id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart || noProjects}"
                [attr.title]="'Export View'">
                <img src="../../../assets/img/ico-download.svg" alt="Download" />
             </div>
