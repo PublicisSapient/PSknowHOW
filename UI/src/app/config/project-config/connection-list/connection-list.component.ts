@@ -37,8 +37,8 @@ interface JiraConnectionField {
   'isOAuth': boolean,
   'privateKey': string,
   'consumerKey': string,
-  'offline': string,
-  'connPrivate': string,
+  'offline': boolean,
+  'connPrivate': boolean,
   'jaasKrbAuth': boolean,
   'jaasConfigFilePath': string,
   'krb5ConfigFilePath': string,
@@ -57,8 +57,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private', 'BearerToken', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
     },
     {
       connectionType: 'Azure',
@@ -368,8 +368,6 @@ export class ConnectionListComponent implements OnInit {
 
   fieldsObj = {};
 
-  disableConnectionTypeDropDown = false;
-
   roleAccess: any = {};
 
   isConnectionAddEditAccess = false;
@@ -422,8 +420,8 @@ export class ConnectionListComponent implements OnInit {
     'krb5ConfigFilePath': '',
     'jaasUser': '',
     'samlEndPoint': '',
-    'offline': '',
-    'connPrivate': '',
+    'offline': false,
+    'connPrivate': false,
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
@@ -457,6 +455,9 @@ export class ConnectionListComponent implements OnInit {
       } else {
         this.jiraForm.controls['jiraAuthType'].setValue('basic');
       }
+    }else{
+      this.jiraForm.controls['jiraAuthType'].setValue('basic');
+      this.onChangeAuthType('basic')
     }
   }
 
@@ -595,12 +596,12 @@ export class ConnectionListComponent implements OnInit {
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
       this.isNewlyConfigAdded = true;
-      this.basicConnectionForm.controls['type'].setValue(this.connection.type);
+      this.jiraForm.controls['type'].setValue(this.connection.type);
+      this.initializeForms(this.jiraConnectionFields);
     } else {
       this.submitted = false;
       this.connectionDialog = true;
       this.isNewlyConfigAdded = true;
-      this.disableConnectionTypeDropDown = false;
       this.connectionTypeFieldsAssignment();
       this.basicConnectionForm.controls['type'].setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
@@ -803,14 +804,13 @@ export class ConnectionListComponent implements OnInit {
     this.connection = { ...connection };
     this.isNewlyConfigAdded = false;
     this.selectedConnectionType = this.connection.type;
-    this.connectionTypeFieldsAssignment();
     if (connection.type?.toLowerCase() == 'jira') {
       this.jiraConnectionDialog = true;
       this.initializeForms(this.connection, true)
     } else {
-      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
       this.connectionDialog = true;
-      this.disableConnectionTypeDropDown = true;
+      this.connectionTypeFieldsAssignment();
+      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
       if (connection.type.toLowerCase() == 'bitbucket' && connection.cloudEnv == true) {
