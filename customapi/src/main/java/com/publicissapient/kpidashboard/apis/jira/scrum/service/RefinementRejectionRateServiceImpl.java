@@ -226,8 +226,9 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			KPIExcelUtility.populateRefinementRejectionExcelData(excelData, issuesExcel, weekAndTypeMap,jiraDateMap);
 			trendValueList.add(new DataCount(node.getProjectFilter().getName(), dataList));
 			mapTmp.get(node.getId()).setValue(trendValueList);
+			kpiElement.setTrendValueList(trendValueList);
 		});
-		kpiElement.setTrendValueList(trendValueList);
+
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.REFINEMENT_REJECTION_RATE.getColumns());
 	}
