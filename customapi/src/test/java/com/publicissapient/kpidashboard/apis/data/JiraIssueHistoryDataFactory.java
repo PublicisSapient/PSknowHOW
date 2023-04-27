@@ -19,9 +19,7 @@ package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -104,13 +102,6 @@ public class JiraIssueHistoryDataFactory {
 	public JiraIssueCustomHistory findIssueById(String id) {
 		return jiraHistoryIssues.stream().filter(jiraIssue -> jiraIssue.getId().toHexString().equals(id)).findFirst()
 				.orElse(null);
-	}
-
-	// added for find unique jira issue custom history.
-	public List<JiraIssueCustomHistory> getUniqueJiraIssueCustomHistory() {
-		Set<String> uniqueStoryIds = new HashSet<>();
-		return jiraHistoryIssues.stream().filter(jiraHistoryIssue -> uniqueStoryIds.add(jiraHistoryIssue.getStoryID()))
-				.collect(Collectors.toList());
 	}
 
 }

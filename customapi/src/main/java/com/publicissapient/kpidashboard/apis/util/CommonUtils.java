@@ -489,10 +489,6 @@ public final class CommonUtils {
 		if (minutes % 60 > 0) {
 			returnString.append(minutes % 60 + "m");
 		}
-		// check if returnString is empty
-		if (returnString.length() == 0) {
-			return "0d";
-		}
 		return returnString.toString();
 	}
 }

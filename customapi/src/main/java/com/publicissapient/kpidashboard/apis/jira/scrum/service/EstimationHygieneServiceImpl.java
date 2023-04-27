@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,8 +141,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Estimation Hygiene -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			//Creating map of modal Objects
-			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
+
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 
@@ -174,7 +172,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueWithoutEstimate++;
 						overAllWithoutEstimate.set(0, overAllWithoutEstimate.get(0) + 1);
 						// set modal values
-						KPIExcelUtility.populateIterationKPI(withoutEstmodalValues,overAllWithoutEstmodalValues,jiraIssue,fieldMapping,modalObjectMap);
+						populateIterationData(withoutEstmodalValues, overAllWithoutEstmodalValues, jiraIssue, false, null);
 					}
 
 					if ((jiraIssue.getTimeSpentInMinutes() == null || jiraIssue.getTimeSpentInMinutes() == 0)
@@ -182,7 +180,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueMissingLog++;
 						overAllMissingLog.set(0, overAllMissingLog.get(0) + 1);
 						// set modal values
-						KPIExcelUtility.populateIterationKPI(missingmodalValues,overAllMissingModalValues,jiraIssue,fieldMapping,modalObjectMap);
+						populateIterationData(missingmodalValues, overAllMissingModalValues, jiraIssue, false, null);
 					}
 
 				}
