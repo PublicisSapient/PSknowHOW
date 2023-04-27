@@ -21,6 +21,7 @@ on:
     branches: [ master ]
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
+  sonartoken: ${{secrets.SONARQUBE_TOKEN}}
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -40,31 +41,6 @@ jobs:
         with:
           time: '5s'
       - uses: actions/checkout@v2
-        #  - name: Get changed files using defaults
-        #id: changed_files
-        #uses: tj-actions/changed-files@v3.3
-      
-        #- name: Get changed files using a comma separator
-        #id: changed_files_comma
-        #uses: tj-actions/changed-files@v3.3
-        #with:
-        #  separator: ","
-       
-        #- name: List all added files
-        #run: |
-        #  for file in "${{ steps.changed_files.outputs.added_files }}"; do
-        #   echo "$file was added"
-        # done
-          
-        #- name: Run step when a file changes in a PR relative to the default branch
-        #if: contains(steps.changed_files.outputs.modified_all, 'UI')
-        #run: |
-        #   echo "Your file UI has been modified."
-
-        #- name: Run step when a file is deleted in a PR relative to the default branch
-        #if: contains(steps.changed_files.outputs.deleted_files, 'test.txt')
-        #run: |
-        #   echo "Your test.txt has been deleted."
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -78,10 +54,12 @@ jobs:
         run: |
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
+          sudo npm cache clean --force
           sudo npm install
-          sudo npm install -g @angular/cli@6.0.8
+          sudo npm install -g @angular/cli@14.2.6
           #npm install --save-dev @angular-devkit/build-angular
-          sudo ng build --configuration=docker
+          sudo npm run build
+          
           sudo mkdir -p build
           sudo cp -r dist/dashboard/* build/
           sudo chmod -R 775 build
@@ -95,7 +73,7 @@ jobs:
         id: TestUI
         run: |
           cd UI
-          sudo npm install --save-dev @angular-devkit/build-angular
+          sudo npm install --save-dev @angular-devkit/build-angular@14.2.10
           sudo ng test --code-coverage
           #sudo sed -i 's|SF:UI/|SF:|g' coverage/lcov.info
       - name: Scanning UI with Sonar Qube
@@ -194,6 +172,7 @@ jobs:
                ./SonarDelay.sh ./processors/target/sonar/report-task.txt ${{secrets.SONARQUBE_TOKEN}} ${{secrets.SONARQUBE_HOST}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
                
       # - name: Checking code Quality using SonarQube for Customapi
       #   if: steps.processors.outputs.processors == 'true' ||  steps.customapi.outputs.customapi == 'true'
@@ -234,7 +213,7 @@ jobs:
             - Status of unit test of non_azure_processor is :        ${{steps.testnonazure.outcome}}
             - Status of Sonarqube report of processor is :            ${{steps.Sonarprocessor.outcome}}
             - Status of Sonarqube report of customapi is :           ${{steps.Sonarcustomapi.outcome}}
-            - click on the link for further details https://github.com/rapkalya/KnowHow/actions/runs/${{ github.run_id }} 
+            - click on the link for further details https://github.com/KnowHow/actions/runs/${{ github.run_id }} 
     # comma-separated string, send email to
           to: 
     # from email name

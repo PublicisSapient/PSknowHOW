@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -605,6 +607,76 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(CONFIG_ID);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
+	}
+
+	/**
+	 * find linked defects of given stories and filters
+	 * @param mapOfFilters
+	 * @param defectsStoryIds
+	 * @param uniqueProjectMap
+	 * @return
+	 */
+	@Override
+	public List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+
+		}
+
+		criteria = criteria.and(DEFECT_STORY_ID).in(defectsStoryIds);
+		Query query = new Query(criteria);
+
+		return operations.find(query, JiraIssue.class);
+
+	}
+
+	/**
+	 * Find issues filtered by map of filters, type name and defectStoryIds
+	 *
+	 * @param mapOfFilters     filters
+	 * @param uniqueProjectMap project map filters
+	 * @return list of jira issues
+	 */
+	@SuppressWarnings(UNCHECKED)
+	@Override
+	public List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria);
+
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		Query query = new Query(criteriaProjectLevelAdded);
+		if (!projectCriteriaList.isEmpty()) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			query = new Query(updatedCriteria);
+		}
+		return operations.find(query, JiraIssue.class);
 	}
 
 }

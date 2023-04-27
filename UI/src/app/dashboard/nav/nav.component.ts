@@ -16,93 +16,58 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
-import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TextEncryptionService } from '../../services/text.encryption.service';
-import { NotificationDTO, NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit {
-  selectedTab = 'mydashboard';
-  username: string;
-  logoImage: any;
-  currentversion: any;
+  selectedTab;
   subscription: Subscription;
   configOthersData;
-  selectedProject: any;
-  notificationPlaceHolder: NotificationDTO[] = [];
-  showNotifications = <boolean>true;
   worker: any;
-  showHelp = false;
-  isGuest = false;
-  kpiConfigData: Object = {};
+  kpiConfigData = {};
   kpiListData: any = {};
-  showNotificationPanel = false;
   changedBoardName: any;
   displayEditModal: boolean;
   selectedType: string;
-
   mainTab: string;
   boardNameArr: any[] = [];
   boardId = 1;
+  visibleSidebar = true;
+  kanban = false;
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
-    private service: SharedService,
-    private router: Router,
-    private getAuth: GetAuthorizationService,
+    public service: SharedService,
+    public router: Router,
     private ga: GoogleAnalyticsService,
     private helper: HelperService,
     private aesEncryption: TextEncryptionService,
   ) {
+    this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
+    this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
     const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab.split('/')[2];
-    this.boardId = isNaN(+selectedTab.split('/')[3]) ? this.boardId : +selectedTab.split('/')[3];
-    this.service.setSelectedTab(this.selectedTab, this.boardId);
-    this.service.onTypeRefresh.subscribe(type => {
-      this.selectedTab = this.service.getSelectedTab();
-    });
-
-    this.username = localStorage.getItem('user_name');
-    /*subscribe logo image from service*/
-    this.subscription = this.service.getLogoImage().subscribe((logoImage) => {
-      this.getLogoImage();
-    });
-
-    this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if (globalConfig['others'] && globalConfig['others'].length > 1) {
-        this.configOthersData = globalConfig['others'][1]?.kpis;
-        this.processKpiConfigData();
-      }
-    });
-
-    this.renderMessage();
-
-  }
-
-  processKpiConfigData() {
-    for (let i = 0; i < this.configOthersData?.length; i++) {
-      if (this.configOthersData[i]?.shown === false && this.configOthersData[i]?.isEnabled === true) {
-        this.kpiConfigData[this.configOthersData[i]?.kpiId] = this.configOthersData[i]?.shown;
-      } else {
-        this.kpiConfigData[this.configOthersData[i]?.kpiId] = this.configOthersData[i]?.isEnabled;
-      }
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+    if(this.selectedTab.includes('-')){
+      this.selectedTab = this.selectedTab.split('-').join(' ');
     }
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
   }
+
+
 
   ngOnInit() {
+    this.service.setSideNav(true);
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -110,153 +75,50 @@ export class NavComponent implements OnInit {
         this.boardNameArr[0].boardName = this.mainTab;
       }
     });
-    let authoritiesArr;
-    if (localStorage.getItem('authorities')) {
-      authoritiesArr = this.aesEncryption.convertText(
-        localStorage.getItem('authorities'),
-        'decrypt',
-      );
-    }
-    if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
-      this.isGuest = true;
-    }
-
-    if (authoritiesArr && authoritiesArr.indexOf('ROLE_SUPERADMIN') != -1) {
-      this.showHelp = true;
-    } else {
-      const projectsAccess = JSON.parse(localStorage.getItem('projectsAccess'));
-      this.showHelp =
-        projectsAccess &&
-        typeof projectsAccess != 'undefined' &&
-        projectsAccess.length !== 0;
-    }
-
-    this.getLogoImage();
-    this.getMatchVersions();
-
-    document.addEventListener(
-      'click',
-      function(e) {
-        const profileChkBox = document.getElementById(
-          'profile2',
-        ) as HTMLInputElement;
-        const profileChkBoxIcon = document.querySelector(
-          'i.fa-bars.profileIcon',
-        );
-        e.stopPropagation();
-        if (e.target !== profileChkBox && e.target !== profileChkBoxIcon) {
-          if (profileChkBox && profileChkBox !== null) {
-            profileChkBox.checked = false;
-          }
-        }
-      },
-      false,
-    );
-
-    this.subscription = this.service.passEventToNav.subscribe(() => {
-      this.renderMessage();
-    });
 
     this.startWorker();
-    this.service.selectedTypeObs.subscribe(selectedType => {
-      this.selectedType = selectedType;
-      this.getKpiOrderedList();
-    });
-  }
-
-  /*Rendered the logo image */
-  getLogoImage() {
-    this.httpService
-      .getUploadedImage()
-      .pipe(first())
-      .subscribe((data) => {
-        if (data['image']) {
-          this.logoImage = 'data:image/png;base64,' + data['image'];
-        } else {
-          this.logoImage = undefined;
-        }
-      });
+    this.getKpiOrderedList();
   }
 
   // call when user is seleting tab
-  selectTab(selectedTab, boardId = this.boardId) {
+  selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    this.helper.isKanban = false;
-    this.service.setSelectedTab(this.selectedTab, boardId);
-    this.service.selectTab(this.selectedTab);
-  }
-
-  // logout is clicked  and removing auth token , username
-  logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
-        this.helper.isKanban = false;
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_name');
-        localStorage.removeItem('authorities');
-        localStorage.removeItem('projectsAccess');
-        if (localStorage.getItem('loginType') === 'AD') {
-          localStorage.removeItem('SpeedyPassword');
-        }
-        // Set blank selectedProject after logged out state
-        this.selectedProject = null;
-        this.service.setSelectedProject(this.selectedProject);
-
-        this.router.navigate(['./authentication/login']);
-      }
-    });
-  }
-
-  // getting the version details from server
-  getMatchVersions() {
-    this.httpService.getMatchVersions().subscribe((filterData) => {
-      if (filterData && filterData.versionDetailsMap) {
-        this.currentversion = filterData.versionDetailsMap.currentVersion;
-      }
-    });
-  }
-
-  renderMessage() {
-    this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
-      if (response && response.success) {
-        if (response.data?.length) {
-          this.notificationPlaceHolder = [...response.data];
-          this.showNotificationPanel = (this.notificationPlaceHolder.length && this.notificationPlaceHolder.some(data => data.count > 0));
-        }
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error in fetching requests. Please try after some time.',
-        });
-      }
-    });
-  }
-
-  messageLink(type: string) {
-    if (this.getAuth.checkIfSuperUser() || this.getAuth.checkIfProjectAdmin()) {
-      switch (type) {
-        case 'Project Access Request':
-          this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
-          break;
-        case 'User Access Request':
-          this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
-          break;
-        default:
-          console.log('default case');
-      }
-    } else {
-      this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog') && this.selectedType.toLowerCase() !== 'scrum'){
+      this.selectedType = 'Scrum';
     }
+    this.setSelectedType(this.selectedType);
   }
 
-  hideNotifications() {
-    this.showNotifications = false;
+  setSelectedType(type) {
+    this.selectedType = type?.toLowerCase();
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
+    if (type.toLowerCase() === 'kanban') {
+      this.kanban = true;
+    } else {
+      this.kanban = false;
+    }
+    this.getKpiOrderedList();
+  }
+
+  processKpiConfigData() {
+    for (let i = 0; i < this.configOthersData?.length; i++) {
+      if (
+        this.configOthersData[i]?.shown === false &&
+        this.configOthersData[i]?.isEnabled === true
+      ) {
+        this.kpiConfigData[this.configOthersData[i]?.kpiId] =
+          this.configOthersData[i]?.shown;
+      } else {
+        this.kpiConfigData[this.configOthersData[i]?.kpiId] =
+          this.configOthersData[i]?.isEnabled;
+      }
+    }
   }
 
   startWorker() {
     if (typeof Worker !== 'undefined') {
       // Create a new
-      this.worker = new Worker('../../app.worker', { type: 'module' });
+      this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
       this.worker.onmessage = ({ data }) => {
         this.ga.setProjectList(data);
         this.stopWorker();
@@ -281,7 +143,7 @@ export class NavComponent implements OnInit {
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
-           this.processKPIListData();
+            this.processKPIListData();
           }
         },
         (error) => {
@@ -291,38 +153,42 @@ export class NavComponent implements OnInit {
           });
         },
       );
-    }else{
+    } else {
       this.processKPIListData();
     }
-
   }
 
-
-  processKPIListData(){
-    this.configOthersData = this.kpiListData['others'][0]?.kpis;
-    this.service.setDashConfigData(this.kpiListData);
+  processKPIListData() {
+    this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
     this.boardNameArr = [];
-    if (this.kpiListData[this.selectedType] && Array.isArray(this.kpiListData[this.selectedType])) {
+    if (
+      this.kpiListData[this.selectedType] &&
+      Array.isArray(this.kpiListData[this.selectedType])
+    ) {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push(
-          {
-            boardName: this.kpiListData[this.selectedType][i].boardName,
-            link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-') + '/' + this.kpiListData[this.selectedType][i].boardId,
-            boardId: this.kpiListData[this.selectedType][i].boardId
-          });
+        this.boardNameArr.push({
+          boardName: this.kpiListData[this.selectedType][i].boardName,
+          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
+        });
       }
     }
 
     for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      this.boardNameArr.push(
-        {
-          boardName: this.kpiListData['others'][i].boardName,
-          link: this.kpiListData['others'][i].boardName.toLowerCase() + '/' + this.kpiListData[this.selectedType][i].boardId
-        });
+      this.boardNameArr.push({
+        boardName: this.kpiListData['others'][i].boardName,
+        link:
+          this.kpiListData['others'][i].boardName.toLowerCase()
+      });
     }
-    this.service.changedMainDashboardValueSub.next(
-      this.kpiListData?.scrum[0]?.boardName,
-    );
+    // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
+    if (this.changedBoardName) {
+      this.service.changedMainDashboardValueSub.next(this.changedBoardName);
+    } else {
+      this.service.changedMainDashboardValueSub.next(
+        this.kpiListData?.scrum[0]?.boardName,
+      );
+    }
+
     this.processKpiConfigData();
   }
 
@@ -337,21 +203,14 @@ export class NavComponent implements OnInit {
     this.displayEditModal = true;
   }
 
-  assignUserNameForKpiData() {
-    if (!this.kpiListData['username']) {
-      delete this.kpiListData['id'];
-    }
-    this.kpiListData['username'] = localStorage.getItem('user_name');
-  }
-
   editDashboardName() {
     this.kpiListData.scrum[0].boardName = this.changedBoardName;
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
-    this.assignUserNameForKpiData();
+    this.service.setDashConfigData(this.kpiListData);
+    this.selectTab(this.changedBoardName);
     this.httpService.updateUserBoardConfig(this.kpiListData).subscribe(
       (data) => {
         if (data.success) {
-          console.log('Data save successfully');
           this.messageService.add({
             severity: 'success',
             summary: `Board name changed successfully to ${this.changedBoardName}`,
@@ -366,7 +225,6 @@ export class NavComponent implements OnInit {
         }
       },
       (error) => {
-        console.log(error);
         this.messageService.add({
           severity: 'error',
           summary: 'Something went wrong, Please try again.',
@@ -378,4 +236,5 @@ export class NavComponent implements OnInit {
   closeEditModal() {
     this.displayEditModal = false;
   }
+
 }

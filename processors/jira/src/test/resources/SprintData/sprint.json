@@ -5,9 +5,8 @@
     "values": [
         {
             "id": 31227,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/31227",
             "state": "closed",
-            "name": "KnowHOW|PI_5|ITR_6|9 Jun-29Jun",
+            "name": "Test|PI_5|ITR_6|9 Jun-29Jun",
             "startDate": "2021-06-09T08:38:00.000Z",
             "endDate": "2021-06-29T08:38:00.000Z",
             "completeDate": "2021-06-30T05:27:26.503Z",
@@ -17,9 +16,8 @@
         },
         {
             "id": 32573,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32573",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_1|30Jun-13Jul",
+            "name": "Test|PI_6|ITR_1|30Jun-13Jul",
             "startDate": "2021-06-30T10:46:00.000Z",
             "endDate": "2021-07-13T10:46:00.000Z",
             "completeDate": "2021-07-14T04:15:49.420Z",
@@ -29,9 +27,8 @@
         },
         {
             "id": 32574,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32574",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_2|14Jul-27Jul",
+            "name": "Test|PI_6|ITR_2|14Jul-27Jul",
             "startDate": "2021-07-14T10:46:00.000Z",
             "endDate": "2021-07-27T10:46:00.000Z",
             "completeDate": "2021-07-28T04:33:19.575Z",
@@ -41,9 +38,8 @@
         },
         {
             "id": 32589,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32589",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_3|28 July",
+            "name": "Test|PI_6|ITR_3|28 July",
             "startDate": "2021-07-28T17:56:00.000Z",
             "endDate": "2021-08-10T17:56:00.000Z",
             "completeDate": "2021-08-11T04:42:56.593Z",
@@ -52,9 +48,8 @@
         },
         {
             "id": 32739,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32739",
             "state": "closed",
-            "name": "PS HOW |PI_6|ITR_2|14_Jul",
+            "name": "TEST |PI_6|ITR_2|14_Jul",
             "startDate": "2021-07-14T15:10:00.000Z",
             "endDate": "2021-07-28T15:10:00.000Z",
             "completeDate": "2021-07-28T14:39:11.365Z",
@@ -64,9 +59,8 @@
         },
         {
             "id": 32590,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32590",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_4| Aug 11",
+            "name": "Test|PI_6|ITR_4| Aug 11",
             "startDate": "2021-08-11T17:56:00.000Z",
             "endDate": "2021-08-24T17:56:00.000Z",
             "completeDate": "2021-08-25T04:38:47.013Z",
@@ -76,9 +70,8 @@
         },
         {
             "id": 32613,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32613",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_5|Aug 25",
+            "name": "Test|PI_6|ITR_5|Aug 25",
             "startDate": "2021-08-25T04:39:00.000Z",
             "endDate": "2021-09-07T04:39:00.000Z",
             "completeDate": "2021-09-08T04:44:33.215Z",
@@ -88,9 +81,8 @@
         },
         {
             "id": 32614,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/32614",
             "state": "closed",
-            "name": "KnowHOW|PI_6|ITR_6|08Sep",
+            "name": "Test|PI_6|ITR_6|08Sep",
             "startDate": "2021-09-08T06:53:00.000Z",
             "endDate": "2021-09-28T06:53:00.000Z",
             "completeDate": "2021-09-28T18:22:10.458Z",
@@ -99,9 +91,8 @@
         },
         {
             "id": 33959,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/33959",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_1|29 Sep",
+            "name": "Test|PI_7|ITR_1|29 Sep",
             "startDate": "2021-09-29T06:26:00.000Z",
             "endDate": "2021-10-13T06:26:00.000Z",
             "completeDate": "2021-10-13T04:34:08.044Z",
@@ -111,9 +102,8 @@
         },
         {
             "id": 34171,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/34171",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_2|13 Oct",
+            "name": "Test|PI_7|ITR_2|13 Oct",
             "startDate": "2021-10-13T11:04:00.000Z",
             "endDate": "2021-10-26T15:04:00.000Z",
             "completeDate": "2021-10-27T04:43:37.848Z",
@@ -123,9 +113,8 @@
         },
         {
             "id": 34172,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/34172",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_3|27 Oct",
+            "name": "Test|PI_7|ITR_3|27 Oct",
             "startDate": "2021-10-27T07:15:00.000Z",
             "endDate": "2021-11-09T11:15:00.000Z",
             "completeDate": "2021-11-09T15:46:05.098Z",
@@ -135,9 +124,8 @@
         },
         {
             "id": 34173,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/34173",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_4|10 Nov",
+            "name": "Test|PI_7|ITR_4|10 Nov",
             "startDate": "2021-11-10T05:28:00.000Z",
             "endDate": "2021-11-23T09:28:00.000Z",
             "completeDate": "2021-11-23T16:26:42.496Z",
@@ -147,9 +135,8 @@
         },
         {
             "id": 34174,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/34174",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_5|24 Nov",
+            "name": "Test|PI_7|ITR_5|24 Nov",
             "startDate": "2021-11-24T05:57:00.000Z",
             "endDate": "2021-12-07T12:57:00.000Z",
             "completeDate": "2021-12-08T04:32:05.688Z",
@@ -159,9 +146,8 @@
         },
         {
             "id": 34177,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/34177",
             "state": "closed",
-            "name": "KnowHOW|PI_7|ITR_6|8 Dec-04Jan",
+            "name": "Test|PI_7|ITR_6|8 Dec-04Jan",
             "startDate": "2021-12-08T05:34:00.000Z",
             "endDate": "2022-01-04T12:34:00.000Z",
             "completeDate": "2022-01-05T04:37:35.935Z",
@@ -171,9 +157,8 @@
         },
         {
             "id": 35781,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35781",
             "state": "closed",
-            "name": "KnowHOW|PI_8|ITR_1| 05 Jan",
+            "name": "Test|PI_8|ITR_1| 05 Jan",
             "startDate": "2022-01-05T09:58:00.000Z",
             "endDate": "2022-01-18T16:58:00.000Z",
             "completeDate": "2022-01-19T04:32:18.366Z",
@@ -183,9 +168,8 @@
         },
         {
             "id": 35782,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35782",
             "state": "closed",
-            "name": "KnowHOW|PI_8|ITR_2| 19 Jan",
+            "name": "Test|PI_8|ITR_2| 19 Jan",
             "startDate": "2022-01-19T06:19:00.000Z",
             "endDate": "2022-02-01T13:19:00.000Z",
             "completeDate": "2022-02-02T04:41:28.530Z",
@@ -195,9 +179,8 @@
         },
         {
             "id": 35783,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35783",
             "state": "active",
-            "name": "KnowHOW|PI_8|ITR_3| 02 Feb",
+            "name": "Test|PI_8|ITR_3| 02 Feb",
             "startDate": "2022-02-02T08:00:00.000Z",
             "endDate": "2022-02-15T15:00:00.000Z",
             "activatedDate": "2022-02-02T08:02:51.481Z",
@@ -206,66 +189,57 @@
         },
         {
             "id": 35784,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35784",
             "state": "future",
-            "name": "KnowHOW|PI_8|ITR_4| 16 Feb",
+            "name": "Test|PI_8|ITR_4| 16 Feb",
             "originBoardId": 11856,
             "goal": "1. Release 4.9 Testing & Rollout\n2. Security issue fixes\n3. Aggregation logic completion at backend"
         },
         {
             "id": 35785,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35785",
             "state": "future",
-            "name": "KnowHOW|PI_8|ITR_5| 02 March",
+            "name": "Test|PI_8|ITR_5| 02 March",
             "originBoardId": 11856
         },
         {
             "id": 35786,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/35786",
             "state": "future",
-            "name": "KnowHOW|PI_8|ITR_6| 16 March",
+            "name": "Test|PI_8|ITR_6| 16 March",
             "originBoardId": 11856
         },
         {
             "id": 36557,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36557",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_1| 30 Mar",
+            "name": "Test|PI_9|ITR_1| 30 Mar",
             "originBoardId": 11856
         },
         {
             "id": 36560,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36560",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_2| 13 April",
+            "name": "Test|PI_9|ITR_2| 13 April",
             "originBoardId": 11856
         },
         {
             "id": 36561,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36561",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_3| 27 April",
+            "name": "Test|PI_9|ITR_3| 27 April",
             "originBoardId": 11856
         },
         {
             "id": 36562,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36562",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_4| 11 May",
+            "name": "Test|PI_9|ITR_4| 11 May",
             "originBoardId": 11856
         },
         {
             "id": 36563,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36563",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_5| 25 May",
+            "name": "Test|PI_9|ITR_5| 25 May",
             "originBoardId": 11856
         },
         {
             "id": 36564,
-            "self": "https://tools.publicis.sapient.com/jira/rest/agile/1.0/sprint/36564",
             "state": "future",
-            "name": "KnowHOW|PI_9|ITR_6| 8 June",
+            "name": "Test|PI_9|ITR_6| 8 June",
             "originBoardId": 11856
         }
     ]

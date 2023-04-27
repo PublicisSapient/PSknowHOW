@@ -161,7 +161,6 @@
     "jiraAutomatedTestValue": [
       "UI"
     ],
-    "jiraStatusForInProgress" : [ "Open"],
     "jiraRegressionTestValue": [
       "JAVA",
       "UI"
@@ -183,6 +182,9 @@
       "On Hold",
       "In Investigation",
       "Open"
+    ],
+    "jiraDefectClosedStatus": [
+      "Closed"
     ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 

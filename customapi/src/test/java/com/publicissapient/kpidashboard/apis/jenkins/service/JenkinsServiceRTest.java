@@ -132,10 +132,6 @@ public class JenkinsServiceRTest {
 		when(filterHelperService.getHierarachyLevelId(5, false)).thenReturn("project");
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), "CODE_BUILD_TIME");
-
-		when(filterHelperService.getFilteredBuilds(kpiRequestJenkins, GROUP_PROJECT))
-				.thenReturn(accountHierarchyDataList);
-
 	}
 
 	private KpiElement setKpiElement(String kpiId, String kpiName) {

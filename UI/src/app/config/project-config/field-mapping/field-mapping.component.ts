@@ -19,7 +19,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
@@ -86,7 +86,7 @@ export class FieldMappingComponent implements OnInit {
  dueDateTypes: any = [];
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
-    private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService) { }
+    private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService,private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.techDebtIdentification = [
@@ -422,6 +422,8 @@ export class FieldMappingComponent implements OnInit {
       jiraBlockedStatus:[],
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
+      jiraDevDoneStatus : [],
+      jiraDefectClosedStatus: [[]],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -452,6 +454,7 @@ export class FieldMappingComponent implements OnInit {
       workingHoursDayCPT: [''],
       jiraDueDateCustomField : [''],
       jiraDueDateField : [''],
+      jiraDevDueDateCustomField : [''],
       // defect mapping
       jiradefecttype: [[]],
 
@@ -559,20 +562,37 @@ export class FieldMappingComponent implements OnInit {
     submitData['basicProjectConfigId'] = this.selectedConfig.id;
 
     submitData = this.handleAdditionalFilters(submitData);
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, submitData).subscribe(Response => {
-      if (Response && Response['success']) {
-        this.messenger.add({
-          severity: 'success',
-          summary: 'Field Mappings submitted!!',
-        });
-        this.uploadedFileName = '';
-      } else {
-        this.messenger.add({
-          severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
-        });
-      }
-    });
+
+    if(this.selectedToolConfig[0].toolName === 'Jira'){
+      this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
+        if (response && response['success']) {
+          if (response['data']) {
+            this.confirmationService.confirm({
+              message: `Please note that change in mappings is a deviation from initially configured template.
+              If you continue with the change in mappings then these changes will be mapped to a 
+              Custom template in project configurations which cannot be changed again to a initially configured template.`,
+              header: 'Template Change Info',
+              key: 'templateInfoDialog',
+              accept: () => {
+                this.saveFieldMapping(submitData);
+              },
+              reject: () => {}
+            });
+          } else {
+          this.saveFieldMapping(submitData);
+          }
+        }else{
+          this.messenger.add({
+            severity: 'error',
+            summary: 'Some error occurred. Please try again later.'
+          });
+        }
+        
+      });
+    }else{
+      this.saveFieldMapping(submitData);
+    }
+  
   }
 
   onUpload(event) {
@@ -694,5 +714,22 @@ export class FieldMappingComponent implements OnInit {
 
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
+  }
+
+  saveFieldMapping(mappingData) {
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(Response => {
+      if (Response && Response['success']) {
+        this.messenger.add({
+          severity: 'success',
+          summary: 'Field Mappings submitted!!',
+        });
+        this.uploadedFileName = '';
+      } else {
+        this.messenger.add({
+          severity: 'error',
+          summary: 'Some error occurred. Please try again later.'
+        });
+      }
+    });
   }
 }

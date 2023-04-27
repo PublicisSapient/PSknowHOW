@@ -143,6 +143,8 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
+	// Added for Defect Reopen Rate KPI.
+	private List<String> jiraDefectClosedStatus;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -201,7 +203,8 @@ public class FieldMappingDTO extends BasicModel {
 	@Builder.Default
 	private String jiraDueDateField= CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
-
+	private String jiraDevDueDateCustomField;
+	private List<String> jiraDevDoneStatus;
 
 	/**
 	 * Get jira issue type names string [ ].

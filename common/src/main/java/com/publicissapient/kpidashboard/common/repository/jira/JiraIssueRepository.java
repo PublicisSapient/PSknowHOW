@@ -157,4 +157,6 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
+	List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
+
 }

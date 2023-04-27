@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -154,8 +153,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
-		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
+		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 		Map<Pair<String, String>, Double> sprintWiseFTPRMap = new HashMap<>();
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseFTPListMap = new HashMap<>();
@@ -167,12 +165,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			List<String> totalStoryIdList = new ArrayList<>();
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(totalStoryIdList::addAll);
-			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
+			sprintWiseTotalStoryIdList.put(sprint,totalStoryIdList);
 
 			List<JiraIssue> ftpStoriesList = ((List<JiraIssue>) resultMap.get(FIRST_TIME_PASS_STORIES)).stream()
 					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue()))
 					.collect(Collectors.toList());
-			sprintWiseFTPListMap.put(sprint, ftpStoriesList);
+			sprintWiseFTPListMap.put(sprint,ftpStoriesList);
 
 			double ftprForCurrentLeaf = 0.0d;
 			if (CollectionUtils.isNotEmpty(ftpStoriesList) && CollectionUtils.isNotEmpty(totalStoryIdList)) {
@@ -199,12 +197,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
 					List<JiraIssue> ftpStoriesList = sprintWiseFTPListMap.get(currentNodeIdentifier);
-					Set<JiraIssue> jiraIssues = projectWiseStories
-							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Set<JiraIssue> jiraIssues = projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
-					KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList,
-							ftpStoriesList, excelData, issueMapping);
+					KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList, ftpStoriesList, excelData,
+							issueMapping);
 				}
 			} else {
 				ftprForCurrentLeaf = 0.0d;
@@ -262,8 +259,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, Pair<String, String>> sprintWithDateMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
-		Map<String, List<String>> statusConfigsOfResolutionTypeForRejection = new HashMap<>();
-		Map<String, List<String>> statusConfigsOfDefectRejectionStatus = new HashMap<>();
 		Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject = new HashMap<>();
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
@@ -278,16 +273,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
-
-			statusConfigsOfResolutionTypeForRejection.put(basicProjectConfigId.toString(),
-					fieldMapping.getResolutionTypeForRejection() == null ? new ArrayList<>()
-							: fieldMapping.getResolutionTypeForRejection().stream().map(String::toLowerCase)
-									.collect(Collectors.toList()));
-
-			statusConfigsOfDefectRejectionStatus.put(basicProjectConfigId.toString(),
-					Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
 
 			if (Optional.ofNullable(fieldMapping.getJiraFTPRStoryIdentification()).isPresent()) {
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
@@ -300,7 +287,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping);
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
 
 		/** additional filter **/
@@ -341,43 +327,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		return resultListMap;
 	}
 
-	/**
-	 * @param projectWiseRCA
-	 * @param leaf
-	 * @param fieldMapping
-	 */
-	private void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getExcludeRCAFromFTPR())) {
-			Set<String> uniqueRCA = new HashSet<>();
-			for (String rca : fieldMapping.getExcludeRCAFromFTPR()) {
-				if (rca.equalsIgnoreCase(Constant.CODING) || rca.equalsIgnoreCase(Constant.CODE)) {
-					rca = Constant.CODE_ISSUE;
-				}
-				uniqueRCA.add(rca.toLowerCase());
-			}
-			projectWiseRCA.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), uniqueRCA);
-		}
-	}
-
-	/**
-	 * @param projectWisePriority
-	 * @param configPriority
-	 * @param leaf
-	 * @param fieldMapping
-	 */
-	private void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
-			Map<String, List<String>> configPriority, Node leaf, FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getDefectPriority())) {
-			List<String> priorValue = fieldMapping.getDefectPriority().stream().map(String::toUpperCase)
-					.collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(priorValue)) {
-				List<String> priorityValues = new ArrayList<>();
-				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority)));
-				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
-			}
-		}
-	}
-
 	@NotNull
 	private List<String> getIssueIds(List<JiraIssue> issuesBySprintAndType) {
 		List<String> storyIds = new ArrayList<>();
@@ -407,7 +356,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
 			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
 					remainingDefects.add(jiraIssue);
 				}
 			} else {
@@ -451,11 +400,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			return false;
 		} else {
 
-			List<JiraHistoryChangeLog> statusUpdationLogs = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+			List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
+			Collections.sort(storySprintDetails, Comparator.comparing(JiraIssueSprint::getActivityDate));
 
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLogs.stream()
-					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
+			JiraIssueSprint latestClosedStatusDetail = storySprintDetails.stream()
+					.filter(statusHistory -> statusHistory.getFromStatus().equals(issue.getJiraStatus())).findFirst()
 					.orElse(null);
 
 			if (latestClosedStatusDetail != null) {
@@ -463,11 +412,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLogs.stream()
-						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-								.isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+				DateTime latestClosedStatusTime = latestClosedStatusDetail.getActivityDate();
+				return storySprintDetails.stream()
+						.filter(statusHistory -> statusHistory.getActivityDate().isAfter(latestClosedStatusTime))
+						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getFromStatus()));
 			}
 			return false;
 		}

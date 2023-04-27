@@ -140,10 +140,10 @@ public class ReleaseDataClientImplTest {
         accountHierarchy.setNodeName("TEST");
         accountHierarchy.setLabelName("Project");
         accountHierarchy.setFilterCategoryId(new ObjectId("5e15d7262b6a0532e258ce9c"));
-        accountHierarchy.setParentId("25071_KnowHow_61160fa56c1b4842c1741fe1");
+        accountHierarchy.setParentId("25071_TestHow_61160fa56c1b4842c1741fe1");
         accountHierarchy.setBasicProjectConfigId(new  ObjectId("5e15d8b195fe1300014538ce"));
         accountHierarchy.setIsDeleted("False");
-        accountHierarchy.setPath(("25071_KnowHow_61160fa56c1b4842c1741fe1###KnowHow_61160fa56c1b4842c1741fe1"));
+        accountHierarchy.setPath(("25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
     }
 
     void prepareKanbanAccountHierarchy(){
@@ -154,10 +154,10 @@ public class ReleaseDataClientImplTest {
         kanbanAccountHierarchy.setNodeName("TEST");
         kanbanAccountHierarchy.setLabelName("Project");
         kanbanAccountHierarchy.setFilterCategoryId(new ObjectId("5e15d7262b6a0532e258ce9c"));
-        kanbanAccountHierarchy.setParentId("25071_KnowHow_61160fa56c1b4842c1741fe1");
+        kanbanAccountHierarchy.setParentId("25071_TestHow_61160fa56c1b4842c1741fe1");
         kanbanAccountHierarchy.setBasicProjectConfigId(new  ObjectId("5e15d8b195fe1300014538ce"));
         kanbanAccountHierarchy.setIsDeleted("False");
-        kanbanAccountHierarchy.setPath(("25071_KnowHow_61160fa56c1b4842c1741fe1###KnowHow_61160fa56c1b4842c1741fe1"));
+        kanbanAccountHierarchy.setPath(("25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
 
 
     }

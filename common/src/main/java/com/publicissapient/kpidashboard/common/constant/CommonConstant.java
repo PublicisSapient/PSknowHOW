@@ -48,8 +48,11 @@ public final class CommonConstant {
 	public static final String SPRINT = "sprint";
 	public static final String BUG = "bug";
 	public static final String ISSUE_TYPE = "issuetype";
+	public static final String TICKET_COUNT_ISSUE_TYPE = "ticketCountIssueType";
+
 	public static final String FIRST_STATUS = "firststatus";
-	public static final String OPEN = "open";
+	public static final String OPEN = "Open";
+	public static final String CLOSED = "Closed";
 	public static final String ROOT_CAUSE = "rootcause";
 	public static final String DEVELOPMENT = "development";
 	public static final String QA = "qa";
@@ -65,6 +68,9 @@ public final class CommonConstant {
 	public static final String UAT_DEFECT = "uatdefect";
 	
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
+	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
+	public static final String JIRA_LIVE_STATUS = "jiraLiveStatus";
+	public static final String JIRA_STATUS_FOR_CLOSED = "jiraStatusForClosed";
 	public static final String TICKET_RESOLVED_STATUS = "ticketResolvedStatus";
 	public static final String TICKET_REOPEN_STATUS = "ticketReopenStatus";
 	public static final String TICKET_TRIAGED_STATUS = "ticketTriagedStatus";
@@ -162,7 +168,8 @@ public final class CommonConstant {
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
 
-
+	public static final String REJECTED = "Rejected";
+	public static final String ITERATION = "Iteration";
 
 
 

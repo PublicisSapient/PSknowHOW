@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -53,8 +54,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
@@ -69,12 +68,6 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -110,15 +103,12 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(notCompletedIssues, basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(notCompletedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);
@@ -159,6 +149,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
@@ -180,7 +172,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
 							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
-						populateIterationData(overAllmodalValues, modalValues, jiraIssue, true, fieldMapping);
+						KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -200,10 +192,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				IterationKpiData storyPoints;
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint, null, null,
+					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint), null, null,
 							CommonConstant.SP, null);
 				} else {
-					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate, null, null,
+					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate), null, null,
 							CommonConstant.HOURS, null);
 				}
 				data.add(issueCounts);
@@ -217,10 +209,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			IterationKpiData overAllStPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0), null,
+				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(overAllStoryPoints.get(0)), null,
 						null, CommonConstant.SP, null);
 			} else {
-				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(overAllOriginalEstimate.get(0)),
 						null, null, CommonConstant.HOURS, null);
 			}
 			data.add(overAllCount);

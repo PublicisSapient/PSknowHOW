@@ -83,7 +83,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20547",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20547"
+                                "url": "http://testabc.com/jira/browse/DTS-20547"
                             },
                             "description": "GS | UI| My dashboard page will be the landing page in case of ping federate  (all data API call to be initiated post successful login)",
                             "issueStatus": "In Analysis",
@@ -92,7 +92,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20544",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20544"
+                                "url": "http://testabc.com/jira/browse/DTS-20544"
                             },
                             "description": "GS | Backend| By pass knowHOW security flow in case of ping federate (conditional bean loading (Auth to work after disabling springboot security",
                             "issueStatus": "Ready for Testing",
@@ -101,7 +101,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20554",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20554"
+                                "url": "http://testabc.com/jira/browse/DTS-20554"
                             },
                             "description": "GS | Backend| Super Admin to add permission to project/ by giving a SSO ID (pre-authorize)",
                             "issueStatus": "Code Review",
@@ -110,7 +110,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20551",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20551"
+                                "url": "http://testabc.com/jira/browse/DTS-20551"
                             },
                             "description": "GS | Backend| All notification alert should bypass kafka flow in case of GS",
                             "issueStatus": "In Analysis",
@@ -119,7 +119,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20540",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20540"
+                                "url": "http://testabc.com/jira/browse/DTS-20540"
                             },
                             "description": "GS |- Devops | Pass authentication type and apigateway  URL (kong ) as environment variable",
                             "issueStatus": "Ready for Testing",
@@ -128,7 +128,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20542",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20542"
+                                "url": "http://testabc.com/jira/browse/DTS-20542"
                             },
                             "description": "GS | UI| Bypass login flow in casee of KONG API",
                             "issueStatus": "Ready for Testing",
@@ -158,7 +158,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20547",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20547"
+                                "url": "http://testabc.com/jira/browse/DTS-20547"
                             },
                             "description": "GS | UI| My dashboard page will be the landing page in case of ping federate  (all data API call to be initiated post successful login)",
                             "issueStatus": "In Analysis",
@@ -167,7 +167,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20544",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20544"
+                                "url": "http://testabc.com/jira/browse/DTS-20544"
                             },
                             "description": "GS | Backend| By pass knowHOW security flow in case of ping federate (conditional bean loading (Auth to work after disabling springboot security",
                             "issueStatus": "Ready for Testing",
@@ -176,7 +176,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20554",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20554"
+                                "url": "http://testabc.com/jira/browse/DTS-20554"
                             },
                             "description": "GS | Backend| Super Admin to add permission to project/ by giving a SSO ID (pre-authorize)",
                             "issueStatus": "Code Review",
@@ -185,7 +185,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20551",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20551"
+                                "url": "http://testabc.com/jira/browse/DTS-20551"
                             },
                             "description": "GS | Backend| All notification alert should bypass kafka flow in case of GS",
                             "issueStatus": "In Analysis",
@@ -194,7 +194,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20540",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20540"
+                                "url": "http://testabc.com/jira/browse/DTS-20540"
                             },
                             "description": "GS |- Devops | Pass authentication type and apigateway  URL (kong ) as environment variable",
                             "issueStatus": "Ready for Testing",
@@ -203,7 +203,7 @@ describe('IterationComponent', () => {
                         {
                             "col1": {
                                 "number": "DTS-20542",
-                                "url": "https://tools.publicis.sapient.com/jira/browse/DTS-20542"
+                                "url": "http://testabc.com/jira/browse/DTS-20542"
                             },
                             "description": "GS | UI| Bypass login flow in casee of KONG API",
                             "issueStatus": "Ready for Testing",
@@ -2028,7 +2028,7 @@ describe('IterationComponent', () => {
 
     xit('Scrum with filter applied', (done) => {
         const type = 'Scrum';
-        service.setSelectedType(type);
+        service.selectedtype=type;
         // component.selectedtype = 'Scrum';
         console.log('Selected Type ====> ', component.selectedtype);
         service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
@@ -2098,6 +2098,7 @@ describe('IterationComponent', () => {
         component.selectedtype = 'Scrum';
         const spygroupJiraKpi = spyOn(component, 'groupJiraKpi');
         const spycalcBusinessDays = spyOn(component, 'calcBusinessDays');
+        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
         component.receiveSharedData(filterData);
         expect(spycalcBusinessDays).toHaveBeenCalled();
         expect(spygroupJiraKpi).toHaveBeenCalled();
@@ -2338,16 +2339,6 @@ describe('IterationComponent', () => {
         expect(component.noTabAccess).toBeFalse();
     });
 
-    it('should process kpi config data on onTypeRefresh', () => {
-        spyOn(service, 'getSelectedType');
-        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
-        const spy = spyOn(component, 'processKpiConfigData');
-        service.onTypeRefresh.emit('Scrum');
-        fixture.detectChanges();
-        expect(component.configGlobalData.length).toEqual(1);
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should set the colorObj', () => {
         const x = {
             'Sample One_hierarchyLevelOne': {
@@ -2445,7 +2436,7 @@ describe('IterationComponent', () => {
           ['Issue Id']: 'DTS-20225',
           ['Issue Status']: 'In Investigation',
           ['Issue Type']: 'Defect',
-          ['Issue URL']: 'https://tools.publicis.sapient.com/jira/browse/DTS-20225',
+          ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
           ['Logged Work']: '0 hrs',
           ['Original Estimate']: '0 hrs',
         };
@@ -2485,7 +2476,7 @@ describe('IterationComponent', () => {
             ],
             tableValues:[{
                 'Issue Id': 'DTS-22685',
-                'Issue URL': 'https://tools.publicis.sapient.com/jira/browse/DTS-22685',
+                'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
                 'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
                 'Issue Status': 'Open',
             }]
@@ -2513,7 +2504,7 @@ describe('IterationComponent', () => {
                             "modalValues": [
                                 {
                                     "Issue Id": "DTS-22685",
-                                    "Issue URL": "https://tools.publicis.sapient.com/jira/browse/DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
                                     "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
                                     "Issue Status": "Open",
                                     "Issue Type": "Change request",
@@ -2564,4 +2555,81 @@ describe('IterationComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should apply aggregation for groupBarchart', () => {
+        const data = [
+            {
+                filter1: "Defect",
+                value: [{
+                    "data": "0",
+                    "value": 10,
+                    "hoverValue": {
+                        "Defect": 5,
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }]
+            },
+            {
+                filter1: "Change request",
+                value: [{
+                    "data": "0",
+                    "value": 11,
+                    "hoverValue": {
+                        "Change request": 5
+                    },
+                    "subFilter": "Issues planned to be closed",
+                    "date": "2023-02-22",
+                    "kpiGroup": "Defect",
+                    "groupBy": "date",
+                    "sprojectName": "41411_AGHORI"
+                }
+                ]
+            }
+        ];
+        const result = component.applyAggregationForChart(data);
+        expect(result[0]?.value[0].value).toEqual(21);
+    });
+
+    it('should get chart type',()=>{
+        component.updatedConfigGlobalData=[
+            {kpiId:'kpi125',
+        kpiDetail:{
+            chartType: 'GroupBarChart'
+        }}
+        ];
+        expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
+    });
+
+    it('should evalvate the aggregated expression',()=>{
+        let aggregatedArr = [
+            {
+                "label": "First Time Pass Stories",
+                "value": "8.00",
+                "value1": null,
+                "modalValues": null
+            },
+            {
+                "label": "Total Stories",
+                "value": "9.00",
+                "modalValues": [],
+                "value1": null
+            },
+            {
+                "label": "First Time Pass Rate %",
+                "value": 88.89,
+                "expressions": [
+                    "First Time Pass Stories",
+                    "Total Stories",
+                    "percentage"
+                ],
+                "value1": null,
+                "modalValues": null
+            }
+        ];
+        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        expect(aggregatedArr[2].value).toEqual(88.89);
+    })
 });

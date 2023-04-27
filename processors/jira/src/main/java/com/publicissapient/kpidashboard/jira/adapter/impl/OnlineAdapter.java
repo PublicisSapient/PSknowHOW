@@ -521,7 +521,12 @@ public class OnlineAdapter implements JiraAdapter {
                 password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
             }
         }
-        request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+        if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
+            String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
+            request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
+        } else{
+            request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+        }
         request.connect();
         StringBuilder sb = new StringBuilder();
         try (InputStream in = (InputStream) request.getContent();
