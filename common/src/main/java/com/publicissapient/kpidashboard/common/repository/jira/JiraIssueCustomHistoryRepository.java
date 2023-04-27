@@ -27,7 +27,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import java.util.List;
 
 /**
- * Repository for FeatureCollector. 
+ * Repository for FeatureCollector.
  */
 @Repository
 public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIssueCustomHistory, String>,
