@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -41,14 +43,21 @@ import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 public class ReleaseDataClientImplTest {
 
-    private JiraAdapter jiraAdapter=Mockito.mock(JiraAdapter.class);
-    private AccountHierarchyRepository accountHierarchyRepository =Mockito.mock(AccountHierarchyRepository.class);
-    private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo =Mockito.mock(KanbanAccountHierarchyRepository.class);
-    private ProjectReleaseRepo projectReleaseRepo =Mockito.mock(ProjectReleaseRepo.class);
+    @Mock
+    private JiraAdapter jiraAdapter;
+    @Mock
+    private AccountHierarchyRepository accountHierarchyRepository;
+    @Mock
+    private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
+    @Mock
+    ProjectReleaseRepo projectReleaseRepo;
     @InjectMocks
-    ReleaseDataClientImpl releaseDataClient;
+    private ReleaseDataClientImpl releaseDataClient;
 
 
     ProjectConfFieldMapping scrumProjectMapping = ProjectConfFieldMapping.builder().build();
@@ -66,40 +75,41 @@ public class ReleaseDataClientImplTest {
 
    @Test
     public void processReleaseInfo() {
-        Mockito.when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
-                scrumProjectMapping.getBasicProjectConfigId())).thenReturn(Arrays.asList(accountHierarchy));
-        Version version =Mockito.mock(Version.class);
-        List<Version> versionList = new ArrayList<>();
-        versionList.add(version);
-        Mockito.when(jiraAdapter.getVersions(Mockito.anyString())).thenReturn(versionList);
-        Mockito.when(version.getId()).thenReturn(Long.parseLong("76219"));
-        Mockito.when(version.getName()).thenReturn("V1.0.2");
-        Mockito.when(version.isArchived()).thenReturn(false);
-        Mockito.when(version.isReleased()).thenReturn(true);
-        Mockito.when(version.getReleaseDate()).thenReturn(DateTime.now());
+        when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
+                any(ObjectId.class))).thenReturn(Arrays.asList(accountHierarchy));
+        when(accountHierarchyRepository.findAll()).thenReturn(Arrays.asList(accountHierarchy));
+        ProjectVersion version = new ProjectVersion();
+        List<ProjectVersion> versionList = new ArrayList<>();
+        version.setId(Long.valueOf("123"));
+        version.setName("V1.0.2");
+        version.setArchived(false);
+        version.setReleased(true);
+        version.setReleaseDate(DateTime.now());
+       versionList.add(version);
+        when(jiraAdapter.getVersion(any())).thenReturn(versionList);
         releaseDataClient.processReleaseInfo(scrumProjectMapping);
     }
 
     @Test
     public void processReleaseInfoNull() {
-        Mockito.when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
+        when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
                 scrumProjectMapping.getBasicProjectConfigId())).thenReturn(null);
         releaseDataClient.processReleaseInfo(scrumProjectMapping);
     }
 
     @Test
     public void processReleaseInfoForKanban() {
-        Mockito.when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project",
+        when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project",
                 kanbanProjectMapping.getBasicProjectConfigId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
-        Version version =Mockito.mock(Version.class);
-        List<Version> versionList = new ArrayList<>();
+        ProjectVersion version = new ProjectVersion();
+        List<ProjectVersion> versionList = new ArrayList<>();
+        version.setId(Long.valueOf("123"));
+        version.setName("V1.0.2");
+        version.setArchived(false);
+        version.setReleased(true);
+        version.setReleaseDate(DateTime.now());
         versionList.add(version);
-        Mockito.when(jiraAdapter.getVersions(Mockito.anyString())).thenReturn(versionList);
-        Mockito.when(version.getId()).thenReturn(Long.parseLong("76219"));
-        Mockito.when(version.getName()).thenReturn("V1.0.2");
-        Mockito.when(version.isArchived()).thenReturn(false);
-        Mockito.when(version.isReleased()).thenReturn(true);
-        Mockito.when(version.getReleaseDate()).thenReturn(DateTime.now());
+        when(jiraAdapter.getVersion(kanbanProjectMapping)).thenReturn(versionList);
         releaseDataClient.processReleaseInfo(kanbanProjectMapping);
     }
 

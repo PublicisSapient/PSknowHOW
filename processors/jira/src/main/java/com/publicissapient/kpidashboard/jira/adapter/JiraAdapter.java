@@ -92,15 +92,6 @@ public interface JiraAdapter {
 	String getUserTimeZone(ProjectConfFieldMapping projectConfig);
 
 	/**
-	 * Gets the project versions for user who is logged in jira
-	 *
-	 * @param projectKey
-	 *            the project key
-	 * @return list of versions
-	 */
-	List<Version> getVersions(String projectKey);
-
-	/**
 	 * Gets the field used on a jira instance.
 	 *
 	 * @return the field
@@ -144,7 +135,11 @@ public interface JiraAdapter {
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
 
-	void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionList);
+	/**
+	 * Gets the project versions for user who is logged in jira
+	 * @param projectConfig
+	 */
+	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 
 
 }

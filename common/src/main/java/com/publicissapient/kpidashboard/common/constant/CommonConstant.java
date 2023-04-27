@@ -70,6 +70,7 @@ public final class CommonConstant {
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
 	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
 	public static final String JIRA_LIVE_STATUS = "jiraLiveStatus";
+	public static final String JIRA_STATUS_FOR_CLOSED = "jiraStatusForClosed";
 	public static final String TICKET_RESOLVED_STATUS = "ticketResolvedStatus";
 	public static final String TICKET_REOPEN_STATUS = "ticketReopenStatus";
 	public static final String TICKET_TRIAGED_STATUS = "ticketTriagedStatus";
@@ -103,6 +104,7 @@ public final class CommonConstant {
 	public static final String ARROW = "->";
 	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
+	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
 	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
@@ -171,6 +173,9 @@ public final class CommonConstant {
 
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
+
+	public static final String RELEASED="Released";
+	public static final String UNRELEASED="Unreleased";
 
 
 

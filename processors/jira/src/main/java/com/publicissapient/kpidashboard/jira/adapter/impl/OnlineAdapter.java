@@ -47,8 +47,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -64,13 +62,12 @@ import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -78,6 +75,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
@@ -309,36 +307,6 @@ public class OnlineAdapter implements JiraAdapter {
             log.error("Error while fetching issues", e.getCause(), kv(CommonConstant.PSLOGDATA, logData));
         }
         return issueList;
-    }
-
-    /**
-     * Returns all versions for a project, which are visible for the currently
-     * logged in user
-     *
-     * @param projectKey the project key
-     * @return List of version
-     */
-    @Override
-    public List<Version> getVersions(String projectKey) {
-        List<Version> rt = new ArrayList<>();
-
-        if (client == null) {
-            log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-        } else {
-            try {
-                Promise<Project> promisedRs = client.getProjectClient().getProject(projectKey);
-
-                Project jiraProject = promisedRs.claim();
-                Iterable<Version> version = jiraProject.getVersions();
-                if (version != null) {
-                    rt = Lists.newArrayList(version.iterator());
-                }
-            } catch (RestClientException e) {
-                exceptionBlockProcess(e);
-            }
-        }
-
-        return rt;
     }
 
     private void exceptionBlockProcess(RestClientException e) {
@@ -742,9 +710,9 @@ public class OnlineAdapter implements JiraAdapter {
             if (null == addedIssue) {
                 addedIssue = new HashSet<>();
             }
-            Set<String> keySet = CollectionUtils.emptyIfNull(totalIssues).stream().map(issue -> issue.getNumber())
+            Set<String> keySet = CollectionUtils.emptyIfNull(totalIssues).stream().map(SprintIssue::getNumber)
                     .collect(Collectors.toSet());
-            keySet.addAll(CollectionUtils.emptyIfNull(puntedIssues).stream().map(issue -> issue.getNumber())
+            keySet.addAll(CollectionUtils.emptyIfNull(puntedIssues).stream().map(SprintIssue::getNumber)
                     .collect(Collectors.toSet()));
             addedIssue.retainAll(keySet);
             return addedIssue;
@@ -963,29 +931,33 @@ public class OnlineAdapter implements JiraAdapter {
 		return getEpicIssuesQuery(epicList, logData);
 	}
 
-    @Override
-    public void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionList) {
-            try {
-                JiraToolConfig jiraToolConfig = projectConfig.getJira();
-                if (null != jiraToolConfig) {
-                    Instant start = Instant.now();
-                    URL url = getVersionUrl(projectConfig);
-                   // sprintReportLog.setUrl(url.toString());
-                    URLConnection connection = url.openConnection();
-                    parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
-                   // sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
-                }
+	@Override
+	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig) {
+		List<ProjectVersion> projectVersionList = new ArrayList<>();
+		PSLogData versionLog = new PSLogData();
+		versionLog.setAction(CommonConstant.RELEASE_DATA);
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				versionLog.setProjectKey(jiraToolConfig.getProjectKey());
+				Instant start = Instant.now();
+				URL url = getVersionUrl(projectConfig);
+				versionLog.setUrl(url.toString());
+				URLConnection connection = url.openConnection();
+				parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
+				versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+			}
 
-            } catch (RestClientException rce) {
-               // log.error("Client exception when loading sprint report " + rce, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-                throw rce;
-            } catch (MalformedURLException mfe) {
-                //log.error("Malformed url for loading sprint report", mfe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-            } catch (IOException ioe) {
-               // log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-            }
-
-    }
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, versionLog));
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe, kv(CommonConstant.PSLOGDATA, versionLog));
+		} catch (IOException ioe) {
+			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, versionLog));
+		}
+		return projectVersionList;
+	}
+    
 
 	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
 		if (StringUtils.isNotBlank(dataFromServer)) {

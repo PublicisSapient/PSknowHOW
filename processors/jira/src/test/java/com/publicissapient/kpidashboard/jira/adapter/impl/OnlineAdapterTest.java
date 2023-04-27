@@ -94,8 +94,7 @@ public class OnlineAdapterTest {
 
         Mockito.when(exception.getStatusCode()).thenReturn(status);
         Mockito.when(status.isPresent()).thenReturn(false);
-        List<ProjectVersion> projectVersionList= new ArrayList<>();
-        onlineAdapter.getVersion(projectConfFieldMapping,projectVersionList);
+        List<ProjectVersion> projectVersionList=onlineAdapter.getVersion(projectConfFieldMapping);
         assertNotNull(projectVersionList);
     }
 

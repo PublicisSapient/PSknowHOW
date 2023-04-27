@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
@@ -36,8 +38,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 //@Service
@@ -138,11 +138,6 @@ public class OfflineAdapter implements JiraAdapter {
     public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
         return "";
     }
-
-    @Override
-    public List<Version> getVersions(String projectKey) {
-        return version;
-    }
     
 	@Override
 	public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
@@ -156,9 +151,9 @@ public class OfflineAdapter implements JiraAdapter {
         return null;
     }
 
-    @Override
-    public void getVersion(ProjectConfFieldMapping projectConfig, List<ProjectVersion> projectVersionDetailList) {
-        return;
-    }
+	@Override
+	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig) {
+		return null;
+	}
 
 }
