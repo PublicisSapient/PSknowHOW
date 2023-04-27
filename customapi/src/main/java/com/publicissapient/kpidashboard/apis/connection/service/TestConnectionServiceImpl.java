@@ -136,7 +136,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
 					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
 					connection.getBaseUrl());
-			client.login();
+			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
+					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
 			HttpResponse response = getApiResponseWithKerbAuth(client, apiUrl);
 			if(null != response && response.getStatusLine().getStatusCode() == 200){
 				isValidConnection = true;

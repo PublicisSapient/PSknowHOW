@@ -242,7 +242,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	public ProcessorJiraRestClient getSpnegoSamlClient(KerberosClient kerberosClient) {
 		ProcessorJiraRestClient client = null;
-		kerberosClient.login();
+		kerberosClient.login(jiraProcessorConfig.getSamlTokenStartString(), jiraProcessorConfig.getSamlTokenEndString(),
+				jiraProcessorConfig.getSamlUrlStartString(), jiraProcessorConfig.getSamlUrlEndString());
 		client = new ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(
 				URI.create(kerberosClient.getJiraHost()), kerberosClient.getCookies(), jiraProcessorConfig);
 		return client;
