@@ -36,6 +36,15 @@ if (db.processor.countDocuments({}) === 0) {
                 "isLastSuccess": false,
                 "_class": "com.publicissapient.kpidashboard.github.model.GitHubProcessor"
             }, {
+                               "processorName": "GitHubAction",
+                               "processorType": "BUILD",
+                               "isActive": true,
+                               "isOnline": true,
+                               "errors": [],
+                               "updatedTime": new Date().getTime(),
+                               "isLastSuccess": false,
+                               "_class": "com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor"
+                           },{
                 "processorName": "Teamcity",
                 "processorType": "BUILD",
                 "isActive": true,

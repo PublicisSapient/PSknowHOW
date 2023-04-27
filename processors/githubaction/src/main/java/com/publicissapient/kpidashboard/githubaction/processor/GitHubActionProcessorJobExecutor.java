@@ -18,53 +18,47 @@
 
 package com.publicissapient.kpidashboard.githubaction.processor;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.githubaction.config.GitHubActionConfig;
-import com.publicissapient.kpidashboard.githubaction.constants.GitHubActionConstants;
+import com.publicissapient.kpidashboard.githubaction.customexception.FetchingBuildException;
+import com.publicissapient.kpidashboard.githubaction.factory.GitHubActionClientFactory;
 import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor;
-import com.publicissapient.kpidashboard.githubaction.model.GitHubProcessorItem;
-import com.publicissapient.kpidashboard.githubaction.processor.service.GitHubClient;
-import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorItemRepository;
+import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubActionClient;
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
-import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
-import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
-import com.publicissapient.kpidashboard.githubaction.customexception.FetchingCommitException;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestClientException;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * GitHubActionProcessorJobExecutor represents a class which holds all the
@@ -76,348 +70,231 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHubActionProcessor> {
 
-	@Autowired
-	private GitHubProcessorRepository gitHubProcessorRepository;
+    private static final String BUILD = "build";
 
-	@Autowired
-	private GitHubActionConfig gitHubActionConfig;
+    @Autowired
+    private GitHubActionConfig gitHubActionConfig;
 
-	@Autowired
-	private GitHubProcessorItemRepository gitHubProcessorItemRepository;
+    @Autowired
+    private GitHubProcessorRepository gitHubActionProcessorRepository;
 
-	@Autowired
-	private GitHubClient gitHubClient;
+    @Autowired
+    private ProcessorToolConnectionService processorToolConnectionService;
 
-	@Autowired
-	private CommitRepository commitsRepo;
+    @Autowired
+    private ProjectBasicConfigRepository projectConfigRepository;
 
-	@Autowired
-	private MergeRequestRepository mergReqRepo;
+    @Autowired
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+    @Autowired
+    private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
+    @Autowired
+    private GitHubActionClientFactory gitHubActionClientFactory;
+    @Autowired
+    private BuildRepository buildRepository;
+    @Autowired
+    private DeploymentRepository deploymentRepository;
 
-	@Autowired
-	private ProjectBasicConfigRepository projectConfigRepository;
+    @Autowired
+    public GitHubActionProcessorJobExecutor(TaskScheduler taskScheduler) {
+        super(taskScheduler,  ProcessorConstants.GITHUBACTION);
+    }
 
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-	@Autowired
-	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+    @Override
+    public GitHubActionProcessor getProcessor() {
+        return GitHubActionProcessor.prototype();
+    }
 
-	/**
-	 * 
-	 * The constructor.
-	 * 
-	 * @param taskScheduler
-	 *            taskScheduler
-	 */
-	@Autowired
-	protected GitHubActionProcessorJobExecutor(TaskScheduler taskScheduler) {
-		super(taskScheduler, ProcessorConstants.GITHUB);
-	}
+    @Override
+    public ProcessorRepository<GitHubActionProcessor> getProcessorRepository() {
+        return gitHubActionProcessorRepository;
+    }
 
-	/**
-	 * Gets the cron.
-	 *
-	 * @return the cron
-	 */
-	@Override
-	public String getCron() {
-		return gitHubActionConfig.getCron();
-	}
+    @Override
+    public String getCron() {
+        return gitHubActionConfig.getCron();
+    }
 
-	/**
-	 * Creates the processor item.
-	 *
-	 * @param tool
-	 *            the tool
-	 * @param processorId
-	 *            the processor id
-	 * @return the processor item
-	 */
-	private GitHubProcessorItem createProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
-		GitHubProcessorItem item = new GitHubProcessorItem();
-		item.setToolConfigId(tool.getId());
-		item.setProcessorId(processorId);
-		item.setActive(Boolean.TRUE);
-		item.getToolDetailsMap().put(GitHubActionConstants.URL, tool.getUrl());
-		item.getToolDetailsMap().put(GitHubActionConstants.TOOL_BRANCH, tool.getBranch());
-		item.getToolDetailsMap().put(GitHubActionConstants.SCM, tool.getToolName());
-		item.getToolDetailsMap().put(GitHubActionConstants.OWNER, tool.getUsername());
-		item.getToolDetailsMap().put(GitHubActionConstants.REPO_NAME, tool.getRepositoryName());
-		item.getToolDetailsMap().put(GitHubActionConstants.REPO_BRANCH, tool.getBranch());
-		return item;
-	}
+    @Override
+    public boolean execute(GitHubActionProcessor processor) {
+        boolean executionStatus = true;
+        long startTime = System.currentTimeMillis();
+        String uid = UUID.randomUUID().toString();
+        MDC.put("GitHubActionProcessorJobExecutorUid", uid);
+        MDC.put("processorStartTime", String.valueOf(startTime));
 
-	/**
-	 * Checks if is new commitDetails.
-	 *
-	 * @param gitHubProcessorItem
-	 *            the git repo
-	 * @param commitDetails
-	 *            commitDetails
-	 * @return true, if is new commit
-	 */
-	private boolean isNewCommit(GitHubProcessorItem gitHubProcessorItem, CommitDetails commitDetails) {
-		CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-				commitDetails.getRevisionNumber());
-		return dbCommit == null;
-	}
+        List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
+        MDC.put("TotalSelectedProjectsForProcessing", String.valueOf(projectConfigList.size()));
+        clearSelectedBasicProjectConfigIds();
+        int count = 0;
 
-	/**
-	 * Checks if is new mergeRequests.
-	 * 
-	 * @param gitHubProcessorItem
-	 *            the git repo
-	 * @param mergeRequests
-	 * @return true, if is new merge Request
-	 */
-	private boolean isNewMergeReq(GitHubProcessorItem gitHubProcessorItem, MergeRequests mergeRequests) {
-		boolean isNewReq = false;
-		MergeRequests mergReq = mergReqRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-				mergeRequests.getRevisionNumber());
-		if (mergReq == null) {
-			isNewReq = true;
-		} else if (!mergReq.getState().equals(mergeRequests.getState())) {
-			mergeRequests.setId(mergReq.getId());
-			mergReqRepo.save(mergeRequests);
-		}
-		return isNewReq;
-	}
+        Set<ObjectId> udId = new HashSet<>();
+        udId.add(processor.getId());
+        List<Deployment> deploymentJobs = deploymentRepository.findByProcessorIdIn(udId);
 
-	/**
-	 * Execute.
-	 *
-	 * @param processor
-	 *            the processor
-	 * @return boolean value
-	 */
-	@Override
-	public boolean execute(GitHubActionProcessor processor) {
-		boolean executionStatus = true;
-		String uid = UUID.randomUUID().toString();
-		MDC.put("GitHubActionProcessorJobExecutorUid", uid);
+        for (ProjectBasicConfig proBasicConfig : projectConfigList) {
+            log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
+            List<ProcessorToolConnection> githubActionJobsFromConfig = processorToolConnectionService
+                    .findByToolAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, proBasicConfig.getId());
+            for (ProcessorToolConnection gitHubActions : githubActionJobsFromConfig) {
+                String jobType = gitHubActions.getJobType();
 
-		long gitHubProcessorActionStartTime = System.currentTimeMillis();
-		MDC.put("GitHubActionProcessorJobExecutorStartTime", String.valueOf(gitHubProcessorActionStartTime));
+                ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+                        proBasicConfig.getId().toHexString());
 
-		int reposCount = 0;
-		int commitsCount = 0;
-		int mergReqCount = 0;
+                try {
+                    log.info("Fetching jobs : {}", gitHubActions.getJobName());
+                    processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+                    MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
 
-		List<ProjectBasicConfig> projectConfigList = getSelectedProjects();
-		MDC.put("TotalSelectedProjectsForProcessing", String.valueOf(projectConfigList.size()));
-		clearSelectedBasicProjectConfigIds();
-		for (ProjectBasicConfig proBasicConfig : projectConfigList) {
-			List<ProcessorToolConnection> githubActionJobsFromConfig = processorToolConnectionService
-					.findByToolAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, proBasicConfig.getId());
-			for (ProcessorToolConnection tool : githubActionJobsFromConfig) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						proBasicConfig.getId().toHexString());
-				try {
-					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-					GitHubProcessorItem gitHubProcessorItem = getGitHubProcessorItem(tool, processor.getId());
-					boolean firstTimeRun = (gitHubProcessorItem.getLastUpdatedCommit() == null);
+                    GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
+                    if (BUILD.equalsIgnoreCase(jobType)) {
+                        processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog, count, proBasicConfig);
+                        MDC.put("totalUpdatedCount", String.valueOf(count));
+                    } else {
+                        processDeployJob(gitHubActionClient, gitHubActions, processor, proBasicConfig, deploymentJobs, processorExecutionTraceLog);
+                    }
+                } catch (RestClientException | FetchingBuildException exception) {
+                    executionStatus = false;
+                    processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+                    processorExecutionTraceLog.setExecutionSuccess(executionStatus);
+                    processorExecutionTraceLogService.save(processorExecutionTraceLog);
+                    log.error(exception.getMessage(), exception);
+                }
 
-					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
-							firstTimeRun, tool, proBasicConfig);
-					updateAssigneeNameForCommits(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, commitDetailList);
-					List<CommitDetails> unsavedCommits = commitDetailList.stream()
-							.filter(commit -> isNewCommit(gitHubProcessorItem, commit)).collect(Collectors.toList());
-					unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitHubProcessorItem.getId()));
-					commitsRepo.saveAll(unsavedCommits);
-					commitsCount += unsavedCommits.size();
-					if (!commitDetailList.isEmpty()) {
-						gitHubProcessorItem.setLastUpdatedCommit(commitDetailList.get(0).getRevisionNumber());
-					}
+            }
+        }
 
-					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
-							firstTimeRun, tool, proBasicConfig);
+        long endTime = System.currentTimeMillis();
+        MDC.put("processorEndTime", String.valueOf(endTime));
+        MDC.put("executionTime", String.valueOf(endTime - startTime));
+        MDC.put("executionStatus", String.valueOf(executionStatus));
+        log.info("GitHubAction Processor execution finished");
+        MDC.clear();
+        return executionStatus;
 
-					updateAssigneeForMerge(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem, mergeRequestsList);
-					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
-							.filter(mergReq -> isNewMergeReq(gitHubProcessorItem, mergReq))
-							.collect(Collectors.toList());
-					unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(gitHubProcessorItem.getId()));
-					mergReqRepo.saveAll(unsavedMergeRequests);
-					mergReqCount += unsavedMergeRequests.size();
+    }
 
-					gitHubProcessorItem.setLastUpdatedTime(Calendar.getInstance().getTime());
-					gitHubProcessorItemRepository.save(gitHubProcessorItem);
-					reposCount++;
-					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
-					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-				} catch (FetchingCommitException exception) {
-					executionStatus = false;
-					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
-					processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
-					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-					log.error(String.format("Error in processing %s", tool.getUrl()), exception);
-				}
-			}
-		}
+    private void processDeployJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
+                                  GitHubActionProcessor processor, ProjectBasicConfig projectBasicConfig,
+                                  List<Deployment> deploymentJobs, ProcessorExecutionTraceLog processorExecutionTraceLog)
+            throws FetchingBuildException {
 
-		MDC.put("RepoCount", String.valueOf(reposCount));
-		MDC.put("CommitCount", String.valueOf(commitsCount));
+        Map<Deployment, Set<Deployment>> deploymentsByJob = gitHubActionClient.getDeployJobsFromServer(gitHubActions, projectBasicConfig);
+        if (MapUtils.isNotEmpty(deploymentsByJob)) {
+            addNewDeploymentJobs(deploymentsByJob, deploymentJobs, processor);
+        }
 
-		if (commitsCount > 0) {
-			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.BITBUCKET_KPI_CACHE);
-		}
-		if (mergReqCount > 0) {
-			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.BITBUCKET_KPI_CACHE);
-		}
-
-		long bitBucketProcessorEndTime = System.currentTimeMillis();
-		MDC.put("GitHubProcessorJobExecutorEndTime", String.valueOf(bitBucketProcessorEndTime));
-
-		MDC.put("TotalGitHubProcessorJobExecutorTime",
-				String.valueOf(bitBucketProcessorEndTime - gitHubProcessorActionStartTime));
-		log.info("GitHub processor execution finished at {}", bitBucketProcessorEndTime);
-		MDC.put("executionStatus", String.valueOf(executionStatus));
-		MDC.clear();
-		return executionStatus;
-	}
-
-	private void updateAssigneeNameForCommits(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<CommitDetails> commitDetailList) {
-		if (proBasicConfig.isSaveAssigneeDetails()
-				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-			List<CommitDetails> updateAuthor = new ArrayList<>();
-			commitDetailList.stream().forEach(commit -> {
-				CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
-						gitHubProcessorItem.getId(), commit.getRevisionNumber());
-				if(commitDetailsData != null){
-					commitDetailsData.setAuthor(commit.getAuthor());
-					updateAuthor.add(commitDetailsData);
-				}
-			});
-			commitsRepo.saveAll(updateAuthor);
-
-		}
-	}
-
-	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem, List<MergeRequests> mergeRequestsList) {
-		if (proBasicConfig.isSaveAssigneeDetails()
-				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-			List<MergeRequests> updateAuthor = new ArrayList<>();
-			mergeRequestsList.stream().forEach(mergeRequests -> {
-				MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
-						gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
-				if (mergeRequestData != null) {
-					mergeRequestData.setAuthor(mergeRequests.getAuthor());
-					updateAuthor.add(mergeRequestData);
-				}
-			});
-			mergReqRepo.saveAll(updateAuthor);
-		}
-	}
-
-	private GitHubProcessorItem getGitHubProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
-		List<GitHubProcessorItem> gitHubProcessorItemList = gitHubProcessorItemRepository
-				.findByProcessorIdAndToolConfigId(processorId, tool.getId());
-		GitHubProcessorItem gitHubProcessorItem;
-		if (CollectionUtils.isNotEmpty(gitHubProcessorItemList)) {
-			gitHubProcessorItem = gitHubProcessorItemList.get(0);
-		} else {
-			gitHubProcessorItem = gitHubProcessorItemRepository.save(createProcessorItem(tool, processorId));
-		}
-		return gitHubProcessorItem;
-	}
+        MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
+        processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+        processorExecutionTraceLog.setExecutionSuccess(true);
+        processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUB);
-		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
-		);
-		return processorExecutionTraceLog;
-	}
-	/**
-	 * Gets the processor.
-	 *
-	 * @return the processor
-	 */
-	@Override
-	public GitHubActionProcessor getProcessor() {
-		return GitHubActionProcessor.prototype();
-	}
+    }
 
-	/**
-	 * Gets the processor repository.
-	 *
-	 * @return the processor repository
-	 */
-	@Override
-	public ProcessorRepository<GitHubActionProcessor> getProcessorRepository() {
-		return gitHubProcessorRepository;
-	}
+    private void addNewDeploymentJobs(Map<Deployment, Set<Deployment>> deploymentsByJob, List<Deployment> existingJobs,
+                                      GitHubActionProcessor processor) {
 
-	/**
-	 * Cleans the cache in the Custom API
-	 * 
-	 * @param cacheEndPoint
-	 *            the cache endpoint
-	 * @param cacheName
-	 *            the cache name
-	 */
-	private void cacheRestClient(String cacheEndPoint, String cacheName) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+        List<Deployment> newJobs = new ArrayList<>();
+        for (Deployment job : deploymentsByJob.keySet()) {
+            Deployment existing = null;
+            if (!CollectionUtils.isEmpty(existingJobs) && existingJobs.contains(job)) {
+                existing = existingJobs.get(existingJobs.indexOf(job));
+            }
 
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(gitHubActionConfig.getCustomApiBaseUrl());
-		uriBuilder.path("/");
-		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(cacheName);
+            if (existing == null) {
+                job.setProcessorId(processor.getId());
+                newJobs.add(job);
+            }
 
-		HttpEntity<?> entity = new HttpEntity<>(headers);
+        }
 
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = null;
-		try {
-			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
-		} catch (RestClientException e) {
-			log.error("[GITHUB-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
-		}
+        if (!CollectionUtils.isEmpty(newJobs)) {
+            deploymentRepository.saveAll(newJobs);
+        }
+    }
 
-		if (null != response && response.getStatusCode().is2xxSuccessful()) {
-			log.info("[GITHUB-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
-		} else {
-			log.error("[GITHUB-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
-		}
-		
-		clearToolItemCache(gitHubActionConfig.getCustomApiBaseUrl());
-	}
+    private void processBuildJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
+                                 GitHubActionProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog,
+                                 int count, ProjectBasicConfig proBasicConfig) throws FetchingBuildException {
 
-	/**
-	 * Return List of selected ProjectBasicConfig id if null then return all
-	 * ProjectBasicConfig ids
-	 * 
-	 * @return List of projects
-	 */
-	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
-		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
+        Map<ObjectId, Set<Build>> buildsByJob = gitHubActionClient.getBuildJobsFromServer(gitHubActions, proBasicConfig);
+        if (MapUtils.isNotEmpty(buildsByJob)) {
 
-		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
-		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
-			return allProjects;
-		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
-	}
+            int updatedJobs = addNewBuildDetails(buildsByJob, gitHubActions, processor.getId(), proBasicConfig);
+            count += updatedJobs;
+            log.info("Job updated for :{}", count);
 
-	private void clearSelectedBasicProjectConfigIds() {
-		setProjectsBasicConfigIds(null);
-	}
+        } else {
+            log.error("Job Details not fetched for : {}, job : {}", gitHubActions.getUrl(), gitHubActions.getJobName());
+        }
+        MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
+        processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+        processorExecutionTraceLog.setExecutionSuccess(true);
+        processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
+        processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
+    }
+
+    private int addNewBuildDetails(Map<ObjectId, Set<Build>> buildsByJob, ProcessorToolConnection gitHubActions,
+                                   ObjectId processorId, ProjectBasicConfig proBasicConfig) {
+        long start = System.currentTimeMillis();
+        int count = 0;
+        List<Build> buildsToSave = new ArrayList<>();
+        for (Build build : buildsByJob.values().iterator().next()) {
+            Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(gitHubActions.getId(),
+                    build.getNumber());
+            if (buildData == null) {
+                build.setJobFolder(gitHubActions.getJobName());
+                build.setProcessorId(processorId);
+                build.setBasicProjectConfigId(gitHubActions.getBasicProjectConfigId());
+                build.setProjectToolConfigId(gitHubActions.getId());
+                build.setBuildJob(gitHubActions.getJobName());
+                buildsToSave.add(build);
+                count++;
+            } else {
+
+                if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null && build.getStartedBy() != null) {
+                    buildData.setStartedBy(build.getStartedBy());
+                    buildsToSave.add(buildData);
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(buildsToSave)) {
+            buildRepository.saveAll(buildsToSave);
+        }
+        log.info("New builds {} {}", start, count);
+        return count;
+    }
+
+    private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUBACTION);
+        processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+        Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, basicProjectConfigId);
+        existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
+                processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
+        );
+
+        return processorExecutionTraceLog;
+    }
+    private void clearSelectedBasicProjectConfigIds() {
+        setProjectsBasicConfigIds(null);
+    }
+    private List<ProjectBasicConfig> getSelectedProjects() {
+        List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+        MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
+
+        List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
+        if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
+            return allProjects;
+        }
+        return CollectionUtils.emptyIfNull(allProjects).stream().filter(
+                        projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+                .collect(Collectors.toList());
+    }
 }

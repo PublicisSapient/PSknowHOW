@@ -29,6 +29,7 @@ public final class CommonConstant {
 	public static final String SONAR_KPI_CACHE = "sonarKpiCache";
 	public static final String BITBUCKET_KPI_CACHE = "bitbucketKpiCache";
 	public static final String GITLAB_KPI_CACHE = "gitLabKpiCache";
+	public static final String GITHUBACTION_KPI_CACHE = "gitHubActionKpiCache";
 	public static final String JENKINS_KPI_CACHE = "jenkinsKpiCache";
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";

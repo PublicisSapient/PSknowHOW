@@ -30,7 +30,7 @@ import lombok.Setter;
 
 
 /**
- * 
+ *
  * GutHubActionConfig represents a class which holds GutHubActionConfig details.
  *
  */
@@ -46,7 +46,6 @@ public class GitHubActionConfig {
     private String host;
     private String cron;
     private String aesEncryptionKey;
-    private int initialRunOccurrenceInDays;
     private String api;
     private String customApiBaseUrl;
     private int pageSize;
