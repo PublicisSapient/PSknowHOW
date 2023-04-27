@@ -1903,6 +1903,7 @@ describe('ExecutiveComponent', () => {
   it('check whether scrum', (done) => {
     const type = 'Scrum';
     component.selectedtype = 'Scrum';
+    spyOn(httpService,'postKpi').and.returnValue(of(fakeJiraGroupId1));
     fixture.detectChanges();
     expect(component.selectedtype).toBe(type);
     done();
@@ -1969,13 +1970,13 @@ describe('ExecutiveComponent', () => {
     const type = 'Kanban';
     service.setSelectedTypeOrTabRefresh('Category One','Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
-    httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
-    httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
-    httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
-    httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
-    httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
-
-    // fixture.detectChanges();
+    fixture.detectChanges();
+    spyOn(httpService,'postKpiKanban').and.returnValue(of(fakejiraKanban));
+    // httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
+    // httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
+    // httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
+    // httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
+    // httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
     expect(component.selectedtype).toBe(type);
     done();
 
@@ -2004,17 +2005,20 @@ describe('ExecutiveComponent', () => {
 
   it('color acc to maturity check ', waitForAsync(() => {
     const returnBlue = component.returnColorAccToMaturity(0);
+    spyOn(component,'receiveSharedData');
     expect(returnBlue).toBe('#44739f');
     // done();
   }));
 
   it('color acc to maturity check array', (done) => {
     component.colorAccToMaturity('1-2-3');
+    spyOn(component,'receiveSharedData');
     expect(component.maturityColorCycleTime[0]).toBe('#44739f');
     done();
   });
 
   it('should create', (done) => {
+    spyOn(component,'receiveSharedData');
     expect(component).toBeTruthy();
     done();
   });

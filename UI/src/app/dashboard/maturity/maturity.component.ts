@@ -83,6 +83,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
     loader= false;
     showNoDataMsg = false;
     noDataForFilter = false;
+    noProjects =false;
+    isKanban = false;
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
@@ -101,7 +103,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.loaderBitBucket = false;
             this.loaderJenkins = false;
             this.loaderJira = false;
-            this.selectedtype = data.selectedType;
+            this.selectedtype = data?.selectedType;
             this.showNoDataMsg = false;
         }));
 
@@ -119,12 +121,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.filterData = $event?.filterData;
             this.filterApplyData = $event?.filterApplyData;
             this.loaderMaturity = true;
-            const isKanban = this.selectedtype.toLowerCase() === 'kanban';
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === isKanban).map(kpi => kpi.kpiId);
-            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0){
+            this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
+            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
+            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype){
                 // this.drawAreaChart(null, null);
                 // this.chart(null);
-                if (this.selectedtype.toLowerCase() === 'scrum') {
+                if (this.selectedtype?.toLowerCase() === 'scrum') {
                     this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                     this.groupZypherKpi(kpiIdsForCurrentBoard);
                     this.groupBitBucketKpi(kpiIdsForCurrentBoard);
@@ -151,6 +153,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration');
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
             }));
+            this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
+                this.noProjects = res;
+                 this.isKanban= this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+              }));
 
         if (this.service.getFilterObject()) {
             this.receiveSharedData(this.service.getFilterObject());

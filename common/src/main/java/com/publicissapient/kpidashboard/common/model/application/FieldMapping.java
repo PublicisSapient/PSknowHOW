@@ -79,6 +79,8 @@ public class FieldMapping extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
+	// Added for Defect Reopen Rate KPI.
+	private List<String> jiraDefectClosedStatus;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
