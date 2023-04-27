@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.filter.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * Implementation of {@link AccountHierarchyService} to managing all requests to
@@ -148,6 +150,7 @@ public class AccountHierarchyServiceImpl
 
 		// create map of sprints with key as parent id of sprint
 		Map<String, List<AccountHierarchy>> parentWiseSprintMap = null;
+		Map<String, List<AccountHierarchy>> parentWiseReleaseMap = null;
 		List<String> sprintIds =  filterDataList.stream()
 				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName()))
 				.map(AccountHierarchy::getNodeId)
@@ -159,22 +162,87 @@ public class AccountHierarchyServiceImpl
 				.sorted(Comparator.comparing(AccountHierarchy::getBeginDate).reversed())
 				.collect(Collectors.groupingBy(AccountHierarchy::getParentId));
 
+		parentWiseReleaseMap = filterDataList.stream()
+				.filter(x -> (CommonConstant.HIERARCHY_LEVEL_ID_RELEASE.equalsIgnoreCase(x.getLabelName()))
+						&& (StringUtils.isNotEmpty(x.getBeginDate()) || StringUtils.isNotEmpty(x.getEndDate())))
+				.collect(Collectors.groupingBy(AccountHierarchy::getParentId));
+
 
 		// create list of sprints ids that need to be displayed in filter.
-		Map<String, List<String>> sprintIdListToDisplay = new HashMap<>();
+		Map<String, List<String>> limitedDisplayMap = new HashMap<>();
 		parentWiseSprintMap.entrySet().forEach(
-				entry -> sprintIdListToDisplay.put(entry.getKey(), limitSprints(entry.getValue(), sprintDetailsMap)));
+				entry -> limitedDisplayMap.put(entry.getKey(), limitSprints(entry.getValue(), sprintDetailsMap)));
+
+		parentWiseReleaseMap.entrySet().forEach(entry -> {
+			List<String> releaseNodeIds = limitRelease(entry.getValue());
+			limitedDisplayMap.computeIfPresent(entry.getKey(), (projectId, sprints) -> {
+				sprints.addAll(releaseNodeIds);
+				return sprints;
+			});
+			limitedDisplayMap.putIfAbsent(entry.getKey(), releaseNodeIds);
+
+		});
 
 		if (firstLevel != null) {
 			filterDataList.stream().filter(fd -> fd.getLabelName().equalsIgnoreCase(firstLevel)).forEach(rootData -> {
 				AccountHierarchyData accountHierarchyData = new AccountHierarchyData();
 				setValuesInAccountHierarchyData(rootData, accountHierarchyData, sprintDetailsMap,hierarchyLevelIdMap);
 				traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData,
-						hierarchyLevelIdMap, sprintIdListToDisplay, sprintDetailsMap);
+						hierarchyLevelIdMap, limitedDisplayMap, sprintDetailsMap);
 			});
 		}
 
 		return listHierarchyData;
+	}
+
+	private List<String> limitRelease(List<AccountHierarchy> releaseHierarchies) {
+		List<String> releaseNodeId = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(releaseHierarchies)){
+			checkUnreleasedStatus(releaseHierarchies, releaseNodeId);
+			checkReleasedStatus(releaseHierarchies, releaseNodeId);
+		}
+		return releaseNodeId;
+	}
+
+	/**
+	 * endtime should be within today-2months and today
+	 * @param releaseHierarchies
+	 * @param releaseNodeId
+	 */
+	private void checkReleasedStatus(List<AccountHierarchy> releaseHierarchies, List<String> releaseNodeId) {
+		releaseHierarchies.stream().filter(
+						accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.RELEASED))
+				.forEach(accountHierarchy -> {
+					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate())
+							&& DateUtil.isWithinDateRange(
+							DateUtil.stringToLocalDate(accountHierarchy.getEndDate(),
+									DateUtil.TIME_FORMAT),
+							LocalDate.now().minusMonths(2), LocalDate.now())) {
+						releaseNodeId.add(accountHierarchy.getNodeId());
+					}
+				});
+	}
+
+	/**
+	 * endtime of release should not be greater than todays+6months or
+	 * starttime of release should be within today's and today+2months
+	 * @param releaseHierarchies
+	 * @param releaseNodeId
+	 */
+	private void checkUnreleasedStatus(List<AccountHierarchy> releaseHierarchies, List<String> releaseNodeId) {
+		releaseHierarchies.stream().filter(
+				accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.UNRELEASED))
+				.forEach(accountHierarchy -> {
+					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate())
+							&& DateUtil.stringToLocalDate(accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT)
+									.isBefore(LocalDate.now().plusMonths(6).plusDays(1))
+							|| (StringUtils.isNotEmpty(accountHierarchy.getBeginDate()) && DateUtil.isWithinDateRange(
+									DateUtil.stringToLocalDate(accountHierarchy.getBeginDate(),
+											DateUtil.TIME_FORMAT),
+									LocalDate.now(), LocalDate.now().plusMonths(1)))) {
+						releaseNodeId.add(accountHierarchy.getNodeId());
+					}
+				});
 	}
 
 	private List<String> limitSprints(List<AccountHierarchy> accountHierarchies,
@@ -220,8 +288,9 @@ public class AccountHierarchyServiceImpl
 	 */
 	private boolean showInFilters(List<String> sprintIdListToDisplay, AccountHierarchy accountHierarchy) {
 		boolean show = true;
-		if (!CollectionUtils.isEmpty(sprintIdListToDisplay)
-				&& accountHierarchy.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+		if (!CollectionUtils.isEmpty(sprintIdListToDisplay) && (accountHierarchy.getLabelName()
+				.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+				|| accountHierarchy.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 			show = sprintIdListToDisplay.contains(accountHierarchy.getNodeId());
 		}
 		return show;
