@@ -35,7 +35,6 @@ export class AuthGuard implements CanActivate {
 
         if (currentUserDetails) {
             if (currentUserDetails['authorities']) {
-                console.log(currentUserDetails);
                 return true;
             } else {
                 this.router.navigate(['./authentication/register']);
