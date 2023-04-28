@@ -37,21 +37,15 @@ import java.util.Map;
 public interface JiraAdapter {
 
 	/**
-	 * Gets all issues from JIRA
 	 *
 	 * @param boardDetails
-	 * 			  boardDetails
 	 * @param projectConfig
-	 *            projectConfig Object
 	 * @param startDateTimeByIssueType
-	 *            map of start dataTime of issue types
 	 * @param userTimeZone
-	 *            user timezone
 	 * @param pageStart
-	 *            page start
 	 * @param dataExist
-	 *            data exist in db or not
-	 * @return list of issues
+	 * @return
+	 * @throws InterruptedException
 	 */
 	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig, String startDateTimeByIssueType,
 						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
