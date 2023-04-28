@@ -209,22 +209,22 @@
         <form [formGroup]="jiraForm" autocomplete="off">
             <div class="p-field">
                 <label for="cloudEnv">Jira Server</label>
-                <p-inputSwitch id="cloudEnv" formControlName="cloudEnv" class="p-ml-2 p-mr-2">
+                <p-inputSwitch id="cloudEnv" formControlName="cloudEnv" class="p-ml-2 p-mr-2" (onChange)="updateForm()">
                 </p-inputSwitch>
                 <label for="cloudEnv">Jira Cloud</label>
             </div>
             <div class="p-field">
                 <label for="connectionName">Connection Name</label>
-                <input class="ml-2" type="text" id="connectionName" pInputText
+                <input class="ml-2" type="text" id="connectionName" pInputText (change)="updateForm()"
                     formControlName="connectionName">
             </div>
             <div class="p-field">
                 <label for="baseUrl">Base Url</label>
-                <input class="ml-2" type="text" id="baseUrl" pInputText formControlName="baseUrl">
+                <input class="ml-2" type="text" id="baseUrl" pInputText formControlName="baseUrl" (change)="updateForm()">
             </div>
             <div class="p-field">
                 <label for="apiEndPoint">API Endpoint</label>
-                <input class="ml-2" type="text" id="apiEndPoint" pInputText formControlName="apiEndPoint">
+                <input class="ml-2" type="text" id="apiEndPoint" pInputText formControlName="apiEndPoint" (change)="updateForm()">
             </div>
             <div class="p-field">
                 <label for="jiraAuthDdwn">Select Authentication Type</label>
@@ -234,44 +234,44 @@
             </div>
             <div class="p-field">
                 <label for="username">Username</label>
-                <input class="ml-2" type="text" id="username" pInputText formControlName="username">
+                <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()">
             </div>
             <div class="p-field"
                 *ngIf="!jiraForm.controls['vault']?.value && !jiraForm.controls['bearerToken']?.value && !jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="password">Password</label>
-                <p-password class="ml-2" type="password" id="password" formControlName="password">
+                <p-password class="ml-2" type="password" id="password" formControlName="password" (change)="updateForm()">
                 </p-password>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['bearerToken']?.value">
                 <label for="patOAuthToken">PatOAuthToken</label>
-                <p-password class="ml-2" type="password" id="patOAuthToken" formControlName="patOAuthToken">
+                <p-password class="ml-2" type="password" id="patOAuthToken" formControlName="patOAuthToken" (change)="updateForm()">
                 </p-password>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['isOAuth']?.value">
                 <label for="privateKey">Private Key</label>
-                <input class="ml-2" type="text" id="privateKey" pInputText formControlName="privateKey" />
+                <input class="ml-2" type="text" id="privateKey" pInputText formControlName="privateKey" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['isOAuth']?.value">
                 <label for="consumerKey">Consumer Key</label>
-                <input class="ml-2" type="text" id="consumerKey" pInputText formControlName="consumerKey" />
+                <input class="ml-2" type="text" id="consumerKey" pInputText formControlName="consumerKey" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="jaasConfigFilePath">Jaas Config File Path</label>
                 <input class="ml-2" type="text" id="jaasConfigFilePath" pInputText 
-                    formControlName="jaasConfigFilePath" />
+                    formControlName="jaasConfigFilePath" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="krb5ConfigFilePath">Krb 5 Config File Path</label>
                 <input class="ml-2" type="text" id="krb5ConfigFilePath" pInputText
-                    formControlName="krb5ConfigFilePath" />
+                    formControlName="krb5ConfigFilePath" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="jaasUser">Jaas User</label>
-                <input class="ml-2" type="text" id="jaasUser" pInputText formControlName="jaasUser" />
+                <input class="ml-2" type="text" id="jaasUser" pInputText formControlName="jaasUser" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="samlEndPoint">Saml EndPoint</label>
-                <input class="ml-2" type="text" id="samlEndPoint" pInputText formControlName="samlEndPoint" />
+                <input class="ml-2" type="text" id="samlEndPoint" pInputText formControlName="samlEndPoint" (change)="updateForm()"/>
             </div>
             <div class="p-field">
                 <label for="offline">isOffline</label>
@@ -280,12 +280,12 @@
             </div>
             <div class="p-field">
                 <label for="connPrivate">Is Connection Private</label>
-                <input class="ml-2" type="checkbox" id="connPrivate" formControlName="connPrivate">
+                <input class="ml-2" type="checkbox" id="connPrivate" formControlName="connPrivate" (change)="updateForm()"/>
             </div>
         </form>
         <button pButton pRipple label="Test Connection" icon="pi pi-question" class="p-button-warning p-mr-2"
             (click)="testConnection()"
-            [disabled]="(jiraForm.invalid || testingConnection)"></button>
+            [disabled]="(!jiraForm.valid || testingConnection)"></button>
         <label [ngClass]="{'p-invalid': !testConnectionValid, 'p-valid': testConnectionValid }"
             *ngIf="testConnectionMsg.length">{{testConnectionMsg}}</label>
     </ng-template>

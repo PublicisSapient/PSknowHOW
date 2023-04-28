@@ -377,7 +377,7 @@ export class ConnectionListComponent implements OnInit {
   isRoleViewer = false;
   currentUser = '';
   zephyrUrl = '';
-  jiraForm: FormGroup<any> = new FormGroup({});
+  jiraForm:FormGroup<any> = new FormGroup({});
   jiraAuthDdwn = [{
     'label': 'Basic Authentication',
     'key': 'basic'
@@ -440,8 +440,8 @@ export class ConnectionListComponent implements OnInit {
   }
 
   initializeForms(connection, isEdit?) {
-    for (let key in connection) {
-      this.jiraForm.controls[key] = new FormControl(connection[key])
+    for (let key in this.jiraConnectionFields) {
+      this.jiraForm.controls[key] = new FormControl({ value: connection[key], disabled: false }, [Validators.required])
     }
     if (isEdit) {
       if (connection['vault']) {
@@ -466,65 +466,121 @@ export class ConnectionListComponent implements OnInit {
       case 'vault':
         this.jiraForm.controls['vault'].setValue(true);
         this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['bearerToken'].disable();
         this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['isOAuth'].disable();
         this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].disable();
         this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['password'].disable();
         this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].disable();
         this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['privateKey'].disable();
         this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].disable();
         this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].disable();
         this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].disable();
         this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['jaasUser'].disable();
         this.jiraForm.controls['samlEndPoint'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].disable();
         break;
       case 'bearerToken':
         this.jiraForm.controls['bearerToken'].setValue(true);
+        this.jiraForm.controls['patOAuthToken'].enable();
         this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['vault'].disable();
         this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['isOAuth'].disable();
         this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].disable();
         this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['password'].disable();
         this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['privateKey'].disable();
         this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].disable();
         this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].disable();
         this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].disable();
         this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['jaasUser'].disable();
         this.jiraForm.controls['samlEndPoint'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].disable();
         break;
       case 'isOAuth':
         this.jiraForm.controls['isOAuth'].setValue(true);
+        this.jiraForm.controls['password'].enable();
+        this.jiraForm.controls['privateKey'].enable();
+        this.jiraForm.controls['consumerKey'].enable();
         this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['vault'].disable();
         this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['bearerToken'].disable();
         this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].disable();
         this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].disable();
         this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].disable();
         this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].disable();
         this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['jaasUser'].disable();
         this.jiraForm.controls['samlEndPoint'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].disable();
         break;
       case 'jaasKrbAuth':
         this.jiraForm.controls['jaasKrbAuth'].setValue(true);
+        this.jiraForm.controls['jaasConfigFilePath'].enable();
+        this.jiraForm.controls['krb5ConfigFilePath'].enable();
+        this.jiraForm.controls['jaasUser'].enable();
+        this.jiraForm.controls['samlEndPoint'].enable();
         this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['vault'].disable();
         this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['bearerToken'].disable();
         this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['isOAuth'].disable();
         this.jiraForm.controls['password'].setValue('');
+        this.jiraForm.controls['password'].disable();
         this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].disable();
         this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['privateKey'].disable();
         this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].disable();
         break;
       default:
         this.jiraForm.controls['vault'].setValue(false);
+        this.jiraForm.controls['vault'].disable();
         this.jiraForm.controls['bearerToken'].setValue(false);
+        this.jiraForm.controls['bearerToken'].disable();
         this.jiraForm.controls['isOAuth'].setValue(false);
+        this.jiraForm.controls['isOAuth'].disable();
         this.jiraForm.controls['jaasKrbAuth'].setValue(false);
+        this.jiraForm.controls['jaasKrbAuth'].disable();
         this.jiraForm.controls['patOAuthToken'].setValue('');
+        this.jiraForm.controls['patOAuthToken'].disable();
         this.jiraForm.controls['privateKey'].setValue('');
+        this.jiraForm.controls['privateKey'].disable();
         this.jiraForm.controls['consumerKey'].setValue('');
+        this.jiraForm.controls['consumerKey'].disable();
         this.jiraForm.controls['jaasConfigFilePath'].setValue('');
+        this.jiraForm.controls['jaasConfigFilePath'].disable();
         this.jiraForm.controls['krb5ConfigFilePath'].setValue('');
+        this.jiraForm.controls['krb5ConfigFilePath'].disable();
         this.jiraForm.controls['jaasUser'].setValue('');
+        this.jiraForm.controls['jaasUser'].disable();
         this.jiraForm.controls['samlEndPoint'].setValue('');
+        this.jiraForm.controls['samlEndPoint'].disable();
         break;
     }
+    this.jiraForm.updateValueAndValidity();
   }
 
   getZephyrUrl() {
@@ -593,15 +649,14 @@ export class ConnectionListComponent implements OnInit {
 
   createConnection() {
     this.connection = { type: this.selectedConnectionType, connPrivate: true };
+    this.isNewlyConfigAdded = true;
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
-      this.isNewlyConfigAdded = true;
       this.jiraForm.controls['type'].setValue(this.connection.type);
       this.initializeForms(this.jiraConnectionFields);
     } else {
       this.submitted = false;
       this.connectionDialog = true;
-      this.isNewlyConfigAdded = true;
       this.connectionTypeFieldsAssignment();
       this.basicConnectionForm.controls['type'].setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
@@ -735,20 +790,20 @@ export class ConnectionListComponent implements OnInit {
       reqData['id'] = this.connection['id'];
     }
 
-    if (!!this.connection['password']) {
-      reqData['password'] = this.rsa.encrypt(this.connection['password']);
+    if (!!reqData['password']) {
+      reqData['password'] = this.rsa.encrypt(reqData['password']);
     }
 
-    if (!!this.connection['pat']) {
-      reqData['pat'] = this.rsa.encrypt(this.connection['pat']);
+    if (!!reqData['pat']) {
+      reqData['pat'] = this.rsa.encrypt(reqData['pat']);
     }
 
-    if (!!this.connection['accessToken'] && this.connection['type'].toLowerCase() !== 'zephyr') {
-      reqData['accessToken'] = this.rsa.encrypt(this.connection['accessToken']);
+    if (!!reqData['accessToken'] && this.connection['type'].toLowerCase() !== 'zephyr') {
+      reqData['accessToken'] = this.rsa.encrypt(reqData['accessToken']);
     }
 
-    if (!!this.connection['apiKey']) {
-      reqData['apiKey'] = this.rsa.encrypt(this.connection['apiKey']);
+    if (!!reqData['apiKey']) {
+      reqData['apiKey'] = this.rsa.encrypt(reqData['apiKey']);
     }
 
     if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
@@ -764,6 +819,10 @@ export class ConnectionListComponent implements OnInit {
       this.editConnectionReq(reqData);
     }
 
+  }
+
+  updateForm(){
+    this.jiraForm.updateValueAndValidity();   
   }
 
   addConnectionReq(reqData) {
