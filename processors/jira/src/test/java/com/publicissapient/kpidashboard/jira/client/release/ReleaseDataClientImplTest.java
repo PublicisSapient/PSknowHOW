@@ -22,17 +22,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
@@ -42,10 +45,13 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
-
+@RunWith(MockitoJUnitRunner.class)
 public class ReleaseDataClientImplTest {
 
     @Mock
@@ -58,26 +64,42 @@ public class ReleaseDataClientImplTest {
     ProjectReleaseRepo projectReleaseRepo;
     @InjectMocks
     private ReleaseDataClientImpl releaseDataClient;
+    @Mock
+    private HierarchyLevelService hierarchyLevelService;
+    @Mock
+    private JiraRestClientFactory jiraRestClientFactory;
 
 
     ProjectConfFieldMapping scrumProjectMapping = ProjectConfFieldMapping.builder().build();
     ProjectConfFieldMapping kanbanProjectMapping = ProjectConfFieldMapping.builder().build();
-    AccountHierarchy accountHierarchy;
-    KanbanAccountHierarchy kanbanAccountHierarchy;
+   List<AccountHierarchy> accountHierarchylist = new ArrayList<>();
+   List<KanbanAccountHierarchy> kanbanAccountHierarchylist = new ArrayList<>();
 
-    @BeforeEach
+    List<HierarchyLevel> hierarchyLevels= new ArrayList<>();
+
+    @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         prepareAccountHierarchy();
         prepareKanbanAccountHierarchy();
         prepareProjectConfig();
+        prepareHierarchyLevel();
     }
 
-   @Test
+    private void prepareHierarchyLevel() {
+       hierarchyLevels.add(new HierarchyLevel(5,"sprint","Sprint"));
+       hierarchyLevels.add(new HierarchyLevel(5,"release","Release"));
+       hierarchyLevels.add(new HierarchyLevel(4,"project","Project"));
+       hierarchyLevels.add(new HierarchyLevel(3,"hierarchyLevelThree","Level Three"));
+       hierarchyLevels.add(new HierarchyLevel(2,"hierarchyLevelTwo","Level Two"));
+       hierarchyLevels.add(new HierarchyLevel(1,"hierarchyLevelOne","Level One"));
+    }
+
+    @Test
     public void processReleaseInfo() {
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
-                any(ObjectId.class))).thenReturn(Arrays.asList(accountHierarchy));
-        when(accountHierarchyRepository.findAll()).thenReturn(Arrays.asList(accountHierarchy));
+                any())).thenReturn(accountHierarchylist);
+        when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
+       when(hierarchyLevelService.getFullHierarchyLevels(anyBoolean())).thenReturn(hierarchyLevels);
         ProjectVersion version = new ProjectVersion();
         List<ProjectVersion> versionList = new ArrayList<>();
         version.setId(Long.valueOf("123"));
@@ -99,8 +121,10 @@ public class ReleaseDataClientImplTest {
 
     @Test
     public void processReleaseInfoForKanban() {
-        when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project",
-                kanbanProjectMapping.getBasicProjectConfigId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
+        when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
+               any())).thenReturn(kanbanAccountHierarchylist);
+        when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
+        when(hierarchyLevelService.getFullHierarchyLevels(kanbanProjectMapping.isKanban())).thenReturn(hierarchyLevels);
         ProjectVersion version = new ProjectVersion();
         List<ProjectVersion> versionList = new ArrayList<>();
         version.setId(Long.valueOf("123"));
@@ -126,8 +150,11 @@ public class ReleaseDataClientImplTest {
         jiraToolConfig.setBoardQuery("");
         jiraToolConfig.setQueryEnabled(false);
         jiraToolConfig.setProjectKey("TEST");
-
-		scrumProjectMapping.setJira(jiraToolConfig);
+        ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+        projectBasicConfig.setProjectName("TEST Project Internal");
+        projectBasicConfig.setIsKanban(false);
+        scrumProjectMapping.setProjectBasicConfig(projectBasicConfig);
+        scrumProjectMapping.setJira(jiraToolConfig);
 
 
         //Online Project Config data Kanban
@@ -137,14 +164,18 @@ public class ReleaseDataClientImplTest {
         subProjectConfig = new SubProjectConfig();
         subProjectConfig.setSubProjectIdentification("CustomField");
         subProjectConfig.setSubProjectIdentSingleValue("customfield_20810");
+        ProjectBasicConfig kanbanBasicConfig = new ProjectBasicConfig();
+        kanbanBasicConfig.setProjectName("Tools-Atlassian Tools Support");
+        kanbanBasicConfig.setIsKanban(true);
+        kanbanProjectMapping.setProjectBasicConfig(kanbanBasicConfig);
         kanbanProjectMapping.setKanban(true);
+
         kanbanProjectMapping.setJira(jiraToolConfig);
 
     }
 
     void prepareAccountHierarchy(){
-
-        accountHierarchy =new AccountHierarchy();
+        AccountHierarchy accountHierarchy =new AccountHierarchy();
         accountHierarchy.setId(new ObjectId("5e15d9d5e4b098db674614b8"));
         accountHierarchy.setNodeId("TEST_1234_TEST");
         accountHierarchy.setNodeName("TEST");
@@ -154,11 +185,12 @@ public class ReleaseDataClientImplTest {
         accountHierarchy.setBasicProjectConfigId(new  ObjectId("5e15d8b195fe1300014538ce"));
         accountHierarchy.setIsDeleted("False");
         accountHierarchy.setPath(("25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
+        accountHierarchylist.add(accountHierarchy);
     }
 
     void prepareKanbanAccountHierarchy(){
 
-        kanbanAccountHierarchy =new KanbanAccountHierarchy();
+        KanbanAccountHierarchy kanbanAccountHierarchy =new KanbanAccountHierarchy();
         kanbanAccountHierarchy.setId(new ObjectId("5e15d9d5e4b098db674614b8"));
         kanbanAccountHierarchy.setNodeId("TEST_1234_TEST");
         kanbanAccountHierarchy.setNodeName("TEST");
@@ -168,6 +200,7 @@ public class ReleaseDataClientImplTest {
         kanbanAccountHierarchy.setBasicProjectConfigId(new  ObjectId("5e15d8b195fe1300014538ce"));
         kanbanAccountHierarchy.setIsDeleted("False");
         kanbanAccountHierarchy.setPath(("25071_TestHow_61160fa56c1b4842c1741fe1###TestHow_61160fa56c1b4842c1741fe1"));
+        kanbanAccountHierarchylist.add(kanbanAccountHierarchy);
 
 
     }
