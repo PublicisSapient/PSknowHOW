@@ -165,11 +165,12 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Cleans the cache in th Custom API
-	 * 
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *     URL end point where Custom API cache is created
 	 * @param cacheName
-	 *            Name of the Custom API cache
+	 *     Name of the Custom API cache
+	 * @return
+	 *    returns nothing
 	 */
 	public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
 		boolean cleaned = false;

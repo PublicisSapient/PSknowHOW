@@ -37,33 +37,43 @@ import java.util.Map;
 public interface JiraAdapter {
 
 	/**
-	 *
+	 * Gets all issues from JIRA
 	 * @param boardDetails
+	 * 		  	boardDetails
 	 * @param projectConfig
+	 * 			projectConfig Object
 	 * @param startDateTimeByIssueType
+	 * 			map of start dataTime of issue types
 	 * @param userTimeZone
+	 * 			user timezone
 	 * @param pageStart
+	 * 			 page start
 	 * @param dataExist
+	 * 			data exist in db or not
 	 * @return
+	 * 		list of issues
 	 * @throws InterruptedException
+	 * 		throws exception
 	 */
 	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig, String startDateTimeByIssueType,
 						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
 
 	/**
 	 * Gets all issues from JIRA
-	 *
 	 * @param projectConfig
-	 *            projectConfig Object
+	 * 			projectConfig Object
 	 * @param startDateTimeByIssueType
-	 *            map of start dataTime of issue types
+	 * 			map of start dataTime of issue types
 	 * @param userTimeZone
-	 *            user timezone
+	 * 			user timezone
 	 * @param pageStart
-	 *            page start
+	 * 			page start
 	 * @param dataExist
-	 *            data exist in db or not
-	 * @return list of issues
+	 * 			data exist in db or not
+	 * @return
+	 * 		list of issues
+	 * @throws InterruptedException
+	 * 		throws exception
 	 */
 	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
 						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
@@ -129,10 +139,6 @@ public interface JiraAdapter {
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
 
-	/**
-	 * Gets the project versions for user who is logged in jira
-	 * @param projectConfig
-	 */
 	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 
 
