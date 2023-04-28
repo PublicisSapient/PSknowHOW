@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -66,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -396,13 +396,15 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 	public Map<String, Long> filterKanbanHistoryDataBasedOnStartAndEndDateAndIssueType(
 			List<KanbanIssueCustomHistory> issueList, List<String> priorityList, List<String> issueClosedStatusList,
 			LocalDate startDate, LocalDate endDate, List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList) {
-		Predicate<JiraHistoryChangeLog> predicate = issue -> issueClosedStatusList.contains(issue.getChangedTo())
-				&& issue.getUpdatedOn().isAfter(startDate.atTime(0, 0, 0))
-				&& issue.getUpdatedOn().isBefore(endDate.atTime(23, 59, 59));
+		Predicate<KanbanIssueHistory> predicate = issue -> issueClosedStatusList.contains(issue.getStatus())
+				&& LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
+						.isAfter(startDate.atTime(0, 0, 0))
+				&& LocalDateTime.parse(issue.getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
+						.isBefore(endDate.atTime(23, 59, 59));
 
 		List<KanbanIssueCustomHistory> filteredIssue = new ArrayList<>();
 		issueList.stream().forEach(issue -> {
-			if (issue.getStatusUpdationLog().stream().anyMatch(predicate)) {
+			if (issue.getHistoryDetails().stream().anyMatch(predicate)) {
 				filteredIssue.add(issue);
 			}
 		});

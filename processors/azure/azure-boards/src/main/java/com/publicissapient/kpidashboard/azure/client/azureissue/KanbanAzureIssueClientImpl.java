@@ -125,9 +125,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
-	@Autowired
-	private KanbanHandleAzureIssueHistory kanbanHandleAzureIssueHistory;
-
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -367,7 +364,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 				setJiraAssigneeDetails(azureIssue, fields);
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
-				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
+				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
 
 				// Placeholder for Test Automated field mapping.
 
@@ -400,7 +397,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            Project Config
 	 */
 	private void setAzureIssueHistory(KanbanIssueCustomHistory azureIssueHistory, KanbanJiraIssue azureIssue,
-									  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
+									  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
 		azureIssueHistory.setProjectID(azureIssue.getProjectName());
 		azureIssueHistory.setProjectComponentId(azureIssue.getProjectID());
 		azureIssueHistory.setProjectKey(azureIssue.getProjectKey());
@@ -411,7 +408,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		azureIssueHistory.setAdditionalFilters(azureIssue.getAdditionalFilters());
 		azureIssueHistory.setUrl(azureIssue.getUrl());
 		azureIssueHistory.setDescription(azureIssue.getName());
-		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
+		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
 		azureIssueHistory.setBasicProjectConfigId(azureIssue.getBasicProjectConfigId());
 	}
 
@@ -430,7 +427,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            the project config
 	 */
 	private void processAzureIssueHistory(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
-										  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
+										  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
 		String issueId = AzureProcessorUtil.deodeUTF8String(issue.getId());
 		AzureServer server = prepareAzureServer(projectConfig);
 		AzureAdapter azureAdapter = new OnlineAdapter(azureProcessorConfig, processorAzureRestClient);
@@ -439,9 +436,9 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 				.getValue();
 
 		if (null == azureIssueCustomHistory.getStoryID()) {
-			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping, fieldsMap);
+			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping);
 		} else {
-			addHistoryInAzureIssue(azureIssueCustomHistory, azureIssue, valueList, fieldMapping, fieldsMap);
+			addHistoryInAzureIssue(azureIssueCustomHistory, azureIssue, valueList, fieldMapping);
 		}
 
 	}
@@ -462,16 +459,18 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 */
 	private void addStoryHistory(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
 								 Value issue, List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList,
-								 FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
+								 FieldMapping fieldMapping) {
 
 		DateTime createdDate = new DateTime(
 				AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 
 		azureIssueCustomHistory.setCreatedDate(createdDate.toString());
 
+		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(azureIssue, valueList, createdDate,
+				fieldMapping);
+
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
-		kanbanHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory, valueList,
-				fieldMapping, fieldsMap, azureIssue);
+		azureIssueCustomHistory.setHistoryDetails(kanbanIssueHistoryList);
 		// estimate
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 		azureIssueCustomHistory.setBufferedEstimateTime(azureIssue.getBufferedEstimateTime());
@@ -495,13 +494,122 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 */
 	private void addHistoryInAzureIssue(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
 										List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
-										FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
+										FieldMapping fieldMapping) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
 			azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 		}
-		kanbanHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory, updateValueList,
-				fieldMapping, fieldsMap, azureIssue);
+		createKanbanIssueHistory(azureIssueCustomHistory, azureIssue, updateValueList, fieldMapping);
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
+	}
+
+	/**
+	 * Creates Issue Kanban history details for delta changed statuses start
+	 *
+	 * @param azureIssueCustomHistory
+	 *            JiraIssueCustomHistory
+	 * @param azureIssue
+	 *            jiraIssue
+	 * @param updateValueList
+	 *            Change Log list
+	 * @param fieldMapping
+	 *            List of JiraIssueCustomHistory
+	 */
+	private void createKanbanIssueHistory(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
+										  List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
+										  FieldMapping fieldMapping) {
+		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
+		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
+		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
+		for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
+			com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
+					.getFields();
+			if (null != changelogItem && null != changelogItem.getSystemState()) {
+				KanbanIssueHistory kanbanIssueHistory = new KanbanIssueHistory();
+				kanbanIssueHistory.setStatus(changelogItem.getSystemState().getNewValue());
+				DateTime changedDate = new DateTime(
+						AzureProcessorUtil.getFormattedDateTime(changelogItem.getSystemChangedDate().getNewValue()));
+				kanbanIssueHistory.setActivityDate(changedDate.toString());
+				issueHistoryList.add(kanbanIssueHistory);
+				setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanIssueHistory);
+
+			}
+			azureIssueCustomHistory.setHistoryDetails(issueHistoryList);
+		}
+
+	}
+
+	/**
+	 * Process change log and create array of status in Issue history
+	 *
+	 * @param azureIssue
+	 *            Jiraissue
+	 * @param updateValueList
+	 *            Changes log list for jira issue
+	 * @param issueCreatedDate
+	 *            creation date on jira issue
+	 * @param fieldMapping
+	 *            FielMapping
+	 * @return
+	 */
+	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue azureIssue,
+												  List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
+												  DateTime issueCreatedDate, FieldMapping fieldMapping) {
+		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
+		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
+		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
+
+		// creating first entry of issue
+		if (null != issueCreatedDate) {
+			KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
+			kanbanHistory.setActivityDate(issueCreatedDate.toString());
+			kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
+			historyDetails.add(kanbanHistory);
+			setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanHistory);
+		}
+		if (CollectionUtils.isNotEmpty(updateValueList)) {
+			for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
+				KanbanIssueHistory kanbanIssueHistory = getIssueHistory(azureIssue, history, jiraStatusForDevelopment,
+						jiraStatusForQa);
+				if (StringUtils.isNotEmpty(kanbanIssueHistory.getActivityDate())) {
+					historyDetails.add(getIssueHistory(azureIssue, history, jiraStatusForDevelopment, jiraStatusForQa));
+				}
+			}
+		}
+		return historyDetails;
+	}
+
+	/**
+	 * Sets Individual Details
+	 *
+	 * @param jiraIssue
+	 *            Jira issue
+	 * @param jiraStatusForDevelopment
+	 *            List of status for Development
+	 * @param jiraStatusForQa
+	 *            List of status for QA
+	 */
+	private void setIndividualDetails(KanbanJiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
+									  List<String> jiraStatusForQa, KanbanIssueHistory kanbanIssueHistory) {
+		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
+				&& jiraStatusForDevelopment.stream().anyMatch(kanbanIssueHistory.getStatus()::equalsIgnoreCase)
+				&& StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setDeveloperId(jiraIssue.getAssigneeId());
+			jiraIssue.setDeveloperName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET
+					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
+
+		}
+		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
+				&& jiraStatusForQa.stream().anyMatch(kanbanIssueHistory.getStatus()::equalsIgnoreCase)
+				&& StringUtils.isNotBlank(jiraIssue.getAssigneeId())
+				&& StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
+
+			jiraIssue.setQaId(jiraIssue.getAssigneeId());
+			jiraIssue.setQaName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET + jiraIssue.getAssigneeId()
+					+ AzureConstants.CLOSED_BRACKET);
+
+		}
 	}
 
 	/**
@@ -560,6 +668,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            Jiraissue list to be saved in DB
 	 * @param projectConfig
 	 *            Project configuration Mapping
+	 * @param kanbanFilterCategoryList
+	 *            Kanban Filter category list
 	 */
 	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD //NOSONAR
 											List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
@@ -951,6 +1061,23 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		azureServer.setApiVersion(projectConfig.getAzure().getApiVersion());
 		azureServer.setUsername(projectConfig.getAzure().getConnection().getUsername());
 		return azureServer;
+	}
+
+	private KanbanIssueHistory getIssueHistory(KanbanJiraIssue jiraIssue,
+											   com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history,
+											   List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
+		com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
+		KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
+		if (null != changelogItem && null != changelogItem.getSystemState()) {
+			DateTime changedDate = new DateTime(
+					AzureProcessorUtil.getFormattedDateTime(changelogItem.getSystemChangedDate().getNewValue()));
+			kanbanHistory.setActivityDate(changedDate.toString());
+			kanbanHistory.setStatus(changelogItem.getSystemState().getNewValue());
+			setIndividualDetails(jiraIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanHistory);
+
+		}
+		return kanbanHistory;
+
 	}
 
 	private String getModifiedIssueId(ProjectConfFieldMapping projectConfig, String issueId) {

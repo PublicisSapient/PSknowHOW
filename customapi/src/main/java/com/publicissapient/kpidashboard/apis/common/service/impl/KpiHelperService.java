@@ -71,6 +71,7 @@ import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
@@ -792,14 +793,13 @@ public class KpiHelperService { // NOPMD
 				// checking if history details is empty then we should atleast
 				// have one history
 				// detail status with an Open status
-				JiraHistoryChangeLog history = new JiraHistoryChangeLog();
-				history.setChangedTo(projectWiseOpenStoryStatus.getOrDefault(issueCustomHistory.getBasicProjectConfigId(),
+				KanbanIssueHistory history = new KanbanIssueHistory();
+				history.setStatus(projectWiseOpenStoryStatus.getOrDefault(issueCustomHistory.getBasicProjectConfigId(),
 						CommonConstant.OPEN));
-				history.setUpdatedOn(
-						LocalDateTime.parse(issueCustomHistory.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER));
-				List<JiraHistoryChangeLog> historyList = new ArrayList<>();
+				history.setActivityDate(issueCustomHistory.getCreatedDate());
+				List<KanbanIssueHistory> historyList = new ArrayList<>();
 				historyList.add(history);
-				issueCustomHistory.setStatusUpdationLog(historyList);
+				issueCustomHistory.setHistoryDetails(historyList);
 				nonClosedTicketsList.add(issueCustomHistory);
 			}
 
@@ -820,20 +820,20 @@ public class KpiHelperService { // NOPMD
 	private void prepareClosedListHistoryDetailsWise(String startDate,
 			List<KanbanIssueCustomHistory> nonClosedTicketsList, KanbanIssueCustomHistory issueCustomHistory,
 			boolean isTicketAdded, List<String> jiraClosedStatusList, List<String> nonClosedStatusList) {
-		List<JiraHistoryChangeLog> statusHistoryDetailsList = issueCustomHistory.getStatusUpdationLog();
+		List<KanbanIssueHistory> statusHistoryDetailsList = issueCustomHistory.getHistoryDetails();
 		for (int i = statusHistoryDetailsList.size() - 1; i >= 0; i--) {
-			JiraHistoryChangeLog issueStatusHistory = statusHistoryDetailsList.get(i);
+			KanbanIssueHistory issueStatusHistory = statusHistoryDetailsList.get(i);
 			/*
 			 * to check the recent status from history details in case of reopen
 			 * nonClosedStatusList will have more status before closed status
 			 * under that scenario the ticket will be counted
 			 */
 
-			if (!jiraClosedStatusList.contains(issueStatusHistory.getChangedTo())) {
-				nonClosedStatusList.add(issueStatusHistory.getChangedTo());
+			if (!jiraClosedStatusList.contains(issueStatusHistory.getStatus())) {
+				nonClosedStatusList.add(issueStatusHistory.getStatus());
 			}
-			if (checkConditionForClosedStatusTickets(issueStatusHistory.getChangedTo(), jiraClosedStatusList,
-					issueStatusHistory.getUpdatedOn().toString(), startDate, nonClosedStatusList)) {
+			if (checkConditionForClosedStatusTickets(issueStatusHistory.getStatus(), jiraClosedStatusList,
+					issueStatusHistory.getActivityDate(), startDate, nonClosedStatusList)) {
 				break;
 			}
 
@@ -892,12 +892,13 @@ public class KpiHelperService { // NOPMD
 				// first time
 				String status = null;
 				LocalDate startLocalDateTemp = LocalDate.parse(startDate);
-				List<JiraHistoryChangeLog> statusHistoryDetailsList = issueCustomHistory.getStatusUpdationLog();
+				List<KanbanIssueHistory> statusHistoryDetailsList = issueCustomHistory.getHistoryDetails();
 				if (CollectionUtils.isNotEmpty(statusHistoryDetailsList)) {
-					for (JiraHistoryChangeLog statusList : statusHistoryDetailsList) {
-						String currentStatus = statusList.getChangedTo().equals("") ? openStatusFromFieldMapping
-								: statusList.getChangedTo();
-						LocalDate activityLocalDate = statusList.getUpdatedOn().toLocalDate();
+					for (KanbanIssueHistory statusList : statusHistoryDetailsList) {
+						String currentStatus = statusList.getStatus().equals("") ? openStatusFromFieldMapping
+								: statusList.getStatus();
+						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
+								DATE_TIME_FORMATTER);
 						/*
 						 * check if ticket's latest activity was before the
 						 * filter's start time then will consider that ticket
@@ -952,8 +953,8 @@ public class KpiHelperService { // NOPMD
 						}
 						// if activity date is less than the filter range then
 						// just update the status
-						status = statusList.getChangedTo().equals("") ? openStatusFromFieldMapping
-								: statusList.getChangedTo();
+						status = statusList.getStatus().equals("") ? openStatusFromFieldMapping
+								: statusList.getStatus();
 					}
 
 					LocalDate endDate = LocalDate.now();
@@ -1062,12 +1063,13 @@ public class KpiHelperService { // NOPMD
 						.get(issueCustomHistory.getBasicProjectConfigId());
 				LocalDate startLocalDateTemp = LocalDate.parse(startDate);
 				String fieldValues = basedOnKPIFieldNameFetchValues(fieldName, issueCustomHistory);
-				List<JiraHistoryChangeLog> statusHistoryDetailsList = issueCustomHistory.getStatusUpdationLog();
+				List<KanbanIssueHistory> statusHistoryDetailsList = issueCustomHistory.getHistoryDetails();
 				if (CollectionUtils.isNotEmpty(statusHistoryDetailsList) && StringUtils.isNotEmpty(fieldValues)) {
-					for (JiraHistoryChangeLog statusList : statusHistoryDetailsList) {
-						String currentStatus = statusList.getChangedTo().equals("") ? openStatusFromFieldMapping
-								: statusList.getChangedTo();
-						LocalDate activityLocalDate = statusList.getUpdatedOn().toLocalDate();
+					for (KanbanIssueHistory statusList : statusHistoryDetailsList) {
+						String currentStatus = statusList.getStatus().equals("") ? openStatusFromFieldMapping
+								: statusList.getStatus();
+						LocalDate activityLocalDate = LocalDate.parse(statusList.getActivityDate().split("\\.")[0],
+								DATE_TIME_FORMATTER);
 						/*
 						 * check if ticket's latest activity was before the
 						 * filter's start time then will consider that ticket
@@ -1125,8 +1127,8 @@ public class KpiHelperService { // NOPMD
 						}
 						// if activity date is less than the filter range then
 						// just update the status
-						status = statusList.getChangedTo().equals("") ? openStatusFromFieldMapping
-								: statusList.getChangedTo();
+						status = statusList.getStatus().equals("") ? openStatusFromFieldMapping
+								: statusList.getStatus();
 					}
 
 					LocalDate endDate = LocalDate.now();
