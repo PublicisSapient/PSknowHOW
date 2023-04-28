@@ -222,7 +222,6 @@ describe('ProjectListComponent', () => {
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
-    localStorage.setItem('projectsAccess', JSON.stringify(projectsAccess));
   });
 
   it('should create', () => {

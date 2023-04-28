@@ -80,8 +80,9 @@ export class SharedService implements OnInit {
   selectedLevel = {};
   selectedTrends = [];
   public isSideNav;
-   currentUserDetails  = new BehaviorSubject<any>({});
-   currentUserDetailsObs = this.currentUserDetails.asObservable();
+  currentUserDetails = null;
+  currentUserDetailsSubject = new BehaviorSubject<any>(null);
+  currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -297,14 +298,22 @@ export class SharedService implements OnInit {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details : object){
-    this.currentUserDetails.next(Object.assign(this.currentUserDetails, details));
+  setCurrentUserDetails(details){
+
+    if(!this.currentUserDetails  || !details || Object.keys(details).length === 0){
+      this.currentUserDetails=details;
+    }else{
+      this.currentUserDetails={...this.currentUserDetails,...details};
+    }
+
+    this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
   getCurrentUserDetails(key){
-    if(this.currentUserDetails.hasOwnProperty(key)){
+    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
       return this.currentUserDetails[key] ;
      }
+    return false;
   }
 
 }

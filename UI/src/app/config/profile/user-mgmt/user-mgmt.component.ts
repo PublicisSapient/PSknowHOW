@@ -21,7 +21,6 @@ import { HttpService } from '../../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 
 @Component({
   selector: 'app-user-mgmt',
@@ -38,7 +37,7 @@ export class UserMgmtComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private httpService: HttpService,
-    private messageService: MessageService, private aesEncryption: TextEncryptionService) { }
+    private messageService: MessageService) { }
 
   ngOnInit() {
     // Set validation for registration-form elements

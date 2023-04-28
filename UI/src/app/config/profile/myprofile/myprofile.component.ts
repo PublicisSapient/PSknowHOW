@@ -21,7 +21,6 @@ import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-myprofile',
@@ -35,10 +34,10 @@ export class MyprofileComponent implements OnInit {
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
   userName : string 
-  authorities = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
+  authorities = this.sharedService.getCurrentUserDetails('authorities');
 
 
-  userRole = this.authorities && JSON.parse(this.authorities).length ? JSON.parse(this.authorities).join(',') : '--';
+  userRole = this.authorities?.length ? this.authorities.join(',') : '--';
   userEmail : string
   userEmailConfigured = false;
   message: string;
@@ -47,7 +46,7 @@ export class MyprofileComponent implements OnInit {
   roleBasedProjectList = [];
   adLogin = false;
   dynamicCols: Array<any> = [];
-  constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent, private aesEncryption: TextEncryptionService,
+  constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
     private sharedService : SharedService) { }
 
   ngOnInit() {
@@ -60,15 +59,17 @@ export class MyprofileComponent implements OnInit {
       this.isProjectAdmin = true;
     }
 
-    if ((!this.isSuperAdmin) && (localStorage.getItem('projectsAccess') === 'undefined' || !JSON.parse(localStorage.getItem('projectsAccess')).length)) {
+    if ((!this.isSuperAdmin) && (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
       this.noAccess = true;
     }
    
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      this.userName = details['user_name'] ? details['user_name'] : '--';
-      this.userEmail = details['user_email'] ? details['user_email'] : '--';
-      if (details['user_email']) {
-        this.emailConfigured = true;
+      if(details){
+        this.userName = details['user_name'] ? details['user_name'] : '--';
+        this.userEmail = details['user_email'] ? details['user_email'] : '--';
+        if (details['user_email']) {
+          this.emailConfigured = true;
+        }
       }
     })
 
@@ -147,7 +148,7 @@ export class MyprofileComponent implements OnInit {
           this.dataLoading = false;
           if (response && response['success']) {
             this.userEmail = response['data'].emailAddress;
-            this.sharedService.setCurrentUserDetails({user_email: this.userEmail})
+            this.sharedService.setCurrentUserDetails({user_email: this.userEmail});
             this.userEmailConfigured = true;
             this.profile.changePswdDisabled = false;
             this.message = '';

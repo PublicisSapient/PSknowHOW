@@ -17,24 +17,41 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate } from '@angular/router';
+import { Router, CanActivate, UrlTree } from '@angular/router';
 import { GetAuthService } from './getauth.service';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { SharedService } from './shared.service';
+import { HttpService } from './http.service';
+import { Observable, pipe } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-    constructor(private router: Router, private getAuth: GetAuthService,private sharedService : SharedService) { }
+    constructor(private router: Router, private getAuth: GetAuthService,private sharedService : SharedService, private httpService: HttpService) { }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (localStorage.getItem('authorities')) {
-            // logged in so return true
-            return true;
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+        const currentUserDetails = this.sharedService.currentUserDetails;
+
+        if (currentUserDetails) {
+            if (currentUserDetails['authorities']) {
+                console.log(currentUserDetails);
+                return true;
+            } else {
+                this.router.navigate(['./authentication/register']);
+                return false;
+            }
+        } else {
+            return this.httpService.getCurrentUserDetails().pipe(map(details => {
+                if (details['success']) {
+                    this.sharedService.setCurrentUserDetails(details['data']);
+                    if (details['data']['authorities']) {
+                        return true;
+                    }
+                    this.router.navigate(['./authentication/register']);
+                    return false;
+                }
+            }));
         }
-
-        // not logged in so redirect to login page with the return url
-        this.router.navigate(['./authentication/register']);
-        return false;
     }
 }

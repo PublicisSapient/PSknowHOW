@@ -36,7 +36,6 @@ describe('MyprofileComponent', () => {
   let fixture: ComponentFixture<MyprofileComponent>;
   let httpService;
   let httpMock;
-  let aesEncryption;
   let shared;
   const baseUrl = environment.baseUrl;
   const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
@@ -660,7 +659,6 @@ describe('MyprofileComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
-    aesEncryption = TestBed.inject(TextEncryptionService);
     shared = TestBed.inject(SharedService);
 
     let localStore = {};
@@ -674,9 +672,6 @@ describe('MyprofileComponent', () => {
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
-
-    localStorage.setItem('projectsAccess', '[{"role":"DUMMY","projects":[]}]');
-    localStorage.setItem('authorities', aesEncryption.convertText('["DUMMY"]', 'encrypt'));
     fixture.detectChanges();
   });
 
@@ -686,7 +681,7 @@ describe('MyprofileComponent', () => {
 
   it('should set email', () => {
     component.ngOnInit();
-    shared.currentUserDetails.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
+    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
     spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
     component.userEmailForm.controls['email'].setValue('someemail@abc.com');
     component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
@@ -697,9 +692,8 @@ describe('MyprofileComponent', () => {
   });
 
   it('should group projects role-wise', () => {
-    component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'))
-    fixture.detectChanges();
-    expect(Object.keys(component.roleBasedProjectList).length).toEqual(4);
+    component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'));
+    expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
   });
 
 });

@@ -53,8 +53,10 @@ export class ToolMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      this.userName = details['user_name'];
-    })
+      if(details){
+        this.userName = details['user_name'];
+      }
+    });
     this.projectTypeOptions = [
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }

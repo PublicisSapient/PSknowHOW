@@ -44,8 +44,10 @@
      ngOnInit() {
          this.getKpisData();
          this.service.currentUserDetailsObs.subscribe(details=>{
-          this.userName = details['user_name'];
-        })
+          if(details){
+            this.userName = details['user_name'];
+          }
+        });
     }
     getKpisData() {
        // api integration to get kpis data

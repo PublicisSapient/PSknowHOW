@@ -46,9 +46,11 @@ export class RaiseAccessRequestComponent implements OnInit {
 
   ngOnInit() {
     this.getRolesList();
-   this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      this.requestData['username']  = details['user_name'];
-    })
+    this.sharedService.currentUserDetailsObs.subscribe(details => {
+      if (details) {
+        this.requestData['username'] = details['user_name'];
+      }
+    });
     this.requestData['status'] = 'Pending';
     this.requestData['reviewComments'] = '';
     this.requestData['role'] = '';
@@ -142,9 +144,7 @@ export class RaiseAccessRequestComponent implements OnInit {
       .subscribe(getData => {
         if (!(getData !== null && getData[0] === 'error')) {
           localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_name');
-          localStorage.removeItem('authorities');
-          localStorage.removeItem('projectsAccess');
+          this.sharedService.setCurrentUserDetails({});
 
           this.router.navigate(['./authentication/login']);
         }

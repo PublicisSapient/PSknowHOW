@@ -83,8 +83,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
-                            localStorage.removeItem('user_name');
-                            localStorage.removeItem('authorities');
+                            this.service.setCurrentUserDetails({});
                             this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                         }
                     } else {
