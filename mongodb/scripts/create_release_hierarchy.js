@@ -33,8 +33,6 @@ function checkDay(inputDay) {
 /*format datetime string of project_release to normal string*/
 function currentDateAsString(releaseDate) {
     if (releaseDate !== undefined) {
-        print(releaseDate);
-        print(releaseDate.toISOString());
         var limiter = "-";
         var time = "T00:00:00";
         var month = checkMonth(releaseDate.getMonth() + 1);
@@ -60,9 +58,7 @@ function updateAccountHierachy(project_release) {
             const path = projectId + "###" + hierarchy.path;
             project_release.listProjectVersion.forEach(
                 version => {
-                    print("nodeName", version.description + "_" + splitString(projectId, "_"))
-                    print(currentDateAsString(version.releaseDate));
-
+                    print("nodeName", version.description + "_" + projectId);
                     db.account_hierarchy.insert([{
 
                         "nodeId": version._id + "_" + projectId,
@@ -99,6 +95,7 @@ function updateKanbanAccountHierachy(project_release) {
             const path = projectId + "###" + hierarchy.path;
             project_release.listProjectVersion.forEach(
                 version => {
+                print("nodeName", version.description + "_" + projectId);
                     db.account_hierarchy.insert([{
                         "nodeId": version._id + "_" + projectId,
                         "nodeName": version.description + "_" + splitString(projectId, "_"),
