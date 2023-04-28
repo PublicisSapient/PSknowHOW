@@ -110,6 +110,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTrendsObj = {};
     selectedTab= 'iteration';
     showCommentIcon = false;
+    noProjects = false;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -202,13 +203,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (this.service.getFilterObject()) {
             this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
-            this.receiveSharedData(this.service.getFilterObject());
         }
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
             }
         });
+        this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+            this.noProjects = res;
+            this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+          }));
 
         this.service.getEmptyData().subscribe((val) => {
             if (val) {
@@ -236,7 +240,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
             }
         }
-        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event.selectedTab.toLowerCase() !== 'iteration') {
+        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
             this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
             if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
@@ -260,7 +264,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     // call kpi request according to tab selected
                     if (this.masterData && Object.keys(this.masterData).length) {
                         this.processKpiConfigData();
-                        if (this.selectedtype.toLowerCase() === 'kanban') {
+                        if (this.service.getSelectedType().toLowerCase() === 'kanban') {
                             this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
                             this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);

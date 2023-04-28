@@ -28,7 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +56,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @Component
 public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -68,12 +69,8 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String LOGGED_WORK = "Logged Work";
 	private static final String OVERALL = "Overall";
 	private static final String HOURS = "Hours";
-
 	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -106,16 +103,12 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Estimate Vs Actual -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues =  KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -151,7 +144,10 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 
@@ -167,7 +163,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				int logWorkData = 0;
 
 				for (JiraIssue jiraIssue : issues) {
-					populateIterationData(overAllmodalValues, modalValues, jiraIssue, false, null);
+					KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
 					if (null != jiraIssue.getOriginalEstimateMinutes()) {
 						origEstData = origEstData + jiraIssue.getOriginalEstimateMinutes();
 						overAllOrigEst.set(0, overAllOrigEst.get(0) + jiraIssue.getOriginalEstimateMinutes());

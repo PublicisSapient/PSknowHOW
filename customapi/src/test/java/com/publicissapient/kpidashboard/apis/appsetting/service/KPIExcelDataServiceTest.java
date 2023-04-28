@@ -106,6 +106,9 @@ public class KPIExcelDataServiceTest {
 	private JenkinsServiceKanbanR jenkinsServiceKanbanR;
 
 	@Mock
+	private ConfigHelperService configHelperService;
+
+	@Mock
 	private KpiMasterRepository kpiMasterRepository;
 	private Map<String, Double> projectData = new HashMap<>();
 	private Map<String, Double> sprintData = new HashMap<>();
@@ -142,7 +145,7 @@ public class KPIExcelDataServiceTest {
 			kpiMaster.setKanban(kpi.getSource().contains("Kanban"));
 			kpiMasterList.add(kpiMaster);
 		});
-		when(kpiMasterRepository.findAll()).thenReturn(kpiMasterList);
+		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasterList);
 
 	}
 
