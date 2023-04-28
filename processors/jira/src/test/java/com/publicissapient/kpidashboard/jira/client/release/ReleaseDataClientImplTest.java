@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.jira.client.release;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
@@ -29,13 +28,13 @@ import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
@@ -45,13 +44,12 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ReleaseDataClientImplTest {
 
     @Mock
@@ -77,7 +75,7 @@ public class ReleaseDataClientImplTest {
 
     List<HierarchyLevel> hierarchyLevels= new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         prepareAccountHierarchy();
         prepareKanbanAccountHierarchy();
