@@ -1280,7 +1280,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
+	 * 			assignees to save
 	 * @param projectConfig
+	 *        projectconfigfieldmapping
 	 */
 	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {

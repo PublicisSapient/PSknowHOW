@@ -165,9 +165,11 @@ public final class JiraIssueClientUtil {
     }
 
     /**
-     * Fetches all saved kanban account hierarchy.
      *
-     * @return Map<Pair < String, String>, KanbanAccountHierarchy>
+     * @param kanbanAccountHierarchyRepo
+     *          list if hierarchy
+     * @return
+     *      map of node,path and its hierarchy
      */
     public static Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy(KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo) {
         List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
