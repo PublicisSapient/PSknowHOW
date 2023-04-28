@@ -575,8 +575,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return val;
   }
 
-  checkSprint(value){
-    return Math.floor(value) < value ? `>${Math.round(value)}` : `=${value}`;
+  checkSprint(value, unit, kpiId){
+    if((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter1'][0]?.toLowerCase() !== 'overall')
+    || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')){
+      return '-'
+    } else{
+      return Math.floor(value) < value ? `>${Math.round(value)} ${unit}` : `=${value} ${unit}`;
+    }
   }
 
   handleArrowClick(kpi, label, tableValues) {

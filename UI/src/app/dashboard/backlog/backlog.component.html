@@ -28,21 +28,21 @@
                             </h3>
                             <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
                             <p class="text-data">
-                                <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
-                                  {{x?.value > 0 ? checkSprint(x?.value) : '-'}}
-                                </span>
-                              <ng-template #otherFields>
-                              <span
-                                [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
-                                > 0 ?
-                                convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                              </ng-template>
-                              <span *ngIf="x?.value1 && x?.value1 > 0 && x?.value1 != undefined"
-                                [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
-                                x?.value1}}</span>
-                              <span *ngIf="x?.value > 0 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                {{ x?.value1 > 0 ? x?.unit : ''}}
+                              <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
+                                {{checkSprint(x?.value, x?.unit, kpi?.kpiId)}}
                               </span>
+                              <ng-template #otherFields>
+                                <span
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                  != -99 ?
+                                  convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                                <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
+                                  x?.value1}}</span>
+                                <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                  {{ x?.value != -99 ? x?.unit : ''}}
+                                </span>
+                              </ng-template>
                             </p>
                           </div>
                         </ng-container>
@@ -92,7 +92,7 @@
                           </ng-container>
                         </div>
                       </ng-container>
-                      
+
                     </ng-container>
                   </app-kpi-card>
                 </div>
@@ -137,8 +137,7 @@
   </div>
 </ng-template>
 
-<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true"
-  [resizable]="true">
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
     {{modalDetails['header']}}
     <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
