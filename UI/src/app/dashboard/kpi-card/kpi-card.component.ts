@@ -28,7 +28,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
-  showCommentIcon = false;
+  @Input() showCommentIcon: boolean;
   selectedTab: string;
 
 
@@ -55,15 +55,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           }
         }
       }
-      const sharedObj = this.service.getFilterObject();
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
-      if (sharedObj) {
-        if (this.selectedTab === 'iteration' || this.selectedTab === 'backlog') {
-          this.showCommentIcon = true;
-        } else {
-          this.showCommentIcon = sharedObj.filterApplyData.selectedMap?.project.length > 0;
-        }
-      }
     }));
     /** assign 1st value to radio button by default */
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
