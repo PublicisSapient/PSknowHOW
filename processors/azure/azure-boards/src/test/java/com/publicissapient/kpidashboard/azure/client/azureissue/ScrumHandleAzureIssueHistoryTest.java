@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -24,8 +24,9 @@ import com.publicissapient.kpidashboard.common.model.azureboards.updates.SystemS
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Value;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ScrumHandleAzureIssueHistoryTest {
 	JiraIssue jiraIssue = new JiraIssue();
 	@InjectMocks
@@ -36,7 +37,7 @@ public class ScrumHandleAzureIssueHistoryTest {
 	private FieldMapping fieldMapping;
 	private List<Value> changeLogList = new ArrayList<>();
 
-	@Before
+	@BeforeEach
 	public void setUp() throws URISyntaxException {
 
 		jiraIssueCustomHistory = new JiraIssueCustomHistory();
