@@ -103,9 +103,6 @@ public class KanbanAzureIssueClientImplTest {
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
-	@Mock
-	private KanbanHandleAzureIssueHistory kanbanHandleAzureIssueHistory;
-
 	AzureUpdatesModel azureUpdatesModel;
 	
 	Fields field;

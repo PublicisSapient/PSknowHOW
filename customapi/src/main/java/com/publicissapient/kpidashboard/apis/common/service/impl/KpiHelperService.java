@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,13 +38,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -207,23 +206,19 @@ public class KpiHelperService { // NOPMD
 		int storyDataSize = jiraIssueCustomHistory.getStatusUpdationLog().size();
 		double daysDifference = -99d;
 		if (storyDataSize >= 2 && null != status1 && null != status2) {
-			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getChangedFrom())
+			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getChangedTo())
 					&& status1.equalsIgnoreCase(
-							jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getChangedFrom())) {
-				DateTime closeDate = new DateTime(
-						jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(), DateTimeZone.UTC);
-				DateTime startDate = new DateTime(
-						jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getUpdatedOn(),
-						DateTimeZone.UTC);
-				Duration duration = new Duration(startDate, closeDate);
-				daysDifference = duration.getStandardDays();
+							jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getChangedTo())) {
+				LocalDateTime closeDate = jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn();
+				LocalDateTime startDate = jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1)
+						.getUpdatedOn();
+				daysDifference = ChronoUnit.DAYS.between(startDate, closeDate);
 			}
 		} else {
-			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(),
-					DateTimeZone.UTC);
-			Duration duration = new Duration(firstDate, secondDate);
-			daysDifference = duration.getStandardDays();
+			LocalDateTime firstDate = LocalDateTime
+					.parse(DateUtil.getFormattedDate(jiraIssueCustomHistory.getCreatedDate()));
+			LocalDateTime secondDate = jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn();
+			daysDifference = ChronoUnit.DAYS.between(firstDate, secondDate);
 		}
 		return daysDifference;
 	}
@@ -265,10 +260,9 @@ public class KpiHelperService { // NOPMD
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
-			mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDod()));
-			mapOfProjectFiltersFH.put("storySprintDetails.defect.fromStatus",
-					fieldMapping.getJiraDefectCreatedStatus());
+			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo", fieldMapping.getJiraDefectCreatedStatus());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
@@ -355,7 +349,7 @@ public class KpiHelperService { // NOPMD
 
 			List<String> dodList = fieldMapping.getJiraDod();
 			if (CollectionUtils.isNotEmpty(dodList)) {
-				mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 						CommonUtils.convertToPatternList(dodList));
 			}
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
