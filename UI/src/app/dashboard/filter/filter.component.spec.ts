@@ -828,7 +828,7 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should ge format date based on iteration/milestone', () => {
+  it('should get format date based on iteration/milestone', () => {
     component.filteredAddFilters = {
       sprint: [
         {
