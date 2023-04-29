@@ -265,9 +265,9 @@ public class KpiHelperService { // NOPMD
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
-			mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDod()));
-			mapOfProjectFiltersFH.put("storySprintDetails.defect.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo",
 					fieldMapping.getJiraDefectCreatedStatus());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
@@ -355,7 +355,7 @@ public class KpiHelperService { // NOPMD
 
 			List<String> dodList = fieldMapping.getJiraDod();
 			if (CollectionUtils.isNotEmpty(dodList)) {
-				mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 						CommonUtils.convertToPatternList(dodList));
 			}
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);

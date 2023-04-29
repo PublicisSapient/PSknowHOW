@@ -380,7 +380,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
 			LocalDate activityLocalDate = LocalDate
-					.parse(statusUpdationLog.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+					.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER);
 
 			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
 				startDate = activityLocalDate;
@@ -407,7 +407,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
 			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}

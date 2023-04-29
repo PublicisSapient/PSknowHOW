@@ -391,21 +391,21 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					hours = (ChronoUnit.MINUTES.between(entryActivityDate, LocalDateTime.now())
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, LocalDateTime.now())
 							- minusHoursOfWeekEndDays(entryActivityDate, LocalDateTime.now()));
 				} else {
 
-					hours = (ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
 							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				LocalDateTime currDate = LocalDateTime.now();
-				hours = (ChronoUnit.MINUTES.between(sprintStartDate, currDate)
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, currDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, currDate));
 			} else {
-				hours = ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
+				hours = ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
