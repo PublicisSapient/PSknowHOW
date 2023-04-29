@@ -130,6 +130,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   allowMultipleSelection = true;
   defaultFilterSelection = true;
   selectedSprint={};
+  noProjects = false;
 
   constructor(
     private service: SharedService,
@@ -358,6 +359,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.filterData = filterData['data'];
       if (this.filterData.length == 0) {
         this.service.setNoProjects(true);
+        this.initializeFilterForm();
+        this.noProjects = true;
+      }else{
+        this.service.setNoProjects(false);
+        this.noProjects = false;
       }
       this.service.setFilterData(JSON.parse(JSON.stringify(filterData)));
       /** check if data for additional filters exists in filterData api, if yes create a formControl for the same */
@@ -376,8 +382,9 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
         }
       }
-
-      this.checkIfFilterAlreadySelected();
+      if(!this.noProjects){
+        this.checkIfFilterAlreadySelected();
+      }
 
       if (this.kanban) {
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
@@ -816,6 +823,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setSelectedTrends([]);
     this.service.setSelectedTab('');
     this.service.setFilterData({});
+    this.service.setDashConfigData(null);
     this.service.selectedtype='';
     this.initializeFilterForm();
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -1133,7 +1141,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   getLevelName(id) {
     const name = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId == id)[0]?.hierarchyLevelName;
-    return name;
+    return name ? name : 'Project';
   }
 
   showChartToggle(val) {
@@ -1226,7 +1234,20 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
-      this.navigateToSelectedTab();
+      this.selectedFilterData.kanban = this.kanban;
+      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+        this.previousType = this.kanban;
+        this.filterData = filterApiData['data'];
+        const selectedLevel = this.service.getSelectedLevel();
+        if(Object.keys(selectedLevel).length > 0){
+          this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() ===selectedLevel['hierarchyLevelId'].toLowerCase());
+          this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+        }
+        this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
+        this.navigateToSelectedTab();
+      });
     });
    }
 }

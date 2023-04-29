@@ -231,7 +231,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 					.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
 		}
-		
+
 		List<Identifier> workflowList = metadataIdentifier.getWorkflow();
 
 		List<Metadata> metadataList = boardMetadata.getMetadata();
@@ -346,6 +346,8 @@ public class MetaDataClientImpl implements MetadataClient {
 					valuesToIdentifyMap.getOrDefault(CommonConstant.QA_ROOT_CAUSE, new ArrayList<>()));
 			fieldMapping.setJiraQADefectDensityIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraDefectClosedStatus(
+					workflowMap.getOrDefault(CommonConstant.JIRA_STATUS_FOR_CLOSED, new ArrayList<>()));
 
 			if (projectConfig.isKanban()) {
 				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);

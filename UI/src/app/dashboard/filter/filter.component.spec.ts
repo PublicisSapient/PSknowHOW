@@ -1224,7 +1224,14 @@ describe('FilterComponent', () => {
       spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
       spyOn(component,'getNotification');
       spyOn(component,'processKpiList');
+      component.kanban=false;
       const navigateToSelectedTabSpy = spyOn(component,'navigateToSelectedTab');
+      spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
+      spyOn(sharedService,'getSelectedLevel').and.returnValue({
+        "level": 5,
+        "hierarchyLevelId": "project",
+        "hierarchyLevelName": "Project"
+    });
       component.navigateToDashboard();
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();
