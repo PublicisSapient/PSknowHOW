@@ -189,7 +189,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-																																		 Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
@@ -201,7 +201,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("storySprintDetails.story.fromStatus"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.ChangedTo"));
 			projectCriteriaList.add(projectCriteria);
 		});
 
