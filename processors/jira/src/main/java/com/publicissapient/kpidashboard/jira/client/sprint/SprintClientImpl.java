@@ -194,7 +194,7 @@ public class SprintClientImpl implements SprintClient {
 			throws InterruptedException {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		for (BoardDetails boardDetails : boardDetailsList) {
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
+			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId(), jiraAdapter);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
@@ -213,7 +213,7 @@ public class SprintClientImpl implements SprintClient {
 		return sd;
 	}
 
-	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, JiraAdapter jiraAdapter) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		psLogData.setBoardId(boardId);
 		psLogData.setAction(CommonConstant.SPRINT_DATA);
@@ -226,9 +226,7 @@ public class SprintClientImpl implements SprintClient {
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
 					psLogData.setUrl(url.toString());
-					URLConnection connection;
-					connection = url.openConnection();
-					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
+					String jsonResponse = jiraAdapter.getDataFromClient(projectConfig, url);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
 				} while (!isLast);
@@ -249,6 +247,7 @@ public class SprintClientImpl implements SprintClient {
 
 	private boolean populateSprintDetailsList(String sprintReportObj, List<SprintDetails> sprintDetailsSet,
 			ProjectConfFieldMapping projectConfig, String boardId) {
+
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray valuesJson = new JSONArray();
@@ -294,59 +293,6 @@ public class SprintClientImpl implements SprintClient {
 				sprintDetailsSet.add(sprintDetails);
 			}
 		});
-	}
-
-	private String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
-			throws IOException {
-		HttpURLConnection request = connection;
-		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		String username = null;
-		String password = null;
-
-		if(connectionOptional.isPresent()) {
-			Connection conn = connectionOptional.get();
-			if (conn.isVault()) {
-				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
-				if (toolCredential != null) {
-					username = toolCredential.getUsername();
-					password = toolCredential.getPassword();
-				}
-
-			} else {
-				username = connectionOptional.map(Connection::getUsername).orElse(null);
-				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-			}
-		}
-
-		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
-			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
-			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
-		}
-		else{
-			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		}
-
-		request.connect();
-		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
-			int cp;
-			while ((cp = inReader.read()) != -1) {
-				sb.append((char) cp);
-			}
-		} catch (IOException ie) {
-			log.error("Read exception when connecting to server {}", ie);
-		}
-		return sb.toString();
-	}
-
-	private String encodeCredentialsToBase64(String username, String password) {
-		String cred = username + ":" + password;
-		return Base64.getEncoder().encodeToString(cred.getBytes());
-	}
-
-	private String decryptJiraPassword(String encryptedPassword) {
-		return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
 	}
 
 	private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
