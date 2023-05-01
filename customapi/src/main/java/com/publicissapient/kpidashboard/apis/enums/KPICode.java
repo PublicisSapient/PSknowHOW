@@ -296,6 +296,8 @@ public enum KPICode {
 
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi138", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
