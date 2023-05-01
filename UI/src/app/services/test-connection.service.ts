@@ -30,12 +30,17 @@ export class TestConnectionService {
   constructor(private http: HttpClient, private rsa: RsaEncryptionService) { }
 
   /** get: test JIRA connection */
-  testJira(baseUrl, apiEndPoint, username, password, vault): Observable<any> {
+  testJira(baseUrl, apiEndPoint, username, password, vault, jaasKrbAuth, jaasConfigFilePath, krb5ConfigFilePath, jaasUser, samlEndPoint): Observable<any> {
     const postData = {
       baseUrl,
       username,
       password: password ? this.rsa.encrypt(password) : '',
-      vault
+      vault,
+      jaasKrbAuth,
+      jaasConfigFilePath,
+      krb5ConfigFilePath,
+      jaasUser,
+      samlEndPoint
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

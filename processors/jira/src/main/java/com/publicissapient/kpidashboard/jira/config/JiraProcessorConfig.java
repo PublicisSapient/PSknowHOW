@@ -67,4 +67,8 @@ public class JiraProcessorConfig {
 	private String jiraEpicApi;
 	private Integer sprintReportCountToBeFetched;
 	private boolean considerStartDate;
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
 }

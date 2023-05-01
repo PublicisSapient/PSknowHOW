@@ -18,13 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -126,15 +131,27 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password) {
-		boolean isValidConnection;
-		HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName);
-		isValidConnection = status.is2xxSuccessful();
+		boolean isValidConnection = false;
+		if(connection.isJaasKrbAuth()){
+			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
+					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
+					connection.getBaseUrl());
+			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
+					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
+			HttpResponse response = getApiResponseWithKerbAuth(client, apiUrl);
+			if(null != response && response.getStatusLine().getStatusCode() == 200){
+				isValidConnection = true;
+			}
+		}else {
+			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName);
+			isValidConnection = status.is2xxSuccessful();
+		}
 		return isValidConnection;
 	}
 	
 	private boolean checkDetails(String apiUrl, String password, Connection connection) {
 		boolean b = false;
-		if (apiUrl != null && isUrlValid(apiUrl) && StringUtils.isNotEmpty(password)
+		if (apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password)||connection.isJaasKrbAuth())
 				&& StringUtils.isNotEmpty(connection.getUsername())) {
 			b = true;
 		}
@@ -248,8 +265,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	/**
 	 * Create API URL using base URL and API path for bitbucket
 	 * 
-	 * @param baseUrl
-	 * @param apiEndPoint
+	 * @param connection
 	 * @return apiURL
 	 */
 	private String createBitBucketUrl(Connection connection) {
@@ -315,13 +331,27 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return responseEntity.getStatusCode();
 	}
 
-	/**
-	 * Create API URL using base URL and API path
-	 * 
-	 * @param baseUrl
-	 * @param toolName
-	 * @return apiURL
-	 */
+	private HttpResponse getApiResponseWithKerbAuth(KerberosClient client, String apiUrl) {
+		HttpUriRequest request = RequestBuilder.get().
+				setUri(apiUrl)
+				.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
+				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
+				.build();
+		try {
+			return client.getHttpResponse(request);
+		} catch (IOException e) {
+			log.error("error occured while executing kerberos client request."+e.getMessage());
+			return null;
+		}
+	}
+
+		/**
+         * Create API URL using base URL and API path
+         *
+         * @param baseUrl
+         * @param toolName
+         * @return apiURL
+         */
 	private String createApiUrl(String baseUrl, String toolName) {
 		String apiPath = getApiPath(toolName);
 		if (StringUtils.isNotEmpty(baseUrl) && StringUtils.isNotEmpty(apiPath)) {

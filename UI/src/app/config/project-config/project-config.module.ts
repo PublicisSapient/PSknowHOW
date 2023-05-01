@@ -57,7 +57,7 @@ import { KanbanFieldMappingComponent } from './kanban-field-mapping/kanban-field
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
-
+import { PasswordModule } from 'primeng/password';
 @NgModule({
   declarations: [ProjectConfigComponent,
     BasicConfigComponent,
@@ -98,7 +98,8 @@ import { PanelModule } from 'primeng/panel';
     AutoCompleteModule,
     InputNumberModule,
     BlockUIModule,
-    PanelModule
+    PanelModule,
+    PasswordModule
   ],
   providers: [MessageService, ConfirmationService]
 })

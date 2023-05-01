@@ -45,9 +45,11 @@ public class ConnectionDTO {
 	private String type;
 	private String connectionName;
 	private boolean cloudEnv;
+	private boolean accessTokenEnabled;
 	private String baseUrl;
 	private String username;
 	private String password;
+	private String patOAuthToken;
 	private String apiEndPoint;
 	private String consumerKey;
 	private String privateKey;
@@ -62,10 +64,19 @@ public class ConnectionDTO {
 	private boolean offline;
 	private String offlineFilePath;
 	private String createdBy;
+	private String createdAt;
 	private boolean connPrivate;
 	private String updatedBy;
-	private List<String> connectionUser;
+	private List<String> connectionUsers;
 	private boolean vault;//GS requirement
+	private boolean bearerToken; // Kurig requirement
+	private String jiraAuthType;
+	private boolean jaasKrbAuth;
+	private String jaasConfigFilePath;
+	private String krb5ConfigFilePath;
+	private String jaasUser;
+	private String userPrincipal;
+	private String samlEndPoint;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
