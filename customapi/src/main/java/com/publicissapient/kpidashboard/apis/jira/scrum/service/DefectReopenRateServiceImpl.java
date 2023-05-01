@@ -2,8 +2,10 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -166,8 +168,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedHistory,
 									reopenHistory);
 							modalValues.add(iterationModal);
-							double duration = (double) DAYS.between(reopenHistory.getUpdatedOn()
-									,closedHistory.getUpdatedOn());
+							double duration = (double) TimeUnit.DAYS.convert(Duration.between(closedHistory.getUpdatedOn(),reopenHistory.getUpdatedOn() ).toMillis(), TimeUnit.MILLISECONDS);
 							totalDuration.set(0, totalDuration.get(0) + duration);
 						}
 					}
@@ -308,7 +309,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			List<String> closedStatusList = (List<String>) CollectionUtils
 					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
-			mapOfProjectFilters.put("statusUpdationLog.story.ChangedTo",
+			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(closedStatusList));
 			uniqueProjectMap.put(basicProjectConfigObjectId.toString(), mapOfProjectFilters);
 		});
