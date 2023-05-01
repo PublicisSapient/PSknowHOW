@@ -231,8 +231,14 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			}
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-					password, jiraProcessorConfig);
+
+			if(jiraInfo.isBearerToken()){
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
+						password, jiraProcessorConfig);
+			}else {
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
+						password, jiraProcessorConfig);
+			}
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");

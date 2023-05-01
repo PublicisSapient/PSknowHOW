@@ -30,12 +30,13 @@ export class TestConnectionService {
   constructor(private http: HttpClient, private rsa: RsaEncryptionService) { }
 
   /** get: test JIRA connection */
-  testJira(baseUrl, apiEndPoint, username, password, vault, patOAuthToken): Observable<any> {
+  testJira(baseUrl, apiEndPoint, username, password, vault, patOAuthToken, bearerToken): Observable<any> {
     const postData = {
       baseUrl,
       username,
       password: password ? this.rsa.encrypt(password) : '',
       vault,
+      bearerToken,
       patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : ''
     };
     let headers: HttpHeaders = new HttpHeaders();

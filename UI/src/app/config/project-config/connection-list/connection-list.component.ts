@@ -192,7 +192,12 @@ export class ConnectionListComponent implements OnInit {
         }
       ],
       isOAuth: [],
-      bearerToken: [],
+      bearerToken: [
+        {
+           field: 'password',
+           isEnabled: false
+        }
+      ],
       vault: [
               {
                 field: 'password',
@@ -739,8 +744,10 @@ export class ConnectionListComponent implements OnInit {
 
     if (!!this.basicConnectionForm.controls['bearerToken'] && this.connection['bearerToken'] === true) {
       this.basicConnectionForm.controls['patOAuthToken'].enable();
+      this.basicConnectionForm.controls['password'].disable();
     } else if (!!this.basicConnectionForm.controls['bearerToken'] && this.connection['bearerToken'] === false) {
       this.basicConnectionForm.controls['patOAuthToken'].disable();
+      this.basicConnectionForm.controls['password'].enable();
     }
     if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === true) {
       this.basicConnectionForm.controls['privateKey'].enable();
@@ -890,7 +897,8 @@ export class ConnectionListComponent implements OnInit {
 
     switch (this.connection.type) {
       case 'Jira':
-        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['patOAuthToken']).subscribe(next => {
+        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'],
+         reqData['password'], reqData['vault'], reqData['patOAuthToken'], reqData['bearerToken']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
