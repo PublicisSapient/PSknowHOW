@@ -26,6 +26,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -36,7 +37,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -82,10 +81,9 @@ public class DailyClosureServiceImplTest {
     DailyClosureServiceImpl dailyClosureService;
 
     @Mock
-    SprintRepository sprintRepository;
-
-    @Mock
     JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
+    @Mock
+    private JiraServiceR jiraService;
 
     @Before
     public void setup() {
@@ -105,7 +103,7 @@ public class DailyClosureServiceImplTest {
         SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
         sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
         JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
-        jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.findIssueInTypeNames(Arrays.asList("Closed"));
+        jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
         projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
         projectConfig.setProjectName("Scrum Project");
@@ -132,11 +130,10 @@ public class DailyClosureServiceImplTest {
         leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
         String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
         String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-        when(sprintRepository.findBySprintID(Mockito.anyString())).thenReturn(sprintDetailsList.get(0));
-        when(jiraIssueRepository
-                .findByNumberInAndBasicProjectConfigId(Mockito.anyList(), Mockito.anyString())).thenReturn(jiraIssues);
-        when(jiraIssueHistoryRepository
-                .findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(), Mockito.anyList())).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
+        when(jiraService
+                .getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
         Map<String, Object> defectDataListMap = dailyClosureService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
                 kpiRequest);
         assertNotNull(defectDataListMap);
@@ -148,8 +145,8 @@ public class DailyClosureServiceImplTest {
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-        when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetailsList.get(0));
-        when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
+        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);

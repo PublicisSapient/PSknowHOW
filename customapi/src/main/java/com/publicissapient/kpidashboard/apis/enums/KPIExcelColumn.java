@@ -65,7 +65,9 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
 
-    CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Resolved")),
+    CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Defect added after Sprint Start", "Resolved")),
+
+    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),
 
@@ -181,7 +183,11 @@ public enum KPIExcelColumn {
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
 
-    FIRST_TIME_PASS_RATE_ITERATION("kpi135", Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority"));
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
+			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
+
+	DEFECT_REOPEN_RATE("kpi137", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
+			"Closed Date", "Reopen Date", "Time taken to reopen"));
 
     // @formatter:on
 

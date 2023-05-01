@@ -509,6 +509,7 @@ describe('FilterComponent', () => {
       }
   ];
 
+  spyOn(component,'checkIfFilterAlreadySelected');
     component.additionalFiltersArr = additionalFiltersArr;
     const spy = spyOn(sharedService, 'setFilterData');
     const spycreateFormGroup = spyOn(component, 'createFormGroup');
@@ -770,7 +771,7 @@ describe('FilterComponent', () => {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project', 1);
+    component.handleIterationFilters('project');
     expect(spy).toHaveBeenCalled();
   });
 
@@ -799,7 +800,7 @@ describe('FilterComponent', () => {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project', 1);
+    component.handleIterationFilters('project');
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1221,7 +1222,14 @@ describe('FilterComponent', () => {
       spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
       spyOn(component,'getNotification');
       spyOn(component,'processKpiList');
+      component.kanban=false;
       const navigateToSelectedTabSpy = spyOn(component,'navigateToSelectedTab');
+      spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
+      spyOn(sharedService,'getSelectedLevel').and.returnValue({
+        "level": 5,
+        "hierarchyLevelId": "project",
+        "hierarchyLevelName": "Project"
+    });
       component.navigateToDashboard();
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();
@@ -1292,7 +1300,7 @@ describe('FilterComponent', () => {
 
     component.previousType = true;
     component.selectedTab = 'Iteration';
-    let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
+    let spyDefaultFilter = spyOn(component, 'findProjectWhichHasData');
     component.checkIfFilterAlreadySelected();
     expect(spyDefaultFilter).toHaveBeenCalled();
   });

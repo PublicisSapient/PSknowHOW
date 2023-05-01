@@ -39,7 +39,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
@@ -56,9 +55,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String OVERALL = "Overall";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -80,7 +76,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 			LOGGER.info("Defect count by RCA -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -111,8 +107,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 						Collections.singletonList(basicProjectConfigId));
 
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueListCompleted = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(totalIssues, basicProjectConfigId);
+					List<JiraIssue> issueListCompleted = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueListCompleted);
@@ -311,7 +306,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
-			KPIExcelUtility.populateDefectRCARelatedExcelData(name, sprintWiseDefectDataList, excelData, fieldMapping);
+			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList, excelData, fieldMapping);
 		}
 
 	}

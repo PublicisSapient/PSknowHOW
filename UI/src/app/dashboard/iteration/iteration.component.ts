@@ -95,8 +95,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
-      this.processKpiConfigData();
+      if(globalConfig){
+        this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
+        this.processKpiConfigData();
+      }
     }));
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
@@ -362,9 +364,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
     aggregatedArr[0]?.data?.forEach((item) => {
-      item['value'] = item['value']?.toFixed(2);
+      item['value'] = +(item['value']?.toFixed(2));
       if(item.value1){
-        item['value1'] = item['value1']?.toFixed(2);
+        item['value1'] = +(item['value1']?.toFixed(2));
       }
     });
 

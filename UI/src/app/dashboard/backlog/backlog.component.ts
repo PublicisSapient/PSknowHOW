@@ -52,6 +52,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     tableHeadings: [],
     tableValues: []
   };
+  noProjects = false;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -73,7 +74,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
   ngOnInit() {
     this.selectedtype = this.service.getSelectedType();
-    if (this.service.getFilterObject()) {
+    const sharedObject = this.service.getFilterObject();
+    if(sharedObject && sharedObject?.selectedTab?.toLowerCase() === 'backlog') {
       this.receiveSharedData(this.service.getFilterObject());
     }
 
@@ -105,6 +107,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
 
   });
+
+  this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+    this.noProjects = res;
+  }));
 }
   processKpiConfigData(){
     this.kpiConfigData = {};
@@ -617,6 +623,24 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }
     return aggregatedArr;
   }
+  generateExcel() {
+      const kpiData = {
+        headerNames: [],
+        excelData: []
+      };
+      this.modalDetails['tableHeadings'].forEach(colHeader => {
+        kpiData.headerNames.push({
+          header: colHeader,
+          key: colHeader,
+          width: 25
+        });
+      });
+      this.modalDetails['tableValues'].forEach(colData => {
+        kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+      });
+
+      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+    }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
