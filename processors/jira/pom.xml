@@ -29,10 +29,6 @@
 		<final.name>jira-processor</final.name>
 		<httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
 		<httpclient.version>4.2.1-atlassian-2</httpclient.version>
-		<sonar.coverage.exclusions>
-			**com/publicissapient/kpidashboard/**/*BearerTokenAuthenticationHandler.java,
-			**com/publicissapient/kpidashboard/**/*JiraToolCredentialProvider.java
-		</sonar.coverage.exclusions>
 	</properties>
 
 	<repositories>
