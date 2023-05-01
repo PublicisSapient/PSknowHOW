@@ -578,13 +578,9 @@ public abstract class ToolsKPIService<R, S> {
 				values = dataCounts.stream().map(val -> (R) val.getValue()).collect(Collectors.toList());
 			}
 			R aggValue = calculateAggValue(kpiName, dataCounts, values,kpiId);
-			if (StringUtils.isNotEmpty(kpiId) && kpiId.equalsIgnoreCase("kpi118")) {
-				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-						String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size()));
-			} else {
-				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
 						String.valueOf(aggValue));
-			}
+
 		}
 		return maturityValue;
 	}
@@ -634,6 +630,9 @@ public abstract class ToolsKPIService<R, S> {
 			aggValue = (R) value.get(0).getValue();
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
+			if(kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)){
+				aggValue= (R)String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size());
+			}
 		}
 		return aggValue;
 	}
@@ -746,7 +745,6 @@ public abstract class ToolsKPIService<R, S> {
 
 		aggMap.forEach((key, objectList) -> {
 			List<Integer> value = objectList.stream().map(Integer.class::cast).collect(Collectors.toList());
-			;
 			if (Constant.PERCENTILE.equalsIgnoreCase(aggregationCriteria)) {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesInteger(value, 90.0D));
