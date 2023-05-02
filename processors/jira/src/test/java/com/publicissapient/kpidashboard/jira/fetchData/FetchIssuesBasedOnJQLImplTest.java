@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.*;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -93,6 +94,9 @@ public class FetchIssuesBasedOnJQLImplTest {
     @Mock
     private ProcessorJiraRestClient client;
 
+    @Mock
+    private KerberosClient krb5Client;
+
 
     @Before
     public void setup() throws URISyntaxException {
@@ -116,7 +120,7 @@ public class FetchIssuesBasedOnJQLImplTest {
         when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
         when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
         when(jiraCommonService.getPageSize()).thenReturn(30);
-        when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
+        when(jiraCommonService.getUserTimeZone(any(),any())).thenReturn("Indian/Maldives");
         when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
         when(jiraCommonService.cleanCache()).thenReturn(true);
@@ -126,7 +130,7 @@ public class FetchIssuesBasedOnJQLImplTest {
                 .thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client).size());
+        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client,krb5Client).size());
 
     }
 

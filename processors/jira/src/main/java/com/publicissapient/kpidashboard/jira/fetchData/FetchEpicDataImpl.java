@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
@@ -22,10 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class FetchEpicDataImpl implements FetchEpicData {
     ProcessorJiraRestClient client;
 
     @Override
-    public List<Issue> fetchEpic(Map.Entry<String, ProjectConfFieldMapping> entry, String boardId, ProcessorJiraRestClient clientIncoming) throws InterruptedException {
+    public List<Issue> fetchEpic(Map.Entry<String, ProjectConfFieldMapping> entry, String boardId, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws InterruptedException {
 
         ProjectConfFieldMapping projectConfig=entry.getValue();
         List<String> epicList = new ArrayList<>();
@@ -67,10 +66,8 @@ public class FetchEpicDataImpl implements FetchEpicData {
                 Instant start = Instant.now();
                 do {
                     URL url = getEpicUrl(projectConfig, boardId, startIndex);
-                    URLConnection connection;
-                    connection = url.openConnection();
                     logData.setUrl(url.toString());
-                    String jsonResponse = jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection);
+                    String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
                     isLast = populateData(jsonResponse, epicList);
                     startIndex = epicList.size();
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());

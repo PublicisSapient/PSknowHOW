@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 
 import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -47,6 +48,9 @@ public class FetchSprintReportImplTest {
     
     @Mock
     private JiraCommonService jiraCommonService;
+
+    @Mock
+    private KerberosClient krb5Client;
 
     @InjectMocks
     private FetchSprintReportImpl fetchSprintReport;
@@ -108,8 +112,8 @@ public class FetchSprintReportImplTest {
         when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
         when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn("rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-        when(jiraCommonService.getDataFromServer(any(),any())).thenReturn(sprintResponse);
-        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,Collections.EMPTY_SET).size());
+        when(jiraCommonService.getDataFromClient(any(),any(),any())).thenReturn(sprintResponse);
+        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,Collections.EMPTY_SET,krb5Client).size());
     }
 
     private List<SprintDetails> getMockSprintDetails() {
@@ -143,8 +147,8 @@ public class FetchSprintReportImplTest {
         when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
         when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn("rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-        when(jiraCommonService.getDataFromServer(any(), any())).thenReturn(sprintResponse);
-        Assert.assertEquals(15,fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,Collections.EMPTY_SET).size());
+        when(jiraCommonService.getDataFromClient(any(),any(),any())).thenReturn(sprintResponse);
+        Assert.assertEquals(15,fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,Collections.EMPTY_SET,krb5Client).size());
 
     }
 

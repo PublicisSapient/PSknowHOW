@@ -1,11 +1,8 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.httpclient.apache.httpcomponents.DefaultRequest;
-import com.atlassian.httpclient.api.HttpClient;
-import com.atlassian.jira.rest.client.api.*;
+import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.*;
-import com.atlassian.jira.rest.client.internal.async.AbstractAsynchronousRestClient;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -14,25 +11,20 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser.CustomSearchResultJsonParser;
-import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
-import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchHttpClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.*;
-import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,47 +32,42 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest(fullyQualifiedNames="scr/main/java/com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.*")
-public class FetchIssuesBasedOnBoardImplTest {
+public class FetchKanbanIssueBasedOnJQLImplTest {
 
     @Mock
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
-    private JiraIssueRepository jiraIssueRepository;
-
-
-    private ProcessorJiraRestClient client;
+    private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
     @Mock
-    private KanbanJiraIssueRepository kanbanJiraRepo;
-
-    @Mock
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-    @Mock
-    private JiraCommonService jiraCommonService;
+    SearchRestClient searchRestClient;
 
     @Mock
     Promise<SearchResult> promisedRs;
 
-    @InjectMocks
-    private FetchIssueBasedOnBoardImpl fetchIssueBasedOnBoard;
+    @Mock
+    JiraCommonService jiraCommonService;
 
-    JiraIssue jiraIssue;
+    @Mock
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+    @InjectMocks
+    private FetchKanbanIssueBasedOnJQLImpl fetchKanbanIssuesBasedOnJQL;
+
+
+    KanbanJiraIssue kanbanJiraIssue;
 
     List<ProcessorExecutionTraceLog> tracelogs;
 
@@ -97,32 +84,7 @@ public class FetchIssuesBasedOnBoardImplTest {
     SearchResult searchResult;
 
     @Mock
-    MetadataRestClient metadataRestClient;
-
-    @Mock
-    HttpClient httpClient;
-
-    @Mock
-    SessionRestClient sessionRestClient;
-
-    @Mock
-    CustomSearchResultJsonParser searchResultJsonParser;
-
-    @Mock
-    private JiraRestClientFactory jiraRestClientFactory;
-
-    @Mock
-    AuthenticationHandler authenticationHandler;
-
-    @Mock
-    CustomAsynchronousIssueRestClient issueRestClient;
-
-    @Mock
-    private JiraOAuthProperties jiraOAuthProperties;
-
-
-    @Mock
-    AbstractAsynchronousRestClient abstractAsynchronousRestClient;
+    private ProcessorJiraRestClient client;
 
     @Mock
     private KerberosClient krb5Client;
@@ -130,7 +92,7 @@ public class FetchIssuesBasedOnBoardImplTest {
 
     @Before
     public void setup() throws URISyntaxException {
-        jiraIssue=getMockJiraIssue();
+        kanbanJiraIssue=getMockKanbanJiraIssue();
         tracelogs=getMockProcessorExecutionTraceLog();
         projectToolConfigs=getMockProjectToolConfig();
         connection=getMockConnection();
@@ -139,54 +101,40 @@ public class FetchIssuesBasedOnBoardImplTest {
         createIssue();
     }
 
-    @Test
-    public void fetchIssueBasedOnBoard() throws Exception {
-        when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
-        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
-        when(jiraCommonService.getPageSize()).thenReturn(30);
-        when(jiraCommonService.getUserTimeZone(any(),any())).thenReturn("Indian/Maldives");
-        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
-//        JiraInfo jiraInfoOAuth = JiraInfo.builder().jiraConfigBaseUrl(jiraOAuthProperties.getJiraBaseURL())
-//                .jiraConfigAccessToken(jiraOAuthProperties.getAccessToken())
-//                .username(entry.getValue().getJira().getConnection().get().getUsername())
-//                .password(entry.getValue().getJira().getConnection().get().getPassword())
-//                .jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build();
-//        when(jiraRestClientFactory.getJiraClient(jiraInfoOAuth)).thenReturn(client);
-//        when(httpClient.newRequest((URI) any()).setAccept(any()).get()).thenReturn();
-//        CustomAsynchronousIssueRestClient issueRestClient=CustomAsynchronousIssueRestClient.builder()
-//                .baseUri(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"))
-//                .metadataRestClient(metadataRestClient)
-//                .client(httpClient)
-//                .sessionRestClient(sessionRestClient).build();
-//        CustomAsynchronousIssueRestClient issueRestClient1=mock(CustomAsynchronousIssueRestClient.class,withSettings().useConstructor(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),metadataRestClient,httpClient,sessionRestClient).defaultAnswer(CALLS_REAL_METHODS));
-//        PowerMockito.whenNew(CustomAsynchronousIssueRestClient.class).withArguments(new URI("https://tools.publicis.sapient.com/jira/rest/agile/latest"),any(),httpClient,sessionRestClient).thenReturn(issueRestClient);
-        when(client.getCustomIssueClient()).thenReturn(issueRestClient);
-        Set<String> stringSet=new HashSet<>();
-        stringSet.add("*all,-attachment,-worklog,-comment,-votes,-watches");
-        when(issueRestClient.searchBoardIssue("11856","updatedDate>='2022-08-31 14:26' order by updatedDate desc",30,0,stringSet)).thenReturn(promisedRs);
-        when(issueRestClient.searchBoardIssue(anyString(),anyString(),anyInt(),anyInt(),anySet())).thenReturn(promisedRs);
-        when(promisedRs.claim()).thenReturn(searchResult);
-        Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client,krb5Client);
-    }
-
     private List<ProcessorExecutionTraceLog> getMockProcessorExecutionTraceLog() {
         ProcessorExecutionTracelogDataFactory processorExecutionTraceLogDataFactory = ProcessorExecutionTracelogDataFactory
                 .newInstance("/json/default/processor_execution_tracelog.json");
         return processorExecutionTraceLogDataFactory.getProcessorExecutionTracelog();
     }
 
-    private JiraIssue getMockJiraIssue() {
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
-                .newInstance("/json/default/jira_issues.json");
-        return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+    @Test
+    public void fetchIssues() throws Exception {
+        when(kanbanJiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(kanbanJiraIssue);
+        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
+        when(jiraCommonService.getPageSize()).thenReturn(30);
+        when(jiraCommonService.getUserTimeZone(any(),any())).thenReturn("Indian/Maldives");
+        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
+        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
+        when(jiraProcessorConfig.getSprintCountForCacheClean()).thenReturn(15);
+        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
+        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+                .thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(searchResult);
+        Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
+        Assert.assertEquals(2,fetchKanbanIssuesBasedOnJQL.fetchIssues(entry, client, krb5Client).size());
+
     }
 
-    private List<ProjectToolConfig> getMockProjectToolConfig() {
+    private KanbanJiraIssue getMockKanbanJiraIssue() {
+        KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory
+                .newInstance("/json/default/kanban_jira_issue.json");
+        return kanbanJiraIssueDataFactory.findTopByBasicProjectConfigId("6335368249794a18e8a4479f");
+    }
+
+    private  List<ProjectToolConfig> getMockProjectToolConfig() {
         ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
                 .newInstance("/json/default/project_tool_configs.json");
-        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63bfa0d5b7617e260763ca21");
+        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,"63c04dc7b7617e260763ca4e");
     }
 
     private Optional<Connection> getMockConnection() {
@@ -210,7 +158,7 @@ public class FetchIssuesBasedOnBoardImplTest {
     private Map<String, ProjectConfFieldMapping> createProjectConfigMap(){
         Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
         ProjectConfFieldMapping projectConfFieldMapping=ProjectConfFieldMapping.builder().build();
-        ProjectBasicConfig projectConfig=projectConfigsList.get(2);
+        ProjectBasicConfig projectConfig=projectConfigsList.get(0);
         try {
             BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -296,7 +244,5 @@ public class FetchIssuesBasedOnBoardImplTest {
 
         return issueLinkList;
     }
-
-
 
 }

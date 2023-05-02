@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -17,6 +18,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -68,7 +71,7 @@ public class JiraCommonService {
         return jiraProcessorConfig.getPageSize();
     }
 
-    public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
+    public String getUserTimeZone(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
         String userTimeZone = StringUtils.EMPTY;
         try {
             JiraToolConfig jiraToolConfig = projectConfig.getJira();
@@ -77,10 +80,8 @@ public class JiraCommonService {
                 Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
                 String username = connectionOptional.map(Connection::getUsername).orElse(null);
                 URL url = getUrl(projectConfig, username);
-                URLConnection connection;
 
-                connection = url.openConnection();
-                userTimeZone = getUserTimeZone(getDataFromServer(projectConfig, (HttpURLConnection) connection));
+                userTimeZone = parseUserTimeZone(getDataFromClient(projectConfig, url, krb5Client));
             }
         } catch (RestClientException rce) {
             log.error("Client exception when loading statuses", rce);
@@ -94,7 +95,7 @@ public class JiraCommonService {
         return userTimeZone;
     }
 
-    private String getUserTimeZone(String timezoneObj) {
+    public String parseUserTimeZone(String timezoneObj) {
         String userTimeZone = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(timezoneObj)) {
             try {
@@ -115,7 +116,6 @@ public class JiraCommonService {
         }
         return userTimeZone;
     }
-
     private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
 
         Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -133,10 +133,24 @@ public class JiraCommonService {
 
     }
 
-    public String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
-            throws IOException {
-        HttpURLConnection request = connection;
+    public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client) throws IOException {
         Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        boolean spenagoClient = connectionOptional.map(Connection::isJaasKrbAuth).orElse(false);
+        if(spenagoClient){
+            HttpUriRequest request = RequestBuilder.get().
+                    setUri(url.toString())
+                    .setHeader(org.apache.http.HttpHeaders.ACCEPT,"application/json")
+                    .setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE,"application/json")
+                    .build();
+            return krb5Client.getResponse(request);
+        }else{
+            return getDataFromServer(url, connectionOptional);
+        }
+    }
+
+    public String getDataFromServer(URL url, Optional<Connection> connectionOptional)
+            throws IOException {
+        HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
         String username = null;
         String password = null;

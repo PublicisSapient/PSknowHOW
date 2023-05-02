@@ -5,6 +5,7 @@ import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousSearchRestClient;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -64,6 +65,9 @@ public class FetchEpicDataImplTest {
     @Mock
     Promise<SearchResult> promise;
 
+    @Mock
+    private KerberosClient krb5Client;
+
     @InjectMocks
     private FetchEpicDataImpl fetchEpicData;
 
@@ -96,7 +100,7 @@ public class FetchEpicDataImplTest {
     @Test
     public void fetchEpic() throws IOException, InterruptedException {
         when(jiraProcessorConfig.getJiraEpicApi()).thenReturn("rest/agile/1.0/board/{boardId}/epic?startAt={startAtIndex}");
-        when(jiraCommonService.getDataFromServer(any(),any())).thenReturn(epicResponse);
+        when(jiraCommonService.getDataFromClient(any(),any(),any())).thenReturn(epicResponse);
         when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
         when(jiraCommonService.getPageSize()).thenReturn(30);
         when(client.getSearchClient()).thenReturn(searchRestClient);
@@ -106,7 +110,7 @@ public class FetchEpicDataImplTest {
         when(promise.claim()).thenReturn(searchResult);
 
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        fetchEpicData.fetchEpic(entry,"11856",client);
+        fetchEpicData.fetchEpic(entry,"11856",client, krb5Client);
 
     }
 

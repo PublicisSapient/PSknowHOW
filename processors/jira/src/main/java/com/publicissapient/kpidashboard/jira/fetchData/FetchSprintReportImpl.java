@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -28,10 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -84,7 +83,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
 
 
     @Override
-    public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean) throws InterruptedException {
+    public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
         List<SprintDetails> sprintToSave = new ArrayList<>();
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
         if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -123,7 +122,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                 if (fetchReport) {
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
                     getSprintReport(sprint, projectConfig, boardId,
-                            dbSprintDetailMap.get(sprint.getSprintID()));
+                            dbSprintDetailMap.get(sprint.getSprintID()),krb5Client);
                     sprintToSave.add(sprint);
                 }
             }
@@ -154,14 +153,14 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
     }
 
     private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig,
-                                 String boardId, SprintDetails dbSprintDetails) {
+                                 String boardId, SprintDetails dbSprintDetails, KerberosClient krb5Client) {
         if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null) {
-            getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails);
+            getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails, krb5Client);
         }
     }
 
     private void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
-                                SprintDetails sprint, SprintDetails dbSprintDetails) {
+                                SprintDetails sprint, SprintDetails dbSprintDetails, KerberosClient krb5Client) {
         PSLogData sprintReportLog= new PSLogData();
         sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);
         sprintReportLog.setBoardId(boardId);
@@ -172,9 +171,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                 Instant start = Instant.now();
                 URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
                 sprintReportLog.setUrl(url.toString());
-                URLConnection connection;
-                connection = url.openConnection();
-                getReport(jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig,
+                getReport(jiraCommonService.getDataFromClient(projectConfig, url, krb5Client), sprint, projectConfig,
                         dbSprintDetails, boardId);
                 sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
             }
@@ -459,15 +456,15 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
     }
 
     @Override
-    public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean)
+    public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client)
             throws InterruptedException {
         List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
         List<SprintDetails> sprintDetailsBasedOnBoard=new ArrayList<>();
         for (BoardDetails boardDetails : boardDetailsList) {
-            List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
+            List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
             if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
                 Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-                sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet,setForCacheClean));
+                sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet,setForCacheClean,krb5Client));
             }
         }
         return sprintDetailsBasedOnBoard;
@@ -484,7 +481,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
         return sd;
     }
 
-    private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+    private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client) {
         List<SprintDetails> sprintDetailsList = new ArrayList<>();
         psLogData.setBoardId(boardId);
         psLogData.setAction(CommonConstant.SPRINT_DATA);
@@ -497,9 +494,7 @@ public class FetchSprintReportImpl implements FetchSprintReport  {
                 do {
                     URL url = getSprintUrl(projectConfig, boardId, startIndex);
                     psLogData.setUrl(url.toString());
-                    URLConnection connection;
-                    connection = url.openConnection();
-                    String jsonResponse = jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection);
+                    String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
                     isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
                     startIndex = sprintDetailsList.size();
                     TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());

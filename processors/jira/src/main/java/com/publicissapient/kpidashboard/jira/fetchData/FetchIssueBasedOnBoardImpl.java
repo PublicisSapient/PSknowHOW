@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -81,7 +82,7 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
     ValidateData validateData;
 
     @Override
-    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming){
+    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client){
 
         List<Issue> totalIssues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
@@ -110,13 +111,13 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
             }
 
             Set<SprintDetails> setForCacheClean = new HashSet<>();
-            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean);
+            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean,krb5Client);
             saveData.saveData(null,null,sprintDetailsList,null,null);
 
 
             //write get logic to fetch last successful updated date.
             String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
-            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
+            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig,krb5Client);
             List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 
             int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();

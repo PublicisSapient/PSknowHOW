@@ -77,4 +77,9 @@ public class JiraProcessorConfig {
 	private Map<String, String> notificationSubject;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
+
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
 }

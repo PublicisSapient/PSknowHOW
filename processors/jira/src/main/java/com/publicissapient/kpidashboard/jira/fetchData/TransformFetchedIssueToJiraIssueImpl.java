@@ -130,7 +130,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                     setIssueEpics(issueEpics, epic, jiraIssue);
                     setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
                     processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
-                    updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
+                    setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
                     setEstimates(jiraIssue, issue);
                     setDueDates(jiraIssue, issue,fields,fieldMapping);
                     JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
@@ -161,14 +161,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         return jiraIssuesToSave;
     }
 
-    private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee,
-                                       Set<Assignee> assigneeSetToSave) {
-        if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-            setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave);
-        }
-    }
-
-    private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
+    public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
         if (user == null) {
             jiraIssue.setOwnersUsername(Collections.<String>emptyList());
             jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -200,12 +193,35 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             jiraIssue.setOwnersFullName(assigneeDisplayName);
             if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
                     && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-                assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+                updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
             }
+        }
+
+    }
+
+    private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+        if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+            List<String> ownerName = assigneeName.stream().map(i->hash(i))
+                    .collect(Collectors.toList());
+            List<String> ownerId = assigneeKey.stream().map(i->hash(i)).collect(Collectors.toList());
+            List<String> ownerFullName = assigneeDisplayName.stream().map(i->hash(i))
+                    .collect(Collectors.toList());
+            jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+            jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+            jiraIssue.setOwnersShortName(ownerName);
+            jiraIssue.setOwnersUsername(ownerName);
+            jiraIssue.setOwnersID(ownerId);
+            jiraIssue.setOwnersFullName(ownerFullName);
+        } else {
+            assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
         }
     }
 
-    private String getAssignee(User user) {
+    public static String hash(String input) {
+        return String.valueOf(Objects.hash(input));
+    }
+
+    public String getAssignee(User user) {
         String userId = "";
         String query = user.getSelf().getQuery();
         if (StringUtils.isNotEmpty(query) && (query.contains("accountId") || query.contains("username"))) {

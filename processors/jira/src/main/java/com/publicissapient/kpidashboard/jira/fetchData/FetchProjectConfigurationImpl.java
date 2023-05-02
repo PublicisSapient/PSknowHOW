@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -66,6 +67,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
 
     private ProcessorJiraRestClient client;
 
+    private KerberosClient krb5Client;
+
    @Override
     public Map<String, ProjectConfFieldMapping> fetchConfiguration(){
         List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
@@ -118,12 +121,12 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
             projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
             try {
                 for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
-                    client = jiraClient.getClient(entry);
+                    client = jiraClient.getClient(projectConfigList,entry,krb5Client);
                     createMetadata.collectMetadata(entry.getValue(),client);
                     if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
-                        fetchIssuesBasedOnJQL.fetchIssues(entry,client);
+                        fetchIssuesBasedOnJQL.fetchIssues(entry,client,krb5Client);
                     } else {
-                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client);
+                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client,krb5Client);
                         log.info("issues fetched from board"+issues.size());
                     }
                 }

@@ -44,7 +44,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 @Slf4j
 @Service
-public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
+public class FetchKanbanIssueBasedOnJQLImpl {
 
     String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
@@ -59,9 +59,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
-    @Autowired
-    private JiraIssueRepository jiraIssueRepository;
-
     PSLogData psLogData = new PSLogData();
 
     private ProcessorJiraRestClient client;
@@ -69,8 +66,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     private KanbanJiraIssueRepository kanbanJiraRepo;
 
-//    @Autowired
-//    private RabbitTemplate template;
     @Autowired
     private TransformFetchedIssueToJiraIssue transformFetchedIssue;
 
@@ -98,7 +93,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Value("${rabbitmq.routing.key}")
     String routingKey;
 
-    @Override
+//    @Override
     public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws JSONException {
 
         List<Issue> totalIssues = new ArrayList<>();
@@ -117,15 +112,9 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
         try {
             boolean dataExist = false;
-            if (projectConfig.isKanban()) {
-                dataExist = (kanbanJiraRepo
+            dataExist = (kanbanJiraRepo
                         .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("true");
-            } else {
-                dataExist = (jiraIssueRepository
-                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("false");
-            }
+            psLogData.setKanban("true");
 
 
             Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
@@ -139,11 +128,10 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
             int pageSize = jiraCommonService.getPageSize();
             boolean hasMore = true;
-            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig,krb5Client);
+            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig, krb5Client);
 
             int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
             boolean latestDataFetched=false;
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
 
             for (int i = 0; hasMore; i += pageSize) {
                 Instant startProcessingJiraIssues = Instant.now();
@@ -156,48 +144,39 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     psLogData.setTotalFetchedIssues(String.valueOf(total));
                 }
 
-                if (CollectionUtils.isNotEmpty(issues)) {
-                    List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
-                    Set<SprintDetails> sprintDetailsSet=new HashSet<>();
-                    Set<Assignee> assigneeSetToSave = new HashSet<>();
-                    boolean dataFromBoard =false;
-                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
-                    Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
-                    List<SprintDetails> sprintDetailsList =new ArrayList<>();
-                    //now we will be putting setCacheClean in fetchSprints fn
-                    if (!dataFromBoard) {
-                        sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean,krb5Client);
-                    }
-                    AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
-                    saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
-                    JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
-                    savedIsuesCount += issues.size();
-                    jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
-//                   template.convertAndSend(exchange, routingKey, jiraIssues);
-                }
-
-                if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
-                    latestDataFetched = jiraCommonService.cleanCache();
-                    setForCacheClean.clear();
-                    log.info("latest sprint fetched cache cleaned.");
-                }
+//                if (CollectionUtils.isNotEmpty(issues)) {
+//                    List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
+//                    Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+//                    Set<Assignee> assigneeSetToSave = new HashSet<>();
+//                    boolean dataFromBoard =false;
+//                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
+//                    Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
+//
+//                    AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
+//                    saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
+//                    JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
+//                    savedIsuesCount += issues.size();
+//                    jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
+////                   template.convertAndSend(exchange, routingKey, jiraIssues);
+//                }
+//
+//                if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+//                    latestDataFetched = jiraCommonService.cleanCache();
+//                    setForCacheClean.clear();
+//                    log.info("latest sprint fetched cache cleaned.");
+//                }
 
                 if (issues.size() < pageSize) {
                     break;
                 }
             }
             processorFetchingComplete = true;
-        } catch (JSONException e) {
-            log.error("Error while updating Story information in scrum client", e,
-                    kv(CommonConstant.PSLOGDATA, psLogData));
-            lastSavedJiraIssueChangedDateByType.clear();
-            processorFetchingComplete = false;
         } catch (InterruptedException e) {
             log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
             lastSavedJiraIssueChangedDateByType.clear();
             processorFetchingComplete = false;
         } finally {
-            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
+//            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
         }
         return totalIssues;
     }
@@ -242,8 +221,8 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     }
 
     private SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
-                                  Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
-                                  boolean dataExist) throws InterruptedException{
+                                   Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
+                                   boolean dataExist) throws InterruptedException{
         ProjectConfFieldMapping projectConfig=entry.getValue();
         SearchResult searchResult = null;
 
@@ -301,3 +280,4 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     }
 
 }
+
