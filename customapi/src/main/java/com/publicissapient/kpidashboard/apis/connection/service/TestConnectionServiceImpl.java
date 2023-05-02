@@ -149,7 +149,15 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		isValidConnection = status.is2xxSuccessful();
 		return isValidConnection;
 	}
-	
+
+	private boolean testConnectionWithBearerToken(String apiUrl, String pat) {
+		boolean isValidConnection;
+		HttpStatus status = null;
+		status = getApiResponseWithBearer(pat, apiUrl);
+		isValidConnection = status.is2xxSuccessful();
+		return isValidConnection;
+	}
+
 	private boolean checkDetails(String apiUrl, String password, Connection connection) {
 		boolean b = false;
 		if (apiUrl != null && isUrlValid(apiUrl) && StringUtils.isNotEmpty(password)
@@ -188,8 +196,14 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			isValid = testConnection(connection, toolName, apiUrl, password, false);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+			if(StringUtils.isNotEmpty(connection.getPatOAuthToken())){
+				isValid = testConnectionWithBearerToken(apiUrl, connection.getPatOAuthToken());
+				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+			} else {
+				isValid = testConnection(connection, toolName, apiUrl, password, false);
+				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+			}
+
 		}
 		return statusCode;
 	}
@@ -307,6 +321,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return headers;
 	}
 
+	private HttpHeaders createHeadersWithBearer(String pat) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer " + rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey()));
+		return headers;
+	}
+
 	/**
 	 * Make API call to validate Credentials
 	 * 
@@ -339,6 +359,21 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			return HttpStatus.OK;
 		}
 
+		return responseEntity.getStatusCode();
+	}
+
+	private HttpStatus getApiResponseWithBearer(String pat, String apiUrl) {
+		RestTemplate rest = new RestTemplate();
+		HttpHeaders httpHeaders;
+		ResponseEntity<?> responseEntity;
+		httpHeaders = createHeadersWithBearer(pat);
+		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
+		try {
+			responseEntity = rest.exchange(URI.create(apiUrl.replace("issue/createmeta","dashboard")), HttpMethod.GET, requestEntity, String.class);
+		} catch (HttpClientErrorException e) {
+			log.error("Invalid login credentials");
+			return e.getStatusCode();
+		}
 		return responseEntity.getStatusCode();
 	}
 

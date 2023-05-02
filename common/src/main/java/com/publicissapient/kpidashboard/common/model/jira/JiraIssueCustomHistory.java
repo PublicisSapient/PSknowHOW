@@ -75,8 +75,15 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	private String projectName;
 	private String basicProjectConfigId;
-
+	//Used for azure processor
 	private List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> assigneeUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> priorityUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> fixVersionUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> labelUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> dueDateUpdationLog = new ArrayList<>();
+	private List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
 
 	private List<AdditionalFilter> additionalFilters;
 
@@ -85,10 +92,13 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	@Override
 	public String toString() {
-		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType=" + storyType
-				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
+		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType="
+				+ storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + ", storySprintDetails=" + storySprintDetails + "]";
+				+ ", projectComponentId=" + projectComponentId + ", statusUpdationLog=" + statusUpdationLog
+				+ ", assigneeUpdationLog=" + assigneeUpdationLog + ", priorityUpdationLog=" + priorityUpdationLog
+				+ ", fixVersionUpdationLog=" + fixVersionUpdationLog + ", labelUpdationLog=" + labelUpdationLog
+				+ ", dueDateUpdationLog=" + dueDateUpdationLog + ", sprintUpdationLog=" + sprintUpdationLog + "]";
 	}
 
 }

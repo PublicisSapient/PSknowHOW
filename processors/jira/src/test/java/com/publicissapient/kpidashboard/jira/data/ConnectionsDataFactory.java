@@ -85,19 +85,9 @@ public class ConnectionsDataFactory {
 		return mapper;
 	}
 
-    public List<Connection> getConnections() {
-        return connections;
-    }
-
     public Optional<Connection> findConnectionById(String id){
 
        return connections.stream().filter(connection -> connection.getId().toString().equals(id))
                 .findFirst();
-    }
-
-    public List<Connection> findConnectionsByType(String type){
-
-	    return connections.stream().filter(connection -> connection.getType().equals(type))
-                .collect(Collectors.toList());
     }
 }

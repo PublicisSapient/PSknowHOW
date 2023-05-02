@@ -8,7 +8,7 @@ import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -18,6 +18,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static com.publicissapient.kpidashboard.jira.fetchData.JiraHelper.*;
@@ -52,30 +54,23 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
     private AdditionalFilterHelper additionalFilterHelper;
 
     @Autowired
-    private SprintRepository sprintRepository;
-
-    @Autowired
     private CreateAccountHierarchy createAccountHierarchy;
 
     @Autowired
     private FetchSprintReportImpl fetchSprintReport;
 
-    private static final String CONTENTS = "contents";
-    private static final String COMPLETED_ISSUES = "completedIssues";
-    private static final String PUNTED_ISSUES = "puntedIssues";
-    private static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
-    private static final String ADDED_ISSUES = "issueKeysAddedDuringSprint";
-    private static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
-    private static final String KEY = "key";
-    private static final String ENTITY_DATA = "entityData";
-    private static final String PRIORITYID = "priorityId";
-    private static final String STATUSID = "statusId";
+    @Autowired
+    private CreateJiraIssueHistoryImpl createJiraIssueHistory;
 
-    private static final String TYPEID = "typeId";
+    @Autowired
+    private SaveData saveData;
+
+    @Autowired
+    private CreateAssigneeDetails createAssigneeDetails;
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                                Set<SprintDetails> setForCacheClean, boolean dataFromBoard) throws JSONException,InterruptedException {
+                                              boolean dataFromBoard, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, Set<SprintDetails> sprintDetailsSet,Set<Assignee> assigneeSetToSave) throws JSONException, InterruptedException {
 
         List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
 
@@ -85,474 +80,95 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         }
 
         Map<String, String> issueEpics = new HashMap<>();
-        Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
+
         ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
+        FieldMapping fieldMapping = projectConfig.getFieldMapping();
+
+        if (null == fieldMapping) {
+            return jiraIssuesToSave;
+        }
+        Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Callable<JiraIssue>> callables = new ArrayList<>();
+
         for (Issue issue : currentPagedJiraRs) {
-            FieldMapping fieldMapping = projectConfig.getFieldMapping();
+            Callable<JiraIssue> callable = () -> {
+                String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
+                String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 
-            if (null == fieldMapping) {
-                return jiraIssuesToSave;
-            }
-            Set<String> issueTypeNames = new HashSet<>();
-            for (String issueTypeName : fieldMapping.getJiraIssueTypeNames()) {
-                issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
-            }
-            String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-            String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
+                JiraIssue jiraIssue = getJiraIssue(projectConfig, issueId);
+                Map<String, IssueField> fields = buildFieldMap(issue.getFields());
+                IssueType issueType = issue.getIssueType();
+                User assignee = issue.getAssignee();
+                IssueField epic = fields.get(fieldMapping.getEpicName());
+                IssueField sprint = fields.get(fieldMapping.getSprintName());
+                setURL(issue.getKey(), jiraIssue, projectConfig);
+                setRCA(fieldMapping, issue, jiraIssue, fields);
+                setDevicePlatform(fieldMapping, jiraIssue, fields);
+                setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
-            JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
-
-            Map<String, IssueField> fields = buildFieldMap(issue.getFields());
-
-            IssueType issueType = issue.getIssueType();
-            User assignee = issue.getAssignee();
-
-            IssueField epic = fields.get(fieldMapping.getEpicName());
-            IssueField sprint = fields.get(fieldMapping.getSprintName());
-
-            //set URL to jiraIssue
-            setURL(issue.getKey(),jiraIssue,projectConfig);
-
-            // Add RCA to JiraIssue
-            setRCA(fieldMapping, issue, jiraIssue, fields);
-
-            // Add device platform filed to issue
-            setDevicePlatform(fieldMapping, jiraIssue, fields);
-
-            // Add UAT/Third Party identification field to JiraIssue
-            setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-
-            if (issueTypeNames.contains(
-                    JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
-                // collectorId
-                jiraIssue.setProcessorId(jiraProcessorId);
-
-                // ID
-                jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
-
-                // Type
-                jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
-                jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
-
-                setDefectIssueType(jiraIssue, issueType, fieldMapping);
-
-                // Label
-                jiraIssue.setLabels(getLabelsList(issue));
-                processJiraIssueData(jiraIssue, issue, fields, fieldMapping, jiraProcessorConfig);
-
-                // Set project specific details
-                setProjectSpecificDetails(projectConfig, jiraIssue, issue);
-
-                // Set additional filters
-                setAdditionalFilters(jiraIssue, issue, projectConfig);
-
-                setStoryLinkWithDefect(issue, jiraIssue);
-
-                // ADD QA identification field to feature
-                setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-                setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
-
-                setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
-                jiraIssue.setAffectedVersions(getAffectedVersions(issue));
-                setIssueEpics(issueEpics, epic, jiraIssue);
-
-                setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
-
-                processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
-
-                setJiraAssigneeDetails(jiraIssue, assignee);
-
-                setEstimates(jiraIssue, issue);
-
-                if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-                    jiraIssuesToSave.add(jiraIssue);
+                if (issueTypeNames.contains(
+                        JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || dataFromBoard) {
+                    jiraIssue.setProcessorId(jiraProcessorId);
+                    jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
+                    jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
+                    jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+                    setDefectIssueType(jiraIssue, issueType, fieldMapping);
+                    jiraIssue.setLabels(getLabelsList(issue));
+                    processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
+                    setProjectSpecificDetails(projectConfig, jiraIssue, issue);
+                    setAdditionalFilters(jiraIssue, issue, projectConfig);
+                    setStoryLinkWithDefect(issue, jiraIssue);
+                    setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+                    setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
+                    setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
+                    jiraIssue.setAffectedVersions(getAffectedVersions(issue));
+                    setIssueEpics(issueEpics, epic, jiraIssue);
+                    setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
+                    processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
+                    updateAssigneeDetails(projectConfig, jiraIssue, assignee , assigneeSetToSave);
+                    setEstimates(jiraIssue, issue);
+                    setDueDates(jiraIssue, issue,fields,fieldMapping);
+                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+                    if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+                        jiraIssuesToSave.add(jiraIssue);
+                        jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
+                    }
                 }
-            }
+                return jiraIssue;
+            };
+            callables.add(callable);
         }
 
-        createAccountHierarchy.createAccountHierarchy(jiraIssuesToSave,projectConfig);
+//        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
 
+//        for (Future<JiraIssue> future : futures) {
+//            JiraIssue jiraIssue;
+//            try {
+//                jiraIssue = future.get();
+//            } catch (ExecutionException e) {
+//                throw new RuntimeException(e);
+//            }
+//            jiraIssuesToSave.add(jiraIssue);
+//        }
 
-        if (!dataFromBoard) {
-            fetchSprintReport.processSprints(projectConfig, sprintDetailsSet);
-        }
+        executor.shutdown();
 
-        setForCacheClean.addAll(sprintDetailsSet.stream()
-                .filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
-                .collect(Collectors.toSet()));
         return jiraIssuesToSave;
     }
 
-//    public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) throws InterruptedException {
-//        ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
-//        if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
-//            List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
-//                    .collect(Collectors.toList());
-//            List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
-//            Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
-//                    .collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
-//            List<SprintDetails> sprintToSave = new ArrayList<>();
-//            PSLogData sprintLogData = new PSLogData();
-//            for (SprintDetails sprint : sprintDetailsSet) {
-//                boolean fetchReport = false;
-//                String boardId = sprint.getOriginBoardId().get(0);
-//                sprint.setProcessorId(jiraProcessorId);
-//                sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-//                if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
-//                    SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
-//                    sprint.setId(dbSprintDetails.getId());
-//                    // case 1 : same sprint different board id
-//                    if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
-//                        sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
-//                        fetchReport = true;
-//                    } // case 2 : sprint state is active or changed which is present in db
-//                    else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
-//                            || !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
-//                        sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
-//                        fetchReport = true;
-//                    } else {
-//                        log.info("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
-//                                sprint.getState());
-//                        fetchReport = false;
-//                    }
-//                } else {
-//                    fetchReport = true;
-//                }
-//
-//                if (fetchReport) {
-//                    TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-//                    getSprintReport(sprint, projectConfig, boardId,
-//                            dbSprintDetailMap.get(sprint.getSprintID()));
-//                    sprintToSave.add(sprint);
-//                }
-//            }
-//            sprintRepository.saveAll(sprintToSave);
-//            sprintLogData.setAction(CommonConstant.SPRINT_DATA);
-//            sprintLogData
-//                    .setSprintListSaved(
-//                            sprintToSave.stream()
-//                                    .map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-//                                            + sprintDetails.getState() + CommonConstant.NEWLINE)
-//                                    .collect(Collectors.toList()));
-//            sprintLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-//            sprintLogData
-//                    .setSprintListFetched(
-//                            sprintDetailsSet.stream()
-//                                    .map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-//                                            + sprintDetails.getState() + CommonConstant.NEWLINE)
-//                                    .collect(Collectors.toList()));
-//            sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-//            log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
-//        }
-//    }
-//
-//    private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig,
-//                                 String boardId, SprintDetails dbSprintDetails) {
-//        if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null) {
-//            getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails);
-//        }
-//    }
-//
-//    public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
-//                                SprintDetails sprint, SprintDetails dbSprintDetails) {
-//        PSLogData sprintReportLog= new PSLogData();
-//        sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);
-//        sprintReportLog.setBoardId(boardId);
-//        sprintReportLog.setSprintId(sprintId);
-//        try {
-//            JiraToolConfig jiraToolConfig = projectConfig.getJira();
-//            if (null != jiraToolConfig) {
-//                Instant start = Instant.now();
-//                URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
-//                sprintReportLog.setUrl(url.toString());
-//                URLConnection connection;
-//                connection = url.openConnection();
-//                getReport(getDataFromServer(projectConfig, (HttpURLConnection) connection), sprint, projectConfig,
-//                        dbSprintDetails, boardId);
-//                sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
-//            }
-//            log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),
-//                    kv(CommonConstant.PSLOGDATA, sprintReportLog));
-//        }
-//        catch (RestClientException rce) {
-//            log.error("Client exception when loading sprint report " + rce, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-//            throw rce;
-//        } catch (MalformedURLException mfe) {
-//            log.error("Malformed url for loading sprint report", mfe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-//        }
-//        catch (IOException ioe) {
-//            log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
-//        }
-//    }
-//
-//    private void getReport(String sprintReportObj, SprintDetails sprint, ProjectConfFieldMapping projectConfig,
-//                           SprintDetails dbSprintDetails, String boardId) {
-//        if (StringUtils.isNotBlank(sprintReportObj)) {
-//            JSONArray completedIssuesJson = new JSONArray();
-//            JSONArray notCompletedIssuesJson = new JSONArray();
-//            JSONArray puntedIssuesJson = new JSONArray();
-//            JSONArray completedIssuesAnotherSprintJson = new JSONArray();
-//            org.json.simple.JSONObject addedIssuesJson = new org.json.simple.JSONObject();
-//            org.json.simple.JSONObject entityDataJson = new org.json.simple.JSONObject();
-//
-//            boolean otherBoardExist = findIfOtherBoardExist(sprint);
-//            Set<SprintIssue> completedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getCompletedIssues(), boardId, otherBoardExist);
-//            Set<SprintIssue> notCompletedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getNotCompletedIssues(), boardId, otherBoardExist);
-//            Set<SprintIssue> puntedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getPuntedIssues(), boardId, otherBoardExist);
-//            Set<SprintIssue> completedIssuesAnotherSprint = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getCompletedIssuesAnotherSprint(), boardId, otherBoardExist);
-//            Set<SprintIssue> totalIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getTotalIssues(), boardId, otherBoardExist);
-//            Set<String> addedIssues = initializeAddedIssues(null == dbSprintDetails ? new HashSet<>()
-//                    : dbSprintDetails.getAddedIssues(), totalIssues, puntedIssues, otherBoardExist);
-//            try {
-//                org.json.simple.JSONObject obj = (org.json.simple.JSONObject) new JSONParser().parse(sprintReportObj);
-//                if (null != obj) {
-//                    org.json.simple.JSONObject contentObj = (org.json.simple.JSONObject) obj.get(CONTENTS);
-//                    completedIssuesJson = (JSONArray) contentObj.get(COMPLETED_ISSUES);
-//                    notCompletedIssuesJson = (JSONArray) contentObj.get(NOT_COMPLETED_ISSUES);
-//                    puntedIssuesJson = (JSONArray) contentObj.get(PUNTED_ISSUES);
-//                    completedIssuesAnotherSprintJson = (JSONArray) contentObj.get(COMPLETED_ISSUES_ANOTHER_SPRINT);
-//                    addedIssuesJson = (org.json.simple.JSONObject) contentObj.get(ADDED_ISSUES);
-//                    entityDataJson = (org.json.simple.JSONObject) contentObj.get(ENTITY_DATA);
-//                }
-//
-//                populateMetaData(entityDataJson, projectConfig);
-//
-//                setIssues(completedIssuesJson, completedIssues, totalIssues, projectConfig, boardId);
-//
-//                setIssues(notCompletedIssuesJson, notCompletedIssues, totalIssues, projectConfig, boardId);
-//
-//                setPuntedCompletedAnotherSprint(puntedIssuesJson, puntedIssues, projectConfig, boardId);
-//
-//                setPuntedCompletedAnotherSprint(completedIssuesAnotherSprintJson, completedIssuesAnotherSprint,
-//                        projectConfig, boardId);
-//
-//                addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
-//
-//                sprint.setCompletedIssues(completedIssues);
-//                sprint.setNotCompletedIssues(notCompletedIssues);
-//                sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
-//                sprint.setPuntedIssues(puntedIssues);
-//                sprint.setAddedIssues(addedIssues);
-//                sprint.setTotalIssues(totalIssues);
-//
-//            } catch (org.json.simple.parser.ParseException pe) {
-//                log.error("Parser exception when parsing statuses", pe);
-//            }
-//        }
-//    }
-//
-//    private Set<String> setAddedIssues(org.json.simple.JSONObject addedIssuesJson, Set<String> addedIssues) {
-//        Set<String> keys = addedIssuesJson.keySet();
-//        if (CollectionUtils.isNotEmpty(keys)) {
-//            addedIssues.addAll(keys.stream().collect(Collectors.toSet()));
-//        }
-//        return addedIssues;
-//    }
-//
-//    private void setPuntedCompletedAnotherSprint(JSONArray puntedIssuesJson, Set<SprintIssue> puntedIssues
-//            , ProjectConfFieldMapping projectConfig, String boardId) {
-//        puntedIssuesJson.forEach(puntedObj -> {
-//            org.json.simple.JSONObject punObj = (org.json.simple.JSONObject) puntedObj;
-//            if (null != punObj) {
-//                SprintIssue issue = getSprintIssue(punObj, projectConfig, boardId);
-//                puntedIssues.remove(issue);
-//                puntedIssues.add(issue);
-//            }
-//        });
-//    }
-//
-//    private boolean findIfOtherBoardExist(SprintDetails sprint) {
-//        boolean exist = false;
-//        if (null != sprint && sprint.getOriginBoardId().size() > 1) {
-//            exist = true;
-//        }
-//        return exist;
-//    }
-//
-//    private Set<SprintIssue> initializeIssues(Set<SprintIssue> sprintIssues, String boardId, boolean otherBoardExist) {
-//        if (otherBoardExist) {
-//            return CollectionUtils.emptyIfNull(sprintIssues).stream().filter(issue -> null != issue.getOriginBoardId() &&
-//                            !issue.getOriginBoardId().equalsIgnoreCase(boardId))
-//                    .collect(Collectors.toSet());
-//        } else {
-//            return new HashSet<>();
-//        }
-//    }
-//
-//    private Set<String> initializeAddedIssues(Set<String> addedIssue, Set<SprintIssue> totalIssues,
-//                                              Set<SprintIssue> puntedIssues, boolean otherBoardExist) {
-//        if (otherBoardExist) {
-//            if (null == addedIssue) {
-//                addedIssue = new HashSet<>();
-//            }
-//            Set<String> keySet = CollectionUtils.emptyIfNull(totalIssues).stream().map(issue -> issue.getNumber())
-//                    .collect(Collectors.toSet());
-//            keySet.addAll(CollectionUtils.emptyIfNull(puntedIssues).stream().map(issue -> issue.getNumber())
-//                    .collect(Collectors.toSet()));
-//            addedIssue.retainAll(keySet);
-//            return addedIssue;
-//        } else {
-//            return new HashSet<>();
-//        }
-//    }
-//
-//    private void populateMetaData(org.json.simple.JSONObject entityDataJson, ProjectConfFieldMapping projectConfig) {
-//        JiraIssueMetadata jiraIssueMetadata = new JiraIssueMetadata();
-//        if (Objects.nonNull(entityDataJson)) {
-//            jiraIssueMetadata.setIssueTypeMap(getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("types"), "typeName"));
-//            jiraIssueMetadata.setStatusMap(getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("statuses"), "statusName"));
-//            jiraIssueMetadata
-//                    .setPriorityMap(getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("priorities"), "priorityName"));
-//            projectConfig.setJiraIssueMetadata(jiraIssueMetadata);
-//        }
-//    }
-//
-//    private Map<String, String> getMetaDataMap(org.json.simple.JSONObject object, String fieldName) {
-//        Map<String, String> map = new HashMap<>();
-//        if (null != object) {
-//            object.keySet().forEach(key -> {
-//                org.json.simple.JSONObject innerObj = (org.json.simple.JSONObject) object.get(key);
-//                Object fieldObject = innerObj.get(fieldName);
-//                if (null != fieldObject) {
-//                    map.put(key.toString(), fieldObject.toString());
-//                }
-//            });
-//        }
-//        return map;
-//    }
-//
-//    private void setIssues(JSONArray issuesJson, Set<SprintIssue> issues,
-//                           Set<SprintIssue> totalIssues, ProjectConfFieldMapping projectConfig,
-//                           String boardId) {
-//        issuesJson.forEach(jsonObj -> {
-//            org.json.simple.JSONObject obj = (org.json.simple.JSONObject) jsonObj;
-//            if (null != obj) {
-//                SprintIssue issue = getSprintIssue(obj, projectConfig, boardId);
-//                issues.remove(issue);
-//                issues.add(issue);
-//                totalIssues.remove(issue);
-//                totalIssues.add(issue);
-//            }
-//        });
-//    }
-//
-//    private SprintIssue getSprintIssue(org.json.simple.JSONObject obj, ProjectConfFieldMapping projectConfig,
-//                                       String boardId) {
-//        SprintIssue issue = new SprintIssue();
-//        issue.setNumber(obj.get(KEY).toString());
-//        issue.setOriginBoardId(boardId);
-//        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-//        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-//        if (isCloudEnv) {
-//            issue.setPriority(getOptionalString(obj, "priorityName"));
-//            issue.setStatus(getOptionalString(obj, "statusName"));
-//            issue.setTypeName(getOptionalString(obj, "typeName"));
-//        } else {
-//            issue.setPriority(getName(projectConfig, PRIORITYID, obj));
-//            issue.setStatus(getName(projectConfig, STATUSID, obj));
-//            issue.setTypeName(getName(projectConfig, TYPEID, obj));
-//        }
-//        setEstimateStatistics(issue, obj, projectConfig);
-//        setTimeTrackingStatistics(issue, obj);
-//        return issue;
-//    }
-//
-//    private void setTimeTrackingStatistics(SprintIssue issue, org.json.simple.JSONObject obj) {
-//        Object timeEstimateFieldId = getStatisticsFieldId((org.json.simple.JSONObject) obj.get("trackingStatistic"),
-//                "statFieldId");
-//        if (null != timeEstimateFieldId) {
-//            Object timeTrackingObject = getStatistics((org.json.simple.JSONObject) obj.get("trackingStatistic"),
-//                    "statFieldValue", "value");
-//            issue.setRemainingEstimate(timeTrackingObject == null ? null : Double.valueOf(timeTrackingObject.toString()));
-//        }
-//    }
-//
-//    private void setEstimateStatistics(SprintIssue issue, org.json.simple.JSONObject obj, ProjectConfFieldMapping projectConfig) {
-//        Object currentEstimateFieldId = getStatisticsFieldId((org.json.simple.JSONObject) obj.get("currentEstimateStatistic"),
-//                "statFieldId");
-//        if (null != currentEstimateFieldId) {
-//            Object estimateObject = getStatistics((org.json.simple.JSONObject) obj.get("currentEstimateStatistic"),
-//                    "statFieldValue", "value");
-//            String storyPointCustomField = StringUtils.defaultIfBlank(projectConfig.getFieldMapping().getJiraStoryPointsCustomField(), "");
-//            if (storyPointCustomField.equalsIgnoreCase(currentEstimateFieldId.toString())) {
-//                issue.setStoryPoints(estimateObject == null ? null : Double.valueOf(estimateObject.toString()));
-//            } else {
-//                issue.setOriginalEstimate(estimateObject == null ? null : Double.valueOf(estimateObject.toString()));
-//            }
-//        }
-//    }
-//
-//    private Object getStatistics(org.json.simple.JSONObject object, String objectName, String fieldName) {
-//        Object resultObj = null;
-//        if (null != object) {
-//            org.json.simple.JSONObject innerObj = (org.json.simple.JSONObject) object.get(objectName);
-//            if (null != innerObj) {
-//                resultObj = innerObj.get(fieldName);
-//            }
-//        }
-//        return resultObj;
-//    }
-//
-//    private Object getStatisticsFieldId(org.json.simple.JSONObject object, String fieldName) {
-//        Object resultObj = null;
-//        if (null != object) {
-//            resultObj = object.get(fieldName);
-//        }
-//        return resultObj;
-//    }
-//
-//    private String getName(ProjectConfFieldMapping projectConfig, String entityDataKey, org.json.simple.JSONObject jsonObject) {
-//        String name = null;
-//        Object obj = jsonObject.get(entityDataKey);
-//        if (null != obj) {
-//            JiraIssueMetadata metadata = projectConfig.getJiraIssueMetadata();
-//            switch (entityDataKey) {
-//                case PRIORITYID:
-//                    name = metadata.getPriorityMap().getOrDefault(obj.toString(), null);
-//                    break;
-//                case STATUSID:
-//                    name = metadata.getStatusMap().getOrDefault(obj.toString(), null);
-//                    break;
-//                case TYPEID:
-//                    name = metadata.getIssueTypeMap().getOrDefault(obj.toString(), null);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//        return name;
-//    }
-//
-//    private String getOptionalString(final org.json.simple.JSONObject jsonObject, final String attributeName) {
-//        final Object res = jsonObject.get(attributeName);
-//        if (res == null) {
-//            return null;
-//        }
-//        return res.toString();
-//    }
-//
-//    private URL getSprintReportUrl(ProjectConfFieldMapping projectConfig, String sprintId, String boardId)
-//            throws MalformedURLException {
-//
-//        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-//        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-//        String serverURL = jiraProcessorConfig.getJiraServerSprintReportApi();
-//        if (isCloudEnv) {
-//            serverURL = jiraProcessorConfig.getJiraCloudSprintReportApi();
-//        }
-//        serverURL = serverURL.replace("{rapidViewId}", boardId).replace("{sprintId}", sprintId);
-//        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-//        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
-//
-//    }
+    private void updateAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, User assignee,
+                                       Set<Assignee> assigneeSetToSave) {
+        if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+            setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave);
+        }
+    }
 
-    public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user) {
+    private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
         if (user == null) {
             jiraIssue.setOwnersUsername(Collections.<String>emptyList());
             jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -561,13 +177,14 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         } else {
             List<String> assigneeKey = new ArrayList<>();
             List<String> assigneeName = new ArrayList<>();
-            if ((user.getName() == null) || user.getName().isEmpty()) {
+            String assigneeUniqueId = getAssignee(user);
+            if ((assigneeUniqueId == null) || assigneeUniqueId.isEmpty()) {
                 assigneeKey = new ArrayList<>();
                 assigneeName = new ArrayList<>();
             } else {
-                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                assigneeName.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                jiraIssue.setAssigneeId(user.getName());
+                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+                assigneeName.add(JiraProcessorUtil.deodeUTF8String(assigneeUniqueId));
+                jiraIssue.setAssigneeId(assigneeUniqueId);
             }
             jiraIssue.setOwnersShortName(assigneeName);
             jiraIssue.setOwnersUsername(assigneeName);
@@ -581,11 +198,23 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 jiraIssue.setAssigneeName(user.getDisplayName());
             }
             jiraIssue.setOwnersFullName(assigneeDisplayName);
+            if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
+                    && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
+                assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+            }
         }
     }
 
+    private String getAssignee(User user) {
+        String userId = "";
+        String query = user.getSelf().getQuery();
+        if (StringUtils.isNotEmpty(query) && (query.contains("accountId") || query.contains("username"))) {
+            userId = query.split("=")[1];
+        }
+        return userId;
+    }
 
-    public void setIssueTechStoryType(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
+    private void setIssueTechStoryType(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
                                       Map<String, IssueField> fields) {
 
         if (StringUtils.isNotBlank(fieldMapping.getJiraTechDebtIdentification())) {
@@ -608,8 +237,8 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
     }
 
-    public void processJiraIssueData(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
-                                     FieldMapping fieldMapping, JiraProcessorConfig jiraProcessorConfig) throws JSONException {
+    private void processJiraIssueData(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+                                     FieldMapping fieldMapping) throws JSONException {
 
         String status = issue.getStatus().getName();
         String changeDate = issue.getUpdateDate().toString();
@@ -653,7 +282,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
     }
 
-    public void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+    private void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
 
         Double value = 0d;
         String valueString = "0";
@@ -697,7 +326,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         jiraIssue.setStoryPoints(value);
     }
 
-    public void setDevicePlatform(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+    private void setDevicePlatform(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 
         try {
             String devicePlatform = null;
@@ -1054,7 +683,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
      *            Issue Field Value Object
      * @return boolean
      */
-    public boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue) {
+    private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue) {
         List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
                 .collect(Collectors.toList());
         JSONParser parser = new JSONParser();
@@ -1113,7 +742,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
                 // Now sort so we can use the most recent one
                 // yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
-                Collections.sort(sprints, JiraCommonService.SPRINT_COMPARATOR);
+                Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
                 setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
 
             } catch (ParseException | JSONException e) {
@@ -1215,6 +844,32 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
         }
         jiraIssue.setUrl(baseUrl);
+    }
+
+    private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+                             FieldMapping fieldMapping) {
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+            if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+                    && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+                jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+            } else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+                    && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+                IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+                if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+                    jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                            .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+                && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+            IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+            if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+                jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+            }
+        }
     }
 
 

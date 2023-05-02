@@ -4,8 +4,6 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRes
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import org.springframework.stereotype.Service;
 
-
-@Service
 public interface CreateMetadata {
 
     void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client);

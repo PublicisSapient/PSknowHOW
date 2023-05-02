@@ -1,0 +1,15 @@
+package com.publicissapient.kpidashboard.jira.fetchData;
+
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+
+import java.util.List;
+import java.util.Set;
+
+public interface FetchSprintReport {
+
+    List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean) throws InterruptedException;
+
+    List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean)
+            throws InterruptedException;
+}

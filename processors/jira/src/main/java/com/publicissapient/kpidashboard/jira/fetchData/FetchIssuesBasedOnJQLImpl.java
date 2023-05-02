@@ -6,14 +6,15 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -27,19 +28,14 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -49,6 +45,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Service
 public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
+    String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
@@ -71,14 +68,28 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     private KanbanJiraIssueRepository kanbanJiraRepo;
 
-    @Autowired
-    private RabbitTemplate template;
-
+//    @Autowired
+//    private RabbitTemplate template;
     @Autowired
     private TransformFetchedIssueToJiraIssue transformFetchedIssue;
 
     @Autowired
     private JiraCommonService jiraCommonService;
+
+    @Autowired
+    ValidateData validateData;
+
+    @Autowired
+    private CreateAccountHierarchy createAccountHierarchy;
+
+    @Autowired
+    private FetchSprintReportImpl fetchSprintReport;
+
+    @Autowired
+    private SaveData saveData;
+
+    @Autowired
+    private CreateAssigneeDetails createAssigneeDetails;
 
     @Value("${rabbitmq.exchange.name}")
     String exchange;
@@ -87,55 +98,109 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     String routingKey;
 
     @Override
-    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws InterruptedException, JSONException {
-        List<Issue> issues = new ArrayList<>();
+    public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming) throws JSONException {
+
+        List<Issue> totalIssues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
+
+        PSLogData psLogData = new PSLogData();
+        psLogData.setProjectName(projectConfig.getProjectName());
+        int total = 0;
+        int savedIsuesCount = 0;
 
         client=clientIncoming;
 
-        boolean dataExist=false;
-        if (projectConfig.isKanban()) {
-            dataExist = (kanbanJiraRepo
-                    .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-        }
-        else {
-            dataExist = (jiraIssueRepository
-                    .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-        }
-
-
-        Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-                projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
-
-        Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
-
-        maxChangeDatesByIssueType.forEach((k, v) -> {
-            long extraMinutes = jiraProcessorConfig.getMinsToReduce();
-            maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
-        });
-
-        int pageSize = getPageSize();
-        boolean hasMore = true;
-        String userTimeZone = getUserTimeZone(projectConfig);
-
-        Set<SprintDetails> setForCacheClean = new HashSet<>();
-
-        for (int i = 0; hasMore; i += pageSize) {
-            SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
-                    userTimeZone, i, dataExist);
-            issues = getIssuesFromResult(searchResult);
-
-            if (CollectionUtils.isNotEmpty(issues)) {
-                List<JiraIssue> jiraIssues=transformFetchedIssue.convertToJiraIssue(issues, projectConfig, setForCacheClean, false);
-                template.convertAndSend(exchange,routingKey,jiraIssues);
+        Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+        JiraHelper.setStartDate(jiraProcessorConfig);
+        boolean processorFetchingComplete = false;
+        ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
+        try {
+            boolean dataExist = false;
+            if (projectConfig.isKanban()) {
+                dataExist = (kanbanJiraRepo
+                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+                psLogData.setKanban("true");
+            } else {
+                dataExist = (jiraIssueRepository
+                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+                psLogData.setKanban("false");
             }
 
-			if (issues.size() < pageSize) {
-				break;
-			}
+
+            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+
+            Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
+
+            maxChangeDatesByIssueType.forEach((k, v) -> {
+                long extraMinutes = jiraProcessorConfig.getMinsToReduce();
+                maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
+            });
+
+            int pageSize = jiraCommonService.getPageSize();
+            boolean hasMore = true;
+            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig);
+
+            int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+            boolean latestDataFetched=false;
+            Set<SprintDetails> setForCacheClean = new HashSet<>();
+
+            for (int i = 0; hasMore; i += pageSize) {
+                Instant startProcessingJiraIssues = Instant.now();
+                SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime,
+                        userTimeZone, i, dataExist);
+                List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
+                totalIssues.addAll(issues);
+                if (total == 0) {
+                    total = JiraHelper.getTotal(searchResult);
+                    psLogData.setTotalFetchedIssues(String.valueOf(total));
+                }
+
+                if (CollectionUtils.isNotEmpty(issues)) {
+                    List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
+                    Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+                    Set<Assignee> assigneeSetToSave = new HashSet<>();
+                    boolean dataFromBoard =false;
+                    List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
+                    Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
+                    List<SprintDetails> sprintDetailsList =new ArrayList<>();
+                    //now we will be putting setCacheClean in fetchSprints fn
+                    if (!dataFromBoard) {
+                        sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean);
+                    }
+                    AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
+                    saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
+                    JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
+                    savedIsuesCount += issues.size();
+                    jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
+//                   template.convertAndSend(exchange, routingKey, jiraIssues);
+                }
+
+                if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+                    latestDataFetched = jiraCommonService.cleanCache();
+                    setForCacheClean.clear();
+                    log.info("latest sprint fetched cache cleaned.");
+                }
+
+                if (issues.size() < pageSize) {
+                    break;
+                }
+            }
+            processorFetchingComplete = true;
+        } catch (JSONException e) {
+            log.error("Error while updating Story information in scrum client", e,
+                    kv(CommonConstant.PSLOGDATA, psLogData));
+            lastSavedJiraIssueChangedDateByType.clear();
+            processorFetchingComplete = false;
+        } catch (InterruptedException e) {
+            log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+            lastSavedJiraIssueChangedDateByType.clear();
+            processorFetchingComplete = false;
+        } finally {
+            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
         }
-        return issues;
+        return totalIssues;
     }
+
     private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
                                                                       FieldMapping fieldMapping) {
 
@@ -175,14 +240,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return lastUpdatedDateByIssueType;
     }
 
-    private List<Issue> getIssuesFromResult(SearchResult searchResult) {
-        if (searchResult != null) {
-            return Lists.newArrayList(searchResult.getIssues());
-        }
-        return new ArrayList<>();
-    }
-
-    public SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
+    private SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
                                   Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
                                   boolean dataExist) throws InterruptedException{
         ProjectConfFieldMapping projectConfig=entry.getValue();
@@ -223,7 +281,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
                     psLogData.setAction(CommonConstant.FETCHING_ISSUE);
                     log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-                                    Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+                                    Math.min(pageStart + jiraCommonService.getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
                             kv(CommonConstant.PSLOGDATA, psLogData));
                 }
                 TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
@@ -240,76 +298,5 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
 
         return searchResult;
     }
-
-
-    public int getPageSize() {
-        return jiraProcessorConfig.getPageSize();
-    }
-
-    public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
-        String userTimeZone = StringUtils.EMPTY;
-        try {
-            JiraToolConfig jiraToolConfig = projectConfig.getJira();
-
-            if (null != jiraToolConfig) {
-                Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-                String username = connectionOptional.map(Connection::getUsername).orElse(null);
-                URL url = getUrl(projectConfig, username);
-                URLConnection connection;
-
-                connection = url.openConnection();
-                userTimeZone = getUserTimeZone(jiraCommonService.getDataFromServer(projectConfig, (HttpURLConnection) connection));
-            }
-        } catch (RestClientException rce) {
-            log.error("Client exception when loading statuses", rce);
-            throw rce;
-        } catch (MalformedURLException mfe) {
-            log.error("Malformed url for loading statuses", mfe);
-        } catch (IOException ioe) {
-            log.error("IOException", ioe);
-        }
-
-        return userTimeZone;
-    }
-
-    private String getUserTimeZone(String timezoneObj) {
-        String userTimeZone = StringUtils.EMPTY;
-        if (StringUtils.isNotBlank(timezoneObj)) {
-            try {
-                Object obj = new JSONParser().parse(timezoneObj);
-                JSONArray userInfoList = new JSONArray();
-                userInfoList.add(obj);
-                for (Object userInfo : userInfoList) {
-                    JSONArray jsonUserInfo = (JSONArray) userInfo;
-                    for (Object timeZone : jsonUserInfo) {
-                        JSONObject timeZoneObj = (JSONObject) timeZone;
-                        userTimeZone = (String) timeZoneObj.get("timeZone");
-                    }
-                }
-
-            } catch (ParseException pe) {
-                log.error("Parser exception when parsing statuses", pe);
-            }
-        }
-        return userTimeZone;
-    }
-
-    private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
-
-        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-        String serverURL = jiraProcessorConfig.getJiraServerGetUserApi();
-        if (isCloudEnv) {
-            serverURL = jiraProcessorConfig.getJiraCloudGetUserApi();
-        }
-
-        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-        String apiEndPoint = connectionOptional.map(Connection::getApiEndPoint).orElse("");
-
-        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint
-                + (apiEndPoint.endsWith("/") ? "" : "/") + serverURL + jiraUserName);
-
-    }
-
 
 }

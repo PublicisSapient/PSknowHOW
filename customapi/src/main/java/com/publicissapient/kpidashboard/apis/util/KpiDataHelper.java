@@ -34,8 +34,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -46,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -60,6 +59,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The class contains methods for helping kpi to prepare data
@@ -430,10 +431,7 @@ public final class KpiDataHelper {
 					remainingEstimateTime, issue, sprintDetails.getState().equalsIgnoreCase(CLOSED), entry.getKey()));
 			pivotPCDLocal = checkPivotPCD(sprintDetails, potentialClosedDate, remainingEstimateTime, pivotPCDLocal);
 		}
-		// when a story is expected to get completed, the subsequent story will be
-		// picked up the next working day
-		LocalDate workingDayAfterAdditionofDays = CommonUtils.getWorkingDayAfterAdditionofDays(pivotPCDLocal, 1);
-		pivotPCD = workingDayAfterAdditionofDays == null ? pivotPCD : workingDayAfterAdditionofDays;
+		pivotPCD = pivotPCDLocal == null ? pivotPCD : pivotPCDLocal;
 		return pivotPCD;
 	}
 
@@ -448,7 +446,7 @@ public final class KpiDataHelper {
 	private static LocalDate getPotentialClosedDate(SprintDetails sprintDetails, LocalDate pivotPCD,
 			int estimatedTime) {
 		return (estimatedTime == 0 && sprintDetails.getState().equalsIgnoreCase(CLOSED))
-				? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+				? DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				: createPotentialClosedDate(sprintDetails, estimatedTime, pivotPCD);
 	}
 
@@ -522,13 +520,16 @@ public final class KpiDataHelper {
 		return localDateListMap;
 	}
 
+	/*
+	 * add remaining estimates to the PCD calculated from the previous stories
+	 */
 	private static LocalDate createPotentialClosedDate(SprintDetails sprintDetails, int remainingEstimateTime,
 			LocalDate pivotPCD) {
 		LocalDate pcd = null;
 		if (pivotPCD == null) {
 			// for the first calculation
 			LocalDate startDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
-					? DateUtil.stringToLocalDate(sprintDetails.getCompleteDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					? DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					: LocalDate.now();
 
 			pcd = CommonUtils.getWorkingDayAfterAdditionofDays(startDate, remainingEstimateTime);
@@ -569,6 +570,73 @@ public final class KpiDataHelper {
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
+	}
+
+	/**
+	 *  To collect originalEstimate
+	 * @param overAllOriginalEstimate
+	 * @param originalEstimate
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getOriginalEstimate(List<Double> overAllOriginalEstimate, Double originalEstimate,
+									   JiraIssue jiraIssue) {
+		if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+			overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+		}
+		return originalEstimate;
+	}
+
+	/**
+	 *  To collect StoryPoint
+	 * @param overAllStoryPoints
+	 * @param storyPoint
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getStoryPoint(List<Double> overAllStoryPoints, Double storyPoint, JiraIssue jiraIssue) {
+		if (null != jiraIssue.getStoryPoints()) {
+			storyPoint = storyPoint + jiraIssue.getStoryPoints();
+			overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+		}
+		return storyPoint;
+	}
+
+	/**
+	 *  Calculating max delay of each assignee based on max marker
+	 * @param jiraIssue
+	 * @param issueWiseDelay
+	 * @param potentialDelay
+	 * @param overallPotentialDelay
+	 * @return
+	 */
+	public static int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay,
+						   List<Integer> overallPotentialDelay) {
+		int finalDelay = 0;
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()
+		) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			finalDelay = potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
+			overallPotentialDelay.set(0,
+					overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
+		} else {
+			finalDelay = potentialDelay + finalDelay;
+		}
+		return finalDelay;
+	}
+	public static int getDelayInMinutes(int delay) {
+		return delay*60*8;
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 * @param jiraIssueList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
 }

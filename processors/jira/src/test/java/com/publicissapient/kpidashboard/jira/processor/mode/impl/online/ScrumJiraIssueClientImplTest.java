@@ -37,6 +37,7 @@ import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.HandleJiraHistory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -163,6 +164,9 @@ public class ScrumJiraIssueClientImplTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Mock
+	private HandleJiraHistory handleJiraHistory;
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
@@ -191,8 +195,6 @@ public class ScrumJiraIssueClientImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		// Online Project Config data
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
-//        projectConfig.setProjectId("63102");
-//        projectConfig.setProjectKey("TEST");
 		projectConfig.setProjectName("TestProject");
 		projectConfig.setSaveAssigneeDetails(true);
 		SubProjectConfig subProjectConfig = new SubProjectConfig();
@@ -200,13 +202,7 @@ public class ScrumJiraIssueClientImplTest {
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
 		List<SubProjectConfig> subProjectList = new ArrayList<>();
 		subProjectList.add(subProjectConfig);
-		// projectConfig.setSubProjects(subProjectList);
 		ProjectToolConfig jiraConfig = new ProjectToolConfig();
-//        jiraConfig.setJiraCredentials("cml0Z2lyZGg6QWRtaW5AMzIx");
-//        jiraConfig.setUrl("https://tools.publicis.sapient.com/jira/");
-//        jiraConfig.setJiraQueryEndpoint("rest/api/2/");
-//        jiraConfig.setOfflineMethod(true);
-//        jiraConfig.setFilePath("offlineData");
 
 		BoardDetails board = new BoardDetails();
 		board.setBoardId("1111");
@@ -214,7 +210,6 @@ public class ScrumJiraIssueClientImplTest {
 		List<BoardDetails> boardList = new ArrayList<>();
 		boardList.add(board);
 		jiraConfig.setBoards(boardList);
-//        projectConfig.setJira(jiraConfig);
 		projectConfig.setIsKanban(false);
 		scrumProjectList.add(projectConfig);
 	}
@@ -223,7 +218,7 @@ public class ScrumJiraIssueClientImplTest {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
 		conn.get().setOffline(Boolean.TRUE);
-		conn.get().setBaseUrl("https://tools.publicis.sapient.com/jira/");
+		conn.get().setBaseUrl("https://abc.com/jira/");
 		conn.get().setApiEndPoint("rest/api/2/");
 		jiraConfig.setBasicProjectConfigId("5b674d58f47cae8935b1b26f");
 		jiraConfig.setConnection(conn);
@@ -333,7 +328,7 @@ public class ScrumJiraIssueClientImplTest {
 		fieldMapping.setJiradefecttype(jiraType);
 
 		jiraIssueType = new String[] { "Support Request", "Incident", "Project Request", "Member Account Request",
-				"DOJO Consulting Request", "Test Case" };
+				"TEST Consulting Request", "Test Case" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setStoryFirstStatus("Open");
 
@@ -357,7 +352,7 @@ public class ScrumJiraIssueClientImplTest {
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
-				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
+				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
 		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
@@ -449,7 +444,7 @@ public class ScrumJiraIssueClientImplTest {
 				null);
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
-		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("self", "https://testDomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);

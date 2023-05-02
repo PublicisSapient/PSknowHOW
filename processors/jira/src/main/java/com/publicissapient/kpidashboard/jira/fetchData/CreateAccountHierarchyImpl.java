@@ -79,7 +79,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
         return setToSave;
     }
 
-    public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(AccountHierarchyRepository accountHierarchyRepository) {
+    private static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(AccountHierarchyRepository accountHierarchyRepository) {
         List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
         return accountHierarchyList.stream()
                 .collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));

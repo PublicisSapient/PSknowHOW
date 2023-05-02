@@ -259,8 +259,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, Pair<String, String>> sprintWithDateMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
-		Map<String, List<String>> statusConfigsOfResolutionTypeForRejection = new HashMap<>();
-		Map<String, List<String>> statusConfigsOfDefectRejectionStatus = new HashMap<>();
 		Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject = new HashMap<>();
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
@@ -275,18 +273,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
-
-			statusConfigsOfResolutionTypeForRejection.put(basicProjectConfigId.toString(),
-					fieldMapping.getResolutionTypeForRejection() == null ? new ArrayList<>()
-							: fieldMapping.getResolutionTypeForRejection().stream().map(String::toLowerCase)
-									.collect(Collectors.toList()));
-
-			statusConfigsOfDefectRejectionStatus.put(basicProjectConfigId.toString(),
-					Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
-
-
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
 
 			if (Optional.ofNullable(fieldMapping.getJiraFTPRStoryIdentification()).isPresent()) {
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
@@ -299,7 +287,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping);
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
 		});
 
 		/** additional filter **/
@@ -340,43 +327,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		return resultListMap;
 	}
 
-	/**
-	 * @param projectWiseRCA
-	 * @param leaf
-	 * @param fieldMapping
-	 */
-	private void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getExcludeRCAFromFTPR())) {
-			Set<String> uniqueRCA = new HashSet<>();
-			for (String rca : fieldMapping.getExcludeRCAFromFTPR()) {
-				if (rca.equalsIgnoreCase(Constant.CODING) || rca.equalsIgnoreCase(Constant.CODE)) {
-					rca = Constant.CODE_ISSUE;
-				}
-				uniqueRCA.add(rca.toLowerCase());
-			}
-			projectWiseRCA.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), uniqueRCA);
-		}
-	}
-
-	/**
-	 * @param projectWisePriority
-	 * @param configPriority
-	 * @param leaf
-	 * @param fieldMapping
-	 */
-	private void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
-			Map<String, List<String>> configPriority, Node leaf, FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getDefectPriority())) {
-			List<String> priorValue = fieldMapping.getDefectPriority().stream().map(String::toUpperCase)
-					.collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(priorValue)) {
-				List<String> priorityValues = new ArrayList<>();
-				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority)));
-				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
-			}
-		}
-	}
-
 	@NotNull
 	private List<String> getIssueIds(List<JiraIssue> issuesBySprintAndType) {
 		List<String> storyIds = new ArrayList<>();
@@ -406,7 +356,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
 			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
 					remainingDefects.add(jiraIssue);
 				}
 			} else {

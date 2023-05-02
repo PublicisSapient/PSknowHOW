@@ -1,25 +1,40 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class JiraHelper {
 
-    //funtion common for kanban and scrum goes here
+    protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
+
+    public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
+        int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
+        if (cmp1 != 0) {
+            return cmp1;
+        }
+        return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
+    };
 
     public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
         Map<String, IssueField> rt = new HashMap<>();
@@ -82,5 +97,77 @@ public class JiraHelper {
         }
         return changeLogList;
     }
+
+    static int getTotal(SearchResult searchResult) {
+        if (searchResult != null) {
+            return searchResult.getTotal();
+        }
+        return 0;
+    }
+
+    static List<Issue> getIssuesFromResult(SearchResult searchResult) {
+        if (searchResult != null) {
+            return Lists.newArrayList(searchResult.getIssues());
+        }
+        return new ArrayList<>();
+    }
+
+    static Map<String, JiraIssue> createMapOfIssueIdToJiraIssue(List<Issue> issueList, List<JiraIssue> jiraIssueList) {
+
+        return jiraIssueList.stream().collect(Collectors.toMap(JiraIssue::getIssueId, x -> x));
+
+    }
+
+    static void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
+                                              Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
+        Map<String, List<JiraIssue>> issuesByType = CollectionUtils.emptyIfNull(jiraIssues)
+                .stream()
+                .sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+                        DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
+                .collect(Collectors.groupingBy(JiraIssue::getTypeName));
+
+        issuesByType.forEach((typeName, issues) -> {
+            JiraIssue firstIssue = issues.stream()
+                    .sorted(Comparator
+                            .comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+                                    DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+                            .reversed())
+                    .findFirst().orElse(null);
+            if (firstIssue != null) {
+                LocalDateTime currentIssueDate = LocalDateTime.parse(firstIssue.getChangeDate(),
+                        DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+                LocalDateTime capturedDate = lastSavedJiraIssueChangedDateByType.get(typeName);
+                lastSavedJiraIssueChangedDateByType.put(typeName, updatedDateToSave(capturedDate, currentIssueDate));
+            }
+        });
+    }
+
+    private static LocalDateTime updatedDateToSave(LocalDateTime capturedDate, LocalDateTime currentIssueDate) {
+        if (capturedDate == null) {
+            return currentIssueDate;
+        }
+
+        if (currentIssueDate.isAfter(capturedDate)) {
+            return currentIssueDate;
+        }
+        return capturedDate;
+    }
+
+    static void setStartDate(JiraProcessorConfig jiraProcessorConfig) {
+        LocalDateTime localDateTime = null;
+        if(jiraProcessorConfig.isConsiderStartDate()){
+            try{
+                localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(),QUERYDATEFORMAT);
+            } catch (DateTimeParseException ex) {
+                log.error("exception while parsing start date provided from property file picking last 6 months data.."
+                        + ex.getMessage());
+                localDateTime = LocalDateTime.now().minusMonths(6);
+            }
+        }else{
+            localDateTime = LocalDateTime.now().minusMonths(6);
+        }
+        jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
+    }
+
 
 }

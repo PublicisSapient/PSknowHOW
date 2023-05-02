@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
-	private CommonService commonService;
+	private NotificationService notificationService;
 
 	/*
 	 * validatePath
@@ -94,7 +95,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			Map<String, String> customData = createCustomData(authentication.getUsername(), token, url,
 					customApiConfig.getForgotPasswordExpiryInterval());
 			LOGGER.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
-			commonService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
+			notificationService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
 					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
 		}

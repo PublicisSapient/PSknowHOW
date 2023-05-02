@@ -86,27 +86,4 @@ public class HierachyLevelFactory {
 		return hierarchyLevels;
 	}
 
-	/*public List<String> getHierarchyOrderedByLevel() {
-
-		//return filterCategories.stream().filter(filterCategory -> filterCategory.getIsDeleted().equals("False"))
-				.sorted(Comparator.comparingInt(FilterCategory::getLevel)).map(FilterCategory::getCategoryName)
-				.collect(Collectors.toList());
-	}
-
-	public List<FilterCategory> getHierarchyOrderByLevelAndEnabled() {
-
-		return filterCategories.stream()
-				.filter(filterCategory -> filterCategory.getIsDeleted().equals("False") && filterCategory.isEnabled())
-				.sorted(Comparator.comparingInt(FilterCategory::getLevel)).collect(Collectors.toList());
-
-	}
-
-	public String getFirstLevel() {
-
-		FilterCategory resultFilterCategory = filterCategories.stream().filter(
-				filterCategory -> filterCategory.getIsDeleted().equals("False") && filterCategory.getLevel() == 1)
-				.findFirst().orElse(null);
-		return resultFilterCategory == null ? null : resultFilterCategory.getCategoryName();
-	}*/
-
 }

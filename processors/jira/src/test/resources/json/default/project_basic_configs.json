@@ -15,7 +15,7 @@
     "id" : "63c04dc7b7617e260763ca4e",
     "projectName" : "NewJira",
     "createdAt" : "2023-01-12T18:13:27",
-    "kanban" : false,
+    "iskanban" : false,
     "_class" : "com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig"
   }
 ]

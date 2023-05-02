@@ -9,13 +9,11 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
@@ -25,6 +23,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,11 +62,6 @@ public class CreateMetadataImplTest {
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
-    private ProcessorAsynchJiraRestClient restClient;
-
-    @Mock
-    Promise<Project> projectPromise;
-    @Mock
     Promise<Iterable<Field>> metaDataFieldPromise;
     @Mock
     Promise<Iterable<IssueType>> metaDataIssueTypePromise;
@@ -76,6 +70,9 @@ public class CreateMetadataImplTest {
 
     @Mock
     RestTemplate restTemplate;
+
+    @Mock
+    private FieldMappingRepository fieldMappingRepository;
 
     @InjectMocks
     private CreateMetadataImpl createMetadata;
@@ -86,25 +83,18 @@ public class CreateMetadataImplTest {
 
     Optional<Connection> connection;
 
-    List<JiraIssue> jiraIssues;
-
     List<ProjectBasicConfig> projectConfigsList;
 
+    Iterable<Field> fieldItr;
+    Iterable<IssueType> issueTypeItr;
+    Iterable<Status> statusItr;
+
     @Before
-    public void setup(){
+    public void setup() throws URISyntaxException {
         projectToolConfigs=getMockProjectToolConfig();
         fieldMappingList=getMockFieldMapping();
         connection=getMockConnection();
         projectConfigsList=getMockProjectConfig();
-    }
-
-    @Test
-    public void collectMetadata() throws Exception {
-
-        when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
-
-        MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
-        when(client.getMetadataClient()).thenReturn(metadataRestClient);
 
         Field field1 = new Field("Story Points", "customfield_20803", FieldType.JIRA, true, true, true, null);
         Field field2 = new Field("Sprint", "customfield_12700", FieldType.JIRA, true, true, true, null);
@@ -113,9 +103,7 @@ public class CreateMetadataImplTest {
         Field field5 = new Field("UAT", "UAT", FieldType.JIRA, true, true, true, null);
         List<Field> fields = Arrays.asList(field1, field2, field3, field4, field5);
 
-        Iterable<Field> fieldItr = fields;
-        when(metadataRestClient.getFields()).thenReturn(metaDataFieldPromise);
-        when(metaDataFieldPromise.claim()).thenReturn(fieldItr);
+        fieldItr = fields;
 
         IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
         IssueType issueType2 = new IssueType(new URI("self"), 1l, "Enabler Story", false, "desc", new URI("iconURI"));
@@ -127,9 +115,7 @@ public class CreateMetadataImplTest {
         List<IssueType> issueTypes = Arrays.asList(issueType1, issueType2, issueType3, issueType4, issueType5,
                 issueType6, issueType7);
 
-        Iterable<IssueType> issueTypeItr = issueTypes;
-        when(metadataRestClient.getIssueTypes()).thenReturn(metaDataIssueTypePromise);
-        when(metaDataIssueTypePromise.claim()).thenReturn(issueTypeItr);
+        issueTypeItr = issueTypes;
 
         Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
                 new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
@@ -140,12 +126,31 @@ public class CreateMetadataImplTest {
         Status status4 = new Status(new URI("self"), 1l, "In Testing", "desc", new URI("iconURI"),
                 new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
         List<Status> statuses = Arrays.asList(status1, status2, status3, status4);
-        Iterable<Status> statusItr = statuses;
+
+        statusItr = statuses;
+    }
+
+    @Test
+    public void collectMetadata() throws Exception {
+
+        when(fieldMappingRepository.save(any())).thenReturn(null);
+        when(boardMetadataRepository.save(any())).thenReturn(null);
+        when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
+
+        MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
+        when(client.getMetadataClient()).thenReturn(metadataRestClient);
+
+        when(metadataRestClient.getFields()).thenReturn(metaDataFieldPromise);
+        when(metaDataFieldPromise.claim()).thenReturn(fieldItr);
+
+        when(metadataRestClient.getIssueTypes()).thenReturn(metaDataIssueTypePromise);
+        when(metaDataIssueTypePromise.claim()).thenReturn(issueTypeItr);
+
         when(metadataRestClient.getStatuses()).thenReturn(metaDataStatusPromise);
         when(metaDataStatusPromise.claim()).thenReturn(statusItr);
 
         MetadataIdentifier metadataIdentifier = createMetaDataIdentifier();
-        when(metadataIdentifierRepository.findByIdAndToolAndIsKanban(any(),any(),any())).thenReturn(metadataIdentifier);
+        when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(),any(),any())).thenReturn(metadataIdentifier);
 
         Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
         PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
@@ -157,10 +162,7 @@ public class CreateMetadataImplTest {
                 HttpMethod.GET, entity, String.class)).thenReturn(response);
 
 
-        createMetadata.collectMetadata(createProjectConfig(),client);
-//        CreateMetadataImpl createMetadata1=mock(CreateMetadataImpl.class);
-//        verify(createMetadata1,times(1)).collectMetadata(createProjectConfig(),client);
-
+        Assert.assertThrows(Exception.class,()->createMetadata.collectMetadata(createProjectConfig(),client));
     }
 
     private MetadataIdentifier createMetaDataIdentifier() {
@@ -211,8 +213,10 @@ public class CreateMetadataImplTest {
                 valuestoidentify3);
 
         List<Identifier> issuelinkIdentifer = new ArrayList<>();
-        return new MetadataIdentifier(tool, "DOJO Agile Template (Default)", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+        return new MetadataIdentifier(tool, "Standard Template", "7", isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
                 issuelinkIdentifer, valuestoidentifyIdentifer);
+//        return new MetadataIdentifier(tool,"Dojo template", isKanban, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
+//                issuelinkIdentifer, valuestoidentifyIdentifer);
 
     }
 
@@ -267,7 +271,7 @@ public class CreateMetadataImplTest {
     private Optional<Connection> getMockConnection() {
         ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
                 .newInstance("/json/default/connections.json");
-        return connectionDataFactory.findConnectionById("63f733a07af7ed784f088cd5");
+        return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
     }
 
     private  List<FieldMapping> getMockFieldMapping() {

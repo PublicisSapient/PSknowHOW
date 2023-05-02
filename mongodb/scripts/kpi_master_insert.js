@@ -609,7 +609,7 @@ db.getCollection('kpi_master').insert(
     "showTrend": true,
     "lineLegend": "Resolved Defects",
     "barLegend": "Created Defects",
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "radioButton",
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": true,
     "maxValue": "300",
@@ -2954,7 +2954,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 0,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -2987,7 +2987,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 4,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3043,7 +3043,7 @@ db.getCollection('kpi_master').insert(
         },
         {
            "type": "paragraph",
-           "value": "Issues finishing post issue due date are marked in RED"
+           "value": "Issues finishing post iteration are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3062,11 +3062,11 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi128",
-    "kpiName": "Overall Completion Status",
+    "kpiName": "Planned Work Status",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 2,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3077,7 +3077,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
             "type": "paragraph",
-            "value": "Overall Completion status explains the planned vs actual progress weighed in terms of issues and size of work."
+            "value": "Planned Work status explains the planned vs actual progress weighed in terms of issues and size of work."
         },
         {
           "type": "paragraph",
@@ -3136,7 +3136,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 14,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3211,7 +3211,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 5,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3248,7 +3248,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 8,
+    "defaultOrder": 1,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3286,7 +3286,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 12,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3319,41 +3319,12 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-      "kpiId": "kpi130",
-      "kpiName": "Iteration Status",
-      "maxValue": "",
-      "kpiUnit": "Count",
-      "isDeleted": "False",
-      "defaultOrder": 11,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "kanban": false,
-      "kpiInfo": {
-        "details": [
-          {
-            "type": "paragraph",
-            "value": "Iteration Status KPI gives a representation of delays in the story."
-          },
-          {
-            "type": "paragraph",
-            "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
-          }
-        ]
-      },
-      "isAdditionalFilterSupport": false,
-      "kpiFilter": "multiSelectDropDown",
-      "boxType": "2_column",
-      "calculateMaturity": false
-    },
-   {
          "kpiId": "kpi132",
-         "kpiName": "Defects by Root Cause",
+         "kpiName": "Defect Count by RCA",
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
-         "defaultOrder": 13,
+         "defaultOrder": 7,
          "kpiCategory": "Iteration",
          "kpiSource": "Jira",
          "groupId": 8,
@@ -3364,7 +3335,7 @@ db.getCollection('kpi_master').insert(
            "details": [
              {
                "type": "paragraph",
-               "value": "Defects by Root Cause KPI gives a graphical representation of no. of issues by Root Cause RCA."
+               "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
              },
              {
                "type": "paragraph",
@@ -3386,31 +3357,112 @@ db.getCollection('kpi_master').insert(
          "calculateMaturity": false
        },
   {
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 9,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+    "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
+       "details": [
+                 {
+                   "type": "paragraph",
+                   "value": "The KPI shows:"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "1. Linked defects to story"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "2. Defect Injection Rate"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "3. Defect Density"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "4. Unlinked defects"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+                 }
+                 ]
+            },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "kpiFilter": "",
+     "showTrend": false,
+     "boxType": "3_column"
+   },
+   {
+     "kpiId": "kpi134",
+     "kpiName": "Unplanned Work Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 3,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,
+     "chartType": null,
+     "kpiInfo": {
+       "details": [
+         {
+             "type": "paragraph",
+             "value": "Unplanned Work status keep track of the issues which doesn't have due date."
+         },
+         {
+           "type": "paragraph",
+           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+         }
+       ]
+     },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isSquadSupport": false,
+     "kpiFilter": "multiSelectDropDown",
+     "boxType": "2_column",
+     "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi125",
     "kpiName": "Daily Closures",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 10,
+    "defaultOrder": 13,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "stackedColumn",
+    "chartType": "GroupBarChart",
     "kpiInfo": {
       "details": [
         {
           "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of no. of issues closed on a daily basis."
+          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
         },
         {
           "type": "paragraph",
-          "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
         }
       ]
     },
@@ -3419,7 +3471,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "multiselectdropdown",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -3429,7 +3481,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Hours",
      "isDeleted": "False",
-     "defaultOrder": 12,
+     "defaultOrder": 11,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,
@@ -3469,6 +3521,44 @@ db.getCollection('kpi_master').insert(
      "boxType": "3_column",
      "calculateMaturity": false
   },
+  {
+       "kpiId": "kpi135",
+       "kpiName": "First Time Pass Rate",
+       "maxValue": "",
+       "kpiUnit": "Hours",
+       "isDeleted": "False",
+       "defaultOrder": 10,
+       "kpiCategory": "Iteration",
+       "kpiSource": "Jira",
+       "groupId": 8,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": null,
+       "kpiInfo": {
+               "details": [
+                {
+                    "type": "paragraph",
+                     "value": "FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)"
+                },
+                {
+                     "type": "paragraph",
+                     "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+                },
+                {
+                   "type": "paragraph",
+                   "value": "First time pass rate (FTPR) = No. of issues closed in a sprint which do not have a return transition or any defects tagged / Total no. of issues closed in the sprint"
+                }
+               ]
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "3_column",
+       "calculateMaturity": false
+    },
   {
     "kpiId": "kpi129",
     "kpiName": "Issues Without Story Link",
@@ -3538,6 +3628,30 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
+  {
+     "kpiId": "kpi136",
+     "kpiName": "Defect Count by Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 8,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,"chartType": "pieChart",
+     "kpiInfo": {
+       "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
+       },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isAdditionalFilterSupport": false,
+     "kpiFilter": "dropdown",
+     "boxType": "chart",
+     "calculateMaturity": false
+   },
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",

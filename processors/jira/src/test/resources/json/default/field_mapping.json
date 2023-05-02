@@ -1,6 +1,6 @@
 [
   {
-    "_id" : "63bfa0f80b28191677615735",
+    "id" : "63bfa0f80b28191677615735",
     "projectToolConfigId" : "63bfa0efb7617e260763ca23",
     "basicProjectConfigId" : "63bfa0d5b7617e260763ca21",
     "sprintName" : "customfield_12700",
@@ -43,8 +43,11 @@
     "workingHoursDayCPT" : "6",
     "issueStatusExcluMissingWork" : [ "Open" ],
     "jiraFTPRStoryIdentification" : [ "Story", "Enabler Story", "Change request" ],
+    "jiraDueDateCustomField": "customfield_20303",
+    "jiraDueDateField": "Custom Field",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.FieldMapping"
   },
+
   {
     "_id": "63c04e0cb7617e260763ca51",
     "projectToolConfigId": "63c04df3b7617e260763ca50",

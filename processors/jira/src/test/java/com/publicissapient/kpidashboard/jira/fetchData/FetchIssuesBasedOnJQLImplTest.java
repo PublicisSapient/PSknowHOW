@@ -16,6 +16,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
@@ -28,6 +30,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,27 +59,6 @@ public class FetchIssuesBasedOnJQLImplTest {
     private JiraIssueRepository jiraIssueRepository;
 
     @Mock
-    private ConnectionRepository connectionRepository;
-
-    @Mock
-    private ProjectToolConfigRepository toolRepository;
-
-    @Mock
-    private ProjectBasicConfigRepository projectConfigRepository;
-
-    @Mock
-    private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
-
-    @Mock
-    private JiraIssueClientFactory factory;
-
-    @Mock
-    private ScrumJiraIssueClientImpl scrumJiraIssueClient;
-
-    @Mock
-    private FieldMappingRepository fieldMappingRepository;
-
-    @Mock
     SearchRestClient searchRestClient;
 
     @Mock
@@ -86,7 +68,7 @@ public class FetchIssuesBasedOnJQLImplTest {
     JiraCommonService jiraCommonService;
 
     @Mock
-    private ProcessorAsynchJiraRestClient restClient;
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
     @InjectMocks
     private FetchIssuesBasedOnJQLImpl fetchIssuesBasedOnJQL;
@@ -106,9 +88,10 @@ public class FetchIssuesBasedOnJQLImplTest {
 
     List<Issue> issues=new ArrayList<>();
 
-    private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-
     SearchResult searchResult;
+
+    @Mock
+    private ProcessorJiraRestClient client;
 
 
     @Before
@@ -129,27 +112,21 @@ public class FetchIssuesBasedOnJQLImplTest {
     }
 
     @Test
-    public void fetchIssues() throws InterruptedException, JSONException, IOException, Exception {
-        when(factory.getJiraIssueDataClient(any())).thenReturn(scrumJiraIssueClient);
+    public void fetchIssues() throws Exception {
         when(jiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(jiraIssue);
-        when(processorExecutionTraceLogRepository.findAll()).thenReturn(tracelogs);
-        when(toolRepository.findByToolNameAndBasicProjectConfigId(any(),any())).thenReturn(projectToolConfigs);
-        when(connectionRepository.findById(any())).thenReturn(connection);
-        when(projectConfigRepository.findAll()).thenReturn(projectConfigsList);
-        when(jiraProcessorConfig.getPageSize()).thenReturn(30);
+        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
+        when(jiraCommonService.getPageSize()).thenReturn(30);
+        when(jiraCommonService.getUserTimeZone(any())).thenReturn("Indian/Maldives");
         when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
-        when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("user/search?query=");
-        when(jiraProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
-        when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
-        when(jiraCommonService.decryptJiraPassword(any())).thenReturn(PLAIN_TEXT_PASSWORD);
-        when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
-        when(jiraProcessorConfig.getThreadPoolSize()).thenReturn(3);
+        when(jiraCommonService.cleanCache()).thenReturn(true);
+        when(jiraProcessorConfig.getSprintCountForCacheClean()).thenReturn(15);
+        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
         when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
                 .thenReturn(promisedRs);
         when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
-        fetchIssuesBasedOnJQL.fetchIssues(entry, restClient);
+        Assert.assertEquals(2,fetchIssuesBasedOnJQL.fetchIssues(entry, client).size());
 
     }
 
@@ -168,7 +145,7 @@ public class FetchIssuesBasedOnJQLImplTest {
     private Optional<Connection> getMockConnection() {
         ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
                 .newInstance("/json/default/connections.json");
-        return connectionDataFactory.findConnectionById("63f733a07af7ed784f088cd5");
+        return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
     }
 
     private List<ProjectBasicConfig> getMockProjectConfig() {
@@ -196,6 +173,7 @@ public class FetchIssuesBasedOnJQLImplTest {
         projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
         projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
         projectConfFieldMapping.setJira(getJiraToolConfig());
+        projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
         projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
         projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
         projectConfigMap.put(projectConfig.getProjectName(), projectConfFieldMapping);

@@ -11,7 +11,6 @@ import java.util.Map;
 
 public interface FetchIssuesBasedOnJQL {
 
-    String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
     List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient client) throws InterruptedException, FileNotFoundException, JSONException;
 
 }

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.jira.config;//NOPMD
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -68,4 +69,12 @@ public class JiraProcessorConfig {
 	private Integer sprintReportCountToBeFetched;
 	private boolean considerStartDate;
 	private long subsequentApiCallDelayInMilli;
+
+	@Value("$spring.kafka.producer.bootstrap-servers")
+	private List<String> kafkaProducerBootStrapServers;
+	@Value("${kafka.mailtopic}")
+	private String kafkaMailTopic;
+	private Map<String, String> notificationSubject;
+	@Value("${notification.switch}")
+	private boolean notificationSwitch;
 }

@@ -18,16 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,17 +34,12 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceIm
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
-import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -63,9 +54,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mail.MailSendException;
 import org.testng.collections.Lists;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+
 
 
 @SuppressWarnings("deprecation")
@@ -76,44 +66,19 @@ public class CommonServiceImplTest {
 	private CommonServiceImpl commonService;
 
 	@Mock
-	private CustomApiConfig customAPISettings;
-	
-	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-	@Mock
 	private UserInfoRepository userInfoRepository;
 	@Mock
 	private AuthenticationRepository authenticationRepository;
-	@Mock
-	private NotificationEventProducer notificationEventProducer;
 	@Mock
 	private HttpServletRequest request;
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
 	ProjectBasicConfigRepository projectBasicConfigRepository;
-	@Mock
-	private GlobalConfigRepository globalConfigRepository;
-	@Mock
-	private SpringTemplateEngine templateEngine;
-
-	private GlobalConfig globalConfig;
-
-	private List<GlobalConfig> globalConfigs = new ArrayList<>();
 
 	@Before
 	public void setUp() throws Exception {
-		globalConfig = new GlobalConfig();
-		globalConfig.setEnv("email");
-		EmailServerDetail emailServerDetail = new EmailServerDetail();
-		emailServerDetail.setEmailPort(25);
-		emailServerDetail.setEmailHost("xyz.smtp.com");
-		emailServerDetail.setFromEmail("xyz@abc.com");
-		globalConfig.setEmailServerDetail(emailServerDetail);
-		globalConfigs.add(globalConfig);
+
 	}
 
 	@Test
@@ -261,42 +226,7 @@ public class CommonServiceImplTest {
 	    commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
 
 	}
-	
-	@Test
-	public void testSendNotificationEvent() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
 
-	}
-	
-	@Test
-	public void testSendNotificationEventNull() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData=new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject="";
-		String notKey="key";
-		String topic="topic";
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null,topic);
-        commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
-
-	}
-	
 	@Test
 	public void testGetApiHost() throws UnknownHostException {
 		when(customApiConfig.getUiHost()).thenReturn("localhost");
@@ -381,47 +311,5 @@ public class CommonServiceImplTest {
 		basicConfig.setProjectName("project");
 		return basicConfig;
 	}
-
-
-	@Test
-	public void testSendEmailWithoutKafka() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		when(templateEngine.process(anyString(), any())).thenReturn("abc");
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		Assert.assertThrows(MailSendException.class,()->
-				commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,"Forgot_Password_Template")
-		);
-
-	}
-
-	@Test
-	public void testSendEmailWithoutKafkaKeyNotFound() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		when(templateEngine.process(anyString(), any())).thenReturn(null);
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,"Forgot_Password_Template");
-	}
-
-
 
 }

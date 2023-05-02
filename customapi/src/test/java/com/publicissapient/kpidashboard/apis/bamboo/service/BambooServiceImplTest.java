@@ -55,9 +55,9 @@ public class BambooServiceImplTest {
 		connectionId = "5fc4d61f80b6350f048a93e5";
 		connection = new Connection();
 		connection.setId(new ObjectId(connectionId));
-		connection.setBaseUrl("https://dev.tools.publicis.sapient.com/bamboo");
+		connection.setBaseUrl("https://test.server.com/bamboo");
 		connection.setUsername("tst-ll-SystemAdmin");
-		connection.setPassword("32X[r<>5k^y+ZefV");
+		connection.setPassword("decryptPassword");
 		testConnectionOpt = Optional.ofNullable(connection);
 	}
 
@@ -66,15 +66,15 @@ public class BambooServiceImplTest {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 		assertEquals(optConnection, testConnectionOpt);
-		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("32X[r<>5k^y+ZefV");
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
 
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization","base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "32X[r<>5k^y+ZefV")).thenReturn(
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(
 				header
 		);
-		when(restTemplate.exchange("https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000", HttpMethod.GET, httpEntity, String.class)).
+		when(restTemplate.exchange("https://test.server.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000", HttpMethod.GET, httpEntity, String.class)).
 						thenReturn(new ResponseEntity<>(getServerResponseFromJson("bambooDeploymentJson.json"), HttpStatus.OK));
 
 
@@ -93,12 +93,12 @@ public class BambooServiceImplTest {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 		assertEquals(optConnection, testConnectionOpt);
-		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("32X[r<>5k^y+ZefV");
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
 
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization","base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "32X[r<>5k^y+ZefV")).thenReturn(
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(
 				header
 		);
 		JSONArray jsonArray = new JSONArray();
@@ -106,7 +106,7 @@ public class BambooServiceImplTest {
 		jsonObject.put("name", "AZURE_KNOWHOW");
 		jsonObject.put("id", "1");
 		jsonArray.add(jsonObject);
-		when(restTemplate.exchange("https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan/COOP-CC/branch.json?max-result=2000", HttpMethod.GET, httpEntity, String.class)).
+		when(restTemplate.exchange("https://test.server.com/bamboo/rest/api/latest/plan/COOP-CC/branch.json?max-result=2000", HttpMethod.GET, httpEntity, String.class)).
 				thenReturn(new ResponseEntity<>(getServerResponseFromJson("bambooBranchListJson.json"), HttpStatus.OK));
 		when(restAPIUtils.getJsonArrayFromJSONObj(any(), anyString())).thenReturn(jsonArray);
 		Assert.assertEquals(1,bambooToolConfigService.getBambooBranchesNameAndKeys(connectionId,"COOP-CC").size());
@@ -117,12 +117,12 @@ public class BambooServiceImplTest {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 		assertEquals(optConnection, testConnectionOpt);
-		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("32X[r<>5k^y+ZefV");
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
 
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization","base64str");
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "32X[r<>5k^y+ZefV")).thenReturn(
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(
 				header
 		);
 		JSONArray jsonArray = new JSONArray();
@@ -130,7 +130,7 @@ public class BambooServiceImplTest {
 		jsonObject.put("name", "AZURE_KNOWHOW");
 		jsonObject.put("id", "1");
 		jsonArray.add(jsonObject);
-		when(restTemplate.exchange("https://dev.tools.publicis.sapient.com/bamboo/rest/api/latest/plan.json?expand=plans&max-result=2000", HttpMethod.GET, httpEntity, String.class)).
+		when(restTemplate.exchange("https://test.server.com/bamboo/rest/api/latest/plan.json?expand=plans&max-result=2000", HttpMethod.GET, httpEntity, String.class)).
 				thenReturn(new ResponseEntity<>(getServerResponseFromJson("bambooPlanListJson.json"), HttpStatus.OK));
 		when(restAPIUtils.getJsonArrayFromJSONObj(any(), anyString())).thenReturn(jsonArray);
 		Assert.assertEquals(1,bambooToolConfigService.getProjectsAndPlanKeyList(connectionId).size());

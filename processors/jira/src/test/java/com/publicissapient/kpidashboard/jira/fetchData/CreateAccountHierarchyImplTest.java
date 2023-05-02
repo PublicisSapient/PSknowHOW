@@ -11,6 +11,7 @@ import com.publicissapient.kpidashboard.jira.data.*;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +70,7 @@ public class CreateAccountHierarchyImplTest {
         when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
         when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(any(),any())).thenReturn(accountHierarchies);
-        createAccountHierarchy.createAccountHierarchy(jiraIssues,createProjectConfig());
+        Assert.assertEquals(2,createAccountHierarchy.createAccountHierarchy(jiraIssues,createProjectConfig()).size());
     }
 
     private List<HierarchyLevel> getMockHierarchyLevel() {
@@ -138,7 +139,7 @@ public class CreateAccountHierarchyImplTest {
     private Optional<Connection> getMockConnection() {
         ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
                 .newInstance("/json/default/connections.json");
-        return connectionDataFactory.findConnectionById("63f733a07af7ed784f088cd5");
+        return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
     }
 
     private  List<FieldMapping> getMockFieldMapping() {

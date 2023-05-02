@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface TransformFetchedIssueToKanbanJiraIssue {
 
     List<KanbanJiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs,

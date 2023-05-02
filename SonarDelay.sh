@@ -38,7 +38,7 @@ wait_for_success=true
 
 while [ "${wait_for_success}" = "true" ]
 do
-  ce_status=$(curl --user d92bab41a52237d8b37aa543a762e6125ca4da3a: https://tools.publicis.sapient.com/sonar/api/ce/task?id="${ce_task_id}" | jq -r .task.status)
+  ce_status=$(curl --user ${sonartoken}: https://tools.publicis.sapient.com/sonar/api/ce/task?id="${ce_task_id}" | jq -r .task.status)
 
   echo "QG Script --> Status of SonarQube task is ${ce_status}"
 
@@ -60,14 +60,15 @@ do
 
 done
 
-ce_analysis_id=$(curl --user d92bab41a52237d8b37aa543a762e6125ca4da3a: https://tools.publicis.sapient.com/sonar/api/ce/task?id=$ce_task_id | jq -r .task.analysisId)
+ce_analysis_id=$(curl --user ${sonartoken}: https://tools.publicis.sapient.com/sonar/api/ce/task?id=$ce_task_id | jq -r .task.analysisId)
 echo "QG Script --> Using analysis id of ${ce_analysis_id}"
 
 # get the status of the quality gate for this analysisId
-qg_status=$(curl --user d92bab41a52237d8b37aa543a762e6125ca4da3a: https://tools.publicis.sapient.com/sonar/api/qualitygates/project_status?analysisId="${ce_analysis_id}" | jq -r .projectStatus.status)
+qg_status=$(curl --user ${sonartoken}: https://tools.publicis.sapient.com/sonar/api/qualitygates/project_status?analysisId="${ce_analysis_id}" | jq -r .projectStatus.status)
 echo "QG Script --> Quality Gate status is ${qg_status}"
 
 if [ "${qg_status}" != "OK" ]; then
   echo "Pipeline aborted due to quality gate failure"
   exit 1
 fi
+

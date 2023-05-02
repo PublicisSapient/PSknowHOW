@@ -15,6 +15,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import org.apache.commons.collections.MapUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -78,8 +79,9 @@ public class BuildServiceImplTest {
 		doReturn(noErrors).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails= new ArrayList<>();
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
-				buildList, errorDataList);
+				buildList, errorDataList, pushDataDetails);
 		Assert.assertEquals(0, buildFailedRecords);
 		Assert.assertEquals(3, buildList.size());
 	}
@@ -95,6 +97,7 @@ public class BuildServiceImplTest {
 		}
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails= new ArrayList<>();
 		Map<String, String> errorsMap = new HashMap<>();
 		errorsMap.put("jobName", "jobName is Blank");
 		errorsMap.put("number", "number should be in digits");
@@ -102,7 +105,7 @@ public class BuildServiceImplTest {
 				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
-				buildList, errorDataList);
+				buildList, errorDataList, pushDataDetails);
 		Assert.assertEquals(3, buildFailedRecords);
 		Assert.assertEquals(0, buildList.size());
 		Assert.assertEquals(3,
@@ -130,6 +133,7 @@ public class BuildServiceImplTest {
 		}
 		List<Build> buildList = new ArrayList<>();
 		List<PushErrorData> errorDataList = new ArrayList<>();
+		List<PushDataDetail> pushDataDetails= new ArrayList<>();
 		Map<String, String> errorsMap = new HashMap<>();
 		errorsMap.put("jobName", "jobName is Blank");
 		errorsMap.put("number", "number should be in digits");
@@ -137,7 +141,7 @@ public class BuildServiceImplTest {
 				"buildStatus should be among SUCCESS/FAILURE/UNSTABLE/ABORTED/IN_PROGRESS/UNKNOWN");
 		doReturn(errorsMap).when(pushDataValidationService).createBuildDeployErrorMap(anyMap());
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectBasicConfigId, pushBuildDeployCorrectData.getBuilds(),
-				buildList, errorDataList);
+				buildList, errorDataList, pushDataDetails);
 		Assert.assertEquals(3, buildFailedRecords);
 		Assert.assertEquals(0, buildList.size());
 		Assert.assertEquals(3,

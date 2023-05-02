@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +57,7 @@ public class ForgotPasswordServiceImplTest {
 	private CustomApiConfig customApiConfig;
 
 	@Mock
-	private CommonService commonService;
+	private NotificationService notificationService;
 
 	@InjectMocks
 	private ForgotPasswordServiceImpl forgotPasswordService;

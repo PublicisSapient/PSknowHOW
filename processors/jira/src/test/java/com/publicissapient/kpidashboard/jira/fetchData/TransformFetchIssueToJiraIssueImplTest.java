@@ -8,6 +8,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.*;
@@ -92,7 +93,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
         when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
         when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code","coding"));
         when(additionalFilterHelper.getAdditionalFilter(any(), any())).thenReturn(getMockAdditionalFilterFromJiraIssue());
-        Assert.assertEquals(1,(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,Collections.EMPTY_SET,false)).size());
+        Assert.assertEquals(JiraIssue.class,(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,false,new ArrayList<>(),new HashSet<>(),new HashSet<>())).get(0).getClass());
 
     }
 

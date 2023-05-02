@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
-@Service
 public interface CreateAccountHierarchy {
 
     Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig);

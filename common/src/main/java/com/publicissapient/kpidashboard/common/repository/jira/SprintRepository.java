@@ -17,14 +17,15 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author yasbano
@@ -83,4 +84,12 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 */
 	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
 			String state);
+	
+	/**
+	 * Find all which matches provided ids
+	 * @param sprintIDs sprint ids
+	 * @return list of sprint details
+	 */
+	 @Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 }")
+	List<SprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
  }

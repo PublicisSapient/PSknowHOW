@@ -55,8 +55,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
@@ -73,12 +71,6 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	private static final String SPRINT_DETAILS = "sprint details";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -114,16 +106,12 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Issue Likely to Spill -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(notCompletedIssues,
-							basicProjectConfigId);
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(notCompletedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), issueList);
@@ -161,7 +149,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Issue Likely To Spill -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
@@ -197,7 +186,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 									DateUtil.stringToLocalDate(jiraIssue.getDueDate(),DateUtil.TIME_FORMAT_WITH_SEC).isAfter(sprintEndDate)) {
 								riskIssueCount = riskIssueCount + 1;
 								overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-								KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping, issueWiseDelay);
+								KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+								setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue);
 								if (null != jiraIssue.getStoryPoints()) {
 									storyPoint = storyPoint + jiraIssue.getStoryPoints();
 									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -210,7 +200,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						}else {
 							riskIssueCount = riskIssueCount + 1;
 							overAllriskIssueCount.set(0, overAllriskIssueCount.get(0) + 1);
-							KPIExcelUtility.populateIterationKpiWithPCD(overAllmodalValues, modalValues, jiraIssue, fieldMapping,issueWiseDelay);
+							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+							setKpiSpecificData(modalObjectMap, issueWiseDelay, jiraIssue);
 							if (null != jiraIssue.getStoryPoints()) {
 								storyPoint = storyPoint + jiraIssue.getStoryPoints();
 								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
@@ -227,10 +218,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 							Double.valueOf(issueCount), null, "", modalValues);
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 							fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						issueAtRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, storyPoint,
+						issueAtRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint),
 								null, null, CommonConstant.SP, null);
 					} else {
-						issueAtRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, originalEstimate,
+						issueAtRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate),
 								null, null, CommonConstant.HOURS, null);
 					}
 					data.add(issueAtRisk);
@@ -246,10 +237,10 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			IterationKpiData overAlllRiskSp;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
 					fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAlllRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, overAllStoryPoints.get(0),
+				overAlllRiskSp = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(overAllStoryPoints.get(0)),
 						null, null, CommonConstant.SP, null);
 			} else {
-				overAlllRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, overAllOriginalEstimate.get(0),
+				overAlllRiskSp = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(overAllOriginalEstimate.get(0)),
 						null, null, CommonConstant.HOURS, null);
 			}
 			data.add(overAllIssuesAtRisk);
@@ -306,5 +297,18 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 				.parse(issueWiseDelay.get(jiraIssue.getNumber()).getPredictedCompletedDate()).isAfter(sprintEndDate);
 	}
 
+
+	private void setKpiSpecificData(Map<String, IterationKpiModalValue> modalObjectMap, Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue) {
+		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber())) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			jiraIssueModalObject.setPredictedCompletionDate(iterationPotentialDelay.getPredictedCompletedDate());
+
+		} else {
+			jiraIssueModalObject.setPotentialDelay("-");
+			jiraIssueModalObject.setPredictedCompletionDate("-");
+		}
+	}
 
 }

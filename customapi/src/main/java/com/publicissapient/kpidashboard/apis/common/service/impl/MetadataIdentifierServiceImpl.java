@@ -22,17 +22,21 @@ public class MetadataIdentifierServiceImpl implements MetaDataIdentifierService 
     }
 
     @Override
-    public List<MetadataIdentifierDTO> getTemplateNamesAndID() {
+    public List<MetadataIdentifierDTO> getTemplateDetails() {
 
-        List<MetadataIdentifierDTO> templateNamesAndID = new ArrayList<>();
+        List<MetadataIdentifierDTO> templateNamesFlagAndID = new ArrayList<>();
         List<MetadataIdentifier> metadataIdentifierList = getMetaDataList();
         for (MetadataIdentifier metadataIdentifier : metadataIdentifierList) {
             MetadataIdentifierDTO metadataIdentifierDTO = new MetadataIdentifierDTO();
             metadataIdentifierDTO.setTemplateName(metadataIdentifier.getTemplateName());
             metadataIdentifierDTO.setId(metadataIdentifier.getId());
-            templateNamesAndID.add(metadataIdentifierDTO);
+            metadataIdentifierDTO.setTemplateCode(metadataIdentifier.getTemplateCode());
+            metadataIdentifierDTO.setKanban(metadataIdentifier.getIsKanban());
+            metadataIdentifierDTO.setTool(metadataIdentifier.getTool());
+            metadataIdentifierDTO.setDisabled(metadataIdentifier.isDisabled());
+            templateNamesFlagAndID.add(metadataIdentifierDTO);
         }
-        return templateNamesAndID;
+        return templateNamesFlagAndID;
     }
 
 }

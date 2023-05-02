@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface FetchProjectConfiguration {
-
     Map<String, ProjectConfFieldMapping> fetchConfiguration();
 
 }

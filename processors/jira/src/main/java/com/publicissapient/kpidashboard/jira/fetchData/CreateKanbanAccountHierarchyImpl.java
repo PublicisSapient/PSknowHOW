@@ -112,11 +112,6 @@ public class CreateKanbanAccountHierarchyImpl implements CreateKanbanAccountHier
         }
     }
 
-    /**
-     * Fetches all saved kanban account hierarchy.
-     *
-     * @return Map<Pair < String, String>, KanbanAccountHierarchy>
-     */
     private Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy() {
         List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
         return accountHierarchyList.stream()

@@ -81,28 +81,4 @@ public class ProjectBasicConfigDataFactory {
 		return projectBasicConfigs;
 	}
 
-	public ProjectBasicConfig findById(String id) {
-
-		return projectBasicConfigs.stream()
-				.filter(projectBasicConfig -> projectBasicConfig.getId().toHexString().equals(id)).findFirst()
-				.orElse(null);
-	}
-
-	public ProjectBasicConfig findByProjectName(String projectName) {
-
-		return projectBasicConfigs.stream()
-				.filter(projectBasicConfig -> projectBasicConfig.getProjectName().equals(projectName)).findFirst()
-				.orElse(null);
-	}
-
-
-	public List<ProjectBasicConfig> findScrumProjects() {
-		return projectBasicConfigs.stream().filter(projectBasicConfig -> !projectBasicConfig.getIsKanban())
-				.collect(Collectors.toList());
-	}
-
-	public List<ProjectBasicConfig> findKanbanProjects() {
-		return projectBasicConfigs.stream().filter(ProjectBasicConfig::getIsKanban)
-				.collect(Collectors.toList());
-	}
 }

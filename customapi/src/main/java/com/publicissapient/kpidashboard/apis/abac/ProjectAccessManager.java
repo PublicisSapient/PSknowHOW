@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.MapUtils;
@@ -44,6 +45,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -114,6 +116,12 @@ public class ProjectAccessManager {
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private NotificationService notificationService;
+
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -310,8 +318,8 @@ public class ProjectAccessManager {
 			Map<String, String> customData = createCustomData(accessRequest, serverPath);
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
-			commonService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
-					customApiConfig.getKafkaMailTopic());
+			notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
+					customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate);
 		} else {
 			log.error("Notification Event not sent : No email address found associated with Superadmin role "
 					+ "or Property - notificationSubject.accessRequest not set in property file ");

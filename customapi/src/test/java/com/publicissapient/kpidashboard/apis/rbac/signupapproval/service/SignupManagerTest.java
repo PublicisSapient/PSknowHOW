@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApp
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectApprovalListener;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignupManagerTest {
@@ -50,6 +52,9 @@ public class SignupManagerTest {
 	CommonService commonService;
 	@Mock
 	private CustomApiConfig customApiConfig;
+
+	@Mock
+	private NotificationService notificationService;
 
 	@Test
 	public void testRejectAccessRequestSuccess() throws Exception {
