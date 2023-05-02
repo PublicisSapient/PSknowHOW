@@ -469,6 +469,7 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
+
 		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
 				issuelinkIdentifer, valuestoidentifyIdentifer);
 
