@@ -673,6 +673,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           break;
         case 'backlog':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
+          break;
         case 'milestone':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'milestone')?.[0]?.kpis;
           break;
@@ -738,7 +739,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardName.toLowerCase() == this.selectedTab.toLowerCase()) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.kpiListData[this.kanban ? 'kanban' 
+          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.kpiListData[this.kanban ? 'kanban'
           : 'scrum'][i]['kpis'].find((kpi) => kpi.kpiId === 'kpi121'),...this.kpiList];
         } else {
           this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.kpiList;
@@ -868,7 +869,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   sortAlphabetically(objArray) {
     objArray?.sort((a, b) => a.nodeName?.localeCompare(b.nodeName));
-    return objArray; 
+    return objArray;
   }
 
   getTrendLevelArray() {
@@ -1074,7 +1075,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
-  
+
         if (obj) {
           let d;
           if (type == 'start') {
