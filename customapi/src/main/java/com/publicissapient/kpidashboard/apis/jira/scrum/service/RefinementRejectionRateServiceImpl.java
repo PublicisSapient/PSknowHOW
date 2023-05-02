@@ -205,7 +205,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap = populateWeekAndTypeMap(weekMap);
 			List<DataCount> dataList = new ArrayList<>();
 			List<JiraIssue> issuesExcel = new ArrayList<>();
-			if (null != projectWiseMap.get(node.getId())) {
+			if (null != projectWiseMap.get(node.getId()) && rejectedInRefinementJiraIssues.size()>0
+			&& readyForRefinementJiraIssues.size()>0 && acceptedInRefinementJiraIssues.size()>0) {
 				getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : weekAndTypeMap.entrySet()) {
 					String week = entry.getKey();
@@ -220,11 +221,11 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 					populateTrendValueList(dataList, week, hoverValue, accepted, rejected, refinementRate, total,
 							weekMap, trendLineName);
 				}
+				trendValueList.add(new DataCount(node.getProjectFilter().getName(), dataList));
 			}
 			weekAndTypeMap.keySet().stream().forEach(f -> weekAndTypeMap.get(f).keySet().stream()
 					.forEach(issue -> issuesExcel.addAll(weekAndTypeMap.get(f).get(issue))));
 			KPIExcelUtility.populateRefinementRejectionExcelData(excelData, issuesExcel, weekAndTypeMap,jiraDateMap);
-			trendValueList.add(new DataCount(node.getProjectFilter().getName(), dataList));
 			mapTmp.get(node.getId()).setValue(trendValueList);
 			kpiElement.setTrendValueList(trendValueList);
 		});
