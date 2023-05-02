@@ -21,20 +21,13 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +50,13 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-
-import lombok.extern.slf4j.Slf4j;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
@@ -192,11 +190,12 @@ public class JiraServiceR {
 	 * @param filteredAccountDataList
 	 * @return
 	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,List<AccountHierarchyData> filteredAccountDataList) {
-			kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-			if (!authorizedProjectsService.ifSuperAdminUser()) {
-				filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-			}
+	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
+			List<AccountHierarchyData> filteredAccountDataList) {
+		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
+			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
+		}
 
 		return filteredAccountDataList;
 	}
