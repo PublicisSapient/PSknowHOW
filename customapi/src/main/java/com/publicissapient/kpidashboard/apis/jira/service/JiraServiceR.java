@@ -20,13 +20,21 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +57,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
@@ -143,8 +147,10 @@ public class JiraServiceR {
 				if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory()) &&
 						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
 					fetchSprintDetails(kpiRequest.getIds());
-					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+					List<String> sprintIssuesList = createIssuesList(filteredAccountDataList.get(0)
+							.getBasicProjectConfigId().toString());
+					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
+					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
 				}
 
 				// set filter value to show on trend line. If sub-projects are
@@ -322,16 +328,45 @@ public class JiraServiceR {
 		return sprintDetails.stream().findFirst().orElse(null);
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId) {
-		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
+		jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList, basicProjectConfigId);
+	}
+
+	private List<String> createIssuesList(String basicProjectConfigId) {
+		List<String> totalIssuesList = new ArrayList<>();
+		sprintDetails.stream().filter(sd ->
+						sd.getBasicProjectConfigId().toString().equals(basicProjectConfigId))
+				.forEach(sprintDetails1 -> {
+					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssues())) {
+						totalIssuesList.addAll(sprintDetails1.getCompletedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
+					}
+					if (!CollectionUtils.isEmpty(sprintDetails1.getNotCompletedIssues())) {
+						totalIssuesList.addAll(sprintDetails1.getNotCompletedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
+					}
+					if (!CollectionUtils.isEmpty(sprintDetails1.getPuntedIssues())) {
+						totalIssuesList.addAll(sprintDetails1.getPuntedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
+					}
+					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssuesAnotherSprint())) {
+						totalIssuesList.addAll(sprintDetails1.getCompletedIssuesAnotherSprint().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
+					}
+					if (!CollectionUtils.isEmpty(sprintDetails1.getAddedIssues())) {
+						totalIssuesList.addAll(sprintDetails1.getAddedIssues());
+					}
+				});
+		return totalIssuesList;
 	}
 
 	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
 		return jiraIssueList;
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
-		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList) {
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn
+				(sprintIssuesList, Collections.singletonList(basicProjectConfigId));
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
