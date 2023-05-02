@@ -24,7 +24,6 @@ import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -52,7 +51,6 @@ export class NavComponent implements OnInit {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private helper: HelperService,
-    private aesEncryption: TextEncryptionService,
   ) {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;

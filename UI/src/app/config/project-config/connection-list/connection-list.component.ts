@@ -22,7 +22,6 @@ import { ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -376,7 +375,7 @@ export class ConnectionListComponent implements OnInit {
   currentUser = '';
   zephyrUrl = '';
 
-  constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private rsa: RsaEncryptionService, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
+  constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
     , private authorization: GetAuthorizationService,private sharedService : SharedService) { }
 
   ngOnInit(): void {
@@ -385,8 +384,10 @@ export class ConnectionListComponent implements OnInit {
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      this.currentUser = details['user_name'] ? details['user_name'] : '';
-    })
+      if(details){
+        this.currentUser = details['user_name'] ? details['user_name'] : '';
+      }
+    });
     this.getZephyrUrl();
   }
 
@@ -588,23 +589,23 @@ export class ConnectionListComponent implements OnInit {
     }
 
     if (!!this.connection['password']) {
-      reqData['password'] = this.rsa.encrypt(this.connection['password']);
+      reqData['password'] = this.connection['password'];
     }
 
     if (!!this.connection['patOAuthToken']) {
-          reqData['patOAuthToken'] = this.rsa.encrypt(this.connection['patOAuthToken']);
+          reqData['patOAuthToken'] = this.connection['patOAuthToken'];
     }
 
     if (!!this.connection['pat']) {
-      reqData['pat'] = this.rsa.encrypt(this.connection['pat']);
+      reqData['pat'] = this.connection['pat'];
     }
 
     if (!!this.connection['accessToken'] && this.connection['type'].toLowerCase() !== 'zephyr') {
-      reqData['accessToken'] = this.rsa.encrypt(this.connection['accessToken']);
+      reqData['accessToken'] = this.connection['accessToken'];
     }
 
     if (!!this.connection['apiKey']) {
-      reqData['apiKey'] = this.rsa.encrypt(this.connection['apiKey']);
+      reqData['apiKey'] = this.connection['apiKey'];
     }
 
     if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {

@@ -50,7 +50,7 @@ export class BasicConfigComponent implements OnInit {
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
   isProjectAdmin = false;
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private aesEncryption: TextEncryptionService) {
+  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -160,9 +160,8 @@ export class BasicConfigComponent implements OnInit {
         this.sharedService.setSelectedProject(this.selectedProject);
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
-            localStorage.setItem('projectsAccess', JSON.stringify(response['projectsAccess']));
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authorities), 'encrypt'));
+            this.sharedService.setCurrentUserDetails({authorities});
           }
         }
         this.form.reset();

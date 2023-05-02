@@ -43,7 +43,6 @@ describe('FilterComponent', () => {
   let fixture: ComponentFixture<FilterComponent>;
   let httpService: HttpService;
   let messageService: MessageService;
-  let aesEncryption;
   let httpMock;
   let sharedService: SharedService;
   let getAuthorizationService: GetAuthorizationService;
@@ -192,13 +191,11 @@ describe('FilterComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
     httpService = TestBed.inject(HttpService);
-    aesEncryption = TestBed.inject(TextEncryptionService);
     getAuthorizationService = TestBed.inject(GetAuthorizationService);
     helperService = TestBed.inject(HelperService);
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.setItem('authorities', aesEncryption.convertText('["DUMMY"]', 'encrypt'));
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 

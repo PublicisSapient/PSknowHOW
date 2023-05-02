@@ -20,23 +20,22 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestConnectionService {
 
-  constructor(private http: HttpClient, private rsa: RsaEncryptionService) { }
+  constructor(private http: HttpClient) { }
 
   /** get: test JIRA connection */
   testJira(baseUrl, apiEndPoint, username, password, vault, patOAuthToken): Observable<any> {
     const postData = {
       baseUrl,
       username,
-      password: password ? this.rsa.encrypt(password) : '',
+      password: password ? password : '',
       vault,
-      patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : ''
+      patOAuthToken: patOAuthToken ? patOAuthToken : ''
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
@@ -49,7 +48,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: password ? this.rsa.encrypt(password) : '',
+      password: password ? password : '',
       apiEndPoint,
       accessToken,
       cloudEnv,
@@ -66,7 +65,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: pat ? this.rsa.encrypt(pat) : '',
+      password: pat ? pat : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -79,7 +78,7 @@ export class TestConnectionService {
     testGitLab(baseUrl, accessToken, vault): Observable<any> {
       const postData = {
         baseUrl,
-        accessToken: accessToken ? this.rsa.encrypt(accessToken) : '',
+        accessToken: accessToken ? accessToken : '',
         vault
       };
       let headers: HttpHeaders = new HttpHeaders();
@@ -93,7 +92,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: password ? this.rsa.encrypt(password) : '',
+      password: password ? password : '',
       apiEndPoint,
       cloudEnv,
       vault
@@ -113,7 +112,7 @@ export class TestConnectionService {
 
       postData = {
         baseUrl,
-        accessToken: accesstoken ? this.rsa.encrypt(accesstoken) : '',
+        accessToken: accesstoken ? accesstoken : '',
         cloudEnv: true,
         vault,
         accessTokenEnabled
@@ -127,9 +126,9 @@ export class TestConnectionService {
       };
 
       if (accessTokenEnabled) {
-        postData['accessToken'] = accesstoken ? this.rsa.encrypt(accesstoken) : '';
+        postData['accessToken'] = accesstoken ? accesstoken : '';
       } else {
-        postData['password'] = password ? this.rsa.encrypt(password) : '';
+        postData['password'] = password ? password : '';
         postData['username'] =  username;
       }
     }
@@ -145,7 +144,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      apiKey: apiKey ? this.rsa.encrypt(apiKey) : '',
+      apiKey: apiKey ? apiKey : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -168,7 +167,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: password ? this.rsa.encrypt(password) : '',
+      password: password ? password : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -182,7 +181,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: password ? this.rsa.encrypt(password) : '',
+      password: password ? password : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -196,7 +195,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: pat ? this.rsa.encrypt(pat) : '',
+      password: pat ? pat : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -210,7 +209,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      password: pat ? this.rsa.encrypt(pat) : '',
+      password: pat ? pat : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();
@@ -225,7 +224,7 @@ export class TestConnectionService {
     const postData = {
       baseUrl,
       username,
-      accessToken: accessToken ? this.rsa.encrypt(accessToken) : '',
+      accessToken: accessToken ? accessToken : '',
       vault
     };
     let headers: HttpHeaders = new HttpHeaders();

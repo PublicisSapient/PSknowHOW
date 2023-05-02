@@ -31,7 +31,6 @@ import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from 'src/app/services/http.service';
-import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
 import { ConnectionListComponent } from './connection-list.component';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
@@ -993,7 +992,6 @@ describe('ConnectionListComponent', () => {
       providers: [
         HttpService,
         ConfirmationService,
-        RsaEncryptionService,
         SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
       ],

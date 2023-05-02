@@ -40,7 +40,7 @@ export class GetAuthService {
     }
 
     getToken() {
-        return localStorage.getItem('authorities');
+        return this.sharedService.getCurrentUserDetails('authorities');
     }
 }
 

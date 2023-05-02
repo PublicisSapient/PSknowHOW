@@ -32,7 +32,6 @@ import { HttpService } from '../../services/http.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { SharedService } from '../../services/shared.service';
-import { RsaEncryptionService } from '../../services/rsa.encryption.service';
 import { TextEncryptionService } from '../../services/text.encryption.service';
 import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
 import { of } from 'rxjs';
@@ -46,8 +45,6 @@ describe('LoginComponent', () => {
   let httpreq;
   let httpService;
   let sharedService;
-  let encryption;
-  let aesEncryption;
   const fakeLogin = {
     instance_owner: 'kbakshi@sapient.com',
     user_email: 'test@gmail.com',
@@ -94,7 +91,7 @@ describe('LoginComponent', () => {
       declarations: [LoginComponent,
         RegisterComponent, DashboardComponent, MyprofileComponent],
       providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, SharedService, RsaEncryptionService, TextEncryptionService
+        HttpService, SharedService, TextEncryptionService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
@@ -105,9 +102,7 @@ describe('LoginComponent', () => {
       component = fixture.componentInstance;
       httpService = TestBed.get(HttpService);
       sharedService = TestBed.get(SharedService);
-      encryption = TestBed.get(RsaEncryptionService);
       httpMock = TestBed.get(HttpTestingController);
-      aesEncryption = TestBed.get(TextEncryptionService);
       fixture.detectChanges();
   }));
 
@@ -184,26 +179,29 @@ describe('LoginComponent', () => {
 
   it("should redirect to profile if user email is blank",()=>{
     sharedService.setCurrentUserDetails({user_email:""});
-    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
+    fixture.detectChanges();
     component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy()
-  })
+    expect(component.redirectToProfile).toBeTruthy();
+  });
 
   it("should redirect on profile for superadmin",()=>{
     sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    localStorage.setItem('projectsAccess',JSON.stringify([]));
-    spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
+    sharedService.setCurrentUserDetails({'projectsAccess':[]});
+    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
+    fixture.detectChanges();
     const respo = component.redirectToProfile();
     expect(respo).toBeFalsy();
   })
 
   it("should not redirect on profile if not superadmin",()=>{
     sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    localStorage.setItem('projectsAccess',undefined);
-    spyOn(aesEncryption,'convertText').and.returnValue("[\"NOT_SUPERADMIN\"]")
+    sharedService.setCurrentUserDetails({projectsAccess:undefined});
+    sharedService.setCurrentUserDetails({authorities: ['NOT_SUPERADMIN']});
+    fixture.detectChanges();
     component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy()
-  })
+    expect(component.redirectToProfile).toBeTruthy();
+  });
 
 
 });

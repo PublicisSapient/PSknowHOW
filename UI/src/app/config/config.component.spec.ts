@@ -104,10 +104,8 @@ describe('ConfigComponent', () => {
   });
 
   it('should check if superadmin has access', () => {
-    component.ngOnInit();
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
-    
+    component.ngOnInit();
     expect(component.hasAccess).toBe(true);
-   
   })
 });

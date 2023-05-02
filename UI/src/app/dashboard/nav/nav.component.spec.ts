@@ -43,7 +43,6 @@ describe('NavComponent', () => {
   let httpMock;
   let httpService;
   let service;
-  let aesEncryption;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const getversionData = { versionDetailsMap: { currentVersion: '2.8.0' } };
@@ -80,7 +79,6 @@ describe('NavComponent', () => {
       httpMock = TestBed.get(HttpTestingController);
       fixture = TestBed.createComponent(NavComponent);
       component = fixture.componentInstance;
-      aesEncryption = TestBed.inject(TextEncryptionService);
       httpService = TestBed.inject(HttpService);
       messageService = TestBed.inject(MessageService);
       shareService = TestBed.inject(SharedService);
@@ -91,7 +89,6 @@ describe('NavComponent', () => {
       // httpMock.expectOne(baseUrl + '/api/getversionmetadata').flush(getversionData);
       httpMock.expectOne(baseUrl + '/api/user-board-config').flush(getDashConfData);
       document.dispatchEvent(new MouseEvent('click'));
-      localStorage.setItem('authorities',aesEncryption.convertText('["ROLE_PROJECT_ADMIN","ROLE_PROJECT_VIEWER"]', 'encrypt'));
   }));
 
   it('select tab functionality ', () => {

@@ -686,7 +686,6 @@ describe('FieldMappingComponent', () => {
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
     localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
-    localStorage.setItem('projectsAccess', JSON.stringify([]));
   });
 
   it('should create', () => {

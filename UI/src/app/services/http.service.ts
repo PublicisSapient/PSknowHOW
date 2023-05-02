@@ -26,8 +26,6 @@ import { Router } from '@angular/router';
 import { Account } from '../model/Account';
 import { KPIScore } from '../model/KPIScore';
 import { ScoreCard } from '../model/ScoreCard';
-import { RsaEncryptionService } from '../services/rsa.encryption.service';
-import { TextEncryptionService } from './text.encryption.service';
 import { NotificationResponseDTO } from '../model/NotificationDTO.model';
 import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/userAccessApprovalDTO.model';
 import { SharedService } from './shared.service';
@@ -140,11 +138,13 @@ import { SharedService } from './shared.service';
     private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData'
     userName : string;
     userEmail : string;
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService,private sharedService : SharedService) { 
-        this.sharedService.currentUserDetails.subscribe(details=>{
-            this.userName = details['user_name'];
-            this.userEmail = details['user_email'];
-          })
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) { 
+        this.sharedService.currentUserDetailsObs.subscribe(details=>{
+            if(details){
+                this.userName = details['user_name'];
+                this.userEmail = details['user_email'];
+            }
+          });
     }
 
     /**get analytics on/off switch */
@@ -277,10 +277,7 @@ import { SharedService } from './shared.service';
         /* Send request to server and store token and username in localstore for authentication */
         return this.http.post<any>(loginUrl, postData, httpOptions)
             .pipe(tap(res => {
-                this.sharedService.setCurrentUserDetails({user_name: username});
-                this.sharedService.setCurrentUserDetails({user_email: res.body['user_email']});
-                 localStorage.setItem('projectsAccess', JSON.stringify(res.body['projectsAccess']));
-                localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(res.body['authorities']), 'encrypt'));
+                this.sharedService.setCurrentUserDetails(res.body);
            }),
                 catchError(this.handleError<object>('errorData', ['error'])));
     }
@@ -296,10 +293,10 @@ import { SharedService } from './shared.service';
                     this.sharedService.setCurrentUserDetails({user_name: username});
                     this.sharedService.setCurrentUserDetails({user_email: email});
                     if(res['authorities']?.length > 0){
-                        localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify([...res['authorities']]), 'encrypt'));
+                        this.sharedService.setCurrentUserDetails({authorities: res['authorities']});
                     }
                     if(res['projectsAccess']){
-                        localStorage.setItem('projectsAccess', JSON.stringify(res['projectsAccess']));
+                        this.sharedService.setCurrentUserDetails({projectsAccess: res['projectsAccess']});
                     }
                 }
             }));
@@ -714,8 +711,7 @@ import { SharedService } from './shared.service';
         return (error: any): Observable<T> => {
             if (error.status === 401) {
                 localStorage.removeItem('auth_token');
-                localStorage.removeItem('user_name');
-                localStorage.removeItem('authorities');
+                this.sharedService.setCurrentUserDetails({});
 
                 this.router.navigate(['./authentication/login']);
             }

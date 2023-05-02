@@ -28,7 +28,6 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { TextEncryptionService } from 'src/app/services/text.encryption.service';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -138,16 +137,16 @@ export class FilterComponent implements OnInit, OnDestroy {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService,
-    private aesEncryption: TextEncryptionService,
+    private helperService: HelperService
   ) { }
 
   ngOnInit() {
     this.service.currentUserDetailsObs.subscribe(details=>{
-      this.username = details['user_name'];
-    })
+      if(details){
+        this.username = details['user_name'];
+      }
+    });
 
-    this.getCurrentUserDetails();
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
@@ -218,8 +217,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     // this.username = this.service.getCurrentUserDetails('user_name');
 
     let authoritiesArr;
-    if (localStorage.getItem('authorities')) {
-      authoritiesArr = localStorage.getItem('authorities');
+    if (this.service.getCurrentUserDetails('authorities')) {
+      authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
@@ -1185,6 +1184,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
+        this.service.setCurrentUserDetails({});
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1232,11 +1232,9 @@ export class FilterComponent implements OnInit, OnDestroy {
 
    getCurrentUserDetails(){
     this.httpService.getCurrentUserDetails().subscribe(details=>{
-      
       if(details['success']){
         this.service.setCurrentUserDetails(details['data']);
       }
     });
-    
    }
 }

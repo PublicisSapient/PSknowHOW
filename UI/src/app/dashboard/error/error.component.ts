@@ -52,7 +52,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
           //   this.redirectButtonRoute = '/';
           //   break;
           case 401:
-            localStorage.removeItem('user_name');
+            this.service.setCurrentUserDetails({});
             this.errorMsg = 'Session Expired';
             this.redirectButtonText = 'Go to Login';
             this.redirectButtonRoute = './authentication/login';

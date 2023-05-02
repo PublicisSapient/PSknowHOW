@@ -40,7 +40,6 @@ describe('AdvancedSettingsComponent', () => {
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
   let httpService;
   let httpMock;
-  let aesEncryption;
   let confirmationService;
   const baseUrl = environment.baseUrl;  // Servers Env
   // var store = {};
@@ -200,9 +199,6 @@ describe('AdvancedSettingsComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     confirmationService = TestBed.inject(ConfirmationService);
     fixture.detectChanges();
-    aesEncryption = TestBed.inject(TextEncryptionService);
-    localStorage.setItem('projectsAccess', '[{"role":"ROLE_PROJECT_VIEWER","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"},{"hierarchyLevel":{"level":2,"hierarchyLevelId":"business","hierarchyLevelName":"Business Name"},"value":"Leve2"},{"hierarchyLevel":{"level":3,"hierarchyLevelId":"account","hierarchyLevelName":"Account Name"},"value":"Level3"},{"hierarchyLevel":{"level":4,"hierarchyLevelId":"subaccount","hierarchyLevelName":"Subaccount"},"value":"Level4"}]}]},{"role":"ROLE_PROJECT_ADMIN","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"},{"hierarchyLevel":{"level":2,"hierarchyLevelId":"business","hierarchyLevelName":"Business Name"},"value":"Org2"},{"hierarchyLevel":{"level":3,"hierarchyLevelId":"account","hierarchyLevelName":"Account Name"},"value":"Level3"},{"hierarchyLevel":{"level":4,"hierarchyLevelId":"subaccount","hierarchyLevelName":"Subaccount"},"value":"Level4"}]}]}]');
-    localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_PROJECT_ADMIN"]', 'encrypt'));
   });
 
   afterEach(() => {
@@ -238,7 +234,6 @@ describe('AdvancedSettingsComponent', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
     component.selectedView = 'processor_state';
-    localStorage.setItem('projectsAccess', '[{"role":"ROLE_PROJECT_ADMIN","projects":[{"projectName":"TestRIshabh","projectId":"601bca9569515b0001d68182"}]}]');
     component.getProjects();
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);

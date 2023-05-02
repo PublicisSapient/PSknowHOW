@@ -27,7 +27,8 @@ describe('ProfileModule', () => {
   let fixture: ComponentFixture<ProfileComponent>;
   let profileModule: ProfileModule;
   let component : ProfileComponent ;
-  let authService : GetAuthorizationService
+  let authService: GetAuthorizationService;
+  let sharedService: SharedService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,6 +41,7 @@ describe('ProfileModule', () => {
     fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
     authService = TestBed.inject(GetAuthorizationService);
+    sharedService =TestBed.inject(SharedService);
   });
 
   it('should create an instance', () => {
@@ -60,6 +62,7 @@ describe('ProfileModule', () => {
 
   it("should AD login enable and change password disable",()=>{
    localStorage.setItem('loginType',"AD");
+   sharedService.currentUserDetailsSubject.next({});
     component.ngOnInit();
     expect(component.changePswdDisabled).toBeTruthy();
     expect(component.adLogin).toBeTruthy();

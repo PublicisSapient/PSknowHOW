@@ -44,10 +44,8 @@ export class ProfileComponent implements OnInit {
         if(this.getAuthorizationService.checkIfProjectAdmin()) {
             this.isProjectAdmin = true;
         }
-         
-       
         this.sharedService.currentUserDetailsObs.subscribe(details=>{
-            if (!details['user_email']) {
+            if (details && !details['user_email']) {
                     this.changePswdDisabled = true;
                 }
           })
