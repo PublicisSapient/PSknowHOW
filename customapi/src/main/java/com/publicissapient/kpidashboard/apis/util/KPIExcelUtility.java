@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -275,16 +276,22 @@ public class KPIExcelUtility {
 	 *
 	 * @param sprint
 	 * @param totalStoriesMap
-	 * @param conditionStories
+	 * @param closedConditionStories
+	 * @param createdConditionStories
 	 * @param kpiExcelData
 	 */
 	public static void populateCreatedVsResolvedExcelData(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData) {
+			List<JiraIssue> closedConditionStories, List<JiraIssue> createdConditionStories,
+			List<KPIExcelData> kpiExcelData) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-			List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
+			List<String> closedConditionalList = closedConditionStories.stream().map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+			List<String> createdConditionalList = createdConditionStories.stream().map(JiraIssue::getNumber)
 					.collect(Collectors.toList());
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
-				String present = conditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
+				String present = closedConditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
+				String createdAfterSprint = createdConditionalList.contains(storyId) ? Constant.EXCEL_YES
+						: Constant.EMPTY_STRING;
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
@@ -292,6 +299,7 @@ public class KPIExcelUtility {
 				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
 				excelData.setCreatedDefectId(storyDetails);
 				excelData.setResolvedTickets(present);
+				excelData.setDefectAddedAfterSprintStart(createdAfterSprint);
 
 				kpiExcelData.add(excelData);
 			});
@@ -1272,7 +1280,8 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setSprintName(jiraIssue.getSprintName());
 		jiraIssueModalObject.setResolution(jiraIssue.getResolution());
 		if (!jiraIssue.getReleaseVersions().isEmpty()) {
-			jiraIssueModalObject.setReleaseName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
+			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
+			jiraIssueModalObject.setReleaseName(releaseVersions.get(releaseVersions.size() -1).getReleaseName());
 		}
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			jiraIssueModalObject

@@ -1,5 +1,5 @@
 //script to save the default configuration of Kpi's modalWindow Column
-db.getCollection('kpi_column_configs').removeAll({"basicProjectConfigId":null});
+db.getCollection('kpi_column_configs').remove({ "basicProjectConfigId": null });
 db.kpi_column_configs.insertMany([{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi8',

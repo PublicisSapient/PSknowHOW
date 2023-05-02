@@ -149,6 +149,7 @@
   padding: 7px 15px;
   border-bottom: 1px solid #dedede;
   position: relative;
+  min-height: 40px;
   /* z-index: 1; */
 }
 
