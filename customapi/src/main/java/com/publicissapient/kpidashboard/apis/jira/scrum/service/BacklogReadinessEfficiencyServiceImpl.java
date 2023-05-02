@@ -248,7 +248,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 							null, null, SPRINT, null);
 					LOGGER.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
 					IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-							cycleTime / Double.valueOf(issueCount), null, null, DAYS, null);
+							(double)Math.round(cycleTime / Double.valueOf(issueCount)), null, null, DAYS, null);
 					data.add(issuesForDevelopment);
 					data.add(backLogStrength);
 					data.add(averageCycleTime);
