@@ -212,17 +212,17 @@ public class KpiHelperService { // NOPMD
 					&& status1.equalsIgnoreCase(
 							jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getChangedTo())) {
 				DateTime closeDate = new DateTime(
-						jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(), DateTimeZone.UTC);
+						jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
 				DateTime startDate = new DateTime(
-						jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getUpdatedOn(),
+						jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getUpdatedOn().toString(),
 						DateTimeZone.UTC);
 				Duration duration = new Duration(startDate, closeDate);
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
 			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn(),
-					DateTimeZone.UTC);
+			DateTime secondDate = new DateTime(
+					jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
 		}
