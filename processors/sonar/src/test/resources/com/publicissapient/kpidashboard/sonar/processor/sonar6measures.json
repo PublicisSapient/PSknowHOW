@@ -1,7 +1,7 @@
 {"component": {
     "id": "AVu3b-MAphY78UZXuYHp",
-    "key": "com.publicissapient.kpidashboard.sonar:TestProject",
-    "name": "com.publicissapient.kpidashboard.sonar:TestProject",
+    "key": "testPackage.sonar:TestProject",
+    "name": "testPackage.sonar:TestProject",
     "description": "Spring Boot Starter Parent",
     "qualifier": "TRK",
     "measures": [

@@ -73,10 +73,10 @@ public class ZephyrServerImplTest {
 	@BeforeEach
 	public void init() {
 		projectConfFieldMapping = new ProjectConfFieldMapping();
-		projectConfFieldMapping.setProjectKey("DTS");
+		projectConfFieldMapping.setProjectKey("TEST");
 		toolInfo = new ProcessorToolConnection();
 		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		toolInfo.setUrl("https://tools.publicis.sapient.com/jira");
+		toolInfo.setUrl("https://test.com/jira");
 		toolInfo.setApiEndPoint("/rest/atm/1.0");
 		toolInfo.setUsername("test");
 		toolInfo.setPassword("password");
@@ -103,7 +103,7 @@ public class ZephyrServerImplTest {
 		testCaseList = new ArrayList<>();
 
 		zephyrTestCaseDTO = new ZephyrTestCaseDTO();
-		zephyrTestCaseDTO.setKey("DTS-T5");
+		zephyrTestCaseDTO.setKey("TEST-T5");
 		zephyrTestCaseDTO.setCreatedOn("2020-07-10T12:02:31.000Z");
 		zephyrTestCaseDTO.setUpdatedOn("2021-08-11T11:08:32.000Z");
 		List<String> labels = new ArrayList<>();
@@ -129,9 +129,9 @@ public class ZephyrServerImplTest {
 	@Test
 	public void getTestCaseSuccess() {
 
-		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://tools.publicis.sapient.com/jira");
+		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://test.com/jira");
 		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
-				.thenReturn(UriComponentsBuilder.fromPath("https://tools.publicis.sapient.com/jira/rest/atm/1.0"));
+				.thenReturn(UriComponentsBuilder.fromPath("https://test.com/jira/rest/atm/1.0"));
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);
@@ -144,9 +144,9 @@ public class ZephyrServerImplTest {
 
 	@Test()
 	public void testGetTestCaseNotFound() {
-		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://tools.publicis.sapient.com/jira");
+		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://test.com/jira");
 		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
-				.thenReturn(UriComponentsBuilder.fromPath("https://tools.publicis.sapient.com/jira/rest/atm/1.0"));
+				.thenReturn(UriComponentsBuilder.fromPath("https://test.com/jira/rest/atm/1.0"));
 		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
 				.thenReturn("base64String");
 		when(zephyrUtil.buildAuthenticationHeader(Mockito.anyString())).thenReturn(mockHttpEntity);

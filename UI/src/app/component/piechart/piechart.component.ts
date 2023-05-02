@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
- import {
+import {
   Component,
   Input,
   OnChanges,
@@ -40,37 +40,21 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   svg: any;
   margin = 50;
-  width = '100%';
+  width = 480;
   height = 298;
   // The radius of the pie chart is half the smallest side
-  radius =  this.height / 2 - this.margin;
+  radius = this.height / 2 - this.margin;
   colors;
   pieChartValuesArray = [];
 
 
 
-  constructor(private viewContainerRef: ViewContainerRef) {
-    this.elem = this.viewContainerRef.element.nativeElement;
-  }
+  constructor(private viewContainerRef: ViewContainerRef) {}
 
-  createSvg(): void {
-    d3.select(this.elem).select('#pie').select('svg').remove();
-    this.svg = d3
-      .select('#pie')
-      .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .append('g')
-      .attr(
-        'transform',
-        'translate(' + 120 + ',' + this.height / 2 + ')',
-      );
-  }
-  //d.Stars.toString()
   createColors(): void {
     this.colors = d3
       .scaleOrdinal()
-      .domain(this.pieChartValuesArray.map((d) => d.value.toString()))
+      .domain(this.pieChartValuesArray.map((d) => d?.value?.toString()))
       .range(['#FFA193',
         '#00B1B0',
         '#FEC84D',
@@ -94,11 +78,12 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   }
   drawChart(): void {
     // Compute the position of each group on the pie:
+    d3.select(this.elem).select('#pie').select('svg').remove();
     this.pieChartValuesArray = [];
-    const width = this.width;
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
-    const pieChartValues = this.data[0]?.value[0]?.value;
-    const colors = this.colors;
+
+    const pieChartValues = this.data[0]?.value[0]?.value[0]?.value;
+
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
         ['title']: property,
@@ -106,54 +91,81 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       }
       )
     }
+    const svg = d3
+      .select(this.elem)
+      .select('#pie')
+      .append('svg')
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g')
+      .attr(
+        'transform',
+        'translate(' + 120 + ',' + this.height / 2 + ')',
+      );
+    this.createColors();
+    const colors = this.colors;
 
     const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
     const toPercent = d3.format("0.1%");
-
     // Build the pie chart
-    this.svg
-    .selectAll('pieces')
-    .data(pie(this.pieChartValuesArray))
-    .enter()
+    svg
+      .selectAll('pieces')
+      .data(pie(this.pieChartValuesArray))
+      .enter()
       .append('path')
       .attr('d', d3.arc().innerRadius(0).outerRadius(this.radius))
       .attr('fill', (d: any, i: any) => colors(i))
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
-    var legendG = this.svg.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
-      .data(pie(this.pieChartValuesArray))
-      .enter().append("g")
-      .attr("transform", function (d, i) {
-        return "translate(" + 150 + "," + (i * 15 - 80) + ")"; // place each legend on the right and bump each one down 15 pixels
-      })
-      .attr("class", "legend");
 
-    legendG.append("rect") // make a matching color rect
-      .attr("width", 10)
-      .attr("height", 10)
-      .attr("fill", function (d, i) {
-        return colors(i);
-      });
+    const foreignObject = svg.append("foreignObject")
+      .attr("width", 220)
+      .attr("height", this.height - (2 * this.margin))
+      .style('overflow-y', 'auto')
+      .attr("transform", `translate(140,${-(this.height / 2 - this.margin)})`)
+      .append("xhtml:div")
+      .attr("id", "main-div")
+      .attr("class", "p-text-left")
+      .style('border', '1px solid #dedede')
+      .append('table')
+      .style('width', '100%')
+      .style('border-collapse', 'collapse')
+      .attr('class', 'legend-table');
 
-    legendG.append("text") // add the text
-      .text((d) => { return `${d?.data?.title} (${d?.data.value}) - ${toPercent(d?.data.value / totalCount)}` })
-      .style("font-size", 12)
-      .style('text-transform', 'capitalize')
-      .attr("y", 10)
-      .attr("x", 15);
+    foreignObject
+      .append('thead')
+      .html('<th class="p-p-1 font-small">Legend Title</th><th class="p-p-1 font-small">Count</th><th class="p-p-1 font-small p-text-right">%</th>')
+      .style('border-bottom', '1px solid #dedede')
+      .style('text-align', 'left');
+
+    const tbody = foreignObject
+      .append('tbody');
+
+    this.pieChartValuesArray.forEach((x, i) => {
+      tbody.append('tr')
+        .style('border-bottom', '1px solid #dedede')
+        .style('padding-top', '2px')
+        .html(`<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td class="p-p-1 font-small">${x?.value}</td><td class="p-p-1 font-small p-text-right">${toPercent(x?.value / totalCount)}</td>`)
+    })
+
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
-    this.createSvg();
-    this.createColors();
-    this.drawChart();
+    if (Object.keys(changes)?.length > 0) {
+      if (changes['data']) {
+        this.elem = this.viewContainerRef.element.nativeElement;
+        this.drawChart();
+      }
+    }
+
   }
 
   ngOnDestroy() {
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#pie').select('svg').remove();
-
+    this.data = [];
     this.pieChartValuesArray = [];
   }
 

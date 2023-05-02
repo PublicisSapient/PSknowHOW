@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -34,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -244,6 +247,9 @@ public class KpiHelperService { // NOPMD
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -252,6 +258,9 @@ public class KpiHelperService { // NOPMD
 			sprintList.add(leaf.getSprintFilter().getId());
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
+
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
@@ -305,11 +314,10 @@ public class KpiHelperService { // NOPMD
 
 		// Fetch Defects linked with story ID's
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
-
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, defectListWoDrop);
+		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop,projectWisePriority,projectWiseRCA));
 		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
@@ -325,6 +333,9 @@ public class KpiHelperService { // NOPMD
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String,List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -338,6 +349,9 @@ public class KpiHelperService { // NOPMD
 					basicProjectConfigId.toString());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQADefectDensityIssueType()));
+
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
 
 			List<String> dodList = fieldMapping.getJiraDod();
 			if (CollectionUtils.isNotEmpty(dodList)) {
@@ -397,10 +411,9 @@ public class KpiHelperService { // NOPMD
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
-
 		resultListMap.put(STORY_POINTS_DATA, storyList);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, defectListWoDrop);
+		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop,projectWisePriority,projectWiseRCA));
 
 		return resultListMap;
 	}
@@ -1291,5 +1304,118 @@ public class KpiHelperService { // NOPMD
 		kpiFieldMappingResponse.setKpiFieldMappingList(lisOfKpiFieldMapping);
 		return kpiFieldMappingResponse;
 	}
+
+	/**
+	 * exclude defects with priority and RCA
+	 *
+	 * @param allDefects
+	 * @param projectWisePriority
+	 * @param projectWiseRCA
+	 * @return
+	 */
+	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
+		Set<JiraIssue> defects = new HashSet<>(allDefects);
+		List<JiraIssue> priorityRemaining = new ArrayList<>();
+		for (JiraIssue jiraIssue : defects) {
+			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
+				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()).contains(jiraIssue.getPriority().toLowerCase()))) {
+					priorityRemaining.add(jiraIssue);
+				}
+			} else {
+				priorityRemaining.add(jiraIssue);
+			}
+		}
+
+		List<JiraIssue> rcaRemaining = new ArrayList<>();
+		for (JiraIssue jiraIssue : priorityRemaining) {
+			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
+				for (String toFindRca : jiraIssue.getRootCauseList()) {
+					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+						rcaRemaining.add(jiraIssue);
+					}
+				}
+			} else {
+				rcaRemaining.add(jiraIssue);
+			}
+		}
+		return rcaRemaining;
+
+	}
+
+	/**
+	 * @param projectWiseRCA
+	 * @param leaf
+	 * @param fieldMapping
+	 */
+	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf,
+			FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getExcludeRCAFromFTPR())) {
+			Set<String> uniqueRCA = new HashSet<>();
+			for (String rca : fieldMapping.getExcludeRCAFromFTPR()) {
+				if (rca.equalsIgnoreCase(Constant.CODING) || rca.equalsIgnoreCase(Constant.CODE)) {
+					rca = Constant.CODE_ISSUE;
+				}
+				uniqueRCA.add(rca.toLowerCase());
+			}
+			projectWiseRCA.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), uniqueRCA);
+		}
+	}
+
+	/**
+	 * @param projectWisePriority
+	 * @param configPriority
+	 * @param leaf
+	 * @param fieldMapping
+	 */
+	public static void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
+			Map<String, List<String>> configPriority, Node leaf, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getDefectPriority())) {
+			List<String> priorValue = fieldMapping.getDefectPriority().stream().map(String::toUpperCase)
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(priorValue)) {
+				List<String> priorityValues = new ArrayList<>();
+				priorValue.forEach(priority -> priorityValues.addAll(configPriority.get(priority).stream().map(String::toLowerCase).collect(Collectors.toList())));
+				projectWisePriority.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
+			}
+		}
+	}
+
+	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
+														  List<JiraIssueCustomHistory> storiesHistory) {
+
+		firstTimePassStories.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
+
+	}
+
+	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
+		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
+				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
+		if (jiraIssueCustomHistory == null) {
+			return false;
+		} else {
+
+			List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
+			Collections.sort(storySprintDetails, Comparator.comparing(JiraIssueSprint::getActivityDate));
+
+			JiraIssueSprint latestClosedStatusDetail = storySprintDetails.stream()
+					.filter(statusHistory -> statusHistory.getFromStatus().equals(issue.getJiraStatus())).findFirst()
+					.orElse(null);
+
+			if (latestClosedStatusDetail != null) {
+				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
+						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
+				DateTime latestClosedStatusTime = latestClosedStatusDetail.getActivityDate();
+				return storySprintDetails.stream()
+						.filter(statusHistory -> statusHistory.getActivityDate().isAfter(latestClosedStatusTime))
+						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getFromStatus()));
+			}
+			return false;
+		}
+
+	}
+
 
 }
