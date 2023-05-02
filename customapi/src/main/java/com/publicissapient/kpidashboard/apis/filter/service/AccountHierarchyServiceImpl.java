@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.VersionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -211,7 +212,7 @@ public class AccountHierarchyServiceImpl
 	 */
 	private void checkReleasedStatus(List<AccountHierarchy> releaseHierarchies, List<String> releaseNodeId) {
 		releaseHierarchies.stream().filter(
-						accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.RELEASED))
+						accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(VersionDetails.RELEASED))
 				.forEach(accountHierarchy -> {
 					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate())
 							&& DateUtil.isWithinDateRange(
@@ -231,7 +232,7 @@ public class AccountHierarchyServiceImpl
 	 */
 	private void checkUnreleasedStatus(List<AccountHierarchy> releaseHierarchies, List<String> releaseNodeId) {
 		releaseHierarchies.stream().filter(
-				accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.UNRELEASED))
+				accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(VersionDetails.UNRELEASED))
 				.forEach(accountHierarchy -> {
 					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate())
 							&& DateUtil.stringToLocalDate(accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT)

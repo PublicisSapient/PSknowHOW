@@ -70,4 +70,6 @@ public class JiraProcessorConfig {
 	private long subsequentApiCallDelayInMilli;
 	private String jiraVersionApi;
 	private String jiraCloudVersionApi;
+	private String jiraServerVersionReportApi;
+	private String jiraCloudVersionReportApi;
 }

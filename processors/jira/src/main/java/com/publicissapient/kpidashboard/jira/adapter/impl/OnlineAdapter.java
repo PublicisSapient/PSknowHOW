@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +48,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.VersionDetails;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -619,7 +621,6 @@ public class OnlineAdapter implements JiraAdapter {
 
     private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
             throws MalformedURLException {
-
         Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
         boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
         String serverURL = jiraProcessorConfig.getJiraVersionApi();
@@ -630,6 +631,40 @@ public class OnlineAdapter implements JiraAdapter {
         String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
         return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 
+    }
+
+    private Map<String,List<String>> getStatusCategory(ProjectConfFieldMapping projectConfig)
+            throws IOException {
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        String apiEndPoint = connectionOptional.map(Connection::getApiEndPoint).orElse("/");
+        URL url = new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + StringUtils.removeEnd(apiEndPoint, "/") + "/status");
+        return parseStatusCategory(getDataFromServer(projectConfig, (HttpURLConnection) url.openConnection()));
+    }
+
+    private Map<String,List<String>> parseStatusCategory(String dataFromServer) {
+        Map<String,List<String>> stringListMap = new HashMap<>();
+        if (StringUtils.isNotBlank(dataFromServer)) {
+            try {
+                JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+                if (null != obj) {
+                    ((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+                        String statusId = getOptionalString((JSONObject) values, "id");
+                        String optionalString = getOptionalString((JSONObject) ((JSONObject) values).get("statusCategory"), "key");
+						stringListMap.computeIfPresent(optionalString, (k, v) -> {
+							v.add(statusId);
+							return v;
+						});
+                        stringListMap.computeIfAbsent(optionalString, k -> new LinkedList<>()).add(statusId);
+
+                    });
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return stringListMap;
     }
 
     private void getReport(String sprintReportObj, SprintDetails sprint, ProjectConfFieldMapping projectConfig,
@@ -944,9 +979,9 @@ public class OnlineAdapter implements JiraAdapter {
 				URL url = getVersionUrl(projectConfig);
 				versionLog.setUrl(url.toString());
 				URLConnection connection = url.openConnection();
-				parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
+                parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
 				versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-			}
+            }
 
 		} catch (RestClientException rce) {
 			log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, versionLog));
@@ -957,9 +992,43 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 		return projectVersionList;
 	}
-    
 
-	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
+    @Override
+    public void getVersionReport(ProjectConfFieldMapping projectConfig, String boardId, List<ProjectVersion> projectVersionList) {
+        Map<String, List<String>> statusCategory = null;
+        try {
+            statusCategory = getStatusCategory(projectConfig);
+            for (ProjectVersion projectVersion : projectVersionList) {
+                parseVersionReport(statusCategory, projectConfig, boardId, projectVersion.getId().toString());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void parseVersionReport(Map<String, List<String>> statusCategory, ProjectConfFieldMapping projectConfig, String boardId, String versionId) throws IOException {
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+        String serverURL = jiraProcessorConfig.getJiraServerVersionReportApi();
+        if (isCloudEnv) {
+            serverURL = jiraProcessorConfig.getJiraCloudVersionReportApi();
+        }
+        serverURL = serverURL.replace("{rapidViewId}", boardId).replace("{versionId}", versionId);
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        URL url = new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+        processVersionReport(getDataFromServer(projectConfig, (HttpURLConnection) url.openConnection()),statusCategory);
+
+    }
+
+    private void processVersionReport(String dataFromServer, Map<String, List<String>> statusCategory) {
+        VersionDetails versionDetails= new VersionDetails();
+
+    }
+
+
+    private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
 		if (StringUtils.isNotBlank(dataFromServer)) {
 			try {
 				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
