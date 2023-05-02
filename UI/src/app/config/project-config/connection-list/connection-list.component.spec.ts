@@ -1064,23 +1064,22 @@ describe('ConnectionListComponent', () => {
       password: undefined,
       pat: undefined,
       privateKey: undefined,
-      type: 'Azure',
+      type: 'Jira',
       username: undefined,
     };
-    component.onChangeConnection(fakeEvent);
+    component.onChangeConnection();
     fixture.detectChanges();
     expect(component.selectedConnectionType).toBe(fakeEvent.type);
     expect(component.testConnectionMsg).toBe('');
   });
 
   it('should allow user to initialize new connection on click of "New Connection" button', () => {
-    component.selectedConnectionType = 'Jira';
+    component.selectedConnectionType = 'Bitbucket';
     component.createConnection();
     fixture.detectChanges();
     expect(component.submitted).toBeFalse();
     expect(component.connectionDialog).toBeTrue();
     expect(component.isNewlyConfigAdded).toBeTrue();
-    expect(component.disableConnectionTypeDropDown).toBeFalse();
   });
 
   it('should enable fields depending on inputs', () => {
@@ -1187,10 +1186,9 @@ describe('ConnectionListComponent', () => {
     component.editConnection(connection);
     fixture.detectChanges();
     expect(component.connection).toEqual({ ...connection });
-    expect(component.connectionDialog).toBeTrue();
+    expect(component.jiraConnectionDialog).toBeTrue();
     expect(component.isNewlyConfigAdded).toBeFalse();
     expect(component.selectedConnectionType).toBe('Jira');
-    expect(component.disableConnectionTypeDropDown).toBeTrue();
   });
 
   it('should get zypherURL', () => {
