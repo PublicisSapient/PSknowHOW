@@ -92,7 +92,6 @@ public class JiraServiceR {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
-	List<String> totalIssuesList = new ArrayList<>();
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call
@@ -147,8 +146,10 @@ public class JiraServiceR {
 				if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory()) &&
 						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
 					fetchSprintDetails(kpiRequest.getIds());
-					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+					List<String> sprintIssuesList = createIssuesList(filteredAccountDataList.get(0)
+							.getBasicProjectConfigId().toString());
+					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
+					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
 				}
 
 				// set filter value to show on trend line. If sub-projects are
@@ -326,45 +327,45 @@ public class JiraServiceR {
 		return sprintDetails.stream().findFirst().orElse(null);
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId) {
-		createIssuesList(basicProjectConfigId);
-		jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssuesList, basicProjectConfigId);
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
+		jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList, basicProjectConfigId);
 	}
 
-	private void createIssuesList(String basicProjectConfigId) {
-		Set<SprintIssue> issuesList = new HashSet<>();
-		sprintDetails.stream().filter(sprintDetails1 ->
-						sprintDetails1.getBasicProjectConfigId().toString().equals(basicProjectConfigId))
+	private List<String> createIssuesList(String basicProjectConfigId) {
+		List<String> totalIssuesList = new ArrayList<>();
+		sprintDetails.stream().filter(sd ->
+						sd.getBasicProjectConfigId().toString().equals(basicProjectConfigId))
 				.forEach(sprintDetails1 -> {
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssues())) {
-						issuesList.addAll(sprintDetails1.getCompletedIssues());
+						totalIssuesList.addAll(sprintDetails1.getCompletedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getNotCompletedIssues())) {
-						issuesList.addAll(sprintDetails1.getNotCompletedIssues());
+						totalIssuesList.addAll(sprintDetails1.getNotCompletedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getPuntedIssues())) {
-						issuesList.addAll(sprintDetails1.getPuntedIssues());
+						totalIssuesList.addAll(sprintDetails1.getPuntedIssues().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssuesAnotherSprint())) {
-						issuesList.addAll(sprintDetails1.getCompletedIssuesAnotherSprint());
-					}
-					if (!CollectionUtils.isEmpty(sprintDetails1.getTotalIssues())) {
-						issuesList.addAll(sprintDetails1.getTotalIssues());
+						totalIssuesList.addAll(sprintDetails1.getCompletedIssuesAnotherSprint().stream()
+								.map(SprintIssue::getNumber).collect(Collectors.toList()));
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getAddedIssues())) {
 						totalIssuesList.addAll(sprintDetails1.getAddedIssues());
 					}
 				});
-		totalIssuesList.addAll(issuesList.stream().map(SprintIssue::getNumber).collect(Collectors.toList()));
+		return totalIssuesList;
 	}
 
 	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
 		return jiraIssueList;
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList) {
 		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn
-				(totalIssuesList, Collections.singletonList(basicProjectConfigId));
+				(sprintIssuesList, Collections.singletonList(basicProjectConfigId));
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
