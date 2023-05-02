@@ -679,6 +679,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           break;
         default:
           this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase() || item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' '))[0]?.kpis;
+          break;
       }
       const kpiObj = {};
       let count = 0;
