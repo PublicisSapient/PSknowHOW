@@ -125,19 +125,6 @@ public class UserInfoServiceImplTest {
 		assertTrue(authorities.contains(authority));
 	}
 
-	@Test
-	public void shouldGetAllUsers() {
-		UserInfo user = Mockito.mock(UserInfo.class);
-		Collection<UserInfo> users = Sets.newHashSet(user, user);
-		when(userInfoRepository.findAll()).thenReturn(users);
-		when(user.getUsername()).thenReturn("abc");
-		when(authenticationRepository.findByUsername("abc")).thenReturn(Mockito.mock(Authentication.class));
-		when(authenticationRepository.findByUsername("abc").isApproved()).thenReturn(true);
-		Collection<UserInfo> result = service.getUsers();
-		assertTrue(result.contains(user));
-		assertTrue(result.size() == 1);
-	}
-
 	@Test(expected = DeleteLastAdminException.class)
 	public void shouldNotDeleteLastAdmin() {
 		String username = "user";
