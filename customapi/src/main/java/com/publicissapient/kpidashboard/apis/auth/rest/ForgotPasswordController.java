@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -89,9 +91,9 @@ public class ForgotPasswordController {
 	 *         <tt>logError</tt> message and <tt>null</tt> incase of
 	 *         <tt>UnknownHostException</tt> occurred.
 	 */
-	@RequestMapping(value = "/forgotPassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ServiceResponse processForgotPassword(HttpServletRequest httpServletRequest,
-			@RequestBody ForgotPasswordRequest request) {
+
+	@RequestMapping(value = "/forgotPassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> processForgotPassword(@RequestBody ForgotPasswordRequest request, HttpServletRequest httpServletRequest) {
 		boolean isSuccess = false;
 		log.info("ForgotPasswordController: requested mail {}", request.getEmail());
 		Authentication authentication = null;
@@ -104,13 +106,12 @@ public class ForgotPasswordController {
 				auth.setEmail(authentication.getEmail());
 				authentication = auth;
 			}
+			return ResponseEntity.ok().body(new ServiceResponse(isSuccess, "Success", authentication));
 		} catch (UnknownHostException e) {
 			log.error("UnknownHostException", e);
 			log.error("ForgotPasswordController: Mail can not be sent to {}", request.getEmail());
-			return new ServiceResponse(isSuccess, "logError", null);
+			return ResponseEntity.badRequest().body(new ServiceResponse(isSuccess, "logError", null));
 		}
-
-		return new ServiceResponse(isSuccess, "Success", authentication);
 	}
 
 	/**
@@ -155,7 +156,7 @@ public class ForgotPasswordController {
 	 *         response code <tt>-14</tt>
 	 */
 	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ServiceResponse resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
+	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
 		boolean isSuccess = false;
 		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());
 		Authentication authentication = null;
@@ -167,13 +168,13 @@ public class ForgotPasswordController {
 				auth.setEmail(authentication.getEmail());
 				authentication = auth;
 			}
-
 		} catch (com.publicissapient.kpidashboard.common.exceptions.ApplicationException e) {
 			log.error("Error in ForgotPasswordController: resetPassword()", e);
-			return new ServiceResponse(false, e.getMessage(), null);
+			return ResponseEntity.badRequest().body(new ServiceResponse(isSuccess, e.getMessage(), null));
 		}
-		return new ServiceResponse(isSuccess, "success", authentication);
+		return ResponseEntity.ok().body(new ServiceResponse(isSuccess, "Success", authentication));
 	}
+
 
 	/**
 	 * 
