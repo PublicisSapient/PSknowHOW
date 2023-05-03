@@ -587,8 +587,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		return hoverMap;
 	}
-  
-  =======
+
 	/**
 	 * Populates Validation Data Object
 	 * 
