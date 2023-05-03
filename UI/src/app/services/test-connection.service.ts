@@ -31,12 +31,13 @@ export class TestConnectionService {
 
   /** get: test JIRA connection */
 
-  testJira(baseUrl, apiEndPoint, username, password, vault, patOAuthToken, jaasKrbAuth, jaasConfigFilePath, krb5ConfigFilePath, jaasUser, samlEndPoint): Observable<any> {
+  testJira(baseUrl, apiEndPoint, username, password, vault, bearerToken, patOAuthToken, jaasKrbAuth, jaasConfigFilePath, krb5ConfigFilePath, jaasUser, samlEndPoint): Observable<any> {
     const postData = {
       baseUrl,
       username,
       password: password ? this.rsa.encrypt(password) : '',
       vault,
+      bearerToken,
       patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : '',
       jaasKrbAuth,
       jaasConfigFilePath,
