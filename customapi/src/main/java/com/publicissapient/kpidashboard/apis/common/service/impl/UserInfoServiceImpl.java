@@ -18,6 +18,34 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
@@ -41,30 +69,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
-
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
+
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -123,12 +129,21 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public Collection<UserInfo> getUsers() {
-        Iterable<UserInfo> userInfoList = this.userInfoRepository.findAll();
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        List<String> userNames = userInfoList.stream()
+        	    .map(UserInfo::getUsername)
+        	    .collect(Collectors.toList());
+
+        List<Authentication> authentications=authenticationRepository.findByUsernameIn(userNames);
+
+    	Map<String, Authentication> authMap = authentications.stream()
+				.collect(Collectors.toMap(Authentication::getUsername, Function.identity()));
+
         List<UserInfo> nonApprovedUserList = new ArrayList<>();
 
         userInfoList.forEach(userInfo -> {
 
-            Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
+            Authentication auth = authMap.get(userInfo.getUsername());
             if (auth != null) {
                 userInfo.setEmailAddress(auth.getEmail());
                 if (!auth.isApproved()) {
