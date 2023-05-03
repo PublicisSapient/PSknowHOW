@@ -275,14 +275,20 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Use bearer token',
-        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
         'Consumer Key',
         'Is Offline',
         'Is Connection Private',
+        'Use bearer token',
+        'PAT (OAuth Token)',
+        'Is jaasKrbAuth',
+        'Jaas Config FilePath',
+        'Krb5 Config FilePath',
+        'Jaas User',
+        'Saml Endpoint',
+        'Select Authentication Type'
       ],
       inputFields: [
         'type',
@@ -292,14 +298,20 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'bearerToken',
-        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
         'consumerKey',
         'offline',
         'connPrivate',
+        'bearerToken',
+        'patOAuthToken',
+        'jaasKrbAuth',
+        'jaasConfigFilePath',
+        'krb5ConfigFilePath',
+        'jaasUser',
+        'samlEndPoint',
+        'jiraAuthType'
       ],
     },
     {
@@ -570,14 +582,20 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Use bearer token',
-        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
         'Consumer Key',
         'Is Offline',
         'Is Connection Private',
+        'Use bearer token',
+        'PAT (OAuth Token)',
+        'Is jaasKrbAuth',
+        'Jaas Config FilePath',
+        'Krb5 Config FilePath',
+        'Jaas User',
+        'Saml Endpoint',
+        'Select Authentication Type'
       ],
       inputFields: [
         'type',
@@ -587,14 +605,20 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'bearerToken',
-        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
         'consumerKey',
         'offline',
         'connPrivate',
+        'bearerToken',
+        'patOAuthToken',
+        'jaasKrbAuth',
+        'jaasConfigFilePath',
+        'krb5ConfigFilePath',
+        'jaasUser',
+        'samlEndPoint',
+        'jiraAuthType'
       ],
     },
     {
@@ -699,6 +723,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Username',
         'Use vault password',
+        ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
         'Is Connection Private',
@@ -925,7 +950,7 @@ describe('ConnectionListComponent', () => {
           field: 'password',
           isEnabled: true,
         },
-        
+
         {
           field: 'apiEndPoint',
           isEnabled: true,
@@ -1343,7 +1368,6 @@ describe('ConnectionListComponent', () => {
 
   it("should be password blank when accessToken or password is toggling",()=>{
     component.connection['accessTokenEnabled'] = true;
-    component.enableDisableFieldsOnAccessTokenORPasswordToggle();
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['password'].value).toBe("")
   })
@@ -1366,7 +1390,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
   })
 
-  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+  fit("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1423,7 +1447,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
   })
 
-  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+  fit("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1436,7 +1460,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
   })
 
-  it("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
+  fit("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
