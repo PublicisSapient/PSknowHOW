@@ -31,6 +31,7 @@ import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Table } from 'primeng/table';
+import { MessageService } from 'primeng/api';
 
 declare let require: any;
 
@@ -72,10 +73,11 @@ export class IterationComponent implements OnInit, OnDestroy {
   upDatedConfigData;
   timeRemaining = 0;
   displayModal = false;
-  modalDetails: object = {
+  modalDetails= {
     header: '',
     tableHeadings: [],
-    tableValues: []
+    tableValues: [],
+    kpiId:''
   };
   kpiDropdowns = {};
   trendBoxColorObj: any;
@@ -84,8 +86,13 @@ export class IterationComponent implements OnInit, OnDestroy {
   tableColumnData= {};
   tableColumnForm={};
   excludeColumnFilter=[];
+  excludeColumns=[];
+  selectedColumns=[];
+  tableColumns=[];
+  tableHeaders=[];
+  filteredColumn;
 
-  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
+  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
         this.allKpiArray = [];
@@ -681,46 +688,130 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   handleArrowClick(kpi, label, tableValues) {
-    this.tableComponent.clear();
-    this.displayModal = true;
+    const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     const idx = this.ifKpiExist(kpi?.kpiId);
-    if (this.allKpiArray[idx]?.modalHeads) {
-      this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
-    } else if (this.allKpiArray[idx]?.excelColumnInfo) {
-      this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.excelColumnInfo;
-    }
-    this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
-    this.modalDetails['tableValues'] = tableValues;
-    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority','Linked Stories'];
-    this.generateTableColumnData();
+    this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
+    this.httpService.getkpiColumns(basicConfigId,kpi.kpiId).subscribe(response =>{
+      if(response['success']){
+        this.tableColumns = response['data']['kpiColumnDetails'];
+        this.selectedColumns=this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
+        this.tableComponent.clear();
+        this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
+        this.tableHeaders= this.selectedColumns;
+        this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
+        this.modalDetails['kpiId'] = kpi.kpiId;
+        this.modalDetails['tableValues'] = tableValues;
+        this.generateExcludeColumnsFilterList(tableValues[0]);
+        this.generateTableColumnData();
+        this.displayModal = true;
+      }
+    });
   }
 
+  generateTableColumnsFilterData(tableValue){
+    const unSelectedColumn = [];
+    const defaultAndSelectedColumns = this.tableColumns.map(col => col.columnName);
+    this.modalDetails['tableHeadings'] = [...new Set([...tableValue,...defaultAndSelectedColumns])];
+    this.modalDetails['tableHeadings'] = this.modalDetails['tableHeadings'].filter(colName => !this.excludeColumns.includes(colName));
+    this.modalDetails['tableHeadings'].forEach(col =>{
+      if(!defaultAndSelectedColumns.includes(col)){
+        unSelectedColumn.push({
+          columnName:col,
+          isDefault: false,
+          isShown: false,
+          order: 0
+        });
+      }
+    });
 
+    this.tableColumns.push(...unSelectedColumn);
+  }
 
+  generateExcludeColumnsFilterList(tableValue){
+  this.excludeColumnFilter = ['Linked Defect', 'Defect Priority','Linked Stories'];
+    for(const colunmName in tableValue){
+      if(typeof tableValue[colunmName] == 'object'){
+        this.excludeColumnFilter.push(colunmName);
+      }
+    }
+  }
+
+  onFilterClick(columnName){
+    this.filteredColumn =columnName;
+  }
+
+  onFilterBlur(columnName){
+    this.filteredColumn= this.filteredColumn === columnName ? '' : this.filteredColumn;
+  }
+
+  applyColumnFilter(){
+    this.saveKpiColumnsConfig(this.selectedColumns);
+  }
+
+  saveTableColumnOrder(){
+    if(this.tableComponent.columns.length > 0){
+      this.saveKpiColumnsConfig(this.tableComponent.columns);
+    }
+  }
+
+  saveKpiColumnsConfig(selectedColumns: any[]){
+    const postData={
+      kpiId:'',
+      basicProjectConfigId:'',
+      kpiColumnDetails:[]
+    };
+    postData.kpiId=this.modalDetails['kpiId'];
+    postData['basicProjectConfigId']=this.service.selectedTrends[0].basicProjectConfigId;
+    postData['kpiColumnDetails']= this.tableColumns.filter(col =>{
+      const selectedColIndex = selectedColumns.findIndex(colName => colName === col.columnName);
+      if(selectedColIndex !== -1){
+        col.isShown = true;
+        col.order=selectedColIndex;
+        return true;
+      } else{
+        col.isShown =false;
+        return false;
+      }
+    });
+    postData['kpiColumnDetails'].sort((a,b) => a.order -b.order);
+    this.tableHeaders =  postData['kpiColumnDetails'].map(col => col.columnName);
+    this.httpService.postkpiColumnsConfig(postData).subscribe(response =>{
+      if (response && response['success'] && response['data']) {
+        this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
+    } else {
+        this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
+    }
+    });
+  }
 
   generateTableColumnData(){
     this.modalDetails['tableHeadings'].forEach(colName =>{
-      this.tableColumnData[colName?.kpiColumn ? colName?.kpiColumn : colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName?.kpiColumn ? colName?.kpiColumn : colName]))].map(colData => ({name:colData,value:colData}));
-      this.tableColumnForm[colName?.kpiColumn ? colName?.kpiColumn : colName]= [];
+      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({name:colData,value:colData}));
+      this.tableColumnForm[colName]= [];
     });
 
     this.tableComponent.sortMode = 'multiple';
     this.tableComponent.multiSortMeta = [{field: 'Assignee', order: 1},{field: 'Due Date', order: -1}];
+    this.tableComponent.sortMultiple();
   }
 
   generateExcel(exportMode) {
-    let excelData = [];
-    if (exportMode === 'all') {
-      excelData = this.modalDetails['tableValues'];
-    } else {
-      excelData = this.tableComponent?.filteredValue ?  this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
-    }
-    let tableData = {
+    const tableData = {
       columns: [],
       excelData: []
     };
-    this.modalDetails['tableHeadings'].forEach(colHeader => {
-      tableData.columns.push(colHeader?.kpiColumn ? colHeader?.kpiColumn : colHeader);
+    let excelData = [];
+    let columns =[];
+    if (exportMode === 'all') {
+      excelData = this.modalDetails['tableValues'];
+      columns = this.modalDetails['tableHeadings'];
+    } else {
+      excelData = this.tableComponent?.filteredValue ?  this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      columns = this.tableHeaders;
+    }
+
+    columns.forEach(colHeader => {
+      tableData.columns.push(colHeader);
     });
 
     excelData.forEach(colData => {

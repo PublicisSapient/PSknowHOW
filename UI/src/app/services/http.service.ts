@@ -136,6 +136,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
+    private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
+    private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
 
     /**get analytics on/off switch */
@@ -698,6 +700,14 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     saveOrUpdateAssignee(postData){
         return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
+    }
+
+    getkpiColumns(projectBasicConfigId,kpiId){
+        return this.http.get(this.getKpiColumnsUrl+'/'+projectBasicConfigId+'/'+kpiId);
+    }
+
+    postkpiColumnsConfig(postData){
+        return this.http.post(this.postKpiColumnsConfigUrl,postData);
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
