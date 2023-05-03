@@ -244,14 +244,14 @@
           </ng-container>
             <ng-container *ngIf="item !== 'Issue Id'">
 
-              <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small" [ngClass]="{'text-center':  x[item].length <= 1}">
+              <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
                   <a [href]="k.value" class="p-d-block text-blue" target="_blank" *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
                   <ng-template #showText>{{k.value}}<br></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td [ngClass]="{'text-center': x[item].length <= 1}">{{x[item]}}</td>
+                <td>{{x[item]}}</td>
               </ng-template>
             </ng-container>
 
