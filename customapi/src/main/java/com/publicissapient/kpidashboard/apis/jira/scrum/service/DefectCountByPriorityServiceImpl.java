@@ -194,16 +194,12 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {
 				SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-				String sprintStartDate = sprintDetails.getActivatedDate() != null ? sprintDetails.getActivatedDate()
-						: sprintDetails.getStartDate();
-				String sprintEndDate = sprintDetails.getCompleteDate() != null ? sprintDetails.getCompleteDate()
-						: sprintDetails.getEndDate();
 				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
 				List<JiraIssue> createDuringIteration = allCompletedDefects.stream()
 						.filter(jiraIssue -> DateUtil.isWithinDateRange(
 								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
-								LocalDate.parse(sprintStartDate.split("\\.")[0], DATE_TIME_FORMATTER),
-								LocalDate.parse(sprintEndDate.split("\\.")[0], DATE_TIME_FORMATTER)))
+								LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER),
+								LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER)))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseStatusList = getPriorityWiseIssueList(
 						allCompletedDefects, createDuringIteration);
