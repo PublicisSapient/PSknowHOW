@@ -310,4 +310,7 @@ public class KPIExcelData {
     @JsonProperty("Assignee")
     private String assignee;
 
+    @JsonProperty("Defect added after Sprint Start")
+    private String defectAddedAfterSprintStart;
+
 }

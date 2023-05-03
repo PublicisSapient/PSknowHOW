@@ -24,6 +24,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -217,12 +219,9 @@ public class ProjectBasicConfigController {
 	 */
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'DELETE_PROJECT')")
 	@DeleteMapping(value = "/{basicProjectConfigId}")
-	public ServiceResponse deleteProject(@PathVariable String basicProjectConfigId) {
+	public ResponseEntity<ServiceResponse> deleteProject(@PathVariable String basicProjectConfigId) {
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
-
-		return new ServiceResponse(true, projectBasicConfig.getProjectName() + " deleted successfully",
-				projectBasicConfig);
-
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, projectBasicConfig.getProjectName() + " deleted successfully",
+				projectBasicConfig));
 	}
-
 }

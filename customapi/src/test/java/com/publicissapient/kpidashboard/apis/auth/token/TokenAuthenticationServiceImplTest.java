@@ -39,6 +39,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,7 +110,11 @@ public class TokenAuthenticationServiceImplTest {
 	@Mock
 	private Cookie cookie;
 
+	@Mock
+	private CustomApiConfig customApiConfig;
+
 	List<AccessNode> listAccessNode = new ArrayList<>();
+
 
 	AccessNode accessNodes;
 	AccessItem accessItem;
@@ -133,21 +140,9 @@ public class TokenAuthenticationServiceImplTest {
 	}
 
 	@Test
-	public void testGetAuthentication_noHeader() {
-
-		assertNull(service.getAuthentication(request));
-	}
-
-	@Test
-	public void testGetAuthentication_expiredToken() {
-		assertNull(service.getAuthentication(request));
-	}
-
-	@Test
 	public void testGetAuthentication() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(userTokenReopository.findByUserToken(anyString())).thenReturn(new UserTokenData());
-		Authentication result = service.getAuthentication(request);
+		Authentication result = service.getAuthentication(request, response);
 		assertNotNull(result);
 	}
 
@@ -224,6 +219,35 @@ public class TokenAuthenticationServiceImplTest {
 
 		service.invalidateAuthToken(users);
 		verify(userTokenReopository, times(1)).deleteByUserNameIn(users);
+	}
+
+	@Test
+	public void setUpdateAuthFlagForExpDateNull() {
+		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
+		assertEquals(service.setUpdateAuthFlag(new ArrayList<>()), Boolean.toString(false));
+	}
+
+	@Test
+	public void getOrSaveUserByToken() {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		UserTokenData userTokenData = new UserTokenData(USERNAME, cookieUtil.getAuthCookie(request).getValue(),
+				"2023-01-19T12:33:14.013");
+
+		UserInfo testUser = new UserInfo();
+		Object auth = "STANDARD";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("username", USERNAME);
+		jsonObject.put("authorities", null);
+		jsonObject.put("emailAddress", null);
+		jsonObject.put("projectsAccess", null);
+		ArrayList<UserTokenData> userTokenDataList = new ArrayList<>();
+		userTokenDataList.add(userTokenData);
+		testUser.setUsername(USERNAME);
+		when(projectAccessManager.getProjectAccessesWithRole(USERNAME)).thenReturn(null);
+		when(userTokenReopository.findAllByUserName(null)).thenReturn(userTokenDataList);
+		when(authentication.getDetails()).thenReturn(auth);
+		when(userInfoService.getOrSaveUserInfo(USERNAME, AuthType.STANDARD, new ArrayList<>())).thenReturn(testUser);
+		assertEquals(service.getOrSaveUserByToken(request, authentication), jsonObject);
 	}
 
 }

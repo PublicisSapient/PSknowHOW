@@ -1,5 +1,6 @@
 <div *ngIf="!noKpis else noKpiTemplate" class="backlog-screen">
   <div id="message"></div>
+  <ng-container *ngIf="!noProjects else noProjectsTemplate">
   <ng-container *ngIf="!noSprints else noSprintsTemplate">
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix"></div>
@@ -124,10 +125,16 @@
       </div>
     </div>
   </ng-container>
+</ng-container>
   <ng-template #noSprintsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
       <h2 class="msg p-ml-3 p-mr-3">The selected project needs to be configured followed by the processor run from
         'Settings' for the KPI's to show up</h2>
+    </div>
+  </ng-template>
+  <ng-template #noProjectsTemplate>
+    <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
+      <h2 class="msg">Access to atleast one Scrum Project is required for the Backlog dashboard to be enabled</h2>
     </div>
   </ng-template>
 </div>
@@ -137,13 +144,13 @@
   </div>
 </ng-template>
 
+
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
     {{modalDetails['header']}}
     <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
       class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
   </p-header>
-
   <div class="dialog-body p-mb-4">
     <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img">
       <ng-template pTemplate="header">

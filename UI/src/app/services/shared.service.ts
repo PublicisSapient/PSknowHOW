@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,7 +30,7 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
@@ -70,7 +70,7 @@ export class SharedService implements OnInit {
   selectedFilterOptionObs = this.selectedFilterOption.asObservable();
   noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
-  noProjects = new Subject<any>();
+  noProjects = new BehaviorSubject<boolean>(false);
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<boolean>(true);
   showTableViewObs = this.showTableView.asObservable();
@@ -195,7 +195,10 @@ export class SharedService implements OnInit {
     this.sharedObject.selectedTab = selectedTab;
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
-    this.passDataToDashboard.emit(this.sharedObject);
+    //emit once navigation complete
+    setTimeout(()=>{
+      this.passDataToDashboard.emit(this.sharedObject);
+    },0);
   }
 
   /** KnowHOW Lite */
@@ -273,7 +276,16 @@ export class SharedService implements OnInit {
   setShowTableView(val){
     this.showTableView.next(val);
   }
-  setGlobalDownload(val){
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
+  }
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
   setSelectedLevel(val){

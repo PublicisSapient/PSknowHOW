@@ -187,6 +187,13 @@ public class CustomApiConfig {// NOPMD
 	private int numberOfFutureDaysForKanbanTestExecution;
 	private int jiraXaxisMonthCount;
 
+	private boolean ssoLogin;
+
+	private Map<String,String> mailTemplate;
+
+	@Value("${flag.mailWithoutKafka}")
+	private boolean mailWithoutKafka;
+
 	private int pushDataLimit;//limit of data allowed to push through api
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
@@ -209,6 +216,11 @@ public class CustomApiConfig {// NOPMD
 	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
 		this.exposeAPITokenExpiryDays = exposeAPITokenExpiryDays;
 	}
+
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
 
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
@@ -643,7 +655,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * JIRA Test connection API
-	 * 
+	 *
 	 * @return
 	 */
 	public String getJiraTestConnection() {
@@ -652,7 +664,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * Sonar Test connection API
-	 * 
+	 *
 	 * @return
 	 */
 	public String getSonarTestConnection() {
@@ -661,7 +673,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * teamcity Test connection API
-	 * 
+	 *
 	 * @return
 	 */
 	public String getTeamcityTestConnection() {
@@ -670,7 +682,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * bamboo Test connection API
-	 * 
+	 *
 	 * @return
 	 */
 	public String getBambooTestConnection() {
@@ -679,7 +691,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * Jenkins Test connection API
-	 * 
+	 *
 	 * @return
 	 */
 	public String getJenkinsTestConnection() {
@@ -688,7 +700,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * Bitbucket Test Connection API path
-	 * 
+	 *
 	 * @return
 	 */
 	public String getBitbucketTestConnection() {
@@ -732,7 +744,7 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 * 
+	 *
 	 * @return emmStatsMonth
 	 */
 
@@ -741,7 +753,7 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getKafkaMailTopic() {
@@ -907,12 +919,68 @@ public class CustomApiConfig {// NOPMD
 		this.numberOfFutureDaysForKanbanTestExecution = numberOfFutureDaysForKanbanTestExecution;
 	}
 
+	public boolean isSsoLogin() {
+		return ssoLogin;
+	}
+
+	public void setSsoLogin(boolean ssoLogin) {
+		this.ssoLogin = ssoLogin;
+	}
+
+	public Map<String, String> getMailTemplate() {
+		return mailTemplate;
+	}
+
+	public void setMailTemplate(Map<String, String> mailTemplate) {
+		this.mailTemplate = mailTemplate;
+	}
+
+	public boolean isMailWithoutKafka() {
+		return mailWithoutKafka;
+	}
+
+	public void setMailWithoutKafka(boolean mailWithoutKafka) {
+		this.mailWithoutKafka = mailWithoutKafka;
+  }
 	public String getHostPath() {
 		return hostPath;
 	}
 
 	public void setHostPath(String hostPath) {
 		this.hostPath = hostPath;
+
+	}
+
+	public void setSamlTokenStartString(String samlTokenStartString) {
+		this.samlTokenStartString = samlTokenStartString;
+	}
+
+	public void setSamlTokenEndString(String samlTokenEndString) {
+		this.samlTokenEndString = samlTokenEndString;
+	}
+
+	public void setSamlUrlStartString(String samlUrlStartString) {
+		this.samlUrlStartString = samlUrlStartString;
+	}
+
+	public void setSamlUrlEndString(String samlUrlEndString) {
+		this.samlUrlEndString = samlUrlEndString;
+	}
+
+	public String getSamlTokenStartString() {
+		return samlTokenStartString;
+	}
+
+	public String getSamlTokenEndString() {
+		return samlTokenEndString;
+	}
+
+	public String getSamlUrlStartString() {
+		return samlUrlStartString;
+	}
+
+	public String getSamlUrlEndString() {
+		return samlUrlEndString;
 	}
 	
 	public int getSprintCountForBackLogStrength() {

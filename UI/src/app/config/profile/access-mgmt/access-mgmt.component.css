@@ -170,3 +170,12 @@
     border: 1px solid rgba(0, 0, 0, 0.6);
     background: transparent;
 }
+.p-input-custom{
+    height: 46px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.add-btn-custom{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

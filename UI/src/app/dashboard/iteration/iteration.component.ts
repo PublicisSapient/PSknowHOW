@@ -95,8 +95,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
-      this.processKpiConfigData();
+      if(globalConfig){
+        this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
+        this.processKpiConfigData();
+      }
     }));
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
