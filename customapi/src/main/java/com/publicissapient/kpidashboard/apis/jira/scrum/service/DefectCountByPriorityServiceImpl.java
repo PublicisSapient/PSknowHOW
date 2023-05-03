@@ -255,7 +255,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					middleOverallData.setValue(trendValueListOverAll);
 					middleOverallData.setSSprintID(latestSprint.getSprintFilter().getId());
 					middleOverallData.setSSprintName(latestSprint.getSprintFilter().getName());
-					middleOverallData.setKpiGroup("Priority");
+					middleOverallData.setKpiGroup(TOTAL_ISSUES);
 					middleOverallData.setSProjectName(latestSprint.getProjectFilter().getName());
 					middleTrendValueListOverAll.add(middleOverallData);
 					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,

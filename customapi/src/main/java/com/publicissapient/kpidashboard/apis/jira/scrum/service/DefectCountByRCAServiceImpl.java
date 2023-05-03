@@ -55,7 +55,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByRCAServiceImpl.class);
 
 	public static final String UNCHECKED = "unchecked";
-	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "Total Issues";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -254,7 +253,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					overallData.setValue(overallRCACountMapAggregate);
 					overallData.setSSprintID(latestSprint.getSprintFilter().getId());
 					overallData.setSSprintName(latestSprint.getSprintFilter().getName());
-					overallData.setKpiGroup(OVERALL);
+					overallData.setKpiGroup(TOTAL_ISSUES);
 					overallData.setSProjectName(latestSprint.getProjectFilter().getName());
 					trendValueListOverAll.add(overallData);
 					// add one more data count group and data count for middle level structure to
