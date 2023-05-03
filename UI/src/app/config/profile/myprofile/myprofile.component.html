@@ -22,7 +22,7 @@
       <h4 class="form_title">User Name:</h4>
       <span class="sub-text">{{userName}}</span>
     </div>
-    <div class="p-md-4 long-text float-left pad-r-0 pad-l-0">
+    <div class="p-md-4 long-text float-left pad-r-0 pad-l-0" *ngIf="!ssoLogin">
       <h4 class="form_title">Configured email:</h4>
       <span class="sub-text">{{userEmail}}</span>
     </div>
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--'">
+  <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
     <div class="card-header bg-warning border-warning">
       Configure Email
     </div>
@@ -174,7 +174,7 @@
       </div>
     </a>
 
-    <a *ngIf="!adLogin" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
+    <a *ngIf="!adLogin && !ssoLogin" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
       routerLink="/dashboard/Config/Profile/UserSettings">
       <div class="action-box clearfix bg-role">
         <div class="action-icon float-left">

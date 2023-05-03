@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRes
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.impl.ProcessorAsynchJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.service.BearerTokenAuthenticationHandler;
+import com.publicissapient.kpidashboard.jira.spnego.SpnegoAuthenticationHandler;
 
 public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestClientFactory {
 
@@ -68,5 +69,18 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
      */
     public ProcessorJiraRestClient createWithBearerTokenAuthentication(final URI serverUri, final String bearerToken, JiraProcessorConfig jiraProcessorConfig) {
         return create(serverUri, new BearerTokenAuthenticationHandler(bearerToken), jiraProcessorConfig);
+
+    }
+
+    /** Creates JIRA client with Basic HTTP Authentication
+     *
+     * @param serverUri Jira Server URI
+     * @param authCookies Authorization cookies
+     * @param jiraProcessorConfig Jira processor config
+     * @return ProcessorJiraRestClient
+     */
+    public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies,
+                                                                   JiraProcessorConfig jiraProcessorConfig) {
+        return create(serverUri, new SpnegoAuthenticationHandler(authCookies), jiraProcessorConfig);
     }
 }

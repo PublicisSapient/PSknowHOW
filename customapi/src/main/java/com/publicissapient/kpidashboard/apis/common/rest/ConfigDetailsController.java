@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,11 +55,12 @@ public class ConfigDetailsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE)//NOSONAR
-	public ConfigDetails getConfigDetails(HttpServletRequest request) {
+	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {
 		LOGGER.info("ConfigDetailsController::getConfigDetails start");
 		ConfigDetails configDetails = configDetailService.getConfigDetails();
 		LOGGER.info("ConfigDetailsController::getConfigDetails end");
-		return configDetails;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(configDetails);
 	}
 
 }
