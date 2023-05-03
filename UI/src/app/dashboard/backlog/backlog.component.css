@@ -42,7 +42,6 @@
     border-right: 1px solid #c0c0c0;
 }
 
-
 :host::ng-deep .p-dialog {
     width: auto !important;
     max-width: 90vw !important;
