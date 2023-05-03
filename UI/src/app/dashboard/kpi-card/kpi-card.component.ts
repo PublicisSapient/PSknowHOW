@@ -48,14 +48,18 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            // this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1')?this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]:this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
         }
       }
     }));
     /** assign 1st value to radio button by default */
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
+      console.log(this.kpiData?.kpiId, this.dropdownArr)
+      console.log(this.kpiSelectedFilterObj[this.kpiData?.kpiId])
       this.radioOption = this.dropdownArr[0]?.options[0];
+      console.log(this.kpiData?.kpiId, this.radioOption)
     }
   }
 

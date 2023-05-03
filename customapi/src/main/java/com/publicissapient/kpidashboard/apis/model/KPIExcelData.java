@@ -313,4 +313,7 @@ public class KPIExcelData {
     @JsonProperty("Defect added after Sprint Start")
     private String defectAddedAfterSprintStart;
 
+    @JsonProperty("Created during Iteration")
+    private String createdDuringIteration;
+
 }

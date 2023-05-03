@@ -52,272 +52,277 @@ import java.util.stream.Collectors;
 @Component
 public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByPriorityServiceImpl.class);
+	public static final String UNCHECKED = "unchecked";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByPriorityServiceImpl.class);
+	private static final String TOTAL_ISSUES = "Total Issues";
+	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
 
-    public static final String UNCHECKED = "unchecked";
-    private static final String OVERALL = "Overall";
-    private static final String TOTAL_ISSUES = "Total Issues";
-    private static final String CREATED_DURING_ITERATION = "Created during Iteration";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    @Autowired
-    private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
-    @Autowired
-    private ConfigHelperService configHelperService;
+	@Autowired
+	private CommonServiceImpl commonService;
 
-    @Autowired
-    private CommonServiceImpl commonService;
+	private static void overallStatusCountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallStatusCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((status, statusCountValue) -> overallStatusCountMapAggregate.merge(status,
+					statusCountValue, Integer::sum));
+		}
+	}
 
-    @Override
-    public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-        return null;
-    }
+	private static int getPriorityStatusCount(Map<String, Integer> overallStatusCountMap,
+			Map<String, List<JiraIssue>> statusData, int priorityRCACount, Map<String, Integer> statusCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : statusData.entrySet()) {
+			String status = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
 
-    @Override
-    public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-                                                  KpiRequest kpiRequest) {
-        Map<String, Object> resultListMap = new HashMap<>();
-        Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-        if (null != leafNode) {
-            LOGGER.info("Defect count by Priority -> Requested sprint : {}", leafNode.getName());
-            String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-            String sprintId = leafNode.getSprintFilter().getId();
-            SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-            List<String> defectType = new ArrayList<>();
-            FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-                    .get(leafNode.getProjectFilter().getBasicProjectConfigId());
+			priorityRCACount += issues.size();
+			statusCountMap.put(status, issues.size());
+			overallStatusCountMap.merge(status, issues.size(), Integer::sum);
+		}
+		return priorityRCACount;
+	}
 
-            if (null != sprintDetails) {
-                List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-                        CommonConstant.TOTAL_ISSUES);
-                List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
-                        .orElse(Collections.emptyList());
-                Set<String> totalSprintReportDefects = new HashSet<>();
-                Set<String> totalSprintReportStories = new HashSet<>();
-                sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
-                    if (defectTypes.contains(sprintIssue.getTypeName())) {
-                        totalSprintReportDefects.add(sprintIssue.getNumber());
-                    } else {
-                        totalSprintReportStories.add(sprintIssue.getNumber());
-                    }
-                });
+	@Override
+	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
+		return null;
+	}
 
-                Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-                Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-                Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-                defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-                mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-                        CommonUtils.convertToPatternList(defectType));
-                uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
-                mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-                        Collections.singletonList(basicProjectConfigId));
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			LOGGER.info("Defect count by Priority -> Requested sprint : {}", leafNode.getName());
+			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
+			String sprintId = leafNode.getSprintFilter().getId();
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
+			List<String> defectType = new ArrayList<>();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
-                if (CollectionUtils.isNotEmpty(totalIssues)) {
-                    List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
-                    Set<JiraIssue> filtersIssuesList = KpiDataHelper
-                            .getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-                                    sprintDetails.getTotalIssues(), totalIssueList);
+			if (null != sprintDetails) {
+				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.TOTAL_ISSUES);
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+						.orElse(Collections.emptyList());
+				Set<String> totalSprintReportDefects = new HashSet<>();
+				Set<String> totalSprintReportStories = new HashSet<>();
+				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
+					if (defectTypes.contains(sprintIssue.getTypeName())) {
+						totalSprintReportDefects.add(sprintIssue.getNumber());
+					} else {
+						totalSprintReportStories.add(sprintIssue.getNumber());
+					}
+				});
 
-                    // fetched all defects which is linked to current sprint report stories
-                    List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
-                            totalSprintReportStories, uniqueProjectMap);
+				Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+				Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(defectType));
+				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
+				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+						Collections.singletonList(basicProjectConfigId));
 
-                    // filter defects which is issue type not coming in sprint report
-                    List<JiraIssue> subTaskDefects = linkedDefects.stream()
-                            .filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
-                            .collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(totalIssues)) {
+					List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
+					Set<JiraIssue> filtersIssuesList = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getTotalIssues(), totalIssueList);
 
-                    List<JiraIssue> totalSubTaskTaggedToSprint = subTaskDefects.stream()
-                            .filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-                                    && jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
-                            .collect(Collectors.toList());
+					// fetched all defects which is linked to current sprint report stories
+					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
+							totalSprintReportStories, uniqueProjectMap);
 
-                    List<JiraIssue> allIssues = new ArrayList<>();
-                    allIssues.addAll(filtersIssuesList);
-                    allIssues.addAll(totalSubTaskTaggedToSprint);
+					// filter defects which is issue type not coming in sprint report
+					List<JiraIssue> subTaskDefects = linkedDefects.stream()
+							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
+							.collect(Collectors.toList());
 
-                    resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(allIssues));
-                }
-            }
-        }
-        return resultListMap;
-    }
+					List<JiraIssue> totalSubTaskTaggedToSprint = subTaskDefects.stream()
+							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+									&& jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
+							.collect(Collectors.toList());
 
-    @Override
-    public String getQualifierType() {
-        return KPICode.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.name();
-    }
+					List<JiraIssue> allIssues = new ArrayList<>();
+					allIssues.addAll(filtersIssuesList);
+					allIssues.addAll(totalSubTaskTaggedToSprint);
 
-    @Override
-    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-            if (Filters.getFilter(k) == Filters.SPRINT) {
-                sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
-            }
-        });
-        LOGGER.info("DefectCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
-        return kpiElement;
-    }
+					resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(allIssues));
+				}
+			}
+		}
+		return resultListMap;
+	}
 
-    private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-        String requestTrackerId = getRequestTrackerId();
-        sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-                .compareTo(node2.getSprintFilter().getStartDate()));
-        List<KPIExcelData> excelData = new ArrayList<>();
-        List<Node> latestSprintNode = new ArrayList<>();
-        Node latestSprint = sprintLeafNodeList.get(0);
-        Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-        if (latestSprint != null) {
-            Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-            FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-                    .get(latestSprint.getProjectFilter().getBasicProjectConfigId());
-            if (fieldMapping != null) {
-                List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
-                Map<String, Map<String, List<JiraIssue>>> priorityWiseStatusList = getPriorityWiseIssueList(
-                        allCompletedDefects);
-                List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-                LOGGER.info("DefectCountByStatusServiceImpl -> priorityWiseStatusList ->  : {}",
-                        priorityWiseStatusList);
-                // filterDataList will consist of IterationKpiValue which will be set for all
-                // priorities
-                List<IterationKpiValue> filterDataList = new ArrayList<>();
-                List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
-                List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
-                Map<String, Integer> overallStatusCountMap = new HashMap<>();
-                for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseStatusList.entrySet()) {
-                    Map<String, List<JiraIssue>> statusData = entry.getValue();
-                    int priorityStatusCount = 0;
-                    Map<String, Integer> statusCountMap = new HashMap<>();
-                    // update and set the overall data
-                    priorityStatusCount = getPriorityStatusCount(overallStatusCountMap, statusData, priorityStatusCount,
-                            statusCountMap);
-                    DataCount priorityStatusData = new DataCount();
-                    priorityStatusData.setData(String.valueOf(priorityStatusCount));
-                    priorityStatusData.setValue(statusCountMap);
-                    List<DataCount> dataCountList = new ArrayList<>();
-                    dataCountList.add(priorityStatusData);
-                    dataCountListForAllPriorities.add(priorityStatusData);
+	@Override
+	public String getQualifierType() {
+		return KPICode.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.name();
+	}
 
-                    // to make structure to create pie chart
-                    List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
-                    DataCount middleOverallData = new DataCount();
-                    middleOverallData.setData(latestSprint.getProjectFilter().getName());
-                    middleOverallData.setValue(dataCountList);
-                    middleTrendValueListForPriorities.add(middleOverallData);
+	@Override
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
+			if (Filters.getFilter(k) == Filters.SPRINT) {
+				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
+			}
+		});
+		LOGGER.info("DefectCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
+		return kpiElement;
+	}
 
-                    IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
-                            middleTrendValueListForPriorities);
-                    filterDataList.add(filterData);
+	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+		String requestTrackerId = getRequestTrackerId();
+		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
+				.compareTo(node2.getSprintFilter().getStartDate()));
+		List<KPIExcelData> excelData = new ArrayList<>();
+		List<Node> latestSprintNode = new ArrayList<>();
+		Node latestSprint = sprintLeafNodeList.get(0);
+		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+		if (latestSprint != null) {
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+			if (fieldMapping != null) {
+				SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
+				String sprintStartDate = sprintDetails.getActivatedDate() != null ? sprintDetails.getActivatedDate()
+						: sprintDetails.getStartDate();
+				String sprintEndDate = sprintDetails.getCompleteDate() != null ? sprintDetails.getCompleteDate()
+						: sprintDetails.getEndDate();
+				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
+				List<JiraIssue> createDuringIteration = allCompletedDefects.stream()
+						.filter(jiraIssue -> DateUtil.isWithinDateRange(
+								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+								LocalDate.parse(sprintStartDate.split("\\.")[0], DATE_TIME_FORMATTER),
+								LocalDate.parse(sprintEndDate.split("\\.")[0], DATE_TIME_FORMATTER)))
+						.collect(Collectors.toList());
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseStatusList = getPriorityWiseIssueList(
+						allCompletedDefects, createDuringIteration);
+				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
+				LOGGER.info("DefectCountByStatusServiceImpl -> priorityWiseStatusList ->  : {}",
+						priorityWiseStatusList);
+				// filterDataList will consist of IterationKpiValue which will be set for all
+				// priorities
+				List<IterationKpiValue> filterDataList = new ArrayList<>();
+				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
+				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
+				Map<String, Integer> overallStatusCountMap = new HashMap<>();
+				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseStatusList.entrySet()) {
+					Map<String, List<JiraIssue>> statusData = entry.getValue();
+					int priorityStatusCount = 0;
+					Map<String, Integer> statusCountMap = new HashMap<>();
+					// update and set the overall data
+					priorityStatusCount = getPriorityStatusCount(overallStatusCountMap, statusData, priorityStatusCount,
+							statusCountMap);
+					DataCount priorityStatusData = new DataCount();
+					priorityStatusData.setData(String.valueOf(priorityStatusCount));
+					priorityStatusData.setValue(statusCountMap);
+					List<DataCount> dataCountList = new ArrayList<>();
+					dataCountList.add(priorityStatusData);
+					dataCountListForAllPriorities.add(priorityStatusData);
 
-                }
-                Map<String, Integer> overallStatusCountMapAggregate = new HashMap<>();
-                overallStatusCountMap(dataCountListForAllPriorities, overallStatusCountMapAggregate);
-                List<DataCount> trendValueListOverAll = new ArrayList<>();
-                if (MapUtils.isNotEmpty(overallStatusCountMapAggregate)) {
-                    DataCount overallData = new DataCount();
-                    int sumOfDefectsCount = overallStatusCountMapAggregate.values().stream().mapToInt(Integer::intValue)
-                            .sum();
-                    overallData.setData(String.valueOf(sumOfDefectsCount));
-                    overallData.setValue(overallStatusCountMapAggregate);
-                    trendValueListOverAll.add(overallData);
-                    // add one more data count group and data count for middle level structure to
-                    // store "Overall" Priority
-                    List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
-                    DataCount middleOverallData = new DataCount();
-                    middleOverallData.setData(latestSprint.getProjectFilter().getName());
-                    middleOverallData.setValue(trendValueListOverAll);
-                    middleTrendValueListOverAll.add(middleOverallData);
-                    populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
-                            latestSprint.getSprintFilter().getName(), fieldMapping);
+					// to make structure to create pie chart
+					List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
+					DataCount middleOverallData = new DataCount();
+					middleOverallData.setData(latestSprint.getProjectFilter().getName());
+					middleOverallData.setValue(dataCountList);
+					middleTrendValueListForPriorities.add(middleOverallData);
 
-                    // "Overall" iterationKpiValue added to filterDataList and added in the final
-                    // filterDataList
-                    kpiElement.setSprint(latestSprint.getName());
-                    kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns());
-                    kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns());
-                    kpiElement.setExcelData(excelData);
-                    sortedFilterDataList.add(filterDataList.stream()
-                            .filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES))
-                            .findFirst().orElse(new IterationKpiValue()));
-                    filterDataList
-                            .removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
-                    sortListByKey(filterDataList);
-                    sortedFilterDataList.addAll(filterDataList);
-                    kpiElement.setTrendValueList(sortedFilterDataList);
-                    LOGGER.info("DefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
-                            requestTrackerId, overAllRCAIssueCount.get(0));
-                }
-            }
-        }
-    }
+					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
+							middleTrendValueListForPriorities);
+					filterDataList.add(filterData);
 
-    private static void overallStatusCountMap(List<DataCount> dataCountListForAllPriorities,
-                                              Map<String, Integer> overallStatusCountMapAggregate) {
-        for (DataCount dataCount : dataCountListForAllPriorities) {
-            Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-            statusCountMap.forEach((status, statusCountValue) -> overallStatusCountMapAggregate.merge(status,
-                    statusCountValue, Integer::sum));
-        }
-    }
+				}
+				Map<String, Integer> overallStatusCountMapAggregate = new HashMap<>();
+				overallStatusCountMap(dataCountListForAllPriorities, overallStatusCountMapAggregate);
+				List<DataCount> trendValueListOverAll = new ArrayList<>();
+				if (MapUtils.isNotEmpty(overallStatusCountMapAggregate)) {
+					DataCount overallData = new DataCount();
+					int sumOfDefectsCount = overallStatusCountMapAggregate.values().stream().mapToInt(Integer::intValue)
+							.sum();
+					overallData.setData(String.valueOf(sumOfDefectsCount));
+					overallData.setValue(overallStatusCountMapAggregate);
+					trendValueListOverAll.add(overallData);
+					// add one more data count group and data count for middle level structure to
+					// store "Overall" Priority
+					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
+					DataCount middleOverallData = new DataCount();
+					middleOverallData.setData(latestSprint.getProjectFilter().getName());
+					middleOverallData.setValue(trendValueListOverAll);
+					middleOverallData.setSSprintID(latestSprint.getSprintFilter().getId());
+					middleOverallData.setSSprintName(latestSprint.getSprintFilter().getName());
+					middleOverallData.setKpiGroup("Priority");
+					middleOverallData.setSProjectName(latestSprint.getProjectFilter().getName());
+					middleTrendValueListOverAll.add(middleOverallData);
+					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
+							latestSprint.getSprintFilter().getName(), fieldMapping, createDuringIteration);
 
-    private static int getPriorityStatusCount(Map<String, Integer> overallStatusCountMap,
-                                              Map<String, List<JiraIssue>> statusData, int priorityRCACount, Map<String, Integer> statusCountMap) {
-        for (Map.Entry<String, List<JiraIssue>> rcaEntry : statusData.entrySet()) {
-            String status = rcaEntry.getKey();
-            List<JiraIssue> issues = rcaEntry.getValue();
+					// "Overall" iterationKpiValue added to filterDataList and added in the final
+					// filterDataList
+					kpiElement.setSprint(latestSprint.getName());
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.getColumns());
+					kpiElement.setExcelData(excelData);
+					sortedFilterDataList.add(filterDataList.stream()
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES))
+							.findFirst().orElse(new IterationKpiValue()));
+					filterDataList.removeIf(
+							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
+					sortListByKey(filterDataList);
+					sortedFilterDataList.addAll(filterDataList);
+					kpiElement.setTrendValueList(sortedFilterDataList);
+					LOGGER.info("DefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
+							requestTrackerId, overAllRCAIssueCount.get(0));
+				}
+			}
+		}
+	}
 
-            priorityRCACount += issues.size();
-            statusCountMap.put(status, issues.size());
-            overallStatusCountMap.merge(status, issues.size(), Integer::sum);
-        }
-        return priorityRCACount;
-    }
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<JiraIssue> sprintWiseDefectDataList, String name, FieldMapping fieldMapping,
+			List<JiraIssue> createDuringIteration) {
 
-    private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-                                         List<JiraIssue> sprintWiseDefectDataList, String name, FieldMapping fieldMapping) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
+			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList,
+					createDuringIteration, excelData, fieldMapping);
+		}
 
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-                && !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
-            KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList, excelData, fieldMapping);
-        }
+	}
 
-    }
-
-    private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
-        List<String> defectStatuses = fieldMapping.getJiradefecttype();
-        // subtask defects consider as BUG type in jira_issue
-        defectStatuses.add(NormalizedJira.DEFECT_TYPE.getValue());
-        if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {
-            return ((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES)).stream()
-                    .filter(issue -> defectStatuses.contains(issue.getTypeName())).collect(Collectors.toList());
-        }
-        return new ArrayList<>();
-    }
+	private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
+		List<String> defectStatuses = fieldMapping.getJiradefecttype();
+		// subtask defects consider as BUG type in jira_issue
+		defectStatuses.add(NormalizedJira.DEFECT_TYPE.getValue());
+		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {
+			return ((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES)).stream()
+					.filter(issue -> defectStatuses.contains(issue.getTypeName())).collect(Collectors.toList());
+		}
+		return new ArrayList<>();
+	}
 
 	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseIssueList(
-			List<JiraIssue> allCompletedIssuesExcludeStory) {
-		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-		String sprintStartDate = sprintDetails.getActivatedDate() != null ? sprintDetails.getActivatedDate()
-				: sprintDetails.getStartDate();
-		String sprintEndDate = sprintDetails.getCompleteDate() != null ? sprintDetails.getCompleteDate()
-				: sprintDetails.getEndDate();
+			List<JiraIssue> allCompletedIssuesExcludeStory, List<JiraIssue> createDuringIteration) {
 
+		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
 		scopeWiseDefectsMap.put(TOTAL_ISSUES,
 				allCompletedIssuesExcludeStory.stream().collect(Collectors.groupingBy(JiraIssue::getPriority)));
-		List<JiraIssue> createDuringIteration = allCompletedIssuesExcludeStory.stream()
-				.filter(jiraIssue -> DateUtil.isWithinDateRange(
-						LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
-						LocalDate.parse(sprintStartDate.split("\\.")[0], DATE_TIME_FORMATTER),
-						LocalDate.parse(sprintEndDate.split("\\.")[0], DATE_TIME_FORMATTER)))
-				.collect(Collectors.toList());
 		scopeWiseDefectsMap.put(CREATED_DURING_ITERATION,
 				createDuringIteration.stream().collect(Collectors.groupingBy(JiraIssue::getPriority)));
 		return scopeWiseDefectsMap;
+
 	}
 
-    private void sortListByKey(List<IterationKpiValue> list) {
-        list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
-    }
+	private void sortListByKey(List<IterationKpiValue> list) {
+		list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
+	}
 }
