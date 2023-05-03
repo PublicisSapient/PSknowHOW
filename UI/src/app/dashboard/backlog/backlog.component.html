@@ -1,5 +1,6 @@
 <div *ngIf="!noKpis else noKpiTemplate" class="backlog-screen">
   <div id="message"></div>
+  <ng-container *ngIf="!noProjects else noProjectsTemplate">
   <ng-container *ngIf="!noSprints else noSprintsTemplate">
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix"></div>
@@ -124,10 +125,16 @@
       </div>
     </div>
   </ng-container>
+</ng-container>
   <ng-template #noSprintsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
       <h2 class="msg p-ml-3 p-mr-3">The selected project needs to be configured followed by the processor run from
         'Settings' for the KPI's to show up</h2>
+    </div>
+  </ng-template>
+  <ng-template #noProjectsTemplate>
+    <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
+      <h2 class="msg">Access to atleast one Scrum Project is required for the Backlog dashboard to be enabled</h2>
     </div>
   </ng-template>
 </div>

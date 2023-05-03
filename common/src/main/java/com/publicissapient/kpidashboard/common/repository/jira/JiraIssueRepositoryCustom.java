@@ -223,6 +223,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range,
 			String mapStatusCriteria, boolean isProductionDefect);
 
+
 	List<JiraIssue> findIssueAndDescByNumber(List<String> storyNumber);
 
 	/**
@@ -234,5 +235,15 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return
 	 */
 	List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
+
 			Map<String, Map<String, Object>> uniqueProjectMap);
+
+	/**
+	 * Find issues filtered by map of filters, type name and defectStoryIds
+	 * @param mapOfFilters filters
+	 * @param uniqueProjectMap project map filters
+	 * @return list of jira issues
+	 */
+	List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters, Map<String,
+			Map<String, Object>> uniqueProjectMap);
 }

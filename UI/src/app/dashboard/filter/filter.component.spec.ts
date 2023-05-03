@@ -467,13 +467,15 @@ describe('FilterComponent', () => {
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
+    spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
     component.previousType = false;
     component.kanban = false;
     component.selectedTab = '';
     component.initFlag = false;
     const spy = spyOn(component, 'processFilterData');
     component.getFilterDataOnLoad();
-    expect(spy).toHaveBeenCalledWith(fakeFilterData);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should process filter data when filter data is comming', () => {
@@ -1222,7 +1224,14 @@ describe('FilterComponent', () => {
       spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
       spyOn(component,'getNotification');
       spyOn(component,'processKpiList');
+      component.kanban=false;
       const navigateToSelectedTabSpy = spyOn(component,'navigateToSelectedTab');
+      spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
+      spyOn(sharedService,'getSelectedLevel').and.returnValue({
+        "level": 5,
+        "hierarchyLevelId": "project",
+        "hierarchyLevelName": "Project"
+    });
       component.navigateToDashboard();
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();

@@ -1144,6 +1144,13 @@ db.getCollection('metadata_identifier').remove({});
                                                 "In Development",
                                                 "In Progress"
                                               ]
+                                            },
+                                            {
+                                              "type": "jiraStatusForClosed",
+                                              "value": [
+                                                "Closed",
+                                                "CLOSED"
+                                              ]
                                             }
                                           ],
                                           "valuestoidentify": [

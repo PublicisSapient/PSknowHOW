@@ -24,6 +24,7 @@ import { GetAuthorizationService } from '../../services/get-authorization.servic
 import { MessageService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-advanced-settings',
@@ -42,6 +43,7 @@ export class AdvancedSettingsComponent implements OnInit {
   selectedProject = {};
   processorsTracelogs = [];
   toolConfigsDetails=[];
+  ssoLogin = environment.SSO_LOGIN;
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
     private service: SharedService, private confirmationService: ConfirmationService) { }
@@ -59,7 +61,7 @@ export class AdvancedSettingsComponent implements OnInit {
       }
     ];
 
-    if (this.getAuthorizationService.checkIfSuperUser()) {
+    if (this.getAuthorizationService.checkIfSuperUser() && !this.ssoLogin) {
       this.items.push({
         label: 'Authentication Type',
         icon: 'pi pi-book',

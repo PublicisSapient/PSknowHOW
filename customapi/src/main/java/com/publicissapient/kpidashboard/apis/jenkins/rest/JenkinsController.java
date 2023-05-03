@@ -149,12 +149,10 @@ public class JenkinsController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/jenkins/jobName/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getJenkinsJobs(@PathVariable String connectionId) {
-		ServiceResponse response;
+	public ResponseEntity<ServiceResponse> getJenkinsJobs(@PathVariable String connectionId) {
 		List<String> jobUrlList = jenkinsToolConfigService.getJenkinsJobNameList(connectionId);
 		if (CollectionUtils.isEmpty(jobUrlList)) {
-			response = new ServiceResponse(false, "No Jobs details found",
-					null);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ServiceResponse(false, "No Jobs details found", null));
 		} else {
 			List<String> jobNameList = new ArrayList<>();
 			for (String jobUrl : jobUrlList) {
@@ -163,9 +161,8 @@ public class JenkinsController {
 				jobName = jobName.replace("/job", "");
 				jobNameList.add(jobName);
 			}
-			response = new ServiceResponse(true, "Fetched Jobs Successfully", jobNameList);
+			return ResponseEntity.ok().body(new ServiceResponse(true, "Fetched Jobs Successfully", jobNameList));
 		}
-		return response;
 	}
 
 }

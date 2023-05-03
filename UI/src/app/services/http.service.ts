@@ -18,7 +18,7 @@
 
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
 import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
@@ -37,6 +37,9 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 ) export class HttpService {
 
     public currentVersion = '';
+    public loadApp = new BehaviorSubject(false);
+    public unauthorisedAccess = false;
+    public createdProjectName = '';
     /*use to change the base url according to the environment variable */
     private baseUrl = environment.baseUrl;  // Servers Env
     private filterDataUrl = this.baseUrl + '/api/filterdata';
@@ -128,11 +131,12 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
+    private authDetailsUrl = this.baseUrl + '/api/authdetails';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
-
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
@@ -563,6 +567,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** add basic config */
     addBasicConfig(basicConfig): Observable<any> {
+        this.createdProjectName = basicConfig?.projectName;
         return this.http.post<any>(this.basicConfigUrl, basicConfig);
     }
 
@@ -684,6 +689,37 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.get<any>(this.getEmmStatsUrl);
     }
 
+
+    getSSOUserInfo(){
+        return this.http.get<any>(this.getSSOUserInfoUrl);
+    }
+
+
+    getAuthDetails() {
+        const existingRoles = JSON.parse(localStorage?.getItem('projectsAccess')).map(projectRolesDetails => projectRolesDetails?.role);
+        this.http.get<any>(this.authDetailsUrl).subscribe(response => {
+
+            if (response && response?.success && response?.data) {
+                const authDetails = response?.data;
+                const newRoles = authDetails['projectsAccess'].map(projectRolesDetails => projectRolesDetails?.role);
+                let roleAlreadyExist = true;
+                newRoles.forEach(role => {
+                  if(!existingRoles.includes(role)) {
+                    roleAlreadyExist = false;
+                  }
+                });
+                localStorage.setItem('user_name', authDetails['username']);
+                localStorage.setItem('user_email', authDetails['emailAddress']);
+                localStorage.setItem('projectsAccess', JSON.stringify(authDetails['projectsAccess']));
+                localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authDetails['authorities']), 'encrypt'));
+                if(!this.unauthorisedAccess && !roleAlreadyExist){
+                    this.loadApp.next(true);
+                    this.unauthorisedAccess = false;
+                }
+            }
+        });
+    }
+    
     generateToken(postData): Observable<any> {
         return this.http.post<any>(this.generateTokenUrl, postData);
     }
