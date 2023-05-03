@@ -32,7 +32,7 @@ function checkDay(inputDay) {
 }
 /*format datetime string of project_release to normal string*/
 function currentDateAsString(releaseDate) {
-    if (releaseDate !== undefined) {
+    if (releaseDate != undefined) {
         var limiter = "-";
         var time = "T00:00:00";
         var month = checkMonth(releaseDate.getMonth() + 1);
@@ -45,6 +45,7 @@ function currentDateAsString(releaseDate) {
 /* hierachies will be created when no release hierachy is present in collection update Account Hierarchy*/
 function updateAccountHierachy(project_release) {
     const projectId = project_release.projectId;
+    print("projectId", projectId)
 
     if (db.getCollection('account_hierarchy').find({
             "parentId": projectId,
@@ -60,14 +61,13 @@ function updateAccountHierachy(project_release) {
                 version => {
                     print("nodeName", version.description + "_" + projectId);
                     db.account_hierarchy.insert([{
-
                         "nodeId": version._id + "_" + projectId,
                         "nodeName": version.description + "_" + splitString(projectId, "_"),
                         "labelName": "release",
                         "beginDate": "",
                         "endDate": currentDateAsString(version.releaseDate),
                         "parentId": projectId,
-                        "basicProjectConfigId": new ObjectId(project_release.configId),
+                        "basicProjectConfigId": project_release.configId,
                         "isDeleted": "False",
                         "path": path,
                         "releaseState": releaseState(version.isReleased),
@@ -103,7 +103,7 @@ function updateKanbanAccountHierachy(project_release) {
                         "beginDate": "",
                         "endDate": currentDateAsString(version.releaseDate),
                         "parentId": projectId,
-                        "basicProjectConfigId": new ObjectId(project_release.configId),
+                        "basicProjectConfigId": project_release.configId,
                         "isDeleted": "False",
                         "path": path,
                         "releaseState": releaseState(version.isReleased),
