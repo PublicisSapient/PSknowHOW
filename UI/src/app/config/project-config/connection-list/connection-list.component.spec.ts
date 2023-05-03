@@ -282,7 +282,7 @@ describe('ConnectionListComponent', () => {
         'Is Offline',
         'Is Connection Private',
         'Use bearer token',
-        'PAT (OAuth Token)',
+        'PAT OAuthToken',
         'Is jaasKrbAuth',
         'Jaas Config FilePath',
         'Krb5 Config FilePath',
@@ -1172,10 +1172,17 @@ describe('ConnectionListComponent', () => {
     component.basicConnectionForm.controls['privateKey'].disable();
     component.basicConnectionForm.controls['consumerKey'].disable();
     component.basicConnectionForm.controls['patOAuthToken'].disable();
+
+    component.basicConnectionForm.controls['jaasKrbAuth'].disable();
+    component.basicConnectionForm.controls['jaasConfigFilePath'].disable();
+    component.basicConnectionForm.controls['krb5ConfigFilePath'].disable();
+    component.basicConnectionForm.controls['jaasUser'].disable();
+    component.basicConnectionForm.controls['samlEndPoint'].disable();
+    component.basicConnectionForm.controls['jiraAuthType'].disable();
     component.isNewlyConfigAdded = true;
     const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(addConnection).toHaveBeenCalled();
   });
 
@@ -1388,9 +1395,9 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
-  })
+  });
 
-  fit("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1447,7 +1454,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
   })
 
-  fit("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1460,7 +1467,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeFalse();
   })
 
-  fit("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
+  it("should be username disabled when selected connection is sonar and accessTokenEnabled switch is enabled", () => {
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
