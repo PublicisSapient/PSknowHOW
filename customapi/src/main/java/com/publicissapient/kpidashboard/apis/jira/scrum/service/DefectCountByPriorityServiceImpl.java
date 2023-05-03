@@ -215,16 +215,16 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseList.entrySet()) {
 					Map<String, List<JiraIssue>> priorityData = entry.getValue();
 					int priorityCount = 0;
-					Map<String, Integer> statusCountMap = new HashMap<>();
+					Map<String, Integer> priorityCountMap = new HashMap<>();
 					// update and set the overall data
 					priorityCount = getPriorityCount(overallPriorityCountMap, priorityData, priorityCount,
-							statusCountMap);
-					DataCount priorityStatusData = new DataCount();
-					priorityStatusData.setData(String.valueOf(priorityCount));
-					priorityStatusData.setValue(statusCountMap);
+							priorityCountMap);
+					DataCount priorityDataCount = new DataCount();
+					priorityDataCount.setData(String.valueOf(priorityCount));
+					priorityDataCount.setValue(priorityCountMap);
 					List<DataCount> dataCountList = new ArrayList<>();
-					dataCountList.add(priorityStatusData);
-					dataCountListForAllPriorities.add(priorityStatusData);
+					dataCountList.add(priorityDataCount);
+					dataCountListForAllPriorities.add(priorityDataCount);
 
 					// to make structure to create pie chart
 					List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
@@ -238,26 +238,10 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					filterDataList.add(filterData);
 
 				}
-				Map<String, Integer> overallStatusCountMapAggregate = new HashMap<>();
-				overallPriorityCountMap(dataCountListForAllPriorities, overallStatusCountMapAggregate);
-				List<DataCount> trendValueListOverAll = new ArrayList<>();
-				if (MapUtils.isNotEmpty(overallStatusCountMapAggregate)) {
-					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = overallStatusCountMapAggregate.values().stream().mapToInt(Integer::intValue)
-							.sum();
-					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(overallStatusCountMapAggregate);
-					trendValueListOverAll.add(overallData);
-					// add one more data count group and data count for middle level structure to
-					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
-					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestSprint.getProjectFilter().getName());
-					middleOverallData.setValue(trendValueListOverAll);
-					middleOverallData.setSSprintID(latestSprint.getSprintFilter().getId());
-					middleOverallData.setSSprintName(latestSprint.getSprintFilter().getName());
-					middleOverallData.setKpiGroup(TOTAL_ISSUES);
-					middleOverallData.setSProjectName(latestSprint.getProjectFilter().getName());
-					middleTrendValueListOverAll.add(middleOverallData);
+				Map<String, Integer> overallPriorityCountMapAggregate = new HashMap<>();
+				overallPriorityCountMap(dataCountListForAllPriorities, overallPriorityCountMapAggregate);
+				if (MapUtils.isNotEmpty(overallPriorityCountMapAggregate)) {
+
 					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
 							latestSprint.getSprintFilter().getName(), fieldMapping, createDuringIteration);
 

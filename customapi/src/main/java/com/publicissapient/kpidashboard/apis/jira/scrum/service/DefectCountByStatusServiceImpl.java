@@ -238,21 +238,8 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				}
 				Map<String, Integer> overallStatusCountMapAggregate = new HashMap<>();
 				overallStatusCountMap(dataCountListForAllPriorities, overallStatusCountMapAggregate);
-				List<DataCount> trendValueListOverAll = new ArrayList<>();
 				if (MapUtils.isNotEmpty(overallStatusCountMapAggregate)) {
-					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = overallStatusCountMapAggregate.values().stream().mapToInt(Integer::intValue)
-							.sum();
-					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(overallStatusCountMapAggregate);
-					trendValueListOverAll.add(overallData);
-					// add one more data count group and data count for middle level structure to
-					// store "Overall" Priority
-					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
-					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestSprint.getProjectFilter().getName());
-					middleOverallData.setValue(trendValueListOverAll);
-					middleTrendValueListOverAll.add(middleOverallData);
+
 					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects, createDuringIteration,
 							latestSprint.getSprintFilter().getName(), fieldMapping);
 
