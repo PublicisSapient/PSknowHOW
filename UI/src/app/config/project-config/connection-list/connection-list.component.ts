@@ -1068,10 +1068,10 @@ export class ConnectionListComponent implements OnInit {
     }
     this.testConnectionMsg = '';
     this.testConnectionValid = true;
-
+    console.log('reqData is : '+reqData);
     switch (this.connection.type) {
       case 'Jira':
-        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['jaasKrbAuth'], reqData['jaasConfigFilePath'], reqData['krb5ConfigFilePath'],reqData['jaasUser'], reqData['samlEndPoint']).subscribe(next => {
+        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['patOAuthToken'],reqData['jaasKrbAuth'], reqData['jaasConfigFilePath'], reqData['krb5ConfigFilePath'],reqData['jaasUser'], reqData['samlEndPoint']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1135,7 +1135,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
       case 'Sonar':
-        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault']).subscribe(next => {
+        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'],reqData['accessTokenEnabled']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;

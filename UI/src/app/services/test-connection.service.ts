@@ -37,7 +37,7 @@ export class TestConnectionService {
       username,
       password: password ? this.rsa.encrypt(password) : '',
       vault,
-      patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : ''
+      patOAuthToken: patOAuthToken ? this.rsa.encrypt(patOAuthToken) : '',
       jaasKrbAuth,
       jaasConfigFilePath,
       krb5ConfigFilePath,
