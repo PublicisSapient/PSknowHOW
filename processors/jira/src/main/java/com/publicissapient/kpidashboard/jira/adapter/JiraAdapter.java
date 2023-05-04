@@ -28,9 +28,10 @@ import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 
 import java.time.LocalDateTime;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -144,5 +145,5 @@ public interface JiraAdapter {
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
 
-
+	String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException;
 }
