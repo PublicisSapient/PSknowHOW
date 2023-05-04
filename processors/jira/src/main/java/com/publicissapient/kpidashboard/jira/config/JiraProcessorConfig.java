@@ -68,6 +68,10 @@ public class JiraProcessorConfig {
 	private Integer sprintReportCountToBeFetched;
 	private boolean considerStartDate;
 	private long subsequentApiCallDelayInMilli;
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
 	private String jiraVersionApi;
 	private String jiraCloudVersionApi;
 }

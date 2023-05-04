@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+
 
 @Slf4j
 //@Service
@@ -148,6 +151,11 @@ public class OfflineAdapter implements JiraAdapter {
 
     @Override
     public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException{
+        return null;
+    }
+
+    @Override
+    public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
         return null;
     }
 

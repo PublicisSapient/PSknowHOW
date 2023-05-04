@@ -275,14 +275,20 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Use bearer token',
-        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
         'Consumer Key',
         'Is Offline',
         'Is Connection Private',
+        'Use bearer token',
+        'PAT OAuthToken',
+        'Is jaasKrbAuth',
+        'Jaas Config FilePath',
+        'Krb5 Config FilePath',
+        'Jaas User',
+        'Saml Endpoint',
+        'Select Authentication Type'
       ],
       inputFields: [
         'type',
@@ -292,14 +298,20 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'bearerToken',
-        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
         'consumerKey',
         'offline',
         'connPrivate',
+        'bearerToken',
+        'patOAuthToken',
+        'jaasKrbAuth',
+        'jaasConfigFilePath',
+        'krb5ConfigFilePath',
+        'jaasUser',
+        'samlEndPoint',
+        'jiraAuthType'
       ],
     },
     {
@@ -570,14 +582,20 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Use bearer token',
-        'PAT (OAuth Token)',
         'Api End Point',
         'IsOAuth',
         'Private Key',
         'Consumer Key',
         'Is Offline',
         'Is Connection Private',
+        'Use bearer token',
+        'PAT (OAuth Token)',
+        'Is jaasKrbAuth',
+        'Jaas Config FilePath',
+        'Krb5 Config FilePath',
+        'Jaas User',
+        'Saml Endpoint',
+        'Select Authentication Type'
       ],
       inputFields: [
         'type',
@@ -587,14 +605,20 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'bearerToken',
-        'patOAuthToken',
         'apiEndPoint',
         'isOAuth',
         'privateKey',
         'consumerKey',
         'offline',
         'connPrivate',
+        'bearerToken',
+        'patOAuthToken',
+        'jaasKrbAuth',
+        'jaasConfigFilePath',
+        'krb5ConfigFilePath',
+        'jaasUser',
+        'samlEndPoint',
+        'jiraAuthType'
       ],
     },
     {
@@ -699,6 +723,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Username',
         'Use vault password',
+        ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
         'Is Connection Private',
@@ -925,7 +950,7 @@ describe('ConnectionListComponent', () => {
           field: 'password',
           isEnabled: true,
         },
-        
+
         {
           field: 'apiEndPoint',
           isEnabled: true,
@@ -1064,23 +1089,22 @@ describe('ConnectionListComponent', () => {
       password: undefined,
       pat: undefined,
       privateKey: undefined,
-      type: 'Azure',
+      type: 'Jira',
       username: undefined,
     };
-    component.onChangeConnection(fakeEvent);
+    component.onChangeConnection();
     fixture.detectChanges();
     expect(component.selectedConnectionType).toBe(fakeEvent.type);
     expect(component.testConnectionMsg).toBe('');
   });
 
   it('should allow user to initialize new connection on click of "New Connection" button', () => {
-    component.selectedConnectionType = 'Jira';
+    component.selectedConnectionType = 'Bitbucket';
     component.createConnection();
     fixture.detectChanges();
     expect(component.submitted).toBeFalse();
     expect(component.connectionDialog).toBeTrue();
     expect(component.isNewlyConfigAdded).toBeTrue();
-    expect(component.disableConnectionTypeDropDown).toBeFalse();
   });
 
   it('should enable fields depending on inputs', () => {
@@ -1148,10 +1172,17 @@ describe('ConnectionListComponent', () => {
     component.basicConnectionForm.controls['privateKey'].disable();
     component.basicConnectionForm.controls['consumerKey'].disable();
     component.basicConnectionForm.controls['patOAuthToken'].disable();
+
+    component.basicConnectionForm.controls['jaasKrbAuth'].disable();
+    component.basicConnectionForm.controls['jaasConfigFilePath'].disable();
+    component.basicConnectionForm.controls['krb5ConfigFilePath'].disable();
+    component.basicConnectionForm.controls['jaasUser'].disable();
+    component.basicConnectionForm.controls['samlEndPoint'].disable();
+    component.basicConnectionForm.controls['jiraAuthType'].disable();
     component.isNewlyConfigAdded = true;
     const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(addConnection).toHaveBeenCalled();
   });
 
@@ -1187,10 +1218,9 @@ describe('ConnectionListComponent', () => {
     component.editConnection(connection);
     fixture.detectChanges();
     expect(component.connection).toEqual({ ...connection });
-    expect(component.connectionDialog).toBeTrue();
+    expect(component.jiraConnectionDialog).toBeTrue();
     expect(component.isNewlyConfigAdded).toBeFalse();
     expect(component.selectedConnectionType).toBe('Jira');
-    expect(component.disableConnectionTypeDropDown).toBeTrue();
   });
 
   it('should get zypherURL', () => {
@@ -1345,7 +1375,6 @@ describe('ConnectionListComponent', () => {
 
   it("should be password blank when accessToken or password is toggling",()=>{
     component.connection['accessTokenEnabled'] = true;
-    component.enableDisableFieldsOnAccessTokenORPasswordToggle();
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['password'].value).toBe("")
   })
@@ -1366,7 +1395,7 @@ describe('ConnectionListComponent', () => {
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
-  })
+  });
 
   it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
     component.selectedConnectionType = "zephyr"

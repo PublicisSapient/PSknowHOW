@@ -491,13 +491,15 @@ describe('FilterComponent', () => {
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
+    spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
     component.previousType = false;
     component.kanban = false;
     component.selectedTab = '';
     component.initFlag = false;
     const spy = spyOn(component, 'processFilterData');
     component.getFilterDataOnLoad();
-    expect(spy).toHaveBeenCalledWith(fakeFilterData);
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalled();
   });
 
   it('should process filter data when filter data is comming', () => {

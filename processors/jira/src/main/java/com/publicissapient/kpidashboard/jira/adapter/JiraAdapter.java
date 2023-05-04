@@ -31,6 +31,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import java.time.LocalDateTime;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -38,42 +40,38 @@ public interface JiraAdapter {
 
 	/**
 	 * Gets all issues from JIRA
+	 *
 	 * @param boardDetails
-	 * 		  	boardDetails
+	 * 			  boardDetails
 	 * @param projectConfig
-	 * 			projectConfig Object
+	 *            projectConfig Object
 	 * @param startDateTimeByIssueType
-	 * 			map of start dataTime of issue types
+	 *            map of start dataTime of issue types
 	 * @param userTimeZone
-	 * 			user timezone
+	 *            user timezone
 	 * @param pageStart
-	 * 			 page start
+	 *            page start
 	 * @param dataExist
-	 * 			data exist in db or not
-	 * @return
-	 * 		list of issues
-	 * @throws InterruptedException
-	 * 		throws exception
+	 *            data exist in db or not
+	 * @return list of issues
 	 */
 	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig, String startDateTimeByIssueType,
 						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
 
 	/**
 	 * Gets all issues from JIRA
+	 *
 	 * @param projectConfig
-	 * 			projectConfig Object
+	 *            projectConfig Object
 	 * @param startDateTimeByIssueType
-	 * 			map of start dataTime of issue types
+	 *            map of start dataTime of issue types
 	 * @param userTimeZone
-	 * 			user timezone
+	 *            user timezone
 	 * @param pageStart
-	 * 			page start
+	 *            page start
 	 * @param dataExist
-	 * 			data exist in db or not
-	 * @return
-	 * 		list of issues
-	 * @throws InterruptedException
-	 * 		throws exception
+	 *            data exist in db or not
+	 * @return list of issues
 	 */
 	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
 						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
@@ -138,6 +136,8 @@ public interface JiraAdapter {
 			SprintDetails sprint, SprintDetails dbSprintDetails);
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
+
+	String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException;
 
 	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 

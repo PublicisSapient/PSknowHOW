@@ -18,6 +18,23 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
+import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -28,26 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Service
 @Slf4j

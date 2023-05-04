@@ -100,10 +100,33 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+
+import { environment } from 'src/environments/environment';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
+import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
+
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 
 /******************************************************/
+
+const initializeAppFactory = (http: HttpClient): () => void  =>{
+    if (!environment.production) {
+        return  ()=> undefined;
+    } else {
+        return async () => {
+        const env$ = http.get('assets/env.json').pipe(
+                tap(env => {
+                    environment['baseUrl'] = env['baseUrl'] || '';
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                }));
+
+        await env$.toPromise().then(res => console.log);
+        };
+    }
+};
 
 
 @NgModule({
@@ -142,6 +165,8 @@ import { MilestoneComponent } from './dashboard/milestone/milestone.component';
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
+        SsoAuthFailureComponent,
+        UnauthorisedAccessComponent,
         GroupBarChartComponent,
         MilestoneComponent
     ],
@@ -187,7 +212,14 @@ import { MilestoneComponent } from './dashboard/milestone/milestone.component';
         MessageService,
         TextEncryptionService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: APP_CONFIG, useValue: AppConfig },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeAppFactory,
+            deps: [HttpClient],
+            multi: true
+          }
     ],
     bootstrap: [AppComponent]
 })

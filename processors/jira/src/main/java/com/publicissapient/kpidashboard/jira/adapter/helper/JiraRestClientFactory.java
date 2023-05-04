@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -240,6 +241,16 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			LOGGER.debug("Exception", e);
 		}
 
+		return client;
+	}
+
+
+	public ProcessorJiraRestClient getSpnegoSamlClient(KerberosClient kerberosClient) {
+		ProcessorJiraRestClient client = null;
+		kerberosClient.login(jiraProcessorConfig.getSamlTokenStartString(), jiraProcessorConfig.getSamlTokenEndString(),
+				jiraProcessorConfig.getSamlUrlStartString(), jiraProcessorConfig.getSamlUrlEndString());
+		client = new ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(
+				URI.create(kerberosClient.getJiraHost()), kerberosClient.getCookies(), jiraProcessorConfig);
 		return client;
 	}
 

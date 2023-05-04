@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,7 +30,7 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
@@ -278,7 +278,16 @@ export class SharedService implements OnInit {
   setShowTableView(val){
     this.showTableView.next(val);
   }
-  setGlobalDownload(val){
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
+  }
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
   setSelectedLevel(val){
