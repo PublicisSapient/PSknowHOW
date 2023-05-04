@@ -974,7 +974,6 @@ public class OnlineAdapter implements JiraAdapter {
 				parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
 				versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 			}
-
 		} catch (RestClientException rce) {
 			log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, versionLog));
 		} catch (MalformedURLException mfe) {

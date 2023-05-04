@@ -74,4 +74,6 @@ public class JiraProcessorConfig {
 	private String samlUrlEndString;
 	private String jiraVersionApi;
 	private String jiraCloudVersionApi;
+	private String jiraServerVersionReportApi;
+	private String jiraCloudVersionReportApi;
 }

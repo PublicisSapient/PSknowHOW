@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
+import com.publicissapient.kpidashboard.jira.client.release.ScrumReleaseDataClientImpl;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +65,6 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.KanbanJiraIssueClientImpl;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -116,7 +117,9 @@ public class OfflineDataProcessorImplTest {
     private JiraAdapter jiraAdapter = Mockito.mock(JiraAdapter.class);
     private ProjectReleaseRepo projectReleaseRepo =Mockito.mock(ProjectReleaseRepo.class);
     @InjectMocks
-    ReleaseDataClientImpl releaseData ;
+    private ReleaseDataClientFactory releaseDataClientFactory;
+    @InjectMocks
+    private ScrumReleaseDataClientImpl releaseData;
 
     List<FieldMapping> fieldMappingList = new ArrayList<>();
     List<JiraIssueOfflineFileTraceLogs> traceLogsList = new ArrayList<>();
@@ -161,7 +164,7 @@ public class OfflineDataProcessorImplTest {
         String localDir = currentDirectory + "/src/test/resources/offlineData";
         when(jiraProcessorConfig.getJsonFileName()).thenReturn(localDir);
         when(issueOfflineTraceLogsRepository.findAll()).thenReturn(traceLogsList);
-        PowerMockito.whenNew(ReleaseDataClientImpl.class).withAnyArguments().thenReturn(releaseData);
+        PowerMockito.whenNew(ScrumReleaseDataClientImpl.class).withAnyArguments().thenReturn(releaseData);
         when(jiraIssueClientFactory.getJiraIssueDataClient(any(ProjectConfFieldMapping.class))).thenReturn(kanbanJiraIssueClient);
         when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
         when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
