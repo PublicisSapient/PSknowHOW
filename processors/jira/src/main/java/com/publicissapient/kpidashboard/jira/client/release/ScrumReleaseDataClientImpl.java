@@ -182,6 +182,7 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
      */
 	private List<AccountHierarchy> createScrumHierarchyForRelease(ProjectRelease projectRelease,
 			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy) {
+		log.info("Create Account Hierarchy");
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 				.getFullHierarchyLevels(projectBasicConfig.isKanban());
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
