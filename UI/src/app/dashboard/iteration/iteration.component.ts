@@ -526,11 +526,12 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.getDropdownArray(data[key]?.kpiId);
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
+        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
         }
         else if (formType?.toLowerCase() == 'dropdown') {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
@@ -544,7 +545,8 @@ export class IterationComponent implements OnInit, OnDestroy {
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
         } else {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       }
@@ -586,10 +588,12 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiDropdowns[kpiId].push(obj);
       }
     }
+    
   }
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
 
       for (const key in event) {
@@ -599,7 +603,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
 

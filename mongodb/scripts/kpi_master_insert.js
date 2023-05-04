@@ -3352,7 +3352,7 @@ db.getCollection('kpi_master').insert(
          "isPositiveTrend": true,
          "showTrend": false,
          "isAdditionalFilterSupport": false,
-         "kpiFilter": "dropdown",
+         "kpiFilter": "radioButton",
          "boxType": "chart",
          "calculateMaturity": false
        },
@@ -3648,7 +3648,7 @@ db.getCollection('kpi_master').insert(
      "isPositiveTrend": true,
      "showTrend": false,
      "isAdditionalFilterSupport": false,
-     "kpiFilter": "dropdown",
+     "kpiFilter": "radioButton",
      "boxType": "chart",
      "calculateMaturity": false
    },
@@ -3683,5 +3683,30 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
+  },
+  {
+    "kpiId": "kpi138",
+    "kpiName": "Defect Count by Priority",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 7,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Defect count by priority shows the breakup of all defects within an iteration by priority. The pie chart representation gives the count of defects in each priority"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "radioButton",
+    "boxType": "chart",
+    "calculateMaturity": false
   }
 ]);
