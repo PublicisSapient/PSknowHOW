@@ -23,10 +23,8 @@ import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -52,6 +50,9 @@ import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -65,7 +66,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -141,6 +141,7 @@ public class OnlineAdapter implements JiraAdapter {
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
 		this.krb5Client = krb5Client;
+		psLogData= new PSLogData();
 	}
 
 	/**
@@ -941,23 +942,6 @@ public class OnlineAdapter implements JiraAdapter {
 		return getEpicIssuesQuery(epicList, logData);
 	}
 
-	private boolean populateData(String sprintReportObj, List<String> epicList) {
-		boolean isLast = true;
-		if (StringUtils.isNotBlank(sprintReportObj)) {
-			JSONArray valuesJson = new JSONArray();
-			try {
-				JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
-				if (null != obj) {
-					valuesJson = (JSONArray) obj.get("values");
-					getEpic(valuesJson, epicList);
-					isLast = Boolean.valueOf(obj.get("isLast").toString());
-				}
-			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
-			}
-		}
-		return isLast;
-	}
 	@Override
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig) {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();
@@ -970,8 +954,7 @@ public class OnlineAdapter implements JiraAdapter {
 				Instant start = Instant.now();
 				URL url = getVersionUrl(projectConfig);
 				versionLog.setUrl(url.toString());
-				URLConnection connection = url.openConnection();
-				parseVersionData(getDataFromServer(projectConfig, (HttpURLConnection) connection), projectVersionList);
+				parseVersionData(getDataFromClient(projectConfig, url), projectVersionList);
 				versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 			}
 		} catch (RestClientException rce) {
