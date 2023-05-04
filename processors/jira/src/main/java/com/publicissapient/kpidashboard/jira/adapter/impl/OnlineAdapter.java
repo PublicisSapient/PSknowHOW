@@ -142,7 +142,7 @@ public class OnlineAdapter implements JiraAdapter {
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
 		this.krb5Client = krb5Client;
-		psLogData= new PSLogData();
+		this.psLogData= new PSLogData();
 	}
 
 	/**
