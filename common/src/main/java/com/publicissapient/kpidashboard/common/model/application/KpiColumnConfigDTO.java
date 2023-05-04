@@ -35,6 +35,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KpiColumnConfigDTO {
+	private ObjectId id;
 	private ObjectId basicProjectConfigId;
 	private String kpiId;
 	private List<KpiColumnDetails> kpiColumnDetails;
