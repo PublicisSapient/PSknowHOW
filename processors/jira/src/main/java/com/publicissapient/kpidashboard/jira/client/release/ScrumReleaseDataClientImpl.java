@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.VersionDetails;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,15 +41,12 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
@@ -76,8 +72,6 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 	private HierarchyLevelService hierarchyLevelService;
 	@Autowired
 	private JiraRestClientFactory jiraRestClientFactory;
-	@Autowired
-	private SprintRepository sprintRepository;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig) {
@@ -95,7 +89,8 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 				AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
 						? accountHierarchyList.get(0)
 						: null;
-				saveProjectRelease(projectConfig, isKanban, accountHierarchy, null, psLogData);
+
+				saveProjectRelease(projectConfig, accountHierarchy, psLogData);
 
 		} catch (Exception ex) {
 			log.error("No hierarchy data found not processing for Version data",
@@ -107,17 +102,14 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 
 	/**
 	 * @param confFieldMapping
-	 * @param isKanban
 	 * @param accountHierarchy
-	 * @param kanbanAccountHierarchy
 	 * @param psLogData
 	 */
-	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, boolean isKanban,
-									AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
+			PSLogData psLogData) {
 		List<ProjectVersion> projectVersionList = jiraAdapter.getVersion(confFieldMapping);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
-				getVersionReport(jiraAdapter,confFieldMapping,projectVersionList);
 				ProjectRelease projectRelease = projectReleaseRepo
 						.findByConfigId(accountHierarchy.getBasicProjectConfigId());
 				projectRelease = projectRelease == null ? new ProjectRelease() : projectRelease;
@@ -125,20 +117,21 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 				projectRelease.setProjectName(accountHierarchy.getNodeId());
 				projectRelease.setProjectId(accountHierarchy.getNodeId());
 				projectRelease.setConfigId(accountHierarchy.getBasicProjectConfigId());
-				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping,projectRelease);
+				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping, projectRelease);
 				projectReleaseRepo.save(projectRelease);
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.JIRA_KPI_CACHE);
 			}
-			psLogData.setProjectVersion(projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
+			psLogData.setProjectVersion(
+					projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
 			log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 	}
 
 	private void saveScrumAccountHierarchy(AccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
-										   ProjectRelease projectRelease) {
+			ProjectRelease projectRelease) {
 		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = JiraIssueClientUtil
 				.getAccountHierarchy(accountHierarchyRepository);
 		Set<AccountHierarchy> setToSave = new HashSet<>();
@@ -214,7 +207,7 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 						? projectVersion.getReleaseDate().toString()
 						: CommonConstant.BLANK);
 				accountHierarchy.setReleaseState(
-						(projectVersion.isReleased()) ? VersionDetails.RELEASED : VersionDetails.UNRELEASED);
+						(projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
 				accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 						.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath())
 						.toString());
@@ -227,21 +220,4 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 		}
 		return accountHierarchies;
 	}
-
-	private void getVersionReport(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig,
-			List<ProjectVersion> projectVersionList) {
-		if (CollectionUtils.isNotEmpty(projectConfig.getProjectToolConfig().getBoards())) {
-			projectConfig.getProjectToolConfig().getBoards().forEach(
-					boards -> jiraAdapter.getVersionReport(projectConfig, boards.getBoardId(), projectVersionList));
-		} else {
-			List<SprintDetails> sprintDetailsList = sprintRepository
-					.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-				sprintDetailsList.stream().map(SprintDetails::getOriginalSprintId).collect(Collectors.toSet())
-						.forEach(boards -> jiraAdapter.getVersionReport(projectConfig, boards, projectVersionList));
-
-			}
-		}
-	}
-
 }

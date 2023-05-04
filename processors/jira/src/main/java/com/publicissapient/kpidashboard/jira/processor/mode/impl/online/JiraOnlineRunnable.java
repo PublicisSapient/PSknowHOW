@@ -47,7 +47,6 @@ import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactor
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.metadata.MetaDataClientImpl;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 

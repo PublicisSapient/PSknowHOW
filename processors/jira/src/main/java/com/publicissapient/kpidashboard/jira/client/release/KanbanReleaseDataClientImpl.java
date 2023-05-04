@@ -39,14 +39,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -92,7 +90,7 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 				KanbanAccountHierarchy kanbanAccountHierarchy = CollectionUtils.isNotEmpty(kanbanAccountHierarchyList)
 						? kanbanAccountHierarchyList.get(0)
 						: null;
-				saveProjectRelease(projectConfig, isKanban,null, kanbanAccountHierarchy, psLogData);
+				saveProjectRelease(projectConfig, kanbanAccountHierarchy, psLogData);
 			}
 		} catch (Exception ex) {
 			log.error("No hierarchy data found not processing for Version data",
@@ -104,16 +102,14 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 
 	/**
 	 * @param confFieldMapping
-	 * @param isKanban
-	 * @param accountHierarchy
 	 * @param kanbanAccountHierarchy
 	 * @param psLogData
 	 */
-	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, boolean isKanban,
-									AccountHierarchy accountHierarchy, KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping,
+			KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData) {
 		List<ProjectVersion> projectVersionList = jiraAdapter.getVersion(confFieldMapping);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
-			if (isKanban && null != kanbanAccountHierarchy) {
+			if (null != kanbanAccountHierarchy) {
 				ProjectRelease projectRelease = projectReleaseRepo
 						.findByConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
 				projectRelease = projectRelease == null ? new ProjectRelease() : projectRelease;
@@ -121,18 +117,18 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 				projectRelease.setProjectName(kanbanAccountHierarchy.getNodeId());
 				projectRelease.setProjectId(kanbanAccountHierarchy.getNodeId());
 				projectRelease.setConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
-				saveKanbanAccountHierarchy(kanbanAccountHierarchy,confFieldMapping,projectRelease);
+				saveKanbanAccountHierarchy(kanbanAccountHierarchy, confFieldMapping, projectRelease);
 				projectReleaseRepo.save(projectRelease);
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 				jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.JIRAKANBAN_KPI_CACHE);
 			}
-			psLogData.setProjectVersion(projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
+			psLogData.setProjectVersion(
+					projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
 			log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
 		}
 	}
-
 
 	private void saveKanbanAccountHierarchy(KanbanAccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
 			ProjectRelease projectRelease) {
@@ -165,34 +161,7 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 			kanbanAccountHierarchyRepo.saveAll(setToSave);
 		}
 	}
-
-	/**
-	 * @param setToSave
-	 * @param accountHierarchy
-	 * @param existingHierarchy
-	 */
-	private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, List<AccountHierarchy> accountHierarchy,
-										   Map<Pair<String, String>, AccountHierarchy> existingHierarchy) {
-		if(CollectionUtils.isNotEmpty(accountHierarchy)){
-			accountHierarchy.forEach(hierarchy->{
-				if (StringUtils.isNotBlank(hierarchy.getParentId())) {
-					AccountHierarchy exHiery = existingHierarchy
-							.get(Pair.of(hierarchy.getNodeId(), hierarchy.getPath()));
-					if (null == exHiery) {
-						hierarchy.setCreatedDate(LocalDateTime.now());
-						setToSave.add(hierarchy);
-					}
-					else if(!exHiery.equals(hierarchy)){
-						exHiery.setBeginDate(hierarchy.getBeginDate());
-						exHiery.setEndDate(hierarchy.getEndDate());
-						exHiery.setReleaseState(hierarchy.getReleaseState());
-						setToSave.add(exHiery);
-					}
-				}
-			});
-		}
-	}
-
+	
 	/**
 	 * create hierarchies for kanban
 	 * @param projectRelease
@@ -221,7 +190,7 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 				kanbanAccountHierarchy.setNodeId(versionId);
 				kanbanAccountHierarchy.setNodeName(versionName);
 				kanbanAccountHierarchy.setReleaseState(
-						(projectVersion.isReleased()) ? CommonConstant.RELEASE : CommonConstant.UNRELEASED);
+						(projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
 				kanbanAccountHierarchy.setBeginDate(
 						ObjectUtils.isNotEmpty(projectVersion.getStartDate()) ? projectVersion.getStartDate().toString()
 								: CommonConstant.BLANK);

@@ -140,7 +140,5 @@ public interface JiraAdapter {
 
 	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 
-	void getVersionReport(ProjectConfFieldMapping projectConfig, String boardId, List<ProjectVersion> projectVersionList);
-
 
 }
