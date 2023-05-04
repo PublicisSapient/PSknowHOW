@@ -29,7 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -122,7 +122,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	private ToolCredentialProvider toolCredentialProvider;
 
 	@Autowired
-	private ReleaseDataClientImpl releaseDataClient;
+	private ReleaseDataClientFactory releaseDataClientFactory;
 
 
 	/**
@@ -165,7 +165,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,releaseDataClient,
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,releaseDataClientFactory,
 									getExecutionLogContext());// NOPMD
 							executor.execute(worker);
 
