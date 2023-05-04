@@ -57,12 +57,7 @@ public class KpiColumnConfigServiceImpl implements KpiColumnConfigService {
 				kpiColumnConfig.getBasicProjectConfigId(), kpiColumnConfig.getKpiId());
 
 		if (existingKpiColumnConfig != null) {
-			// Check if the data has changed
-			if (existingKpiColumnConfig.equals(kpiColumnConfig)) {
-				log.info("No changes detected in kpiColumnConfig data");
-				return new ServiceResponse(false, "No changes detected in kpiColumnConfig data",
-						existingKpiColumnConfig);
-			}
+
 			// Update the existing document
 			existingKpiColumnConfig.setKpiColumnDetails(kpiColumnConfig.getKpiColumnDetails());
 			kpiColumnConfigRepository.save(existingKpiColumnConfig);

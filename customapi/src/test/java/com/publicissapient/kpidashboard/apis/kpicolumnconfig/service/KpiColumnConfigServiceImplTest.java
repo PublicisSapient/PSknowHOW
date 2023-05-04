@@ -116,15 +116,6 @@ public class KpiColumnConfigServiceImplTest {
 	}
 
 	@Test
-	public void testSaveKpiColumnConfigExistingDoc() {
-		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
-		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
-		KpiColumnConfigDTO kpiColumnConfig1DTO = convertToKpiColumnConfigDTO(kpiColumnConfig1);
-		ServiceResponse response = kpiColumnConfigService.saveKpiColumnConfig(kpiColumnConfig1DTO);
-		assertEquals(response.getSuccess(), Boolean.FALSE);
-	}
-
-	@Test
 	public void testSaveKpiColumnConfigUpdateExistingDoc() {
 		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
 		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
