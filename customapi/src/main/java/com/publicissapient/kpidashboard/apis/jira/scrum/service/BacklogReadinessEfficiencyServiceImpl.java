@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,10 +157,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		List<JiraIssueCustomHistory> historyForIssues = jiraHistoryRepo.findByStoryIDIn(issueNumbers);
 		resultListMap.put(HISTORY, historyForIssues);
 
-		leafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		Collections.reverse(leafNodeList);
-
 		List<Node> sprintForStregthCalculation = leafNodeList.stream()
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 
@@ -198,7 +193,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						.get(latestSprint.getProjectFilter().getBasicProjectConfigId())
 				: new FieldMapping();
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
 		Double avgVelocity = getAverageSprintCapacity(sprintLeafNodeList,
 				(List<SprintDetails>) resultMap.get(SPRINT_WISE_SPRINT_DETAIL_MAP),
