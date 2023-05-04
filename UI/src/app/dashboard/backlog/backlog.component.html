@@ -67,8 +67,6 @@
                               [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                               [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                               [selectedtype]="selectedtype"></app-groupstackchart>
-                            <app-line-bar-chart-with-hover *ngSwitchCase="match_expression_1">
-                            </app-line-bar-chart-with-hover>
                             <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
@@ -85,8 +83,10 @@
                             <app-progressbar *ngSwitchCase="'progress-bar'"
                               [value]="kpiChartData[kpi?.kpiId][0]?.value[0]?.value"
                               [maxValue]="kpiChartData[kpi?.kpiId][0]?.value[0]?.maxValue"></app-progressbar>
+                            
                           </ng-container>
                         </div>
+                        <app-stacked-area-chart></app-stacked-area-chart>
                       </ng-container>
 
                     </ng-container>

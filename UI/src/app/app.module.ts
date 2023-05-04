@@ -108,6 +108,7 @@ import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-f
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
+import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 
 
 /******************************************************/
@@ -167,7 +168,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         ExportExcelComponent,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
-        GroupBarChartComponent
+        GroupBarChartComponent,
+        StackedAreaChartComponent
     ],
     imports: [
         DropdownModule,
