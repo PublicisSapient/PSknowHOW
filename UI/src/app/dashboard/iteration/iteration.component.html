@@ -258,6 +258,11 @@
           </ng-container>
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="tableHeaders.length">No data found.</td>
+        </tr>
+      </ng-template>
     </p-table>
   </div>
 
