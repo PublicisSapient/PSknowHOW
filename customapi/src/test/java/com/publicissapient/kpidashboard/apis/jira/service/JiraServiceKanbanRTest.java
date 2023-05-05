@@ -29,12 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchiesKanbanDataFactory;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -119,6 +122,7 @@ public class JiraServiceKanbanRTest {
 	@Mock
 	private JiraKPIServiceFactory jiraKPIServiceFactory;
 	private KpiRequestFactory kpiRequestFactory;
+	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -126,7 +130,8 @@ public class JiraServiceKanbanRTest {
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory.newInstance();
 		accountHierarchyDataList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
 
-
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
 		jiraKPIServiceFactory.initMyServiceCache();
 
@@ -278,8 +283,15 @@ public class JiraServiceKanbanRTest {
 	        utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.WIP_VS_CLOSED.name())).thenReturn(mcokAbstract);
 	    }
 
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(accountHierarchyDataList);
-
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 
 		resultList.forEach(k -> {

@@ -91,7 +91,7 @@ public class UserInfoController {
 
 		log.info("user info ");
 		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
-		userTokenDeletionService.invalidateSession(username);
+
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	
 	
@@ -103,7 +103,7 @@ public class UserInfoController {
 	 *
 	 * @return the Service Response
 	 */
-	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	/*@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
 	public ServiceResponse deleteUser(@PathVariable String userName) {
 		log.info("Inside deleteUser() method of UserInfoController ");
@@ -117,6 +117,24 @@ public class UserInfoController {
 		} else {
 			log.info("Unauthorized to perform deletion of user " + userName);
 			return new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized");
+		}
+
+	}*/
+
+	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	@DeleteMapping(value = "/{userName}")
+	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
+		log.info("Inside deleteUser() method of UserInfoController ");
+		String loggedUserName = authenticationService.getLoggedInUser();
+		UserInfo userInfo = userInfoRepository.findByUsername(userName);
+		if ((!loggedUserName.equals(userName)
+				&& !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))
+		) {
+			ServiceResponse response = userInfoService.deleteUser(userName);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			log.info("Unauthorized to perform deletion of user " + userName);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}
 
 	}
