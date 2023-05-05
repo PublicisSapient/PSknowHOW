@@ -91,6 +91,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   tableColumns=[];
   tableHeaders=[];
   filteredColumn;
+  markerInfo=[];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -694,6 +695,12 @@ export class IterationComponent implements OnInit, OnDestroy {
   handleArrowClick(kpi, label, tableValues) {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     const idx = this.ifKpiExist(kpi?.kpiId);
+    this.markerInfo = [];
+    if (this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo) {
+      for (const key in this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo) {
+        this.markerInfo.push({ color: key, info: this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo[key] });
+      }
+    }
     this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
     this.httpService.getkpiColumns(basicConfigId,kpi.kpiId).subscribe(response =>{
       if(response['success']){
