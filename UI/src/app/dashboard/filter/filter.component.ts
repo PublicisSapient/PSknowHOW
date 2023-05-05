@@ -840,12 +840,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   setMarker() {
+    let colorsArr = ['#079FFF','#cdba38', '#00E6C3', '#fc6471', '#bd608c', '#7d5ba6']
     const colorObj = {};
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-      colorObj[this.selectedFilterArray[i].nodeId] = i == 0
-          ? { nodeName: this.selectedFilterArray[i].nodeName, color: '#079FFF' } : i == 1
-          ? { nodeName: this.selectedFilterArray[i].nodeName, color: '#cdba38' }
-          : { nodeName: this.selectedFilterArray[i].nodeName, color: '#00E6C3'};
+      colorObj[this.selectedFilterArray[i].nodeId] = { nodeName: this.selectedFilterArray[i].nodeName, color: colorsArr[i] } 
     }
     this.service.setColorObj(colorObj);
   }

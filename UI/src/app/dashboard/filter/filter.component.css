@@ -732,25 +732,14 @@ ul li.selectedfilter {
   margin: 0 1rem 0 0;
 }
 
-.align-list-marker {
-  position: absolute;
-  left: 0;
+ul li.selectedfilter .selected-node-label .align-list-marker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right:5px;
 }
 
-ul li.selectedfilter .selected-node-label .align-list-marker::before {
-  content: "\2022";
-  font-size: 26px;
-  color: var(--color-secondary-green);
-  font-weight: bold;
-}
-
-ul li.selectedfilter:first-child .selected-node-label .align-list-marker::before {
-  color: var(--color-secondary-blue);
-}
-
-ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::before {
-  color: var(--color-secondary-yellow);
-}
 
 .marker {
   width: 10px;

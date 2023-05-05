@@ -70,9 +70,9 @@
     <div class="kpi-card-body" 
     [ngStyle]="{'height': showChartView ? '365px' : '110px', 
     'min-height': showChartView ? '330px' : '100px'}">
-        <div class="kpi-card-indicator p-jc-evenly" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
             >
-            <ng-container *ngFor="let item of trendData; let i = index;">
+            <div *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
                     [dataTrend]="item" [color]="getColor(item?.hierarchyName)" [kpiData]="kpiData"
                     [noOfBox]="trendData?.length">
@@ -102,7 +102,7 @@
                         [noOfBox]="trendData?.length">
                     </app-trend-indicator>
                 </ng-container> -->
-            </ng-container>
+            </div>
         </div>
         <div class="kpi-card-indicator p-jc-evenly" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
             <ng-container *ngFor="let item of trendData; let i = index;">

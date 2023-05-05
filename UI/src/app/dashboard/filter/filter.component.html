@@ -26,9 +26,9 @@
                      <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
                            [closeOnSelect]="false"
-                           [maxSelectedItems]="3"
+                           [maxSelectedItems]="6"
                            class="trend-line-value p-pb-0" [clearable]="false">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
@@ -234,7 +234,7 @@
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
                <li class="selectedfilter p-mr-5">
                   <div class="selected-node">
-                     <div class="selected-node-label"><span class="align-list-marker"></span>{{item?.nodeName?.length
+                     <div class="selected-node-label"><span class="align-list-marker" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
                         <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
                            (click)="removeNode(item.nodeId)" *ngIf="selectedFilterArray.length > 1">x</span>
                      </div>
