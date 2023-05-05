@@ -28,6 +28,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,8 @@ public class JwtAuthenticationFilterTest {
 	@Mock
 	HttpServletRequest request;
 	@Mock
+	HttpServletResponse response;
+	@Mock
 	private FilterChain filterChain;
 
 	@Mock
@@ -68,14 +71,13 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		ServletResponse response = null;
-		when(authService.getAuthentication(any(HttpServletRequest.class))).thenReturn(authentication);
+		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
 
-		verify(authService).getAuthentication(any(HttpServletRequest.class));
+		verify(authService).getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
 		verify(filterChain).doFilter(request, response);
 	}
 

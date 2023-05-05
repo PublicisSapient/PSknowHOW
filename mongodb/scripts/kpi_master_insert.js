@@ -1827,7 +1827,7 @@ db.getCollection('kpi_master').insert(
         },
         {
           "type": "paragraph",
-          "value": "Maturity of the KPI is calculated based on the latest value"
+          "value": "Maturity of the KPI is calculated based on the average of the last 5 months"
         }
       ],
       "maturityLevels": [

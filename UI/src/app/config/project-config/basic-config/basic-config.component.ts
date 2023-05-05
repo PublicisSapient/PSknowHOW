@@ -160,7 +160,6 @@ export class BasicConfigComponent implements OnInit {
         this.sharedService.setSelectedProject(this.selectedProject);
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
-            localStorage.setItem('projectsAccess', JSON.stringify(response['projectsAccess']));
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
             localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authorities), 'encrypt'));
           }
