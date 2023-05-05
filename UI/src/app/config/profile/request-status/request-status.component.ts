@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { MessageService } from 'primeng/api';
@@ -27,20 +27,23 @@ import { ConfirmationService } from 'primeng/api';
   templateUrl: './request-status.component.html',
   styleUrls: ['./request-status.component.css', '../profile.component.css', '../view-requests/view-requests.component.css']
 })
-export class RequestStatusComponent implements OnInit {
+export class RequestStatusComponent implements OnInit, OnDestroy {
   requestStatusRequest = <any>'';
   requestStatusData = {};
   requestStatusList = [];
   dataLoading = <boolean>false;
   userName : string;
+  subscriptions = [];
   constructor(private httpService: HttpService, private messageService: MessageService, private confirmationService: ConfirmationService, private sharedService: SharedService) { }
 
   ngOnInit() {
    
-    this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      this.userName = details['user_name'];
-      this.getRequests();
-    })
+    this.subscriptions.push(this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      if(details && details['user_name']){
+        this.userName = details['user_name'];
+        this.getRequests();
+      }
+    }))
   }
 
   getRequests() {
@@ -78,5 +81,9 @@ export class RequestStatusComponent implements OnInit {
       },
       reject: () => { }
     });
+  }
+
+  ngOnDestroy(){
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }
