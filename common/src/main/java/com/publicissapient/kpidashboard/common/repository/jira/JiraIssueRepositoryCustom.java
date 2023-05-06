@@ -246,4 +246,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 */
 	List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters, Map<String,
 			Map<String, Object>> uniqueProjectMap);
+
+	List<JiraIssue> findByRelease(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap);
 }

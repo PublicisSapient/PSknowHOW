@@ -3673,7 +3673,32 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport":true,
     "hideOverallFilter" : true,
     "calculateMaturity":false
-  }
+  },
+  {
+       "kpiId": "kpi139",
+       "kpiName": "Release Defect",
+       "maxValue": "",
+       "kpiUnit": "Count",
+       "isDeleted": "False",
+       "defaultOrder": 1,
+       "kpiCategory": "Milestone",
+       "kpiSource": "Jira",
+       "groupId": 9,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": "pieChart",
+       "kpiInfo": {
+         "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
+         },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "radioButton",
+       "boxType": "chart",
+       "calculateMaturity": false
+     },
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
