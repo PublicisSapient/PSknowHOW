@@ -18,5 +18,6 @@
 
 export const environment = {
   production: true,
-    baseUrl: ''
+    baseUrl: '',
+    SSO_LOGIN: false
 };

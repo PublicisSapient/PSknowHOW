@@ -85,10 +85,9 @@
        let trueShowCount = 0;
        let allShownFlag = false;
        if ((item?.boardName && item?.kpis)) {
-         list = item.kpis.map((kpi) => {
+          item.kpis.forEach((kpi) => {
            kpiObj[kpi.kpiId] = new UntypedFormControl(kpi.shown);
            trueShowCount = kpi.shown ? ++trueShowCount : trueShowCount;
-           return kpiObj;
          });
          if (trueShowCount === item?.kpis?.length) {
            allShownFlag = true;
@@ -194,13 +193,12 @@ return item.kpiId;
      // on kpicategory flag change,  setting all of its kpi flag
      handleKpiCategoryChange(event, boardData) {
        const modifiedObj = {...boardData};
-       let targetObj = {};
        const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
        if (event.checked) {
         if(targetSelector.classList.contains('hide-kpisList')) {
           targetSelector.classList.remove('hide-kpisList');
         }
-        targetObj = modifiedObj.kpis.map((item) => {
+        modifiedObj.kpis.forEach((item) => {
           item.shown = true;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(true);
           this.setMainDashboardKpiShowHideStatus(item.kpiId,true);
@@ -208,7 +206,7 @@ return item.kpiId;
         });
        } else {
         targetSelector.classList.add('hide-kpisList');
-        targetObj = modifiedObj.kpis.map((item) => {
+        modifiedObj.kpis.forEach((item) => {
           item.shown = false;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
           this.setMainDashboardKpiShowHideStatus(item.kpiId,false);

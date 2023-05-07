@@ -44,7 +44,7 @@ public class IterationKpiValue implements Serializable {
 	private String filter2;
 	private List<IterationKpiData> data;
 	private List<DataCount> value;
-
+	private List<String> metaDataColumns;
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
 		this.filter1 = filter1;
 		this.filter2 = filter2;
@@ -55,4 +55,12 @@ public class IterationKpiValue implements Serializable {
 		this.filter1 = filter1;
 		this.value = value;
 	}
+
+	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data, List<String> metaDataColumns) {
+		this.filter1 = filter1;
+		this.filter2 = filter2;
+		this.data = data;
+		this.metaDataColumns = metaDataColumns;
+	}
+
 }

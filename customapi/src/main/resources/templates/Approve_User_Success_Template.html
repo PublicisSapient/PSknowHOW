@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Signup Request Email</title>
+
+      <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css' />
+</head>
+
+<body style="font-family: 'Roboto', sans-serif;font-size: 16px;line-height: 24px;background-color: #ccc;margin: 0;">
+      <table cellpadding="0" cellspacing="0" class="main" style=" width: 800px;margin:20px;background-color: #fff;">
+            <tbody>
+                  <tr>
+                        <td style="height: 100px;display: table; text-align: center;width: 100%;">
+                              <div style="font-size: 52px; padding: 25px;text-align: center;">
+                                    PS | kn<span style="color: #FE414D;">o</span>w<span
+                                          style="font-weight: 900;">HOW</span>
+                              </div>
+                              <hr style="border-top:1px solid #0099ff;" />
+                        </td>
+                  </tr>
+                  <tr>
+                        <td style="padding: 25px 25px;">
+                              <table cellpadding="0" cellspacing="0" class="content" style="width: 800px;">
+                                    <tbody>
+                                    <tr align="center">
+                                                <td>
+                                                      <div>Your access request to <a  th:href="@{${Server_Host}}">KnowHOW</a>
+                                                             has been <b> APPROVED </b> <br>
+
+                                                            Please login to the above URL and chose a project to start using KnowHOW. <br>
+
+                                                            In case, your project is not available kindly contact <em th:text="${Admin_Email}"> </em>.
+
+                                                      </div>
+                                                </td>
+                                          </tr>
+                                    </tbody>
+                              </table>
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              <table
+                                    style="text-align: center;background-color: #0099ff; height: 50px;width: 850px;display: table; margin-top: 25px;">
+                                    <tbody>
+                                          <tr>
+                                                <td class="footer-content"
+                                                      style="height: 50px; display: table-cell;text-align: center;vertical-align: middle;color: #fff;">
+                                                      For any queries, contact <a
+                                                            href="mailto:DOJOSupport@publicissapient.com"
+                                                            style="color: #fff;">
+                                                            DOJO
+                                                            Support</a>.
+                                                </td>
+                                          </tr>
+                                    </tbody>
+                              </table>
+                        </td>
+                  </tr>
+            </tbody>
+      </table>
+</body>
+
+</html>

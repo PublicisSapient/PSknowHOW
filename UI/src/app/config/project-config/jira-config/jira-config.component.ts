@@ -2134,24 +2134,6 @@ export class JiraConfigComponent implements OnInit {
       formData[obj] = self.tool[obj].value;
     }
 
-    // if (self.queryEnabled) {
-    //   group['queryEnabled'] = new UntypedFormControl(true);
-    //   if (this.urlParam === 'Azure') {
-    //     group['apiVersion'] = new UntypedFormControl('', [Validators.required]);
-    //   }
-    //   group['projectKey'] = new UntypedFormControl('', [Validators.required]);
-    //   group['boardQuery'] = new UntypedFormControl('', [Validators.required]);
-    //   self.toolForm = new UntypedFormGroup(group);
-    // } else {
-    //   group['queryEnabled'] = new UntypedFormControl(false);
-    //   group['projectKey'] = new UntypedFormControl('', [Validators.required]);
-    //   group['boardQuery'] = new UntypedFormControl('');
-    //   if (this.urlParam === 'Azure') {
-    //     group['apiVersion'] = new UntypedFormControl('', [Validators.required]);
-    //   }
-    //   self.toolForm = new UntypedFormGroup(group);
-    // }
-
     for (const obj in formData) {
       if (self.toolForm && self.toolForm.controls[obj]) {
         self.toolForm.controls[obj].setValue(formData[obj]);
