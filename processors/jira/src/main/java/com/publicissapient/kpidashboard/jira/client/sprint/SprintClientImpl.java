@@ -34,14 +34,15 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -50,6 +51,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -111,28 +113,38 @@ public class SprintClientImpl implements SprintClient {
 	 *            sprintDetailsSet
 	 */
 	@Override
-	public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
+	public synchronized void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
 			JiraAdapter jiraAdapter) throws InterruptedException {
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
+			log.info("sprintDetailsSet came for saving:{}"+sprintDetailsSet);
 			List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
+			log.info("sprintDetails fetched from db :{}"+dbSprints);
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
-			PSLogData sprintLogData = new PSLogData();
-			for (SprintDetails sprint : sprintDetailsSet) {
+
+			sprintDetailsSet.forEach(sprint -> {
+			  PSLogData sprintLogData = new PSLogData();
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} "
+						+sprint.getSprintID(),sprint.getState(), boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
-					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
+
+					log.info("sprint id {} found in db."+sprint.getSprintID());
+					SprintDetails dbSprintDetails =  dbSprintDetailMap.get(sprint.getSprintID());
 					sprint.setId(dbSprintDetails.getId());
-					// case 1 : same sprint different board id
+					log.info("mongo Id of existing sprint details: {}"+dbSprintDetails.getId());
+					//case 1 : same sprint different board id
+
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
+						log.info("different board id came with same sprintid");
 						fetchReport = true;
 					} // case 2 : sprint state is active or changed which is present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
@@ -145,33 +157,29 @@ public class SprintClientImpl implements SprintClient {
 						fetchReport = false;
 					}
 				} else {
+					log.info("sprint id {} not found in db."+sprint.getSprintID());
 					fetchReport = true;
 				}
 
 				if (fetchReport) {
-					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					try {
+						TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
 					getSprintReport(sprint, jiraAdapter, projectConfig, boardId,
 							dbSprintDetailMap.get(sprint.getSprintID()));
 					sprintToSave.add(sprint);
 				}
+
+			});
+			log.info("sprints going for save or update operation: {}", sprintToSave);
+			try {
+				sprintRepository.saveAll(sprintToSave);
+			}catch (DuplicateKeyException e){
+				log.info("duplicate sprint found."+e.getMessage());
 			}
-			sprintRepository.saveAll(sprintToSave);
-			sprintLogData.setAction(CommonConstant.SPRINT_DATA);
-			sprintLogData
-					.setSprintListSaved(
-							sprintToSave.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-			sprintLogData
-					.setSprintListFetched(
-							sprintDetailsSet.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
+			log.info("{} sprints found", sprintDetailsSet.size());
 		}
 	}
 
@@ -186,7 +194,7 @@ public class SprintClientImpl implements SprintClient {
 			throws InterruptedException {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		for (BoardDetails boardDetails : boardDetailsList) {
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId());
+			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId(), jiraAdapter);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
@@ -205,7 +213,7 @@ public class SprintClientImpl implements SprintClient {
 		return sd;
 	}
 
-	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId) {
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, JiraAdapter jiraAdapter) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		psLogData.setBoardId(boardId);
 		psLogData.setAction(CommonConstant.SPRINT_DATA);
@@ -218,9 +226,7 @@ public class SprintClientImpl implements SprintClient {
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
 					psLogData.setUrl(url.toString());
-					URLConnection connection;
-					connection = url.openConnection();
-					String jsonResponse = getDataFromServer(projectConfig, (HttpURLConnection) connection);
+					String jsonResponse = jiraAdapter.getDataFromClient(projectConfig, url);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
 				} while (!isLast);
@@ -241,6 +247,7 @@ public class SprintClientImpl implements SprintClient {
 
 	private boolean populateSprintDetailsList(String sprintReportObj, List<SprintDetails> sprintDetailsSet,
 			ProjectConfFieldMapping projectConfig, String boardId) {
+
 		boolean isLast = true;
 		if (StringUtils.isNotBlank(sprintReportObj)) {
 			JSONArray valuesJson = new JSONArray();
@@ -250,7 +257,7 @@ public class SprintClientImpl implements SprintClient {
 					valuesJson = (JSONArray) obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
-				isLast = Boolean.valueOf(obj.get("isLast").toString());
+				isLast = Boolean.parseBoolean(Objects.requireNonNull(obj).get("isLast").toString());
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}
@@ -288,65 +295,13 @@ public class SprintClientImpl implements SprintClient {
 		});
 	}
 
-	private String getDataFromServer(ProjectConfFieldMapping projectConfig, HttpURLConnection connection)
-			throws IOException {
-		HttpURLConnection request = connection;
-		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-
-		String username = null;
-		String password = null;
-
-		if (connectionOptional.isPresent()) {
-			Connection conn = connectionOptional.get();
-			if (conn.isVault()) {
-				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
-				if (toolCredential != null) {
-					username = toolCredential.getUsername();
-					password = toolCredential.getPassword();
-				}
-
-			} else {
-				username = connectionOptional.map(Connection::getUsername).orElse(null);
-				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-			}
-		}
-		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
-			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
-			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
-		}
-		else{
-			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		}
-		request.connect();
-		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
-			int cp;
-			while ((cp = inReader.read()) != -1) {
-				sb.append((char) cp);
-			}
-		} catch (IOException ie) {
-			log.error("Read exception when connecting to server {}", ie);
-		}
-		return sb.toString();
-	}
-
-	private String encodeCredentialsToBase64(String username, String password) {
-		String cred = username + ":" + password;
-		return Base64.getEncoder().encodeToString(cred.getBytes());
-	}
-
-	private String decryptJiraPassword(String encryptedPassword) {
-		return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
-	}
-
 	private URL getSprintUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)
 			throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		String serverURL = jiraProcessorConfig.getJiraSprintByBoardUrlApi();
 		serverURL = serverURL.replace("{startAtIndex}", String.valueOf(startIndex)).replace("{boardId}", boardId);
-		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
 
