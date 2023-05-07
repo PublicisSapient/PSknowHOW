@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.githubAction.model;
+package com.publicissapient.kpidashboard.apis.githubaction.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GithubActionWorkflowsDTO {
 
-    private String workflowName;
-    private String workflowID;
+	private String workflowName;
+	private String workflowID;
 }

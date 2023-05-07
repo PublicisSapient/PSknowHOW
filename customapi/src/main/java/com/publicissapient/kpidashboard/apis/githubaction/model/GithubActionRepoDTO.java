@@ -1,5 +1,4 @@
-package com.publicissapient.kpidashboard.apis.githubAction.model;
-
+package com.publicissapient.kpidashboard.apis.githubaction.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GithubActionRepoDTO {
 
-    private String repositoryName;
-    private String connectionID;
+	private String repositoryName;
+	private String connectionID;
 }

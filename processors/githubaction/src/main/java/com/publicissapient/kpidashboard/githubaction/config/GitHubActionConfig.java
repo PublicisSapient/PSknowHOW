@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
  *
  * GutHubActionConfig represents a class which holds GutHubActionConfig details.
@@ -43,11 +42,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GitHubActionConfig {
-    private String host;
-    private String cron;
-    private String aesEncryptionKey;
-    private String api;
-    private String customApiBaseUrl;
-    private int pageSize;
-    private int initialPageSize;
+	private String host;
+	private String cron;
+	private String aesEncryptionKey;
+	private String api;
+	private String customApiBaseUrl;
+	private int pageSize;
+	private int initialPageSize;
 }

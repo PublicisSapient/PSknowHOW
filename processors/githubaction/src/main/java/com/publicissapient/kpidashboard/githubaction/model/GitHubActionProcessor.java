@@ -20,15 +20,15 @@ package com.publicissapient.kpidashboard.githubaction.model;
 
 import java.util.List;
 
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorError;
+
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
  * GitHubActionProcessor represents a class which holds github prototyping and
@@ -40,19 +40,8 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorError;
 public class GitHubActionProcessor extends Processor {
 
 	/**
-	 * This method return githubprocessor object
-	 * 
-	 * @return GitHubActionProcessor
-	 */
-	public static GitHubActionProcessor prototype() {
-		return GitHubActionProcessor.processorBuilder().processorName(ProcessorConstants.GITHUBACTION).online(true)
-				.enabled(true).processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis())
-				.isLastSuccess(false).build();
-	}
-
-	/**
 	 * The constructor.
-	 * 
+	 *
 	 * @param processorName
 	 *            processorName
 	 * @param processorType
@@ -74,6 +63,17 @@ public class GitHubActionProcessor extends Processor {
 	public GitHubActionProcessor(String processorName, ProcessorType processorType, boolean enabled, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean isLastSuccess) {
 		super(processorName, processorType, enabled, online, errors, lastExecuted, objectId, isLastSuccess);
+	}
+
+	/**
+	 * This method return githubprocessor object
+	 *
+	 * @return GitHubActionProcessor
+	 */
+	public static GitHubActionProcessor prototype() {
+		return GitHubActionProcessor.processorBuilder().processorName(ProcessorConstants.GITHUBACTION).online(true)
+				.enabled(true).processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis())
+				.isLastSuccess(false).build();
 	}
 
 }

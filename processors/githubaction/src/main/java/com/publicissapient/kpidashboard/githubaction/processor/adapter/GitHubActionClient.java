@@ -18,23 +18,21 @@
 
 package com.publicissapient.kpidashboard.githubaction.processor.adapter;
 
+import java.util.Map;
+import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.githubaction.customexception.FetchingBuildException;
-import org.bson.types.ObjectId;
-
-import java.util.Map;
-import java.util.Set;
 
 public interface GitHubActionClient {
 
-    Map<ObjectId, Set<Build>> getBuildJobsFromServer(ProcessorToolConnection gitHubServer,
-                                                     ProjectBasicConfig proBasicConfig) throws FetchingBuildException;
+	Set<Build> getBuildJobsFromServer(ProcessorToolConnection gitHubServer, ProjectBasicConfig proBasicConfig)
+			throws FetchingBuildException;
 
-    Map<Deployment, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection gitHubServer,
-                                                         ProjectBasicConfig proBasicConfig) throws FetchingBuildException;
+	Map<Deployment, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection gitHubServer,
+			ProjectBasicConfig proBasicConfig) throws FetchingBuildException;
 
 }
