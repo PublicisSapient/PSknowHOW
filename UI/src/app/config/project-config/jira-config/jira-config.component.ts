@@ -316,8 +316,9 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if(this.urlParam === 'GitHubAction'){
-      this.hideFormElements(['workflowID','jobType'])
-      this.toolForm.reset();
+      this.gitActionWorkflowNameList = [];
+      this.toolForm.get('repositoryName').reset();
+      this.toolForm.get('workflowID').reset();
     }
   }
 
@@ -1843,11 +1844,23 @@ export class JiraConfigComponent implements OnInit {
               { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
               {field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
               { field: 'jobType', header: 'Job Type', class: 'long-text' },
+              { field: 'jobName', header: 'Workflow Name', class: 'long-text' },
             ];
   
             this.formTemplate = {
               group: 'GitHub Action',
               elements: [
+                {
+                  type: 'dropdown',
+                  label: 'Job Type',
+                  id: 'jobType',
+                  containerClass: 'p-sm-6',
+                  optionsList: this.jobType,
+                  changeHandler: this.jobTypeChangeHandler,
+                  validators: ['required'],
+                  show: true,
+                  isLoading: false
+                },
                 {
                   type: 'text',
                   label: 'Repository Name',
@@ -1857,17 +1870,6 @@ export class JiraConfigComponent implements OnInit {
                   show: true,
                   tooltip: `GitHub Repository Name.<br / <i>Impacted : All GitHub Repository based KPIs</i>`,
                   onFocusOut : this.getGitActionWorkflowName
-                },
-                {
-                  type: 'dropdown',
-                  label: 'Job Type',
-                  id: 'jobType',
-                  containerClass: 'p-sm-6',
-                  optionsList: this.jobType,
-                  changeHandler: this.jobTypeChangeHandler,
-                  validators: ['required'],
-                  show: false,
-                  isLoading: false
                 },
                 {
                   type: 'dropdown',
@@ -2469,21 +2471,27 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getGitActionWorkflowName(event, self){
+    self.showLoadingOnFormElement("workflowID");
+    self.toolForm.get('workflowID').reset();
+    self.gitActionWorkflowNameList = [];
+    if(self.toolForm.get('jobType').value === 'Deploy'){
+      self.hideLoadingOnFormElement("workflowID");
+      return;
+    }
     if(!self.selectedConnection?.id || event.target.value === ''){
-      self.hideFormElements(['jobType','workflowID'])
+      self.hideLoadingOnFormElement("workflowID");
       self.showPrompt('error',"Please fill all fields and select a connection.");
       return;
-    }else{
-      self.showFormElements(['jobType'])
     }
-    self.gitActionWorkflowNameList = [];
     const postJson = {connectionID : self.selectedConnection?.id,repositoryName:event.target.value};
     self.http.getGitActionWorkFlowName(postJson).subscribe(resp=>{
       if(resp && resp['success']){
         self.gitActionWorkflowNameList = resp['data'].map(option=>{
           return {'name' : option['workflowName'],'code':option['workflowID']}
         })
+        self.hideLoadingOnFormElement("workflowID");
       }else{
+        self.hideLoadingOnFormElement("workflowID");
         self.showPrompt('error',"No Workflow list found.");
       }
     })
