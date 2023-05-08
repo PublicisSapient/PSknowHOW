@@ -33,7 +33,7 @@ class ProcessorUtilsTest {
 	@Test
 	void firstCulprit() {
 		JSONObject d = new JSONObject();
-		ProcessorUtils.firstCulprit(d);
+		ProcessorUtils.authorName(d);
 	}
 
 	@Test

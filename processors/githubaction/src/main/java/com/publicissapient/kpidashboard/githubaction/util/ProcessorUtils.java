@@ -43,13 +43,13 @@ public class ProcessorUtils {
         return array == null ? new JSONArray() : (JSONArray) array;
     }
 
-    public static String firstCulprit(JSONObject buildJson) {
-        JSONArray culprits = getJsonArray(buildJson, "author");
-        if (CollectionUtils.isEmpty(culprits)) {
+    public static String authorName(JSONObject buildJson) {
+        JSONArray author = getJsonArray(buildJson, "author");
+        if (CollectionUtils.isEmpty(author)) {
             return null;
         }
-        JSONObject culprit = (JSONObject) culprits.get(0);
-        return getFullName(culprit);
+        JSONObject authorName = (JSONObject) author.get(0);
+        return getFullName(authorName);
     }
 
     public static String getFullName(JSONObject jsonObject) {

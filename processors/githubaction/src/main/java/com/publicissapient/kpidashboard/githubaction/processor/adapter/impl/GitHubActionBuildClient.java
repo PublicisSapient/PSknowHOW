@@ -151,7 +151,7 @@ public class GitHubActionBuildClient implements GitHubActionClient {
 		Build gitHubActionBuild = new Build();
 		String buildURL = ProcessorUtils.getString(jsonBuild, Constants.URL);
 		if (proBasicConfig.isSaveAssigneeDetails()) {
-			gitHubActionBuild.setStartedBy(ProcessorUtils.firstCulprit(jsonBuild));
+			gitHubActionBuild.setStartedBy(ProcessorUtils.authorName(jsonBuild));
 		}
 		gitHubActionBuild.setBuildUrl(buildURL);
 		gitHubActionBuild.setNumber(buildNumber);

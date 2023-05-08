@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.githubaction.processor;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -144,6 +145,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
+		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
 
 	}
 
