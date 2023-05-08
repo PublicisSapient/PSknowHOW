@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.abac;
 
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +36,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.common.service.NotificationService;
@@ -134,6 +137,9 @@ public class ProjectAccessManager {
 
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
+
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
 
 	// get current role and access - input user
 	public UserInfo getUserInfo(String username) {
@@ -440,7 +446,6 @@ public class ProjectAccessManager {
 		}
 
 		saveUserInfo(resultUserInfo);
-
 		updateAccessRequestStatus(accessRequest, Constant.ACCESS_REQUEST_STATUS_APPROVED, null);
 		listenGrantAccessSuccess(grantAccessListener, resultUserInfo);
 
@@ -520,6 +525,7 @@ public class ProjectAccessManager {
 		}
 
 	}
+
 
 	private void removeChildren(Map<String, Set<String>> globalChildrenMap, UserInfo resultUserInfo) {
 
@@ -623,7 +629,7 @@ public class ProjectAccessManager {
 		List<String> authorities = userInfo.getAuthorities();
 		if (!authorities.contains(role)) {
 			authorities.add(role);
-		}
+			}
 		userInfo.setAuthorities(authorities);
 	}
 
@@ -741,7 +747,7 @@ public class ProjectAccessManager {
 
 	private void listenGrantAccessSuccess(GrantAccessListener listener, UserInfo userInfo) {
 		if (listener != null) {
-			userTokenDeletionService.invalidateSession(userInfo.getUsername());
+			tokenAuthenticationService.updateExpiryDate(userInfo.getUsername(), LocalDateTime.now().toString());
 			listener.onSuccess(userInfo);
 		}
 	}
