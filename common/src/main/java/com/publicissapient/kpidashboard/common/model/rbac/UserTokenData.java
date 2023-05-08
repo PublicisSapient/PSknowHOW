@@ -43,5 +43,5 @@ public class UserTokenData extends BasicModel {
 
 	private String userName;
 	private String userToken;
-
+	private String expiryDate;
 }

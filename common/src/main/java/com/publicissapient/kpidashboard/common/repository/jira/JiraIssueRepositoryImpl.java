@@ -628,7 +628,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
-
 	/**
 	 * find linked defects of given stories and filters
 	 * @param mapOfFilters

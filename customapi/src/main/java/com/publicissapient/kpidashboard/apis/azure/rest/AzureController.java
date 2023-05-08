@@ -6,7 +6,9 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +29,8 @@ public class AzureController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/azure/pipeline/{connectionId}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getAzurePipelineNameAndDefinitionIdList(@PathVariable String connectionId,
-			@PathVariable String version) {
+	public ResponseEntity<ServiceResponse> getAzurePipelineNameAndDefinitionIdList(@PathVariable String connectionId,
+																				   @PathVariable String version) {
 		ServiceResponse response;
 		List<AzurePipelinesResponseDTO> pipelinesResponseList = azureToolConfigService
 				.getAzurePipelineNameAndDefinitionIdList(connectionId, version);
@@ -37,7 +39,8 @@ public class AzureController {
 		} else {
 			response = new ServiceResponse(true, "Fetched Pipelines Successfully", pipelinesResponseList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(response);
 	}
 
 
@@ -50,7 +53,7 @@ public class AzureController {
 	 */
 
 	@GetMapping(value = "/azure/release/{connectionId}/6.0", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getAzureReleaseNameAndDefinitionIdList(@PathVariable String connectionId) {
+	public ResponseEntity<ServiceResponse> getAzureReleaseNameAndDefinitionIdList(@PathVariable String connectionId) {
 		ServiceResponse response;
 		List<AzurePipelinesResponseDTO> releasesResponseList = azureToolConfigService
 				.getAzureReleaseNameAndDefinitionIdList(connectionId);
@@ -59,6 +62,7 @@ public class AzureController {
 		} else {
 			response = new ServiceResponse(true, "Fetched Release Pipeline details Successfully", releasesResponseList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(response);
 	}
 }

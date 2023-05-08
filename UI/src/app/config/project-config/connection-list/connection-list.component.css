@@ -88,3 +88,10 @@ p-accordionTab .card {
     max-height: 350px;
     overflow-y: auto;
 }
+.connectionDdwn{
+    width: 200px;
+}
+::ng-deep .connectionDdwn .p-dropdown .p-inputtext{
+    padding: .70rem;
+    width: 150px;
+}

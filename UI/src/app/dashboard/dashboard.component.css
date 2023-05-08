@@ -77,9 +77,10 @@
 }
 
 
+.p-align-self-end{
+  align-self: flex-end;
+}
 
 #wrapper.toggled #page-content-wrapper {
   padding-left: 16rem;
 }
-
-

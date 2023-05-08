@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -40,7 +41,7 @@ public class SprintDetails extends BasicModel {
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	public static final String SPRINT_STATE_FUTURE = "FUTURE";
-
+	@Indexed(unique = true)
 	private String sprintID;
 	private String sprintName;
 	private String originalSprintId;

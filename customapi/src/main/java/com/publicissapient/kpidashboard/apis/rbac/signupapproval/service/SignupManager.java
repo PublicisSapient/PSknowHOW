@@ -1,12 +1,14 @@
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.service;
 
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.MapUtils;
@@ -46,6 +48,9 @@ public class SignupManager {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
+
 	/**
 	 * when grant is provided to user
 	 *
@@ -70,6 +75,7 @@ public class SignupManager {
 				authentication.setApproved(true);
 				Authentication updateAuthenticationApprovalStatus = updateAuthenticationApprovalStatus(authentication);
 				grantApprovalListener.onSuccess(updateAuthenticationApprovalStatus);
+				tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 				List<String> emailAddresses = new ArrayList<>();
 				emailAddresses.add(updateAuthenticationApprovalStatus.getEmail());
 				String serverPath = getServerPath();
