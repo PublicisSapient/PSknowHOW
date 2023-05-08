@@ -174,7 +174,8 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	}
 
 	private boolean checkDeploymentConditionsNotNull(Deployment deployment) {
-		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null) {
+		if (deployment.getEnvName() == null || deployment.getStartTime() == null || deployment.getEndTime() == null
+				|| deployment.getDeploymentStatus() == null) {
 			log.error("deployments conditions not satisfied so that data is not saved in db {}", deployment);
 			return false;
 		} else {
