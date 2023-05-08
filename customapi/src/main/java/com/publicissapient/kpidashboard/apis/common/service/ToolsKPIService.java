@@ -397,14 +397,20 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-					R aggValue = null;
-					String maturityValue = null;
+
+					Pair<String, String> maturityValue = null;
 					if (null != configHelperService.calculateMaturity().get(kpiId)) {
 						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
 					}
-
-					trendValues
-							.add(new DataCount(node.getName(), maturityValue, aggValue, getList(dataCounts, kpiName)));
+					String aggregateValue = null;
+					String maturity = null;
+					if (maturityValue != null) {
+						aggregateValue = maturityValue.getValue();
+						maturity = maturityValue.getKey();
+					}
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
+							getList(dataCounts, kpiName)));
+				
 				}
 			}
 		}
@@ -440,12 +446,19 @@ public abstract class ToolsKPIService<R, S> {
 						List<DataCount> trendValues = new ArrayList<>();
 
 						R aggValue = null;
-						String maturityValue = null;
+						Pair<String, String> maturityValue = null;
 						if (null != configHelperService.calculateMaturity().get(kpiId)) {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
 						}
+						String aggregateValue = null;
+						String maturity = null;
+						if(maturityValue!=null)
+						{
+							aggregateValue = maturityValue.getValue();
+							maturity = maturityValue.getKey();
+						}
 						trendValues
-								.add(new DataCount(node.getName(), maturityValue, aggValue, getList(value, kpiName)));
+								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
 
 					});
@@ -561,15 +574,17 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return maturity value
 	 */
-	private String collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
+	private Pair<String,String> collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
 		List<R> values = null;
 		String maturityValue = null;
+		String aggregateValue = null;
 		List<R> valueMap = dataCounts.stream().filter(val -> val.getValue() instanceof HashMap<?, ?>)
 				.map(val -> (R) val.getValue()).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(valueMap)) {
 			S aggValue = calculateMapKpiMaturity(valueMap, kpiName);
 			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
 					String.valueOf(aggValue));
+			aggregateValue = String.valueOf(aggValue);
 		}
 		if (CollectionUtils.isEmpty(valueMap)) {
 			values = dataCounts.stream().filter(val -> null != val.getLineValue()).map(val -> (R) val.getLineValue())
@@ -580,9 +595,9 @@ public abstract class ToolsKPIService<R, S> {
 			R aggValue = calculateAggValue(kpiName, dataCounts, values, kpiId);
 			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
 					String.valueOf(aggValue));
-
+			aggregateValue = String.valueOf(aggValue);
 		}
-		return maturityValue;
+		return Pair.of(maturityValue,aggregateValue);
 	}
 
 	/**
