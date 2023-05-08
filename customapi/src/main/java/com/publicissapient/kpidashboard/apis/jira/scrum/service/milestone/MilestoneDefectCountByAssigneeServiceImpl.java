@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,6 +202,11 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 	}
 
 	private Map<String, List<JiraIssue>> getAssigneeWiseList(List<JiraIssue> defectJiraIssueList) {
-		return defectJiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
+		return defectJiraIssueList.stream().filter(jiraIssue -> {
+			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
+				jiraIssue.setAssigneeName("-");
+			}
+			return true;
+		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
 	}
 }
