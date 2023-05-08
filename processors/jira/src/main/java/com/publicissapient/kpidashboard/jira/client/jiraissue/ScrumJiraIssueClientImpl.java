@@ -262,7 +262,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
-						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
+						.setLastSuccessfulRun(DateUtil.dateTimeConverter(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT),QUERYDATEFORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
 					projectConfig.getProjectBasicConfig());
@@ -362,7 +362,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				log.error("Error in Fetching Issues through board", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
-						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
+						.setLastSuccessfulRun(DateUtil.dateTimeConverter(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT),QUERYDATEFORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
 					projectConfig.getProjectBasicConfig());
@@ -463,14 +463,14 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			processorExecutionTraceLog = traceLogs.get(0);
 			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
 					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(jiraProcessorConfig.getStartDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 			}
 		} else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
+			processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(jiraProcessorConfig.getStartDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		}
 		return processorExecutionTraceLog;
 	}
@@ -498,7 +498,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionEndedAt()));
 		traceLog.setExecutionStartedAt(
 				DateUtil.convertMillisToDateTime(processorExecutionTraceLog.getExecutionStartedAt()));
-		traceLog.setLastSuccessfulRun(processorExecutionTraceLog.getLastSuccessfulRun());
+		traceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(processorExecutionTraceLog.getLastSuccessfulRun(),DateUtil.DATE_TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
 		traceLog.setProjectExecutionStatus(String.valueOf(processorExecutionTraceLog.isExecutionSuccess()));
 		traceLog.setLastEnableAssigneeToggleState(String.valueOf(processorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		List<String> logJiraIssueChange = new ArrayList<>();

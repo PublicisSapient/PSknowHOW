@@ -796,7 +796,7 @@ public class KPIExcelUtility {
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
 						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-						epicEndDate = dateTime.toString();
+						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DATE_YEAR_MONTH_FORMAT));
 					}
 					excelData.setMonth(month);
 					excelData.setEpicEndDate(epicEndDate);
@@ -1204,11 +1204,11 @@ public class KPIExcelUtility {
 
 		KPIExcelData excelData = new KPIExcelData();
 		excelData.setProjectName(projectName);
-		excelData.setStartDate(dateRange.getStartDate().toString());
+		excelData.setStartDate(DateUtil.localDateTimeConverter(dateRange.getStartDate()));
 		if (CommonConstant.DAYS.equalsIgnoreCase(duration)) {
-			excelData.setEndDate(dateRange.getStartDate().toString());
+			excelData.setEndDate(DateUtil.localDateTimeConverter(dateRange.getStartDate()));
 		} else {
-			excelData.setEndDate(dateRange.getEndDate().toString());
+			excelData.setEndDate(DateUtil.localDateTimeConverter(dateRange.getEndDate()));
 		}
 		excelData.setEstimatedCapacity(df2.format(capacity));
 		kpiExcelData.add(excelData);

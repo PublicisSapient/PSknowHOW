@@ -227,7 +227,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				.valueOf(TimeUnit.DAYS.convert(reopenTimeMillis - closedTimeMillis, TimeUnit.MILLISECONDS));
 		return IterationKpiModalValue.builder().issueId(issue.getNumber()).issueURL(issue.getUrl())
 				.description(issue.getName()).priority(issue.getPriority()).issueStatus(issue.getStatus())
-				.closedDate(closedTime.toLocalDate().toString()).reopenDate(reopenTime.toLocalDate().toString())
+				.closedDate(DateUtil.localDateTimeConverter(closedTime.toLocalDate()))
+				.reopenDate(DateUtil.localDateTimeConverter(reopenTime.toLocalDate()))
 				.durationToReopen(duration + "d").build();
 	}
 
@@ -239,8 +240,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 */
 	private IterationKpiData createReopenRateIterationData(List<IterationKpiModalValue> reopenIssueList,
 			Integer totalDefects) {
-		reopenIssueList.sort((issue1, issue2) -> LocalDate.parse(issue2.getReopenDate())
-				.compareTo(LocalDate.parse(issue1.getReopenDate())));
+		reopenIssueList.sort((issue1, issue2) -> DateUtil.stringToLocalDate(issue2.getReopenDate(),DateUtil.DISPLAY_DATE_FORMAT)
+				.compareTo(DateUtil.stringToLocalDate(issue1.getReopenDate(),DateUtil.DISPLAY_DATE_FORMAT)));
 		Double overAllReopenRate = totalDefects != 0 ? (double) reopenIssueList.size() / totalDefects : 0;
 		BigDecimal bdOverallRate = BigDecimal.valueOf(overAllReopenRate * 100).setScale(2, RoundingMode.HALF_DOWN);
 		return IterationKpiData.builder().label(DEFECT_REOPEN_RATE)

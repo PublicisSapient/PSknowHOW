@@ -59,6 +59,10 @@ public class DateUtil {
 	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
 
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
+
+	public static final String BASIC_DATE_FORMAT = "dd-MM-yyyy";
+
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	
 	private DateUtil() {
 		// to prevent creation on object

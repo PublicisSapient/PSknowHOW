@@ -251,7 +251,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		Map<String, KanbanTestExecution> resultMap = new HashMap<>();
 		LocalDate currentDate = dateRange.getStartDate();
 		while (DateUtil.isWithinDateRange(currentDate, dateRange.getStartDate(), dateRange.getEndDate())) {
-			String formattedCurrentDate = DATE_FORMATTER.format(currentDate);
+			String formattedCurrentDate = DateUtil.localDateTimeConverter(currentDate);
 			resultMap.put(formattedCurrentDate, existingTestExecutionsByDate.getOrDefault(formattedCurrentDate,
 					emptyKanbanTestExecution(projectName, formattedCurrentDate)));
 			currentDate = currentDate.plusDays(1);

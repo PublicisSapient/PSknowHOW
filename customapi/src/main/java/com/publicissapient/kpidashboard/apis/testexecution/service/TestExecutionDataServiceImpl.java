@@ -1,19 +1,5 @@
 package com.publicissapient.kpidashboard.apis.testexecution.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
@@ -26,6 +12,20 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecutionData;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author sansharm13
@@ -187,8 +187,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecutionData.setTotalTestCases(0);
 			}
 
-			testExecutionData.setExecutionDate(executionDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
-
+			testExecutionData.setExecutionDate(DateUtil.localDateTimeConverter(executionDate));
 			setProjectMeta(testExecutionData, project);
 
 			testExecutions.add(testExecutionData);
