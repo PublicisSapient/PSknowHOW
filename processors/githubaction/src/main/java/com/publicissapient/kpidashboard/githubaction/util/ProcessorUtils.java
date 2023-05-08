@@ -35,7 +35,7 @@ public class ProcessorUtils {
     }
 
     public static String getFullName(JSONObject jsonObject) {
-        return getString(jsonObject, "fullName");
+        return getString(jsonObject, "name");
     }
 
 }
