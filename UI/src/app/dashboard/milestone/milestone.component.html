@@ -9,7 +9,7 @@
               (cdkDropListDropped)="drop($event)">
               <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                 <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
-                  <!-- iteration kpi card container -->
+                  <!-- Milestone kpi card container -->
 
                   <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
