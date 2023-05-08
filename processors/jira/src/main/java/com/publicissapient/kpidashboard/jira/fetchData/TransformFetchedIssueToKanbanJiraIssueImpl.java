@@ -7,8 +7,12 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -18,6 +22,7 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
@@ -27,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.publicissapient.kpidashboard.jira.fetchData.JiraHelper.*;
 
@@ -51,12 +57,11 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
 
     @Override
     public List<KanbanJiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs,
-                                                       ProjectConfFieldMapping projectConfig)// NOPMD
+                                                    ProjectConfFieldMapping projectConfig, boolean dataFromBoard, List<KanbanIssueCustomHistory> kanbanIssueHistoryToSave, Set<Assignee> assigneeSetToSave)// NOPMD
         // //NOSONAR
             throws JSONException {
 
         List<KanbanJiraIssue> kanbanIssuesToSave = new ArrayList<>();
-//        List<KanbanIssueCustomHistory> kanbanIssueHistoryToSave = new ArrayList<>();
 
         if (null == currentPagedJiraRs) {
             log.error("JIRA Processor |. No list of current paged JIRA's issues found");
@@ -120,14 +125,16 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
 
                 setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
 
-                setJiraAssigneeDetails(jiraIssue, assignee);
+                setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave,projectConfig);
+
+                setDueDates(jiraIssue, issue,fields,fieldMapping);
                 // setting filter data from Jira issue to
                 // jira_issue_custom_history
 //                setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
                 // Add Test Automated data to Jira_issue and TestDetails Repo
                 if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                     kanbanIssuesToSave.add(jiraIssue);
-//                    kanbanIssueHistoryToSave.add(jiraIssueHistory);
+//                    kanbanIssueHistoryToSave.add();
                 }
 
             }
@@ -142,6 +149,32 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
             issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
         }
         return issueTypeNames;
+    }
+
+    private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
+                             FieldMapping fieldMapping) {
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+            if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+                    && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+                jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+            } else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+                    && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
+                IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
+                if (issueField!=null && ObjectUtils.isNotEmpty(issueField.getValue())) {
+                    jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                            .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+                && ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+            IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+            if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+                jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+                        .concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+            }
+        }
     }
 
     private void setAdditionalFilters(KanbanJiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
@@ -356,8 +389,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
                     && null != fields.get(fieldMapping.getJiraTechDebtCustomField())
                     && fields.get(fieldMapping.getJiraTechDebtCustomField().trim()) != null
                     && fields.get(fieldMapping.getJiraTechDebtCustomField().trim()).getValue() != null
-                    && CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(), JiraIssueClientUtil
-                    .getListFromJson(fields.get(fieldMapping.getJiraTechDebtCustomField().trim())))) {
+                    && CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(), getListFromJson(fields.get(fieldMapping.getJiraTechDebtCustomField().trim())))) {
                 jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
             }
         }
@@ -372,7 +404,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
      * @param user
      *            Jira issue User Object
      */
-    public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user) {
+    public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
         if (user == null) {
             jiraIssue.setOwnersUsername(Collections.<String>emptyList());
             jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -381,13 +413,14 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         } else {
             List<String> assigneeKey = new ArrayList<>();
             List<String> assigneeName = new ArrayList<>();
-            if (user.getName().isEmpty() || (user.getName() == null)) {
+            String uniqueAssigneeId = getAssignee(user);
+            if (StringUtils.isEmpty(uniqueAssigneeId)) {
                 assigneeKey = new ArrayList<>();
                 assigneeName = new ArrayList<>();
             } else {
-                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                assigneeName.add(JiraProcessorUtil.deodeUTF8String(user.getName()));
-                jiraIssue.setAssigneeId(user.getName());
+                assigneeKey.add(JiraProcessorUtil.deodeUTF8String(uniqueAssigneeId));
+                assigneeName.add(JiraProcessorUtil.deodeUTF8String(uniqueAssigneeId));
+                jiraIssue.setAssigneeId(uniqueAssigneeId);
             }
             jiraIssue.setOwnersShortName(assigneeName);
             jiraIssue.setOwnersUsername(assigneeName);
@@ -401,6 +434,28 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
                 jiraIssue.setAssigneeName(user.getDisplayName());
             }
             jiraIssue.setOwnersFullName(assigneeDisplayName);
+            if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
+                    && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
+                updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
+            }
+        }
+    }
+
+    private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+        if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+            List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash)
+                    .collect(Collectors.toList());
+            List<String> ownerId = assigneeKey.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
+            List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueClient::hash)
+                    .collect(Collectors.toList());
+            jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+            jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+            jiraIssue.setOwnersShortName(ownerName);
+            jiraIssue.setOwnersUsername(ownerName);
+            jiraIssue.setOwnersID(ownerId);
+            jiraIssue.setOwnersFullName(ownerFullName);
+        } else {
+            assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
         }
     }
 

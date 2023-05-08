@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,6 +71,14 @@ public class KanbanJiraIssueDataFactory {
 	public KanbanJiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId){
 		return kanbanJiraIssueDataFactory.stream().filter(kanbanJiraIssue -> kanbanJiraIssue.getBasicProjectConfigId().equals(basicProjectConfigId)).findFirst()
 				.orElse(null);
+	}
+
+	public List<AdditionalFilter> getAdditionalFilter(){
+		return kanbanJiraIssueDataFactory.get(0).getAdditionalFilters();
+	}
+
+	public List<KanbanJiraIssue> getKanbanJiraIssues(){
+		return kanbanJiraIssueDataFactory;
 	}
 }
 

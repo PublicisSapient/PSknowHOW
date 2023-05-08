@@ -144,7 +144,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             callables.add(callable);
         }
 
-//        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
+        List<Future<JiraIssue>> futures = executor.invokeAll(callables);
 
 //        for (Future<JiraIssue> future : futures) {
 //            JiraIssue jiraIssue;

@@ -11,9 +11,11 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -167,6 +169,42 @@ public class JiraHelper {
             localDateTime = LocalDateTime.now().minusMonths(6);
         }
         jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
+    }
+
+    public static String hash(String input) {
+        return String.valueOf(Objects.hash(input));
+    }
+
+    public static String getAssignee(User user) {
+        String userId = "";
+        String query = user.getSelf().getQuery();
+        if (StringUtils.isNotEmpty(query) && (query.contains("accountId") || query.contains("username"))) {
+            userId = query.split("=")[1];
+        }
+        return userId;
+    }
+
+    public static Collection getListFromJson(IssueField issueField) {
+
+        Object value = issueField.getValue();
+        final List list = new ArrayList<>();
+        if (value instanceof JSONArray) {
+
+            ((JSONArray) value).forEach(v -> {
+                try {
+                    list.add(((JSONObject) v).get(JiraConstants.VALUE));
+                } catch (JSONException e) {
+                    log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+                }
+            });
+        } else if (value instanceof JSONObject) {
+            try {
+                list.add(((JSONObject) value).get(JiraConstants.VALUE));
+            } catch (JSONException e) {
+                log.error("JIRA PROCESSOR | Error while parsing Atlassian Issue JSON Object", e);
+            }
+        }
+        return list;
     }
 
 

@@ -9,7 +9,9 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.data.*;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
@@ -18,6 +20,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import org.apache.commons.beanutils.BeanUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -33,20 +36,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.bson.types.ObjectId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
-public class TransformFetchIssueToJiraIssueImplTest {
+public class TransformFetchedIssueToKanbanJiraIssueTest {
 
     @Mock
-    private JiraIssueRepository jiraIssueRepository;
+    private KanbanJiraIssueRepository kanbanJiraRepo;
 
     @Mock
     private JiraProcessorRepository jiraProcessorRepository;
@@ -61,7 +59,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
     FieldMapping fieldMapping;
 
     @InjectMocks
-    TransformFetchedIssueToJiraIssueImpl transformFetchedIssueToJiraIssue;
+    TransformFetchedIssueToKanbanJiraIssueImpl transformFetchedIssueToKanbanJiraIssue;
 
     List<Issue> issues = new ArrayList<>();
 
@@ -76,15 +74,6 @@ public class TransformFetchIssueToJiraIssueImplTest {
 
     List<FieldMapping> fieldMappingList;
 
-    @Mock
-    Runtime runtime;
-
-    @Mock
-    Executors executors;
-
-    @Mock
-    ExecutorService executorService;
-
     @Before
     public void setup() throws URISyntaxException {
         fieldMapping=getMockFieldMapping();
@@ -97,15 +86,15 @@ public class TransformFetchIssueToJiraIssueImplTest {
     }
 
     @Test
-    public void convertToJiraIssue() throws URISyntaxException, JSONException, InterruptedException {
+    public void convertToJiraIssue() throws JSONException {
         when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
-        when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));//63b3f50b6d8d7f44def6ec2f
+        when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
         when(jiraProcessorConfig.getJiraCloudDirectTicketLinkKey()).thenReturn( "browse/");
         when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
-        when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
+        when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
         when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code","coding"));
         when(additionalFilterHelper.getAdditionalFilter(any(), any())).thenReturn(getMockAdditionalFilterFromJiraIssue());
-        Assert.assertEquals(JiraIssue.class,(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,false,new ArrayList<>(),new HashSet<>(),new HashSet<>())).get(0).getClass());
+        Assert.assertEquals(KanbanJiraIssue.class,(transformFetchedIssueToKanbanJiraIssue.convertToJiraIssue(issues,projectConfFieldMapping,false,new ArrayList<>(),new HashSet<>())).get(0).getClass());
 
     }
 
@@ -135,8 +124,8 @@ public class TransformFetchIssueToJiraIssueImplTest {
 
     private  FieldMapping getMockFieldMapping() {
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-                .newInstance("/json/default/field_mapping.json");
-        return fieldMappingDataFactory.findByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+                .newInstance("/json/default/kanban_project_field_mappings.json");
+        return fieldMappingDataFactory.findByBasicProjectConfigId("6335368249794a18e8a4479f");
     }
 
     private void createIssue() throws URISyntaxException {
@@ -152,12 +141,12 @@ public class TransformFetchIssueToJiraIssueImplTest {
         User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
                 null);
         Map<String, String> map = new HashMap<>();
-        map.put("customfield_12121", "Client Testing (UAT)");
+        map.put("customfield_19121", "Client Testing (UAT)");
         map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
         map.put("value", "Component");
         map.put("id", "20810");
         JSONObject value = new JSONObject(map);
-        IssueField issueField = new IssueField("20810", "Component", null, value);
+        IssueField issueField = new IssueField("customfield_19121", "Component", null, value);
         List<IssueField> issueFields = Arrays.asList(issueField);
         Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
                 new Visibility(Visibility.Type.ROLE, "abc"), 1l);
@@ -171,7 +160,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
                 "toString");
         ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
-        Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
+        Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
                 basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
                 DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
                 null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
@@ -191,7 +180,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
     }
 
     private void createProjectConfigMap(){
-        ProjectBasicConfig projectConfig=projectConfigsList.get(1);
+        ProjectBasicConfig projectConfig=projectConfigsList.get(0);
         try {
             BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -202,7 +191,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
         projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
         projectConfFieldMapping.setJira(getJiraToolConfig());
         projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
-        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
+        projectConfFieldMapping.setFieldMapping(fieldMapping);
     }
 
     private JiraToolConfig getJiraToolConfig() {
