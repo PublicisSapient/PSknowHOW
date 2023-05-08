@@ -280,7 +280,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				data.add(overAllDD);
 				data.add(overAllUD);
 				Map<String,String> markerInfo = new HashMap<>();
-				markerInfo.put(Constant.GREEN,"Represent the stories used to calculate DIR & DD");
+				markerInfo.put(Constant.GREEN,"Represent the closed linked stories & is used to calculate DIR & DD");
 				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data, Arrays.asList("marker"), markerInfo);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
@@ -372,18 +372,19 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
 						linkedDefect.add(jiraIssue);
 						KPIExcelUtility.populateIterationKPI(overAlllinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, linkedJiraIssueStoryList, true, completedStoriesMap);
+						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, linkedJiraIssueStoryList, true, completedStoriesMap,totalStoriesMap);
+						// adding only completed linked stories for DD & DIR cal
 						Set<String> defectStoryIds = jiraIssue.getDefectStoryID();
-						defectStoryIds.forEach(id -> {
-							if (completedStoriesMap.containsKey(id))
-								linkedDefectCompletedList.add(jiraIssue);
-						});
+						Set<String> defectStoryIdsOfSprint = defectStoryIds.stream().filter(totalStoriesMap::containsKey).collect(Collectors.toSet());
+						if (defectStoryIdsOfSprint.stream().allMatch(completedStoriesMap::containsKey)) {
+							linkedDefectCompletedList.add(jiraIssue);
+						}
 					}
 
 				} else {
 					unlinkedDefect.add(jiraIssue);
 					KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-					setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false,null);
+					setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false,null,null);
 				}
 
 	}
@@ -407,7 +408,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					if (fieldMapping.getJiradefecttype().contains(linkedJiraIssueStory.getTypeName())) {
 						unlinkedDefect.add(jiraIssue);
 						KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues,new ArrayList<>(),jiraIssue,fieldMapping,modalObjectMap);
-						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false,null);
+						setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, new ArrayList<>(), false,null,null);
 					} else {
 						linkedJiraIssueStoryList.add(linkedJiraIssueStory);
 					}
@@ -418,7 +419,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 
 	private void setKpiSpecificData(JiraIssue jiraIssue, FieldMapping fieldMapping, // NOSONAR
 			Map<String, IterationKpiModalValue> modalObjectMap, List<JiraIssue> linkedJiraIssueStoryList,
-			boolean estimationFlag, Map<String, JiraIssue> completedStoriesMap) {
+			boolean estimationFlag, Map<String, JiraIssue> completedStoriesMap, Map<String, JiraIssue> totalStoriesMap) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
 			AtomicReference<Double> storyPoint = new AtomicReference<>(0.0d);
@@ -436,7 +437,9 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 									.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 						storyPoint.updateAndGet(v -> v + (double) linkedStory.getOriginalEstimateMinutes() / 480);
 					}
-					if (completedStoriesMap.containsKey(linkedStory.getNumber())) {
+					Set<String> defectStoryIds = jiraIssue.getDefectStoryID();
+					Set<String> defectStoryIdsOfSprint = defectStoryIds.stream().filter(totalStoriesMap::containsKey).collect(Collectors.toSet());
+					if (defectStoryIdsOfSprint.stream().allMatch(completedStoriesMap::containsKey)) {
 						jiraIssueModalObject.setMarker(Constant.GREEN);
 					}
 				}
