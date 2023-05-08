@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -118,4 +119,22 @@ public class IterationKpiModalValue implements Serializable {
 	// end for Defect Reopen Rate - submohan1
 
 
+	@JsonProperty("Change Date")
+	private String changeDate;
+	@JsonProperty("Labels")
+	private List<String> labels;
+	@JsonProperty("Created Date")
+	private String createdDate;
+	@JsonProperty("Root Cause List")
+	private List<String> rootCauseList;
+	@JsonProperty("Owner Full Name")
+	private List<String> ownersFullName;
+	@JsonProperty("Sprint Name")
+	private String sprintName;
+	@JsonProperty("Resolution")
+	private String resolution;
+	@JsonProperty("Release Name")
+	private String releaseName;
+	@JsonProperty("Updated Date")
+	private String updatedDate;
 }
