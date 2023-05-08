@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,8 +118,12 @@ public class MilestoneDefectCountByAssigneeServiceImplTest {
 
 	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
 		Map<String, Integer> finalMap = new HashMap<>();
-		Map<String, List<JiraIssue>> collect = bugList.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
+		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
+			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
+				jiraIssue.setAssigneeName("-");
+			}
+			return true;
+		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
 		collect.forEach((k, v) -> finalMap.put(k, v.size()));
 		return finalMap;
 	}

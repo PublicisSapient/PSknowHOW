@@ -199,6 +199,13 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 	}
 
 	private Map<String, List<JiraIssue>> getRCAWiseList(List<JiraIssue> defectList) {
-		return defectList.stream().collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
+		return defectList.stream().filter(jiraIssue -> {
+			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
+				List<String> rcaDummy = new ArrayList<>();
+				rcaDummy.add("-");
+				jiraIssue.setRootCauseList(rcaDummy);
+			}
+			return true;
+		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
 	}
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,10 +61,10 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MilestoneDefectCountByPriorityImplTest {
+public class MilestoneDefectCountByRCAServiceImplTest {
 
 	@InjectMocks
-	private MilestoneDefectCountByPriorityServiceImpl defectCountByPriorityService;
+	private MilestoneDefectCountByRCAServiceImpl defectCountByRCAService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -94,8 +95,8 @@ public class MilestoneDefectCountByPriorityImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(defectCountByPriorityService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_PRIORITY_MILESTONE.name()));
+		assertThat(defectCountByRCAService.getQualifierType(),
+				equalTo(KPICode.DEFECT_COUNT_BY_RCA_MILESTONE.name()));
 	}
 
 	@Test
@@ -107,7 +108,7 @@ public class MilestoneDefectCountByPriorityImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findByRelease(anyMap(), anyMap())).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
@@ -117,7 +118,14 @@ public class MilestoneDefectCountByPriorityImplTest {
 
 	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
 		Map<String, Integer> finalMap = new HashMap<>();
-		Map<String, List<JiraIssue>> collect = bugList.stream().collect(Collectors.groupingBy(JiraIssue::getPriority));
+		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
+			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
+				List<String> rcaDummy = new ArrayList<>();
+				rcaDummy.add("-");
+				jiraIssue.setRootCauseList(rcaDummy);
+			}
+			return true;
+		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
 		collect.forEach((k, v) -> finalMap.put(k, v.size()));
 		return finalMap;
 	}
