@@ -828,10 +828,10 @@ describe('FilterComponent', () => {
     });
 
     let result = component.getDate('start');
-    expect(result).toBe('07/09/2022');
+    expect(result).toBe('07-Sep-2022');
 
     result = component.getDate('end');
-    expect(result).toBe('27/09/2022');
+    expect(result).toBe('27-Sep-2022');
   });
 
 

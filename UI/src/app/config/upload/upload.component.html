@@ -116,7 +116,7 @@
                     <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MM/yyyy') === (item?.executionDate | date: 'dd/MM/yyyy'))}">
                       <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}" class="upload_tep_width_kanban">
                         <span *ngIf="col.field === 'executionDate' else otherFieldsTemp">
-                          {{item[col.field] | date: 'dd/MM/yyyy'}}
+                          {{item[col.field]}}
                         </span>
                         <ng-template #otherFieldsTemp>
                           {{item[col.field] ? item[col.field] : '- -'}}
@@ -194,7 +194,7 @@
                         class="upload_sprint_capacity sprint p-pl-3">
                         <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button" pButton pRipple  class="p-button-text  p-button-plain expand-btn" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
                         <span *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
-                          {{item[col.field] | date: 'dd/MM/yyyy'}}
+                          {{item[col.field]}}
                         </span>
                         <ng-template #otherFieldsTemp>
                           {{item[col.field] ? item[col.field] : '- -'}}
@@ -433,7 +433,7 @@
     <form [formGroup]="popupForm" class="p-fluid p-xl-12 p-p-0" *ngIf="selectedView === 'upload_tep' else sprintCapacityPopupFormTemp">
       <div class=" form-group p-xl-12 pad-l-0">
         <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
-          <span>For Execution Date {{executionDate | date: 'dd/MM/yyyy'}}</span>
+          <span>For Execution Date {{executionDate}}</span>
         </label>
         <ng-template #scrumTemp>
           <label class="mr-sm-2">
@@ -471,7 +471,7 @@
       <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
         <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
           <label for="capacity" class="mr-sm-2 float-left">
-            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date: 'dd/MM/yyyy'}} to {{this.endDate | date: 'dd/MM/yyyy'}}</span>
+            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate}} to {{this.endDate}}</span>
             <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
           </label>
           <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2" (input)="numericInputUpDown($event)"

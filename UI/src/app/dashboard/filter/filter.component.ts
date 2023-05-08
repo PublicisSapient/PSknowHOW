@@ -1060,6 +1060,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (selectedSprint) {
       const obj = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == selectedSprint)[0];
 
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
       if (obj) {
         let d;
         if (type == 'start') {
@@ -1067,7 +1070,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         } else {
           d = new Date(obj['sprintEndDate']);
         }
-        dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
+        dateString = `${this.pad(d.getDate())}-${monthNames[d.getMonth()].substring(0,3)}-${d.getFullYear()}`
       }
     }
     return dateString;
