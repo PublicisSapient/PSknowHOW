@@ -3685,7 +3685,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false
   },
   {
-    "kpiId": "kpi138",
+    "kpiId": "kpi140",
     "kpiName": "Defect Count by Priority",
     "maxValue": "",
     "kpiUnit": "Count",

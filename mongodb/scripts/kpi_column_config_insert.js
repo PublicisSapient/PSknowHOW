@@ -612,6 +612,11 @@ db.kpi_column_configs.insertMany([{
                                  			order: 7,
                                  			isShown: true,
                                  			isDefault: false
+                                 		}, {
+                                 		    columnName: 'Created during Iteration',
+                                 		    order: 8,
+                                 		    isShown: true,
+                                 		    isDefault: false
                                  		}]
                                  	},
 
@@ -658,7 +663,12 @@ db.kpi_column_configs.insertMany([{
                                  			order: 7,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}]
+                                 		}, {
+                                            columnName: 'Created during Iteration',
+                                            order: 8,
+                                            isShown: true,
+                                            isDefault: false
+                                        }]
                                  	},
 
                                  	{
@@ -2202,5 +2212,56 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: false
                                  		}]
-                                 	}
+                                 	},
+
+                                 	{
+                                        basicProjectConfigId: null,
+                                        kpiId: 'kpi140',
+                                        kpiColumnDetails: [{
+                                            columnName: 'Defect ID',
+                                            order: 0,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Issue Description',
+                                            order: 1,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Status',
+                                            order: 2,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Type',
+                                            order: 3,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Size(story point/hours)',
+                                            order: 4,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Root Cause',
+                                            order: 5,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Priority',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Assignee',
+                                            order: 7,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Created during Iteration',
+                                            order: 8,
+                                            isShown: true,
+                                            isDefault: false
+                                        }]
+                                    }
                                  ]);

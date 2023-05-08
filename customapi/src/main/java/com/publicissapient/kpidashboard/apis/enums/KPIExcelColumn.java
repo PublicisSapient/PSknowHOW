@@ -63,7 +63,7 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
 
-    DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi138",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
+    DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
 
     DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
 
