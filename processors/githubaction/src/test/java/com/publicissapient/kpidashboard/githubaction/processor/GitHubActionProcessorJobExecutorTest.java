@@ -1,15 +1,26 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.githubaction.processor;
 
-
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -25,10 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -47,6 +55,7 @@ import com.publicissapient.kpidashboard.githubaction.factory.GitHubActionClientF
 import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor;
 import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubActionClient;
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
+
 @SuppressWarnings("java:S5786")
 @ExtendWith(SpringExtension.class)
 public class GitHubActionProcessorJobExecutorTest {
@@ -94,10 +103,9 @@ public class GitHubActionProcessorJobExecutorTest {
 		GITHUBSAMPLESERVER.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		connList.add(GITHUBSAMPLESERVER);
 
-        projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
-        projectConfig.setSaveAssigneeDetails(false);
+		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
-
 
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUBACTION);
 		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
@@ -130,10 +138,10 @@ public class GitHubActionProcessorJobExecutorTest {
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build));
 		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
 
-        projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
-        projectConfig.setSaveAssigneeDetails(false);
-        projectConfigList.add(projectConfig);
-        when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		projectConfig.setSaveAssigneeDetails(false);
+		projectConfigList.add(projectConfig);
+		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 
