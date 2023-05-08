@@ -1261,7 +1261,7 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setIssueSize(originalEstimate);
 		}
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate()))
-				? DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString()
+				? DateUtil.dateTimeConverter(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT)
 				: "-");
 		jiraIssueModalObject.setChangeDate((StringUtils.isNotEmpty(jiraIssue.getChangeDate()))
 				? jiraIssue.getChangeDate().split("T")[0]
