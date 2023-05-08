@@ -76,6 +76,9 @@ export class MilestoneComponent implements OnInit {
     /** When release not found for any project */
     this.subscriptions.push(this.service.noReleaseObs.subscribe((res) => {
       this.noRelease = res;
+      if (this.noRelease) {
+        this.service.kpiListNewOrder.next([]);
+      }
     }));
 
     /** When click on show/Hide button on filter component */
@@ -251,6 +254,7 @@ export class MilestoneComponent implements OnInit {
 
 
   ngOnInit() {
+    this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
     if (this.service.getFilterObject()) {
       this.receiveSharedData(this.service.getFilterObject());
@@ -538,6 +542,18 @@ export class MilestoneComponent implements OnInit {
         this.kpiDropdowns[kpiId] = [];
         this.kpiDropdowns[kpiId].push(obj);
       }
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event?.previousIndex !== event.currentIndex) {
+      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
+      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
+      disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
+      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
+      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
+      this.service.kpiListNewOrder.next([...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
     }
   }
 
