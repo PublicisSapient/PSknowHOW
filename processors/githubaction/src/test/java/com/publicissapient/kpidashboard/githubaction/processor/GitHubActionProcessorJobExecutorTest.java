@@ -136,8 +136,10 @@ public class GitHubActionProcessorJobExecutorTest {
 		build.setBuildUrl("JOB1_1_URL");
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		build.setStartedBy("TestUser");
+		List<Build> builds = new ArrayList<>();
+		builds.add(build);
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build));
-		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
+		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
 
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);

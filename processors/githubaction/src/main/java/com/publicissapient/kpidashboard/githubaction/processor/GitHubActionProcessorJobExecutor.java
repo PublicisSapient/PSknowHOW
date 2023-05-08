@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -41,7 +40,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -64,8 +66,6 @@ import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubAct
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * GitHubActionProcessorJobExecutor represents a class which holds all the
@@ -255,10 +255,12 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		long start = System.currentTimeMillis();
 		int count = 0;
 		List<Build> buildsToSave = new ArrayList<>();
+		Set<String> number = buildsByJob.stream().map(Build::getNumber).collect(Collectors.toSet());
+		List<Build> buildData = buildRepository.findByProjectToolConfigIdAndNumberIn(gitHubActions.getId(), number);
 		for (Build build : buildsByJob) {
-			Build buildData = buildRepository.findByProjectToolConfigIdAndNumber(gitHubActions.getId(),
-					build.getNumber());
-			if (buildData == null) {
+			List<Build> buildList = buildData.stream().filter(build1 -> build1.getNumber().equals(build.getNumber()))
+					.collect(Collectors.toList());
+			if (CollectionUtils.isEmpty(buildList)) {
 				build.setJobFolder(gitHubActions.getJobName());
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(gitHubActions.getBasicProjectConfigId());
@@ -268,10 +270,10 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 				count++;
 			} else {
 
-				if (proBasicConfig.isSaveAssigneeDetails() && buildData.getStartedBy() == null
+				if (proBasicConfig.isSaveAssigneeDetails() && buildList.get(0).getStartedBy() == null
 						&& build.getStartedBy() != null) {
-					buildData.setStartedBy(build.getStartedBy());
-					buildsToSave.add(buildData);
+					buildList.get(0).setStartedBy(build.getStartedBy());
+					buildsToSave.add(buildList.get(0));
 				}
 			}
 		}

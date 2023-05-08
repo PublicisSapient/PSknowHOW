@@ -18,42 +18,44 @@
 
 package com.publicissapient.kpidashboard.githubaction.util;
 
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class ProcessorUtils {
 
-    private ProcessorUtils() {
+	private ProcessorUtils() {
 
-    }
+	}
 
+	public static String getString(JSONObject json, String key) {
+		return (String) json.get(key);
+	}
 
-    public static String getString(JSONObject json, String key) {
-        return (String) json.get(key);
-    }
+	public static JSONArray getJsonArray(JSONObject json, String key) {
+		Object array = json.get(key);
+		return array == null ? new JSONArray() : (JSONArray) array;
+	}
 
-    public static JSONArray getJsonArray(JSONObject json, String key) {
-        Object array = json.get(key);
-        return array == null ? new JSONArray() : (JSONArray) array;
-    }
+	public static String authorName(JSONObject buildJson) {
 
-    public static String authorName(JSONObject buildJson) {
-        JSONArray author = getJsonArray(buildJson, "author");
-        if (CollectionUtils.isEmpty(author)) {
-            return null;
-        }
-        JSONObject authorName = (JSONObject) author.get(0);
-        return getFullName(authorName);
-    }
+		JSONObject headCommit = (JSONObject) buildJson.get("head_commit");
+		if (headCommit == null) {
+			return null;
+		}
+		JSONObject author = (JSONObject) headCommit.get("author");
+		if (author == null) {
+			return null;
+		}
+		return getString(author, "name");
+	}
 
-    public static String getFullName(JSONObject jsonObject) {
-        return getString(jsonObject, "name");
-    }
+	public static String getFullName(JSONObject jsonObject) {
+		return getString(jsonObject, "name");
+	}
 
 }
