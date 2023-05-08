@@ -51,6 +51,7 @@ describe('IterationComponent', () => {
     const masterData = require('../../../test/resource/masterData.json');
     const filterData = require('../../../test/resource/filterData.json');
     const filterApplyDataWithScrum = { level: 2, label: 'Account', ids: ['CIM', 'FCA'], startDate: '', endDate: '', selectedMap: { Level1: [], Level2: ['CIM', 'FCA'], Level3: [], Project: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
+    const fakeKpiResponse = require('../../../test/resource/milestoneKpiResponse.json');
     const arrToBeAggregated = [
         {
             "filter1": "Defect",
@@ -2487,7 +2488,7 @@ describe('IterationComponent', () => {
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
-    it('should getchartdata for kpi when trendValueList is an object', () => {
+    it('should get chartdata for kpi when trendValueList is an object', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: {
@@ -2549,11 +2550,10 @@ describe('IterationComponent', () => {
 
     it('should calculate business days', () => {
         const today = new Date().toISOString().split('T')[0];
-        const endDate = new Date('2023-02-27T13:36:00.0000000').toISOString().split('T')[0];
-        const spy = spyOn(component, 'calcBusinessDays').and.returnValue(of(0))
-        component.calcBusinessDays(today, endDate);
-        expect(spy).toHaveBeenCalled();
-    });
+        const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
+        const days = component.calcBusinessDays(today, endDate);
+        expect(days).toBe(18);
+      });
 
     it('should apply aggregation for groupBarchart', () => {
         const data = [
@@ -2632,4 +2632,182 @@ describe('IterationComponent', () => {
         component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
         expect(aggregatedArr[2].value).toEqual(88.89);
     })
+
+
+    it('should get chartdata for kpi when trendValueList is an object with single filter', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {   
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+                
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            'filter1': ['Overall']
+        }
+        const res = {
+            "filter1": "Overall",
+            "data": [
+                {
+                    "label": "Issue without estimates",
+                    "value": 21,
+                    "value1": 51,
+                    "unit": "",
+                    "modalValues": []
+                },
+            ]
+        }
+        const combo = [{
+            filter1: 'Overall',
+        }]
+        
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
+    })
+
+    it('should get chartdata for kpi when trendValueList is an object and KPI selected filter is blank', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {   
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+                
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {}
+        
+        const combo = [{
+            filter1: 'Overall',
+        }]
+        
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
+    })
+
+    it('should get chartdata for kpi when trendValueList is an object but there is no data', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  {
+                value: []
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {}
+        const combo = [{ filter1: 'Overall' }]
+        
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array of filters', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  [
+                { filter1 : 'hold' , value : [{count : 1}] },
+                { filter1 : 'hold' , value : [{count : 1}] },
+                { filter1 : 'in progress' , value : [{count : 2}] },
+                { filter1 : 'in progress' , value : [{count : 2}] }
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1 : ['hold','in progress']
+        }
+        
+        const spyObj = spyOn(component, 'applyAggregationLogic');
+        spyOn(component,'getKpiChartType');
+        component.getChartData('kpi124', 0)
+        expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array without filter', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  [
+               { label : "l1"}
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1 : ['hold','in progress']
+        }
+        
+        const spyObj = spyOn(component, 'applyAggregationLogic');
+        spyOn(component,'getKpiChartType');
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
+    })
+
+    it("should create kpi wise list()",()=>{
+        const fakeKPi = helperService.createKpiWiseId(fakeKpiResponse.response);
+         component.createAllKpiArray(fakeKPi)
+         expect(component.allKpiArray.length).toBeGreaterThan(0);
+       })
+
+       it("should create kpi array when trendvalueList is object",()=>{
+        let kpi = [{
+            kpiId: "kpi141",
+            trendValueList: {
+                value: [
+                    {   
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+                
+            },
+            filters : ['f1',"f2"]
+        },]
+        const fakeKPi = helperService.createKpiWiseId(kpi);
+         component.createAllKpiArray(fakeKPi)
+         expect(component.allKpiArray.length).toBeGreaterThan(0);
+       })
 });
