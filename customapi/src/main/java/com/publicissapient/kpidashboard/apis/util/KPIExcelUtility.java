@@ -1285,4 +1285,24 @@ public class KPIExcelUtility {
 		modalValues.add(jiraIssueModalObject);
 		overAllModalValues.add(jiraIssueModalObject);
 	}
+
+	public static void populateMilestoneDefectRelatedExcelData(List<JiraIssue> jiraIssues,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(jiraIssue.getSprintName());
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setRootCause(jiraIssue.getRootCauseList());
+				excelData.setPriority(jiraIssue.getPriority());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 }
