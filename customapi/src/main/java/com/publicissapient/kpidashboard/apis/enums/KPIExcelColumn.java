@@ -187,7 +187,15 @@ public enum KPIExcelColumn {
 			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
 
 	DEFECT_REOPEN_RATE("kpi137", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
-			"Closed Date", "Reopen Date", "Time taken to reopen"));
+			"Closed Date", "Reopen Date", "Time taken to reopen")),
+
+    DEFECT_COUNT_BY_STATUS_MILESTONE("kpi141",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_RCA_MILESTONE("kpi142",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_ASSIGNEE_MILESTONE("kpi143",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_PRIORITY_MILESTONE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee"));
 
     // @formatter:on
 
