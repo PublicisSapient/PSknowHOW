@@ -61,6 +61,7 @@ export class MilestoneComponent implements OnInit {
   kpiSelectedFilterObj = {};
   allKpiArray: any = [];
   kpiDropdowns = {};
+  kpiLoader = true;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -196,6 +197,7 @@ export class MilestoneComponent implements OnInit {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
+    this.kpiLoader = true;
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -213,7 +215,7 @@ export class MilestoneComponent implements OnInit {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
           });
         }
-
+        this.kpiLoader = false;
        
       });
   }
