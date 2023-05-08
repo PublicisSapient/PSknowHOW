@@ -110,7 +110,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startsdfDate, String endczxcDate,
 			KpiRequest kpiRequest) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
