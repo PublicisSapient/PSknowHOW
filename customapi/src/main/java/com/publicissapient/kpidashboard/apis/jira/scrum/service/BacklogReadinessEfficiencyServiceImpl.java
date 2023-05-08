@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -243,7 +244,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 							null, null, SPRINT, null);
 					LOGGER.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
 					IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-							(double)Math.round(cycleTime / Double.valueOf(issueCount)), null, null, DAYS, null);
+							(double) Math.round(cycleTime / Double.valueOf(issueCount)), null, null, DAYS, null);
 					data.add(issuesForDevelopment);
 					data.add(backLogStrength);
 					data.add(averageCycleTime);
@@ -262,7 +263,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					null);
 			LOGGER.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
 			IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-					(double)Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null, DAYS, null);
+					(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null,
+					DAYS, null);
 			data.add(overAllIssues);
 			data.add(backLogStrength);
 			data.add(averageOverAllCycleTime);
@@ -295,17 +297,13 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
 		AtomicLong difference = new AtomicLong(0);
 		if (jiraCustomHistory.isPresent()) {
+
 			Optional<JiraIssueSprint> sprint = jiraCustomHistory.get().getStorySprintDetails().stream()
-					.filter(sprintDetails -> sprintDetails.getFromStatus().equalsIgnoreCase(status)).findFirst();
+					.filter(sprintDetails -> sprintDetails.getFromStatus().equalsIgnoreCase(status)).
+					sorted(Comparator.comparing(JiraIssueSprint::getActivityDate).reversed()).findFirst();
 			if (sprint.isPresent()) {
 				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
 				DateTime changedDate = new DateTime(sprint.get().getActivityDate(), DateTimeZone.UTC);
-				difference.set(difference.get() + new Duration(createdDate, changedDate).getStandardDays());
-
-			} else {
-				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
-				DateTime changedDate = new DateTime(
-						jiraCustomHistory.get().getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
 				difference.set(difference.get() + new Duration(createdDate, changedDate).getStandardDays());
 			}
 		}
