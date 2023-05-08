@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +33,7 @@ public class BambooController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/bamboo/plans/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getBambooProjectsAndPlanKeys(@PathVariable String connectionId) {
+	public ResponseEntity<ServiceResponse> getBambooProjectsAndPlanKeys(@PathVariable String connectionId) {
 		ServiceResponse response;
 		List<BambooPlansResponseDTO> projectKeyList = bambooToolConfigService.getProjectsAndPlanKeyList(connectionId);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
@@ -40,7 +42,8 @@ public class BambooController {
 		} else {
 			response = new ServiceResponse(true, "FETCHED_SUCCESSFULLY", projectKeyList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	/**
@@ -52,7 +55,7 @@ public class BambooController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/bamboo/branches/{connectionId}/{jobNameKey}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getBambooBranchesNameAndKeys(@PathVariable String connectionId,
+	public ResponseEntity<ServiceResponse> getBambooBranchesNameAndKeys(@PathVariable String connectionId,
 			@PathVariable String jobNameKey) {
 		ServiceResponse response;
 		List<BambooBranchesResponseDTO> projectKeyList = bambooToolConfigService
@@ -62,7 +65,8 @@ public class BambooController {
 		} else {
 			response = new ServiceResponse(true, "Fetched successfully", projectKeyList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(response);
 	}
 
 	/**
@@ -72,7 +76,7 @@ public class BambooController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/bamboo/deploy/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ServiceResponse getBambooDeploymentProject(@PathVariable String connectionId) {
+	public ResponseEntity<ServiceResponse> getBambooDeploymentProject(@PathVariable String connectionId) {
 		ServiceResponse response;
 		List<BambooDeploymentProjectsResponseDTO> projectKeyList = bambooToolConfigService.getDeploymentProjectList(connectionId);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
@@ -81,6 +85,7 @@ public class BambooController {
 		} else {
 			response = new ServiceResponse(true, "FETCHED_SUCCESSFULLY", projectKeyList);
 		}
-		return response;
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(response);
 	}
 }

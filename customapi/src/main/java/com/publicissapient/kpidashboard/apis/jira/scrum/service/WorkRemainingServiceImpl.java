@@ -232,7 +232,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					data.add(issueCounts);
 					data.add(hours);
 					data.add(potentialDelay);
-					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
+					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data, Arrays.asList("marker"));
 					iterationKpiValues.add(iterationKpiValue);
 				}));
 			List<IterationKpiData> data = new ArrayList<>();
@@ -248,7 +248,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			data.add(overAllCount);
 			data.add(overAllHours);
 			data.add(overAllPotentialDelay);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data, Arrays.asList("marker"));
 			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters

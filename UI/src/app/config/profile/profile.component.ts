@@ -19,6 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 declare let $: any;
 
@@ -32,6 +33,7 @@ export class ProfileComponent implements OnInit {
     isProjectAdmin = false;
     changePswdDisabled = false;
     adLogin = false;
+    ssoLogin = environment.SSO_LOGIN;
     constructor(private getAuthorizationService: GetAuthorizationService, public router: Router) {
     }
     ngOnInit() {

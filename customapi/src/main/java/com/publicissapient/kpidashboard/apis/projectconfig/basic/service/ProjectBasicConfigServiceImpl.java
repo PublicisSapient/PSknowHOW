@@ -148,7 +148,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-
+			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(basicConfig, username);
 
 			if (accessRoleOfParent == null) {

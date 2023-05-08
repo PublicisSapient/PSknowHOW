@@ -440,8 +440,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** get kpi ordered list ends */
-
   assignUserNameForKpiData() {
     if (!this.kpiListData['username']) {
       delete this.kpiListData['id'];

@@ -326,20 +326,24 @@ public class CommonServiceImpl implements CommonService {
 	 */
 	public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
 			String notKey, String topic) {
-
-		if (StringUtils.isNotBlank(notSubject)) {
-			EmailServerDetail emailServerDetail = getEmailServerDetail();
-			if (emailServerDetail != null) {
-				EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
-						notSubject, null, customData, emailServerDetail.getEmailHost(),
-						emailServerDetail.getEmailPort());
-				notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
+		if (!customApiConfig.isMailWithoutKafka()) {
+			if (StringUtils.isNotBlank(notSubject)) {
+				EmailServerDetail emailServerDetail = getEmailServerDetail();
+				if (emailServerDetail != null) {
+					EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
+							notSubject, null, customData, emailServerDetail.getEmailHost(),
+							emailServerDetail.getEmailPort());
+					notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
+				} else {
+					log.error("Notification Event not sent : notification emailServer Details not found in db");
+				}
 			} else {
-				log.error("Notification Event not sent : notification emailServer Details not found in db");
+				log.error("Notification Event not sent : notification subject for {} not found in properties file",
+						notSubject);
 			}
 		} else {
-			log.error("Notification Event not sent : notification subject for {} not found in properties file",
-					notSubject);
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey,"");
+			sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, templateKey);
 		}
 
 	}

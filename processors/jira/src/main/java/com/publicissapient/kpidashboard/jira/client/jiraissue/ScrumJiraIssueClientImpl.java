@@ -1004,6 +1004,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
+			String parentKey = null;
+
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
 						&& jiraProcessorConfig.getExcludeLinks().stream()
@@ -1012,9 +1014,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
-
 			storyWithSubTaskDefect(issue, fields, defectStorySet);
-
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
 	}

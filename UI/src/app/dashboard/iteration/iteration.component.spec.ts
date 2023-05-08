@@ -35,6 +35,7 @@ import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { MessageService } from 'primeng/api';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -43,6 +44,7 @@ describe('IterationComponent', () => {
     let httpService: HttpService;
     let helperService: HelperService;
     let excelService: ExcelService;
+    let messageService:MessageService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
@@ -1986,7 +1988,7 @@ describe('IterationComponent', () => {
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
-                , ExcelService, DatePipe
+                , ExcelService, DatePipe,MessageService
 
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2430,7 +2432,7 @@ describe('IterationComponent', () => {
           order: 3,
           shown: true,
         };
-        const tableValues = {
+        const tableValues =[ {
           ['Issue Description']:
             'Playground server is failing with OutOfMemoryError',
           ['Issue Id']: 'DTS-20225',
@@ -2439,8 +2441,69 @@ describe('IterationComponent', () => {
           ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
           ['Logged Work']: '0 hrs',
           ['Original Estimate']: '0 hrs',
+        }];
+        const response ={
+            "message": "Fetched successfully",
+            "success": true,
+            "data": {
+                "basicProjectConfigId": "64218f1f7b8332581c81169d",
+                "kpiId": "kpi119",
+                "kpiColumnDetails": [
+                    {
+                        "columnName": "Issue Id",
+                        "order": 0,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Description",
+                        "order": 1,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Status",
+                        "order": 2,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Type",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue URL",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    }
+                ]
+            }
         };
+        service.selectedTrends = [
+            {
+                "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+                "nodeName": "aCjCgoFkxh",
+                "path": [
+                    "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+                ],
+                "labelName": "project",
+                "parentId": [
+                    "Level3_hierarchyLevelThree"
+                ],
+                "level": 4,
+                "basicProjectConfigId": "64218f1f7b8332581c81169d"
+            }
+        ];
+        spyOn(httpService,'getkpiColumns').and.returnValue(of(response));
+        // spyOn(component,'generateTableColumnsFilterData');
+        // spyOn(component,'generateExcludeColumnsFilterList');
+        spyOn(component,'generateTableColumnData');
+        component.tableComponent.clear = ()=>{};
         component.handleArrowClick(kpi,"Issue Count",tableValues);
+        fixture.detectChanges();
         expect(component.displayModal).toBeTruthy();
     });
 
@@ -2479,11 +2542,12 @@ describe('IterationComponent', () => {
                 'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
                 'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
                 'Issue Status': 'Open',
-            }]
+            }],
+            kpiId:'kpi19'
         };
 
         const spyGenerateExcel = spyOn(excelService,'generateExcel');
-        component.generateExcel();
+        component.generateExcel('all');
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
@@ -2631,5 +2695,78 @@ describe('IterationComponent', () => {
         ];
         component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
         expect(aggregatedArr[2].value).toEqual(88.89);
-    })
+    });
+
+    it('should filter table columns',()=>{
+        service.selectedTrends = [
+            {
+                "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+                "nodeName": "aCjCgoFkxh",
+                "path": [
+                    "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+                ],
+                "labelName": "project",
+                "parentId": [
+                    "Level3_hierarchyLevelThree"
+                ],
+                "level": 4,
+                "basicProjectConfigId": "64218f1f7b8332581c81169d"
+            }
+        ];
+
+        component.modalDetails['tableHeadings']=[
+            "Issue Id",
+            "Issue Description",
+            "First Time Pass",
+            "Linked Defect",
+            "Defect Priority"
+        ];
+
+        component.selectedColumns=[
+            "Issue Id",
+            "Issue Description",
+            "Linked Defect",
+            "Defect Priority"
+        ];
+
+        component.tableColumns=[
+            {
+                "columnName": "Issue Id",
+                "order": 0,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Issue Description",
+                "order": 1,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "First Time Pass",
+                "order": 2,
+                "isShown": false,
+                "isDefault": false
+            },
+            {
+                "columnName": "Linked Defect",
+                "order": 3,
+                "isShown": true,
+                "isDefault": false
+            },
+            {
+                "columnName": "Defect Priority",
+                "order": 4,
+                "isShown": true,
+                "isDefault": false
+            }
+        ];
+
+        const spypostKpiColumnConfig = spyOn(httpService,'postkpiColumnsConfig').and.returnValue(of({}));
+        component.applyColumnFilter();
+        expect(spypostKpiColumnConfig).toHaveBeenCalled();
+    });
+
+
+
 });
