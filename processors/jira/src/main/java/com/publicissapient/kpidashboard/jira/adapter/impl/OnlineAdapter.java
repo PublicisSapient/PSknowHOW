@@ -508,7 +508,7 @@ public class OnlineAdapter implements JiraAdapter {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
-		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
+		if(connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
 		} else{
