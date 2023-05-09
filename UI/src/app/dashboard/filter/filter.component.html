@@ -24,6 +24,25 @@
                      </div>
                      <!-- Trend line value -->
                      <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                        <!-- <ng-select
+                           [items]="trendLineValueList"
+                           [multiple]="true"
+                           bindLabel="login"
+                           bindValue="login"
+                           (remove)="handleRemove()"
+                           [maxSelectedItems]="6"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
+                           formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" >
+                           <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                              <div class="ng-value" *ngFor="let item of items | slice:0:2">
+                                    <span class="ng-value-label">{{item.nodeName}}</span>
+                                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                              </div>
+                              <div class="ng-value" *ngIf="items.length > 2">
+                                    <span class="ng-value-label">{{items.length - 2}} more...</span>
+                              </div>
+                           </ng-template>
+                        </ng-select>  -->
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            (remove)="handleRemove()" [multiple]="true"
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
@@ -40,8 +59,6 @@
                                  <button pButton pRipple label="Apply" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm" (click)="onSelectedTrendValueChange()"
                                     [disabled]="filterForm.get('selectedTrendValue')?.value?.length == 0"></button>
-                                 <!-- <button class="btn btn-filter rounded p-mr-2">Cancel</button> -->
-                                 <!-- <button class="btn btn-filter rounded" (click)="applyChanges(true)">Apply</button> -->
                               </div>
                            </ng-template>
                         </ng-select>
