@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,9 +260,9 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		Set<String> number = buildsByJob.stream().map(Build::getNumber).collect(Collectors.toSet());
 		List<Build> buildData = buildRepository.findByProjectToolConfigIdAndNumberIn(gitHubActions.getId(), number);
 		for (Build build : buildsByJob) {
-			List<Build> buildList = buildData.stream().filter(build1 -> build1.getNumber().equals(build.getNumber()))
-					.collect(Collectors.toList());
-			if (CollectionUtils.isEmpty(buildList)) {
+			Build dBBuild = buildData.stream().filter(build1 -> build1.getNumber().equals(build.getNumber()))
+					.findFirst().orElse(new Build());
+			if (StringUtils.isEmpty(dBBuild.getNumber())) {
 				build.setJobFolder(gitHubActions.getJobName());
 				build.setProcessorId(processorId);
 				build.setBasicProjectConfigId(gitHubActions.getBasicProjectConfigId());
@@ -270,10 +272,10 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 				count++;
 			} else {
 
-				if (proBasicConfig.isSaveAssigneeDetails() && buildList.get(0).getStartedBy() == null
+				if (proBasicConfig.isSaveAssigneeDetails() && dBBuild.getStartedBy() == null
 						&& build.getStartedBy() != null) {
-					buildList.get(0).setStartedBy(build.getStartedBy());
-					buildsToSave.add(buildList.get(0));
+					dBBuild.setStartedBy(build.getStartedBy());
+					buildsToSave.add(dBBuild);
 				}
 			}
 		}
