@@ -316,4 +316,7 @@ public class KPIExcelData {
 	@JsonProperty("Change Date")
 	private String changeDate;
 
+    @JsonProperty("Created during Iteration")
+    private String createdDuringIteration;
+
 }

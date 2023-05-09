@@ -244,10 +244,11 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDefectRCAandStatusRelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			List<JiraIssue> createDuringIteration, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
+				String present = createDuringIteration.contains(jiraIssue) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
 				excelData.setSprintName(sprint);
 				Map<String, String> defectIdDetails = new HashMap<>();
 				defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
@@ -267,6 +268,7 @@ public class KPIExcelUtility {
 				}
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setCreatedDuringIteration(present);
 				kpiExcelData.add(excelData);
 			});
 		}
