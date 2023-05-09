@@ -173,6 +173,7 @@ public final class CommonConstant {
 
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
+	public static final String MILESTONE = "Milestone";
 
 	public static final String RELEASED="Released";
 	public static final String UNRELEASED="Unreleased";
