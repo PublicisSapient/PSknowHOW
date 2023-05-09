@@ -192,7 +192,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
 					resultListMap.put(COMPLETED_ISSUES,new ArrayList<>(completedJiraIssue));
-				}
+				} else
+					resultListMap.put(COMPLETED_ISSUES,new ArrayList<>());
 			}
 
 		}
@@ -249,7 +250,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			List<JiraIssue> allStory = completedIssueList.stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 
-			if (CollectionUtils.isNotEmpty(allDefects) && CollectionUtils.isNotEmpty(allStory)) {
+			if (CollectionUtils.isNotEmpty(allDefects)) {
 
 				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 				List<IterationKpiModalValue> overAllUnlinkedmodalValues = new ArrayList<>();
