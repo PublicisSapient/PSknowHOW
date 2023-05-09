@@ -21,7 +21,10 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -38,6 +41,8 @@ import org.springframework.util.CollectionUtils;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -47,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -142,13 +148,9 @@ public class JiraServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
 
-				if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory()) &&
-						origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
-					fetchSprintDetails(kpiRequest.getIds());
-					List<String> sprintIssuesList = createIssuesList(filteredAccountDataList.get(0)
-							.getBasicProjectConfigId().toString());
-					fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
-					fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
+				if (!CollectionUtils.isEmpty(origRequestedKpis)
+						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
+					updateJiraIssueList(kpiRequest, origRequestedKpis, filteredAccountDataList, treeAggregatorDetail);
 				}
 
 				// set filter value to show on trend line. If sub-projects are
@@ -183,6 +185,37 @@ public class JiraServiceR {
 		}
 
 		return responseList;
+	}
+
+	private void updateJiraIssueList(KpiRequest kpiRequest, List<KpiElement> origRequestedKpis,
+			List<AccountHierarchyData> filteredAccountDataList, TreeAggregatorDetail treeAggregatorDetail) {
+		if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.ITERATION)) {
+			fetchSprintDetails(kpiRequest.getIds());
+			List<String> sprintIssuesList = createIssuesList(
+					filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList,
+					CommonConstant.ITERATION);
+			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
+					sprintIssuesList);
+		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.MILESTONE)) {
+			List<String> releaseList = getReleaseList(treeAggregatorDetail);
+			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList,
+					CommonConstant.MILESTONE);
+		}
+	}
+
+	/**
+	 * creating relase List on the basis of releaseId
+	 * @param treeAggregatorDetail
+	 * @return
+	 */
+	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
+		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
+		List<String> releaseList = new ArrayList<>();
+		if (!CollectionUtils.isEmpty(nodes)) {
+			nodes.forEach(relaseNode -> releaseList.add(relaseNode.getReleaseFilter().getName().split("_")[0]));
+		}
+		return releaseList;
 	}
 
 	/**
@@ -327,8 +360,20 @@ public class JiraServiceR {
 		return sprintDetails.stream().findFirst().orElse(null);
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
-		jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList, basicProjectConfigId);
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
+		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
+			jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList,
+					basicProjectConfigId);
+		} else if (board.equalsIgnoreCase(CommonConstant.MILESTONE)) {
+			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					Collections.singletonList(basicProjectConfigId));
+			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			mapOfProjectFilters.put(CommonConstant.RELEASE, sprintIssuesList);
+			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
+			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
+		}
 	}
 
 	private List<String> createIssuesList(String basicProjectConfigId) {

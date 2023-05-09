@@ -19,14 +19,14 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.milestone;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -40,7 +40,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -52,7 +51,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -66,7 +64,6 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MilestoneDefectCountByAssigneeServiceImpl.class);
-	private static final String RELEASE = "releaseName";
 	private static final String TOTAL_DEFECT = "totalDefects";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -90,26 +87,18 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 		if (null != leafNode) {
 			LOGGER.info("Defect count by Assignee Milestone -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String releaseId = leafNode.getReleaseFilter().getName().split("_")[0];
-			List<String> defectType = new ArrayList<>();
+			Set<String> defectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
 			if (null != fieldMapping) {
-				Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-				Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+				Map<String, Set<String>> mapOfProjectFilters = new LinkedHashMap<>();
 				if (fieldMapping.getJiradefecttype() != null) {
 					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(defectType));
-				mapOfProjectFilters.put(RELEASE, Arrays.asList(releaseId));
-				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
-				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-						Collections.singletonList(basicProjectConfigId));
-				List<JiraIssue> releaseDefects = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
+				mapOfProjectFilters.put(basicProjectConfigId,defectType);
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
 		}

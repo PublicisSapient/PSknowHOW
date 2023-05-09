@@ -75,7 +75,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
-	private static final String RELEASE = "releaseName";
+	private static final String RELEASE = "release";
 	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
 	@Autowired
@@ -685,7 +685,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	public List<JiraIssue> findByRelease(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
-		// map of common filters Project and Sprint
+		// map of common filters Project and Release
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
 			if (CollectionUtils.isNotEmpty(entry.getValue())) {
 				criteria = criteria.and(entry.getKey()).in(entry.getValue());
