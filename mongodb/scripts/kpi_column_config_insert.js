@@ -2294,10 +2294,9 @@ db.kpi_column_configs.insertMany([{
                                  			isDefault: true
                                  		}]
                                  	},
-
                                     {
                                  		basicProjectConfigId: null,
-                                 		kpiId: 'kpi142',
+                                 		kpiId: 'kpi143',
                                  		kpiColumnDetails: [{
                                  			columnName: 'Issue ID',
                                  			order: 0,
@@ -2340,10 +2339,9 @@ db.kpi_column_configs.insertMany([{
                                  			isDefault: true
                                  		}]
                                  	},
-
                                     {
                                  		basicProjectConfigId: null,
-                                 		kpiId: 'kpi143',
+                                 		kpiId: 'kpi144',
                                  		kpiColumnDetails: [{
                                  			columnName: 'Issue ID',
                                  			order: 0,
