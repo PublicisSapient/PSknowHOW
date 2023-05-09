@@ -112,7 +112,7 @@
                     </div>
                     <div class="min-ht"
                       *ngIf="kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false">
-                      <div class="err">No Data Available</div>
+                      <div class="no-data">No Data Available</div>
                     </div>
                   </ng-template>
                   <ng-template #loader>
