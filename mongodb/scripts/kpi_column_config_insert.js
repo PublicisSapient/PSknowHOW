@@ -2203,6 +2203,46 @@ db.kpi_column_configs.insertMany([{
                                  			isDefault: false
                                  		}]
                                  	},
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi139',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue Id',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Priority',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Change Date',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Weeks',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Issue Status',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}]
+                                 	},
 									{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi138',

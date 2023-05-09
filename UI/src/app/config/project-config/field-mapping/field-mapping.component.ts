@@ -472,7 +472,10 @@ export class FieldMappingComponent implements OnInit {
       productionDefectComponentValue: [''],
       productionDefectValue: [[]],
       // qaRootCauseValue: [[]],
-      excludeRCAFromFTPR: [[]]
+      excludeRCAFromFTPR: [[]],
+      jiraReadyForRefinement: [[]],
+      jiraAcceptedInRefinement: [[]],
+      jiraRejectedInRefinement: [[]]
     };
 
     this.addAdditionalFilterOptions();
