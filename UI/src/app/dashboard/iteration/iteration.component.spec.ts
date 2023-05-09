@@ -1989,7 +1989,7 @@ describe('IterationComponent', () => {
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
-                , ExcelService, DatePipe
+                , ExcelService, DatePipe,MessageService
 
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2433,7 +2433,7 @@ describe('IterationComponent', () => {
           order: 3,
           shown: true,
         };
-        const tableValues = {
+        const tableValues =[ {
           ['Issue Description']:
             'Playground server is failing with OutOfMemoryError',
           ['Issue Id']: 'DTS-20225',
@@ -2442,7 +2442,67 @@ describe('IterationComponent', () => {
           ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
           ['Logged Work']: '0 hrs',
           ['Original Estimate']: '0 hrs',
+        }];
+        const response ={
+            "message": "Fetched successfully",
+            "success": true,
+            "data": {
+                "basicProjectConfigId": "64218f1f7b8332581c81169d",
+                "kpiId": "kpi119",
+                "kpiColumnDetails": [
+                    {
+                        "columnName": "Issue Id",
+                        "order": 0,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Description",
+                        "order": 1,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Status",
+                        "order": 2,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Type",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue URL",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    }
+                ]
+            }
         };
+        service.selectedTrends = [
+            {
+                "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+                "nodeName": "aCjCgoFkxh",
+                "path": [
+                    "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+                ],
+                "labelName": "project",
+                "parentId": [
+                    "Level3_hierarchyLevelThree"
+                ],
+                "level": 4,
+                "basicProjectConfigId": "64218f1f7b8332581c81169d"
+            }
+        ];
+        spyOn(httpService,'getkpiColumns').and.returnValue(of(response));
+        // spyOn(component,'generateTableColumnsFilterData');
+        // spyOn(component,'generateExcludeColumnsFilterList');
+        spyOn(component,'generateTableColumnData');
+        component.tableComponent.clear = ()=>{};
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
     });
@@ -2482,7 +2542,8 @@ describe('IterationComponent', () => {
                 'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
                 'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
                 'Issue Status': 'Open',
-            }]
+            }],
+            kpiId:'kpi19'
         };
 
         const spyGenerateExcel = spyOn(excelService,'generateExcel');
@@ -2490,7 +2551,7 @@ describe('IterationComponent', () => {
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
-    it('should get chartdata for kpi when trendValueList is an object', () => {
+    it('should getchartdata for kpi when trendValueList is an object', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: {
@@ -2551,10 +2612,10 @@ describe('IterationComponent', () => {
     })
 
     it('should calculate business days', () => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date("2023-05-01T00:00:00").toISOString().split('T')[0];
         const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
         const days = component.calcBusinessDays(today, endDate);
-        expect(days).toBe(18);
+        expect(days).toBe(24);
       });
 
     it('should apply aggregation for groupBarchart', () => {
@@ -2812,9 +2873,8 @@ describe('IterationComponent', () => {
          component.createAllKpiArray(fakeKPi)
          expect(component.allKpiArray.length).toBeGreaterThan(0);
        })
-    });
 
-    it('should filter table columns',()=>{
+       it('should filter table columns',()=>{
         service.selectedTrends = [
             {
                 "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
@@ -2883,7 +2943,5 @@ describe('IterationComponent', () => {
         component.applyColumnFilter();
         expect(spypostKpiColumnConfig).toHaveBeenCalled();
     });
+    });
 
-
-
-});

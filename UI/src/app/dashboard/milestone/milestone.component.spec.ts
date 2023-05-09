@@ -400,11 +400,11 @@ it('should process config data on getting globalDashConfigData', () => {
 });
 
 it('should calculate business days', () => {
-  const today = new Date().toISOString().split('T')[0];
-  const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
-  const days = component.calcBusinessDays(today, endDate);
-  expect(days).toBe(18);
-});
+    const today = new Date("2023-05-01T00:00:00").toISOString().split('T')[0];
+    const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
+    const days = component.calcBusinessDays(today, endDate);
+    expect(days).toBe(24);
+  });
 
 it('should process kpi config Data', () => {
   component.configGlobalData = configGlobalData;
