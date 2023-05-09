@@ -24,13 +24,15 @@
                      </div>
                      <!-- Trend line value -->
                      <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
-                        <!-- <ng-select
+                        <ng-select #selector
                            [items]="trendLineValueList"
                            [multiple]="true"
-                           bindLabel="login"
-                           bindValue="login"
+                           bindLabel="nodeName"
+                           bindValue="nodeId"
+                           [closeOnSelect]="false"
                            (remove)="handleRemove()"
                            [maxSelectedItems]="6"
+                           class="trend-line-value p-pb-0" 
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
                            formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" >
                            <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
@@ -42,15 +44,6 @@
                                     <span class="ng-value-label">{{items.length - 2}} more...</span>
                               </div>
                            </ng-template>
-                        </ng-select>  -->
-                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
-                           (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
-                           [closeOnSelect]="false"
-                           [maxSelectedItems]="6"
-                           class="trend-line-value p-pb-0" [clearable]="false">
-                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                           </ng-option>
                            <ng-template ng-footer-tmp>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"
