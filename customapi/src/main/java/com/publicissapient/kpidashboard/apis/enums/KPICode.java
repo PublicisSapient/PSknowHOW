@@ -376,7 +376,13 @@ public enum KPICode {
 	/**
 	 * Defect Reopen Rate
 	 */
-	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name());
+	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name()),
+
+
+	/**
+	 * Refinement Rejection Rate
+	 */
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
 
 	// @formatter:on
 
