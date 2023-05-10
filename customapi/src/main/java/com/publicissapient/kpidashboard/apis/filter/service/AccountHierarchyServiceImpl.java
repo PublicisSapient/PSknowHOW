@@ -186,7 +186,7 @@ public class AccountHierarchyServiceImpl
 		if (firstLevel != null) {
 			filterDataList.stream().filter(fd -> fd.getLabelName().equalsIgnoreCase(firstLevel)).forEach(rootData -> {
 				AccountHierarchyData accountHierarchyData = new AccountHierarchyData();
-				setValuesInAccountHierarchyData(rootData, accountHierarchyData, sprintDetailsMap,hierarchyLevelIdMap);
+				setValuesInAccountHierarchyData(rootData, accountHierarchyData, null, hierarchyLevelIdMap);
 				traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData,
 						hierarchyLevelIdMap, limitedDisplayMap, sprintDetailsMap);
 			});
@@ -316,16 +316,27 @@ public class AccountHierarchyServiceImpl
 			List<AccountHierarchyData> listHierarchyData, AccountHierarchyData accountHierarchyData,
 			Map<String,Integer> hierarchyLevelIdMap, Map<String, List<String>> sprintIdListToDisplay,
 			Map<String, SprintDetails> sprintDetailsMap) {
-		if (parentWiseMap.containsKey(hierarchy.getNodeId()) ) {
+
+		if (parentWiseMap.containsKey(hierarchy.getNodeId())) {
 			parentWiseMap.get(hierarchy.getNodeId()).stream()
 					.filter(child -> showInFilters(sprintIdListToDisplay.get(hierarchy.getNodeId()), child)
 							&& isCurrentNodeChild(hierarchy, child) && isParentChildHierarchy(hierarchy, child))
 					.forEach(child -> {
-						AccountHierarchyData accountHierarchyDataClone = (AccountHierarchyData) SerializationUtils
-								.clone(accountHierarchyData);
-						setValuesInAccountHierarchyData(child, accountHierarchyDataClone, sprintDetailsMap, hierarchyLevelIdMap);
-						traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone,
-								hierarchyLevelIdMap, sprintIdListToDisplay, sprintDetailsMap);
+						SprintDetails sprintDetails = sprintDetailsMap.get(child.getNodeId());
+						if(!child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) ||
+								(child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) &&
+										null != sprintDetails && null != sprintDetails.getState())) {
+							AccountHierarchyData accountHierarchyDataClone = (AccountHierarchyData) SerializationUtils.clone(
+									accountHierarchyData);
+							setValuesInAccountHierarchyData(child, accountHierarchyDataClone, sprintDetails,
+									hierarchyLevelIdMap);
+							traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone,
+									hierarchyLevelIdMap, sprintIdListToDisplay, sprintDetailsMap);
+						}else{
+							accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
+							accountHierarchyData.setLabelName(hierarchy.getLabelName());
+							listHierarchyData.add(accountHierarchyData);
+						}
 					});
 		} else {
 			accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
@@ -350,8 +361,7 @@ public class AccountHierarchyServiceImpl
 	 * @param accountHierarchyData
 	 */
 	private void setValuesInAccountHierarchyData(AccountHierarchy hierarchy, AccountHierarchyData accountHierarchyData,
-			Map<String, SprintDetails> sprintDetailsMap, Map<String,Integer> hierarchyLevelIdMap) {
-		SprintDetails sprintDetails = sprintDetailsMap.get(hierarchy.getNodeId());
+			SprintDetails sprintDetails, Map<String,Integer> hierarchyLevelIdMap) {
 		if (sprintDetails != null){
 			hierarchy
 					.setSprintState(sprintDetails.getState());
