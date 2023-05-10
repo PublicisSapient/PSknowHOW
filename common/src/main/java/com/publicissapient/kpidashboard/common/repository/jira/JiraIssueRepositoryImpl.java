@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
 	private static final String JIRA_UPDATED_DATE = "updateDate";
-	private static final String RELEASE = "RELEASE";
 	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
 	@Autowired
@@ -714,8 +714,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
 			filterMap.forEach((subk, subv) -> {
-				if (subk.equalsIgnoreCase(RELEASE)) {
-					projectCriteria.and(RELEASE_VERSION).in((List<Pattern>) filterMap.get(RELEASE));
+				if (subk.equalsIgnoreCase(CommonConstant.RELEASE)) {
+					projectCriteria.and(RELEASE_VERSION).in((List<Pattern>) filterMap.get(CommonConstant.RELEASE));
 				} else {
 					projectCriteria.and(subk).in((List<Pattern>) subv);
 				}
