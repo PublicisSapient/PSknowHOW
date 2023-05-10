@@ -231,7 +231,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
-						.setLastSuccessfulRun(DateUtil.dateTimeConverter(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT),QUERYDATEFORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedKanbanJiraIssueChangedDateByType,
 					isAttemptSuccess, projectConfig.getProjectBasicConfig());
@@ -315,7 +315,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				log.error("Error in Fetching Issues through board", kv(CommonConstant.PSLOGDATA, psLogData));
 			} else {
 				processorExecutionTraceLog
-						.setLastSuccessfulRun(DateUtil.dateTimeConverter(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT),QUERYDATEFORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), QUERYDATEFORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedKanbanJiraIssueChangedDateByType,
 					isAttemptSuccess, projectConfig.getProjectBasicConfig());
@@ -414,14 +414,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			processorExecutionTraceLog = traceLogs.get(0);
 			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
 					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-				processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(jiraProcessorConfig.getStartDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
 			}
 		} else {
 			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
 			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(jiraProcessorConfig.getStartDate(),DateUtil.TIME_FORMAT,DateUtil.DISPLAY_DATE_FORMAT));
+			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
 		}
 		return processorExecutionTraceLog;
 	}
