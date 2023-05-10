@@ -75,3 +75,16 @@
     font-size: .9rem;
     font-weight: 600;
 }
+
+.trend-content-margin{
+    margin-right: 1rem;
+}
+
+@media only screen and (max-width: 1600px){
+    .average-data-primary {
+        font-size: 0.8rem;
+    }
+    .trend-content-margin{
+        margin-right: 0.3rem;
+    }
+}

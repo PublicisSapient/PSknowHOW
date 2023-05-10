@@ -1,7 +1,7 @@
 <div class="indicator-container p-mb-2" [ngStyle]="{'border-color': color}">
 
     <div class="indicator-average-data" *ngIf="dataTrend && cols?.length == 0">
-        <div class="p-pr-2 p-text-center">
+        <div class="trend-content-margin p-text-center">
             <div class="indicator-heading">Latest</div>
             <!-- <p class="average-data-primary" [ngStyle]="{'color': color}"
                 *ngIf="kpiData?.kpiDetail?.chartType === 'stackedColumn' else lineChartTemplate">
@@ -18,7 +18,8 @@
                 </p>
             <!-- </ng-template> -->
         </div>
-        <div class="p-pr-2 p-text-center">
+
+        <div class="p-pr-2 trend-content-margin p-text-center">
             <div class="indicator-heading">Trend</div>
 
             <div class="p-d-flex p-justify-center">
@@ -69,8 +70,7 @@
         </div>
         <div class="p-text-center">
             <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{ dataTrend?.maturity}}
-            </p>
+            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue+'%' : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
         </div>
     </div>
 

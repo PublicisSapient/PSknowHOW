@@ -82,6 +82,16 @@
     top: 14px;
 }
 
+.export-button button{
+line-height: 1;
+border: none;
+padding: 0.75rem !important;
+}
+
+.markerInfo{
+    font-size: 0.75rem;
+}
+
 ::ng-deep .p-overflow-hidden {
     overflow: unset;
 }
@@ -122,3 +132,108 @@
 .kpi-formula{
     font-size: .9rem;
 }
+
+.columns-btn{
+    float: right;
+}
+:host ::ng-deep.column-btn{
+    color: var(--color-secondary-blue);
+}
+
+.table-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1.1rem 1rem;
+    border: 1px solid #e4e4e4;
+    height: 60px;
+    /* border-left: none; */
+    /* min-width: 120px */
+}
+
+:host ::ng-deep .p-multiselect-items-wrapper{
+    max-height: 140px !important;
+}
+
+:host ::ng-deep .p-multiselect-label{
+    padding: 0px;
+}
+
+:host ::ng-deep.p-multiselect-trigger{
+    display: none;
+}
+:host ::ng-deep.p-datatable-header{
+    border: none;
+    padding-top: 0px;
+}
+
+:host ::ng-deep.p-multiselect{
+    border: none;
+    background-color: transparent;
+}
+
+:host ::ng-deep.p-multiselect-filter-container{
+    min-width: 100px;
+}
+
+:host ::ng-deep th .p-multiselect-panel{
+    left:-200px !important;
+    max-width: 250px;
+}
+
+:host ::ng-deep th:first-child .p-multiselect-panel{
+    left:0px !important;
+}
+
+:host ::ng-deep.p-dialog.p-component.p-dialog-draggable{
+    min-height: 400px;
+}
+
+:host ::ng-deep.p-multiselect .p-multiselect-label{
+    color: #1D4ED8;
+}
+
+:host ::ng-deep.p-multiselect .p-multiselect-label.p-placeholder{
+    color: rgba(0, 0, 0, 0.6);
+}
+
+:host ::ng-deep.p-multiselect-open{
+    z-index: 2000;
+}
+
+:host ::ng-deep.p-sortable-column-badge{
+    display: none !important;
+}
+
+:host ::ng-deep.p-sortable-column-icon{
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+}
+
+:host ::ng-deep .p-datatable-header{
+    padding-left: 0px;
+}
+
+:host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th{
+    top: 0;
+    position: sticky;
+    z-index: 1;
+    padding: 0px;
+    border: none;
+}
+
+:host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th.dragged{
+    border: 2px dashed #1D4ED8;
+    /* display: none; */
+}
+
+.overlap{
+    z-index: 1000 !important;
+}
+:host::ng-deep.text-center{
+    text-align: center !important;
+}
+
+
+
