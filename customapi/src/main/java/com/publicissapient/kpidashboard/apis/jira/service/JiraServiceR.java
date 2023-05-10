@@ -197,10 +197,10 @@ public class JiraServiceR {
 					CommonConstant.ITERATION);
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
 					sprintIssuesList);
-		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.MILESTONE)) {
+		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.RELEASE)) {
 			List<String> releaseList = getReleaseList(treeAggregatorDetail);
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList,
-					CommonConstant.MILESTONE);
+					CommonConstant.RELEASE);
 		}
 	}
 
@@ -364,7 +364,7 @@ public class JiraServiceR {
 		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
 			jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList,
 					basicProjectConfigId);
-		} else if (board.equalsIgnoreCase(CommonConstant.MILESTONE)) {
+		} else if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
 			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					Collections.singletonList(basicProjectConfigId));

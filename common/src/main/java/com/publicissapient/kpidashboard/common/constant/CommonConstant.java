@@ -42,7 +42,6 @@ public final class CommonConstant {
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
 	public static final String REPROCESS = "Reprocess";
-	public static final String RELEASE = "release";
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
 	
 	public static final String SPRINT = "sprint";
@@ -173,7 +172,7 @@ public final class CommonConstant {
 
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
-	public static final String MILESTONE = "Milestone";
+	public static final String RELEASE = "Release";
 
 	public static final String RELEASED="Released";
 	public static final String UNRELEASED="Unreleased";

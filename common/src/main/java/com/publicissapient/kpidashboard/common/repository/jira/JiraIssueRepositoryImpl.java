@@ -75,7 +75,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
 	private static final String JIRA_UPDATED_DATE = "updateDate";
-	private static final String RELEASE = "release";
+	private static final String RELEASE = "RELEASE";
 	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
 	@Autowired
