@@ -104,6 +104,7 @@ public final class CommonConstant {
 	public static final String ARROW = "->";
 	public static final String NEWLINE = "\n";
 	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
+	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
 	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
@@ -123,6 +124,8 @@ public final class CommonConstant {
 	public static final String HIERARCHY_LEVEL_NAME_PROJECT = "Project";
 	public static final String HIERARCHY_LEVEL_ID_SPRINT = "sprint";
 	public static final String HIERARCHY_LEVEL_NAME_SPRINT = "Sprint";
+	public static final String HIERARCHY_LEVEL_ID_RELEASE = "release";
+	public static final String HIERARCHY_LEVEL_NAME_RELEASE = "Release";
 
 	public static final String ADDITIONAL_FILTER_VALUE_ID_SEPARATOR = "_";
 
@@ -170,6 +173,10 @@ public final class CommonConstant {
 
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
+	public static final String MILESTONE = "Milestone";
+
+	public static final String RELEASED="Released";
+	public static final String UNRELEASED="Unreleased";
 
 
 
