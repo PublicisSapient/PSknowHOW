@@ -71,7 +71,7 @@ public interface ConnectionRepository
 	 *
 	 * @return
 	 */
-	@Query(value = "{}", fields = "{ 'password' : 0,'apiKey':0,'accessToken':0,'privateKey':0,'pat':0,'consumerKey':0}")
+	@Query(value = "{}", fields = "{ 'password' : 0,'apiKey':0,'accessToken':0,'privateKey':0,'pat':0,'consumerKey':0,'patOAuthToken':0}")
 	List<Connection> findAllWithoutSecret();
 
 
