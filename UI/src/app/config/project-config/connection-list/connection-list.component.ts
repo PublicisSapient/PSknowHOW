@@ -448,14 +448,19 @@ export class ConnectionListComponent implements OnInit {
     if (isEdit) {
       if (connection['vault']) {
         this.jiraForm.controls['jiraAuthType'].setValue('vault');
+        this.onChangeAuthType('vault')
       } else if (connection['bearerToken']) {
         this.jiraForm.controls['jiraAuthType'].setValue('bearerToken');
+        this.onChangeAuthType('bearerToken')
       } else if (connection['isOAuth']) {
         this.jiraForm.controls['jiraAuthType'].setValue('isOAuth');
+        this.onChangeAuthType('isOAuth')
       } else if (connection['jaasKrbAuth']) {
         this.jiraForm.controls['jiraAuthType'].setValue('jaasKrbAuth');
+        this.onChangeAuthType('jaasKrbAuth')
       } else {
         this.jiraForm.controls['jiraAuthType'].setValue('basic');
+        this.onChangeAuthType('basic')
       }
     }else{
       this.jiraForm.controls['jiraAuthType'].setValue('basic');
@@ -773,7 +778,9 @@ export class ConnectionListComponent implements OnInit {
     }
     if (this.connection?.type?.toLowerCase() == 'jira') {
       for (let key in this.jiraForm.controls) {
-        reqData[key] = this.jiraForm.controls[key]?.value;
+        if(this.jiraForm.controls[key]?.value){
+          reqData[key] = this.jiraForm.controls[key]?.value;
+        }
       }
     } else {
       this.addEditConnectionFieldsNlabels.forEach(data => {
@@ -794,6 +801,10 @@ export class ConnectionListComponent implements OnInit {
 
     if (!!reqData['password']) {
       reqData['password'] = this.rsa.encrypt(reqData['password']);
+    }
+
+    if (!!reqData['patOAuthToken']) {
+      reqData['patOAuthToken'] = this.rsa.encrypt(reqData['patOAuthToken']);
     }
 
     if (!!reqData['pat']) {
