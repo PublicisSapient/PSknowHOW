@@ -64,6 +64,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.joda.time.DateTime;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -75,9 +76,11 @@ public class KPIExcelUtility {
 	private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
 	private static final String DATE_YEAR_MONTH_FORMAT = "dd-MMM-yy";
 
-	private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
-	private static final DecimalFormat df2 = new DecimalFormat(".##");
-	public static final String TIME = "0d ";
+    private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
+    private static final DecimalFormat df2 = new DecimalFormat(".##");
+    public static final String TIME = "0d ";
+    private static final String STATUS = "Status";
+    private static final String WEEK = "Week";
 
 	private KPIExcelUtility() {
 	}
@@ -241,10 +244,11 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDefectRCAandStatusRelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			List<JiraIssue> createDuringIteration, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
+				String present = createDuringIteration.contains(jiraIssue) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
 				excelData.setSprintName(sprint);
 				Map<String, String> defectIdDetails = new HashMap<>();
 				defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
@@ -264,6 +268,7 @@ public class KPIExcelUtility {
 				}
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setCreatedDuringIteration(present);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1303,5 +1308,101 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
 		modalValues.add(jiraIssueModalObject);
 		overAllModalValues.add(jiraIssueModalObject);
+	}
+
+	/**
+	 * This Method is used to populate Excel Data for Rejection Refinement KPI
+	 *
+	 * @param excelDataList
+	 * @param issuesExcel
+	 * @param weekAndTypeMap
+	 * @param jiraDateMap
+	 */
+	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
+															List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, Map<String, DateTime> jiraDateMap) {
+
+		if (CollectionUtils.isNotEmpty(issuesExcel)) {
+			issuesExcel.forEach(e -> {
+
+				HashMap<String,String> data = getStatusNameAndWeekName(weekAndTypeMap, e);
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> epicLink = new HashMap<>();
+				epicLink.put(e.getNumber(), checkEmptyURL(e));
+				excelData.setChangeDate(
+
+						LocalDate
+								.parse(jiraDateMap.entrySet().stream().filter(f -> f.getKey().equalsIgnoreCase(e.getNumber())).findFirst().get().getValue().toString().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
+								.toString());
+				excelData.setIssueID(epicLink);
+				excelData.setPriority(e.getPriority());
+				excelData.setIssueDesc(e.getName());
+				excelData.setStatus(e.getStatus());
+				excelData.setIssueStatus(data.get(STATUS));
+				excelData.setWeeks(data.get(WEEK));
+				excelDataList.add(excelData);
+			});
+		}
+	}
+
+	/**
+	 * This Method is used for fetching status and Weekname to show the data in excel data record 
+	 * @param weekAndTypeMap
+	 * @param e
+	 */
+	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+		HashMap<String,String> data = new HashMap<>();
+		for (String week : weekAndTypeMap.keySet()) {
+			for (String type : weekAndTypeMap.get(week).keySet()) {
+				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
+					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
+						data.put(STATUS,type);
+						data.put(WEEK,week);
+					}
+				}
+			}
+		}
+		return data;
+	}
+
+	public static void populateIterationDataForWastage(List<IterationKpiModalValue> overAllmodalValues,
+													   List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime,
+													   FieldMapping fieldMapping) {
+		int wastageTime = blockedTime + waitTime;
+		int originalEstimate = 0;
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		KPIExcelUtility.populateAssignee(jiraIssue, iterationKpiModalValue);
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
+			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
+		}
+		if ((blockedTime != 0)) {
+			iterationKpiModalValue.setBlockedTime(CommonUtils.convertIntoDays(blockedTime));
+		} else {
+			iterationKpiModalValue.setBlockedTime(TIME);
+		}
+		if ((waitTime != 0)) {
+			iterationKpiModalValue.setWaitTime(CommonUtils.convertIntoDays(waitTime));
+		} else {
+			iterationKpiModalValue.setWaitTime(TIME);
+		}
+		if ((wastageTime != 0)) {
+			iterationKpiModalValue.setWastage(CommonUtils.convertIntoDays(wastageTime));
+		} else {
+			iterationKpiModalValue.setWastage(TIME);
+		}
+		modalValues.add(iterationKpiModalValue);
+		overAllmodalValues.add(iterationKpiModalValue);
 	}
 }

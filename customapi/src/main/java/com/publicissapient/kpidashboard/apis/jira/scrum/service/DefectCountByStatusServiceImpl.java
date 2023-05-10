@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
@@ -71,7 +74,9 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByStatusServiceImpl.class);
 
 	public static final String UNCHECKED = "unchecked";
-	private static final String OVERALL = "Overall";
+	private static final String TOTAL_ISSUES = "Total Issues";
+	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -186,9 +191,16 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {
+				SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
+				List<JiraIssue> createDuringIteration = allCompletedDefects.stream()
+						.filter(jiraIssue -> DateUtil.isWithinDateRange(
+								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
+								LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER),
+								LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseStatusList = getPriorityWiseStatusList(
-						allCompletedDefects);
+						allCompletedDefects, createDuringIteration);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
 				LOGGER.info("DefectCountByStatusServiceImpl -> priorityWiseStatusList ->  : {}",
 						priorityWiseStatusList);
@@ -226,37 +238,20 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				}
 				Map<String, Integer> overallStatusCountMapAggregate = new HashMap<>();
 				overallStatusCountMap(dataCountListForAllPriorities, overallStatusCountMapAggregate);
-				List<DataCount> trendValueListOverAll = new ArrayList<>();
 				if (MapUtils.isNotEmpty(overallStatusCountMapAggregate)) {
-					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = overallStatusCountMapAggregate.values().stream().mapToInt(Integer::intValue)
-							.sum();
-					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(overallStatusCountMapAggregate);
-					trendValueListOverAll.add(overallData);
-					// add one more data count group and data count for middle level structure to
-					// store "Overall" Priority
-					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
-					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestSprint.getProjectFilter().getName());
-					middleOverallData.setValue(trendValueListOverAll);
-					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
+
+					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects, createDuringIteration,
 							latestSprint.getSprintFilter().getName(), fieldMapping);
 
-					// "Overall" iterationKpiValue added to filterDataList and added in the final
-					// filterDataList
-					IterationKpiValue filterDataOverall = new IterationKpiValue(OVERALL, middleTrendValueListOverAll);
-					filterDataList.add(filterDataOverall);
 					kpiElement.setSprint(latestSprint.getName());
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OVERALL))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES))
 							.findFirst().orElse(new IterationKpiValue()));
 					filterDataList
-							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OVERALL));
+							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
@@ -290,11 +285,13 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseDefectDataList, String name, FieldMapping fieldMapping) {
+			List<JiraIssue> sprintWiseDefectDataList, List<JiraIssue> createDuringIteration, String name,
+			FieldMapping fieldMapping) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
-			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList, excelData, fieldMapping);
+			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList,
+					createDuringIteration, excelData, fieldMapping);
 		}
 
 	}
@@ -311,9 +308,13 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseStatusList(
-			List<JiraIssue> allCompletedIssuesExcludeStory) {
-		return allCompletedIssuesExcludeStory.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getPriority, Collectors.groupingBy(JiraIssue::getStatus)));
+			List<JiraIssue> allCompletedIssuesExcludeStory, List<JiraIssue> createDuringIteration) {
+		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
+		scopeWiseDefectsMap.put(TOTAL_ISSUES,
+				allCompletedIssuesExcludeStory.stream().collect(Collectors.groupingBy(JiraIssue::getStatus)));
+		scopeWiseDefectsMap.put(CREATED_DURING_ITERATION,
+				createDuringIteration.stream().collect(Collectors.groupingBy(JiraIssue::getStatus)));
+		return scopeWiseDefectsMap;
 	}
 
 	private void sortListByKey(List<IterationKpiValue> list) {
