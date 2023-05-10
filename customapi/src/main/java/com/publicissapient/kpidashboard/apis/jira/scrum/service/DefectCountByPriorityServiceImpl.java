@@ -1,21 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -28,8 +12,8 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
@@ -49,12 +33,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByRCAServiceImpl.class);
+@Component
+public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByPriorityServiceImpl.class);
 	private static final String TOTAL_ISSUES = "Total Issues";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -67,6 +66,28 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	@Autowired
 	private CommonServiceImpl commonService;
 
+	private static void overallPriorityCountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallPriorityCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((priority, priorityCountValue) -> overallPriorityCountMapAggregate.merge(priority,
+					priorityCountValue, Integer::sum));
+		}
+	}
+
+	private static int getPriorityCount(Map<String, Integer> overallPriorityCountMap,
+			Map<String, List<JiraIssue>> priorityData, int priorityRCACount, Map<String, Integer> priorityCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : priorityData.entrySet()) {
+			String priority = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+
+			priorityRCACount += issues.size();
+			priorityCountMap.put(priority, issues.size());
+			overallPriorityCountMap.merge(priority, issues.size(), Integer::sum);
+		}
+		return priorityRCACount;
+	}
+
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
@@ -78,7 +99,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Defect count by RCA -> Requested sprint : {}", leafNode.getName());
+			LOGGER.info("Defect count by Priority -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
@@ -112,10 +133,10 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 						Collections.singletonList(basicProjectConfigId));
 
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueListCompleted = getJiraIssuesFromBaseClass(totalIssues);
+					List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueListCompleted);
+									sprintDetails.getTotalIssues(), totalIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
@@ -144,7 +165,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_RCA_PIE_CHART.name();
+		return KPICode.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.name();
 	}
 
 	@Override
@@ -155,19 +176,10 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("DefectCountByRCAServiceImpl -> getKpiData ->  : {}", kpiElement);
+		LOGGER.info("DefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
-	/**
-	 * This method will set trendValueList information to the RCA KPI. It consists
-	 * of logic to show data for P1, P2, P3, P4 and "Overall" Priorities as per the
-	 * accepted JSON structure.
-	 * 
-	 * @param sprintLeafNodeList
-	 * @param kpiElement
-	 * @param kpiRequest
-	 */
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -189,115 +201,78 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 								LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER),
 								LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER)))
 						.collect(Collectors.toList());
-				Map<String, Map<String, List<JiraIssue>>> priorityWiseRCAList = getPriorityWiseRCAList(
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseIssueList(
 						allCompletedDefects, createDuringIteration);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-				LOGGER.info("DefectCountByRCAServiceImpl -> priorityWiseRCAList ->  : {}", priorityWiseRCAList);
+				LOGGER.info("DefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}",
+						priorityWiseList);
 				// filterDataList will consist of IterationKpiValue which will be set for all
 				// priorities
 				List<IterationKpiValue> filterDataList = new ArrayList<>();
 				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
-				Map<String, Integer> overallRCACountMap = new HashMap<>();
-				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseRCAList.entrySet()) {
-					String priority = entry.getKey();
-					Map<String, List<JiraIssue>> rcaData = entry.getValue();
-
-					DataCount priorityData = new DataCount();
-					priorityData.setData(priority);
-					priorityData.setValue(new ArrayList<>());
-
-					int priorityRCACount = 0;
-					Map<String, Integer> rcaCountMap = new HashMap<>();
+				Map<String, Integer> overallPriorityCountMap = new HashMap<>();
+				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseList.entrySet()) {
+					Map<String, List<JiraIssue>> priorityData = entry.getValue();
+					int priorityCount = 0;
+					Map<String, Integer> priorityCountMap = new HashMap<>();
 					// update and set the overall data
-					priorityRCACount = getPriorityRCACount(overallRCACountMap, rcaData, priorityRCACount, rcaCountMap);
-					DataCount priorityRCAData = new DataCount();
-					priorityRCAData.setData(String.valueOf(priorityRCACount));
-					priorityRCAData.setValue(rcaCountMap);
-					priorityRCAData.setSSprintID(latestSprint.getSprintFilter().getId());
-					priorityRCAData.setSSprintName(latestSprint.getSprintFilter().getName());
-					priorityRCAData.setKpiGroup("Priority");
-					priorityRCAData.setSProjectName(latestSprint.getProjectFilter().getName());
-					// dataCountList will store data for P1,P2,P3 and P4 priorities pertaining to
-					// child level structure
-					List<DataCount> dataCountList = (List<DataCount>) priorityData.getValue();
+					priorityCount = getPriorityCount(overallPriorityCountMap, priorityData, priorityCount,
+							priorityCountMap);
+					DataCount priorityDataCount = new DataCount();
+					priorityDataCount.setData(String.valueOf(priorityCount));
+					priorityDataCount.setValue(priorityCountMap);
+					List<DataCount> dataCountList = new ArrayList<>();
+					dataCountList.add(priorityDataCount);
+					dataCountListForAllPriorities.add(priorityDataCount);
 
-					// add dataCount for middle level structure to store P1,P2,P3 and P4 Priorities,
-					// set dataCountList
-					// as value for child level structure
+					// to make structure to create pie chart
 					List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
 					DataCount middleOverallData = new DataCount();
 					middleOverallData.setData(latestSprint.getProjectFilter().getName());
 					middleOverallData.setValue(dataCountList);
 					middleTrendValueListForPriorities.add(middleOverallData);
 
-					IterationKpiValue filterData = new IterationKpiValue(priority, middleTrendValueListForPriorities);
-
+					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
+							middleTrendValueListForPriorities);
 					filterDataList.add(filterData);
-					dataCountList.add(priorityRCAData);
-					priorityData.setValue(dataCountList);
-					dataCountListForAllPriorities.add(priorityRCAData);
-				}
-				// logic to create "Overall" Priority which will contain aggregate of all the
-				// priorities such as P1, P2, P3 and P4
-				Map<String, Integer> overallRCACountMapAggregate = new HashMap<>();
-				overallRCACountMap(dataCountListForAllPriorities, overallRCACountMapAggregate);
 
-				if (MapUtils.isNotEmpty(overallRCACountMapAggregate)) {
+				}
+				Map<String, Integer> overallPriorityCountMapAggregate = new HashMap<>();
+				overallPriorityCountMap(dataCountListForAllPriorities, overallPriorityCountMapAggregate);
+				if (MapUtils.isNotEmpty(overallPriorityCountMapAggregate)) {
+
 					populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects,
 							latestSprint.getSprintFilter().getName(), fieldMapping, createDuringIteration);
 
+					// filterDataList
 					kpiElement.setSprint(latestSprint.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
 							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES))
 							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList
-							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
+					filterDataList.removeIf(
+							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
-					// filterDataList will consist of iterationKpiValue for all the available
-					// priorities such as P1, P2, P3, P4, Overall etc.
 					kpiElement.setTrendValueList(sortedFilterDataList);
-					LOGGER.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}",
+					LOGGER.info("DefectCountByPriorityServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, overAllRCAIssueCount.get(0));
 				}
 			}
 		}
 	}
 
-	private static void overallRCACountMap(List<DataCount> dataCountListForAllPriorities,
-			Map<String, Integer> overallRCACountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllPriorities) {
-			Map<String, Integer> rcaCountMap = (Map<String, Integer>) dataCount.getValue();
-			rcaCountMap.forEach((rcaName, rcaCountValue) -> overallRCACountMapAggregate.merge(rcaName, rcaCountValue,
-					Integer::sum));
-		}
-	}
-
-	private static int getPriorityRCACount(Map<String, Integer> overallRCACountMap,
-			Map<String, List<JiraIssue>> rcaData, int priorityRCACount, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			String rcaName = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-
-			priorityRCACount += issues.size();
-			rcaCountMap.put(rcaName, issues.size());
-			overallRCACountMap.merge(rcaName, issues.size(), Integer::sum);
-		}
-		return priorityRCACount;
-	}
-
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> sprintWiseDefectDataList, String name, FieldMapping fieldMapping,
-			List<JiraIssue> createdDuringIteration) {
+			List<JiraIssue> createDuringIteration) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
 			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList,
-					createdDuringIteration, excelData, fieldMapping);
+					createDuringIteration, excelData, fieldMapping);
 		}
 
 	}
@@ -313,14 +288,14 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 		return new ArrayList<>();
 	}
 
-	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseRCAList(
-			List<JiraIssue> allCompletedIssuesExcludeStory, List<JiraIssue> createdDuringIteration) {
+	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseIssueList(
+			List<JiraIssue> allCompletedIssuesExcludeStory, List<JiraIssue> createDuringIteration) {
 
 		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		scopeWiseDefectsMap.put(TOTAL_ISSUES, allCompletedIssuesExcludeStory.stream()
-				.collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
-		scopeWiseDefectsMap.put(CREATED_DURING_ITERATION, createdDuringIteration.stream()
-				.collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0))));
+		scopeWiseDefectsMap.put(TOTAL_ISSUES,
+				allCompletedIssuesExcludeStory.stream().collect(Collectors.groupingBy(JiraIssue::getPriority)));
+		scopeWiseDefectsMap.put(CREATED_DURING_ITERATION,
+				createDuringIteration.stream().collect(Collectors.groupingBy(JiraIssue::getPriority)));
 		return scopeWiseDefectsMap;
 
 	}

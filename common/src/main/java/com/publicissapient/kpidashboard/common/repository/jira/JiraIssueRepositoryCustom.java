@@ -113,6 +113,8 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 */
 	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
 
+	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
+
 	/**
 	 * Find stories by type list.
 	 *

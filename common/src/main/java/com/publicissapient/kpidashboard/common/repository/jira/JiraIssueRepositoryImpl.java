@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +74,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
+	private static final String JIRA_UPDATED_DATE = "updateDate";
 	private static final String RELEASE = "release";
 	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
@@ -245,6 +245,25 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssue.class);
 
+	}
+
+	@Override
+	public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,
+			Map<String, List<String>> mapOfFilters) {
+		Criteria criteria = new Criteria();
+		Criteria orCriteria = new Criteria();
+		List<Criteria> filter = new ArrayList<>();
+		for (String val : mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
+		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
+		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
+		Query query = new Query(criteria);
+
+		return operations.find(query, JiraIssue.class);
 	}
 
 	@Override

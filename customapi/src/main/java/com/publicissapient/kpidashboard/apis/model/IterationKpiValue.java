@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import lombok.Data;
@@ -45,6 +46,7 @@ public class IterationKpiValue implements Serializable {
 	private List<IterationKpiData> data;
 	private List<DataCount> value;
 	private List<String> metaDataColumns;
+	private Map<String,String> markerInfo;
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
 		this.filter1 = filter1;
 		this.filter2 = filter2;
@@ -56,11 +58,12 @@ public class IterationKpiValue implements Serializable {
 		this.value = value;
 	}
 
-	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data, List<String> metaDataColumns) {
+	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data, List<String> metaDataColumns, Map<String,String> markerInfo) {
 		this.filter1 = filter1;
 		this.filter2 = filter2;
 		this.data = data;
 		this.metaDataColumns = metaDataColumns;
+		this.markerInfo = markerInfo;
 	}
 
 }

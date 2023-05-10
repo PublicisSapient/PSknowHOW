@@ -153,6 +153,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.initializeFilterForm();
     this.toggleFilter();
     this.initializeUserInfo();
+    this.getLogoImage();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {

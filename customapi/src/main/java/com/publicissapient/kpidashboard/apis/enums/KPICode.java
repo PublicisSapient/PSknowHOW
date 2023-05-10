@@ -296,6 +296,8 @@ public enum KPICode {
 
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_STATUS_MILESTONE("kpi141", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_RCA_MILESTONE("kpi142", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_ASSIGNEE_MILESTONE("kpi143", KPISource.JIRA.name()),
@@ -378,7 +380,13 @@ public enum KPICode {
 	/**
 	 * Defect Reopen Rate
 	 */
-	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name());
+	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name()),
+
+
+	/**
+	 * Refinement Rejection Rate
+	 */
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
 
 	// @formatter:on
 
