@@ -452,28 +452,28 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi141',
-        kpiName: 'Defect Count by Status (Milestone)',
+        kpiName: 'Defect Count by Status (Release)',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi142',
-        kpiName: 'Defect Count by RCA (Milestone)',
+        kpiName: 'Defect Count by RCA (Release)',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi143',
-        kpiName: 'Defect Count by Assignee (Milestone)',
+        kpiName: 'Defect Count by Assignee (Release)',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi144',
-        kpiName: 'Defect Count by Priority (Milestone)',
+        kpiName: 'Defect Count by Priority (Release)',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
