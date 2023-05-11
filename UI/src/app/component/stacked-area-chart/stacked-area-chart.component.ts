@@ -30,7 +30,7 @@ export class StackedAreaChartComponent implements OnInit {
         `translate(${margin.left}, ${margin.top})`);
 
     // Parse the Data
-    d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv").then(function (data) {
+    d3.csv("./assets/date-wise-issue-type.csv").then(function (data) {
 
 
       //////////
