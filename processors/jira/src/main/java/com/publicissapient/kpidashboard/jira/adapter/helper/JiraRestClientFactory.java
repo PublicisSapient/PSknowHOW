@@ -166,11 +166,12 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Cleans the cache in th Custom API
-	 * 
 	 * @param cacheEndPoint
-	 *            URL end point where Custom API cache is created
+	 *     URL end point where Custom API cache is created
 	 * @param cacheName
-	 *            Name of the Custom API cache
+	 *     Name of the Custom API cache
+	 * @return
+	 *    returns nothing
 	 */
 	public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
 		boolean cleaned = false;
@@ -232,8 +233,14 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			}
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-					password, jiraProcessorConfig);
+
+			if(jiraInfo.isBearerToken()){
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
+						password, jiraProcessorConfig);
+			}else {
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
+						password, jiraProcessorConfig);
+			}
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");

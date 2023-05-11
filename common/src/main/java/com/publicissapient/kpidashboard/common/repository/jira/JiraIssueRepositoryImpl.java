@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
+	private static final String JIRA_UPDATED_DATE = "updateDate";
+	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -242,6 +245,25 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssue.class);
 
+	}
+
+	@Override
+	public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,
+			Map<String, List<String>> mapOfFilters) {
+		Criteria criteria = new Criteria();
+		Criteria orCriteria = new Criteria();
+		List<Criteria> filter = new ArrayList<>();
+		for (String val : mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
+		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
+		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
+		Query query = new Query(criteria);
+
+		return operations.find(query, JiraIssue.class);
 	}
 
 	@Override
@@ -677,5 +699,37 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		}
 		return operations.find(query, JiraIssue.class);
 	}
+
+	@Override
+	public List<JiraIssue> findByRelease(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Release
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> {
+				if (subk.equalsIgnoreCase(CommonConstant.RELEASE)) {
+					projectCriteria.and(RELEASE_VERSION).in((List<Pattern>) filterMap.get(CommonConstant.RELEASE));
+				} else {
+					projectCriteria.and(subk).in((List<Pattern>) subv);
+				}
+			});
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssue.class);
+
+	}
+
 
 }

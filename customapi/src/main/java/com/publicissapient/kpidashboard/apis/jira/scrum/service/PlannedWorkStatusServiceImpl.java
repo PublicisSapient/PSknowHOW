@@ -209,6 +209,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			List<Double> overAllOriginalEstimatePlanned = Arrays.asList(0.0);
 			List<Integer> overallDelay = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+			//For markerInfo
+			Map<String,String> markerInfo = new HashMap<>();
+			markerInfo.put(Constant.GREEN,"Issue finished earlier than planned are marked in Green");
 			typeAndPriorityWiseIssues
 					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
 						issueTypes.add(issueType);
@@ -314,7 +317,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						data.add(issueCountsPlanned);
 						data.add(issueCountsActual);
 						data.add(delayed);
-						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data, Arrays.asList("marker"));
+						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data, Arrays.asList("marker"), markerInfo);
 						iterationKpiValues.add(iterationKpiValue);
 					}));
 			List<IterationKpiData> data = new ArrayList<>();
@@ -330,7 +333,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			data.add(overAllIssueCountsPlanned);
 			data.add(overAllIssueCountsActual);
 			data.add(overAllDelay);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data, Arrays.asList("marker"));
+			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data, Arrays.asList("marker"), markerInfo);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters

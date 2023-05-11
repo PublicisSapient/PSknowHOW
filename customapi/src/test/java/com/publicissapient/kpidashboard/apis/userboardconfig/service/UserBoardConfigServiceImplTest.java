@@ -219,7 +219,7 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals(userBoardConfigDTO.getOthers().size(),2);
+		assertEquals(userBoardConfigDTO.getOthers().size(),3);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}

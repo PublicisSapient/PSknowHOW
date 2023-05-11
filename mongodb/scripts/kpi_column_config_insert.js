@@ -2202,5 +2202,277 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: false
                                  		}]
+                                 	},
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi139',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue Id',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Priority',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Change Date',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Weeks',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Issue Status',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}]
+                                 	},
+                                 	{
+                                        basicProjectConfigId: null,
+                                        kpiId: 'kpi140',
+                                        kpiColumnDetails: [{
+                                            columnName: 'Defect ID',
+                                            order: 0,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Issue Description',
+                                            order: 1,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Status',
+                                            order: 2,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Type',
+                                            order: 3,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Size(story point/hours)',
+                                            order: 4,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Root Cause',
+                                            order: 5,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Priority',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Assignee',
+                                            order: 7,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Created during Iteration',
+                                            order: 8,
+                                            isShown: true,
+                                            isDefault: false
+                                        }]
+                                    }
+                                 	},
+
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi141',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue ID',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Sprint Name',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Type',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Issue Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Root Cause',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Priority',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Assignee',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}]
+                                 	},
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi142',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue ID',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Sprint Name',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Type',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Issue Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Root Cause',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Priority',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Assignee',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}]
+                                 	},
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi143',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue ID',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Sprint Name',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Type',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Issue Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Root Cause',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Priority',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Assignee',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}]
+                                 	},
+                                    {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi144',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue ID',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Description',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Sprint Name',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Type',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Issue Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Root Cause',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: true
+                                        }, {
+                                 			columnName: 'Priority',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Assignee',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}]
                                  	}
                                  ]);
