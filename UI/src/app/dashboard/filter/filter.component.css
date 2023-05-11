@@ -725,7 +725,7 @@ ul li.selectedfilter {
   font-size: 0.8rem;
   display: flex;
   line-height: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
 }
 
 .align-marker {

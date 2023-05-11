@@ -248,10 +248,10 @@
 <div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
    <div class="filter-nav">
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
-         <ul class="p-m-0 p-pl-0 p-d-flex flex-wrap">
+         <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
             <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
-               <li class="selectedfilter p-mr-5">
+               <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
                      <div class="selected-node-label"><span class="align-list-marker" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
                         <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
