@@ -1,0 +1,184 @@
+{
+   "response" : [
+    {
+        "kpiId": "kpi144",
+        "kpiName": "Defect Count by Priority",
+        "unit": "Count",
+        "maxValue": "",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "Defect Count by Priority shows the breakup of all defects within an iteration by Priority. The pie chart representation gives the count of defects in each Priority"
+        },
+        "id": "6458e9f4bdc21702af972a6a",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "filter1": "Overall",
+                "value": [
+                    {
+                        "data": "DOTC",
+                        "value": [
+                            {
+                                "data": "117",
+                                "value": {
+                                    "High": 40,
+                                    "Low": 14,
+                                    "Medium": 41,
+                                    "Critical": 10,
+                                    "Blocker": 12
+                                },
+                                "kpiGroup": "Overall",
+                                "sprojectName": "DOTC"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "groupId": 9,
+        "sprint": "Release 1.3.0 (SBR.com)_DOTC",
+        "modalHeads": [
+            "Issue ID",
+            "Issue Description",
+            "Sprint Name",
+            "Issue Type",
+            "Issue Status",
+            "Root Cause",
+            "Priority",
+            "Assignee"
+        ]
+    },
+    {
+        "kpiId": "kpi142",
+        "kpiName": "Defect Count by RCA",
+        "unit": "Count",
+        "maxValue": "",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "Defect count by RCA shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each RCA"
+        },
+        "id": "6458e9f4bdc21702af972a68",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "filter1": "Overall",
+                "value": [
+                    {
+                        "data": "DOTC",
+                        "value": [
+                            {
+                                "data": "117",
+                                "value": {
+                                    "code issue": 39,
+                                    "other-see comments": 6,
+                                    "environment": 8,
+                                    "tech design": 2,
+                                    "data issue": 10,
+                                    "not reproducible": 1,
+                                    "duplicate": 1,
+                                    "requirement": 4,
+                                    "enhancement": 8,
+                                    "None": 36,
+                                    "thirdparty-coveo": 1,
+                                    "architecture": 1
+                                },
+                                "kpiGroup": "Overall",
+                                "sprojectName": "DOTC"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "groupId": 9,
+        "sprint": "Release 1.3.0 (SBR.com)_DOTC",
+        "modalHeads": [
+            "Issue ID",
+            "Issue Description",
+            "Sprint Name",
+            "Issue Type",
+            "Issue Status",
+            "Root Cause",
+            "Priority",
+            "Assignee"
+        ]
+    },
+    {
+        "kpiId": "kpi141",
+        "kpiName": "Defect Count by Status",
+        "unit": "Count",
+        "maxValue": "",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "Defect count by Status shows the breakup of all defects within an iteration by Status. The pie chart representation gives the count of defects in each Status"
+        },
+        "id": "6458e9f4bdc21702af972a67",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "filter1": "Overall",
+                "value": [
+                    {
+                        "data": "DOTC",
+                        "value": [
+                            {
+                                "data": "117",
+                                "value": {
+                                    "To Do": 10,
+                                    "Done": 93,
+                                    "Dev In Progress": 4,
+                                    "Code Review": 2,
+                                    "RELEASE READY (PROD)": 8
+                                },
+                                "kpiGroup": "Overall",
+                                "sprojectName": "DOTC"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "groupId": 9,
+        "sprint": "Release 1.3.0 (SBR.com)_DOTC",
+        "modalHeads": [
+            "Issue ID",
+            "Issue Description",
+            "Sprint Name",
+            "Issue Type",
+            "Issue Status",
+            "Root Cause",
+            "Priority",
+            "Assignee"
+        ]
+    },
+    {
+        "kpiId": "kpi143",
+        "kpiName": "Defect Count by Assignee",
+        "value": "undefined",
+        "maxValue": "",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "Defect Count by Assignee shows the breakup of all defects within an iteration by Assignee. The pie chart representation gives the count of defects by each Assignee"
+        },
+        "id": "6458e9f4bdc21702af972a69",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "groupId": 9
+    }
+]
+}

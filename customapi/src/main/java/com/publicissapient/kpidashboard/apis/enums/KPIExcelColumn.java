@@ -193,7 +193,15 @@ public enum KPIExcelColumn {
 
     REFINEMENT_REJECTION_RATE("kpi139",
             Arrays.asList("Issue ID", "Issue Description", "Priority", "Status", "Change Date", "Weeks",
-                    "Issue Status"));
+                    "Issue Status")),
+
+    DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_RCA_RELEASE("kpi142",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee"));
 
     // @formatter:on
 

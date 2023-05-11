@@ -45,6 +45,7 @@ public class Node implements Serializable {
 	
 	private ProjectFilter projectFilter;
 	private SprintFilter sprintFilter;
+	private ReleaseFilter releaseFilter;
 
 	public Node() {
 		super();
@@ -82,6 +83,21 @@ public class Node implements Serializable {
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 	}
+
+	public Node(Object object, String childId,String name, String parentId, String groupName,
+				AccountHierarchy accountHierarchy,ProjectFilter projectFilter,SprintFilter sprintFilter,ReleaseFilter releaseFilter) {
+		this.value = object;
+		this.id = childId;
+		this.name=name;
+		this.parentId = parentId;
+		this.groupName = groupName;
+		this.accountHierarchy = accountHierarchy;
+		this.children = new ArrayList<>();
+		this.projectFilter = projectFilter;
+		this.sprintFilter = sprintFilter;
+		this.releaseFilter=releaseFilter;
+	}
+
 	/**
 	 * 
 	 * @param object
@@ -261,6 +277,12 @@ public class Node implements Serializable {
 	}
 	public void setSprintFilter(SprintFilter sprintFilter) {
 		this.sprintFilter = sprintFilter;
+	}
+	public ReleaseFilter getReleaseFilter() {
+		return releaseFilter;
+	}
+	public void setReleaseFilter(ReleaseFilter releaseFilter) {
+		this.releaseFilter = releaseFilter;
 	}
 	
 	@Override
