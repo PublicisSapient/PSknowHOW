@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -319,7 +320,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			LocalDate monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
 			LocalDate sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);
 			String weekName = "Week" + (i);
-			String dateRange = monday + " to " + sunday;
+			String dateRange = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 			currentDate = sunday.plusDays(1);
 			weekMap.put(weekName, dateRange);
 		}
@@ -394,7 +395,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		if (null != jiraDate) {
 			LocalDate monday = jiraDate.withDayOfWeek(DateTimeConstants.MONDAY);
 			LocalDate sunday = jiraDate.withDayOfWeek(DateTimeConstants.SUNDAY);
-			String value = monday + " to " + sunday;
+			String value = DateUtil.dateTimeConverter(monday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 			String weekVal = "";
 			for (String week : weekMap.keySet()) {
 				if (weekMap.get(week).equalsIgnoreCase(value)) {

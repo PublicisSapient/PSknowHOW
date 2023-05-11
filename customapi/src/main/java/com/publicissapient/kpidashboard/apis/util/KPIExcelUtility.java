@@ -1327,10 +1327,10 @@ public class KPIExcelUtility {
 				Map<String, String> epicLink = new HashMap<>();
 				epicLink.put(e.getNumber(), checkEmptyURL(e));
 				excelData.setChangeDate(
-
-						LocalDate
+						DateUtil.localDateTimeConverter(LocalDate
 								.parse(jiraDateMap.entrySet().stream().filter(f -> f.getKey().equalsIgnoreCase(e.getNumber())).findFirst().get().getValue().toString().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
-								.toString());
+								));
+
 				excelData.setIssueID(epicLink);
 				excelData.setPriority(e.getPriority());
 				excelData.setIssueDesc(e.getName());
