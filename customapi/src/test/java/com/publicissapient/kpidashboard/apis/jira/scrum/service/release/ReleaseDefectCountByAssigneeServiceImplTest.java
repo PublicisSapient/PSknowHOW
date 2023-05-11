@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.jira.scrum.service.milestone;
+package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,10 +60,10 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MilestoneDefectCountByRCAServiceImplTest {
+public class ReleaseDefectCountByAssigneeServiceImplTest {
 
 	@InjectMocks
-	private MilestoneDefectCountByRCAServiceImpl defectCountByRCAService;
+	private ReleaseDefectCountByAssigneeServiceImpl defectCountByAssigneeService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -82,7 +82,7 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi141");
 		kpiRequest.setLabel("RELEASE");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance("/json/default/account_hierarchy_filter_data_milestone.json");
+				.newInstance("/json/default/account_hierarchy_filter_data_release.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		bugList = jiraIssueDataFactory.getBugs();
@@ -94,7 +94,8 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(defectCountByRCAService.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY_RCA_MILESTONE.name()));
+		assertThat(defectCountByAssigneeService.getQualifierType(),
+				equalTo(KPICode.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.name()));
 	}
 
 	@Test
@@ -106,7 +107,7 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = defectCountByAssigneeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
@@ -115,8 +116,8 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 	}
 
 	@Test
-	public void getKpiDataWithoutRCA() throws ApplicationException {
-		bugList.forEach(jiraIssue -> jiraIssue.setRootCauseList(new ArrayList<>()));
+	public void getKpiDataWithoutAssignee() throws ApplicationException {
+		bugList.forEach(jiraIssue -> jiraIssue.setAssigneeName(null));
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
@@ -124,7 +125,7 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = defectCountByAssigneeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
@@ -135,13 +136,11 @@ public class MilestoneDefectCountByRCAServiceImplTest {
 	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
 		Map<String, Integer> finalMap = new HashMap<>();
 		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
-			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				List<String> rcaDummy = new ArrayList<>();
-				rcaDummy.add("-");
-				jiraIssue.setRootCauseList(rcaDummy);
+			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
+				jiraIssue.setAssigneeName("-");
 			}
 			return true;
-		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
+		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
 		collect.forEach((k, v) -> finalMap.put(k, v.size()));
 		return finalMap;
 	}

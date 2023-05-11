@@ -294,7 +294,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'milestone'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -438,7 +438,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.selectedTab?.toLowerCase() === 'iteration') {
       this.projectIndex = 0;
         this.handleIterationFilters('project');
-    }else if(this.selectedTab?.toLowerCase() === 'milestone'){
+    }else if(this.selectedTab?.toLowerCase() === 'release'){
       this.projectIndex = 0;
         this.handleMilestoneFilter('project');
     }else  {
@@ -673,8 +673,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         case 'backlog':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
-        case 'milestone':
-          this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'milestone')?.[0]?.kpis;
+        case 'release':
+          this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'release')?.[0]?.kpis;
           break;
         default:
           this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase() || item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' '))[0]?.kpis;
@@ -776,7 +776,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
 
   setKPIOrder() {
-    const kpiArray = this.selectedTab.toLowerCase() === 'milestone' ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = this.selectedTab.toLowerCase() === 'release' ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
     for (const kpiBoard of kpiArray) {
       if (kpiBoard.boardName.toLowerCase() === this.selectedTab.toLowerCase()) {
         kpiBoard.kpis = this.kpisNewOrder;
@@ -889,7 +889,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedTrends = this.service.getSelectedTrends();
 
     if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
-      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'milestone') {
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
                this.findProjectWhichHasData();
         } else {
@@ -908,7 +908,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'milestone') {
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         this.findProjectWhichHasData();
       }else{
         this.checkDefaultFilterSelection();
@@ -972,7 +972,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
         this.selectedProjectData = this.trendLineValueList[projectIndex];
-        if(this.selectedTab?.toLowerCase() === 'milestone'){
+        if(this.selectedTab?.toLowerCase() === 'release'){
           this.checkIfProjectHasRelease();
           if (Object.keys(this.selectedRelease).length > 0) {
             break;

@@ -1406,8 +1406,8 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
-	public static void populateMilestoneDefectRelatedExcelData(List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData) {
+	public static void populateReleaseDefectRelatedExcelData(List<JiraIssue> jiraIssues,
+															 List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
