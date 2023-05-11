@@ -43,7 +43,7 @@
           <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
         <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
         <label class="label2 rounded filter-btn" for="tab2" (click)="setSelectedType('Kanban')" id="Layout-Kanban"
-        [ngClass]="{'disable-kanban': selectedTab.toLowerCase() === 'iteration' ||  selectedTab.toLowerCase() === 'backlog'}">
+        [ngClass]="{'disable-kanban': selectedTab.toLowerCase() === 'iteration' ||  selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'milestone'}">
           <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
           <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
       </div>
@@ -71,7 +71,7 @@
 
               </a>
             </li>
-          
+
           </ng-container>
         </ul>
       </ng-container>
@@ -95,9 +95,13 @@
           <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
+          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+            <p-skeleton width="14rem" height="3rem"></p-skeleton>
+          </li>
+
         </ul>
       </ng-container>
-      
+
       <!-- </ul> -->
     </div>
     <div class="close-btn cursor-pointer" (click)="visibleSidebar = false;service.setSideNav(false)">

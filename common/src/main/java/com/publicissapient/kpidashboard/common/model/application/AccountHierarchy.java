@@ -61,6 +61,7 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 	private String isDeleted;
 	private String path;
 	private String sprintState;
+	private String releaseState;
 	private LocalDateTime createdDate;
 
 	@Override
@@ -71,7 +72,10 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 		}
 		AccountHierarchy other = (AccountHierarchy) obj;
 		if (obj instanceof AccountHierarchy && this.nodeId.equals(other.nodeId)
-				&& (null == this.path || this.path.equals(other.path))) {
+				&& (null == this.path || this.path.equals(other.path))
+				&& (null == this.beginDate || this.beginDate.equals(other.beginDate))
+				&& (null == this.endDate || this.endDate.equals(other.endDate))
+				&& (null == this.releaseState || this.releaseState.equals(other.releaseState))) {
 			isEqual = true;
 
 		}
@@ -80,7 +84,7 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.nodeId, this.path);
+		return Objects.hash(this.nodeId, this.path,this.beginDate,this.endDate,this.releaseState);
 	}
 
 }

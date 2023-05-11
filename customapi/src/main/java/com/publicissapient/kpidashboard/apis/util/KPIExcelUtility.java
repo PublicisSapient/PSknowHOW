@@ -1345,7 +1345,7 @@ public class KPIExcelUtility {
 	}
 
 	/**
-	 * This Method is used for fetching status and Weekname to show the data in excel data record 
+	 * This Method is used for fetching status and Weekname to show the data in excel data record
 	 * @param weekAndTypeMap
 	 * @param e
 	 */
@@ -1404,5 +1404,25 @@ public class KPIExcelUtility {
 		}
 		modalValues.add(iterationKpiModalValue);
 		overAllmodalValues.add(iterationKpiModalValue);
+	}
+
+	public static void populateMilestoneDefectRelatedExcelData(List<JiraIssue> jiraIssues,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(jiraIssue.getSprintName());
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setRootCause(jiraIssue.getRootCauseList());
+				excelData.setPriority(jiraIssue.getPriority());
+				kpiExcelData.add(excelData);
+			});
+		}
 	}
 }

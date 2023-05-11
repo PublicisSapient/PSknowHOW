@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +96,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String BACKLOG = "Backlog";
 
+	private static final String MILESTONE = "Milestone";
+
 	private static final String KPI_MATURITY = "Kpi Maturity";
 
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
@@ -118,7 +121,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			return defaultUserBoardConfigDTO;
 		} else {
 			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
-			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)) {
+			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap) && checkCategories(existingUserBoardConfigDTO,kpiCategoryList)) {
 				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
 						defaultUserBoardConfigDTO.getScrum());
@@ -131,6 +134,25 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
 			return existingUserBoardConfigDTO;
 		}
+	}
+
+	/**
+	 * to check if no new default categories are absent in the existing userboard
+	 * @param existingUserBoardConfigDTO
+	 * @param kpiCategoryList
+	 * @return
+	 */
+	private boolean checkCategories(UserBoardConfigDTO existingUserBoardConfigDTO, List<KpiCategory> kpiCategoryList) {
+		Set<String> existingCategories = existingUserBoardConfigDTO.getScrum().stream().map(BoardDTO::getBoardName).collect(Collectors.toSet());
+		existingCategories.addAll(existingUserBoardConfigDTO.getKanban().stream().map(BoardDTO::getBoardName).collect(Collectors.toSet()));
+		existingCategories.addAll(existingUserBoardConfigDTO.getOthers().stream().map(BoardDTO::getBoardName).collect(Collectors.toSet()));
+
+		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName).collect(Collectors.toList());
+		defaultKpiCategory.add(ITERATION);
+		defaultKpiCategory.add(MILESTONE);
+		defaultKpiCategory.add(BACKLOG);
+		defaultKpiCategory.add(KPI_MATURITY);
+		return (!defaultKpiCategory.containsAll(existingCategories));
 	}
 
 	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
@@ -282,6 +304,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<BoardDTO> scrumBoards = new ArrayList<>();
 		List<String> defaultKpiCategory = new ArrayList<>();
 		defaultKpiCategory.add(ITERATION);
+		defaultKpiCategory.add(MILESTONE);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
@@ -304,6 +327,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		newUserBoardConfig.setKanban(kanbanBoards);
 
 		List<BoardDTO> otherBoards = new ArrayList<>();
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), MILESTONE,
+				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
