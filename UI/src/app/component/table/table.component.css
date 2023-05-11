@@ -47,15 +47,5 @@
 
 .show-marker{
     margin-right: 10px;
-    color: var(--color-secondary-green);
-}
-
-
-::ng-deep tr:first-child td:first-child span i.show-marker{
-    color: var(--color-secondary-blue);
-}
-
-::ng-deep tr:nth-child(2)  td:first-child span i.show-marker{
-    color: var(--color-secondary-yellow);
 }
 

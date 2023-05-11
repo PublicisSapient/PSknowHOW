@@ -245,7 +245,7 @@
    </div>
 </div>
 
-<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
+<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')">
    <div class="filter-nav">
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
          <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
@@ -253,11 +253,11 @@
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
                <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
-                     <div class="selected-node-label"><span class="align-list-marker" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
-                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
+                     <div class="selected-node-label p-pl-0"><span class="align-list-marker" [title]="item?.nodeName" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
+                        <= 20 ? item?.nodeName : item?.nodeName?.slice(0,20)+'...'}} <span class="remove-node p-l-1"
                            (click)="removeNode(item.nodeId)" *ngIf="selectedFilterArray.length > 1">x</span>
                      </div>
-                     <div class="p-d-flex p-ml-2" *ngIf="item?.additionalFilters?.length > 0">
+                     <div class="p-d-flex" *ngIf="item?.additionalFilters?.length > 0">
                         <div class="p-d-flex p-align-center" (mouseover)="showDropdown[item?.nodeId] = true"
                            (mouseleave)="showDropdown[item?.nodeId] = false">
                            <img src="../../../assets/img/ico-filter.svg" alt="Filter" class="p-mr-1" />

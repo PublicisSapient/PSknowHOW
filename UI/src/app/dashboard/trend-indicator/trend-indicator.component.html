@@ -1,4 +1,4 @@
-<div class="indicator-container p-mb-2" [ngStyle]="{'border-color': color}">
+<div class="indicator-container p-mb-2 p-mr-1" [ngStyle]="{'border-color': color}">
 
     <div class="indicator-average-data" *ngIf="dataTrend && cols?.length == 0">
         <div class="p-pr-1 p-text-center">
@@ -75,14 +75,14 @@
     </div>
 
 
-    <ng-container *ngIf="cols?.length>0">
-        <ng-container *ngFor="let col of cols; let i = index;">
+    <div class="p-d-flex p-justify-center" *ngIf="cols?.length>0">
+        <div *ngFor="let col of cols; let i = index;">
             <div *ngIf="i != 0">
                 <div class="p-text-center" [ngClass]="{'p-pr-3': i != cols.length - 1}">
                     <div class="indicator-heading">{{col?.header}}</div>
                     <p class="average-data-primary" [ngStyle]="{'color': col?.field == 'value' && color}">{{dataTrend[col?.field]}}</p>
                 </div>
             </div>
-        </ng-container>
-    </ng-container>
+        </div>
+    </div>
 </div>
