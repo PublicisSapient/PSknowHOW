@@ -20,7 +20,7 @@
 .indicator-average-data,
 .indicator-maturity-data {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 .average-data-primary {
@@ -72,19 +72,12 @@
     font-size: .6rem;
 }
 .font-bold{
-    font-size: .9rem;
+    font-size: .75rem;
     font-weight: 600;
-}
-
-.trend-content-margin{
-    margin-right: 1rem;
 }
 
 @media only screen and (max-width: 1600px){
     .average-data-primary {
         font-size: 0.8rem;
-    }
-    .trend-content-margin{
-        margin-right: 0.3rem;
     }
 }
