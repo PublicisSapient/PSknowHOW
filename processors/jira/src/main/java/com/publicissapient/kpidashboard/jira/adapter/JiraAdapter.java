@@ -24,13 +24,14 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 
 import java.time.LocalDateTime;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -92,15 +93,6 @@ public interface JiraAdapter {
 	String getUserTimeZone(ProjectConfFieldMapping projectConfig);
 
 	/**
-	 * Gets the project versions for user who is logged in jira
-	 *
-	 * @param projectKey
-	 *            the project key
-	 * @return list of versions
-	 */
-	List<Version> getVersions(String projectKey);
-
-	/**
 	 * Gets the field used on a jira instance.
 	 *
 	 * @return the field
@@ -143,6 +135,10 @@ public interface JiraAdapter {
 			SprintDetails sprint, SprintDetails dbSprintDetails);
 
 	List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException;
+
+	String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException;
+
+	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 
 
 }

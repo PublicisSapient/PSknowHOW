@@ -61,8 +61,13 @@ db.user_info.createIndex( {"username":1,"authType":1} )
 
 // Creating Indexes on collection "usertokendata"
 
-db.usertokendata.createIndex( {"userToken":1} )  
+db.usertokendata.createIndex( {"userToken":1} )
 
+// unique index in sprintID
+db.getCollection("sprint_details").createIndex({ "sprintID": 1 }, {
+    "name": "IDX_UNQ_SPRINTID",
+    "unique": true
+})
 
 
 

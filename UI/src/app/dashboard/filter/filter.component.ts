@@ -131,6 +131,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   defaultFilterSelection = true;
   selectedSprint={};
   noProjects = false;
+  selectedRelease ={};
 
   constructor(
     private service: SharedService,
@@ -152,6 +153,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.initializeFilterForm();
     this.toggleFilter();
     this.initializeUserInfo();
+    this.getLogoImage();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
@@ -205,6 +207,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       date: new UntypedFormControl(''),
       selectedLevel: new UntypedFormControl(),
       selectedSprintValue: new UntypedFormControl(),
+      selectedRelease : new UntypedFormControl(),
     });
   }
 
@@ -291,7 +294,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'milestone'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -435,12 +438,13 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.selectedTab?.toLowerCase() === 'iteration') {
       this.projectIndex = 0;
         this.handleIterationFilters('project');
-    }else {
+    }else if(this.selectedTab?.toLowerCase() === 'milestone'){
+      this.projectIndex = 0;
+        this.handleMilestoneFilter('project');
+    }else  {
       this.applyChanges();
     }
   }
-
-  /** get kpi ordered list ends */
 
   assignUserNameForKpiData() {
     if (!this.kpiListData['username']) {
@@ -468,21 +472,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         for (let i = 0; i < selectedProjects?.length; i++) {
           for (const key in this.additionalFiltersDdn) {
             if (key == 'sprint') {
-              this.filteredAddFilters[key] = [
-                ...this.filteredAddFilters[key],
-                ...this.additionalFiltersDdn[key]?.filter(
-                  (x) =>
-                    x['parentId']?.includes(selectedProjects[i]) &&
-                    x['sprintState']?.toLowerCase() == 'closed',
-                ),
-              ];
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) &&  x['sprintState']?.toLowerCase() == 'closed')];
             } else {
-              this.filteredAddFilters[key] = [
-                ...this.filteredAddFilters[key],
-                ...this.additionalFiltersDdn[key]?.filter((x) =>
-                  x['path'][0]?.includes(selectedProjects[i]),
-                ),
-              ];
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key],...this.additionalFiltersDdn[key]?.filter((x) =>x['path'][0]?.includes(selectedProjects[i]))];
             }
           }
         }
@@ -508,10 +500,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (Array.isArray(selectedTrendIds)) {
         for (let i = 0; i < selectedTrendIds?.length; i++) {
           selectedTrendValues.push(
-            this.trendLineValueList?.filter(
-              (x) => x.nodeId === selectedTrendIds[i],
-            )[0],
-          );
+            this.trendLineValueList?.filter( (x) => x.nodeId === selectedTrendIds[i] )[0]);
         }
       }else{
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
@@ -594,6 +583,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
+          this.filterApplyData['label'] = temp[j]?.labelName;
           if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
             this.filterApplyData['selectedMap']['project'].push(this.selectedFilterArray[i]?.nodeId);
           }
@@ -602,6 +592,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterApplyData['level'] = this.selectedFilterArray[i]?.level;
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
+        this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
       }
     }
 
@@ -682,8 +673,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         case 'backlog':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')?.[0]?.kpis;
           break;
+        case 'milestone':
+          this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'milestone')?.[0]?.kpis;
+          break;
         default:
           this.kpiList = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() === this.selectedTab.toLowerCase() || item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' '))[0]?.kpis;
+          break;
       }
       const kpiObj = {};
       let count = 0;
@@ -744,7 +739,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardName.toLowerCase() == this.selectedTab.toLowerCase()) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.kpiListData[this.kanban ? 'kanban' 
+          this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.kpiListData[this.kanban ? 'kanban'
           : 'scrum'][i]['kpis'].find((kpi) => kpi.kpiId === 'kpi121'),...this.kpiList];
         } else {
           this.kpiListData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.kpiList;
@@ -781,7 +776,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
 
   setKPIOrder() {
-    const kpiArray = this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = this.selectedTab.toLowerCase() === 'milestone' ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
     for (const kpiBoard of kpiArray) {
       if (kpiBoard.boardName.toLowerCase() === this.selectedTab.toLowerCase()) {
         kpiBoard.kpis = this.kpisNewOrder;
@@ -839,6 +834,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
+    this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === event?.toLowerCase()));
   }
 
   setMarker() {
@@ -858,6 +854,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       sprintIncluded: this.selectedTab?.toLowerCase() != 'iteration' ? ['CLOSED'] : ['CLOSED', 'ACTIVE'],
       selectedMap: {},
       level: 0,
+      label : ''
     };
     for (let i = 0; i < this.hierarchyLevels?.length; i++) {
       this.filterApplyData['selectedMap'][this.hierarchyLevels[i]?.hierarchyLevelId] = [];
@@ -892,9 +889,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedTrends = this.service.getSelectedTrends();
 
     if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
-      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog') {
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'milestone') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
-          this.findProjectWhichHasData();
+               this.findProjectWhichHasData();
         } else {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
@@ -911,7 +908,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog') {
+      if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'milestone') {
         this.findProjectWhichHasData();
       }else{
         this.checkDefaultFilterSelection();
@@ -975,12 +972,18 @@ export class FilterComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
         this.selectedProjectData = this.trendLineValueList[projectIndex];
-        this.checkIfProjectHasData();
-        if (Object.keys(this.selectedSprint).length > 0) {
-          break;
+        if(this.selectedTab?.toLowerCase() === 'milestone'){
+          this.checkIfProjectHasRelease();
+          if (Object.keys(this.selectedRelease).length > 0) {
+            break;
+          }
+        }else{
+          this.checkIfProjectHasData();
+          if (Object.keys(this.selectedSprint).length > 0) {
+            break;
+          }
         }
       }
-
       if (projectIndex < this.trendLineValueList?.length) {
         this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
         this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
@@ -1055,21 +1058,35 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getDate(type) {
-    let dateString = 'N/A';
-    const selectedSprint = this.filterForm?.get('selectedSprintValue')?.value;
-    if (selectedSprint) {
-      const obj = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == selectedSprint)[0];
-
-      if (obj) {
-        let d;
-        if (type == 'start') {
-          d = new Date(obj['sprintStartDate']);
-        } else {
-          d = new Date(obj['sprintEndDate']);
-        }
-        dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
-      }
+    if (this.selectedTab.toLowerCase() === 'iteration') {
+      return this.getFormatDateBasedOnIterationAndMilestone(type, 'sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
+    } else {
+      return this.getFormatDateBasedOnIterationAndMilestone(type, 'release', "selectedRelease", "releaseStartDate", "releaseEndDate");
     }
+  }
+
+  /** Get formated start/end date for Iteration and Milestone   */
+  getFormatDateBasedOnIterationAndMilestone(type,filteredAddFiltersKey,formfield,startDateField,endDateField){
+    let dateString = 'N/A';
+    const selectedField = this.filterForm?.get(formfield)?.value;
+      if (selectedField) {
+        const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
+
+        if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+          return dateString;
+        }
+
+        if (obj) {
+          let d;
+          if (type == 'start') {
+            d = new Date(obj[startDateField]);
+          } else {
+            d = new Date(obj[endDateField]);
+          }
+          dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
+        }
+      }
+
     return dateString;
   }
 
@@ -1252,4 +1269,58 @@ export class FilterComponent implements OnInit, OnDestroy {
       });
     });
    }
+
+  handleMilestoneFilter(level) {
+    const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
+    this.filteredAddFilters['release'] = []
+    if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
+      this.filteredAddFilters['release'] = this.additionalFiltersDdn['release']?.filter((x) => x['parentId'][0]?.includes(selectedProject));
+    }
+    if (this.filteredAddFilters && this.filteredAddFilters['release'].length > 0) {
+      if (level === 'project') {
+        this.filterForm?.get('selectedRelease')?.setValue('');
+        this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
+        this.checkIfProjectHasRelease();
+        this.filterForm.get('selectedRelease').setValue(this.selectedRelease['nodeId']);
+      }
+      this.service.setNoRelease(false);
+      this.selectedFilterArray = [];
+      this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
+      this.createFilterApplyData();
+      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+    } else {
+      this.filterForm.controls['selectedRelease'].reset();
+      this.service.setNoRelease(true);
+    }
+    this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+  }
+
+   checkIfProjectHasRelease(){
+    let activeRelease = [];
+    let closedRelease = [];
+    this.selectedRelease={};
+    const selectedProject = this.selectedProjectData['nodeId'];
+    this.filteredAddFilters['release'] = [];
+    if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
+      this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
+    }
+    activeRelease = [...this.filteredAddFilters['release']?.filter((x) => x['releaseState']?.toLowerCase() == 'unreleased')];
+    closedRelease = [...this.filteredAddFilters['release']?.filter((x) => x['releaseState']?.toLowerCase() == 'released')];
+    if (activeRelease?.length > 0) {
+      this.selectedRelease = { ...activeRelease[0] };
+    } else if (closedRelease?.length > 0) {
+      this.selectedRelease = closedRelease[0];
+      for (let i = 0; i < closedRelease?.length; i++) {
+        const releaseEndDateTS1 = new Date(closedRelease[i]['sprintEndDate']).getTime();
+        const releaseEndDateTS2 = new Date(this.selectedRelease['sprintEndDate']).getTime();
+        if (releaseEndDateTS1 > releaseEndDateTS2) {
+          this.selectedRelease = closedRelease[i];
+        }
+      }
+    } else {
+      this.selectedFilterArray = [];
+      this.selectedRelease={};
+      this.service.setNoRelease(true);
+    }
+  }
 }

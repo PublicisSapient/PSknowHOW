@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -203,7 +204,7 @@ public class SonarServiceKanbanRTest {
 		}
 
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), Mockito.anyBoolean())).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(),Mockito.anyBoolean())).thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))

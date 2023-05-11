@@ -1,23 +1,5 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -29,6 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -396,14 +397,20 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-					R aggValue = null;
-					String maturityValue = null;
+
+					Pair<String, String> maturityValue = null;
 					if (null != configHelperService.calculateMaturity().get(kpiId)) {
 						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
 					}
-
-					trendValues
-							.add(new DataCount(node.getName(), maturityValue, aggValue, getList(dataCounts, kpiName)));
+					String aggregateValue = null;
+					String maturity = null;
+					if (maturityValue != null) {
+						aggregateValue = maturityValue.getValue();
+						maturity = maturityValue.getKey();
+					}
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
+							getList(dataCounts, kpiName)));
+				
 				}
 			}
 		}
@@ -439,12 +446,19 @@ public abstract class ToolsKPIService<R, S> {
 						List<DataCount> trendValues = new ArrayList<>();
 
 						R aggValue = null;
-						String maturityValue = null;
+						Pair<String, String> maturityValue = null;
 						if (null != configHelperService.calculateMaturity().get(kpiId)) {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
 						}
+						String aggregateValue = null;
+						String maturity = null;
+						if(maturityValue!=null)
+						{
+							aggregateValue = maturityValue.getValue();
+							maturity = maturityValue.getKey();
+						}
 						trendValues
-								.add(new DataCount(node.getName(), maturityValue, aggValue, getList(value, kpiName)));
+								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
 
 					});
@@ -560,15 +574,17 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return maturity value
 	 */
-	private String collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
+	private Pair<String,String> collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
 		List<R> values = null;
 		String maturityValue = null;
+		String aggregateValue = null;
 		List<R> valueMap = dataCounts.stream().filter(val -> val.getValue() instanceof HashMap<?, ?>)
 				.map(val -> (R) val.getValue()).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(valueMap)) {
 			S aggValue = calculateMapKpiMaturity(valueMap, kpiName);
 			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
 					String.valueOf(aggValue));
+			aggregateValue = String.valueOf(aggValue);
 		}
 		if (CollectionUtils.isEmpty(valueMap)) {
 			values = dataCounts.stream().filter(val -> null != val.getLineValue()).map(val -> (R) val.getLineValue())
@@ -576,11 +592,12 @@ public abstract class ToolsKPIService<R, S> {
 			if (CollectionUtils.isEmpty(values)) {
 				values = dataCounts.stream().map(val -> (R) val.getValue()).collect(Collectors.toList());
 			}
-			R aggValue = calculateAggValue(kpiName, dataCounts, values,kpiId);
+			R aggValue = calculateAggValue(kpiName, dataCounts, values, kpiId);
 			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
 					String.valueOf(aggValue));
+			aggregateValue = String.valueOf(aggValue);
 		}
-		return maturityValue;
+		return Pair.of(maturityValue,aggregateValue);
 	}
 
 	/**
@@ -620,7 +637,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            values
 	 * @return aggregated value
 	 */
-	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values,String kpiId) {
+	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values, String kpiId) {
 		R aggValue;
 		if (kpiName.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE.name())) {
 			aggValue = (R) value.get(value.size() - 1).getValue();
@@ -628,6 +645,9 @@ public abstract class ToolsKPIService<R, S> {
 			aggValue = (R) value.get(0).getValue();
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
+			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
+				aggValue = (R) String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size());
+			}
 		}
 		return aggValue;
 	}
@@ -740,7 +760,6 @@ public abstract class ToolsKPIService<R, S> {
 
 		aggMap.forEach((key, objectList) -> {
 			List<Integer> value = objectList.stream().map(Integer.class::cast).collect(Collectors.toList());
-			;
 			if (Constant.PERCENTILE.equalsIgnoreCase(aggregationCriteria)) {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesInteger(value, 90.0D));

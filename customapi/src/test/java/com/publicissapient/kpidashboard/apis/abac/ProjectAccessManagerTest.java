@@ -6,20 +6,21 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.testng.Assert.assertEquals;
 
 import java.net.UnknownHostException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,9 +94,10 @@ public class ProjectAccessManagerTest {
 	AuthenticationService authenticationService;
 	@Mock
 	UserInfoCustomRepository userInfoCustomRepository;
-
 	@Mock
 	HierarchyLevelService hierarchyLevelService;
+	@Mock
+	TokenAuthenticationService tokenAuthenticationService;
 
 	@Test
 	public void testCreateAccessRequest_hasPendingAccessRequest() {
@@ -149,13 +151,8 @@ public class ProjectAccessManagerTest {
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
 		userInfo.setProjectsAccess(Lists.newArrayList());
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
-		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_SUPERADMIN,
-				Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id")))
-						.thenReturn(getAccessRequestList(Constant.ROLE_SUPERADMIN,
-								Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"));
 		projectAccessManager.createAccessRequest(
 				accessRequestObj(Constant.ROLE_SUPERADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"),
 				accessRequestListener);
@@ -180,16 +177,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setAccessNodes(Lists.newArrayList(accessNode));
 		userInfo.setProjectsAccess(Lists.newArrayList(projectsAccess));
 
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
-		when(projectBasicConfigService.getBasicConfigTree()).thenReturn(createProjectBasicConfigNode());
-		doReturn(createProjectBasicConfigNode()).when(projectBasicConfigService).findNode(ArgumentMatchers.any(),
-				ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
-
-		doAnswer(i -> {
-			List<ProjectBasicConfigNode> parents = i.getArgument(1);
-			parents.add(createProjectBasicConfigNode());
-			return null;
-		}).when(projectBasicConfigService).findParents(ArgumentMatchers.anyList(), ArgumentMatchers.anyList());
 		projectAccessManager.createAccessRequest(
 				accessRequestObj(Constant.ROLE_SUPERADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"),
 				accessRequestListener);

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ public class SonarServiceRTest {
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
 				.thenReturn(exampleStringList);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), Mockito.anyBoolean())).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(),anyString(), Mockito.anyBoolean())).thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()

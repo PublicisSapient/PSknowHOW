@@ -29,7 +29,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -104,6 +107,7 @@ public class JiraServiceRTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private List<DataCount> dataCountRCAList = new ArrayList<>();
+	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 
 	List<KpiElement> mockKpiElementList = new ArrayList<>();
 
@@ -117,7 +121,7 @@ public class JiraServiceRTest {
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	private static String GROUP_PROJECT = "PROJECT";
+	private static String GROUP_PROJECT = "project";
 
 	@Before
 	public void setup() {
@@ -131,6 +135,8 @@ public class JiraServiceRTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
@@ -146,7 +152,7 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(4, false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(4,"project" ,false)).thenReturn("project");
 
 		setRcaKpiElement();
 
@@ -264,11 +270,15 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 		}
 
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
-
-		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		resultList.forEach(k -> {

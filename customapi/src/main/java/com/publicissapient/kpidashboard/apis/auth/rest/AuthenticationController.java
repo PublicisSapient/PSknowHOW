@@ -18,11 +18,40 @@
 
 package com.publicissapient.kpidashboard.apis.auth.rest;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResponseService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationRequest;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.service.ChangePasswordRequest;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.features.EnableFeatureToggle;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -31,42 +60,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationRequest;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.ChangePasswordRequest;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.features.EnableFeatureToggle;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 /**
  * Rest Controller to handle authentication requests
@@ -82,6 +79,8 @@ public class AuthenticationController {
 	private final SignupManager signupManager;
 
 	private AuthTypesConfigService authTypesConfigService;
+
+	private TokenAuthenticationService tokenAuthenticationService;
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String STATUS = "Success";
 	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
@@ -99,13 +98,15 @@ public class AuthenticationController {
 	@Autowired
 	public AuthenticationController(AuthenticationService authenticationService,
 			AuthenticationResponseService authenticationResponseService, UserInfoService userInfoService,
-			AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService) {
+			AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService,
+			TokenAuthenticationService tokenAuthenticationService) {
 		this.authenticationService = authenticationService;
 		this.authenticationResponseService = authenticationResponseService;
 		this.authProperties = authProperties;
 		this.userInfoService = userInfoService;
 		this.signupManager = signupManager;
 		this.authTypesConfigService = authTypesConfigService;
+		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
 	/**
@@ -365,6 +366,17 @@ public class AuthenticationController {
 
 	private boolean isPassContainUser(String reqPassword, String username) {
 		return !(StringUtils.containsIgnoreCase(reqPassword, username));
+	}
+
+	@RequestMapping(value = "/authdetails", method = GET)
+	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
+		JSONObject jsonObject = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
+		if(jsonObject != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", jsonObject));
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(false, "Invalid token", null));
+
 	}
 
 }

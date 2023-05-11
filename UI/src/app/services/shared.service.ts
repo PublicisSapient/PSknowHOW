@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,7 +30,7 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
@@ -81,6 +81,8 @@ export class SharedService implements OnInit {
   selectedTrends = [];
   public isSideNav;
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  noRelease = new BehaviorSubject<any>(false);
+  noReleaseObs = this.noRelease.asObservable();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -276,7 +278,16 @@ export class SharedService implements OnInit {
   setShowTableView(val){
     this.showTableView.next(val);
   }
-  setGlobalDownload(val){
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
+  }
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
   setSelectedLevel(val){
@@ -296,6 +307,10 @@ export class SharedService implements OnInit {
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
+  }
+
+  setNoRelease(value){
+    this.noRelease.next(value)
   }
 }
 

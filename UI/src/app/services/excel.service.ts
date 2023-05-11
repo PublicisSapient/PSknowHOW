@@ -106,7 +106,7 @@ export class ExcelService {
                     const lastRow = worksheet.lastRow.number;
                     const rowSpan = excelData['rowSpan'];
                     delete excelData['rowSpan'];
-                    for (let j = 0; j < Object.keys(excelData).length; j++) {
+                    for (let j = 0; j < kpiData.headerNames.length; j++) {
                         if (!Array.isArray(excelData[worksheet.getColumn(j + 1).key])) {
                             worksheet.mergeCells(lastRow + 1, j + 1, lastRow + rowSpan, j + 1);
                             worksheet.getCell(worksheet.getColumn(j + 1).letter + (lastRow + 1)).value = excelData[worksheet.getColumn(j + 1).key];
