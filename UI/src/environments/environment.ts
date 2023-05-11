@@ -21,8 +21,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  baseUrl: '//customapi:8080'
+   production: false,
+   baseUrl: '//customapi:8080',
+   SSO_LOGIN: false
 };
 
 /*

@@ -302,4 +302,7 @@ public class ValidationData {
 
 	@JsonProperty("Created Tickets")
 	private List<String>  createdTicketList;
+
+	@JsonProperty("Defects Added after Sprint Start")
+	private List<String> defectsAddedAfterSprint;
 }

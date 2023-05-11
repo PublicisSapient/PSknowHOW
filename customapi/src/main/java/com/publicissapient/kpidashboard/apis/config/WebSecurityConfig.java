@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticatio
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
 import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
