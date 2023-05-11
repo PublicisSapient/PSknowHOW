@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.extern.slf4j.Slf4j;
@@ -96,7 +95,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String BACKLOG = "Backlog";
 
-	private static final String MILESTONE = "Milestone";
+	private static final String RELEASE = "Release";
 
 	private static final String KPI_MATURITY = "Kpi Maturity";
 
@@ -149,7 +148,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName).collect(Collectors.toList());
 		defaultKpiCategory.add(ITERATION);
-		defaultKpiCategory.add(MILESTONE);
+		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		return (!defaultKpiCategory.containsAll(existingCategories));
@@ -304,7 +303,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<BoardDTO> scrumBoards = new ArrayList<>();
 		List<String> defaultKpiCategory = new ArrayList<>();
 		defaultKpiCategory.add(ITERATION);
-		defaultKpiCategory.add(MILESTONE);
+		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
@@ -327,7 +326,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		newUserBoardConfig.setKanban(kanbanBoards);
 
 		List<BoardDTO> otherBoards = new ArrayList<>();
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), MILESTONE,
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), RELEASE,
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);

@@ -588,7 +588,7 @@
       "others": [
         {
           "boardId": 12,
-          "boardName": "Milestone",
+          "boardName": "Release",
           "kpis": [   {
             "kpiId": "kpi121",
             "kpiName": "Capacity",

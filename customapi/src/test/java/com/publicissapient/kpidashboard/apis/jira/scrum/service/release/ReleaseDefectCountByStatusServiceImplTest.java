@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.jira.scrum.service.milestone;
+package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -60,10 +60,10 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MilestoneDefectCountByPriorityServiceImplTest {
+public class ReleaseDefectCountByStatusServiceImplTest {
 
 	@InjectMocks
-	private MilestoneDefectCountByPriorityServiceImpl defectCountByPriorityService;
+	private ReleaseDefectCountByStatusServiceImpl defectCountByStatusService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -82,7 +82,7 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi141");
 		kpiRequest.setLabel("RELEASE");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance("/json/default/account_hierarchy_filter_data_milestone.json");
+				.newInstance("/json/default/account_hierarchy_filter_data_release.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		bugList = jiraIssueDataFactory.getBugs();
@@ -94,8 +94,8 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(defectCountByPriorityService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_PRIORITY_MILESTONE.name()));
+		assertThat(defectCountByStatusService.getQualifierType(),
+				equalTo(KPICode.DEFECT_COUNT_BY_STATUS_RELEASE.name()));
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
@@ -116,8 +116,8 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 	}
 
 	@Test
-	public void getKpiDataWithoutPriority() throws ApplicationException {
-		bugList.forEach(jira -> jira.setPriority(null));
+	public void getKpiDataWithoutStatus() throws ApplicationException {
+		bugList.forEach(jiraIssue -> jiraIssue.setStatus(null));
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
@@ -125,7 +125,7 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
@@ -136,11 +136,11 @@ public class MilestoneDefectCountByPriorityServiceImplTest {
 	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
 		Map<String, Integer> finalMap = new HashMap<>();
 		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
-			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
-				jiraIssue.setPriority("-");
+			if (StringUtils.isEmpty(jiraIssue.getStatus())) {
+				jiraIssue.setStatus("-");
 			}
 			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getPriority));
+		}).collect(Collectors.groupingBy(JiraIssue::getStatus));
 		collect.forEach((k, v) -> finalMap.put(k, v.size()));
 		return finalMap;
 	}

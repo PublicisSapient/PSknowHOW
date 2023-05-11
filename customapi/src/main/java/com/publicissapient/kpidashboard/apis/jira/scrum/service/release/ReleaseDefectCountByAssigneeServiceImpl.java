@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.jira.scrum.service.milestone;
+package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,10 +60,10 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @Component
-public class MilestoneDefectCountByAssigneeServiceImpl
+public class ReleaseDefectCountByAssigneeServiceImpl
 		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MilestoneDefectCountByAssigneeServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDefectCountByAssigneeServiceImpl.class);
 	private static final String TOTAL_DEFECT = "totalDefects";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -85,7 +85,7 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Defect count by Assignee Milestone -> Requested sprint : {}", leafNode.getName());
+			LOGGER.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> defectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -107,7 +107,7 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_ASSIGNEE_MILESTONE.name();
+		return KPICode.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.name();
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("MilestoneDefectCountByAssigneeServiceImpl -> getKpiData ->  : {}", kpiElement);
+		LOGGER.info("ReleaseDefectCountByAssigneeServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -140,7 +140,7 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
 				Map<String, List<JiraIssue>> assigneeWiseList = getAssigneeWiseList(totalDefects);
-				LOGGER.info("MilestoneDefectCountByAssigneeServiceImpl -> assigneeWiseList ->  : {}", assigneeWiseList);
+				LOGGER.info("ReleaseDefectCountByAssigneeServiceImpl -> assigneeWiseList ->  : {}", assigneeWiseList);
 				Map<String, Integer> assigneeWiseCountMap = new HashMap<>();
 				getAssigneeWiseCount(assigneeWiseList, assigneeWiseCountMap);
 				if (MapUtils.isNotEmpty(assigneeWiseCountMap)) {
@@ -164,10 +164,10 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 							middleTrendValueListOverAll);
 					filterDataList.add(filterDataOverall);
 					kpiElement.setSprint(latestRelease.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_ASSIGNEE_MILESTONE.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_ASSIGNEE_MILESTONE.getColumns());
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
-					LOGGER.info("MilestoneDefectCountByAssigneeServiceImpl -> request id : {} total jira Issues : {}",
+					LOGGER.info("ReleaseDefectCountByAssigneeServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, filterDataList.get(0));
 				}
 			}
@@ -186,7 +186,7 @@ public class MilestoneDefectCountByAssigneeServiceImpl
 			List<JiraIssue> jiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(jiraIssueList) && !jiraIssueList.isEmpty()) {
-			KPIExcelUtility.populateMilestoneDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
 		}
 	}
 

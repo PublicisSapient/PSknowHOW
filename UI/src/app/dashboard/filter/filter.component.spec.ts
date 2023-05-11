@@ -868,7 +868,7 @@ describe('FilterComponent', () => {
   })
 
   it("should call formatted date for milestone",()=>{
-    component.selectedTab = 'milestone';
+    component.selectedTab = 'release';
     const spy = spyOn(component,"getFormatDateBasedOnIterationAndMilestone");
     component.getDate('start');
     expect(spy).toHaveBeenCalled();
