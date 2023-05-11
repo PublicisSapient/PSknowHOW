@@ -75,9 +75,3 @@
     font-size: .75rem;
     font-weight: 600;
 }
-
-@media only screen and (max-width: 1600px){
-    .average-data-primary {
-        font-size: 0.8rem;
-    }
-}
