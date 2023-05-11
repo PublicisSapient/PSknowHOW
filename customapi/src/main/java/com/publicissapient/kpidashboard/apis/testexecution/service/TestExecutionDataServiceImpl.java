@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +188,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 			}
 
 			testExecutionData.setExecutionDate(executionDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
+
 			setProjectMeta(testExecutionData, project);
 
 			testExecutions.add(testExecutionData);

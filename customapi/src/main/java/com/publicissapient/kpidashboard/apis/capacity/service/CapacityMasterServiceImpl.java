@@ -217,8 +217,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setId(null);
 					capacityMasterKanban.setCapacity(0D);
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-					capacityMasterKanban.setStartDate(DateUtil.localDateTimeConverter(week.getStartDate()));
-					capacityMasterKanban.setEndDate(DateUtil.localDateTimeConverter(week.getEndDate()));
+					capacityMasterKanban.setStartDate(week.getStartDate().format(formatter));
+					capacityMasterKanban.setEndDate(week.getEndDate().format(formatter));
 				}
 
 			} else {
