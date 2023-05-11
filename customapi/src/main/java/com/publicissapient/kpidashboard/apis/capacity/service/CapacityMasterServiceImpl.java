@@ -206,8 +206,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					//mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity()*5);
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-					capacityMasterKanban.setStartDate(DateUtil.localDateTimeConverter(kanbanCapacity.getStartDate()));
-					capacityMasterKanban.setEndDate(DateUtil.localDateTimeConverter(kanbanCapacity.getEndDate()));
+					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
+					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
 					if(CollectionUtils.isNotEmpty(kanbanCapacity.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
 						kanbanCapacity.getAssigneeCapacity().stream().forEach(assignees -> assignees.setLeaves(Optional.ofNullable(assignees.getLeaves()).orElse(0D)));
 						capacityMasterKanban.setAssigneeCapacity(kanbanCapacity.getAssigneeCapacity());
@@ -225,8 +225,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMasterKanban.setId(null);
 				capacityMasterKanban.setCapacity(0D);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-				capacityMasterKanban.setStartDate(DateUtil.localDateTimeConverter(week.getStartDate()));
-				capacityMasterKanban.setEndDate(DateUtil.localDateTimeConverter(week.getEndDate()));
+				capacityMasterKanban.setStartDate(week.getStartDate().format(formatter));
+				capacityMasterKanban.setEndDate(week.getEndDate().format(formatter));
 			}
 			settingFutureAssigneeDetails(assigneeCapacity, capacityMasterKanban);
 			setProjectMeta(capacityMasterKanban, project);

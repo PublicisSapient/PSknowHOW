@@ -188,7 +188,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecutionData.setTotalTestCases(0);
 			}
 
-			testExecutionData.setExecutionDate(DateUtil.localDateTimeConverter(executionDate));
+			testExecutionData.setExecutionDate(executionDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
 			setProjectMeta(testExecutionData, project);
 
 			testExecutions.add(testExecutionData);
