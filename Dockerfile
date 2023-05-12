@@ -19,7 +19,7 @@ ARG BAMBOO_JAR_FILE=processors/bamboo/target/bamboo-processor.jar
 ARG TEAMCITY_JAR_FILE=processors/teamcity/target/teamcity-processor.jar
 ARG GITLAB_JAR_FILE=processors/gitlab/target/gitlab-processor.jar
 ARG GITHUB_JAR_FILE=processors/github/target/github-processor.jar
-ARG GITHUBACTION_JAR_FILE=processors/github/target/githubaction-processor.jar
+ARG GITHUBACTION_JAR_FILE=processors/githubaction/target/githubaction-processor.jar
 
 ARG JENKINS_PROPERTIES_FILE_NAME=jenkins.properties
 ARG BAMBOO_PROPERTIES_FILE_NAME=bamboo.properties
