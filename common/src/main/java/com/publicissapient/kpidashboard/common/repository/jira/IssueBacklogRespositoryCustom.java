@@ -19,4 +19,6 @@ public interface IssueBacklogRespositoryCustom {
 	List<IssueBacklog> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters, Map<String,
 			Map<String, Object>> uniqueProjectMap);
 
+	List<IssueBacklog> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
+
 }

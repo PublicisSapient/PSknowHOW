@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -28,6 +27,8 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
+	private static final String JIRA_UPDATED_DATE = "updateDate";
+	private static final String SPRINT_NAME = "sprintName";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -169,6 +170,25 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
 			query = new Query(updatedCriteria);
 		}
+		return operations.find(query, IssueBacklog.class);
+	}
+
+	@Override
+	public List<IssueBacklog> findUnassignedIssues(String startDate, String endDate,
+												Map<String, List<String>> mapOfFilters) {
+		Criteria criteria = new Criteria();
+		Criteria orCriteria = new Criteria();
+		List<Criteria> filter = new ArrayList<>();
+		for (String val : mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
+		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
+		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
+		Query query = new Query(criteria);
+
 		return operations.find(query, IssueBacklog.class);
 	}
 
