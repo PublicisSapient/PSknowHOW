@@ -62,8 +62,9 @@ public class NotificationHandler {
             customData.put(key,value);
             String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
             log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
+            String templateKey = jiraProcessorConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY,"");
             notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
-                   jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate);
+                   jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,templateKey,jiraProcessorConfig.isMailWithoutKafka());
         } else {
             log.error("Notification Event not sent : No email address found associated with Superadmin role "
                     + "or Property - notificationSubject.accessRequest not set in property file ");

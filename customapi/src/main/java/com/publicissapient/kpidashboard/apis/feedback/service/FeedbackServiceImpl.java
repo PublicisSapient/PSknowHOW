@@ -75,8 +75,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 			}
 			Map<String, String> customData = createCustomData(feedback, serverPath);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY,"");
 			notificationService.sendNotificationEvent(emailAddresses, customData, feedbackNotificationSubjects,
-					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate);
+					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate,templateKey,customApiConfig.isMailWithoutKafka());
 		} else {
 			status = false;
 			log.error("Notification Event not sent : No email address "

@@ -1,6 +1,6 @@
 [
   {
-    "_id" : "6335e4ea4fd2f76a82111843",
+    "id" : "6335e4ea4fd2f76a82111843",
     "projectToolConfigId" : "6335e4899a86a10a43ae4826",
     "basicProjectConfigId" : "6335368249794a18e8a4479f",
     "jiraIssueTypeNames" : [ "Issue", "Defect", "Story" ],

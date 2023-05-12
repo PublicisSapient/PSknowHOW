@@ -78,6 +78,11 @@ public class JiraProcessorConfig {
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 
+	private Map<String,String> mailTemplate;
+
+	@Value("${flag.mailWithoutKafka}")
+	private boolean mailWithoutKafka;
+
 	private String samlTokenStartString;
 	private String samlTokenEndString;
 	private String samlUrlStartString;

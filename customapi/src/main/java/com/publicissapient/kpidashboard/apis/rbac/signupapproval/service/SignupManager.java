@@ -129,8 +129,9 @@ public class SignupManager {
 				&& MapUtils.isNotEmpty(notificationSubjects)) {
 			String subject = notificationSubjects.get(subjectKey);
 			log.info("Notification message sent to kafka with key : {}", notKey);
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey,"");
 			notificationService.sendNotificationEvent(emailAddresses, customData, subject, notKey,
-					customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate);
+					customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate,templateKey,customApiConfig.isMailWithoutKafka());
 		} else {
 			log.error("Notification Event not sent : No email address found "
 					+ "or Property - notificationSubject.accessRequest not set in property file ");

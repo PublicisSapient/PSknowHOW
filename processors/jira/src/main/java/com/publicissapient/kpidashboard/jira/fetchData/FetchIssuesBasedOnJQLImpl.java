@@ -9,6 +9,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
@@ -128,7 +129,7 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
             }
 
 
-            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+            Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
 
             Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
 
@@ -202,8 +203,10 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         return totalIssues;
     }
 
-    private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ObjectId basicProjectConfigId,
-                                                                      FieldMapping fieldMapping) {
+    private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ProjectConfFieldMapping projectConfig) {
+        ObjectId basicProjectConfigId = projectConfig.getBasicProjectConfigId();
+        FieldMapping fieldMapping = projectConfig.getFieldMapping();
+        ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
 
         String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
         Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
@@ -217,7 +220,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         if (CollectionUtils.isNotEmpty(traceLogs)) {
             projectTraceLog = traceLogs.get(0);
         }
-
         LocalDateTime configuredStartDate = LocalDateTime.parse(jiraProcessorConfig.getStartDate(),
                 DateTimeFormatter.ofPattern(QUERYDATEFORMAT));
 
@@ -233,14 +235,17 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
                     lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
                 }
 
+                // When toggle is On first time it will update lastUpdatedDateByIssueType to start date
+                setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
+
             } else {
                 lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
             }
+
         }
 
         return lastUpdatedDateByIssueType;
     }
-
     private SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
                                   Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
                                   boolean dataExist) throws InterruptedException{
@@ -298,6 +303,12 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
         }
 
         return searchResult;
+    }
+
+    private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
+        if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+            lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+        }
     }
 
 }

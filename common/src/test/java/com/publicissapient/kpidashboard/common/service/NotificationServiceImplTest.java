@@ -70,7 +70,7 @@ public class NotificationServiceImplTest {
 				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
 				globalConfig.getEmailServerDetail().getEmailPort());
 		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null,topic, true, kafkaTemplate);
-        notificationService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic, true, kafkaTemplate);
+        notificationService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic, true, kafkaTemplate, "abc",false);
 
 	}
 
@@ -127,7 +127,7 @@ public class NotificationServiceImplTest {
 				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
 				globalConfig.getEmailServerDetail().getEmailPort());
 		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, true, kafkaTemplate);
-		notificationService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic, true, kafkaTemplate);
+		notificationService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic, true, kafkaTemplate, "abc",false);
 
 	}
 }

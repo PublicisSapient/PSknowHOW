@@ -43,21 +43,25 @@ public class NotificationServiceImpl implements NotificationService  {
 
     @Override
     public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
-                                      String notKey, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate) {
+                                      String notKey, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate, String templateKey, boolean isMailWithoutKafka) {
 
-        if (StringUtils.isNotBlank(notSubject)) {
-            EmailServerDetail emailServerDetail = getEmailServerDetail();
-            if (emailServerDetail != null) {
-                EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
-                        notSubject, null, customData, emailServerDetail.getEmailHost(),
-                        emailServerDetail.getEmailPort());
-                notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, notificationSwitch, kafkaTemplate);
+        if (!isMailWithoutKafka) {
+            if (StringUtils.isNotBlank(notSubject)) {
+                EmailServerDetail emailServerDetail = getEmailServerDetail();
+                if (emailServerDetail != null) {
+                    EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
+                            notSubject, null, customData, emailServerDetail.getEmailHost(),
+                            emailServerDetail.getEmailPort());
+                    notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, notificationSwitch, kafkaTemplate);
+                } else {
+                    log.error("Notification Event not sent : notification emailServer Details not found in db");
+                }
             } else {
-                log.error("Notification Event not sent : notification emailServer Details not found in db");
+                log.error("Notification Event not sent : notification subject for {} not found in properties file",
+                        notSubject);
             }
-        } else {
-            log.error("Notification Event not sent : notification subject for {} not found in properties file",
-                    notSubject);
+        }else {
+            sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, templateKey);
         }
 
     }

@@ -8,7 +8,12 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
@@ -18,6 +23,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
@@ -66,6 +72,12 @@ public class JiraCommonService {
 
     @Autowired
     private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+    @Autowired
+    private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
+
+    @Autowired
+    private KanbanJiraIssueRepository kanbanJiraRepo;
 
     public int getPageSize() {
         return jiraProcessorConfig.getPageSize();
@@ -280,5 +292,46 @@ public class JiraCommonService {
         }
         return processorExecutionTraceLog;
     }
+
+    public KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
+        List<KanbanJiraIssue> jiraIssues = kanbanJiraRepo
+                .findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
+
+        // Not sure of the state of the data
+        if (jiraIssues.size() > 1) {
+            log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
+        }
+
+        if (!jiraIssues.isEmpty()) {
+            return jiraIssues.get(0);
+        }
+
+        return null;
+    }
+
+    /**
+     * Find kanban Jira Issue custom history object by issueId
+     *
+     * @param issueId
+     *            Jira issue ID
+     * @param basicProjectConfigId
+     *            basicProjectConfigId
+     * @return KanbanIssueCustomHistory Kanban history object corresponding to
+     *         issueId from DB
+     */
+    public KanbanIssueCustomHistory findOneKanbanIssueCustomHistory(String issueId, String basicProjectConfigId) {
+        List<KanbanIssueCustomHistory> jiraIssues = kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(issueId,
+                basicProjectConfigId);
+        // Not sure of the state of the data
+        if (jiraIssues.size() > 1) {
+            log.warn("JIRA Processor | Data issue More than one JIRA issue item found for id {}", issueId);
+        }
+        if (!jiraIssues.isEmpty()) {
+            return jiraIssues.get(0);
+        }
+
+        return null;
+    }
+
 
 }

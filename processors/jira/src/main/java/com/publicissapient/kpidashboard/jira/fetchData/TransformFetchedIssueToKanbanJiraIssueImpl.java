@@ -44,9 +44,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
     private JiraProcessorRepository jiraProcessorRepository;
 
     @Autowired
-    private KanbanJiraIssueRepository kanbanJiraRepo;
-
-    @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
 
     @Autowired
@@ -54,6 +51,9 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
 
     @Autowired
     private CreateKanbanAccountHierarchy accountHierarchy;
+
+    @Autowired
+    private JiraCommonService jiraCommonService;
 
     @Override
     public List<KanbanJiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs,
@@ -201,7 +201,7 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
     }
 
     private KanbanJiraIssue getKanbanJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
-        KanbanJiraIssue jiraIssue = findOneKanbanIssueRepo(issueId, projectConfig.getBasicProjectConfigId().toString());
+        KanbanJiraIssue jiraIssue = jiraCommonService.findOneKanbanIssueRepo(issueId, projectConfig.getBasicProjectConfigId().toString());
         if (jiraIssue == null) {
             jiraIssue = new KanbanJiraIssue();
         }
@@ -223,22 +223,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         if (epic != null && epic.getValue() != null && !JiraProcessorUtil.deodeUTF8String(epic.getValue()).isEmpty()) {
             issueEpics.put(jiraIssue.getIssueId(), JiraProcessorUtil.deodeUTF8String(epic.getValue()));
         }
-    }
-
-    private KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
-        List<KanbanJiraIssue> jiraIssues = kanbanJiraRepo
-                .findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
-
-        // Not sure of the state of the data
-        if (jiraIssues.size() > 1) {
-            log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
-        }
-
-        if (!jiraIssues.isEmpty()) {
-            return jiraIssues.get(0);
-        }
-
-        return null;
     }
 
     private void setRCA(FieldMapping fieldMapping, Issue issue, KanbanJiraIssue jiraIssue,
