@@ -119,8 +119,8 @@ export class SharedService {
 
   // setter dash config data
   setDashConfigData(data) {
-    this.globalDashConfigData.emit(data);
     this.dashConfigData = JSON.parse(JSON.stringify(data));
+      this.globalDashConfigData.emit(data);
   }
 
   // getter kpi config data
