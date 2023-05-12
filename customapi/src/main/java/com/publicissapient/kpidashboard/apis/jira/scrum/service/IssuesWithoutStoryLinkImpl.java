@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -37,10 +38,13 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -77,7 +81,12 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
     @Autowired
     private IssueBacklogRepository issueBacklogRepository;
     @Autowired
+    private JiraIssueRepository jiraIssueRepository;
+    @Autowired
     private TestCaseDetailsRepository testCaseDetailsRepository;
+
+    @Autowired
+    private KpiHelperService kpiHelperService;
 
     @Override
     public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -272,17 +281,20 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
         mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
                 basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-        List<IssueBacklog> storyList = issueBacklogRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
-
+        List<IssueBacklog> backlogstoryList = issueBacklogRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+        List<JiraIssue> jiraStoryList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+        List<IssueBacklog> storyList = ListUtils.union(backlogstoryList, kpiHelperService.convertJiraIssueToBacklog(jiraStoryList));
         List<String> storyIssueNumberList = storyList.stream().map(IssueBacklog::getNumber).collect(Collectors.toList());
 
         resultListMap.put(STORY_LIST, storyIssueNumberList);
         defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
         mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 
-        resultListMap.put(DEFECT_LIST,
-                issueBacklogRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn));
-        return resultListMap;
+		resultListMap.put(DEFECT_LIST, ListUtils.union(
+				issueBacklogRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn),
+				kpiHelperService.convertJiraIssueToBacklog(
+						jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn))));
+		return resultListMap;
 
     }
 

@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,6 +46,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -1419,4 +1422,33 @@ public class KpiHelperService { // NOPMD
 	}
 
 
+	public List<JiraIssue> convertBacklogToJiraIssue(List<IssueBacklog> issueBacklogList)
+	{
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogList.forEach(issueBacklog -> {
+			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class));
+		});
+		return jiraIssues;
+	}
+
+	public List<IssueBacklog> convertJiraIssueToBacklog(List<JiraIssue> jiraIssueList)
+	{
+		List<IssueBacklog> issueBacklogs = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueList.forEach(jiraIssue -> {
+			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class));
+		});
+		return issueBacklogs;
+	}
+	
+	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogCustomHistories.forEach(issueHistory->{
+			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class));
+		});
+		return jiraIssueCustomHistoryList;
+	}
 }

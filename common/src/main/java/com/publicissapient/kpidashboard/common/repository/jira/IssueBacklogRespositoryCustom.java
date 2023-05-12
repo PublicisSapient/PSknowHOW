@@ -15,4 +15,8 @@ public interface IssueBacklogRespositoryCustom {
 
 	List<IssueBacklog> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMapNotIn);
+
+	List<IssueBacklog> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters, Map<String,
+			Map<String, Object>> uniqueProjectMap);
+
 }

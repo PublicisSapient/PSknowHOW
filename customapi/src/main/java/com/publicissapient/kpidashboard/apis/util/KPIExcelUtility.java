@@ -35,8 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -846,23 +846,23 @@ public class KPIExcelUtility {
 
 	}
 
-    public static void populateDefectWithoutIssueLinkExcelData(List<IssueBacklog> defectWithoutStory,
-                                                               List<KPIExcelData> kpiExcelData, String sprintName) {
-        if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
-            defectWithoutStory.forEach(defect -> {
-                if (null != defect) {
-                    KPIExcelData excelData = new KPIExcelData();
-                    Map<String, String> defectLink = new HashMap<>();
-                    defectLink.put(defect.getNumber(), checkEmptyURL(defect));
-                    excelData.setProjectName(sprintName);
-                    excelData.setDefectWithoutStoryLink(defectLink);
-                    excelData.setIssueDesc(checkEmptyName(defect));
-                    excelData.setPriority(defect.getPriority());
-                    kpiExcelData.add(excelData);
-                }
-            });
-        }
-    }
+	public static void populateDefectWithoutIssueLinkExcelData(List<IssueBacklog> defectWithoutStory,
+			List<KPIExcelData> kpiExcelData, String sprintName) {
+		if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
+			defectWithoutStory.forEach(defect -> {
+				if (null != defect) {
+					KPIExcelData excelData = new KPIExcelData();
+					Map<String, String> defectLink = new HashMap<>();
+					defectLink.put(defect.getNumber(), checkEmptyURL(defect));
+					excelData.setProjectName(sprintName);
+					excelData.setDefectWithoutStoryLink(defectLink);
+					excelData.setIssueDesc(checkEmptyName(defect));
+					excelData.setPriority(defect.getPriority());
+					kpiExcelData.add(excelData);
+				}
+			});
+		}
+	}
 
 	public static void populateTestWithoutStoryExcelData(String projectName, Map<String, TestCaseDetails> totalTestMap,
 			List<TestCaseDetails> testWithoutStory, List<KPIExcelData> kpiExcelData) {
@@ -992,31 +992,31 @@ public class KPIExcelUtility {
 		}
 	}
 
-    public static void populateProductionDefectAgingExcelData(String projectName, List<IssueBacklog> defectList,
-                                                              List<KPIExcelData> kpiExcelData) {
-        if (CollectionUtils.isNotEmpty(defectList)) {
-            defectList.forEach(defect -> {
-                KPIExcelData excelData = new KPIExcelData();
-                Map<String, String> defectLink = new HashMap<>();
-                defectLink.put(defect.getNumber(), checkEmptyURL(defect));
-                excelData.setProjectName(projectName);
-                excelData.setDefectId(defectLink);
-                excelData.setPriority(defect.getPriority());
-                String date = Constant.EMPTY_STRING;
-                if (defect.getCreatedDate() != null) {
-                    DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-                            .optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
-                            .optionalEnd().toFormatter();
-                    LocalDateTime dateTime = LocalDateTime.parse(defect.getCreatedDate(), formatter);
-                    date = dateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_PRODUCTION_DEFECT_AGEING));
-                }
-                excelData.setCreatedDate(date);
-                excelData.setIssueDesc(checkEmptyName(defect));
-                excelData.setStatus(defect.getJiraStatus());
-                kpiExcelData.add(excelData);
-            });
-        }
-    }
+	public static void populateProductionDefectAgingExcelData(String projectName, List<IssueBacklog> defectList,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(defectList)) {
+			defectList.forEach(defect -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> defectLink = new HashMap<>();
+				defectLink.put(defect.getNumber(), checkEmptyURL(defect));
+				excelData.setProjectName(projectName);
+				excelData.setDefectId(defectLink);
+				excelData.setPriority(defect.getPriority());
+				String date = Constant.EMPTY_STRING;
+				if (defect.getCreatedDate() != null) {
+					DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
+							.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
+							.optionalEnd().toFormatter();
+					LocalDateTime dateTime = LocalDateTime.parse(defect.getCreatedDate(), formatter);
+					date = dateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_PRODUCTION_DEFECT_AGEING));
+				}
+				excelData.setCreatedDate(date);
+				excelData.setIssueDesc(checkEmptyName(defect));
+				excelData.setStatus(defect.getJiraStatus());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
 	public static void populateOpenTicketByAgeingExcelData(String projectName, List<KanbanJiraIssue> kanbanJiraIssues,
 			List<KPIExcelData> kpiExcelData) {
@@ -1225,7 +1225,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Method to populate assignee name in kpi's
-	 *
+	 * 
 	 * @param jiraIssue
 	 * @param object
 	 */
@@ -1240,7 +1240,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 *
+	 * 
 	 * @param overAllModalValues
 	 * @param modalValues
 	 * @param jiraIssue

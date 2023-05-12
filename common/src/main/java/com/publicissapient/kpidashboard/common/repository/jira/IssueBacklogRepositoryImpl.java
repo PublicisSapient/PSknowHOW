@@ -146,4 +146,30 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 
 		return operations.find(query, IssueBacklog.class);
 	}
+
+	@SuppressWarnings(UNCHECKED)
+	@Override
+	public List<IssueBacklog> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
+																 Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria);
+
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		Query query = new Query(criteriaProjectLevelAdded);
+		if (!projectCriteriaList.isEmpty()) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			query = new Query(updatedCriteria);
+		}
+		return operations.find(query, IssueBacklog.class);
+	}
+
 }
