@@ -18,13 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -62,6 +67,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final int GITHUB_RATE_LIMIT_PER_HOUR = 60;
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
+
+	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
 
 
 	@Override
@@ -143,13 +150,31 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl,
 								   String password, boolean isSonarWithAccessToken) {
-		boolean isValidConnection;
-		HttpStatus status = null;
-		status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName, isSonarWithAccessToken);
-		isValidConnection = status.is2xxSuccessful();
+		boolean isValidConnection = false;
+		if(connection.isJaasKrbAuth()){
+			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
+					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
+					connection.getBaseUrl());
+			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
+					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
+			HttpResponse response = getApiResponseWithKerbAuth(client, apiUrl);
+			if(null != response && response.getStatusLine().getStatusCode() == 200){
+				isValidConnection = true;
+			}
+		}else {
+			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
+					isSonarWithAccessToken);
+			isValidConnection = status.is2xxSuccessful();
+		}
 		return isValidConnection;
 	}
 
+	/**
+	 *
+	 * @param apiUrl
+	 * @param pat
+	 * @return
+	 */
 	private boolean testConnectionWithBearerToken(String apiUrl, String pat) {
 		boolean isValidConnection;
 		HttpStatus status = null;
@@ -160,7 +185,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private boolean checkDetails(String apiUrl, String password, Connection connection) {
 		boolean b = false;
-		if (apiUrl != null && isUrlValid(apiUrl) && StringUtils.isNotEmpty(password)
+		if (apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password)||connection.isJaasKrbAuth())
 				&& StringUtils.isNotEmpty(connection.getUsername())) {
 			b = true;
 		}
@@ -196,8 +221,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			if(StringUtils.isNotEmpty(connection.getPatOAuthToken())){
-				isValid = testConnectionWithBearerToken(apiUrl, connection.getPatOAuthToken());
+			if(connection.isBearerToken()){
+				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
@@ -285,6 +310,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	/**
 	 * Create API URL using base URL and API path for bitbucket
 	 * @param connection connection
+	 *
+	 * @param connection
 	 * @return apiURL
 	 */
 	private String createBitBucketUrl(Connection connection) {
@@ -323,7 +350,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private HttpHeaders createHeadersWithBearer(String pat) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey()));
+		String decryptedPswd = rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey());
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + decryptedPswd);
+		headers.add(HttpHeaders.ACCEPT,"*/*");
+		headers.add(HttpHeaders.CONTENT_TYPE,"application/json");
+		headers.set("Cookie", "");
 		return headers;
 	}
 
@@ -369,21 +400,39 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		httpHeaders = createHeadersWithBearer(pat);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl.replace("issue/createmeta","dashboard")), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
-		return responseEntity.getStatusCode();
-	}
+		HttpStatus responseCode = responseEntity.getStatusCode();
 
+		if(responseCode.is2xxSuccessful() && null != responseEntity.getBody()
+				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)){
+			responseCode = HttpStatus.UNAUTHORIZED;
+		}
+		return responseCode;
+	}
 	/**
 	 * Create API URL using base URL and API path
 	 * 
-	 * @param baseUrl
-	 * @param toolName
+	 * @param client
+	 * @param apiUrl
 	 * @return apiURL
 	 */
+	private HttpResponse getApiResponseWithKerbAuth(KerberosClient client, String apiUrl) {
+		HttpUriRequest request = RequestBuilder.get().
+				setUri(apiUrl)
+				.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
+				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
+				.build();
+		try {
+			return client.getHttpResponse(request);
+		} catch (IOException e) {
+			log.error("error occured while executing kerberos client request."+e.getMessage());
+			return null;
+		}
+	}
 	private String createApiUrl(String baseUrl, String toolName) {
 		String apiPath = getApiPath(toolName);
 		if (StringUtils.isNotEmpty(baseUrl) && StringUtils.isNotEmpty(apiPath)) {
@@ -462,6 +511,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) &&
 				StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
+		}
+		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
+			return connection.getPatOAuthToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}

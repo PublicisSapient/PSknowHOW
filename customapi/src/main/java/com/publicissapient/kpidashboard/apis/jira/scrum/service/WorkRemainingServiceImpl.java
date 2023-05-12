@@ -184,6 +184,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<Integer> overallPotentialDelay = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 			List<IterationKpiModalValue> finalOverAllmodalValues = overAllmodalValues;
+			//For markerInfo
+			Map<String,String> markerInfo = new HashMap<>();
+			markerInfo.put(Constant.AMBER,"Issue finishing in the last two days of the iteration are marked in AMBER");
+			markerInfo.put(Constant.RED,"Issues finishing post issue due date are marked in RED");
 			typeAndStatusWiseIssues.forEach((issueType, statusWiseIssue) ->
 				statusWiseIssue.forEach((status, issues) -> {
 					issueTypes.add(issueType);
@@ -232,7 +236,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					data.add(issueCounts);
 					data.add(hours);
 					data.add(potentialDelay);
-					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data);
+					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data, Arrays.asList("marker"), markerInfo);
 					iterationKpiValues.add(iterationKpiValue);
 				}));
 			List<IterationKpiData> data = new ArrayList<>();
@@ -248,7 +252,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			data.add(overAllCount);
 			data.add(overAllHours);
 			data.add(overAllPotentialDelay);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data, Arrays.asList("marker"), markerInfo);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters

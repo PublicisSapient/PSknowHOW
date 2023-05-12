@@ -1827,7 +1827,7 @@ db.getCollection('kpi_master').insert(
         },
         {
           "type": "paragraph",
-          "value": "Maturity of the KPI is calculated based on the latest value"
+          "value": "Maturity of the KPI is calculated based on the average of the last 5 months"
         }
       ],
       "maturityLevels": [
@@ -3352,7 +3352,7 @@ db.getCollection('kpi_master').insert(
          "isPositiveTrend": true,
          "showTrend": false,
          "isAdditionalFilterSupport": false,
-         "kpiFilter": "dropdown",
+         "kpiFilter": "radioButton",
          "boxType": "chart",
          "calculateMaturity": false
        },
@@ -3629,6 +3629,30 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+		"kpiId": "kpi139",
+		"kpiName": "Refinement Rejection Rate",
+		"kpiUnit": "%",
+		"isDeleted": "False",
+		"defaultOrder": 4,
+		"kpiCategory": "Backlog",
+		"kpiSource": "Jira",
+		"groupId": 2,
+		"thresholdValue": "",
+		"kanban": false,
+		"chartType": "line",
+		"kpiInfo": {
+		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+		},
+		"xAxisLabel": "Weeks",
+		"yAxisLabel": "Count",
+		"isPositiveTrend": false,
+		"kpiFilter": "",
+		"showTrend": false,
+		"aggregationCriteria": "sum",
+		"isAdditionalFilterSupport": false,
+		"calculateMaturity": false
+  },
+  {
      "kpiId": "kpi136",
      "kpiName": "Defect Count by Status",
      "maxValue": "",
@@ -3648,7 +3672,7 @@ db.getCollection('kpi_master').insert(
      "isPositiveTrend": true,
      "showTrend": false,
      "isAdditionalFilterSupport": false,
-     "kpiFilter": "dropdown",
+     "kpiFilter": "radioButton",
      "boxType": "chart",
      "calculateMaturity": false
    },
@@ -3673,7 +3697,107 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport":true,
     "hideOverallFilter" : true,
     "calculateMaturity":false
-  }
+  },
+  {
+    "kpiId": "kpi141",
+    "kpiName": "Defect Count by Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+        "definition": "Defect count by Status shows the breakup of all defects within an iteration by Status. The pie chart representation gives the count of defects in each Status"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi142",
+    "kpiName": "Defect Count by RCA",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+         "definition": "Defect count by RCA shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each RCA"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi143",
+    "kpiName": "Defect Count by Assignee",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+         "definition": "Defect Count by Assignee shows the breakup of all defects within an iteration by Assignee. The pie chart representation gives the count of defects by each Assignee"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi144",
+    "kpiName": "Defect Count by Priority",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+           "definition": "Defect Count by Priority shows the breakup of all defects within an iteration by Priority. The pie chart representation gives the count of defects in each Priority"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
   {
     "kpiId": "kpi989",
     "kpiName": "Kpi Maturity",
@@ -3683,5 +3807,30 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
+  },
+  {
+    "kpiId": "kpi140",
+    "kpiName": "Defect Count by Priority",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 7,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Defect count by priority shows the breakup of all defects within an iteration by priority. The pie chart representation gives the count of defects in each priority"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "radioButton",
+    "boxType": "chart",
+    "calculateMaturity": false
   }
 ]);

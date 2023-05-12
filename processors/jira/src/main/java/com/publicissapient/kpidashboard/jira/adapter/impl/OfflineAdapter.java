@@ -18,26 +18,29 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 //@Service
@@ -138,11 +141,6 @@ public class OfflineAdapter implements JiraAdapter {
     public String getUserTimeZone(ProjectConfFieldMapping projectConfig) {
         return "";
     }
-
-    @Override
-    public List<Version> getVersions(String projectKey) {
-        return version;
-    }
     
 	@Override
 	public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
@@ -155,5 +153,15 @@ public class OfflineAdapter implements JiraAdapter {
     public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException{
         return null;
     }
+
+    @Override
+    public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
+        return null;
+    }
+
+	@Override
+	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig) {
+		return null;
+	}
 
 }

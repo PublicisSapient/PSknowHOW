@@ -129,7 +129,7 @@ public class JenkinsServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(5, false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(5,"project",false)).thenReturn("project");
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), "CODE_BUILD_TIME");
 	}
@@ -265,6 +265,7 @@ public class JenkinsServiceRTest {
 		addKpiElement(kpiList, KPICode.CODE_BUILD_TIME.getKpiId(), KPICode.CODE_BUILD_TIME.name(), "Productivity",
 				"mins", source);
 		kpiRequest.setLevel(level);
+		kpiRequest.setLabel("project");
 		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
