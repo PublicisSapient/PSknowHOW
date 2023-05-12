@@ -8,6 +8,7 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
+                    <span *ngIf="sprintsOverlayVisible && trendValueList?.length > 0" class="fa fa-paper-plane cursor-pointer" aria-hidden="true" (click)="prepareData()"></span>
                 </h3>
             </div>
         </div>
@@ -125,3 +126,44 @@
         </div>
     </div>
 </div>
+
+<p-dialog [(visible)]="displaySprintDetailsModal" [modal]="true" [draggable]="true" [resizable]="true">
+    <p-header>{{kpiData.kpiName}}</p-header>
+    <div class="dialog-body p-mb-4">
+        <p-tabView [(activeIndex)]="selectedTabIndex">
+
+            <ng-container *ngFor="let project of projectList;  let i = index;">
+                <p-tabPanel header="{{project}}" [headerStyle]="{'background-color': sprintDetailsList[selectedTabIndex]['color']}">
+
+                    <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" styleClass="p-datatable-gridlines kpi-table">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                <th *ngIf="hasData(col.field)">
+                                    {{ col.header }}
+                                </th>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <td *ngIf="hasData(col.field)">
+                                        {{ rowData[col.field] }}
+                                    </td>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+
+                </p-tabPanel>
+            </ng-container>
+            <ng-template #showNoDataMessage>
+                <h2 class="p-text-center">No Data Available</h2>
+              </ng-template>
+        </p-tabView>
+
+       
+    </div>
+</p-dialog>

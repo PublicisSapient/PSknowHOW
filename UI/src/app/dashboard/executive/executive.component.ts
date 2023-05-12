@@ -110,6 +110,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTrendsObj = {};
     selectedTab= 'iteration';
     noProjects = false;
+    sprintsOverlayVisible : boolean = false
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -233,6 +234,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     click apply and call kpi
      **/
     receiveSharedData($event) {
+        this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
         if(localStorage?.getItem('completeHierarchyData')){
             const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
             if(Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]){

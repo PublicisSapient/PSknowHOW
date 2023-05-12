@@ -98,3 +98,9 @@
 ::ng-deep .kpi-filter .ng-placeholder {
     top: 5px;
 }
+
+:host::ng-deep .p-dialog {
+    width: auto !important;
+    max-width: 70vw !important;
+    min-width: 544px;
+}
