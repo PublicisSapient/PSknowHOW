@@ -82,6 +82,7 @@ public class JiraIssueHistoryDataFactory {
 			mapper.registerModule(new JodaModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			mapper.registerModule(new JavaTimeModule());
 		}
 
 		return mapper;

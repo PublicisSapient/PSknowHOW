@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;

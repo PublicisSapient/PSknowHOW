@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -29,6 +30,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -52,6 +54,10 @@ public class IssuesWithoutStoryLinkImplTest {
     private CacheService cacheService;
     @Mock
     private IssueBacklogRepository issueBacklogRepository;
+    @Mock
+    private JiraIssueRepository jiraIssueRepository;
+    @Mock
+    private KpiHelperService kpiHelperService;
     @Mock
     private TestCaseDetailsRepository testCaseDetailsRepository;
 

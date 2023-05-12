@@ -16,6 +16,7 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,6 +74,9 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
     @Mock
     IssueBacklogRepository issueBacklogRepository;
+
+    @Mock
+    JiraIssueRepository jiraIssueRepository;
 
     @Mock
     CacheService cacheService;
