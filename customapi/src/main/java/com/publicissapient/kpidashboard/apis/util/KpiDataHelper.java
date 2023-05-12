@@ -409,12 +409,12 @@ public final class KpiDataHelper {
 
 	public static List<IterationPotentialDelay> sprintWiseDelayCalculation(
 			List<JiraIssue> inProgressIssuesJiraIssueList, List<JiraIssue> openIssuesJiraIssueList,
-			SprintDetails sprintDetails) {
+			SprintDetails sprintDetails, String devDueDate) {
 		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
 		LocalDate pivotPCD = null;
 		Map<LocalDate, List<JiraIssue>> dueDateWiseInProgressJiraIssue = createDueDateWiseMap(
-				inProgressIssuesJiraIssueList);
-		Map<LocalDate, List<JiraIssue>> dueDateWiseOpenJiraIssue = createDueDateWiseMap(openIssuesJiraIssueList);
+				inProgressIssuesJiraIssueList, devDueDate);
+		Map<LocalDate, List<JiraIssue>> dueDateWiseOpenJiraIssue = createDueDateWiseMap(openIssuesJiraIssueList, devDueDate);
 		if (MapUtils.isNotEmpty(dueDateWiseInProgressJiraIssue)) {
 			for (Map.Entry<LocalDate, List<JiraIssue>> entry : dueDateWiseInProgressJiraIssue.entrySet()) {
 				pivotPCD = getNextPotentialClosedDate(sprintDetails, iterationPotentialDelayList, pivotPCD, entry);
@@ -506,15 +506,21 @@ public final class KpiDataHelper {
 
 	/**
 	 * create dueDateWise sorted Map only for the stories having dueDate
-	 * 
+	 *
 	 * @param arrangeJiraIssueList
+	 * @param devDueDate
 	 * @return
 	 */
-	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
+	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList, String devDueDate) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
 			arrangeJiraIssueList.forEach(jiraIssue -> {
-				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
+				LocalDate dueDate;
+				if(devDueDate.equalsIgnoreCase("devDueDate")){
+					 dueDate = DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
+				} else {
+					 dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
+				}
 				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
 					issue.add(jiraIssue);
 					return issue;
@@ -558,17 +564,26 @@ public final class KpiDataHelper {
 
 	/**
 	 * setting in progress and open issues
+	 *
 	 * @param fieldMapping
 	 * @param allIssues
 	 * @param inProgressIssues
 	 * @param openIssues
+	 * @param date
 	 * @return
 	 */
 	public static void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
-			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
-				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
+											List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues, String date) {
+		List<JiraIssue> jiraIssuesWithDueDate;
+		if(date.equalsIgnoreCase("devDueDate")) {
+			jiraIssuesWithDueDate = allIssues.stream()
+					.filter(issue -> StringUtils.isNotEmpty(issue.getDevDueDate())).collect(Collectors.toList());
+		} else {
+			jiraIssuesWithDueDate = allIssues.stream()
+					.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
+		}
+
+		if (null != fieldMapping.getJiraStatusForInProgress() && CollectionUtils
 				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
 					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
