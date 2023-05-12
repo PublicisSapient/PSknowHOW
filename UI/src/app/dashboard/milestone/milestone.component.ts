@@ -170,7 +170,7 @@ export class MilestoneComponent implements OnInit {
   /** sending requests after grouping the the KPIs according to group Id */
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Release');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });

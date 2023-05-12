@@ -175,7 +175,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
         if (this.kpiJira?.kpiList?.length > 0) {
           this.postJiraKpi(this.kpiJira, 'jira');
         }
@@ -249,7 +249,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
         if (this.kpiZypher?.kpiList?.length > 0) {
           this.postZypherKpi(this.kpiZypher, 'zypher');
         }
