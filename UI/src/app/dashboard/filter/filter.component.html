@@ -31,9 +31,9 @@
                            bindValue="nodeId"
                            [closeOnSelect]="false"
                            (remove)="handleRemove()"
-                           [maxSelectedItems]="6"
+                           [maxSelectedItems]="3"
                            class="trend-line-value p-pb-0" 
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
                            formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" >
                            <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                               <div class="ng-value" *ngFor="let item of items | slice:0:2">
