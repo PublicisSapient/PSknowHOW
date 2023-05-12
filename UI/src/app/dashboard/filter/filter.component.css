@@ -149,6 +149,7 @@
   padding: 7px 15px;
   border-bottom: 1px solid #dedede;
   position: relative;
+  min-height: 40px;
   /* z-index: 1; */
 }
 
@@ -170,7 +171,7 @@
   /* margin-bottom: 12px; */
   cursor: pointer;
   font-size: 14px;
-  padding: 0 0 0 20px;
+  padding: 0 15px 0 20px;
 }
 
 
@@ -724,32 +725,21 @@ ul li.selectedfilter {
   font-size: 0.8rem;
   display: flex;
   line-height: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
 }
 
 .align-marker {
   margin: 0 1rem 0 0;
 }
 
-.align-list-marker {
-  position: absolute;
-  left: 0;
+ul li.selectedfilter .selected-node-label .align-list-marker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right:5px;
 }
 
-ul li.selectedfilter .selected-node-label .align-list-marker::before {
-  content: "\2022";
-  font-size: 26px;
-  color: var(--color-secondary-green);
-  font-weight: bold;
-}
-
-ul li.selectedfilter:first-child .selected-node-label .align-list-marker::before {
-  color: var(--color-secondary-blue);
-}
-
-ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::before {
-  color: var(--color-secondary-yellow);
-}
 
 .marker {
   width: 10px;
@@ -919,7 +909,6 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   border: none;
   font-size: 0.75rem;
   margin-left: 0.5rem;
-  padding-bottom: 0.5rem;
 }
 
 .last-sync-date-block {
@@ -956,9 +945,14 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
   margin-bottom: 0px !important;
 }
 
+:host ::ng-deep .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value{
+  max-width: 120px;
+}
+
 ::ng-deep .ng-select-multiple .ng-value .ng-value-label {
   font-size: 12px !important;
   padding-left: 0px;
+  text-overflow: ellipsis;
 }
 
 ::ng-deep .ng-select-container .ng-placeholder {
@@ -966,7 +960,7 @@ ul li.selectedfilter:nth-child(2) .selected-node-label .align-list-marker::befor
 }
 
 ::ng-deep .ng-select-container.ng-has-value .ng-placeholder {
-  font-size: 22px; 
+  font-size: 1.4rem;
 }
 
 ::ng-deep .abc .ng-select.ng-select-single .ng-select-container.ng-has-value .ng-placeholder {

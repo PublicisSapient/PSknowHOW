@@ -35,6 +35,7 @@ import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { MessageService } from 'primeng/api';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -43,6 +44,7 @@ describe('IterationComponent', () => {
     let httpService: HttpService;
     let helperService: HelperService;
     let excelService: ExcelService;
+    let messageService:MessageService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
@@ -51,6 +53,7 @@ describe('IterationComponent', () => {
     const masterData = require('../../../test/resource/masterData.json');
     const filterData = require('../../../test/resource/filterData.json');
     const filterApplyDataWithScrum = { level: 2, label: 'Account', ids: ['CIM', 'FCA'], startDate: '', endDate: '', selectedMap: { Level1: [], Level2: ['CIM', 'FCA'], Level3: [], Project: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
+    const fakeKpiResponse = require('../../../test/resource/milestoneKpiResponse.json');
     const arrToBeAggregated = [
         {
             "filter1": "Defect",
@@ -151,8 +154,8 @@ describe('IterationComponent', () => {
             "data": [
                 {
                     "label": "Issues at Risk",
-                    "value": '6.00',
-                    "value1": '14.00',
+                    "value": 6,
+                    "value1": 14,
                     "unit": "",
                     "modalValues": [
                         {
@@ -213,7 +216,7 @@ describe('IterationComponent', () => {
                 },
                 {
                     "label": "Story Point",
-                    "value": '19.00',
+                    "value": 19,
                     "unit": "SP",
                     "value1": null,
                     "modalValues": null
@@ -1986,7 +1989,7 @@ describe('IterationComponent', () => {
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
-                , ExcelService, DatePipe
+                , ExcelService, DatePipe,MessageService
 
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2028,7 +2031,7 @@ describe('IterationComponent', () => {
 
     xit('Scrum with filter applied', (done) => {
         const type = 'Scrum';
-        service.setSelectedType(type);
+        service.selectedtype=type;
         // component.selectedtype = 'Scrum';
         console.log('Selected Type ====> ', component.selectedtype);
         service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
@@ -2098,6 +2101,7 @@ describe('IterationComponent', () => {
         component.selectedtype = 'Scrum';
         const spygroupJiraKpi = spyOn(component, 'groupJiraKpi');
         const spycalcBusinessDays = spyOn(component, 'calcBusinessDays');
+        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
         component.receiveSharedData(filterData);
         expect(spycalcBusinessDays).toHaveBeenCalled();
         expect(spygroupJiraKpi).toHaveBeenCalled();
@@ -2338,16 +2342,6 @@ describe('IterationComponent', () => {
         expect(component.noTabAccess).toBeFalse();
     });
 
-    it('should process kpi config data on onTypeRefresh', () => {
-        spyOn(service, 'getSelectedType');
-        spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
-        const spy = spyOn(component, 'processKpiConfigData');
-        service.onTypeRefresh.emit('Scrum');
-        fixture.detectChanges();
-        expect(component.configGlobalData.length).toEqual(1);
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should set the colorObj', () => {
         const x = {
             'Sample One_hierarchyLevelOne': {
@@ -2439,7 +2433,7 @@ describe('IterationComponent', () => {
           order: 3,
           shown: true,
         };
-        const tableValues = {
+        const tableValues =[ {
           ['Issue Description']:
             'Playground server is failing with OutOfMemoryError',
           ['Issue Id']: 'DTS-20225',
@@ -2448,7 +2442,67 @@ describe('IterationComponent', () => {
           ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
           ['Logged Work']: '0 hrs',
           ['Original Estimate']: '0 hrs',
+        }];
+        const response ={
+            "message": "Fetched successfully",
+            "success": true,
+            "data": {
+                "basicProjectConfigId": "64218f1f7b8332581c81169d",
+                "kpiId": "kpi119",
+                "kpiColumnDetails": [
+                    {
+                        "columnName": "Issue Id",
+                        "order": 0,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Description",
+                        "order": 1,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Status",
+                        "order": 2,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue Type",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    },
+                    {
+                        "columnName": "Issue URL",
+                        "order": 3,
+                        "isShown": true,
+                        "isDefault": true
+                    }
+                ]
+            }
         };
+        service.selectedTrends = [
+            {
+                "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+                "nodeName": "aCjCgoFkxh",
+                "path": [
+                    "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+                ],
+                "labelName": "project",
+                "parentId": [
+                    "Level3_hierarchyLevelThree"
+                ],
+                "level": 4,
+                "basicProjectConfigId": "64218f1f7b8332581c81169d"
+            }
+        ];
+        spyOn(httpService,'getkpiColumns').and.returnValue(of(response));
+        // spyOn(component,'generateTableColumnsFilterData');
+        // spyOn(component,'generateExcludeColumnsFilterList');
+        spyOn(component,'generateTableColumnData');
+        component.tableComponent.clear = ()=>{};
         component.handleArrowClick(kpi,"Issue Count",tableValues);
         expect(component.displayModal).toBeTruthy();
     });
@@ -2488,11 +2542,12 @@ describe('IterationComponent', () => {
                 'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
                 'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
                 'Issue Status': 'Open',
-            }]
+            }],
+            kpiId:'kpi19'
         };
 
         const spyGenerateExcel = spyOn(excelService,'generateExcel');
-        component.generateExcel();
+        component.generateExcel('all');
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
 
@@ -2501,7 +2556,7 @@ describe('IterationComponent', () => {
             kpiId: 'kpi124',
             trendValueList: {
                 value: [
-                    {   
+                    {
                         filter1:"Overall",
                         filter2: "Overall",
                         data: [{
@@ -2526,7 +2581,7 @@ describe('IterationComponent', () => {
                         }]
                     }
                 ]
-                
+
             }
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
@@ -2550,19 +2605,18 @@ describe('IterationComponent', () => {
             filter1: 'Overall',
             filter2: 'Overall',
         }]
-        
+
         spyOn(component, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
 
     it('should calculate business days', () => {
-        const today = new Date().toISOString().split('T')[0];
-        const endDate = new Date('2023-02-27T13:36:00.0000000').toISOString().split('T')[0];
-        const spy = spyOn(component, 'calcBusinessDays').and.returnValue(of(0))
-        component.calcBusinessDays(today, endDate);
-        expect(spy).toHaveBeenCalled();
-    });
+        const today = new Date("2023-05-01T00:00:00").toISOString().split('T')[0];
+        const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
+        const days = component.calcBusinessDays(today, endDate);
+        expect(days).toBe(24);
+      });
 
     it('should apply aggregation for groupBarchart', () => {
         const data = [
@@ -2611,4 +2665,283 @@ describe('IterationComponent', () => {
         ];
         expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
     });
-});
+
+    it('should evalvate the aggregated expression',()=>{
+        let aggregatedArr = [
+            {
+                "label": "First Time Pass Stories",
+                "value": "8.00",
+                "value1": null,
+                "modalValues": null
+            },
+            {
+                "label": "Total Stories",
+                "value": "9.00",
+                "modalValues": [],
+                "value1": null
+            },
+            {
+                "label": "First Time Pass Rate %",
+                "value": 88.89,
+                "expressions": [
+                    "First Time Pass Stories",
+                    "Total Stories",
+                    "percentage"
+                ],
+                "value1": null,
+                "modalValues": null
+            }
+        ];
+        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        expect(aggregatedArr[2].value).toEqual(88.89);
+    })
+
+
+    it('should get chartdata for kpi when trendValueList is an object with single filter', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            'filter1': ['Overall']
+        }
+        const res = {
+            "filter1": "Overall",
+            "data": [
+                {
+                    "label": "Issue without estimates",
+                    "value": 21,
+                    "value1": 51,
+                    "unit": "",
+                    "modalValues": []
+                },
+            ]
+        }
+        const combo = [{
+            filter1: 'Overall',
+        }]
+
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
+    })
+
+    it('should get chartdata for kpi when trendValueList is an object and KPI selected filter is blank', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {}
+
+        const combo = [{
+            filter1: 'Overall',
+        }]
+
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
+    })
+
+    it('should get chartdata for kpi when trendValueList is an object but there is no data', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  {
+                value: []
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {}
+        const combo = [{ filter1: 'Overall' }]
+
+        spyOn(component, 'createCombinations').and.returnValue(combo);
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array of filters', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  [
+                { filter1 : 'hold' , value : [{count : 1}] },
+                { filter1 : 'hold' , value : [{count : 1}] },
+                { filter1 : 'in progress' , value : [{count : 2}] },
+                { filter1 : 'in progress' , value : [{count : 2}] }
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1 : ['hold','in progress']
+        }
+
+        const spyObj = spyOn(component, 'applyAggregationLogic');
+        spyOn(component,'getKpiChartType');
+        component.getChartData('kpi124', 0)
+        expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array without filter', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList:  [
+               { label : "l1"}
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1 : ['hold','in progress']
+        }
+
+        const spyObj = spyOn(component, 'applyAggregationLogic');
+        spyOn(component,'getKpiChartType');
+        component.getChartData('kpi124', 0)
+        expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
+    })
+
+    it("should create kpi wise list()",()=>{
+        const fakeKPi = helperService.createKpiWiseId(fakeKpiResponse.response);
+         component.createAllKpiArray(fakeKPi)
+         expect(component.allKpiArray.length).toBeGreaterThan(0);
+       })
+
+       it("should create kpi array when trendvalueList is object",()=>{
+        let kpi = [{
+            kpiId: "kpi141",
+            trendValueList: {
+                value: [
+                    {
+                        filter1:"Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                            "modalValues": [
+                                {
+                                    "Issue Id": "DTS-22685",
+                                    "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                                    "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                                }
+                            ]
+                        }]
+                    }
+                ]
+
+            },
+            filters : ['f1',"f2"]
+        },]
+        const fakeKPi = helperService.createKpiWiseId(kpi);
+         component.createAllKpiArray(fakeKPi)
+         expect(component.allKpiArray.length).toBeGreaterThan(0);
+       })
+
+       it('should filter table columns',()=>{
+        service.selectedTrends = [
+            {
+                "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
+                "nodeName": "aCjCgoFkxh",
+                "path": [
+                    "Level3_hierarchyLevelThree###Level2_hierarchyLevelTwo###Level1_hierarchyLevelOne"
+                ],
+                "labelName": "project",
+                "parentId": [
+                    "Level3_hierarchyLevelThree"
+                ],
+                "level": 4,
+                "basicProjectConfigId": "64218f1f7b8332581c81169d"
+            }
+        ];
+
+        component.modalDetails['tableHeadings']=[
+            "Issue Id",
+            "Issue Description",
+            "First Time Pass",
+            "Linked Defect",
+            "Defect Priority"
+        ];
+
+        component.selectedColumns=[
+            "Issue Id",
+            "Issue Description",
+            "Linked Defect",
+            "Defect Priority"
+        ];
+
+        component.tableColumns=[
+            {
+                "columnName": "Issue Id",
+                "order": 0,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Issue Description",
+                "order": 1,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "First Time Pass",
+                "order": 2,
+                "isShown": false,
+                "isDefault": false
+            },
+            {
+                "columnName": "Linked Defect",
+                "order": 3,
+                "isShown": true,
+                "isDefault": false
+            },
+            {
+                "columnName": "Defect Priority",
+                "order": 4,
+                "isShown": true,
+                "isDefault": false
+            }
+        ];
+
+        const spypostKpiColumnConfig = spyOn(httpService,'postkpiColumnsConfig').and.returnValue(of({}));
+        component.applyColumnFilter();
+        expect(spypostKpiColumnConfig).toHaveBeenCalled();
+    });
+    });
+

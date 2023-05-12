@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,7 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -401,10 +400,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			return false;
 		} else {
 
-			List<JiraHistoryChangeLog> statusUpdationLogs = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
+			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLogs.stream()
+			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
 					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
 					.orElse(null);
 
@@ -414,7 +413,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
 				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLogs.stream()
+				return statusUpdationLog.stream()
 						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
 								.isAfter(latestClosedStatusTime))
 						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));

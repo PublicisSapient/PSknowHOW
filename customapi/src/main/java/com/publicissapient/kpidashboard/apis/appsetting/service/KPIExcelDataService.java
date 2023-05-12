@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -115,6 +116,9 @@ public class KPIExcelDataService {
 
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
+
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * Processes the request for fetching the source wise KPI data. It leverages
@@ -621,9 +625,8 @@ public class KPIExcelDataService {
 			}
 
 			List<KpiElement> kpiElementList = new ArrayList<>();
-
+			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
 			if (null == kpiID) {
-				List<KpiMaster> masterList = (List<KpiMaster>) kpiMasterRepository.findAll();
 				List<String> masterKpiIdList = masterList.stream().map(KpiMaster::getKpiId)
 						.collect(Collectors.toList());
 				Stream.of(KPICode.values()).filter(kpi -> kpi != KPICode.INVALID
@@ -634,6 +637,10 @@ public class KPIExcelDataService {
 							kpiElement.setKpiId(kpi.getKpiId());
 							kpiElement.setKpiName(kpi.name());
 							kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
+							kpiElement.setKpiCategory(masterList.stream()
+									.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
+									.map(KpiMaster::getKpiCategory)
+									.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
 
 							kpiElementList.add(kpiElement);
 						});
@@ -645,6 +652,10 @@ public class KPIExcelDataService {
 				kpiElement.setKpiId(kpi.getKpiId());
 				kpiElement.setKpiName(kpi.name());
 				kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
+				kpiElement.setKpiCategory(masterList.stream()
+						.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
+						.map(KpiMaster::getKpiCategory)
+						.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
 
 				kpiElementList.add(kpiElement);
 

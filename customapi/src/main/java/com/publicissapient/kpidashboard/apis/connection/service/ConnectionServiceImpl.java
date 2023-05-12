@@ -221,7 +221,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 				connectionRepository.save(conn);
 				final ModelMapper modelMapper = new ModelMapper();
 				final ConnectionDTO connectionDTO = modelMapper.map(conn, ConnectionDTO.class);
-				connectionDTO.setConnectionUser(connectionUser);
+				connectionDTO.setConnectionUsers(connectionUser);
 				removeSecureFields(connectionDTO);
 
 				return new ServiceResponse(true, "created and saved new connection", connectionDTO);
@@ -366,7 +366,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		final ConnectionDTO connectionDTO = modelMapper.map(existingConnection, ConnectionDTO.class);
 		removeSecureFields(connectionDTO);
 		if (CollectionUtils.isNotEmpty(existingConnection.getConnectionUsers())) {
-			connectionDTO.setConnectionUser(existingConnection.getConnectionUsers());
+			connectionDTO.setConnectionUsers(existingConnection.getConnectionUsers());
 		}
 		return new ServiceResponse(true, "modified connection " + existingConnection.getConnectionName(),
 				connectionDTO);
@@ -500,6 +500,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
 		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
 		existingConnection.setBearerToken(connection.isBearerToken());
+		existingConnection.setJaasKrbAuth(connection.isJaasKrbAuth());
+		existingConnection.setJaasConfigFilePath(connection.getJaasConfigFilePath());
+		existingConnection.setJaasUser(connection.getJaasUser());
+		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
+		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
 	}
 
 	private void saveConnection(Connection conn) {
@@ -558,6 +563,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 	}
 
+	private void setEncryptedPatOAuthTokenForDb(Connection conn) {
+		String patOAuthTokenFromClient = conn.getPatOAuthToken();
+		if (StringUtils.isEmpty(patOAuthTokenFromClient)) {
+			conn.setPatOAuthToken(conn.getType() == null ? "" : conn.getPatOAuthToken());
+		} else {
+			conn.setPatOAuthToken(encryptStringForDb(patOAuthTokenFromClient));
+		}
+	}
+
 	private String encryptStringForDbZephyr(String plainTextAccessToken) {
 		String encryptedString = aesEncryptionService.encrypt(plainTextAccessToken,
 				customApiConfig.getAesEncryptionKey());
@@ -596,6 +610,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String typeName = conn.getType();
 		switch (typeName) {
 		case ProcessorConstants.JIRA:
+			setEncryptedPasswordFieldForDb(conn);
+			if (conn.isBearerToken()) {
+				setEncryptedPatOAuthTokenForDb(conn);
+			}
+			break;
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:

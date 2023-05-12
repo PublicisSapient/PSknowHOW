@@ -21,7 +21,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
-import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
@@ -32,8 +31,9 @@ import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @Slf4j
 public class HandleJiraHistory {
 

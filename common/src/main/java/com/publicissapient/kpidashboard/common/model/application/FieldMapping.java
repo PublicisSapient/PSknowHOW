@@ -79,6 +79,8 @@ public class FieldMapping extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
+	// Added for Defect Reopen Rate KPI.
+	private List<String> jiraDefectClosedStatus;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
@@ -198,6 +200,15 @@ public class FieldMapping extends BasicModel {
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
+
+	// For DTS_21154 - field for Team refinement status
+	private List<String> jiraRejectedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraAcceptedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraReadyForRefinement;
 
 	/**
 	 * Get jira issue type names string [ ].

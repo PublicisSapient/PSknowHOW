@@ -20,9 +20,10 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +33,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Minutes;
+import org.joda.time.Hours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,27 +62,11 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
 @Component
 public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -95,20 +80,10 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private static final String BLOCKED_TIME = "Blocked Time";
 	private static final String WAITING_TIME = "Waiting Time";
 	private static final String WASTAGE = "Wastage";
-	private static final String HOURS = "Hours";
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private SprintRepository sprintRepository;
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -142,18 +117,13 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 		if (null != leafNode) {
 			LOGGER.info("Wastage -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(totalIssues,
-							basicProjectConfigId);
-					List<JiraIssueCustomHistory> issueHistoryList = jiraIssueCustomHistoryRepository
-							.findByStoryIDInAndBasicProjectConfigIdIn(totalIssues,
-									Collections.singletonList(basicProjectConfigId));
+					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -197,7 +167,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
-
+			//Creating map of modal Objects
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -240,16 +211,19 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 								blockedTime += jiraIssueBlockedTime;
 								overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
 							}
-							populateIterationDataForWastage(overAllmodalValues, modalValues, jiraIssue, jiraIssueBlockedTime,
-									jiraIssueWaitedTime, fieldMapping);
+							IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
+							jiraIssueModalObject.setBlockedTime(CommonUtils.convertIntoDays(jiraIssueBlockedTime));
+							jiraIssueModalObject.setWaitTime(CommonUtils.convertIntoDays(jiraIssueWaitedTime));
+							jiraIssueModalObject.setWastage(CommonUtils.convertIntoDays(jiraIssueBlockedTime+jiraIssueWaitedTime));
+							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData wastage = new IterationKpiData(WASTAGE,
-								Double.valueOf((waitedTime + blockedTime)), null, null, HOURS, modalValues);
+								Double.valueOf((waitedTime + blockedTime)), null, null, CommonConstant.DAY, modalValues);
 						IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
-								null, HOURS, null);
+								null, CommonConstant.DAY, null);
 						IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null,
-								null, HOURS, null);
+								null, CommonConstant.DAY, null);
 						data.add(wastage);
 						data.add(blocked);
 						data.add(waited);
@@ -259,11 +233,11 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			List<IterationKpiData> data = new ArrayList<>();
 			overAllWastedTime.set(0, overAllWaitedTime.get(0) + overAllBlockedTime.get(0));
 			IterationKpiData overAllWastage = new IterationKpiData(WASTAGE, Double.valueOf(overAllWastedTime.get(0)),
-					null, null, HOURS, overAllmodalValues);
+					null, null, CommonConstant.DAY, overAllmodalValues);
 			IterationKpiData overAllBlocked = new IterationKpiData(BLOCKED_TIME,
-					Double.valueOf(overAllBlockedTime.get(0)), null, null, HOURS, null);
+					Double.valueOf(overAllBlockedTime.get(0)), null, null, CommonConstant.DAY, null);
 			IterationKpiData overAllWaited = new IterationKpiData(WAITING_TIME,
-					Double.valueOf(overAllWaitedTime.get(0)), null, null, HOURS, null);
+					Double.valueOf(overAllWaitedTime.get(0)), null, null, CommonConstant.DAY, null);
 			data.add(overAllWastage);
 			data.add(overAllBlocked);
 			data.add(overAllWaited);
@@ -312,115 +286,130 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList) {
-		List<JiraHistoryChangeLog> statusUpdationLogs = new ArrayList<>();
+		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+		List<Integer> resultList = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
-			statusUpdationLogs = issueCustomHistory.getStatusUpdationLog();
+			statusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		}
 		int blockedTime = 0;
 		int waitedTime = 0;
-		for (int i = 0; i < statusUpdationLogs.size(); i++) {
-			JiraHistoryChangeLog entry = statusUpdationLogs.get(i);
+		for (int i = 0; i < statusUpdationLog.size(); i++) {
+			JiraHistoryChangeLog entry = statusUpdationLog.get(i);
 
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLogs, i,
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog, i,
 					sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLogs, i,
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLog, i,
 					sprintDetail, waitedTime);
 		}
-		return Arrays.asList(waitedTime, blockedTime);
+		resultList.add(calculateBlockandwaitTimeinDays(waitedTime));
+		resultList.add(calculateBlockandwaitTimeinDays(blockedTime));
+		return resultList;
 	}
+
+	private int calculateBlockandwaitTimeinDays(int timeInHours) {
+		int timeInMin = (timeInHours / 24) * 8 * 60;
+		int remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
+		} else {
+			timeInMin = timeInMin + remainingTimeInMin;
+		}
+		return timeInMin;
+	}
+
 
 	/**
 	 * Calculate the wait and block time w.r.t fieldMappingStatus
-	 * 
+	 *
 	 * @param entry
 	 * @param fieldMappingStatus
-	 * @param statusUpdationLogs
+	 * @param statusUpdationLog
 	 * @param index
 	 * @param sprintDetails
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
-			List<String> fieldMappingStatus, List<JiraHistoryChangeLog> statusUpdationLogs, int index,
-			SprintDetails sprintDetails, int time) {
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry, List<String> fieldMappingStatus,
+			List<JiraHistoryChangeLog> statusUpdationLog, int index, SprintDetails sprintDetails, int time) {
 		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
 		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
-			long minutes = 0;
-			// Checking for indexOutOfBound in storySprintDetails list
-			if (statusUpdationLogs.size() == index + 1) {
-				minutes = minutesForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
+			long hours = 0;
+			// Checking for indexOutOfBound in statusUpdationLog list
+			if (statusUpdationLog.size() == index + 1) {
+				hours = hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
 						entryActivityDate);
 			} else {
-				// Find fetch the next element of storySprintDetails
-				JiraHistoryChangeLog nextEntry = statusUpdationLogs.get(index + 1);
+				// Find fetch the next element of statusUpdationLog
+				JiraHistoryChangeLog nextEntry = statusUpdationLog.get(index + 1);
 				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
 				// Checking if both alternate element are inside the sprint start and end date
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					minutes = minutesForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
 							nextEntryActivityDate);
 				}
 			}
-			if (minutes != 0)
-				time += minutes;
+			if (hours != 0)
+				time += hours;
 		}
 		return time;
 	}
 
 	// Calculate the time for entries which lies between sprint start and end date
 	// or one of them is inside sprint start end date
-	private long minutesForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
-												 LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
-		long minutes;
+	private long hoursForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
+			LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+		long hours;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, nextEntryActivityDate)
-										- minusMinutesInWeekEndDays(entryActivityDate, nextEntryActivityDate));
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, nextEntryActivityDate)
-						- minusMinutesInWeekEndDays(sprintStartDate, nextEntryActivityDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				minutes =  ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
-						- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			} else {
-				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
-						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			}
 		}
-		return minutes;
+		return hours;
 	}
 
-	// Calculate the time for last entry of storySprintDetails
-	private long minutesForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
+	// Calculate the time for last entry of statusUpdationLog
+	private long hoursForLastEntryOfStatusUpdationLog(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
 			LocalDateTime sprintEndDate, LocalDateTime entryActivityDate) {
-		long minutes = 0;
+		long hours = 0;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, LocalDateTime.now())
-												- minusMinutesInWeekEndDays(entryActivityDate, LocalDateTime.now()));
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, LocalDateTime.now())
+							- minusHoursOfWeekEndDays(entryActivityDate, LocalDateTime.now()));
 				} else {
-					minutes =  (ChronoUnit.MINUTES.between(entryActivityDate, sprintEndDate)
-												- minusMinutesInWeekEndDays(entryActivityDate, sprintEndDate));
+
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
+							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
 				LocalDateTime currDate = LocalDateTime.now();
-				minutes =  (ChronoUnit.MINUTES.between(sprintStartDate, currDate)
-										- minusMinutesInWeekEndDays(sprintStartDate, currDate));
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, currDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, currDate));
 			} else {
-				minutes =  ChronoUnit.MINUTES.between(sprintStartDate, sprintEndDate)
-						- minusMinutesInWeekEndDays(sprintStartDate, sprintEndDate);
+				hours = ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
-		return minutes;
+		return hours;
 	}
 
 	public boolean isWeekEnd(LocalDateTime localDateTime) {
@@ -439,56 +428,13 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return countWeekEnd;
 	}
 
-	public int minusMinutesInWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
+	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
 		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
 		if (countOfWeekEndDays != 0) {
-			return countOfWeekEndDays * 24 * 60;
+			return countOfWeekEndDays * 24;
 		} else {
 			return 0;
 		}
-	}
-
-	// used for populating the Excel file
-	public void populateIterationDataForWastage(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, int blockedTime, int waitTime,
-			FieldMapping fieldMapping) {
-		int wastageTime = blockedTime + waitTime;
-		int originalEstimate = 0;
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setIssueStatus(jiraIssue.getStatus());
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		KPIExcelUtility.populateAssignee(jiraIssue, iterationKpiModalValue);
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			iterationKpiModalValue.setIssueSize(jiraIssue.getStoryPoints().toString());
-		}
-		if (null != jiraIssue.getOriginalEstimateMinutes()
-				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			originalEstimate = jiraIssue.getOriginalEstimateMinutes() / 60;
-			iterationKpiModalValue.setIssueSize(originalEstimate + " hrs");
-		}
-		if ((blockedTime != 0)) {
-			iterationKpiModalValue.setBlockedTime(String.valueOf(blockedTime / 60 + "h " + blockedTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setBlockedTime(blockedTime + " h");
-		}
-		if ((waitTime != 0)) {
-			iterationKpiModalValue.setWaitTime(String.valueOf(waitTime / 60 + "h " + waitTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setWaitTime(waitTime + " h");
-		}
-		if ((wastageTime != 0)) {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime / 60 + "h " + wastageTime % 60 + " m"));
-		} else {
-			iterationKpiModalValue.setWastage(String.valueOf(wastageTime + " h"));
-		}
-		modalValues.add(iterationKpiModalValue);
-		overAllmodalValues.add(iterationKpiModalValue);
 	}
 
 }

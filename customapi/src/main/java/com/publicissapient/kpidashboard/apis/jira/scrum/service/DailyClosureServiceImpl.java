@@ -18,21 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -40,19 +25,48 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.*;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 /**
  * Daily Closures KPI gives a graphical representation of no. of issues planned to be closed each
@@ -74,15 +88,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	public static final String ISSUES_CLOSED = "Issues closed";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String DATE = "date";
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
-
-	@Autowired
-	private SprintRepository sprintRepository;
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -134,17 +140,14 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Daily Closure -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> totalIssueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(totalIssues, basicProjectConfigId);
+					List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), totalIssueList);
@@ -152,15 +155,13 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 					resultListMap.put(SPRINT, sprintDetails);
 				}
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					List<JiraIssue> completedIssueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
+					List<JiraIssue> completedIssueList = getJiraIssuesFromBaseClass(completedIssues);
 					Set<JiraIssue> filtersCompletedIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
-					List<JiraIssueCustomHistory> completedJiraIssuesHistory = jiraIssueHistoryRepository
-							.findByStoryIDInAndBasicProjectConfigIdIn(completedIssues,
-									Arrays.asList(basicProjectConfigId));
+					List<JiraIssueCustomHistory> completedJiraIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(completedIssues);
 					Map<String, String> activityMap = getClosedDate(completedJiraIssuesHistory, sprintDetails);
+					resultListMap.put(SPRINT, sprintDetails);
 					filtersCompletedIssuesList.forEach(issue -> issue
 							.setUpdateDate(activityMap.getOrDefault(issue.getNumber(), issue.getUpdateDate())));
 					resultListMap.put(COMPLETED_ISSUE, new ArrayList<>(filtersCompletedIssuesList));
@@ -173,24 +174,30 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private Map<String, String> getClosedDate(List<JiraIssueCustomHistory> completedJiraIssuesHistory,
 			SprintDetails sprintDetails) {
 		Map<String, String> closedDateMap = new HashMap<>();
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		// Creating the set of completed status
+		Set<String> closedStatus = sprintDetails.getCompletedIssues().stream().map(SprintIssue::getStatus)
+				.collect(Collectors.toSet());
 		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
+			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			SprintIssue sprintIssue = sprintDetails.getCompletedIssues().stream()
-					.filter(s -> s.getNumber().equals(jiraIssueCustomHistory.getStoryID())).findFirst().get();
-			if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
-				for (int i = statusUpdationLog.size() - 1; i >= 0; i--) {
-					if (statusUpdationLog.get(i).getChangedTo().equalsIgnoreCase(sprintIssue.getStatus())) {
-						DateTime dateValue = DateTime.parse(statusUpdationLog.get(i).getUpdatedOn().toString());
-						DateTime startDateValue = DateTime.parse(sprintDetails.getStartDate());
-						DateTime endDateValue = DateTime.parse(sprintDetails.getEndDate());
-						if (dateValue.isAfter(startDateValue) && dateValue.isBefore(endDateValue)) {
-							closedDateMap.put(jiraIssueCustomHistory.getStoryID(),
-									statusUpdationLog.get(i).getUpdatedOn().toString());
-							break;
+			for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
+				if (closedStatus.contains(jiraHistoryChangeLog.getChangedTo())) {
+					LocalDate activityDate = LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+					if (DateUtil.isWithinDateRange(activityDate, sprintStartDate, sprintEndDate)) {
+						if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
+							closedStatusDateMap.clear();
 						}
+						closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo(), activityDate);
 					}
 				}
 			}
+			// Getting the min date of closed status.
+			String endDate = closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
+					.map(LocalDate::toString).orElse(null);
+			closedDateMap.put(jiraIssueCustomHistory.getStoryID(), endDate);
 		});
 		return closedDateMap;
 	}
@@ -241,8 +248,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			if (CollectionUtils.isNotEmpty(allCompletedIssue)) {
 				typeWiseAndCompletedDateMap = allCompletedIssue.stream()
 						.filter(f -> StringUtils.isNotBlank(f.getUpdateDate()))
-						.collect(Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(f -> LocalDate.parse
-								(f.getUpdateDate().split("\\.")[0], DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT)).toString())));
+						.collect(Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getUpdateDate)));
 			}
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
 					allIssues, fieldMapping);

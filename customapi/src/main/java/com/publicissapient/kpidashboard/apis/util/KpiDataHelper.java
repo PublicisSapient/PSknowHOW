@@ -34,8 +34,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -46,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -60,6 +59,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The class contains methods for helping kpi to prepare data
@@ -301,6 +302,15 @@ public final class KpiDataHelper {
 		LocalDate endDate = LocalDate.now();
 		YearMonth month = YearMonth.from(endDate.minusMonths(dataPoint));
 		LocalDate startDate = month.atDay(1);
+		cdr.setStartDate(startDate);
+		cdr.setEndDate(endDate);
+		return cdr;
+	}
+
+	public static CustomDateRange getDayForPastDataHistory(int pastDayCount) {
+		CustomDateRange cdr = new CustomDateRange();
+		LocalDate endDate = LocalDate.now().plusDays(1);
+		LocalDate startDate = endDate.minusDays(pastDayCount);
 		cdr.setStartDate(startDate);
 		cdr.setEndDate(endDate);
 		return cdr;
@@ -569,6 +579,73 @@ public final class KpiDataHelper {
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
+	}
+
+	/**
+	 *  To collect originalEstimate
+	 * @param overAllOriginalEstimate
+	 * @param originalEstimate
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getOriginalEstimate(List<Double> overAllOriginalEstimate, Double originalEstimate,
+									   JiraIssue jiraIssue) {
+		if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
+			overAllOriginalEstimate.set(0, overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
+		}
+		return originalEstimate;
+	}
+
+	/**
+	 *  To collect StoryPoint
+	 * @param overAllStoryPoints
+	 * @param storyPoint
+	 * @param jiraIssue
+	 * @return
+	 */
+	public static Double getStoryPoint(List<Double> overAllStoryPoints, Double storyPoint, JiraIssue jiraIssue) {
+		if (null != jiraIssue.getStoryPoints()) {
+			storyPoint = storyPoint + jiraIssue.getStoryPoints();
+			overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+		}
+		return storyPoint;
+	}
+
+	/**
+	 *  Calculating max delay of each assignee based on max marker
+	 * @param jiraIssue
+	 * @param issueWiseDelay
+	 * @param potentialDelay
+	 * @param overallPotentialDelay
+	 * @return
+	 */
+	public static int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay, int potentialDelay,
+						   List<Integer> overallPotentialDelay) {
+		int finalDelay = 0;
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()
+		) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			finalDelay = potentialDelay + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
+			overallPotentialDelay.set(0,
+					overallPotentialDelay.get(0) + getDelayInMinutes(iterationPotentialDelay.getPotentialDelay()));
+		} else {
+			finalDelay = potentialDelay + finalDelay;
+		}
+		return finalDelay;
+	}
+	public static int getDelayInMinutes(int delay) {
+		return delay*60*8;
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 * @param jiraIssueList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
 }

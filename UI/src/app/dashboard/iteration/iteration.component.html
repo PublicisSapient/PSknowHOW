@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div *ngIf="!noKpis else noKpiTemplate">
   <div id="message"></div>
   <ng-container *ngIf="!noProjects else noProjectsTemplate">
@@ -173,47 +173,99 @@
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
-    {{modalDetails['header']}}
-    <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
-      class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
+    <div>
+      {{modalDetails['header']}}
+      <div class="export-button">
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save"
+          class="p-p-2 p-mr-2" (click)="saveTableColumnOrder()"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
+            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+      </div>
+    </div>
+   
+    <div *ngIf="markerInfo?.length > 0" class="p-d-flex  p-flex-wrap">
+      <span *ngFor="let marker of markerInfo" class="p-m-2 markerInfo"> <i class='fas fa-square' [ngStyle]="{'color': marker?.color}"></i> {{marker?.info}}</span>
+    </div>
   </p-header>
   <div class="dialog-body p-mb-4">
-    <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img">
-      <ng-template pTemplate="header">
+    <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [globalFilterFields]="modalDetails['tableHeadings']">
+      <ng-template pTemplate="caption">
+        <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
+        selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'" optionDisabled="isDefault" [style]="{minWidth: '220px', 'border':'none'}" placeholder="Choose Columns">
+        <ng-template pTemplate="selectedItems">
+          <p-button styleClass="p-button-outlined column-btn">Column &nbsp; <img src="../../../assets/img/column-triple-svgrepo-com.svg" alt="Column filter icon"/></p-button>
+        </ng-template>
+      <ng-template pTemplate="footer">
+        <hr>
+        <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn" (click)="applyColumnFilter()"></p-button>
+      </ng-template>
+      
+      </p-multiSelect>
+    </ng-template>
+      <ng-template pTemplate="header" let-columns>
         <tr>
-          <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item?.kpiColumn ? item?.kpiColumn : item}} <span
-              *ngIf="item?.columnInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true" pTooltip='<div class="inner-content">
-                {{item.columnInfo}}
-            </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span></th>
+          <th *ngFor="let item of tableHeaders;let i = index;" 
+          [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn>
+            <div class="table-head">
+              <span [ngStyle]="{'width':'max-content','margin-right': '2rem'}">{{item}}</span>
+              <div class="p-d-flex">
+                <p-columnFilter *ngIf="!excludeColumnFilter.includes(item)"
+                  [field]="item" matchMode="in" [showMenu]="false" [showMatchModes]="false"
+                  [showOperator]="false" [showAddButton]="false" [showClearButton]="false" [showApplyButton]="false"
+                  [style]="{'margin-top':'2px'}">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                    <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"  (onPanelShow)="onFilterClick(item)" (onPanelHide)="onFilterBlur(item)"
+                      [options]="this.tableColumnData[item]"
+                      [placeholder]="'Select '+ item" (onChange)="filter($event.value)"
+                      [optionValue]="'value'" [optionLabel]="'name'"
+                      [ngModel]="tableColumnForm[item]">
+                      <ng-template pTemplate="selectedItems">
+                        <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                      </ng-template>
+                    </p-multiSelect>
+                  </ng-template>
+                </p-columnFilter>
+                <p-sortIcon [pSortableColumn]="item"
+                  [field]="item"></p-sortIcon>
+              </div>
+            </div>
+          </th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-x>
-        <tr>
+      <ng-template pTemplate="body" let-x let-columns="columns" let-index="rowIndex">
+        <tr [pReorderableRow]="index">
 
-          <td class="font-small p-p-0 first-cell">
-            
-            <ng-container>
+
+          <ng-container *ngFor="let item of tableHeaders; let i = index;">
+          <ng-container *ngIf="item == 'Issue Id'">
+            <td class="font-small p-p-0 first-cell text-center">
               <div class="cell-indicator">
                 <div class="color-indicator" [ngStyle]="{'background-color': x['marker'] ? x['marker'] : ''}"></div>
-                <a [href]="x['Issue URL']" class="text-blue p-ml-1"  target="_blank">{{x['Issue Id']}}</a>
+                <a [href]="x['Issue URL']" class="text-blue p-ml-1" target="_blank">{{x['Issue Id']}}</a>
               </div>
-            </ng-container>
-          </td>
-          <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
-            <ng-container *ngIf="i!=0">
+            </td>
+          </ng-container>
+            <ng-container *ngIf="item !== 'Issue Id'">
 
               <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
-                  <a [href]="k.value" class="p-d-block text-blue" target="_blank">{{k.key}}</a>
+                  <a [href]="k.value" class="p-d-block text-blue" target="_blank" *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
+                  <ng-template #showText>{{k.value}}<br></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td>{{item?.kpiColumn ? x[item.kpiColumn] : x[item]}}</td>
+                <td>{{x[item]}}</td>
               </ng-template>
             </ng-container>
 
           </ng-container>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="tableHeaders.length">No data found.</td>
         </tr>
       </ng-template>
     </p-table>

@@ -295,6 +295,13 @@ public enum KPICode {
 	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
 
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
@@ -363,7 +370,23 @@ public enum KPICode {
 	/**
 	 * Wastage
 	 */
-	WASTAGE("kpi131", KPISource.JIRA.name());
+	WASTAGE("kpi131", KPISource.JIRA.name()),
+
+	/**
+	 * First time pass rate
+	 */
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135", KPISource.JIRA.name()),
+
+	/**
+	 * Defect Reopen Rate
+	 */
+	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name()),
+
+
+	/**
+	 * Refinement Rejection Rate
+	 */
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
 
 	// @formatter:on
 

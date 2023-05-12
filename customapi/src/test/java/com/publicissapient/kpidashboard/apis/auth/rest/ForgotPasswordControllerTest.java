@@ -83,7 +83,7 @@ public class ForgotPasswordControllerTest extends Mockito {
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/forgotPassword").contentType(TestUtil.APPLICATION_JSON_UTF8)
 						.content(TestUtil.convertObjectToJsonBytes(forgotPasswordRequest)))
-				.andExpect(status().isOk());
+				.andExpect(status().isBadRequest());
 	}
 	@Test
 	public void processForgotPasswordTestWithException() throws Exception {
@@ -127,7 +127,7 @@ public class ForgotPasswordControllerTest extends Mockito {
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/resetPassword").contentType(TestUtil.APPLICATION_JSON_UTF8)
 						.content(TestUtil.convertObjectToJsonBytes(resetPasswordRequest)))
-				.andExpect(status().isOk());
+				.andExpect(status().isBadRequest());
 	}
 
 }

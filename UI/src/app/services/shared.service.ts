@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { OnInit, EventEmitter, Injectable, Output } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 /*************
@@ -30,17 +30,14 @@ user click on tab or type(scrum , kanban).
 
 
 @Injectable()
-export class SharedService implements OnInit {
+export class SharedService {
   public passDataToDashboard;
   public passAllProjectsData;
   public passEventToNav;
   public allProjectsData;
   public sharedObject;
-  public onTabRefresh;
-  public onTypeRefresh;
   public globalDashConfigData;
   public selectedTab;
-  public selectedTabObs: any = new Subject();
   public selectedtype;
   public title = <any>{};
   public logoImage;
@@ -56,8 +53,6 @@ export class SharedService implements OnInit {
   public engineeringMaturityExcelData;
   public suggestionsData: any = [];
   private passServerRole= new BehaviorSubject<boolean>(false);
-  public activateKanban;
-  public selectedTypeObs = new BehaviorSubject('scrum');
   public boardId = 1;
   public isDownloadExcel;
 
@@ -73,27 +68,27 @@ export class SharedService implements OnInit {
   mapColorToProjectObs = this.mapColorToProject.asObservable();
   selectedFilterOption = new BehaviorSubject<any>({});
   selectedFilterOptionObs = this.selectedFilterOption.asObservable();
-  noSprints = new Subject<any>();
+  noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
-  noProjects = new Subject<any>();
+  noProjects = new BehaviorSubject<boolean>(false);
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<boolean>(true);
   showTableViewObs = this.showTableView.asObservable();
   setNoData = new Subject<boolean>();
   clickedItem = new Subject<any>();
   public xLabelValue: any;
-  selectedLevel:object={};
-  selectedTrends:Array<object> = [];
+  selectedLevel = {};
+  selectedTrends = [];
   public isSideNav;
+  public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  noRelease = new BehaviorSubject<any>(false);
+  noReleaseObs = this.noRelease.asObservable();
   constructor() {
     this.passDataToDashboard = new EventEmitter();
-    this.onTabRefresh = new EventEmitter();
-    this.onTypeRefresh = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.activateKanban = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
   }
@@ -102,30 +97,19 @@ export class SharedService implements OnInit {
   ngOnInit() {
   }
 
-  // calls when tab is selected
-  selectTab(selectedTab) {
-    this.onTabRefresh.emit(selectedTab);
-  }
-  // setter for tab i.e executive etc
-  setSelectedTab(selectedTab, boardId) {
+  setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
+    this.selectedtype = selectedType;
     this.selectedTab = selectedTab;
-    this.boardId = boardId;
-    this.selectedTabObs.next(selectedTab);
+    this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
   }
 
-  getSelectBoardId() {
-    return this.boardId;
+  setSelectedTab(selectedTab) {
+    this.selectedTab = selectedTab;
   }
+
   // getter for type i.e scrum or kanban
   getSelectedTab() {
     return this.selectedTab;
-  }
-  // setter for tab i.e Scrum/Kanban
-  setSelectedType(selectedtype) {
-    this.selectedtype = selectedtype;
-    this.onTypeRefresh.emit(selectedtype);
-    this.activateKanban.emit(selectedtype === 'Kanban' ? true : false);
-    this.selectedTypeObs.next(selectedtype.toLowerCase());
   }
 
   // getter for tab i.e Scrum/Kanban
@@ -213,7 +197,10 @@ export class SharedService implements OnInit {
     this.sharedObject.selectedTab = selectedTab;
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
-    this.passDataToDashboard.emit(this.sharedObject);
+    //emit once navigation complete
+    setTimeout(()=>{
+      this.passDataToDashboard.emit(this.sharedObject);
+    },0);
   }
 
   /** KnowHOW Lite */
@@ -291,7 +278,16 @@ export class SharedService implements OnInit {
   setShowTableView(val){
     this.showTableView.next(val);
   }
-  setGlobalDownload(val){
+
+  clearAllCookies() {
+    console.log('clear all cookie Called');
+    const cookies = document.cookie.split(';');
+    // set past expiry to all cookies
+    for (const cookie of cookies) {
+      document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
+    }
+  }
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
   setSelectedLevel(val){
@@ -301,7 +297,7 @@ export class SharedService implements OnInit {
     return this.selectedLevel;
   }
   setSelectedTrends(values){
-    this.selectedTrends = [...values];
+    this.selectedTrends = values;
   }
   getSelectedTrends(){
     return this.selectedTrends;
@@ -311,6 +307,10 @@ export class SharedService implements OnInit {
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
+  }
+
+  setNoRelease(value){
+    this.noRelease.next(value)
   }
 }
 

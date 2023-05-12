@@ -19,10 +19,13 @@
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +75,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String END_TIME = "T23:59:59.0000000";
 	private static final String JIRA_ISSUE_STATUS = "jiraStatus";
 	private static final String NIN = "nin";
+	private static final String JIRA_UPDATED_DATE = "updateDate";
+	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -240,6 +245,25 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssue.class);
 
+	}
+
+	@Override
+	public List<JiraIssue> findUnassignedIssues(String startDate, String endDate,
+			Map<String, List<String>> mapOfFilters) {
+		Criteria criteria = new Criteria();
+		Criteria orCriteria = new Criteria();
+		List<Criteria> filter = new ArrayList<>();
+		for (String val : mapOfFilters.keySet()) {
+			Criteria expression = new Criteria();
+			expression.and(val).is(mapOfFilters.get(val));
+			filter.add(expression);
+		}
+		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
+		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
+		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
+		Query query = new Query(criteria);
+
+		return operations.find(query, JiraIssue.class);
 	}
 
 	@Override
@@ -606,5 +630,106 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
+	/**
+	 * find linked defects of given stories and filters
+	 * @param mapOfFilters
+	 * @param defectsStoryIds
+	 * @param uniqueProjectMap
+	 * @return
+	 */
+	@Override
+	public List<JiraIssue> findLinkedDefects(Map<String, List<String>> mapOfFilters, Set<String> defectsStoryIds,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+
+		}
+
+		criteria = criteria.and(DEFECT_STORY_ID).in(defectsStoryIds);
+		Query query = new Query(criteria);
+
+		return operations.find(query, JiraIssue.class);
+
+	}
+
+	/**
+	 * Find issues filtered by map of filters, type name and defectStoryIds
+	 *
+	 * @param mapOfFilters     filters
+	 * @param uniqueProjectMap project map filters
+	 * @return list of jira issues
+	 */
+	@SuppressWarnings(UNCHECKED)
+	@Override
+	public List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria);
+
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		Query query = new Query(criteriaProjectLevelAdded);
+		if (!projectCriteriaList.isEmpty()) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			query = new Query(updatedCriteria);
+		}
+		return operations.find(query, JiraIssue.class);
+	}
+
+	@Override
+	public List<JiraIssue> findByRelease(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Release
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			filterMap.forEach((subk, subv) -> {
+				if (subk.equalsIgnoreCase(CommonConstant.RELEASE)) {
+					projectCriteria.and(RELEASE_VERSION).in((List<Pattern>) filterMap.get(CommonConstant.RELEASE));
+				} else {
+					projectCriteria.and(subk).in((List<Pattern>) subv);
+				}
+			});
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssue.class);
+
+	}
+
 
 }

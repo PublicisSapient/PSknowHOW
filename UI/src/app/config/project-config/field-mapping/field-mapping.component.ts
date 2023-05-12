@@ -423,6 +423,7 @@ export class FieldMappingComponent implements OnInit {
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
       jiraDevDoneStatus : [],
+      jiraDefectClosedStatus: [[]],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -470,7 +471,10 @@ export class FieldMappingComponent implements OnInit {
       productionDefectComponentValue: [''],
       productionDefectValue: [[]],
       // qaRootCauseValue: [[]],
-      excludeRCAFromFTPR: [[]]
+      excludeRCAFromFTPR: [[]],
+      jiraReadyForRefinement: [[]],
+      jiraAcceptedInRefinement: [[]],
+      jiraRejectedInRefinement: [[]]
     };
 
     this.addAdditionalFilterOptions();

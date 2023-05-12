@@ -1,28 +1,5 @@
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
-import com.atlassian.jira.rest.client.api.ExpandableProperty;
-import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
-import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
-import com.atlassian.jira.rest.client.api.domain.FieldType;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.atlassian.jira.rest.client.api.domain.Priority;
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.User;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
-import org.apache.commons.lang3.ObjectUtils;
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -33,7 +10,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(MockitoJUnitRunner.class)
+import com.atlassian.jira.rest.client.api.domain.BasicUser;
+import com.atlassian.jira.rest.client.api.domain.FieldType;
+import com.atlassian.jira.rest.client.api.domain.Priority;
+import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
+import org.apache.commons.lang3.ObjectUtils;
+import org.joda.time.DateTime;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
+import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
+import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.User;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+@ExtendWith(SpringExtension.class)
 public class HandleJiraHistoryTest {
 
     @InjectMocks
@@ -51,7 +52,7 @@ public class HandleJiraHistoryTest {
 
     private Issue issue;
 
-    @Before
+    @BeforeEach
     public void setUp() throws URISyntaxException {
 
         jiraIssueCustomHistory = new JiraIssueCustomHistory();

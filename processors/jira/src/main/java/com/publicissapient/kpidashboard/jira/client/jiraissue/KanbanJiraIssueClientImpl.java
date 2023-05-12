@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -582,9 +583,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				jiraIssue.setAffectedVersions(JiraIssueClientUtil.getAffectedVersions(issue));
 
 				setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
-				if (projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave);
-				}
+
+				setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave,projectConfig);
+
 				setDueDates(jiraIssue, issue,fields,fieldMapping);
 
 				// setting filter data from Jira issue to
@@ -989,7 +990,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = getKanbanAccountHierarchy();
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = JiraIssueClientUtil.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 
 		for (KanbanJiraIssue kanbanJiraIssue : jiraIssueList) {
@@ -1059,16 +1060,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 	}
 
-	/**
-	 * Fetches all saved kanban account hierarchy.
-	 *
-	 * @return Map<Pair < String, String>, KanbanAccountHierarchy>
-	 */
-	private Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy() {
-		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-	}
 
 	/**
 	 * set RCA root cause values
@@ -1284,15 +1275,16 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 	/**
 	 * This method process owner and user details
-	 *
-	 * @param jiraIssue
+	 *  @param jiraIssue
 	 *            JiraIssue Object to set Owner details
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
-	 * 	          assignee details set from JiraIssue
+	 * 			assignees to save
+	 * @param projectConfig
+	 *        projectconfigfieldmapping
 	 */
-	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user , Set<Assignee> assigneeSetToSave) {
+	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -1324,8 +1316,26 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
 			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
 					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-				assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
 			}
+		}
+	}
+
+	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash)
+					.collect(Collectors.toList());
+			List<String> ownerId = assigneeKey.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueClient::hash)
+					.collect(Collectors.toList());
+			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+			jiraIssue.setOwnersShortName(ownerName);
+			jiraIssue.setOwnersUsername(ownerName);
+			jiraIssue.setOwnersID(ownerId);
+			jiraIssue.setOwnersFullName(ownerFullName);
+		} else {
+			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
 		}
 	}
 

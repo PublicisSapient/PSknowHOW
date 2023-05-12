@@ -47,6 +47,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
     private static final String NIN = "nin";
     private static final String DEFECT_LIST = "Total Defects";
     private static final String OVERALL = "Overall";
+    private static final String PROJECT = "project";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     private ConfigHelperService configHelperService;
@@ -85,28 +88,21 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
         DataCount trendValue = new DataCount();
-        treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-            Filters filters = Filters.getFilter(k);
-            if (Filters.SPRINT == filters) {
-                projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-            }
-        });
+        Node root = treeAggregatorDetail.getRoot();
+        Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+        List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
+        projectWiseLeafNodeValue(trendValue, projectList, kpiElement, kpiRequest);
         return kpiElement;
     }
 
     @Override
     public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
         Map<String, Object> map = new HashMap<>();
-        leafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
-        List<Node> latestSprintNode = new ArrayList<>();
-        Node latestSprint = leafNodeList.get(0);
-        Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-        Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(latestSprintNode);
+        Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(leafNodeList);
         map.put(TEST_WITHOUT_STORY_LIST, resultMapForTestWithoutStory.get(STORY_LIST));
         map.put(TEST_WITHOUT_STORY_TEST_CASES, resultMapForTestWithoutStory.get(TOTAL_TEST_CASES));
         Map<String, Object> resultMapDefectsWithoutStoryLink =
-                fetchKPIDataFromDbForDefectsWithoutStoryLink(latestSprintNode);
+                fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNodeList);
         map.put(DEFECTS_WITHOUT_STORY_LIST, resultMapDefectsWithoutStoryLink.get(STORY_LIST));
         map.put(DEFECTS_WITHOUT_STORY_DEFECTS_LIST, resultMapDefectsWithoutStoryLink.get(DEFECT_LIST));
         return map;
@@ -295,20 +291,20 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
         return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
     }
 
-    private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue,
-                                          KpiElement kpiElement, KpiRequest kpiRequest) {
+    private void projectWiseLeafNodeValue(DataCount trendValue, List<Node> leafNodeList, KpiElement kpiElement,
+                                       KpiRequest kpiRequest) {
 
         String requestTrackerId = getRequestTrackerId();
-        sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
         List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
         List<KPIExcelData> excelDataForTestWithoutStory = new ArrayList<>();
         List<KPIExcelData> excelDataDefectsWithoutStoryLink = new ArrayList<>();
-        Node latestSprint = sprintLeafNodeList.get(0);
         List<IterationKpiModalValue> testCasesWithoutStoryLinkModals = new ArrayList<>();
         List<IterationKpiModalValue> defectWithoutStoryLinkModals = new ArrayList<>();
-
-        Map<String, Object> returnMap = fetchKPIDataFromDb(sprintLeafNodeList,
-                null, null, kpiRequest);
+        CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(15);
+        String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
+        String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
+        Node latestNode = leafNodeList.get(0);
+        Map<String, Object> returnMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
         List<String> storiesInProject = (List<String>) returnMap.get(TEST_WITHOUT_STORY_LIST);
         List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) returnMap
@@ -326,7 +322,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
                         .collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(totalTestNonRegression)) {
             populateExcelDataObject(requestTrackerId, totalTestNonRegression, testWithoutStory,
-                    latestSprint.getProjectFilter().getName(), excelDataDefectsWithoutStoryLink);
+                    latestNode.getProjectFilter().getName(), excelDataDefectsWithoutStoryLink);
         }
         kpiElement.setExcelData(excelDataForTestWithoutStory);
         kpiElement.setExcelColumns(KPIExcelColumn.TEST_WITHOUT_STORY_LINK.getColumns());
@@ -334,7 +330,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
         if (CollectionUtils.isNotEmpty(defectWithoutStory)
                 && requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
             KPIExcelUtility.populateDefectWithoutIssueLinkExcelData(defectWithoutStory,
-                    excelDataDefectsWithoutStoryLink, latestSprint.getProjectFilter().getName());
+                    excelDataDefectsWithoutStoryLink, latestNode.getProjectFilter().getName());
         }
 
         kpiElement.setExcelData(excelDataDefectsWithoutStoryLink);

@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
@@ -149,6 +150,12 @@ public final class KPIHelperUtil {
 			node.setSprintFilter(new SprintFilter(node.getId(), node.getName(),
 					node.getAccountHierarchy().getBeginDate(), node.getAccountHierarchy().getEndDate()));
 		}
+		else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
+			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
+					node.getAccountHierarchy().getBasicProjectConfigId()));
+			node.setReleaseFilter(new ReleaseFilter(node.getId(), node.getName(),
+					node.getAccountHierarchy().getBeginDate(), node.getAccountHierarchy().getEndDate()));
+		}
 	}
 
 	/**
@@ -171,7 +178,7 @@ public final class KPIHelperUtil {
 			if (isAccountHierarchyData(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
 						node.getGroupName(), node.getAccountHierarchy(), node.getProjectFilter(),
-						node.getSprintFilter());
+						node.getSprintFilter(),node.getReleaseFilter());
 				leafNodeList.add(newNode);
 			} else if (isAccountHierarchyDataKanban(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
@@ -186,8 +193,10 @@ public final class KPIHelperUtil {
 				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 						&& !child.getChildren().isEmpty() && child.getChildren().get(0).getGroupName()
 								.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-					child.getChildren().sort((node1, node2) -> node2.getSprintFilter().getStartDate()
-							.compareTo(node1.getSprintFilter().getStartDate()));
+					child.getChildren().stream().filter(filter->filter.getSprintFilter()!=null)
+							.collect(Collectors.toList())
+							.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
+									.compareTo(node1.getSprintFilter().getStartDate()));
 				}
 				getLeafNodes(child, leafNodeList);
 			}
