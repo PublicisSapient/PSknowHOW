@@ -62,6 +62,8 @@ export class MilestoneComponent implements OnInit {
   allKpiArray: any = [];
   kpiDropdowns = {};
   kpiLoader = true;
+  globalConfig;
+  sharedObject;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -69,7 +71,9 @@ export class MilestoneComponent implements OnInit {
     /** When filter dropdown change */
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'release') {
-        this.receiveSharedData(sharedobject);
+        if(this.globalConfig || this.service.getDashConfigData()){
+          this.receiveSharedData(sharedobject);
+        }
       }
     }));
 
@@ -84,6 +88,9 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if(globalConfig){
+        if(this.sharedObject || this.service.getFilterObject()){
+          this.receiveSharedData(this.service.getFilterObject());
+        }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -163,7 +170,7 @@ export class MilestoneComponent implements OnInit {
   /** sending requests after grouping the the KPIs according to group Id */
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Release');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -256,9 +263,6 @@ export class MilestoneComponent implements OnInit {
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
-    if (this.service.getFilterObject()) {
-      this.receiveSharedData(this.service.getFilterObject());
-    }
 
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
@@ -562,5 +566,7 @@ export class MilestoneComponent implements OnInit {
    /** unsubscribing all Kpi Request  */
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 }
