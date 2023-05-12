@@ -28,7 +28,8 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.publicissapient.kpidashboard.common.repository.application.*;
+
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -46,6 +47,12 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
@@ -115,8 +122,12 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
+	@Autowired
+	private ReleaseDataClientFactory releaseDataClientFactory;
+
+
 	/**
-	 * Validates and collects Jira issues using JIRA API for projects with onlinemode
+	 * Validates and collects Jira issues using JIA API for projects with onlinemode
 	 * 
 	 * @param projectConfigList List of all configured projects
 	 */
@@ -129,6 +140,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 		issueCountMap.put(JiraConstants.SCRUM_DATA, 0);
 		issueCountMap.put(JiraConstants.KANBAN_DATA, 0);
 		try {
+
 			Map<String, ProjectConfFieldMapping> onlineLineprojectConfigMap = createProjectConfigMap(
 					getRelevantProjects(projectConfigList), fieldMappingList);
 			executor = Executors.newFixedThreadPool(jiraProcessorConfig.getThreadPoolSize());
@@ -156,7 +168,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,releaseDataClientFactory,
 									getExecutionLogContext());// NOPMD
 							executor.execute(worker);
 
@@ -209,6 +221,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 				password = toolCredential.getPassword();
 			}
 
+		} else if (conn.isBearerToken()) {
+			password = decryptJiraPassword(conn.getPatOAuthToken());
 		} else {
 			username = conn.getUsername();
 			password = decryptJiraPassword(conn.getPassword());
@@ -236,7 +250,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			client = jiraRestClientFactory.getJiraClient(JiraInfo.builder()
 					.jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
 					.password(password).jiraConfigProxyUrl(null)
-					.jiraConfigProxyPort(null).build());
+					.jiraConfigProxyPort(null).bearerToken(conn.isBearerToken()).build());
 
 		}
 		return client;

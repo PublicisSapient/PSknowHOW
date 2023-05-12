@@ -128,7 +128,7 @@ public class ZephyrServiceTest {
 
 	@Test
 	public void TestProcess() throws Exception {
-		when(filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(), false)).thenReturn("project");
 /*
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "Regression")).thenReturn(accountHierarchyDataList);
 		when(cacheService.getFromApplicationCache(projectKey, KPISource.ZEPHYR.name(),

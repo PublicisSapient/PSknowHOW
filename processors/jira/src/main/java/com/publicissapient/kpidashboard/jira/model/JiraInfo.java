@@ -34,4 +34,5 @@ public class JiraInfo {
     private String jiraConfigProxyUrl;
     private String jiraConfigProxyPort;
     private String jiraConfigAccessToken;
+    private boolean bearerToken;
 }

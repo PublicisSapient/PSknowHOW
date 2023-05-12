@@ -88,6 +88,7 @@ export class HelperService {
             kpiRequestObject.level = filterApplyData.level;
             kpiRequestObject.selectedMap = filterApplyData.selectedMap;
             kpiRequestObject.sprintIncluded = filterApplyData.sprintIncluded;
+            kpiRequestObject.label = filterApplyData.label;
             // start date and end Date is required in kanban so ading it if no filter Selected
             if (isKanban) {
                 let onlyDateAvailable = true;
@@ -115,6 +116,7 @@ export class HelperService {
             kpiRequestObject.level = filterData[2]?.level;
             kpiRequestObject.selectedMap = {};
             kpiRequestObject.selectedMap[filterData[2]?.label] = [];
+            kpiRequestObject.label = filterApplyData.label;
             for (let i = 0; i < filterData[2]?.filterData?.length; i++) {
                 kpiRequestObject.ids.push(filterData[2]?.filterData[i]?.nodeId);
                 kpiRequestObject.selectedMap[filterData[2]?.label].push(filterData[2]?.filterData[i]?.nodeId);

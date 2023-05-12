@@ -500,6 +500,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
 		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
 		existingConnection.setBearerToken(connection.isBearerToken());
+		existingConnection.setJaasKrbAuth(connection.isJaasKrbAuth());
+		existingConnection.setJaasConfigFilePath(connection.getJaasConfigFilePath());
+		existingConnection.setJaasUser(connection.getJaasUser());
+		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
+		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
 	}
 
 	private void saveConnection(Connection conn) {
@@ -584,7 +589,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void setEncryptedPasswordFieldForDb(Connection conn) {
 		String passwordFromClient = conn.getPassword();
-		//TODO
 		conn.setPassword(encryptStringForDb(passwordFromClient));
 	}
 

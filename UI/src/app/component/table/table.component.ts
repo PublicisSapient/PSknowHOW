@@ -11,6 +11,7 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() data;
   @Input() showMarker = false;
   @Input() showMarkerColumnNumber;
+  @Input() trendBoxColorObj;
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges) {

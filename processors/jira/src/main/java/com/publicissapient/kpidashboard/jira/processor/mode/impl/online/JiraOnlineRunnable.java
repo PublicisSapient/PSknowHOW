@@ -25,7 +25,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.MDC;
@@ -43,9 +44,9 @@ import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifie
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.metadata.MetaDataClientImpl;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
@@ -89,6 +90,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	private MetadataIdentifierRepository metadataIdentifierRepository;
 
 	private JiraRestClientFactory jiraRestClientFactory;
+
+	private ReleaseDataClientFactory releaseDataClientFactory;
 
 	private ExecutionLogContext executionLogContext;
 
@@ -178,7 +181,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
 							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
 							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory, ExecutionLogContext executionLogContext) //NOPMD
+							  JiraRestClientFactory jiraRestClientFactory,ReleaseDataClientFactory releaseDataClientFactory, ExecutionLogContext executionLogContext) //NOPMD
 	{
 		this.latch = latch;
 		this.jiraAdapter = jiraAdapter;
@@ -192,6 +195,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.jiraRestClientFactory = jiraRestClientFactory;
+		this.releaseDataClientFactory=releaseDataClientFactory;
 		this.executionLogContext=executionLogContext;
 	}
 
@@ -212,9 +216,8 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 */
 	private void collectReleaseData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		Instant start = Instant.now();
-		ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraAdapter, projectReleaseRepo,
-				accountHierarchyRepository, kanbanAccountHierarchyRepo);
-		releaseData.processReleaseInfo(projectConfig);
+		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,jiraAdapter);
+		jiraIssueDataClient.processReleaseInfo(projectConfig);
 		psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
 		psLogData.setAction(CommonConstant.RELEASE_DATA);
 		log.info("Time Taken to process release data", kv(CommonConstant.PSLOGDATA, psLogData));
