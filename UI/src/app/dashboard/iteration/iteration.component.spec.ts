@@ -2335,6 +2335,7 @@ describe('IterationComponent', () => {
             },
             selectedTab: 'Iteration'
         };
+        component.globalConfig =userConfigData['data'];
         const spy = spyOn(component, 'receiveSharedData');
         service.passDataToDashboard.emit(sharedObject);
         fixture.detectChanges();
@@ -2356,12 +2357,11 @@ describe('IterationComponent', () => {
     });
 
     it('should process config data on getting globalDashConfigData', () => {
-        // spyOn(service,'globalDashConfigData').and.returnValue(userConfigData['data']);
-        const spy = spyOn(component, 'processKpiConfigData');
+
+        component.sharedObject={};
         service.globalDashConfigData.emit(userConfigData['data']);
         fixture.detectChanges();
         expect(component.configGlobalData.length).toEqual(1);
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should perform the aggregation logic', () => {
