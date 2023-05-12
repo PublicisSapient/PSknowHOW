@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
@@ -26,6 +27,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -72,6 +75,10 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiHelperService kpiHelperService;
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringMapMap) {
@@ -115,8 +122,12 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(RANGE_TICKET_LIST, issueBacklogRespository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
+		resultListMap.put(RANGE_TICKET_LIST,
+				ListUtils.union(
+						issueBacklogRespository.findIssuesByDateAndTypeAndStatus(mapOfFilters, uniqueProjectMap,
+								startDate, endDate, RANGE, NIN, true),
+						kpiHelperService.convertJiraIssueToBacklog(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
+								mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true))));
 
 		return resultListMap;
 	}
