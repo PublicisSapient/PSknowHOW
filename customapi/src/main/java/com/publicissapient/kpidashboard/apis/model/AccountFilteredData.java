@@ -51,6 +51,9 @@ public class AccountFilteredData {
 	private String parentId;
 	private String sprintState;
 	private int level;
+	private String releaseEndDate;
+	private String releaseStartDate;
+	private String releaseState;
 	private ObjectId basicProjectConfigId;
 
 	@Override

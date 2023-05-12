@@ -140,7 +140,7 @@ public class BitBucketServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(5, false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(5,"project", false)).thenReturn("project");
 
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 

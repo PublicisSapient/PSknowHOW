@@ -23,14 +23,12 @@ import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -38,6 +36,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
@@ -142,6 +141,7 @@ public class OnlineAdapter implements JiraAdapter {
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
 		this.krb5Client = krb5Client;
+		this.psLogData= new PSLogData();
 	}
 
 	/**
@@ -313,44 +313,14 @@ public class OnlineAdapter implements JiraAdapter {
 		return issueList;
 	}
 
-	/**
-	 * Returns all versions for a project, which are visible for the currently
-	 * logged in user
-	 *
-	 * @param projectKey the project key
-	 * @return List of version
-	 */
-	@Override
-	public List<Version> getVersions(String projectKey) {
-		List<Version> rt = new ArrayList<>();
-
-		if (client == null) {
-			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else {
-			try {
-				Promise<Project> promisedRs = client.getProjectClient().getProject(projectKey);
-
-				Project jiraProject = promisedRs.claim();
-				Iterable<Version> version = jiraProject.getVersions();
-				if (version != null) {
-					rt = Lists.newArrayList(version.iterator());
-				}
-			} catch (RestClientException e) {
-				exceptionBlockProcess(e);
-			}
-		}
-
-		return rt;
-	}
-
-	private void exceptionBlockProcess(RestClientException e) {
-		if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-			log.error(ERROR_MSG_401);
-		} else {
-			log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-		}
-		log.debug(EXCEPTION, e);
-	}
+    private void exceptionBlockProcess(RestClientException e) {
+        if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+            log.error(ERROR_MSG_401);
+        } else {
+            log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+        }
+        log.debug(EXCEPTION, e);
+    }
 
 	@Override
 	public List<Field> getField() {
@@ -538,7 +508,7 @@ public class OnlineAdapter implements JiraAdapter {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
-		if(connectionOptional.isPresent() && connectionOptional.get().getPatOAuthToken()!=null) {
+		if(connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
 		} else{
@@ -658,6 +628,21 @@ public class OnlineAdapter implements JiraAdapter {
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 
 	}
+
+    private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
+            throws MalformedURLException {
+
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+        String serverURL = jiraProcessorConfig.getJiraVersionApi();
+        if (isCloudEnv) {
+            serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
+        }
+        serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+
+    }
 
 	private void getReport(String sprintReportObj, SprintDetails sprint, ProjectConfFieldMapping projectConfig,
 			SprintDetails dbSprintDetails, String boardId) {
@@ -957,23 +942,79 @@ public class OnlineAdapter implements JiraAdapter {
 		return getEpicIssuesQuery(epicList, logData);
 	}
 
-	private boolean populateData(String sprintReportObj, List<String> epicList) {
-		boolean isLast = true;
-		if (StringUtils.isNotBlank(sprintReportObj)) {
-			JSONArray valuesJson = new JSONArray();
-			try {
-				JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
-				if (null != obj) {
-					valuesJson = (JSONArray) obj.get("values");
-					getEpic(valuesJson, epicList);
-					isLast = Boolean.valueOf(obj.get("isLast").toString());
-				}
-			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
+	@Override
+	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig) {
+		List<ProjectVersion> projectVersionList = new ArrayList<>();
+		PSLogData versionLog = new PSLogData();
+		versionLog.setAction(CommonConstant.RELEASE_DATA);
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				versionLog.setProjectKey(jiraToolConfig.getProjectKey());
+				Instant start = Instant.now();
+				URL url = getVersionUrl(projectConfig);
+				versionLog.setUrl(url.toString());
+				parseVersionData(getDataFromClient(projectConfig, url), projectVersionList);
+				versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, versionLog));
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe, kv(CommonConstant.PSLOGDATA, versionLog));
+		} catch (IOException ioe) {
+			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, versionLog));
 		}
-		return isLast;
+		return projectVersionList;
 	}
+
+
+	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			try {
+				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+						ProjectVersion projectVersion = new ProjectVersion();
+						projectVersion.setId(
+								Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+						projectVersion.setName(getOptionalString((JSONObject) values, "name"));
+						projectVersion
+								.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+						projectVersion
+								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+						if (getOptionalString((JSONObject) values, "startDate") != null) {
+							projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+						}
+						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+						}
+						projectVersionDetailList.add(projectVersion);
+					});
+				}
+			} catch (Exception pe) {
+				log.error("Parser exception when parsing versions", pe);
+			}
+
+		}
+	}
+
+    private boolean populateData(String sprintReportObj, List<String> epicList) {
+        boolean isLast = true;
+        if (StringUtils.isNotBlank(sprintReportObj)) {
+            JSONArray valuesJson = new JSONArray();
+            try {
+                JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
+                if (null != obj) {
+                    valuesJson = (JSONArray) obj.get("values");
+                }
+                getEpic(valuesJson, epicList);
+                isLast = Boolean.valueOf(obj.get("isLast").toString());
+            } catch (ParseException pe) {
+                log.error("Parser exception when parsing statuses", pe);
+            }
+        }
+        return isLast;
+    }
 
 	private void getEpic(JSONArray valuesJson, List<String> epicList) {
 		valuesJson.forEach(values -> {

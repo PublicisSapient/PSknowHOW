@@ -240,12 +240,12 @@
             <div class="p-field"
                 *ngIf="!jiraForm.controls['vault']?.value && !jiraForm.controls['bearerToken']?.value && !jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="password">Password</label>
-                <p-password class="ml-2" type="password" id="password" formControlName="password" (change)="updateForm()">
+                <p-password class="ml-2" type="password" id="password" [feedback]="false" formControlName="password" (change)="updateForm()">
                 </p-password>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['bearerToken']?.value">
                 <label for="patOAuthToken">PatOAuthToken</label>
-                <p-password class="ml-2" type="password" id="patOAuthToken" formControlName="patOAuthToken" (change)="updateForm()">
+                <p-password class="ml-2" type="password" id="patOAuthToken" [feedback]="false" formControlName="patOAuthToken" (change)="updateForm()">
                 </p-password>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['isOAuth']?.value">
