@@ -47,6 +47,7 @@ public class ProjectVersion {
 	private boolean isArchived;
 	private boolean isReleased;
 	private DateTime releaseDate;
+	private DateTime startDate;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -56,14 +57,15 @@ public class ProjectVersion {
 					&& Objects.equal(this.description, that.description)
 					&& Objects.equal(this.isArchived, that.isArchived)
 					&& Objects.equal(this.isReleased, that.isReleased)
-					&& Objects.equal(this.releaseDate, that.releaseDate);
+					&& Objects.equal(this.releaseDate, that.releaseDate)
+					&& Objects.equal(this.startDate, that.startDate);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id, name, description, isArchived, isReleased, releaseDate);
+		return Objects.hashCode(id, name, description, isArchived, isReleased, releaseDate,startDate);
 	}
 
 }

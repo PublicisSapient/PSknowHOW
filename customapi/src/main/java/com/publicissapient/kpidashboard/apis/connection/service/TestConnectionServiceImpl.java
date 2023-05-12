@@ -68,6 +68,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 
+	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
+
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -167,6 +169,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return isValidConnection;
 	}
 
+	/**
+	 *
+	 * @param apiUrl
+	 * @param pat
+	 * @return
+	 */
 	private boolean testConnectionWithBearerToken(String apiUrl, String pat) {
 		boolean isValidConnection;
 		HttpStatus status = null;
@@ -213,8 +221,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			if(StringUtils.isNotEmpty(connection.getPatOAuthToken())){
-				isValid = testConnectionWithBearerToken(apiUrl, connection.getPatOAuthToken());
+			if(connection.isBearerToken()){
+				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
@@ -342,7 +350,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private HttpHeaders createHeadersWithBearer(String pat) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey()));
+		String decryptedPswd = rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey());
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + decryptedPswd);
+		headers.add(HttpHeaders.ACCEPT,"*/*");
+		headers.add(HttpHeaders.CONTENT_TYPE,"application/json");
+		headers.set("Cookie", "");
 		return headers;
 	}
 
@@ -388,14 +400,19 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		httpHeaders = createHeadersWithBearer(pat);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl.replace("issue/createmeta","dashboard")), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
-		return responseEntity.getStatusCode();
-	}
+		HttpStatus responseCode = responseEntity.getStatusCode();
 
+		if(responseCode.is2xxSuccessful() && null != responseEntity.getBody()
+				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)){
+			responseCode = HttpStatus.UNAUTHORIZED;
+		}
+		return responseCode;
+	}
 	/**
 	 * Create API URL using base URL and API path
 	 * 
@@ -494,6 +511,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) &&
 				StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
+		}
+		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
+			return connection.getPatOAuthToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}

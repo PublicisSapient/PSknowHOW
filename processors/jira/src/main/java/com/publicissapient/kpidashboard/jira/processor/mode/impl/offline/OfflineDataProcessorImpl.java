@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jira.processor.mode.impl.offline;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +33,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -66,10 +67,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.IssueOfflineTrace
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser.CustomSearchResultJsonParser;
-import com.publicissapient.kpidashboard.jira.adapter.impl.OfflineAdapter;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
@@ -119,6 +118,9 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	
+	@Autowired
+	private ReleaseDataClientFactory releaseDataClientFactory;
 
 	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
 
@@ -270,9 +272,8 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 
 	private void collectReleaseData(JiraAdapter jiraClient, ProjectConfFieldMapping projectConfig) {
 		long releaseDataStart = System.currentTimeMillis();
-		ReleaseDataClientImpl releaseData = new ReleaseDataClientImpl(jiraClient, projectReleaseRepo,
-				accountHierarchyRepository, kanbanAccountHierarchyRepo);
-		releaseData.processReleaseInfo(projectConfig);
+		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,jiraClient);
+		jiraIssueDataClient.processReleaseInfo(projectConfig);
 		long end = System.currentTimeMillis();
 		log.info("Jira-Feature Collector Release ends at: %s", end);
 		long timeTaken = end - releaseDataStart;
