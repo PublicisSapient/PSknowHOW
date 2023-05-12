@@ -183,7 +183,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedHistory,
 									reopenHistory);
 							modalValues.add(iterationModal);
-							double duration = (double) ChronoUnit.DAYS.between( closedHistory.getUpdatedOn(), reopenHistory.getUpdatedOn());
+							double duration = ChronoUnit.DAYS.between( closedHistory.getUpdatedOn(), reopenHistory.getUpdatedOn());
 							totalDuration.set(0, totalDuration.get(0) + duration);
 						}
 					}
@@ -215,7 +215,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
 			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
-		double averageTimeToReopen = totalDuration.get(0) > 0 && modalValues.size() > 0
+		double averageTimeToReopen = totalDuration.get(0) > 0 && !modalValues.isEmpty()
 				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
 

@@ -1426,9 +1426,9 @@ public class KpiHelperService { // NOPMD
 	{
 		List<JiraIssue> jiraIssues = new ArrayList<>();
 		ModelMapper mapper = new ModelMapper();
-		issueBacklogList.forEach(issueBacklog -> {
-			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class));
-		});
+		issueBacklogList.forEach(issueBacklog ->
+			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class))
+		);
 		return jiraIssues;
 	}
 
@@ -1436,9 +1436,9 @@ public class KpiHelperService { // NOPMD
 	{
 		List<IssueBacklog> issueBacklogs = new ArrayList<>();
 		ModelMapper mapper = new ModelMapper();
-		jiraIssueList.forEach(jiraIssue -> {
-			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class));
-		});
+		jiraIssueList.forEach(jiraIssue ->
+			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class))
+		);
 		return issueBacklogs;
 	}
 	
@@ -1446,9 +1446,9 @@ public class KpiHelperService { // NOPMD
 			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 		ModelMapper mapper = new ModelMapper();
-		issueBacklogCustomHistories.forEach(issueHistory->{
-			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class));
-		});
+		issueBacklogCustomHistories.forEach(issueHistory->
+			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class))
+		);
 		return jiraIssueCustomHistoryList;
 	}
 }
