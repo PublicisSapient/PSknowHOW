@@ -461,6 +461,6 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Backlog Readiness Efficiency',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Issue Types Mapping' : ['readyForDevelopmentStatus'] }
+        fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
       }
 	  ]);

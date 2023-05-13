@@ -391,6 +391,22 @@
                                   (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
                         </div>
                     </div>
+					 <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
+                                Definition:
+                                Status to identify Ready for development from the backlog.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
+                                placeholder="Enter backlog ready for development status"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
+                        </div>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"
@@ -677,22 +693,6 @@
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'jiraIssueEpicType', 'Issue_Type')"></button>
-                        </div>
-                    </div>
-                    <div class="p-mb-3 p-d-flex p-align-center"
-                        *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle" aria-hidden="true"
-                                pTooltip='<span>
-                                Definition:
-                                Status to identify Ready for development from the backlog.
-                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
-                                placeholder="Enter backlog ready for development status"
-                                [style]="{'max-width':'initial','width':'60vw'}">
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
                         </div>
                     </div>
                 </div>
