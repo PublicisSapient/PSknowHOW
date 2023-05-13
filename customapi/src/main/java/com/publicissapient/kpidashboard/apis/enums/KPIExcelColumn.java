@@ -190,7 +190,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
 
 	DEFECT_REOPEN_RATE("kpi137", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
-			"Closed Date", "Reopen Date", "Time taken to reopen"));
+			"Closed Date", "Reopen Date", "Time taken to reopen")),
+
+    REFINEMENT_REJECTION_RATE("kpi139",
+            Arrays.asList("Issue ID", "Issue Description", "Priority", "Status", "Change Date", "Weeks",
+                    "Issue Status"));
 
 
     // @formatter:on

@@ -3629,6 +3629,30 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+		"kpiId": "kpi139",
+		"kpiName": "Refinement Rejection Rate",
+		"kpiUnit": "%",
+		"isDeleted": "False",
+		"defaultOrder": 4,
+		"kpiCategory": "Backlog",
+		"kpiSource": "Jira",
+		"groupId": 2,
+		"thresholdValue": "",
+		"kanban": false,
+		"chartType": "line",
+		"kpiInfo": {
+		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+		},
+		"xAxisLabel": "Weeks",
+		"yAxisLabel": "Count",
+		"isPositiveTrend": false,
+		"kpiFilter": "",
+		"showTrend": false,
+		"aggregationCriteria": "sum",
+		"isAdditionalFilterSupport": false,
+		"calculateMaturity": false
+  },
+  {
      "kpiId": "kpi136",
      "kpiName": "Defect Count by Status",
      "maxValue": "",

@@ -201,6 +201,9 @@ public class CustomApiConfig {// NOPMD
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
+	@Value("${backlogWeekCount}")
+	private int backlogWeekCount;
+
 	public int getPushDataLimit() {
 		return pushDataLimit;
 	}
@@ -211,6 +214,10 @@ public class CustomApiConfig {// NOPMD
 
 	public int getExposeAPITokenExpiryDays() {
 		return exposeAPITokenExpiryDays;
+	}
+
+	public int getBacklogWeekCount() {
+		return this.backlogWeekCount;
 	}
 
 	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {

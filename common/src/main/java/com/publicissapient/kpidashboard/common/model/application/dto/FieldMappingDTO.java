@@ -209,6 +209,15 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 
+	// For DTS_21154 - field for Team refinement status
+	private List<String> jiraRejectedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraAcceptedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraReadyForRefinement;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
