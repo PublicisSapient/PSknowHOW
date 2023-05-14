@@ -110,17 +110,18 @@ public class FetchKanbanIssueBasedOnJQLImplTest {
     @Test
     public void fetchIssues() throws Exception {
         when(kanbanJiraIssueRepository.findTopByBasicProjectConfigId(any())).thenReturn(kanbanJiraIssue);
-        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
-        when(jiraCommonService.getPageSize()).thenReturn(30);
-        when(jiraCommonService.getUserTimeZone(any(),any())).thenReturn("Indian/Maldives");
-        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
-        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
-        when(jiraProcessorConfig.getSprintCountForCacheClean()).thenReturn(15);
-        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
-        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
-                .thenReturn(promisedRs);
-        when(promisedRs.claim()).thenReturn(searchResult);
+//        when(processorExecutionTraceLogService.getTraceLogs(any(),any())).thenReturn(tracelogs);
+//        when(jiraProcessorConfig.getPageSize()).thenReturn(30);
+//        when(jiraCommonService.getUserTimeZone(any(),any())).thenReturn("Indian/Maldives");
+//        when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
+//        when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
+//        when(jiraProcessorConfig.getSprintCountForCacheClean()).thenReturn(15);
+//        when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
+//        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+//                .thenReturn(promisedRs);
+//        when(promisedRs.claim()).thenReturn(searchResult);
         Map.Entry<String, ProjectConfFieldMapping> entry = createProjectConfigMap().entrySet().iterator().next();
+//        when(jiraCommonService.fetchIssueBasedOnBoard(entry, client, krb5Client,false)).thenReturn(issues);
         Assert.assertEquals(2,fetchKanbanIssuesBasedOnJQL.fetchIssues(entry, client, krb5Client).size());
 
     }

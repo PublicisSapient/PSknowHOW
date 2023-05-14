@@ -46,188 +46,24 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
     protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
     @Autowired
-    private JiraProcessorConfig jiraProcessorConfig;
-
-    @Autowired
     private JiraIssueRepository jiraIssueRepository;
 
     PSLogData psLogData = new PSLogData();
 
-    private ProcessorJiraRestClient client;
-
-    @Autowired
-    private KanbanJiraIssueRepository kanbanJiraRepo;
-
-    @Autowired
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
     @Autowired
     private JiraCommonService jiraCommonService;
 
-    @Autowired
-    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
-
-    @Autowired
-    private FetchSprintReport fetchSprintReport;
-
-    @Autowired
-    private CreateAccountHierarchy createAccountHierarchy;
-
-    @Autowired
-    private SaveData saveData;
-
-    @Autowired
-    private CreateAssigneeDetails createAssigneeDetails;
-    @Autowired
-    ValidateData validateData;
-
     @Override
-    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client){
+    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) {
 
-        List<Issue> totalIssues = new ArrayList<>();
-        ProjectConfFieldMapping projectConfig=entry.getValue();
+        ProjectConfFieldMapping projectConfig = entry.getValue();
 
-        PSLogData psLogData = new PSLogData();
-        psLogData.setProjectName(projectConfig.getProjectName());
-        int total = 0;
-        int savedIsuesCount = 0;
+        boolean dataExist = false;
+            dataExist = (jiraIssueRepository
+                    .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+            psLogData.setKanban("false");
 
-        Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
-        JiraHelper.setStartDate(jiraProcessorConfig);
-        boolean processorFetchingComplete = false;
-        client=clientIncoming;
-        ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
+        return jiraCommonService.fetchIssueBasedOnBoard(entry,clientIncoming, krb5Client, dataExist);
 
-        try {
-            boolean dataExist = false;
-            if (projectConfig.isKanban()) {
-                dataExist = (kanbanJiraRepo
-                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("true");
-            } else {
-                dataExist = (jiraIssueRepository
-                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("false");
-            }
-
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
-            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean,krb5Client);
-            saveData.saveData(null,null,sprintDetailsList,null,null);
-
-
-            //write get logic to fetch last successful updated date.
-            String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
-            String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig,krb5Client);
-            List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
-
-            int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
-            boolean latestDataFetched=false;
-
-            for (BoardDetails board : boardDetailsList) {
-                Instant startProcessingJiraIssues = Instant.now();
-                psLogData.setBoardId(board.getBoardId());
-                int boardTotal = 0;
-                int pageSize = jiraCommonService.getPageSize();
-                boolean hasMore = true;
-                for (int i = 0; hasMore; i += pageSize) {
-
-                    SearchResult searchResult = getIssues(board, projectConfig, queryDate,
-                            userTimeZone, i, dataExist);
-                    List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
-                    totalIssues.addAll(issues);
-                    if (boardTotal == 0) {
-                        boardTotal = JiraHelper.getTotal(searchResult);
-                        total += boardTotal;
-                        psLogData.setTotalFetchedIssues(String.valueOf(total));
-                    }
-
-                    if (CollectionUtils.isNotEmpty(issues)) {
-                        List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
-                        Set<SprintDetails> sprintDetailsSet=new HashSet<>();
-                        Set<Assignee> assigneeSetToSave = new HashSet<>();
-                        boolean dataFromBoard =true;
-                        List<JiraIssue> jiraIssues = transformFetchedIssue.convertToJiraIssue(issues, projectConfig, dataFromBoard, jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
-                        Set<AccountHierarchy> createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
-                        AssigneeDetails assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
-                        saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails);
-                        JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
-                        savedIsuesCount += issues.size();
-                        jiraCommonService.savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
-                    }
-
-                    if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
-                        latestDataFetched = jiraCommonService.cleanCache();
-                        setForCacheClean.clear();
-                        log.info("latest sprint fetched cache cleaned.");
-                    }
-
-                    if (issues.size() < pageSize) {
-                        break;
-                    }
-                TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-                }
-            }
-            processorFetchingComplete = true;
-        } catch (JSONException e) {
-            log.error("Error while updating Story information in scrum client", e,
-                    kv(CommonConstant.PSLOGDATA, psLogData));
-            lastSavedJiraIssueChangedDateByType.clear();
-        } catch (InterruptedException e) {
-            log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
-            lastSavedJiraIssueChangedDateByType.clear();
-            processorFetchingComplete = false;
-        } finally {
-            validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
-        }
-        return totalIssues;
-    }
-
-    public String getDeltaDate(String lastSuccessfulRun) {
-        LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
-        ldt = ldt.minusDays(30);
-        return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
-    }
-
-    public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
-                                  String startDateTimeByIssueType, String userTimeZone, int pageStart,
-                                  boolean dataExist) throws InterruptedException{
-        SearchResult searchResult = null;
-
-        if (client == null) {
-            log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-        } else {
-            String query = StringUtils.EMPTY;
-            try {
-                query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
-                psLogData.setUserTimeZone(userTimeZone);
-                psLogData.setJql(query);
-                psLogData.setBoardId(boardDetails.getBoardId());
-                Instant start = Instant.now();
-                CustomAsynchronousIssueRestClient issueRestClient=client.getCustomIssueClient();
-                Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardDetails.getBoardId(), query,
-                        jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
-                searchResult = promisedRs.claim();
-                psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
-                log.debug("jql query processed for board", kv(CommonConstant.PSLOGDATA,psLogData));
-                if (searchResult != null) {
-                    psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
-                    psLogData.setAction(CommonConstant.FETCHING_ISSUE);
-                    log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-                                    Math.min(pageStart + jiraCommonService.getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
-                            kv(CommonConstant.PSLOGDATA,psLogData));
-                }
-                TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-            } catch (RestClientException e) {
-                if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-                    log.error(ERROR_MSG_401, kv(CommonConstant.PSLOGDATA,psLogData));
-                } else {
-                    log.info(NO_RESULT_QUERY, query,kv(CommonConstant.PSLOGDATA,psLogData));
-                    log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause(), kv(CommonConstant.PSLOGDATA,psLogData));
-                }
-            }
-
-        }
-
-        return searchResult;
     }
 }

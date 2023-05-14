@@ -2,6 +2,8 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -205,6 +207,18 @@ public class JiraHelper {
             }
         }
         return list;
+    }
+
+    public static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
+        if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+            lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+        }
+    }
+
+    public static String getDeltaDate(String lastSuccessfulRun) {
+        LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
+        ldt = ldt.minusDays(30);
+        return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
     }
 
 

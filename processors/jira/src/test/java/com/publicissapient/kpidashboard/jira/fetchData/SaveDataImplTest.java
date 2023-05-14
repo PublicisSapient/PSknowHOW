@@ -1,15 +1,11 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.*;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,14 +49,26 @@ public class SaveDataImplTest {
     private SaveDataImpl saveData;
 
     List<JiraIssue> jiraIssueList=new ArrayList<>();
+    List<KanbanJiraIssue> kanbanJiraIssuesList=new ArrayList<>();
     List<JiraIssueCustomHistory> jiraIssueCustomHistoryList=new ArrayList<>();
+    List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryList=new ArrayList<>();
 
     List<SprintDetails> sprintDetailsToSave=new ArrayList<>();
 
     Set<AccountHierarchy> accountHierarchySet=new HashSet<>();
+    Set<KanbanAccountHierarchy> kanbanAccountHierarchySet=new HashSet<>();
 
     @Mock
     AssigneeDetails assigneeDetailsToSave;
+
+    @Mock
+    private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+
+    @Mock
+    private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+
+    @Mock
+    private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
 
     @Before
     public void setUp(){
@@ -72,6 +81,12 @@ public class SaveDataImplTest {
         AccountHierarchy accountHierarchy=new AccountHierarchy();
         accountHierarchySet.add(accountHierarchy);
         assigneeDetailsToSave=new AssigneeDetails();
+        KanbanJiraIssue kanbanJiraIssue=new KanbanJiraIssue();
+        kanbanJiraIssuesList.add(kanbanJiraIssue);
+        KanbanAccountHierarchy kanbanAccountHierarchy=new KanbanAccountHierarchy();
+        kanbanAccountHierarchySet.add(kanbanAccountHierarchy);
+        KanbanIssueCustomHistory kanbanIssueCustomHistory=new KanbanIssueCustomHistory();
+        kanbanIssueCustomHistoryList.add(kanbanIssueCustomHistory);
     }
 
     @Test
@@ -82,7 +97,10 @@ public class SaveDataImplTest {
         when(sprintRepository.saveAll(any())).thenReturn(null);
         when(accountHierarchyRepository.saveAll(any())).thenReturn(null);
         when(assigneeDetailsRepository.save(any())).thenReturn(null);
-        saveData.saveData(jiraIssueList,jiraIssueCustomHistoryList,sprintDetailsToSave,accountHierarchySet,assigneeDetailsToSave);
+        when(kanbanAccountHierarchyRepository.saveAll(any())).thenReturn(null);
+        when(kanbanJiraIssueHistoryRepository.saveAll(any())).thenReturn(null);
+        when(kanbanJiraIssueRepository.saveAll(any())).thenReturn(null);
+        saveData.saveData(jiraIssueList,jiraIssueCustomHistoryList,sprintDetailsToSave,accountHierarchySet,assigneeDetailsToSave,kanbanJiraIssuesList,kanbanIssueCustomHistoryList,kanbanAccountHierarchySet);
     }
     
 }
