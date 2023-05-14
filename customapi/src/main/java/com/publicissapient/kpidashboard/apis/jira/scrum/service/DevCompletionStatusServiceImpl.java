@@ -1,5 +1,31 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -29,31 +55,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 @Component
 public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -68,6 +69,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	public static final String ACTUAL_COMPLETION_DATA = "actualCompletionData";
 	public static final String ISSUE_DELAY = "issueDelay";
 	public static final String DEV_COMPLETION_DATE = "devCompletionDate";
+	public static final String DUEDATE = "devDueDate";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DevCompletionStatusServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
@@ -76,7 +78,6 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	public static final String DUEDATE = "devDueDate";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -184,7 +185,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 					.filter(jiraIssue -> !allCompletedIssuesList.contains(jiraIssue.getNumber()))
 					.collect(Collectors.toList());
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
-                    notCompletedIssuesWithDevDueDate, fieldMapping);
+					notCompletedIssuesWithDevDueDate, fieldMapping);
 			Map<String, IterationPotentialDelay> issueWiseDelay = checkMaxDelayAssigneeWise(
 					notCompletedIssuesWithDevDueDate, iterationPotentialDelayList, sprintDetails);
 			Set<String> issueTypes = new HashSet<>();
@@ -215,7 +216,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 						int delay = 0;
 						for (JiraIssue jiraIssue : issues) {
 							if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
-								// Checking if dueDate is < today date for active sprint
+								// Checking if devdueDate is < today date for active sprint
 								if (DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 										.isBefore(LocalDate.now())) {
 									issueCountPlanned = issueCountPlanned + 1;
@@ -448,7 +449,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null && jiraIssue.getDevDueDate() != null) {
 			LocalDate actualCompletedDate = (LocalDate) actualCompletionData.get(ACTUAL_COMPLETE_DATE);
-			jiraIssueDelay = getDelay(DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
+			jiraIssueDelay = getDelay(
+					DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
 					actualCompletedDate);
 			resultList.put(ISSUE_DELAY, jiraIssueDelay);
 		} else {
@@ -467,14 +469,17 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	private LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(List<JiraIssue> jiraIssueList,
 			List<IterationPotentialDelay> issueWiseDelay, SprintDetails sprintDetails) {
 		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
-			jiraIssueList = jiraIssueList.stream().filter(jiraIssue -> jiraIssue.getDevDueDate() != null && DateUtil
-					.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(LocalDate.now()))
+			jiraIssueList = jiraIssueList.stream()
+					.filter(jiraIssue -> jiraIssue.getDevDueDate() != null
+							&& DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+									.isBefore(LocalDate.now()))
 					.collect(Collectors.toList());
 		} else {
 			jiraIssueList = jiraIssueList
 					.stream().filter(
 							jiraIssue -> jiraIssue.getDevDueDate() != null
-									&& DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+									&& DateUtil
+											.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 											.isBefore(DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
 													DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1)))
 					.collect(Collectors.toList());
@@ -541,7 +546,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
-			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+			iterationPotentialDelayList
+					.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
 		}
 		return iterationPotentialDelayList;
 	}
