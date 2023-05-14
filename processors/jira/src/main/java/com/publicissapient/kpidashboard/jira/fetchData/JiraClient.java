@@ -144,7 +144,7 @@ public class JiraClient {
             client = getJiraClient(JiraInfo.builder()
                     .jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
                     .password(password).jiraConfigProxyUrl(null)
-                    .jiraConfigProxyPort(null).build());
+                    .jiraConfigProxyPort(null).bearerToken(conn.isBearerToken()).build());
 
         }
         return client;

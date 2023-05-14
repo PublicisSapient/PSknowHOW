@@ -29,12 +29,6 @@ public class SaveDataImpl implements SaveData {
     private JiraIssueRepository jiraIssueRepository;
 
     @Autowired
-    private JiraCommonService jiraCommonService;
-
-    @Autowired
-    private JiraProcessorConfig jiraProcessorConfig;
-
-    @Autowired
     private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
     @Autowired
