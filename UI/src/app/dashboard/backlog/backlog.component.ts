@@ -53,13 +53,18 @@ export class BacklogComponent implements OnInit, OnDestroy{
     tableValues: []
   };
   noProjects = false;
+  globalConfig;
+  sharedObject;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
-        this.receiveSharedData(sharedobject);
+        this.sharedObject = sharedobject;
+        if(this.globalConfig || this.service.getDashConfigData()){
+          this.receiveSharedData(sharedobject);
+        }
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -67,6 +72,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+      if(this.sharedObject || this.service.getFilterObject()){
+        this.receiveSharedData(this.service.getFilterObject());
+      }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
@@ -74,10 +82,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
   ngOnInit() {
     this.selectedtype = this.service.getSelectedType();
-    const sharedObject = this.service.getFilterObject();
-    if(sharedObject && sharedObject?.selectedTab?.toLowerCase() === 'backlog') {
-      this.receiveSharedData(this.service.getFilterObject());
-    }
 
     this.httpService.getTooltipData()
       .subscribe(filterData => {
@@ -171,7 +175,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
         if (this.kpiJira?.kpiList?.length > 0) {
           this.postJiraKpi(this.kpiJira, 'jira');
         }
@@ -245,7 +249,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
         if (this.kpiZypher?.kpiList?.length > 0) {
           this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -644,5 +648,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 }
