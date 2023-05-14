@@ -29,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -121,6 +122,10 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
 
+	@Autowired
+	private ReleaseDataClientFactory releaseDataClientFactory;
+
+
 	/**
 	 * Validates and collects Jira issues using JIA API for projects with onlinemode
 	 * 
@@ -163,7 +168,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,releaseDataClientFactory,
 									getExecutionLogContext());// NOPMD
 							executor.execute(worker);
 
@@ -216,6 +221,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 				password = toolCredential.getPassword();
 			}
 
+		} else if (conn.isBearerToken()) {
+			password = decryptJiraPassword(conn.getPatOAuthToken());
 		} else {
 			username = conn.getUsername();
 			password = decryptJiraPassword(conn.getPassword());
@@ -243,7 +250,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			client = jiraRestClientFactory.getJiraClient(JiraInfo.builder()
 					.jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
 					.password(password).jiraConfigProxyUrl(null)
-					.jiraConfigProxyPort(null).build());
+					.jiraConfigProxyPort(null).bearerToken(conn.isBearerToken()).build());
 
 		}
 		return client;

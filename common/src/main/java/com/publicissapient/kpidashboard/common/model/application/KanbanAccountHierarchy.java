@@ -59,6 +59,7 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 	private ObjectId basicProjectConfigId;
 	private String isDeleted;
 	private String path;
+	private String releaseState;
 	private LocalDateTime createdDate;
 	
 
@@ -70,7 +71,10 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 		}
 		KanbanAccountHierarchy other = (KanbanAccountHierarchy) obj;
 		if (obj instanceof KanbanAccountHierarchy && this.nodeId.equals(other.nodeId)
-				&& (null == this.path || this.path.equals(other.path))) {
+				&& (null == this.path || this.path.equals(other.path))
+				&& (null == this.beginDate || this.beginDate.equals(other.beginDate))
+				&& (null == this.endDate || this.endDate.equals(other.endDate))
+				&& (null == this.releaseState || this.releaseState.equals(other.releaseState))) {
 			isEqual = true;
 
 		}
@@ -79,6 +83,6 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.nodeId, this.path);
+		return Objects.hash(this.nodeId, this.path,this.beginDate,this.endDate,this.releaseState);
 	}
 }
