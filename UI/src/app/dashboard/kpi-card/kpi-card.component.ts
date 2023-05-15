@@ -29,17 +29,18 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
   @Input() trendValueList : any
-  @Input() colors : Array<string>
+  @Input() colors : Array<any>;
   selectedTabIndex : number = 0;
   @Input() sprintsOverlayVisible : boolean = false;
   projectList : Array<string>;
   displaySprintDetailsModal : boolean = false;
   columnList = [
     { field: 'duration', header: 'Duration' },
-    { field: 'value', header: 'Kpi Value' },
+    { field: 'value', header: 'Kpi Value (Units)' },
     { field: 'params', header: 'Parameters' },
  ];
  sprintDetailsList : Array<any>;
+ colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
 
   constructor(private service: SharedService) {
   }
@@ -138,12 +139,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     this.projectList = [];
     this.sprintDetailsList = [];
     this.selectedTabIndex = 0;
-    const filterObj = this.service.getFilterObject();
-    for (let i = 0; i < filterObj.filterApplyData.selectedMap?.project.length; i++) {
-      this.projectList.push(filterObj.filterData.filter(data => {
-        return data.nodeId === filterObj.filterApplyData.selectedMap?.project[i]
-      })[0]['nodeName']);
-    }
+    this.projectList = Object.values(this.colors).map(obj=> obj['nodeName']);
     this.projectList.forEach((project,index)=>{
       const selectedProjectTrend = this.trendValueList.find(obj=>obj.data === project);
       const tempColorObjArray = Object.values(this.colors).find(obj=>obj['nodeName'] === project)['color'];
@@ -152,9 +148,9 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         selectedProjectTrend.value.forEach(element => {
           let tempObj = {};
           tempObj['duration'] = element['sSprintName'] || element['date'];
-          tempObj['value'] = element['value'];
+          tempObj['value'] = (Math.round(element['value'] * 100) / 100) + ' ' + this.kpiData.kpiDetail?.kpiUnit
           if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
-            tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(',\n');
+            tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join('<br />');
           }
           hoverObjectListTemp.push(tempObj);
         });
@@ -176,6 +172,10 @@ export class KpiCardComponent implements OnInit, OnDestroy {
 
   hasData(field: string): boolean {
     return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
+  }
+
+  getColorCssClasses(index){
+    return this.colorCssClassArray[index];
   }
 
   ngOnDestroy() {

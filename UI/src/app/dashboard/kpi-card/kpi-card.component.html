@@ -8,7 +8,7 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
-                    <span *ngIf="sprintsOverlayVisible && trendValueList?.length > 0" class="fa fa-paper-plane cursor-pointer" aria-hidden="true" (click)="prepareData()"></span>
+                     <img src="../../../assets/img/sprint-details.svg" *ngIf="sprintsOverlayVisible && trendValueList?.length > 0"  (click)="prepareData()" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon" />
                 </h3>
             </div>
         </div>
@@ -103,19 +103,19 @@
 </div>
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [modal]="true" [draggable]="true" [resizable]="true">
-    <p-header>{{kpiData.kpiName}}</p-header>
+    <p-header>{{kpiData?.kpiName}}</p-header>
     <div class="dialog-body p-mb-4">
         <p-tabView [(activeIndex)]="selectedTabIndex">
 
             <ng-container *ngFor="let project of projectList;  let i = index;">
-                <p-tabPanel header="{{project}}" [headerStyle]="{'background-color': sprintDetailsList[selectedTabIndex]['color']}">
-
+                <p-tabPanel header="{{project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
                     <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" styleClass="p-datatable-gridlines kpi-table">
                         <ng-template pTemplate="header" let-columns>
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                <th *ngIf="hasData(col.field)">
+                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field">
                                     {{ col.header }}
+                                    <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
                                 </th>
                                </ng-container>
                             </tr>
@@ -123,8 +123,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns">
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                    <td *ngIf="hasData(col.field)">
-                                        {{ rowData[col.field] }}
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="rowData[col.field]" class="p-text-center">
                                     </td>
                                </ng-container>
                             </tr>
