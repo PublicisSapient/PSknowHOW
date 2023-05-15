@@ -183,8 +183,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		if (null != leafNode) {
 			LOGGER.info("First Time Pass rate -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());

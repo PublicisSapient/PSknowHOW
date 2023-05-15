@@ -219,6 +219,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
 		Set<String> totalNonBugIssues = new HashSet<>();
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
