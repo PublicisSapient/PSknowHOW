@@ -56,7 +56,7 @@ EXPOSE 50012
 EXPOSE 50014
 EXPOSE 50019
 EXPOSE 50020
-EXPOSE 50021
+EXPOSE 50022
 
 ADD processors/nonjira_combined_processor_docker/start_combined_collector.sh start_combined_collector.sh
 RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
