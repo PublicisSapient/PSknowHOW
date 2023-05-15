@@ -385,6 +385,7 @@ const kpiDropdowns = {
         },
         selectedTab: 'Release'
     };
+    component.globalConfig = userConfigData;
     const spy = spyOn(component, 'receiveSharedData');
     service.passDataToDashboard.emit(sharedObject);
     fixture.detectChanges();
