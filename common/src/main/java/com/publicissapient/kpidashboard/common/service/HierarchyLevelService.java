@@ -13,4 +13,6 @@ public interface HierarchyLevelService {
     HierarchyLevel getProjectHierarchyLevel();
 
     HierarchyLevel getSprintHierarchyLevel();
+
+    HierarchyLevel getReleaseHierarchyLevel();
 }

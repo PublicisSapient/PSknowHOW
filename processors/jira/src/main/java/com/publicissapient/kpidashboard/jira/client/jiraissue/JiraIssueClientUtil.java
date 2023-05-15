@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jettison.json.JSONException;
@@ -160,6 +162,19 @@ public final class JiraIssueClientUtil {
         return accountHierarchyList.stream()
                 .collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 
+    }
+
+    /**
+     *
+     * @param kanbanAccountHierarchyRepo
+     *          list if hierarchy
+     * @return
+     *      map of node,path and its hierarchy
+     */
+    public static Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy(KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo) {
+        List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
+        return accountHierarchyList.stream()
+                .collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
     }
 
     public static List<String> getLabelsList(Issue issue) {

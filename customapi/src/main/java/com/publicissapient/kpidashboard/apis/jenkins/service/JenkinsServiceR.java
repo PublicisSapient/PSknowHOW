@@ -75,7 +75,7 @@ public class JenkinsServiceR {
 		try {
 
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(),false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			}	

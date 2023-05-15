@@ -85,6 +85,11 @@
 .export-button button{
 line-height: 1;
 border: none;
+padding: 0.75rem !important;
+}
+
+.markerInfo{
+    font-size: 0.75rem;
 }
 
 ::ng-deep .p-overflow-hidden {
@@ -160,6 +165,7 @@ border: none;
 }
 :host ::ng-deep.p-datatable-header{
     border: none;
+    padding-top: 0px;
 }
 
 :host ::ng-deep.p-multiselect{

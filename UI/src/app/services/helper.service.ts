@@ -62,7 +62,7 @@ export class HelperService {
     // this is used for making request object for kpi .Here first parameter is kpi source i.e
     // sonar , jira etc and second parameter is Kanban is true or false
     // type is quality or productivity
-    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type) {
+    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type,selectedTab) {
         const kpiRequestObject = <any>{};
 
         kpiRequestObject.kpiList = <any>[];
@@ -73,6 +73,9 @@ export class HelperService {
 
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
+            }
+            if(obj?.kpiCategory){
+              condition =   obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
             if (condition) {
@@ -88,6 +91,7 @@ export class HelperService {
             kpiRequestObject.level = filterApplyData.level;
             kpiRequestObject.selectedMap = filterApplyData.selectedMap;
             kpiRequestObject.sprintIncluded = filterApplyData.sprintIncluded;
+            kpiRequestObject.label = filterApplyData.label;
             // start date and end Date is required in kanban so ading it if no filter Selected
             if (isKanban) {
                 let onlyDateAvailable = true;
@@ -115,6 +119,7 @@ export class HelperService {
             kpiRequestObject.level = filterData[2]?.level;
             kpiRequestObject.selectedMap = {};
             kpiRequestObject.selectedMap[filterData[2]?.label] = [];
+            kpiRequestObject.label = filterApplyData.label;
             for (let i = 0; i < filterData[2]?.filterData?.length; i++) {
                 kpiRequestObject.ids.push(filterData[2]?.filterData[i]?.nodeId);
                 kpiRequestObject.selectedMap[filterData[2]?.label].push(filterData[2]?.filterData[i]?.nodeId);

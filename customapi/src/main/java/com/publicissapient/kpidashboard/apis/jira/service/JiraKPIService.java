@@ -22,13 +22,16 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,10 +280,26 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 				.filter(jiraIssueCustomHistory -> numbersList.contains(jiraIssueCustomHistory.getStoryID()))
 				.collect(Collectors.toList());
 	}
-	
+
+	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
+		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
+			projectWiseDefectTypes.forEach((project, values) ->
+				filteredJiraIssue
+						.addAll(jiraIssuesForCurrentSprint.stream()
+								.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+										&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+								.collect(Collectors.toList()))
+			);
+		}
+		return filteredJiraIssue;
+	}
+
+
 	/**
 	 * Popup date for the backlog issues
-	 * 
+	 *
 	 * @param overAllmodalValues
 	 * @param modalValues
 	 * @param jiraIssue

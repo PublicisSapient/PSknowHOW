@@ -63,11 +63,13 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
 
-    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
+    DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
+
+    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
 
     CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Defect added after Sprint Start", "Resolved")),
 
-    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee")),
+    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",Arrays.asList("Defect ID", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)" ,"Root Cause" , "Priority","Assignee", "Created during Iteration")),
 
     REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),
 
@@ -194,7 +196,15 @@ public enum KPIExcelColumn {
 
     REFINEMENT_REJECTION_RATE("kpi139",
             Arrays.asList("Issue ID", "Issue Description", "Priority", "Status", "Change Date", "Weeks",
-                    "Issue Status"));
+                    "Issue Status")),
+
+    DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_RCA_RELEASE("kpi142",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee"));
 
 
     // @formatter:on

@@ -68,49 +68,24 @@
         </div>
     </div>
     <div class="kpi-card-body" 
-    [ngStyle]="{'height': showChartView ? '365px' : '110px', 
+    [ngStyle]="{'height': showChartView ? '400px' : '150px', 
     'min-height': showChartView ? '330px' : '100px'}">
-        <div class="kpi-card-indicator p-jc-evenly" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
             >
-            <ng-container *ngFor="let item of trendData; let i = index;">
+            <div *ngFor="let item of trendData; let i = index;" class="trend-box">
                 <app-trend-indicator
-                    [dataTrend]="item" [color]="getColor(item?.hierarchyName)" [kpiData]="kpiData"
+                    [dataTrend]="item" [color]="trendBoxColorObj[item?.hierarchyName]?.color" [kpiData]="kpiData"
                     [noOfBox]="trendData?.length">
                 </app-trend-indicator>
-                <!--Grouped Column Plus Chart has line value(lineValue) and bar value(value). We need to send lineValue to the latest value indicator.-->
-                <!-- <ng-container *ngIf="kpiData?.kpiDetail?.chartType !== 'grouped_column_plus_line'">
-                    <app-trend-indicator *ngIf="!kpiData?.kpiDetail?.trendCalculative"
-                        [dataTrend]="trendsObj"
-                        [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
-                        [noOfBox]="trendData?.length">
-                    </app-trend-indicator>
-                    <app-trend-indicator *ngIf="kpiData?.kpiDetail?.trendCalculative"
-                        [dataTrend]="[item?.value[item?.value?.length-1][lhs], item?.value[item?.value?.length - 1][rhs]]"
-                        [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
-                        [noOfBox]="trendData?.length">
-                    </app-trend-indicator>
-                </ng-container>
-                <ng-container *ngIf="kpiData?.kpiDetail?.chartType === 'grouped_column_plus_line'">
-                    <app-trend-indicator *ngIf="!kpiData?.kpiDetail?.trendCalculative"
-                        [dataTrend]="item?.value?.length > 1 ? [item?.value[item?.value?.length - 2]?.lineValue, item?.value[item?.value?.length - 1]?.lineValue]  : [item?.value[item?.value?.length - 1]?.lineValue]"
-                        [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
-                        [noOfBox]="trendData?.length">
-                    </app-trend-indicator>
-                    <app-trend-indicator *ngIf="kpiData?.kpiDetail?.trendCalculative"
-                        [dataTrend]="[item?.value[item?.value?.length-1][lhs], item?.value[item?.value?.length - 1][rhs]]"
-                        [maturity]="checkMaturity(item)" [color]="getColor(item?.data)" [kpiData]="kpiData"
-                        [noOfBox]="trendData?.length">
-                    </app-trend-indicator>
-                </ng-container> -->
-            </ng-container>
+            </div>
         </div>
-        <div class="kpi-card-indicator p-jc-evenly" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
-            <ng-container *ngFor="let item of trendData; let i = index;">
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
+            <div class="trend-box" *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
-                    [dataTrend]="item" [cols]="cols" [color]="getColor(item?.name)" 
+                    [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color" 
                     [kpiData]="kpiData" [noOfBox]="trendData?.length">
                 </app-trend-indicator>
-            </ng-container>
+            </div>
         </div>
         <!--place for chart to be rendered-->
         <ng-content></ng-content>
