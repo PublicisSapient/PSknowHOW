@@ -369,16 +369,16 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
 						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));;
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
 			} else {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate));;
 			}
 		}
 		return hours;
