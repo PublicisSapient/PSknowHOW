@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,12 +68,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
@@ -356,22 +352,22 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	private Map<String, Object> calStartAndEndDate(JiraIssueCustomHistory issueCustomHistory,
 			SprintDetails sprintDetail, FieldMapping fieldMapping) {
 		List<String> inProgressStatuses = new ArrayList<>();
-		List<JiraIssueSprint> filterStorySprintDetails = new ArrayList<>();
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
 
 		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		Map<String, Object> resultList = new HashMap<>();
 
-		// filtering storySprintDetails lies in between sprintStart and sprintEnd
-		filterStorySprintDetails = getFilterStorySprintDetails(issueCustomHistory, filterStorySprintDetails,
+		// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
+		filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
 				sprintStartDate, sprintEndDate);
 
 		// Creating the set of completed status
 		Set<String> closedStatus = sprintDetail.getCompletedIssues().stream().map(SprintIssue::getStatus)
 				.collect(Collectors.toSet());
 
-		// sorting the story history on basis of activityDate
-		filterStorySprintDetails.sort(Comparator.comparing(JiraIssueSprint::getActivityDate));
+		// sorting the story history on basis of UpdatedOn
+		filterStatusUpdationLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		// Getting inProgress Status
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
@@ -382,20 +378,20 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		boolean isStartDateFound = false;
 
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-		for (JiraIssueSprint storySprintDetail : filterStorySprintDetails) {
+		for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
 			LocalDate activityLocalDate = LocalDate
-					.parse(storySprintDetail.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+					.parse(statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER);
 
-			if (inProgressStatuses.contains(storySprintDetail.getFromStatus()) && !isStartDateFound) {
+			if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
 				startDate = activityLocalDate;
 				isStartDateFound = true;
 			}
 
-			if (closedStatus.contains(storySprintDetail.getFromStatus())) {
-				if (closedStatusDateMap.containsKey(storySprintDetail.getFromStatus())) {
+			if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
+				if (closedStatusDateMap.containsKey(statusUpdationLog.getChangedTo())) {
 					closedStatusDateMap.clear();
 				}
-				closedStatusDateMap.put(storySprintDetail.getFromStatus(), activityLocalDate);
+				closedStatusDateMap.put(statusUpdationLog.getChangedTo(), activityLocalDate);
 			}
 		}
 		// Getting the min date of closed status.
@@ -406,16 +402,16 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	}
 
 	// Filtering the history which happened inside the sprint on basis of activity date
-	private List<JiraIssueSprint> getFilterStorySprintDetails(JiraIssueCustomHistory issueCustomHistory,
-			List<JiraIssueSprint> filterStorySprintDetails, LocalDate sprintStartDate, LocalDate sprintEndDate) {
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			filterStorySprintDetails = issueCustomHistory.getStorySprintDetails().stream()
+	private List<JiraHistoryChangeLog> getFilterStatusUpdationLogs(JiraIssueCustomHistory issueCustomHistory,
+																   List<JiraHistoryChangeLog> filterStatusUpdationLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"), DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}
-		return filterStorySprintDetails;
+		return filterStatusUpdationLogs;
 	}
 
 	/**

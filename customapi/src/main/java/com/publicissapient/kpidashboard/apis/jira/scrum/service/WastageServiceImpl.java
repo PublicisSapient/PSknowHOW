@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,7 +64,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -284,20 +286,20 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList) {
-		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 		List<Integer> resultList = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStorySprintDetails())) {
-			storySprintDetails = issueCustomHistory.getStorySprintDetails();
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			statusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		}
 		int blockedTime = 0;
 		int waitedTime = 0;
-		for (int i = 0; i < storySprintDetails.size(); i++) {
-			JiraIssueSprint entry = storySprintDetails.get(i);
+		for (int i = 0; i < statusUpdationLog.size(); i++) {
+			JiraHistoryChangeLog entry = statusUpdationLog.get(i);
 
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, storySprintDetails, i,
+			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog, i,
 					sprintDetail, blockedTime);
-			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, storySprintDetails, i,
+			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLog, i,
 					sprintDetail, waitedTime);
 		}
 		resultList.add(calculateBlockandwaitTimeinDays(waitedTime));
@@ -322,27 +324,27 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 *
 	 * @param entry
 	 * @param fieldMappingStatus
-	 * @param storySprintDetails
+	 * @param statusUpdationLog
 	 * @param index
 	 * @param sprintDetails
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraIssueSprint entry, List<String> fieldMappingStatus,
-			List<JiraIssueSprint> storySprintDetails, int index, SprintDetails sprintDetails, int time) {
-		DateTime sprintStartDate = DateUtil.stringToDateTime(sprintDetails.getStartDate(), DATE_TIME_FORMAT);
-		DateTime sprintEndDate = DateUtil.stringToDateTime(sprintDetails.getEndDate(), DATE_TIME_FORMAT);
-		DateTime entryActivityDate = entry.getActivityDate();
-		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getFromStatus())) {
-			int hours = 0;
-			// Checking for indexOutOfBound in storySprintDetails list
-			if (storySprintDetails.size() == index + 1) {
-				hours = hoursForLastEntryOfStorySprintDetails(sprintDetails, sprintStartDate, sprintEndDate,
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry, List<String> fieldMappingStatus,
+			List<JiraHistoryChangeLog> statusUpdationLog, int index, SprintDetails sprintDetails, int time) {
+		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime entryActivityDate = entry.getUpdatedOn();
+		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
+			long hours = 0;
+			// Checking for indexOutOfBound in statusUpdationLog list
+			if (statusUpdationLog.size() == index + 1) {
+				hours = hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
 						entryActivityDate);
 			} else {
-				// Find fetch the next element of storySprintDetails
-				JiraIssueSprint nextEntry = storySprintDetails.get(index + 1);
-				DateTime nextEntryActivityDate = nextEntry.getActivityDate();
+				// Find fetch the next element of statusUpdationLog
+				JiraHistoryChangeLog nextEntry = statusUpdationLog.get(index + 1);
+				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
 				// Checking if both alternate element are inside the sprint start and end date
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
@@ -359,63 +361,63 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	// Calculate the time for entries which lies between sprint start and end date
 	// or one of them is inside sprint start end date
-	private int hoursForEntriesInBetweenSprint(DateTime sprintStartDate, DateTime sprintEndDate,
-			DateTime entryActivityDate, DateTime nextEntryActivityDate) {
-		int hours;
+	private long hoursForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
+			LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+		long hours;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = Hours.hoursBetween(entryActivityDate, nextEntryActivityDate).getHours()
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate, nextEntryActivityDate).getHours()
-						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = Hours.hoursBetween(entryActivityDate, sprintEndDate).getHours()
-						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate, sprintEndDate).getHours()
-						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
 			}
 		}
 		return hours;
 	}
 
-	// Calculate the time for last entry of storySprintDetails
-	private int hoursForLastEntryOfStorySprintDetails(SprintDetails sprintDetails, DateTime sprintStartDate,
-			DateTime sprintEndDate, DateTime entryActivityDate) {
-		int hours = 0;
+	// Calculate the time for last entry of statusUpdationLog
+	private long hoursForLastEntryOfStatusUpdationLog(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
+			LocalDateTime sprintEndDate, LocalDateTime entryActivityDate) {
+		long hours = 0;
 		if (entryActivityDate.isAfter(sprintStartDate)) {
 			if (entryActivityDate.isBefore(sprintEndDate)) {
 				if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-					hours = Hours.hoursBetween(entryActivityDate, DateTime.now()).getHours()
-							- minusHoursOfWeekEndDays(entryActivityDate, DateTime.now());
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, LocalDateTime.now())
+							- minusHoursOfWeekEndDays(entryActivityDate, LocalDateTime.now()));
 				} else {
 
-					hours = Hours.hoursBetween(entryActivityDate, sprintEndDate).getHours()
-							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate);
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
+							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
 				}
 			}
 		} else {
 			if (Objects.equals(sprintDetails.getState(), SprintDetails.SPRINT_STATE_ACTIVE)) {
-				DateTime currDate = DateTime.now();
-				hours = Hours.hoursBetween(sprintStartDate, currDate).getHours()
-						- minusHoursOfWeekEndDays(sprintStartDate, currDate);
+				LocalDateTime currDate = LocalDateTime.now();
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, currDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, currDate));
 			} else {
-				hours = Hours.hoursBetween(sprintStartDate, sprintEndDate).getHours()
+				hours = ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate);
 			}
 		}
 		return hours;
 	}
 
-	public boolean isWeekEnd(DateTime dateTime) {
-		int dayOfWeek = dateTime.getDayOfWeek();
+	public boolean isWeekEnd(LocalDateTime localDateTime) {
+		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
 		return dayOfWeek == 6 || dayOfWeek == 7;
 	}
 
-	public int saturdaySundayCount(DateTime d1, DateTime d2) {
+	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
 		int countWeekEnd = 0;
 		while (!d1.isAfter(d2)) {
 			if (isWeekEnd(d1)) {
@@ -426,7 +428,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return countWeekEnd;
 	}
 
-	public int minusHoursOfWeekEndDays(DateTime d1, DateTime d2) {
+	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
 		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
 		if (countOfWeekEndDays != 0) {
 			return countOfWeekEndDays * 24;

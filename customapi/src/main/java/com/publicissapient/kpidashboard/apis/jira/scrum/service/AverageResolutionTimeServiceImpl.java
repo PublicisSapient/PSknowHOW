@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -207,9 +209,11 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 			Map<String, Double> issueTypeAvgTime = new HashMap<>();
 			if (sprintIssueTypeWiseTime.containsKey(currentSprintComponentId)) {
 				issueTypeAvgTime = sprintIssueTypeWiseTime.get(currentSprintComponentId);
-				List<ResolutionTimeValidation> resolutionTimeValidations = sprintWiseResolution.get(currentSprintComponentId);
+				List<ResolutionTimeValidation> resolutionTimeValidations = sprintWiseResolution
+						.get(currentSprintComponentId);
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateAverageResolutionTime(node.getSprintFilter().getName(),resolutionTimeValidations, excelData);
+					KPIExcelUtility.populateAverageResolutionTime(node.getSprintFilter().getName(),
+							resolutionTimeValidations, excelData);
 				}
 			}
 			Set<String> issueTypesFound = issueTypeAvgTime.keySet();
@@ -247,12 +251,12 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 
-				jiraIssueCustomHistory.getStorySprintDetails()
-						.sort(Comparator.comparing(JiraIssueSprint::getActivityDate));
+				jiraIssueCustomHistory.getStatusUpdationLog()
+						.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 				FieldMapping fieldMapping = fieldMappingMap.get(jiraIssueCustomHistory.getBasicProjectConfigId());
-				List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
+				List<JiraHistoryChangeLog> statusUpdationLogs = jiraIssueCustomHistory.getStatusUpdationLog();
 				sprintWiseResult.put(jiraIssueCustomHistory.getStoryID(),
-						getStoryCompletionDays(fieldMapping, storySprintDetails));
+						getStoryCompletionDays(fieldMapping, statusUpdationLogs));
 			}
 
 		}
@@ -265,11 +269,11 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 	 *
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @param storySprintDetails
-	 *            storySprintDetails
+	 * @param statusUpdationLog
+	 *            statusUpdationLog
 	 * @return days
 	 */
-	private Double getStoryCompletionDays(FieldMapping fieldMapping, List<JiraIssueSprint> storySprintDetails) {
+	private Double getStoryCompletionDays(FieldMapping fieldMapping, List<JiraHistoryChangeLog> statusUpdationLog) {
 		Double storyCompletionDays = 0.0;
 		long developmentTime = 0L;
 		long lastClosedStatusTime = 0L;
@@ -281,14 +285,14 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 
 		List<String> storyDevelopmentStatuses = (List<String>) CollectionUtils
 				.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
-		for (int i = 0; i < storySprintDetails.size(); i++) {
-			if (storyDevelopmentStatuses.contains(storySprintDetails.get(i).getFromStatus()) && developmentTime == 0L) {
+		for (int i = 0; i < statusUpdationLog.size(); i++) {
+			if (storyDevelopmentStatuses.contains(statusUpdationLog.get(i).getChangedTo()) && developmentTime == 0L) {
 				devStatusFound = true;
-				developmentTime = storySprintDetails.get(i).getActivityDate().getMillis();
+				developmentTime = statusUpdationLog.get(i).getUpdatedOn().toInstant(ZoneOffset.UTC).toEpochMilli();
 			}
-			if (storyDeliveredStatuses.contains(storySprintDetails.get(i).getFromStatus())) {
+			if (storyDeliveredStatuses.contains(statusUpdationLog.get(i).getChangedTo())) {
 				closedStatusFound = true;
-				lastClosedStatusTime = storySprintDetails.get(i).getActivityDate().getMillis();
+				lastClosedStatusTime = statusUpdationLog.get(i).getUpdatedOn().toInstant(ZoneOffset.UTC).toEpochMilli();
 			}
 
 		}
