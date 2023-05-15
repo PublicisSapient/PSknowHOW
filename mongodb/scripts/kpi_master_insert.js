@@ -3672,7 +3672,7 @@ db.getCollection('kpi_master').insert(
      "isPositiveTrend": true,
      "showTrend": false,
      "isAdditionalFilterSupport": false,
-     "kpiFilter": "dropdown",
+     "kpiFilter": "radioButton",
      "boxType": "chart",
      "calculateMaturity": false
    },
