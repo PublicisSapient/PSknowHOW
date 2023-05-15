@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +85,8 @@ public class FTPRServiceImplTest {
 	private KpiHelperService kpiHelperService;
 	@InjectMocks
 	private FTPRServiceImpl ftprService;
+	@Mock
+	private JiraServiceR jiraService;
 
 	@Mock
 	private SprintRepository sprintRepository;
@@ -141,7 +144,7 @@ public class FTPRServiceImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(sprintRepository.findBySprintID(any())).thenReturn(sprintDetails);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(storyList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
