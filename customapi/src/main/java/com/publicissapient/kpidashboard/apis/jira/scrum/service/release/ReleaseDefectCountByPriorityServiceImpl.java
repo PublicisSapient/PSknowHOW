@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.jira.scrum.service.milestone;
+package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +58,11 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 @Component
-public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectCountByPriorityServiceImpl
+		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MilestoneDefectCountByRCAServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDefectCountByPriorityServiceImpl.class);
 	private static final String TOTAL_DEFECT = "totalDefects";
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -79,7 +80,7 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Defect count by RCA Milestone -> Requested sprint : {}", leafNode.getName());
+			LOGGER.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> defectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -91,7 +92,7 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(basicProjectConfigId,defectType);
+				mapOfProjectFilters.put(basicProjectConfigId, defectType);
 				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
@@ -101,7 +102,7 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_RCA_MILESTONE.name();
+		return KPICode.DEFECT_COUNT_BY_PRIORITY_RELEASE.name();
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("MilestoneDefectCountByRCAServiceImpl -> getKpiData ->  : {}", kpiElement);
+		LOGGER.info("ReleaseDefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -133,16 +134,16 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
-				Map<String, List<JiraIssue>> rcaData = getRCAWiseList(totalDefects);
-				LOGGER.info("MilestoneDefectCountByRCAServiceImpl -> rcaDataList ->  : {}", rcaData);
-				Map<String, Integer> rcaCountMap = new HashMap<>();
-				getPriorityRCACount(rcaData, rcaCountMap);
-				if (MapUtils.isNotEmpty(rcaCountMap)) {
+				Map<String, List<JiraIssue>> priorityWiseList = getPriorityWiseList(totalDefects);
+				LOGGER.info("ReleaseDefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
+				Map<String, Integer> priorityWiseCountMap = new HashMap<>();
+				getPriorityWiseCount(priorityWiseList, priorityWiseCountMap);
+				if (MapUtils.isNotEmpty(priorityWiseCountMap)) {
 					List<DataCount> trendValueListOverAll = new ArrayList<>();
 					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = rcaCountMap.values().stream().mapToInt(Integer::intValue).sum();
+					int sumOfDefectsCount = priorityWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
 					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(rcaCountMap);
+					overallData.setValue(priorityWiseCountMap);
 					overallData.setKpiGroup(CommonConstant.OVERALL);
 					overallData.setSProjectName(latestRelease.getProjectFilter().getName());
 					trendValueListOverAll.add(overallData);
@@ -158,11 +159,10 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 							middleTrendValueListOverAll);
 					filterDataList.add(filterDataOverall);
 					kpiElement.setSprint(latestRelease.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_MILESTONE.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_MILESTONE.getColumns());
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
-					kpiElement.setTrendValueList(filterDataList);
-					LOGGER.info("MilestoneDefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}",
+					LOGGER.info("ReleaseDefectCountByPriorityServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, filterDataList.get(0));
 				}
 			}
@@ -170,9 +170,10 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 		}
 	}
 
-	private static void getPriorityRCACount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			rcaCountMap.put(rcaEntry.getKey(), rcaEntry.getValue().size());
+	private static void getPriorityWiseCount(Map<String, List<JiraIssue>> priorityData,
+			Map<String, Integer> priorityCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> priorityEntry : priorityData.entrySet()) {
+			priorityCountMap.put(priorityEntry.getKey(), priorityEntry.getValue().size());
 		}
 	}
 
@@ -180,18 +181,16 @@ public class MilestoneDefectCountByRCAServiceImpl extends JiraKPIService<Integer
 			List<JiraIssue> jiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateMilestoneDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
 		}
 	}
 
-	private Map<String, List<JiraIssue>> getRCAWiseList(List<JiraIssue> defectList) {
-		return defectList.stream().filter(jiraIssue -> {
-			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				List<String> rcaDummy = new ArrayList<>();
-				rcaDummy.add("-");
-				jiraIssue.setRootCauseList(rcaDummy);
+	private Map<String, List<JiraIssue>> getPriorityWiseList(List<JiraIssue> defectJiraIssueList) {
+		return defectJiraIssueList.stream().filter(jiraIssue -> {
+			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
+				jiraIssue.setPriority("-");
 			}
 			return true;
-		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
+		}).collect(Collectors.groupingBy(JiraIssue::getPriority));
 	}
 }

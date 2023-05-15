@@ -60,7 +60,7 @@ const routes: Routes = [
       { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'milestone', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
       { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
       {

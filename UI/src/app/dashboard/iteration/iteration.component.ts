@@ -92,6 +92,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   tableHeaders=[];
   filteredColumn;
   markerInfo=[];
+  globalConfig;
+  sharedObject;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -100,7 +102,10 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
-        this.receiveSharedData(sharedobject);
+        this.sharedObject = sharedobject;
+        if(this.globalConfig || this.service.getDashConfigData()){
+          this.receiveSharedData(sharedobject);
+        }
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -108,7 +113,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig){
+      if(globalConfig && this.sharedObject){
+        if(this.sharedObject || this.service.getFilterObject()){
+          this.receiveSharedData(this.service.getFilterObject());
+        }
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -199,7 +207,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Iteration');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -250,9 +258,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
-    if (this.service.getFilterObject()) {
-      this.receiveSharedData(this.service.getFilterObject());
-    }
 
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
@@ -281,6 +286,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 
 

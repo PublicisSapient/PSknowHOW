@@ -62,14 +62,18 @@ export class MilestoneComponent implements OnInit {
   allKpiArray: any = [];
   kpiDropdowns = {};
   kpiLoader = true;
+  globalConfig;
+  sharedObject;
 
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     
     /** When filter dropdown change */
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'milestone') {
-        this.receiveSharedData(sharedobject);
+      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'release') {
+        if(this.globalConfig || this.service.getDashConfigData()){
+          this.receiveSharedData(sharedobject);
+        }
       }
     }));
 
@@ -84,7 +88,10 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if(globalConfig){
-        this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'milestone')[0]?.kpis;
+        if(this.sharedObject || this.service.getFilterObject()){
+          this.receiveSharedData(this.service.getFilterObject());
+        }
+        this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
     }));
@@ -125,7 +132,7 @@ export class MilestoneComponent implements OnInit {
    **/
   receiveSharedData($event) {
     if(this.service.getDashConfigData()){
-      this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'milestone')[0]?.kpis;
+      this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
       this.filterData = $event.filterData;
@@ -155,7 +162,7 @@ export class MilestoneComponent implements OnInit {
    /** creating a set of unique group Ids */
     const groupIdSet = new Set();
     this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Milestone') {
+      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Release') {
         groupIdSet.add(obj.groupId);
       }
     });
@@ -163,7 +170,7 @@ export class MilestoneComponent implements OnInit {
   /** sending requests after grouping the the KPIs according to group Id */
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Release');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -256,9 +263,6 @@ export class MilestoneComponent implements OnInit {
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
     this.selectedtype = this.service.getSelectedType();
-    if (this.service.getFilterObject()) {
-      this.receiveSharedData(this.service.getFilterObject());
-    }
 
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
@@ -562,5 +566,7 @@ export class MilestoneComponent implements OnInit {
    /** unsubscribing all Kpi Request  */
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 }
