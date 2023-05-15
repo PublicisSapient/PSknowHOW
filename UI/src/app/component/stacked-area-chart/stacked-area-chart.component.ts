@@ -14,8 +14,24 @@ export class StackedAreaChartComponent implements OnInit {
     this.draw();
   }
 
+  
+
   draw() {
     // set the dimensions and margins of the graph
+    const formatDate = (dateInput) =>{
+      const today = new Date(dateInput);
+      console.log(today);
+      
+      const yyyy = today.getFullYear();
+      let mm:any = today.getMonth() + 1; // Months start at 0!
+      let dd:any = today.getDate();
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      
+      const formattedDate = dd + '-' + mm + '-' + yyyy;
+      return formattedDate;
+    }
+
     const margin = { top: 60, right: 230, bottom: 50, left: 50 },
       width = 660 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
@@ -32,13 +48,14 @@ export class StackedAreaChartComponent implements OnInit {
     // Parse the Data
     d3.csv("./assets/date-wise-issue-type.csv").then(function (data) {
 
-
+      // console.log(data);
+      
       //////////
       // GENERAL //
       //////////
 
       // List of groups = header of the csv files
-      const keys = data.columns.slice(1)
+      const keys = data.columns.slice(3)
 
       // color palette
       const color = d3.scaleOrdinal()
@@ -58,8 +75,9 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add X axis
       const x = d3.scaleLinear()
-        .domain(d3.extent(data, function (d) { return d.year; }))
+        .domain(d3.extent(data, function (d) { const xInput = formatDate(d.date); console.log(xInput); return xInput; }))
         .range([0, width]);
+        
       const xAxis = svg.append("g")
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(x).ticks(5))
@@ -69,14 +87,14 @@ export class StackedAreaChartComponent implements OnInit {
         .attr("text-anchor", "end")
         .attr("x", width)
         .attr("y", height + 40)
-        .text("Time (year)");
+        .text("Time (months)");
 
       // Add Y axis label:
       svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", 0)
         .attr("y", -20)
-        .text("# of baby born")
+        .text("")
         .attr("text-anchor", "start")
 
       // Add Y axis
@@ -115,7 +133,7 @@ export class StackedAreaChartComponent implements OnInit {
         .x(function (d) { return x(d.data.year); })
         .y0(function (d) { return y(d[0]); })
         .y1(function (d) { return y(d[1]); })
-
+      
       // Show the areas
       areaChart
         .selectAll("mylayers")
