@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +57,6 @@ import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasi
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author tauakram
@@ -136,7 +136,10 @@ public class FilterHelperService {
 					.stream()
 					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
 							&& node.getAccountHierarchy().getSprintState() != null
-							&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))) {
+							&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
+			|| data.getNode()
+					.stream()
+					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 				hierarchyData.add(data);
 			}
 		});
@@ -582,20 +585,26 @@ public class FilterHelperService {
 		}
 	}
 
-	public String getHierarachyLevelId(int level, boolean isKanban) {
+	public String getHierarachyLevelId(int level, String label, boolean isKanban) {
 		String hierarchyId = CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 		Map<String, HierarchyLevel> map = getHierarchyLevelMap(isKanban);
-
 		if (MapUtils.isNotEmpty(map)) {
-			hierarchyId = map.values().stream().filter(hlevel -> hlevel.getLevel() == level)
-					.map(HierarchyLevel::getHierarchyLevelId).findFirst()
-					.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			if (StringUtils.isNotEmpty(label)) {
+				hierarchyId = map.values().stream().filter(hlevel -> (hlevel.getLevel() == level)
+						&& (StringUtils.isNotEmpty(label) && hlevel.getHierarchyLevelId().equalsIgnoreCase(label)))
+						.map(HierarchyLevel::getHierarchyLevelId).findFirst()
+						.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			} else {
+				hierarchyId = map.values().stream().filter(hlevel -> (hlevel.getLevel() == level))
+						.map(HierarchyLevel::getHierarchyLevelId).findFirst()
+						.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			}
 		}
 		return hierarchyId;
 	}
 
 	public String getFirstHierarachyLevel() {
-		return getHierarachyLevelId(1, true);
+		return getHierarachyLevelId(1,"", true);
 	}
 
 	public Map<String, Integer> getHierarchyIdLevelMap(boolean isKanban) {

@@ -18,6 +18,34 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
@@ -41,29 +69,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -122,12 +129,21 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public Collection<UserInfo> getUsers() {
-        Iterable<UserInfo> userInfoList = this.userInfoRepository.findAll();
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        List<String> userNames = userInfoList.stream()
+        	    .map(UserInfo::getUsername)
+        	    .collect(Collectors.toList());
+
+        List<Authentication> authentications=authenticationRepository.findByUsernameIn(userNames);
+
+    	Map<String, Authentication> authMap = authentications.stream()
+				.collect(Collectors.toMap(Authentication::getUsername, Function.identity()));
+
         List<UserInfo> nonApprovedUserList = new ArrayList<>();
 
         userInfoList.forEach(userInfo -> {
 
-            Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
+            Authentication auth = authMap.get(userInfo.getUsername());
             if (auth != null) {
                 userInfo.setEmailAddress(auth.getEmail());
                 if (!auth.isApproved()) {
@@ -298,6 +314,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     public ServiceResponse updateUserRole(String username, UserInfo userInfo) {
         UserInfo existingUserInfo = userInfoRepository.findByUsername(username);
 
+        existingUserInfo = createUserInCaseSSOUserNotFound(existingUserInfo,userInfo);
+
         if (existingUserInfo == null) {
             return new ServiceResponse(false, "No user in user_info collection", userInfo);
         }
@@ -305,7 +323,18 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (resultUserInfo == null) {
             return new ServiceResponse(false, "Unable to update Role.", null);
         }
+        tokenAuthenticationService.updateExpiryDate(resultUserInfo.getUsername(), LocalDateTime.now().toString());
         return new ServiceResponse(true, "Updated the role Successfully", resultUserInfo);
+    }
+
+    private UserInfo createUserInCaseSSOUserNotFound(UserInfo existingUserInfo, UserInfo userInfo) {
+        if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) &&
+                null != userInfo.getAuthType() && userInfo.getAuthType().equals(AuthType.SSO)) {
+            UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
+                    userInfo.getEmailAddress());
+            existingUserInfo = save(defaultUserInfo);
+        }
+        return existingUserInfo;
     }
 
     /**
@@ -397,8 +426,44 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfoRepository.findByAuthType(authType);
     }
 
+
+    @Override
+    public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email){
+        UserInfo userInfo = getUserInfo(username);
+        if(null == userInfo){
+            userInfo = createDefaultUserInfo(username,authType,email);
+            userInfo = save(userInfo);
+        }
+        UserInfoDTO userInfoDTO = convertToDTOObject(userInfo);
+        return userInfoDTO;
+    }
+
+    private UserInfoDTO convertToDTOObject(UserInfo userInfo){
+        UserInfoDTO userInfoDTO = null;
+        if(null != userInfo) {
+            userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername())
+                    .authType(userInfo.getAuthType()).authorities(userInfo.getAuthorities())
+                    .emailAddress(userInfo.getEmailAddress()).projectsAccess(userInfo.getProjectsAccess())
+                    .build();
+        }
+        return userInfoDTO;
+    }
+
     private void cleanAllCache() {
         cacheService.clearAllCache();
         log.info("cache cleared");
+    }
+
+    @Override
+    public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities){
+        UserInfo userInfo = userInfoRepository.findByUsername(userName);
+        if(userInfo == null) {
+            userInfo = new UserInfo();
+            userInfo.setUsername(userName);
+            userInfo.setAuthorities(authorities);
+            userInfo.setAuthType(authType);
+            userInfoRepository.save(userInfo);
+        }
+        return userInfo;
     }
 }

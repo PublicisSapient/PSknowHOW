@@ -296,7 +296,9 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
+	 * 			 to save assignee details
 	 * @param projectConfig
+	 *          project congig fieldmapping
 	 */
 	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {

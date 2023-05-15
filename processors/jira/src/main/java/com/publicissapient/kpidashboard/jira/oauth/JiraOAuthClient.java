@@ -272,6 +272,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 			for (Entry<String, String> ap : httpRequest.headers)
 				request.setHeader(ap.getKey(), ap.getValue());
 			request.setUri(httpRequest.url.toURI());
+
 		} catch (Exception e) {
 			log.error("Error while authenticating jira OAuth", e);
 		}

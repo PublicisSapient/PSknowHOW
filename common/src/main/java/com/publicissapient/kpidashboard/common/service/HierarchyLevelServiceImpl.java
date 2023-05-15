@@ -33,11 +33,13 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		List<HierarchyLevel> topHierarchyLevels = getTopHierarchyLevels();
 		HierarchyLevel projectHierarchyLevel = getProjectHierarchyLevel();
 		HierarchyLevel sprintHierarchyLevel = getSprintHierarchyLevel();
+		HierarchyLevel releaseHierarchyLevel = getReleaseHierarchyLevel();
 		hierarchyLevels.addAll(topHierarchyLevels);
 		hierarchyLevels.add(projectHierarchyLevel);
 		if (!isKanban) {
 			hierarchyLevels.add(sprintHierarchyLevel);
 		}
+		hierarchyLevels.add(releaseHierarchyLevel);
 		List<AdditionalFilterCategory> additionalFilterCategories = filterCategoryLevelService.getAdditionalFilterCategories();
 		if (CollectionUtils.isNotEmpty(additionalFilterCategories)) {
 
@@ -46,7 +48,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 				bottomHierarchyLevel.setHierarchyLevelId(additionalFilterCategory.getFilterCategoryId());
 				bottomHierarchyLevel.setHierarchyLevelName(additionalFilterCategory.getFilterCategoryName());
 				if (isKanban){
-					bottomHierarchyLevel.setLevel(projectHierarchyLevel.getLevel() + 1);
+					bottomHierarchyLevel.setLevel(releaseHierarchyLevel.getLevel() + 1);
 				} else {
 					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel()  + 1);
 				}
@@ -65,6 +67,11 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 	@Override
 	public HierarchyLevel getSprintHierarchyLevel() {
 		return createSprintHierarchyLevel(getTopHierarchyLevels());
+	}
+
+	@Override
+	public HierarchyLevel getReleaseHierarchyLevel() {
+		return createReleaseHierarchyLevel(getTopHierarchyLevels());
 	}
 
 	private HierarchyLevel createProjectHierarchyLevel(List<HierarchyLevel> topHierarchies) {
@@ -87,6 +94,21 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		HierarchyLevel hierarchyLevel = new HierarchyLevel();
 		hierarchyLevel.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 		hierarchyLevel.setHierarchyLevelName(CommonConstant.HIERARCHY_LEVEL_NAME_SPRINT);
+		if (CollectionUtils.isNotEmpty(topHierarchies)) {
+			HierarchyLevel parent = getProjectHierarchyLevel();
+			hierarchyLevel.setLevel(parent.getLevel() + 1);
+		} else {
+			hierarchyLevel.setLevel(2);
+		}
+		return hierarchyLevel;
+
+	}
+
+	private HierarchyLevel createReleaseHierarchyLevel(List<HierarchyLevel> topHierarchies) {
+
+		HierarchyLevel hierarchyLevel = new HierarchyLevel();
+		hierarchyLevel.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+		hierarchyLevel.setHierarchyLevelName(CommonConstant.HIERARCHY_LEVEL_NAME_RELEASE);
 		if (CollectionUtils.isNotEmpty(topHierarchies)) {
 			HierarchyLevel parent = getProjectHierarchyLevel();
 			hierarchyLevel.setLevel(parent.getLevel() + 1);

@@ -60,7 +60,7 @@ import { PanelModule } from 'primeng/panel';
 import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
-
+import { PasswordModule } from 'primeng/password';
 @NgModule({
   declarations: [ProjectConfigComponent,
     BasicConfigComponent,
@@ -105,6 +105,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     SharedModuleModule,
     BadgeModule,
     RadioButtonModule,
+    PasswordModule
   ],
   providers: [MessageService, ConfirmationService]
 })
