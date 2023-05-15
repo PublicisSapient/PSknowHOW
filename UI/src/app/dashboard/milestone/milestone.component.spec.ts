@@ -64,7 +64,7 @@ describe('MilestoneComponent', () => {
         },
         level: 6
     },
-    selectedTab: 'Milestone'
+    selectedTab: 'Release'
 };
 
 const aggregatedData = [
@@ -383,8 +383,9 @@ const kpiDropdowns = {
             },
             level: 6
         },
-        selectedTab: 'Milestone'
+        selectedTab: 'Release'
     };
+    component.globalConfig = userConfigData;
     const spy = spyOn(component, 'receiveSharedData');
     service.passDataToDashboard.emit(sharedObject);
     fixture.detectChanges();
@@ -446,7 +447,7 @@ it('should make post call when kpi available for Jira for Scrum', () => {
           kpiId: 'kpi17',
           kanban: false,
           kpiSource: 'Jira',
-          kpiCategory: 'Milestone',
+          kpiCategory: 'Release',
           groupId: 1
       }]
   };

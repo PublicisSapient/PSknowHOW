@@ -99,3 +99,6 @@
 ::ng-deep .kpi-filter .ng-placeholder {
     top: 5px;
 }
+.trend-box{
+    flex: 0 0 33.3333%;
+}

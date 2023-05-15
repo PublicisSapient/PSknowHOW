@@ -141,13 +141,13 @@
 
   <ng-template #noProjectsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
-      <h2 class="msg">Access to atleast one Scrum Project is required for the Milestone dashboard to be enabled</h2>
+      <h2 class="msg">Access to atleast one Scrum Project is required for the Release dashboard to be enabled</h2>
     </div>
   </ng-template>
 </div>
 <ng-template #noKpiTemplate>
   <div class="no-kpi-template">
-    <app-no-access [selectedTab]="'Milestone'" [userEnable]='enableByUser'></app-no-access>
+    <app-no-access [selectedTab]="'Release'" [userEnable]='enableByUser'></app-no-access>
   </div>
 </ng-template>
 <app-export-excel #exportExcel></app-export-excel>

@@ -13,7 +13,7 @@
                <div class="p-d-flex p-justify-between p-align-center">
                   <div class="p-d-flex p-align-end">
                      <!-- Aggregation level -->
-                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'milestone'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
+                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
                            id="Filter-Aggregation-Level" class="p-pb-0">
@@ -24,14 +24,26 @@
                      </div>
                      <!-- Trend line value -->
                      <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
-                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
-                           (remove)="handleRemove()" [multiple]="true"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
+                        <ng-select #selector
+                           [items]="trendLineValueList"
+                           [multiple]="true"
+                           bindLabel="nodeName"
+                           bindValue="nodeId"
                            [closeOnSelect]="false"
+                           (remove)="handleRemove()"
                            [maxSelectedItems]="3"
-                           class="trend-line-value p-pb-0" [clearable]="false">
-                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                           </ng-option>
+                           class="trend-line-value p-pb-0" 
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
+                           formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" >
+                           <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                              <div class="ng-value" *ngFor="let item of items | slice:0:2">
+                                    <span class="ng-value-label">{{item.nodeName}}</span>
+                                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                              </div>
+                              <div class="ng-value" *ngIf="items.length > 2">
+                                    <span class="ng-value-label">{{items.length - 2}} more...</span>
+                              </div>
+                           </ng-template>
                            <ng-template ng-footer-tmp>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"
@@ -40,8 +52,6 @@
                                  <button pButton pRipple label="Apply" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm" (click)="onSelectedTrendValueChange()"
                                     [disabled]="filterForm.get('selectedTrendValue')?.value?.length == 0"></button>
-                                 <!-- <button class="btn btn-filter rounded p-mr-2">Cancel</button> -->
-                                 <!-- <button class="btn btn-filter rounded" (click)="applyChanges(true)">Apply</button> -->
                               </div>
                            </ng-template>
                         </ng-select>
@@ -49,7 +59,7 @@
                      <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="min-width: 289px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
-                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'milestone') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
+                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
                            </ng-option>
@@ -64,7 +74,7 @@
                         </ng-option>
                      </ng-select>
                   </div>
-                  <div *ngIf="selectedTab?.toLowerCase() === 'milestone'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
+                  <div *ngIf="selectedTab?.toLowerCase() === 'release'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
                      <ng-select  formControlName="selectedRelease" [dropdownPosition]="'bottom'"
                         (change)="handleMilestoneFilter('release')" placeholder="Release" [clearable]="false"
                         class="p-pb-0">
@@ -74,7 +84,7 @@
                      </ng-select>
                   </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'milestone'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
                      <div *ngIf="kanban && selectedDateFilter !== ''"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -167,7 +177,7 @@
 
             <!-- SHow/Hide start for iteration and backlog -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'milestone')"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
@@ -235,19 +245,19 @@
    </div>
 </div>
 
-<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')" style="margin-left: 4.8rem;">
+<div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')">
    <div class="filter-nav">
-      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'milestone'">
-         <ul class="p-m-0 p-pl-0 p-d-flex flex-wrap">
+      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
+         <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
             <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
-               <li class="selectedfilter p-mr-5">
+               <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
-                     <div class="selected-node-label"><span class="align-list-marker"></span>{{item?.nodeName?.length
-                        <= 50 ? item?.nodeName : item?.nodeName?.slice(0,50)+'...'}} <span class="remove-node p-l-1"
+                     <div class="selected-node-label p-pl-0"><span class="align-list-marker" [title]="item?.nodeName" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
+                        <= 20 ? item?.nodeName : item?.nodeName?.slice(0,20)+'...'}} <span class="remove-node p-l-1"
                            (click)="removeNode(item.nodeId)" *ngIf="selectedFilterArray.length > 1">x</span>
                      </div>
-                     <div class="p-d-flex p-ml-2" *ngIf="item?.additionalFilters?.length > 0">
+                     <div class="p-d-flex" *ngIf="item?.additionalFilters?.length > 0">
                         <div class="p-d-flex p-align-center" (mouseover)="showDropdown[item?.nodeId] = true"
                            (mouseleave)="showDropdown[item?.nodeId] = false">
                            <img src="../../../assets/img/ico-filter.svg" alt="Filter" class="p-mr-1" />
@@ -337,7 +347,7 @@
             <!-- Download excel Button error message end -->
          </div>
       </div>
-      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'milestone'">
+      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() === 'iteration' || selectedTab?.toLowerCase() === 'release'">
          <!--start date and end date-->
          <div class="p-d-flex p-ml-3 p-align-end" *ngIf="selectedTab?.toLowerCase() !== 'backlog'">
             <span class="p-mr-5">
@@ -357,7 +367,7 @@
                <p class="p-m-0 text-red">
                   {{iterationConfigData?.daysLeft > 0 ? iterationConfigData?.daysLeft : 0}} Days</p>
             </span>
-            <span class="p-mr-5" *ngIf="iterationConfigData?.capacity != undefined && selectedTab?.toLowerCase() !== 'milestone'">
+            <span class="p-mr-5" *ngIf="iterationConfigData?.capacity != undefined && selectedTab?.toLowerCase() !== 'release'">
                <h4 class="label-text p-mt-0 p-mb-2">Capacity <span class="fa fa-info-circle" aria-hidden="true"
                      (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
                      <app-tooltip *ngIf="isTooltip" [data]="iterationConfigData?.capacity?.kpiInfo"></app-tooltip>
