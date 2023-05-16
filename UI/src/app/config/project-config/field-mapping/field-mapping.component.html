@@ -471,11 +471,10 @@
                   </div>
                   <div class="p-mb-3 p-d-flex p-align-center"
                        *ngIf="fieldstoShow?.includes('jiraIterationCompletionStatusCustomField') || fieldstoShow.length === 0">
-                    <label class="field-title">Iteration Dashboard & SPEED KPIs Completion Status<span class="fa fa-info-circle"
+                    <label class="field-title">Iteration Dashboard & SPEED KPIs Completion Status <span class="fa fa-info-circle"
                                                                             aria-hidden="true" pTooltip='<span>
-                                                    Definition:
-                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
-                                                    Example: Rejected in Refinement
+                                                                                Iteration Dashboard
+                                                                                SPEED KPIs - Sprint Velocity, Commitment Reliability, Created vs Resolved, Story Count, Sprint Predictability
                                               </span>' tooltipPosition="top" tooltipEvent="hover"
                                                                             tooltipStyleClass="tooltiptext"
                                                                             [escape]="false"></span></label>
@@ -787,13 +786,13 @@
                         *ngIf="fieldstoShow?.includes('jiraIterationCompletionTypeCustomField') || fieldstoShow.length === 0">
                         <label class="field-title">Iteration Board Custom Completion Types <span class="fa fa-info-circle" aria-hidden="true"
                                 pTooltip='<span>
-                                Definition:
-                                This field is used to identify Epic Issue type.
+                                    Iteration Dashboard
+                                    SPEED KPIs - Sprint Velocity, Commitment Reliability, Created vs Resolved, Story Count, Sprint Predictability
                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
                                 [escape]="false"></span></label>
                         <div class="p-inputgroup">
                             <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="jiraIterationCompletionTypeCustomField"
-                                formControlName="jiraIterationCompletionTypeCustomField" placeholder="Enter Epic Issue Type"
+                                formControlName="jiraIterationCompletionTypeCustomField" placeholder="Enter Custom Completion Types"
                                 addOnBlur="true">
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
