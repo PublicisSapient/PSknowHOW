@@ -106,18 +106,6 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 		return getAndParse(uriBuilder.build(), searchResultJsonParser);
 	}
 
-	private Promise<SearchResult> searchJqlImplGet(String boardId, @Nullable Integer maxResults, @Nullable Integer startAt, Iterable<String> expandosValues, @Nullable Set<String> fields) {
-		final UriBuilder uriBuilder = UriBuilder.fromUri(baseUri).path("/"+boardId+"/issue")
-				.queryParam(JiraConstants.EXPAND_ATTRIBUTE, String.join(",",expandosValues));
-
-		if (fields != null) {
-			uriBuilder.queryParam(JiraConstants.FIELDS_ATTRIBUTE,   String.join(",",fields));
-		}
-		addOptionalQueryParam(uriBuilder, JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
-		addOptionalQueryParam(uriBuilder, JiraConstants.START_AT_ATTRIBUTE, startAt);
-		return getAndParse(uriBuilder.build(), searchResultJsonParser);
-	}
-
 	/**
 	 * Adds optional query params
 	 * @param uriBuilder URI Builder

@@ -472,8 +472,8 @@ public class OnlineDataProcessorImplTest {
 		onlineDataProcessor.validateAndCollectIssues(scrumProjectList);
 	}
 
-	// @Test
-	public void validateAndCollectIssuesScrumWithOAuth() throws URISyntaxException {
+	@Test
+	public void validateAndCollectIssuesScrumWithBearerToken() throws URISyntaxException {
 		List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
@@ -484,7 +484,10 @@ public class OnlineDataProcessorImplTest {
 		conn.get().setOffline(Boolean.FALSE);
 		conn.get().setIsOAuth(Boolean.TRUE);
 		conn.get().setUsername("xyz");
-		conn.get().setPassword("testPassword");
+		conn.get().setBearerToken(true);
+		conn.get().setPatOAuthToken("testPassword");
+
+
 
 		List<Subproject> subProjectsList = new ArrayList<>();
 		Subproject subproject = new Subproject();

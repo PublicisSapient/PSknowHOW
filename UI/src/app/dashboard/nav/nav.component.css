@@ -303,7 +303,11 @@
     font-size: 0.9rem;
   }
   .open-btn{
-    bottom: 0.8rem;
+    bottom: 0.7rem;
+  }
+
+  .close-btn{
+    bottom: 8px;
   }
 
 }
