@@ -3814,7 +3814,7 @@ db.getCollection('kpi_master').insert(
       "maxValue": "",
       "kpiUnit": "Count",
       "isDeleted": "False",
-      "defaultOrder": 2,
+      "defaultOrder": 3,
       "kpiCategory": "Iteration",
       "kpiSource": "Jira",
       "groupId": 8,
