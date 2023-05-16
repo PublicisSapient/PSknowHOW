@@ -61,6 +61,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
+        this.kpiChartData = {};
+        this.kpiSelectedFilterObj = {};
+        this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
         if(this.globalConfig || this.service.getDashConfigData()){
           this.receiveSharedData(sharedobject);

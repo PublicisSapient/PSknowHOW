@@ -95,8 +95,8 @@ function updateKanbanAccountHierachy(project_release) {
             const path = projectId + "###" + hierarchy.path;
             project_release.listProjectVersion.forEach(
                 version => {
-                print("nodeName", version.description + "_" + projectId);
-                    db.account_hierarchy.insert([{
+                    print("nodeName", version.description + "_" + projectId);
+                    db.kanban_account_hierarchy.insert([{
                         "nodeId": version._id + "_" + projectId,
                         "nodeName": version.description + "_" + splitString(projectId, "_"),
                         "labelName": "release",
@@ -115,9 +115,25 @@ function updateKanbanAccountHierachy(project_release) {
     }
 }
 
+/*delete from account_hierarchy*/
+function deleteByMistakenlyAddedKanbanReleaseToScrum(project_release) {
+    const projectId = project_release.projectId;
+    if (db.getCollection('kanban_account_hierarchy').find({
+            "nodeId": projectId
+        }).count() > 0) {
+        print("deleting projectId", projectId)
+        var hierarchy = db.getCollection('account_hierarchy').deleteMany({
+            "parentId": projectId,
+            labelName: 'release'
+        });
+    }
+}
 //start
 db.getCollection('project_release').find().forEach(
     project_release => {
-        updateAccountHierachy(project_release);
-        updateKanbanAccountHierachy(project_release);
+        if (project_release.projectId != undefined) {
+            updateAccountHierachy(project_release);
+            deleteByMistakenlyAddedKanbanReleaseToScrum(project_release);
+            updateKanbanAccountHierachy(project_release);
+        }
     });
