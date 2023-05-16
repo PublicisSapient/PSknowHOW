@@ -192,10 +192,11 @@ public final class KPIHelperUtil {
 				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 						&& !child.getChildren().isEmpty() && child.getChildren().get(0).getGroupName()
 								.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-					child.getChildren().stream().filter(filter->filter.getSprintFilter()!=null)
-							.collect(Collectors.toList())
-							.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
-									.compareTo(node1.getSprintFilter().getStartDate()));
+					List<Node> sprintFiltersChild = child.getChildren().stream()
+							.filter(filter -> filter.getSprintFilter() != null).collect(Collectors.toList());
+					sprintFiltersChild.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
+							.compareTo(node1.getSprintFilter().getStartDate()));
+					child.setChildren(sprintFiltersChild);
 				}
 				getLeafNodes(child, leafNodeList);
 			}
