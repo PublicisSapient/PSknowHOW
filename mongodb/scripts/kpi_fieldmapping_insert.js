@@ -63,7 +63,7 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Scrum'],
         kpiName: 'Created vs Resolved defects',
 		kpiSource:'Jira',
-        fieldNames : {'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIssueDeliverdStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
       },
       {
         kpiId: 'kpi42',
@@ -119,21 +119,21 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Story Count',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentification'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentification','jiraIterationCompletionTypeCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField']}
       },
       {
         kpiId: 'kpi72',
         kpiName: 'Commitment Reliability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraSprintVelocityIssueType','jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi39',
         kpiName: 'Sprint Velocity',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType','jiraIterationCompletionTypeCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField']}
       },
       {
         kpiId: 'kpi46',
@@ -203,7 +203,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Predictability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType','jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi55',
