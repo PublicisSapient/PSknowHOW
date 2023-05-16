@@ -157,10 +157,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				node -> node.getProjectFilter().getBasicProjectConfigId(),
 				Collectors.collectingAndThen(Collectors.toList(),
 						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-		Map<String, Object> resultListMap = kpiHelperService.fetchSprintVelocityDataFromDb(projectWiseSprintsForFilter,
-				kpiRequest);
-		setDbQueryLogger((List<JiraIssue>) resultListMap.get(SPRINTVELOCITYKEY));
-
+		Map<String, Object> resultListMap = new HashMap<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
 		leafNodeList.forEach(leaf -> {
 			basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId());
@@ -175,10 +172,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 									s -> s.stream().map(sprint -> sprint.getSprintID())
 											.skip(customApiConfig.getSprintCountForFilters()).limit(4)
 											.collect(Collectors.toList()))));
-			Map<String, Object> otherSprintsListMap = kpiHelperService
-					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest);
-			resultListMap.put(PREVIOUS_SPRINT_VELOCITY, otherSprintsListMap.get(SPRINTVELOCITYKEY));
-			resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, otherSprintsListMap.get(SPRINT_WISE_SPRINTDETAILS));
+			resultListMap = kpiHelperService
+					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest, projectWiseSprintsForFilter);
 		}
 
 		return resultListMap;
@@ -334,7 +329,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * Get average velocity of 5 sprints
 	 * 
 	 * @param sprintVelocityMap
-	 * @param avgVelocityCount
+	 * @param 
 	 * @param basicProjId
 	 * @return
 	 */

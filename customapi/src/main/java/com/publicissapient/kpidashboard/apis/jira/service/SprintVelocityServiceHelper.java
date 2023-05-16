@@ -43,27 +43,27 @@ public class SprintVelocityServiceHelper {
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues, List<SprintDetails> sprintDetails,
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap) {
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.forEach(sd -> {
-				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
-				if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-					sd.getCompletedIssues().stream().forEach(sprintIssue -> {
-						allJiraIssue.stream().forEach(jiraIssue -> {
-							if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
-								IssueDetails issueDetails = new IssueDetails();
-								issueDetails.setSprintIssue(sprintIssue);
-								issueDetails.setUrl(jiraIssue.getUrl());
-								issueDetails.setDesc(jiraIssue.getName());
-								filterIssueDetailsSet.add(issueDetails);
-							}
+			sprintDetails.stream().filter(sd -> CollectionUtils.isNotEmpty(sd.getCompletedIssues())).forEach(
+					sd -> {
+						Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
+						sd.getCompletedIssues().stream().forEach(sprintIssue -> {
+							allJiraIssue.stream().forEach(jiraIssue -> {
+								if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
+									IssueDetails issueDetails = new IssueDetails();
+									issueDetails.setSprintIssue(sprintIssue);
+									issueDetails.setUrl(jiraIssue.getUrl());
+									issueDetails.setDesc(jiraIssue.getName());
+									filterIssueDetailsSet.add(issueDetails);
+								}
+							});
+							Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
+									sd.getSprintID());
+							LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
+									filterIssueDetailsSet.size());
+							currentSprintLeafVelocityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 						});
-						Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
-								sd.getSprintID());
-						LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
-								filterIssueDetailsSet.size());
-						currentSprintLeafVelocityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
-					});
-				}
-			});
+					}
+			);
 		} else {
 			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
 				// start : for azure board sprint details collections empty so
