@@ -172,7 +172,7 @@
                   <span [ngClass]="(selectedProjectLastSyncStatus && selectedProjectLastSyncStatus == 'SUCCESS') ? 'active-state' : 'traceLog-fail-font'"> {{selectedProjectLastSyncStatus && selectedProjectLastSyncStatus != '' ? '('+selectedProjectLastSyncStatus+')' : ""}}</span>
                </h4>
                <p class="last-sync-date p-m-0 p-text-right">
-                  {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd/MM/yyyy h:mm:ss a') : 'NA' }}
+                  {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd/MM/yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
             </div>
 

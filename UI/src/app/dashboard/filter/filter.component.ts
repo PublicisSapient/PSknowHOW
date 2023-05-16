@@ -1141,7 +1141,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
     if(this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null){
       if(this.selectedProjectLastSyncDetails.executionSuccess){
-        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.lastSuccessfulRun;
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
         this.selectedProjectLastSyncStatus = "SUCCESS";
       }else{
         this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
