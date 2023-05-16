@@ -434,7 +434,7 @@ public class JiraServiceR {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				if (null != fieldMapping && (CollectionUtils
-						.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField())
+						.isNotEmpty(fieldMapping.getJiraIterationCompletionTypeCustomField())
 						|| CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField()))) {
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail, fieldMapping);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
@@ -452,7 +452,7 @@ public class JiraServiceR {
 			Set<SprintIssue> statusWiseIssues) {
 		Set<SprintIssue> newCompletedSet;
 		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
-			newCompletedSet = new HashSet<>((ArrayList<SprintIssue>) CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
+			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
 		} else if (CollectionUtils.isNotEmpty(typeWiseIssues)) {
 			newCompletedSet = typeWiseIssues;
 		} else {
