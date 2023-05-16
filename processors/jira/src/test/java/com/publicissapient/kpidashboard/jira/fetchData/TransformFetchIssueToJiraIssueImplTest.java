@@ -299,7 +299,6 @@ public class TransformFetchIssueToJiraIssueImplTest {
         try {
             BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
         } catch (IllegalAccessException | InvocationTargetException e) {
-
         }
         projectConfFieldMapping.setProjectBasicConfig(projectConfig);
         projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
