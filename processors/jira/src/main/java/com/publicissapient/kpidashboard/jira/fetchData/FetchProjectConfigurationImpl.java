@@ -119,22 +119,22 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration{
                     .filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
                     .forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
             projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
-            try {
-                for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
-                    client = jiraClient.getClient(projectConfigList,entry,krb5Client);
-                    createMetadata.collectMetadata(entry.getValue(),client);
-                    if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
-                        fetchIssuesBasedOnJQL.fetchIssues(entry,client,krb5Client);
-                    } else {
-                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client,krb5Client);
-                        log.info("issues fetched from board"+issues.size());
-                    }
-                }
-            } catch (InterruptedException | FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                for(Map.Entry<String, ProjectConfFieldMapping> entry : projectConfigMap.entrySet()) {
+//                    client = jiraClient.getClient(projectConfigList,entry,krb5Client);
+//                    createMetadata.collectMetadata(entry.getValue(),client);
+//                    if (entry.getValue().getProjectToolConfig().isQueryEnabled()) {
+//                        fetchIssuesBasedOnJQL.fetchIssues(entry,client,krb5Client);
+//                    } else {
+//                        List<Issue> issues=fetchIssueBasedOnBoard.fetchIssueBasedOnBoard(entry,client,krb5Client);
+//                        log.info("issues fetched from board"+issues.size());
+//                    }
+//                }
+//            } catch (InterruptedException | FileNotFoundException e) {
+//                throw new RuntimeException(e);
+//            } catch (JSONException e) {
+//                throw new RuntimeException(e);
+//            }
         }
         );
         return projectConfigMap;

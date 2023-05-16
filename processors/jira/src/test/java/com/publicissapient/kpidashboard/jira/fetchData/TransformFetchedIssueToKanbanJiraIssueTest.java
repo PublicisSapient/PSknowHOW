@@ -56,6 +56,9 @@ public class TransformFetchedIssueToKanbanJiraIssueTest {
     private AdditionalFilterHelper additionalFilterHelper;
 
     @Mock
+    private JiraCommonService jiraCommonService;
+
+    @Mock
     FieldMapping fieldMapping;
 
     @InjectMocks

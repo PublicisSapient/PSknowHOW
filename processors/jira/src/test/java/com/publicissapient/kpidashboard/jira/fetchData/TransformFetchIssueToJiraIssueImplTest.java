@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.*;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -18,8 +19,10 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONTokener;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,8 +60,8 @@ public class TransformFetchIssueToJiraIssueImplTest {
     @Mock
     private AdditionalFilterHelper additionalFilterHelper;
 
-    @Mock
-    FieldMapping fieldMapping;
+//    @Mock
+//    FieldMapping fieldMapping;
 
     @InjectMocks
     TransformFetchedIssueToJiraIssueImpl transformFetchedIssueToJiraIssue;
@@ -74,7 +77,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
     List<ProjectToolConfig> projectToolConfigs;
     Optional<Connection> connection;
 
-    List<FieldMapping> fieldMappingList;
+    List<FieldMapping> fieldMappingList=new ArrayList<>();
 
     @Mock
     Runtime runtime;
@@ -85,15 +88,19 @@ public class TransformFetchIssueToJiraIssueImplTest {
     @Mock
     ExecutorService executorService;
 
+    List<IssueField> issueFieldList = new ArrayList<>();
+
     @Before
-    public void setup() throws URISyntaxException {
-        fieldMapping=getMockFieldMapping();
+    public void setup() throws URISyntaxException, JSONException {
+//        fieldMapping=getMockFieldMapping();
         projectConfigsList=getMockProjectConfig();
         projectToolConfigs=getMockProjectToolConfig();
         connection=getMockConnection();
-        fieldMappingList=getMockFieldMappingList();
-        createProjectConfigMap();
+//        fieldMappingList=getMockFieldMappingList();
         createIssue();
+        createIssuefieldsList();
+        prepareFiledMapping();
+        createProjectConfigMap();
     }
 
     @Test
@@ -136,7 +143,7 @@ public class TransformFetchIssueToJiraIssueImplTest {
     private  FieldMapping getMockFieldMapping() {
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
                 .newInstance("/json/default/field_mapping.json");
-        return fieldMappingDataFactory.findByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+        return fieldMappingDataFactory.findByBasicProjectConfigId("63bfa0d5b7617e260763ca21");
     }
 
     private void createIssue() throws URISyntaxException {
@@ -151,14 +158,15 @@ public class TransformFetchIssueToJiraIssueImplTest {
         avatarMap.put("48x48", new URI("value"));
         User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
                 null);
-        Map<String, String> map = new HashMap<>();
-        map.put("customfield_12121", "Client Testing (UAT)");
-        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
-        map.put("value", "Component");
-        map.put("id", "20810");
-        JSONObject value = new JSONObject(map);
-        IssueField issueField = new IssueField("20810", "Component", null, value);
-        List<IssueField> issueFields = Arrays.asList(issueField);
+//        Map<String, String> map = new HashMap<>();
+//        map.put("customfield_19121", "Client Testing (UAT)");
+//        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+//        map.put("value", "Component");
+//        map.put("id", "20810");
+//        JSONObject value = new JSONObject(map);
+//        IssueField issueField = new IssueField("customfield_19121", "Component", null, value);
+//        List<IssueField> issueFields = Arrays.asList(issueField);
+
         Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
                 new Visibility(Visibility.Type.ROLE, "abc"), 1l);
         List<Comment> comments = Arrays.asList(comment);
@@ -171,9 +179,9 @@ public class TransformFetchIssueToJiraIssueImplTest {
                 "toString");
         ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
-        Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
+        Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
                 basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-                DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
+                DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFieldList, comments,
                 null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
                 Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
         issues.add(issue);
@@ -188,6 +196,102 @@ public class TransformFetchIssueToJiraIssueImplTest {
         issueLinkList.add(issueLink);
 
         return issueLinkList;
+    }
+
+    private void prepareFiledMapping() {
+        FieldMapping fieldMapping = new FieldMapping();
+        fieldMapping.setBasicProjectConfigId(new ObjectId("63bfa0d5b7617e260763ca21"));
+        fieldMapping.setSprintName("customfield_12700");
+        List<String> jiraType = new ArrayList<>();
+        jiraType.add("Defect");
+        fieldMapping.setJiradefecttype(jiraType);
+        jiraType = new ArrayList<>(
+                Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" }));
+        String[] jiraIssueType = new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" };
+        fieldMapping.setJiraIssueTypeNames(jiraIssueType);
+        fieldMapping.setRootCause("customfield_19121");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Story");
+        fieldMapping.setJiraDefectInjectionIssueType(jiraType);
+        fieldMapping.setJiraTechDebtIssueType(jiraType);
+        fieldMapping.setJiraDefectSeepageIssueType(jiraType);
+        fieldMapping.setJiraDefectRemovalStatus(jiraType);
+        fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+        fieldMapping.setJiraTestAutomationIssueType(jiraType);
+        fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+        fieldMapping.setJiraDefectCountlIssueType(jiraType);
+        fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+        fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
+
+        fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
+        fieldMapping.setJiraTechDebtCustomField("customfield_14141");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("TECH_DEBT");
+        fieldMapping.setJiraTechDebtValue(jiraType);
+        fieldMapping.setJiraDefectRejectionStatus("Dropped");
+        fieldMapping.setJiraBugRaisedByIdentification("CustomField");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Ready for Sign-off");
+        fieldMapping.setJiraDod(jiraType);
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Closed");
+        fieldMapping.setJiraDefectRemovalStatus(jiraType);
+
+        fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("40");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Client Testing (UAT)");
+        fieldMapping.setJiraBugRaisedByValue(jiraType);
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Story");
+        jiraType.add("Feature");
+        fieldMapping.setJiraSprintVelocityIssueType(jiraType);
+
+        jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
+        fieldMapping.setJiraSprintCapacityIssueType(jiraType);
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Closed");
+        fieldMapping.setJiraIssueDeliverdStatus(jiraType);
+
+        fieldMapping.setJiraDor("In Progress");
+        fieldMapping.setJiraLiveStatus("Closed");
+        fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
+
+        jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
+        fieldMapping.setJiraStoryIdentification(jiraType);
+
+        fieldMapping.setJiraDefectCreatedStatus("Open");
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Ready for Sign-off");
+        fieldMapping.setJiraDod(jiraType);
+        fieldMapping.setStoryFirstStatus("In Analysis");
+        jiraType = new ArrayList<>();
+        jiraType.add("In Analysis");
+        jiraType.add("In Development");
+        fieldMapping.setJiraStatusForDevelopment(jiraType);
+
+        jiraType = new ArrayList<>();
+        jiraType.add("Ready for Testing");
+        fieldMapping.setJiraStatusForQa(jiraType);
+
+        List<String> jiraSegData = new ArrayList<>();
+        jiraSegData.add("Tech Story");
+        jiraSegData.add("Task");
+
+        jiraSegData = new ArrayList<>();
+        jiraSegData.add("Tech Story");
+        fieldMappingList.add(fieldMapping);
+
     }
 
     private void createProjectConfigMap(){
@@ -216,11 +320,93 @@ public class TransformFetchIssueToJiraIssueImplTest {
         return toolObj;
     }
 
-    private  List<FieldMapping> getMockFieldMappingList() {
-        FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-                .newInstance("/json/default/field_mapping.json");
-        return fieldMappingDataFactory.getFieldMappings();
-    }
+//    private  List<FieldMapping> getMockFieldMappingList() {
+//        FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+//                .newInstance("/json/default/field_mapping.json");
+//        return fieldMappingDataFactory.getFieldMappings();
+//    }
 
+    private void createIssuefieldsList() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("customfield_12121", "Client Testing (UAT)");
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "Client Testing (UAT)");
+        map.put("id", "12121");
+        IssueField issueField = new IssueField("customfield_12121", "UAT", null, new JSONObject(map));
+        issueFieldList.add(issueField);
+
+
+        JSONArray array = null;
+
+            List<Object> sprintList = new ArrayList<>();
+            String sprint = "com.atlassian.greenhopper.service.sprint.Sprint@6fc7072e[id=23356,rapidViewId=11649,state=CLOSED,name=TEST | 06 Jan - 19 Jan,startDate=2020-01-06T11:38:31.937Z,endDate=2020-01-19T11:38:00.000Z,completeDate=2020-01-20T11:15:21.528Z,sequence=22778,goal=]";
+            sprintList.add(sprint);
+            array = new JSONArray(sprintList);
+
+        issueField = new IssueField("customfield_12700", "Sprint", null, array);
+        issueFieldList.add(issueField);
+
+
+        List<String> list = new ArrayList<>();
+        list.add("BrandName-12");
+        issueField = new IssueField("customfield_48531", "Bran", null, new JSONArray(list));
+        issueFieldList.add(issueField);
+
+
+        issueField = new IssueField("customfield_56789", "StoryPoints", null, Integer.parseInt("5"));
+        issueFieldList.add(issueField);
+
+
+        map = new HashMap<>();
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "TECH_DEBT");
+        map.put("id", "14141");
+        issueField = new IssueField("customfield_14141", "StoryPoints", null, new JSONObject(map));
+        issueFieldList.add(issueField);
+
+
+        map = new HashMap<>();
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "Mobile");
+        map.put("id", "18181");
+        issueField = new IssueField("customfield_18181", "Device Platform", null, new JSONObject(map));
+        issueFieldList.add(issueField);
+
+
+        map = new HashMap<>();
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "code");
+        map.put("id", "19121");
+        JSONObject jsonObject = new JSONObject(map);
+        issueField = new IssueField("customfield_19121", "code_issue", null, jsonObject);
+        issueFieldList.add(issueField);
+
+
+        map = new HashMap<>();
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "stage");
+        map.put("id", "13131");
+        issueField = new IssueField("customfield_13131", "stage", null, new JSONObject(map));
+        issueFieldList.add(issueField);
+
+
+        List<JSONObject> jsonArrayList1 = new ArrayList<>();
+        map = new HashMap<>();
+        map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+        map.put("value", "40");
+        map.put("id", "Test_Automation");
+        JSONObject jsonObject1 = new JSONObject(map);
+        jsonArrayList1.add(jsonObject1);
+        issueField = new IssueField("40", "Test_Automation", null, new JSONArray(jsonArrayList1));
+        issueFieldList.add(issueField);
+
+
+        issueField=new IssueField("","Fix Version",null,"KnowHowv6.7");
+        issueFieldList.add(issueField);
+
+        issueField=new IssueField("","Due_Date",null,"");
+        issueFieldList.add(issueField);
+
+    }
 
 }

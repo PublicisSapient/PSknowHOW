@@ -62,7 +62,7 @@ public class NotificationHandler {
             customData.put(key,value);
             String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
             log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
-            String templateKey = jiraProcessorConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY,"");
+            String templateKey = jiraProcessorConfig.getMailTemplate().getOrDefault(Error_In_Jira_Processor_Template_Key,"");
             notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
                    jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,templateKey,jiraProcessorConfig.isMailWithoutKafka());
         } else {

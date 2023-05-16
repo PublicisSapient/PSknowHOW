@@ -133,10 +133,10 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                     setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
                     setEstimates(jiraIssue, issue);
                     setDueDates(jiraIssue, issue,fields,fieldMapping);
-                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+//                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
                     if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                         jiraIssuesToSave.add(jiraIssue);
-                        jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
+//                        jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
                     }
                 }
                 return jiraIssue;
