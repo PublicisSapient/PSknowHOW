@@ -169,7 +169,7 @@
          <div class="p-d-flex p-align-center">
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
                <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data
-                  <span class="active-state"> {{selectedProjectLastSyncStatus != '' ? '('+selectedProjectLastSyncStatus+')' : ""}}</span>
+                  <span [ngClass]="(selectedProjectLastSyncStatus && selectedProjectLastSyncStatus == 'SUCCESS') ? 'active-state' : 'traceLog-fail-font'"> {{selectedProjectLastSyncStatus && selectedProjectLastSyncStatus != '' ? '('+selectedProjectLastSyncStatus+')' : ""}}</span>
                </h4>
                <p class="last-sync-date p-m-0 p-text-right">
                   {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd/MM/yyyy h:mm:ss a') : 'NA' }}

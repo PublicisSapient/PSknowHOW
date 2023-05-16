@@ -1091,3 +1091,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .iteration-selected-sprint{
   width: 225px;
 }
+
+.traceLog-fail-font{
+  color:  red;
+}
+

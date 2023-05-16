@@ -1516,7 +1516,7 @@ describe('FilterComponent', () => {
     }
     spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
     component.showExecutionDate();
-    expect(component.selectedProjectLastSyncStatus).toBe("FAIL");
+    expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
   })
 
 });
