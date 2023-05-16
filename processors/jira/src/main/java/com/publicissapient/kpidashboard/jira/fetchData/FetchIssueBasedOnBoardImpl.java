@@ -53,8 +53,14 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
     @Autowired
     private JiraCommonService jiraCommonService;
 
+    @Autowired
+    private FetchSprintReportImpl fetchSprintReport;
+
+    @Autowired
+    private SaveData saveData;
+
     @Override
-    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) {
+    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws InterruptedException {
 
         ProjectConfFieldMapping projectConfig = entry.getValue();
 
@@ -63,7 +69,11 @@ public class FetchIssueBasedOnBoardImpl implements FetchIssueBasedOnBoard {
                     .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
             psLogData.setKanban("false");
 
-        return jiraCommonService.fetchIssueBasedOnBoard(entry,clientIncoming, krb5Client, dataExist);
+        Set<SprintDetails> setForCacheClean = new HashSet<>();
+        List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean,krb5Client);
+        saveData.saveData(null,null,sprintDetailsList,null,null,null,null,null);
+
+        return jiraCommonService.fetchIssueBasedOnBoard(entry,clientIncoming, krb5Client, dataExist, setForCacheClean);
 
     }
 }

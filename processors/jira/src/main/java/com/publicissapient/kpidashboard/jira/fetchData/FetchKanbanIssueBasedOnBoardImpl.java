@@ -8,6 +8,7 @@ import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRes
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class FetchKanbanIssueBasedOnBoardImpl implements FetchKanbanIssueBasedOn
                     .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
             psLogData.setKanban("true");
 
-        return jiraCommonService.fetchIssueBasedOnBoard(entry,clientIncoming, krb5Client, dataExist);
+        return jiraCommonService.fetchIssueBasedOnBoard(entry,clientIncoming, krb5Client, dataExist, new HashSet<>());
 
     }
 

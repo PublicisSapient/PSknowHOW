@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface FetchIssueBasedOnBoard {
-    List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming,KerberosClient krb5Client);
+    List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming,KerberosClient krb5Client) throws InterruptedException;
 }

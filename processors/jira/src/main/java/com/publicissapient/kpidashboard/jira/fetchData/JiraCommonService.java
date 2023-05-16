@@ -99,22 +99,7 @@ public class JiraCommonService {
     private KanbanJiraIssueRepository kanbanJiraRepo;
 
     @Autowired
-    private TransformFetchedIssueToJiraIssue transformFetchedIssue;
-
-    @Autowired
     ValidateData validateData;
-
-    @Autowired
-    private CreateAccountHierarchy createAccountHierarchy;
-
-    @Autowired
-    private FetchSprintReportImpl fetchSprintReport;
-
-    @Autowired
-    private SaveData saveData;
-
-    @Autowired
-    private CreateAssigneeDetails createAssigneeDetails;
 
     @Autowired
     private ToolCredentialProvider toolCredentialProvider;
@@ -452,7 +437,6 @@ public class JiraCommonService {
 //                    JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
 //                    savedIsuesCount += issues.size();
 //                    savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues,false,psLogData);
-////                   template.convertAndSend(exchange, routingKey, jiraIssues);
 //                }
 
                 if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -585,7 +569,7 @@ public class JiraCommonService {
         return searchResult;
     }
 
-    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, boolean dataExist){
+    public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, boolean dataExist, Set<SprintDetails> setForCacheClean){
 
         List<Issue> totalIssues = new ArrayList<>();
         ProjectConfFieldMapping projectConfig=entry.getValue();
@@ -602,11 +586,6 @@ public class JiraCommonService {
         ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 
         try {
-
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
-            List<SprintDetails> sprintDetailsList=fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig,setForCacheClean,krb5Client);
-            saveData.saveData(null,null,sprintDetailsList,null,null,null,null,null);
-
 
             //write get logic to fetch last successful updated date.
             String queryDate = JiraHelper.getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());

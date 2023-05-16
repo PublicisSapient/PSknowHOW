@@ -93,12 +93,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL{
     @Autowired
     private CreateAssigneeDetails createAssigneeDetails;
 
-    @Value("${rabbitmq.exchange.name}")
-    String exchange;
-
-    @Value("${rabbitmq.routing.key}")
-    String routingKey;
-
     @Override
     public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws JSONException {
 
