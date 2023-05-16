@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -94,6 +95,9 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private SprintRepository sprintRepository;
 	@Autowired
 	private SprintVelocityServiceHelper velocityHelper;
+	
+	@Value("${sprint.velocity.limit}")
+	private int sprintVelocityLimit;
 
 	/**
 	 * Gets Qualifier Type
@@ -170,7 +174,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId,
 							Collectors.collectingAndThen(Collectors.toList(),
 									s -> s.stream().map(sprint -> sprint.getSprintID())
-											.skip(customApiConfig.getSprintCountForFilters()).limit(4)
+											.skip(customApiConfig.getSprintCountForFilters()).limit(sprintVelocityLimit)
 											.collect(Collectors.toList()))));
 			resultListMap = kpiHelperService
 					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest, projectWiseSprintsForFilter);
