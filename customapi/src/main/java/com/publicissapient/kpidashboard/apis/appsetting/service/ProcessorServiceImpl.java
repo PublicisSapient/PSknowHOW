@@ -97,6 +97,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+				log.info(" Github Action response url " + resp.getStatusCode() + " ** body " + resp.getBody() + "@@@@ status code value  " + resp.getStatusCodeValue());
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
 				statuscode = ex.getStatusCode().value();
