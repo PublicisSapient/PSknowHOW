@@ -113,26 +113,32 @@
 
 ::ng-deep .sprint-hover-project1 [aria-selected="true"] {
     background-color: #079FFF !important;
+    color: black !important;
 }
 
 ::ng-deep .sprint-hover-project2 [aria-selected="true"] {
     background-color: #cdba38 !important;
+    color: black !important;
 }
 
 ::ng-deep .sprint-hover-project3 [aria-selected="true"] {
     background-color: #00E6C3 !important;
+    color: black !important;
 }
 
 ::ng-deep .sprint-hover-project4 [aria-selected="true"] {
     background-color: #fc6471 !important;
+    color: black !important;
 }
 
 ::ng-deep .sprint-hover-project5 [aria-selected="true"] {
     background-color: #bd608c !important;
+    color: black !important;
 }
 
 ::ng-deep .sprint-hover-project6 [aria-selected="true"] {
     background-color: #7d5ba6 !important;
+    color: black !important;
 }
 
 .sprint-hover-icon {
