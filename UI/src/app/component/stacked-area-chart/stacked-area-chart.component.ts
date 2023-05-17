@@ -20,8 +20,6 @@ export class StackedAreaChartComponent implements OnInit {
     // set the dimensions and margins of the graph
     const formatDate = (dateInput) =>{
       const today = new Date(dateInput);
-      console.log(today);
-      
       const yyyy = today.getFullYear();
       let mm:any = today.getMonth() + 1; // Months start at 0!
       let dd:any = today.getDate();
@@ -68,16 +66,13 @@ export class StackedAreaChartComponent implements OnInit {
         (data)
 
 
-
       //////////
       // AXIS //
       //////////
-
       // Add X axis
-      const x = d3.scaleLinear()
-        .domain(d3.extent(data, function (d) { const xInput = formatDate(d.date); console.log(xInput); return xInput; }))
+      const x = d3.scaleTime()
+        .domain(d3.extent(data, function (d) { const xInput = formatDate(d.date); return new Date(xInput); }))
         .range([0, width]);
-        
       const xAxis = svg.append("g")
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(x).ticks(5))
@@ -99,7 +94,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add Y axis
       const y = d3.scaleLinear()
-        .domain([0, 200000])
+        .domain([0, 7000])
         .range([height, 0]);
       svg.append("g")
         .call(d3.axisLeft(y).ticks(5))
@@ -121,7 +116,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add brushing
       const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
-        .extent([[0, 0], [width, height]]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+        .extent([[0, 0], [width, height]])// initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
         .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
 
       // Create the scatter variable: where both the circles and the brush take place
@@ -130,7 +125,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Area generator
       const area = d3.area()
-        .x(function (d) { return x(d.data.year); })
+        .x(function (d) { return x(new Date(d.data.date)); })
         .y0(function (d) { return y(d[0]); })
         .y1(function (d) { return y(d[1]); })
       
@@ -160,7 +155,7 @@ export class StackedAreaChartComponent implements OnInit {
         // If no selection, back to initial coordinate. Otherwise, update X axis domain
         if (!extent) {
           if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-          x.domain(d3.extent(data, function (d) { return d.year; }))
+          x.domain(d3.extent(data, function (d) { return new Date(d.date); }))
         } else {
           x.domain([x.invert(extent[0]), x.invert(extent[1])])
           areaChart.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
@@ -192,8 +187,6 @@ export class StackedAreaChartComponent implements OnInit {
       const noHighlight = function (event, d) {
         d3.selectAll(".myArea").style("opacity", 1)
       }
-
-
 
       //////////
       // LEGEND //
