@@ -3839,7 +3839,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 2,
