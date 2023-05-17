@@ -3413,7 +3413,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Count",
      "isDeleted": "False",
-     "defaultOrder": 3,
+     "defaultOrder": 5,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,

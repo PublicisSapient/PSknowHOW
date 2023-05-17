@@ -2428,86 +2428,6 @@ db.kpi_column_configs.insertMany([{
                                  			isDefault: true
                                  		}]
                                  	},
-                                 		{
-                                                                     		basicProjectConfigId: null,
-                                                                     		kpiId: 'kpi145',
-                                                                     		kpiColumnDetails: [{
-                                                                     			columnName: 'Issue Id',
-                                                                     			order: 0,
-                                                                     			isShown: true,
-                                                                     			isDefault: true
-                                                                     		}, {
-                                                                     			columnName: 'Issue Description',
-                                                                     			order: 1,
-                                                                     			isShown: true,
-                                                                     			isDefault: true
-                                                                     		}, {
-                                                                     			columnName: 'Issue Status',
-                                                                     			order: 2,
-                                                                     			isShown: true,
-                                                                     			isDefault: true
-                                                                     		}, {
-                                                                     			columnName: 'Issue Type',
-                                                                     			order: 3,
-                                                                     			isShown: true,
-                                                                     			isDefault: true
-                                                                     		}, {
-                                                                     			columnName: 'Size(story point/hours)',
-                                                                     			order: 4,
-                                                                     			isShown: true,
-                                                                     			isDefault: true
-                                                                     		}, {
-                                                                     			columnName: 'Original Estimate',
-                                                                     			order: 5,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Remaining Estimate',
-                                                                     			order: 6,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Dev Due Date',
-                                                                     			order: 7,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Actual Start Date',
-                                                                     			order: 8,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Dev Completion Date',
-                                                                     			order: 9,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Actual Completion Date',
-                                                                     			order: 10,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Delay(in days)',
-                                                                     			order: 11,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Predicted Completion Date',
-                                                                     			order: 12,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Potential Delay(in days)',
-                                                                     			order: 13,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}, {
-                                                                     			columnName: 'Assignee',
-                                                                     			order: 14,
-                                                                     			isShown: true,
-                                                                     			isDefault: false
-                                                                     		}]
-                                                                     	},
                                     {
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi144',
@@ -2582,5 +2502,50 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: false
                                  		}]
-                                 	}
+                                 	},
+                                    {
+                                            basicProjectConfigId: null,
+                                            kpiId: 'kpi145',
+                                            kpiColumnDetails: [{
+                                            columnName: 'Issue Id',
+                                            order: 0,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Description',
+                                            order: 1,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Status',
+                                            order: 2,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Issue Type',
+                                            order: 3,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Size(story point/hours)',
+                                            order: 4,
+                                            isShown: true,
+                                            isDefault: true
+                                        }, {
+                                            columnName: 'Remaining Estimate',
+                                            order: 5,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Dev Due Date',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Dev Completion Date',
+                                            order: 7,
+                                            isShown: true,
+                                            isDefault: false
+                                        }]
+                                    }
                                  ]);
