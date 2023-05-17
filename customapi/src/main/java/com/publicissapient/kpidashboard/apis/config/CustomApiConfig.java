@@ -185,6 +185,13 @@ public class CustomApiConfig {// NOPMD
 
 	@Value(("${testExecution.kanban.numberOfFutureDays}"))
 	private int numberOfFutureDaysForKanbanTestExecution;
+
+	@Value("${kpi.comments.max.store.count}")
+	private int kpiCommentsMaxStoreCount;
+
+	@Value("${limit.comments.shown.on.kpi.dashboard.count}")
+	private int limitCommentsShownOnKpiDashboardCount;
+
 	private int jiraXaxisMonthCount;
 
 	private boolean ssoLogin;
@@ -198,6 +205,22 @@ public class CustomApiConfig {// NOPMD
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
 
+	public int getLimitCommentsShownOnKpiDashboardCount() {
+		return limitCommentsShownOnKpiDashboardCount;
+	}
+
+	public void setLimitCommentsShownOnKpiDashboardCount(int limitCommentsShownOnKpiDashboardCount) {
+		this.limitCommentsShownOnKpiDashboardCount = limitCommentsShownOnKpiDashboardCount;
+	}
+
+	public int getKpiCommentsMaxStoreCount() {
+		return kpiCommentsMaxStoreCount;
+	}
+
+	public void setKpiCommentsMaxStoreCount(int kpiCommentsMaxStoreCount) {
+		this.kpiCommentsMaxStoreCount = kpiCommentsMaxStoreCount;
+	}
+		
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
 
