@@ -56,6 +56,7 @@ import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 @Slf4j
 public class ProcessorServiceImpl implements ProcessorService {
 
+	public static final String AUTHORIZATION = "Authorization";
 	@Autowired
 	private ProcessorRepository<Processor> processorRepository;
 
@@ -80,27 +81,55 @@ public class ProcessorServiceImpl implements ProcessorService {
 		return new ServiceResponse(true, StringUtils.EMPTY, listProcessor);
 	}
 
+	@SuppressWarnings("java:S2254")
 	@Override
 	public ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
-
+        log.info(" processorName " + processorName);
+		log.info(" processorExecutionBasicConfig ID  " + processorExecutionBasicConfig.getProjectBasicConfigIds()
+				+ "  processorExecutionBasicConfig Log Context  " + processorExecutionBasicConfig.getLogContext());
 		String url = processorUrlConfig.getProcessorUrl(processorName);
+		log.info(" get Processor url  " + url);
 		boolean isSuccess = true;
 		
-		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(); 
-		String token = httpServletRequest.getHeader("Authorization");
+		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		log.info(" httpServletRequest getHeader "+ httpServletRequest.getHeader(AUTHORIZATION));
+		log.info(" httpServletRequest path info " + httpServletRequest.getPathInfo());
+		log.info(" httpServletRequest ContextPath info " + httpServletRequest.getContextPath());
+		log.info(" httpServletRequest AuthType info " + httpServletRequest.getAuthType());
+		log.info(" httpServletRequest Method info " + httpServletRequest.getMethod());
+		log.info(" httpServletRequest getPathTranslated  " + httpServletRequest.getPathTranslated());
+		log.info(" httpServletRequest QueryString  " + httpServletRequest.getQueryString());
+		log.info(" httpServletRequest getRemoteUser " + httpServletRequest.getRemoteUser());
+		log.info(" httpServletRequest changeSessionId "+ httpServletRequest.changeSessionId());
+		log.info(" httpServletRequest getRequestedSessionId "+ httpServletRequest.getRequestedSessionId());
+		log.info(" httpServletRequest getRequestURI "+ httpServletRequest.getRequestURI());
+		log.info(" httpServletRequest getServletPath "+ httpServletRequest.getServletPath());
+
+
+
+		String token = httpServletRequest.getHeader(AUTHORIZATION);
+		log.info(" token "+ token );
+
 		token = CommonUtils.handleCrossScriptingTaintedValue(token);
+		log.info(" token 2 "+ token);
+
 		int statuscode = HttpStatus.NOT_FOUND.value();
+		log.info(" statuscode "+ statuscode);
 		if (StringUtils.isNotEmpty(url)) {
 			try {
 				HttpHeaders headers = new HttpHeaders();
-				headers.add("Authorization", token);
+				headers.add(AUTHORIZATION, token);
 
 				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
 				log.info("headers passing in request Entity  " + headers);
+				log.info("processorExecutionBasicConfig passing in request Entity  " + processorExecutionBasicConfig);
+				log.info(" requestEntity 1 " + requestEntity);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-				log.info(" requestEntity " + requestEntity + " url " + url);
+				log.info(" requestEntity passed in restemplate exchange method  " + requestEntity );
+				log.info(" url passed in restemplate exchange method " + url);
 				log.info(" Github Action response header " + resp.getHeaders() + " ** body " + resp.getBody() + "@@@@ status code value  " + resp.getStatusCodeValue());
 				statuscode = resp.getStatusCode().value();
+				log.info(" status code --> " + statuscode);
 			} catch (HttpClientErrorException ex) {
 				statuscode = ex.getStatusCode().value();
 				isSuccess = false;
