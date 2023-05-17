@@ -109,6 +109,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     isGlobalDownload = false;
     kpiTrendsObj = {};
     selectedTab= 'iteration';
+    showCommentIcon = false;
     noProjects = false;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
@@ -315,6 +316,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     });
                 } else {
                     this.noTabAccess = true;
+                }
+                if(this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project'){
+                    this.showCommentIcon = true;
+                } else {
+                    this.showCommentIcon = false;
                 }
             }
         }

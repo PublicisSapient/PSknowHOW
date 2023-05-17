@@ -2552,5 +2552,35 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}]
+                                 	},
+									{
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi138',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Issue Id',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}, {
+                                 			columnName: 'Issue Type',
+                                 			order: 1,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		},{
+                                 			columnName: 'Issue Description',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		},  {
+                                 			columnName: 'Priority',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Size(story point/hours)',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}]
                                  	}
                                  ]);

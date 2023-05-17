@@ -26,7 +26,7 @@ else
             -sha256 \
             -days 3650 \
             -nodes \
-            -out /etc/ssl/certs/knowhow.crt \
+            -out /etc/ssl/certs/knowhow.cer \
             -keyout /etc/ssl/certs/knowhow.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
     echo "Self sign certificate created "
