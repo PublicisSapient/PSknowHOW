@@ -39,7 +39,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -57,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -104,8 +102,6 @@ public class SprintVelocityServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
-	@Mock
-	SprintVelocityServiceHelper velocityHelper;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
