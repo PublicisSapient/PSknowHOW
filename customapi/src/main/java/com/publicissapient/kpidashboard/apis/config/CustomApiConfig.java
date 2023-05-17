@@ -197,6 +197,9 @@ public class CustomApiConfig {// NOPMD
 	private int pushDataLimit;//limit of data allowed to push through api
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
+	
+	@Value(("${backlog.sprint.count}"))
+	private int sprintCountForBackLogStrength;
 
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
@@ -985,5 +988,9 @@ public class CustomApiConfig {// NOPMD
 
 	public String getSamlUrlEndString() {
 		return samlUrlEndString;
+	}
+	
+	public int getSprintCountForBackLogStrength() {
+		return sprintCountForBackLogStrength;
 	}
 }
