@@ -14,18 +14,18 @@ export class StackedAreaChartComponent implements OnInit {
     this.draw();
   }
 
-  
+
 
   draw() {
     // set the dimensions and margins of the graph
-    const formatDate = (dateInput) =>{
+    const formatDate = (dateInput) => {
       const today = new Date(dateInput);
       const yyyy = today.getFullYear();
-      let mm:any = today.getMonth() + 1; // Months start at 0!
-      let dd:any = today.getDate();
+      let mm: any = today.getMonth() + 1; // Months start at 0!
+      let dd: any = today.getDate();
       if (dd < 10) dd = '0' + dd;
       if (mm < 10) mm = '0' + mm;
-      
+
       const formattedDate = dd + '-' + mm + '-' + yyyy;
       return formattedDate;
     }
@@ -47,7 +47,7 @@ export class StackedAreaChartComponent implements OnInit {
     d3.csv("./assets/date-wise-issue-type.csv").then(function (data) {
 
       // console.log(data);
-      
+
       //////////
       // GENERAL //
       //////////
@@ -100,7 +100,6 @@ export class StackedAreaChartComponent implements OnInit {
         .call(d3.axisLeft(y).ticks(5))
 
 
-
       //////////
       // BRUSHING AND CHART //
       //////////
@@ -128,7 +127,7 @@ export class StackedAreaChartComponent implements OnInit {
         .x(function (d) { return x(new Date(d.data.date)); })
         .y0(function (d) { return y(d[0]); })
         .y1(function (d) { return y(d[1]); })
-      
+
       // Show the areas
       areaChart
         .selectAll("mylayers")
