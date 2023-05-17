@@ -32,7 +32,6 @@ import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { of } from 'rxjs';
 import { compileComponentFromMetadata } from '@angular/compiler';
 describe('AdvancedSettingsComponent', () => {
@@ -187,7 +186,7 @@ describe('AdvancedSettingsComponent', () => {
         BrowserAnimationsModule,
         RouterTestingModule
       ],
-      providers: [HttpService, MessageService, SharedService, DatePipe, GetAuthorizationService, TextEncryptionService, ConfirmationService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, MessageService, SharedService, DatePipe, GetAuthorizationService, ConfirmationService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));

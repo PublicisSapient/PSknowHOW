@@ -33,7 +33,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { DatePipe } from '../../../../node_modules/@angular/common';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { of } from 'rxjs';
 
 describe('NavComponent', () => {
@@ -69,7 +68,7 @@ describe('NavComponent', () => {
         ])
 
       ],
-      providers: [HttpService, SharedService, MessageService, HelperService, DatePipe, TextEncryptionService,
+      providers: [HttpService, SharedService, MessageService, HelperService, DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })

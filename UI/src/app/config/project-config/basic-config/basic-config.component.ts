@@ -22,7 +22,6 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 declare const require: any;
 
 @Component({

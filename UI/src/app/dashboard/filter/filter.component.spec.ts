@@ -32,7 +32,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
@@ -205,7 +204,7 @@ describe('FilterComponent', () => {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, TextEncryptionService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   });

@@ -28,7 +28,6 @@ import { HttpService } from '../../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { ProfileComponent } from '../profile.component';
 import { environment } from 'src/environments/environment';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
 describe('MyprofileComponent', () => {
@@ -649,7 +648,7 @@ describe('MyprofileComponent', () => {
         RouterTestingModule,
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, TextEncryptionService, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));

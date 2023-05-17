@@ -32,7 +32,6 @@ import { HttpService } from '../../services/http.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { SharedService } from '../../services/shared.service';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
 import { of } from 'rxjs';
 
@@ -91,7 +90,7 @@ describe('LoginComponent', () => {
       declarations: [LoginComponent,
         RegisterComponent, DashboardComponent, MyprofileComponent],
       providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, SharedService, TextEncryptionService
+        HttpService, SharedService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
