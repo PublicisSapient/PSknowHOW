@@ -189,6 +189,9 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
+	
+	//field for identifying ready for development status
+	private String readyForDevelopmentStatus;
 
 	//field for Wasting - wait status
 	private List<String> jiraWaitStatus;
