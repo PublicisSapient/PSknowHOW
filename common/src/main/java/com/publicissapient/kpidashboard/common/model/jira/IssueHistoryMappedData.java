@@ -18,6 +18,6 @@ public class IssueHistoryMappedData {
 	private IssueGroupFields id;
 	// for scrum
 	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
-	// for kanban
+
 	private List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 }

@@ -61,6 +61,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
+        this.kpiChartData = {};
+        this.kpiSelectedFilterObj = {};
+        this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
         if(this.globalConfig || this.service.getDashConfigData()){
           this.receiveSharedData(sharedobject);
@@ -584,15 +587,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return val;
   }
 
-  checkSprint(value, unit, kpiId){
-    if((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter1'][0]?.toLowerCase() !== 'overall')
-    || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')){
-      return '-'
-    } else{
-      return Math.floor(value) < value ? `>${Math.round(value)} ${unit}` : `=${value} ${unit}`;
-    }
-  }
-
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
@@ -654,11 +648,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
       this.excelService.generateExcel(kpiData, this.modalDetails['header']);
     }
-
-
-  typeOf(value) {
-    return typeof value === 'object' && value !== null;
-  }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());

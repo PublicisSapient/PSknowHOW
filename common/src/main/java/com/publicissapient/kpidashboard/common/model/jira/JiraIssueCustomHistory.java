@@ -75,8 +75,7 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	private String projectName;
 	private String basicProjectConfigId;
-	//Used for azure processor
-	private List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+
 	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 	private List<JiraHistoryChangeLog> assigneeUpdationLog = new ArrayList<>();
 	private List<JiraHistoryChangeLog> priorityUpdationLog = new ArrayList<>();

@@ -31,6 +31,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
@@ -48,9 +50,12 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.apis.model.SprintFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -178,7 +183,7 @@ public final class KPIHelperUtil {
 			if (isAccountHierarchyData(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
 						node.getGroupName(), node.getAccountHierarchy(), node.getProjectFilter(),
-						node.getSprintFilter(),node.getReleaseFilter());
+						node.getSprintFilter(), node.getReleaseFilter());
 				leafNodeList.add(newNode);
 			} else if (isAccountHierarchyDataKanban(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
@@ -190,13 +195,21 @@ public final class KPIHelperUtil {
 		List<Node> children = node.getChildren();
 		for (Node child : children) {
 			if (child.getChildren() != null) {
-				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
-						&& !child.getChildren().isEmpty() && child.getChildren().get(0).getGroupName()
-								.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-					child.getChildren().stream().filter(filter->filter.getSprintFilter()!=null)
-							.collect(Collectors.toList())
-							.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
-									.compareTo(node1.getSprintFilter().getStartDate()));
+				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+					List<Node> sortedChildNodes = new ArrayList<>();
+					Map<String, List<Node>> allChildrenMap = child.getChildren().stream()
+							.collect(Collectors.groupingBy(Node::getGroupName));
+					allChildrenMap.computeIfPresent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, (k, v) -> {
+						v.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
+								.compareTo(node1.getSprintFilter().getStartDate()));
+						sortedChildNodes.addAll(v);
+						return v;
+					});
+					allChildrenMap.computeIfPresent(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE, (k, v) -> {
+						sortedChildNodes.addAll(v);
+						return v;
+					});
+					child.setChildren(sortedChildNodes);
 				}
 				getLeafNodes(child, leafNodeList);
 			}

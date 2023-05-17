@@ -46,6 +46,7 @@ public class JiraIssueHistoryDataFactory {
 	private List<JiraIssueCustomHistory> jiraHistoryIssues = new ArrayList<>();
 	private ObjectMapper mapper = null;
 
+
 	private JiraIssueHistoryDataFactory() {
 	}
 
