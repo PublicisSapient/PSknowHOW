@@ -444,9 +444,64 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
       },
       {
+        kpiId: 'kpi137',
+        kpiName: 'Defect Reopen Rate',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : { 'Workflow Status Mapping' : ['jiraDefectClosedStatus'] }
+      },
+      {
+        kpiId: 'kpi141',
+        kpiName: 'Defect Count by Status (Release)',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
+        kpiId: 'kpi142',
+        kpiName: 'Defect Count by RCA (Release)',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
+        kpiId: 'kpi143',
+        kpiName: 'Defect Count by Assignee (Release)',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
+        kpiId: 'kpi144',
+        kpiName: 'Defect Count by Priority (Release)',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'] }
+      },
+      {
         kpiId: 'kpi989',
         kpiName: 'Kpi Maturity',
         type: ['Other'],
         fieldNames : { }
+      },
+      {
+        kpiId: 'kpi139',
+        kpiName: 'Refinement Rejection Rate',
+        kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames: {
+          'Workflow Status Mapping': [
+            'jiraReadyForRefinement',
+            'jiraAcceptedInRefinement',
+            'jiraRejectedInRefinement'
+          ]
+        }
+      },
+	  {
+        kpiId: 'kpi138',
+        kpiName: 'Backlog Readiness Efficiency',
+		kpiSource: 'Jira',
+        type: ['Other'],
+        fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
       }
 	  ]);

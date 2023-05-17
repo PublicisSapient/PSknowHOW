@@ -22,11 +22,8 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +46,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author anisingh4
  */
@@ -67,6 +66,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_WSJF = "epicWsjf";
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
+	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatus";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -325,8 +325,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
 			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-						ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
-					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE, "additionalFilterConfig","jiraDueDateField","jiraDueDateCustomField");
+					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
+					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
+					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
+					"jiraDueDateCustomField");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
 					STORY_FIRST_STATUS);
@@ -387,7 +389,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority", "excludeRCAFromFTPR",
 					"workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, "jiraDor",
 					"resolutionTypeForRejection", "jiraDefectRejectionStatus", EPIC_TIME_CRITICALITY, "jiraLiveStatus",
-					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField");
+					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
+					"jiraDefectClosedStatus","jiraRejectedInRefinement","jiraAcceptedInRefinement","jiraReadyForRefinement");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
 					STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",

@@ -310,4 +310,13 @@ public class KPIExcelData {
     @JsonProperty("Assignee")
     private String assignee;
 
+    @JsonProperty("Defect added after Sprint Start")
+    private String defectAddedAfterSprintStart;
+
+	@JsonProperty("Change Date")
+	private String changeDate;
+
+    @JsonProperty("Created during Iteration")
+    private String createdDuringIteration;
+
 }

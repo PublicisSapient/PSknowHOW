@@ -82,7 +82,8 @@ import com.publicissapient.kpidashboard.common.util.EncryptionException;
 	 * @return list of tokens
 	 */
 	@RequestMapping(path = "/apitokens", method = RequestMethod.GET) // NOSONAR
-	public Collection<ApiToken> getApiTokens() {
-		return apiTokenService.getApiTokens();
+	public ResponseEntity<Collection<ApiToken>> getApiTokens() {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(apiTokenService.getApiTokens());
 	}
 }

@@ -587,6 +587,50 @@
       ],
       "others": [
         {
+          "boardId": 12,
+          "boardName": "Release",
+          "kpis": [   {
+            "kpiId": "kpi121",
+            "kpiName": "Capacity",
+            "isEnabled": true,
+            "order": 2,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2686c",
+              "kpiId": "kpi121",
+              "kpiName": "Capacity",
+              "isDeleted": "False",
+              "defaultOrder": 2,
+              "kpiCategory": "Iteration",
+              "kpiUnit": "Hours",
+              "showTrend": false,
+              "isPositiveTrend": true,
+              "boxType": "1_column",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "maxValue": "",
+              "kanban": false,
+              "groupId": 8,
+              "kpiInfo": {
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "Planned capacity is the development team's available time represented in Hours."
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Source of this is KnowHOW"
+                  }
+                ]
+              },
+              "trendCalculative": false,
+              "squadSupport": false,
+              "xaxisLabel": "",
+              "yaxisLabel": ""
+            },
+            "shown": true
+          }]
+        },
+        {
           "boardId": 11,
           "boardName": "Backlog",
           "kpis": [

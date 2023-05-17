@@ -109,6 +109,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     isGlobalDownload = false;
     kpiTrendsObj = {};
     selectedTab= 'iteration';
+    showCommentIcon = false;
+    noProjects = false;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -201,13 +203,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (this.service.getFilterObject()) {
             this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
-            this.receiveSharedData(this.service.getFilterObject());
         }
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
             }
         });
+        this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+            this.noProjects = res;
+            this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+          }));
 
         this.service.getEmptyData().subscribe((val) => {
             if (val) {
@@ -235,7 +240,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
             }
         }
-        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event.selectedTab.toLowerCase() !== 'iteration') {
+        if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
             this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
             this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
             if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
@@ -259,7 +264,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     // call kpi request according to tab selected
                     if (this.masterData && Object.keys(this.masterData).length) {
                         this.processKpiConfigData();
-                        if (this.selectedtype.toLowerCase() === 'kanban') {
+                        if (this.service.getSelectedType().toLowerCase() === 'kanban') {
                             this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
                             this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
@@ -312,6 +317,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 } else {
                     this.noTabAccess = true;
                 }
+                if(this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project'){
+                    this.showCommentIcon = true;
+                } else {
+                    this.showCommentIcon = false;
+                }
             }
         }
     }
@@ -325,7 +335,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKpi(this.kpiListSonar, 'sonar');
         }
@@ -333,7 +343,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
     groupJenkinsKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
@@ -351,7 +361,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+                this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'',);
                 if (this.kpiZypher?.kpiList?.length > 0) {
                     this.postZypherKpi(this.kpiZypher, 'zypher');
                 }
@@ -377,7 +387,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'');
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
                 }
@@ -401,7 +411,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.loaderJiraKanbanArray = [];
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId);
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'');
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKanbanKpi(this.kpiJira, 'jira');
                 }
@@ -410,7 +420,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
     // Used for grouping all Sonar kpi of kanban from master data and calling Sonar kpi.
     groupSonarKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKanbanKpi(this.kpiListSonar, 'sonar');
         }
@@ -418,7 +428,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
     groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKanbanKpi(this.kpiJenkins, 'jenkins');
         }
@@ -426,7 +436,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Zypher kpi of kanban from master data and calling Zypher kpi.
     groupZypherKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiZypher?.kpiList?.length > 0) {
             this.postZypherKanbanKpi(this.kpiZypher, 'zypher');
         }
@@ -434,7 +444,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
     groupBitBucketKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKanbanKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -442,7 +452,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of scrum from master data and calling BitBucket kpi.
     groupBitBucketKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '');
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '','');
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -1060,7 +1070,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let trend:string = '';
         if(item?.value?.length > 0){
             let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
-            let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' ? kpiData?.kpiDetail?.kpiUnit : '';
+            let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -1113,6 +1123,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
                                     this.checkMaturity(this.kpiChartData[kpiId][i]) 
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
+                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue
                     };
                     if(kpiId === 'kpi997'){
                         trendObj['value'] = 'NA';

@@ -18,7 +18,7 @@
 
 import { Injectable, Inject} from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
 import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
@@ -36,6 +36,9 @@ import { SharedService } from './shared.service';
 ) export class HttpService {
 
     public currentVersion = '';
+    public loadApp = new BehaviorSubject(false);
+    public unauthorisedAccess = false;
+    public createdProjectName = '';
     /*use to change the base url according to the environment variable */
     private baseUrl = environment.baseUrl;  // Servers Env
     private filterDataUrl = this.baseUrl + '/api/filterdata';
@@ -127,18 +130,23 @@ import { SharedService } from './shared.service';
     private azurePipelineUrl = this.baseUrl + '/api/azure/pipeline';
     private azureReleasePipelineUrl = this.baseUrl + '/api/azure/release';
     private allHierachyLevelsUrl = this.baseUrl + '/api/filters';
+    private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
+    private authDetailsUrl = this.baseUrl + '/api/authdetails';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
+    private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
+    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
-
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
-    private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData'
+    private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
+    private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
+    private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
     userName : string;
     userEmail : string;
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) { 
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) {
         this.sharedService.currentUserDetailsObs.subscribe(details=>{
             if(details){
                 this.userName = details['user_name'];
@@ -146,6 +154,7 @@ import { SharedService } from './shared.service';
             }
           });
     }
+
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
@@ -569,6 +578,7 @@ import { SharedService } from './shared.service';
 
     /** add basic config */
     addBasicConfig(basicConfig): Observable<any> {
+        this.createdProjectName = basicConfig?.projectName;
         return this.http.post<any>(this.basicConfigUrl, basicConfig);
     }
 
@@ -690,6 +700,37 @@ import { SharedService } from './shared.service';
         return this.http.get<any>(this.getEmmStatsUrl);
     }
 
+
+    getSSOUserInfo(){
+        return this.http.get<any>(this.getSSOUserInfoUrl);
+    }
+
+
+    getAuthDetails() {
+        const existingRoles = JSON.parse(localStorage?.getItem('projectsAccess')).map(projectRolesDetails => projectRolesDetails?.role);
+        this.http.get<any>(this.authDetailsUrl).subscribe(response => {
+
+            if (response && response?.success && response?.data) {
+                const authDetails = response?.data;
+                const newRoles = authDetails['projectsAccess'].map(projectRolesDetails => projectRolesDetails?.role);
+                let roleAlreadyExist = true;
+                newRoles.forEach(role => {
+                  if(!existingRoles.includes(role)) {
+                    roleAlreadyExist = false;
+                  }
+                });
+                this.sharedService.setCurrentUserDetails({username: authDetails['username']});
+                this.sharedService.setCurrentUserDetails({user_email:authDetails['emailAddress']});
+                this.sharedService.setCurrentUserDetails({projectsAccess : JSON.stringify(authDetails['projectsAccess'])});
+                this.sharedService.setCurrentUserDetails({authorities :authDetails['authorities']});
+                if(!this.unauthorisedAccess && !roleAlreadyExist){
+                    this.loadApp.next(true);
+                    this.unauthorisedAccess = false;
+                }
+            }
+        });
+    }
+    
     generateToken(postData): Observable<any> {
         return this.http.post<any>(this.generateTokenUrl, postData);
     }
@@ -704,6 +745,14 @@ import { SharedService } from './shared.service';
 
     saveOrUpdateAssignee(postData){
         return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
+    }
+
+    getkpiColumns(projectBasicConfigId,kpiId){
+        return this.http.get(this.getKpiColumnsUrl+'/'+projectBasicConfigId+'/'+kpiId);
+    }
+
+    postkpiColumnsConfig(postData){
+        return this.http.post(this.postKpiColumnsConfigUrl,postData);
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
@@ -867,11 +916,20 @@ import { SharedService } from './shared.service';
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
+    getComment(selectedTab, selectedFilter, kpiId){
+        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
+    }
+
+    submitComment(data): Observable<any> {
+        return this.http.post<object>(this.submitCommentUrl, data);
+    }
+
     /* Update project details  */
       updateProjectDetails(updatedDetails,id){
             return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
         }
-        /** POST: Upload ldap certificate file */
+
+    /** POST: Upload ldap certificate file */
     uploadCertificate(file): Observable<object> {
         const fileFormData = new FormData();
         fileFormData.append('file', file);

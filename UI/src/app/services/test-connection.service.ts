@@ -29,13 +29,20 @@ export class TestConnectionService {
   constructor(private http: HttpClient) { }
 
   /** get: test JIRA connection */
-  testJira(baseUrl, apiEndPoint, username, password, vault, patOAuthToken): Observable<any> {
+
+  testJira(baseUrl, apiEndPoint, username, password, vault, bearerToken, patOAuthToken, jaasKrbAuth, jaasConfigFilePath, krb5ConfigFilePath, jaasUser, samlEndPoint): Observable<any> {
     const postData = {
       baseUrl,
       username,
       password: password ? password : '',
       vault,
-      patOAuthToken: patOAuthToken ? patOAuthToken : ''
+      patOAuthToken: patOAuthToken ? patOAuthToken : '',
+      bearerToken,
+      jaasKrbAuth,
+      jaasConfigFilePath,
+      krb5ConfigFilePath,
+      jaasUser,
+      samlEndPoint
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

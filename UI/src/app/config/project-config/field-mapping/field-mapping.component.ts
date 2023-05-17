@@ -405,6 +405,7 @@ export class FieldMappingComponent implements OnInit {
   initializeFields() {
     this.fieldMappingFormObj = {
       // workflow status mapping
+      readyForDevelopmentStatus: [''],
       storyFirstStatus: [''],
       jiraDefectCreatedStatus: [''],
       jiraDefectDroppedStatus: [[]],
@@ -423,6 +424,7 @@ export class FieldMappingComponent implements OnInit {
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
       jiraDevDoneStatus : [],
+      jiraDefectClosedStatus: [[]],
       // issue type mapping
       jiraIssueTypeNames: [[]],
       jiraDefectSeepageIssueType: [[]],
@@ -470,7 +472,10 @@ export class FieldMappingComponent implements OnInit {
       productionDefectComponentValue: [''],
       productionDefectValue: [[]],
       // qaRootCauseValue: [[]],
-      excludeRCAFromFTPR: [[]]
+      excludeRCAFromFTPR: [[]],
+      jiraReadyForRefinement: [[]],
+      jiraAcceptedInRefinement: [[]],
+      jiraRejectedInRefinement: [[]]
     };
 
     this.addAdditionalFilterOptions();

@@ -143,6 +143,8 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
+	// Added for Defect Reopen Rate KPI.
+	private List<String> jiraDefectClosedStatus;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -187,6 +189,9 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
+	
+	//field for identifying ready for development status
+	private String readyForDevelopmentStatus;
 
 	//field for Wasting - wait status
 	private List<String> jiraWaitStatus;
@@ -203,6 +208,15 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
+
+	// For DTS_21154 - field for Team refinement status
+	private List<String> jiraRejectedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraAcceptedInRefinement;
+
+	// For DTS_21154 - field for Stakeholder refinement status
+	private List<String> jiraReadyForRefinement;
 
 	/**
 	 * Get jira issue type names string [ ].

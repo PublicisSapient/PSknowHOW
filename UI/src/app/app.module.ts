@@ -18,10 +18,10 @@
 
 
 /******************* Modules   ***********************/
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule } from '@angular/common';
@@ -65,8 +65,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
-import { SkeletonModule } from 'primeng/skeleton'
-
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { SkeletonModule } from 'primeng/skeleton';
 
 /******************************************************/
 
@@ -99,9 +99,34 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+
+import { environment } from 'src/environments/environment';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
+import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
+
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
+import { CommentsComponent } from './component/comments/comments.component';
+import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 
 /******************************************************/
+
+const initializeAppFactory = (http: HttpClient): () => void  =>{
+    if (!environment.production) {
+        return  ()=> undefined;
+    } else {
+        return async () => {
+        const env$ = http.get('assets/env.json').pipe(
+                tap(env => {
+                    environment['baseUrl'] = env['baseUrl'] || '';
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                }));
+
+        await env$.toPromise().then(res => console.log);
+        };
+    }
+};
 
 
 @NgModule({
@@ -140,7 +165,11 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
-        GroupBarChartComponent
+        CommentsComponent,
+        SsoAuthFailureComponent,
+        UnauthorisedAccessComponent,
+        GroupBarChartComponent,
+        MilestoneComponent
     ],
     imports: [
         DropdownModule,
@@ -169,6 +198,7 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         DialogModule,
         FontAwesomeModule,
         DragDropModule,
+        OverlayPanelModule,
         MenuModule,
         SkeletonModule
     ],
@@ -183,12 +213,15 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
         MessageService,
         TextEncryptionService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: APP_CONFIG, useValue: AppConfig },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeAppFactory,
+            deps: [HttpClient],
+            multi: true
+          }
     ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-
-
-

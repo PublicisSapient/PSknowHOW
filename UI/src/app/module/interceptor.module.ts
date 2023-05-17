@@ -18,20 +18,21 @@
 
 import { Injectable, NgModule } from '@angular/core';
 import { throwError } from 'rxjs';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import * as uuid from 'uuid';
+import { HttpService } from '../services/http.service';
 declare let $: any;
 
 @Injectable()
 
 export class HttpsRequestInterceptor implements HttpInterceptor {
-    constructor(private getAuth: GetAuthService, private router: Router, private service: SharedService) { }
+    constructor(private getAuth: GetAuthService, private router: Router, private service: SharedService, private httpService: HttpService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
@@ -79,21 +80,49 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
 
         // handling error response
         return next.handle(req)
-            .pipe(catchError((err) => {
+            .pipe(
+                tap(event => {
+                    if (event instanceof HttpResponse){
+                        if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
+                            this.httpService.getAuthDetails();
+                        }
+                    }
+                }),
+                catchError((err) => {
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
-                            this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                            if(!environment.SSO_LOGIN){
+                                this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                            }
                         }
+
+                        if (environment.SSO_LOGIN) {
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
+                        }
+                    } else if(err.status === 403){
+                        this.httpService.unauthorisedAccess =true;
+                        this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
-                        if (httpErrorHandler !== 'local') {
-                            if (requestArea === 'internal') {
-                                if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                    this.router.navigate(['./dashboard/Error']);
-                                    setTimeout(() => {
-                                        this.service.raiseError(err);
-                                    }, 0);
+                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
+                            this.service.clearAllCookies();
+                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                                window.location.reload();
+                            });
+                        }else{
+                            if (httpErrorHandler !== 'local') {
+                                if (requestArea === 'internal') {
+                                    if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
+                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        this.router.navigate(['./dashboard/Error']);
+                                        }
+                                        setTimeout(() => {
+                                            this.service.raiseError(err);
+                                        }, 0);
+                                    }
                                 }
                             }
                         }

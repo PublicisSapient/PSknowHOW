@@ -25,6 +25,7 @@
       "Epic"
     ],
     "storyFirstStatus": "Open",
+    "readyForDevelopmentStatus": "Ready for Development",
     "rootCause": "customfield_19121",
     "jiraStatusForDevelopment": [
       "Implementing",
@@ -182,6 +183,9 @@
       "On Hold",
       "In Investigation",
       "Open"
+    ],
+    "jiraDefectClosedStatus": [
+      "Closed"
     ],
     "estimationCriteria": "Story Point",
     "storyPointToHourMapping": 

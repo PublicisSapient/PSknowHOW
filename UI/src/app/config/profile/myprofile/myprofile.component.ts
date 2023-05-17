@@ -22,6 +22,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
 import { SharedService } from 'src/app/services/shared.service';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-myprofile',
   templateUrl: './myprofile.component.html',
@@ -46,8 +47,11 @@ export class MyprofileComponent implements OnInit {
   roleBasedProjectList = [];
   adLogin = false;
   dynamicCols: Array<any> = [];
+  ssoLogin = environment.SSO_LOGIN;
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
     private sharedService : SharedService) { }
+
+
 
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {

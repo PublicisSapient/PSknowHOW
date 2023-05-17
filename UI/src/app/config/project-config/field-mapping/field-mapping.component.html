@@ -375,6 +375,116 @@
                                 (click)="showDialogToAddValue(false, 'jiraDevDoneStatus', 'workflow')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                         *ngIf="fieldstoShow?.includes('jiraDefectClosedStatus') || fieldstoShow.length === 0">
+                         <label class="field-title">Status to identify Closed Bugs
+                            <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                                    This field should consider all status that are considered Closed in Jira for e.g. Closed, Done etc <br>
+                                                   </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                   inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
+                                   placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                  (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+					 <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
+                                Definition:
+                                Status to identify Ready for development from the backlog.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
+                                placeholder="Enter backlog ready for development status"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
+                        </div>
+                    </div>
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
+                    <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
+                                                                          aria-hidden="true" pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Ready for Refinement<br>
+                                                    Example: Ready For Refinement
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                          tooltipStyleClass="tooltiptext"
+                                                                          [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraReadyForRefinement" formControlName="jiraReadyForRefinement"
+                               placeholder="Enter status for Issues Ready For Refinement" addOnBlur="true" pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Ready For Refinement
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraReadyForRefinement', 'workflow')"></button>
+                    </div>
+                  </div>
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraAcceptedInRefinement') || fieldstoShow.length === 0">
+                    <label class="field-title">Accepted in Refinement <span class="fa fa-info-circle"
+                                                                            aria-hidden="true" pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is that is Accepted in Refinement. <br>
+                                                    Example: Accepted In Refinement
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                            tooltipStyleClass="tooltiptext"
+                                                                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraAcceptedInRefinement" formControlName="jiraAcceptedInRefinement"
+                               placeholder="Enter status for Accepted Tickets In Refinement Process" addOnBlur="true"
+                               pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Rejected in Refinement
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraAcceptedInRefinement', 'workflow')"></button>
+                    </div>
+                  </div>
+
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraRejectedInRefinement') || fieldstoShow.length === 0">
+                    <label class="field-title">Rejected in Refinement <span class="fa fa-info-circle"
+                                                                            aria-hidden="true" pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Rejected in Refinement
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                            tooltipStyleClass="tooltiptext"
+                                                                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraRejectedInRefinement" formControlName="jiraRejectedInRefinement"
+                               placeholder="Enter status for Rejected Tickets In Refinement Process" addOnBlur="true"
+                               pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Rejected in Refinement
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraRejectedInRefinement', 'workflow')"></button>
+                    </div>
+                  </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"
@@ -1178,7 +1288,7 @@
                                   (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
                           </div>
                       </div>
-                      
+
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
                         <label class="field-title">Due Date <span class="fa fa-info-circle"

@@ -30,6 +30,7 @@ import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepos
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
@@ -122,6 +123,9 @@ public class UserInfoServiceImplTest {
 	@Mock
 	private Cookie cookie;
 	
+	@Mock
+	TokenAuthenticationService tokenAuthenticationService;
+
 	private static final String ROLE_VIEWER="ROLE_VIEWER";
 	private static final String ROLE_SUPERADMIN="ROLE_SUPERADMIN";
 	@Before
@@ -138,19 +142,6 @@ public class UserInfoServiceImplTest {
 		when(userInfoRepository.findByUsername("user")).thenReturn(user);
 		Collection<GrantedAuthority> authorities = service.getAuthorities("user");
 		assertTrue(authorities.contains(authority));
-	}
-
-	@Test
-	public void shouldGetAllUsers() {
-		UserInfo user = Mockito.mock(UserInfo.class);
-		Collection<UserInfo> users = Sets.newHashSet(user, user);
-		when(userInfoRepository.findAll()).thenReturn(users);
-		when(user.getUsername()).thenReturn("abc");
-		when(authenticationRepository.findByUsername("abc")).thenReturn(Mockito.mock(Authentication.class));
-		when(authenticationRepository.findByUsername("abc").isApproved()).thenReturn(true);
-		Collection<UserInfo> result = service.getUsers();
-		assertTrue(result.contains(user));
-		assertTrue(result.size() == 1);
 	}
 
 	@Test(expected = DeleteLastAdminException.class)
@@ -431,7 +422,7 @@ public class UserInfoServiceImplTest {
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken("dummyUser", "dummyData", 100000L)));
 		when(userTokenReopository.findByUserToken(anyString()))
-				.thenReturn(new UserTokenData("dummyUser", "dummyToken"));
+				.thenReturn(new UserTokenData("dummyUser", "dummyToken",null));
 		when(authenticationRepository.findByUsername(anyString())).thenReturn(new Authentication());
 
 		user.setUsername("dummyUser");

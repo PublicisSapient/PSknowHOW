@@ -34,7 +34,7 @@
 }
 
 .kpi-card-name-placeholder h3 {
-    font-size: 1.10rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -71,6 +71,7 @@
     color: #707070;
     vertical-align: middle;
     margin-top: -2px;
+    margin-right: 5px;
 }
 
 .kpi-download-icon{
@@ -97,4 +98,7 @@
 
 ::ng-deep .kpi-filter .ng-placeholder {
     top: 5px;
+}
+.trend-box{
+    flex: 0 0 33.3333%;
 }

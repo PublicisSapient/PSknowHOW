@@ -20,6 +20,7 @@ import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
+import { environment } from 'src/environments/environment';
 
 declare let $: any;
 
@@ -33,8 +34,9 @@ export class ProfileComponent implements OnInit {
     isProjectAdmin = false;
     changePswdDisabled = false;
     adLogin = false;
-    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {
-    }
+    ssoLogin = environment.SSO_LOGIN;
+    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
+
     ngOnInit() {
         if (this.getAuthorizationService.checkIfSuperUser()) {
             // logged in as SuperAdmin
