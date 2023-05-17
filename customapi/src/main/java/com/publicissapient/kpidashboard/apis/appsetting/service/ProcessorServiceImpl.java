@@ -96,8 +96,10 @@ public class ProcessorServiceImpl implements ProcessorService {
 				headers.add("Authorization", token);
 
 				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
+				log.info("headers passing in request Entity  " + headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-				log.info(" Github Action response url " + resp.getStatusCode() + " ** body " + resp.getBody() + "@@@@ status code value  " + resp.getStatusCodeValue());
+				log.info(" requestEntity " + requestEntity + " url " + url);
+				log.info(" Github Action response header " + resp.getHeaders() + " ** body " + resp.getBody() + "@@@@ status code value  " + resp.getStatusCodeValue());
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
 				statuscode = ex.getStatusCode().value();
