@@ -831,6 +831,7 @@ describe('FilterComponent', () => {
   });
 
   it('should get format date based on iteration/milestone', () => {
+    component.selectedTab = 'iteration';
     component.filteredAddFilters = {
       sprint: [
         {
@@ -854,10 +855,10 @@ describe('FilterComponent', () => {
     });
 
     let result = component.getDate('start');
-    expect(result).toBe('07-Sep-2022');
+    expect(result).toBe('07/09/2022');
 
     let result2 = component.getDate('end');
-    expect(result).toBe('27-Sep-2022');
+    expect(result2).toBe('27/09/2022');
   });
 
   it("should call formatted date for iteration",()=>{
