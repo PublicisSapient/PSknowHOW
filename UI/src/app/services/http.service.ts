@@ -134,6 +134,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private getSSOUserInfoUrl = this.baseUrl + '/api/sso/user';
     private authDetailsUrl = this.baseUrl + '/api/authdetails';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
+    private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
+    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
@@ -908,11 +910,20 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
+    getComment(selectedTab, selectedFilter, kpiId){
+        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
+    }
+
+    submitComment(data): Observable<any> {
+        return this.http.post<object>(this.submitCommentUrl, data);
+    }
+
     /* Update project details  */
       updateProjectDetails(updatedDetails,id){
             return this.http.put<any>(this.basicConfigUrl + "/"+ id,updatedDetails);
         }
-        /** POST: Upload ldap certificate file */
+
+    /** POST: Upload ldap certificate file */
     uploadCertificate(file): Observable<object> {
         const fileFormData = new FormData();
         fileFormData.append('file', file);

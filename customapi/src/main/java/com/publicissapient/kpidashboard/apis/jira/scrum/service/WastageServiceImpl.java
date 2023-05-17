@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Hours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -369,16 +367,16 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
 						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));;
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
+						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
 			} else {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));;
+				hours = (ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
+						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate));;
 			}
 		}
 		return hours;

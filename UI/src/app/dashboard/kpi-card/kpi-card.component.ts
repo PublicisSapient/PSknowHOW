@@ -28,6 +28,9 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
+  @Input() showCommentIcon: boolean;
+  selectedTab: string;
+
 
   constructor(private service: SharedService) {
   }
@@ -48,10 +51,12 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            // this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1')?this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]:this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
         }
       }
+      this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){

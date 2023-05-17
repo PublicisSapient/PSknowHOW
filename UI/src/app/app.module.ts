@@ -65,8 +65,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
-import { SkeletonModule } from 'primeng/skeleton'
-
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { SkeletonModule } from 'primeng/skeleton';
 
 /******************************************************/
 
@@ -108,7 +108,8 @@ import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-f
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
-
+import { CommentsComponent } from './component/comments/comments.component';
+import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 
 /******************************************************/
 
@@ -165,9 +166,11 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
+        CommentsComponent,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
-        GroupBarChartComponent
+        GroupBarChartComponent,
+        MilestoneComponent
     ],
     imports: [
         DropdownModule,
@@ -196,6 +199,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DialogModule,
         FontAwesomeModule,
         DragDropModule,
+        OverlayPanelModule,
         MenuModule,
         SkeletonModule
     ],
@@ -223,7 +227,3 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
     bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-
-
-

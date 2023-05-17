@@ -34,7 +34,7 @@
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                       (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                       [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                      [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'">
+                      [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true">
                       <ng-container *ngIf="!noTabAccess else noDataAccess">
                         <div class="p-d-flex p-justify-around p-align-center w-100"
                           *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -84,7 +84,8 @@
                         (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
                         [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                         [showExport]="true" [isShow]="true"
-                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
+                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
+                        [showCommentIcon]="true">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                             <div class="p-pl-3 p-pr-3 w-100 position-relative" [ngSwitch]="kpi?.kpiDetail?.chartType"
@@ -173,16 +174,21 @@
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
   <p-header>
-    {{modalDetails['header']}}
-    <div class="export-button">
-      <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save"
-        class="p-p-2 p-mr-2" (click)="saveTableColumnOrder()"></button>
-      <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
-        class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
-        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
-          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+    <div>
+      {{modalDetails['header']}}
+      <div class="export-button">
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save"
+          class="p-p-2 p-mr-2" (click)="saveTableColumnOrder()"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
+            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+      </div>
     </div>
-
+   
+    <div *ngIf="markerInfo?.length > 0" class="p-d-flex  p-flex-wrap">
+      <span *ngFor="let marker of markerInfo" class="p-m-2 markerInfo"> <i class='fas fa-square' [ngStyle]="{'color': marker?.color}"></i> {{marker?.info}}</span>
+    </div>
   </p-header>
   <div class="dialog-body p-mb-4">
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [globalFilterFields]="modalDetails['tableHeadings']">

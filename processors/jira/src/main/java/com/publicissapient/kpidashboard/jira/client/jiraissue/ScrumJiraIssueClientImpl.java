@@ -1311,9 +1311,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
-			//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-			//		fieldMapping);
-			//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		}
 
@@ -1333,11 +1330,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
 			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		//List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-		//		fieldMapping);
 		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-		//jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
 		// estimate
@@ -1347,206 +1341,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
 
-	}
-
-	/**
-	 * Process change log and create array of status in Jira issue history
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue
-	 * @param changeLogList
-	 *            ChangeLogList
-	 * @param issueCreatedDate
-	 *            Jira Issue creation date
-	 * @param fieldMapping
-	 *            Field Config Mapping
-	 * @return
-	 */
-	private List<JiraIssueSprint> getChangeLog(JiraIssue jiraIssue, List<ChangelogGroup> changeLogList, // NOPMD
-																										// //NOSONAR
-			DateTime issueCreatedDate, FieldMapping fieldMapping) {
-
-		List<JiraIssueSprint> issueHistory = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
-		// creating first entry of issue
-		if (null != issueCreatedDate) {
-			JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-			jiraIssueSprint.setActivityDate(issueCreatedDate);
-			jiraIssueSprint.setFromStatus(fieldMapping.getStoryFirstStatus());
-			jiraIssueSprint.setSprintId("");
-			jiraIssueSprint.setSprintComponentId("");
-			jiraIssueSprint.setStatus("");
-			issueHistory.add(jiraIssueSprint);
-		}
-		Map<String, String> values = new HashMap<>();
-
-		if (CollectionUtils.isNotEmpty(changeLogList)) {
-			for (ChangelogGroup history : changeLogList) {
-				getHistory(history, values, jiraIssue, issueHistory, jiraStatusForDevelopment, jiraStatusForQa);
-			}
-		}
-		/**
-		 * check if no sprint found in changelog but sprint present in issue
-		 * update sprint in all changelog
-		 */
-		if (StringUtils.isEmpty(values.get("fromSprint")) && StringUtils.isEmpty(values.get("toSprint"))
-				&& !StringUtils.isEmpty(jiraIssue.getSprintName())) {
-			updateChangeLogWithSprint(issueHistory, jiraIssue);
-		}
-		return issueHistory;
-	}
-
-	/**
-	 * @param history
-	 * @param values
-	 * @param jiraIssue
-	 * @param issueHistory
-	 * @param jiraStatusForDevelopment
-	 * @param jiraStatusForQa
-	 * @return
-	 */
-	private void getHistory(ChangelogGroup history, Map<String, String> values, JiraIssue jiraIssue,
-			List<JiraIssueSprint> issueHistory, List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
-		String fromSprint = "";
-		String fromSprintId = "";
-		String toSprint = "";
-		String toSprintId = "";
-		String sprintStatus = "";
-		boolean sprintUpdated = true;
-		boolean sprintChanged = false;
-
-		for (ChangelogItem changelogItem : history.getItems()) {
-
-			setJiraIssueForTestAutomated(changelogItem, jiraIssue, history);
-
-			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.SPRINT)) {
-				fromSprint = changelogItem.getFromString() == null ? "" : changelogItem.getFromString();
-				fromSprintId = changelogItem.getFrom();
-				toSprint = changelogItem.getToString() == null ? null
-						: changelogItem.getToString().replace(fromSprint + ",", "").trim();
-
-				toSprintId = changelogItem.getTo();
-				sprintChanged = true;
-			} else if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
-				JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-				jiraIssueSprint.setStatus(sprintStatus);
-				jiraIssueSprint.setSprintId(toSprint);
-
-				setSprintComponentId(jiraIssueSprint, toSprintId, jiraIssue);
-
-				jiraIssueSprint.setStatus(sprintStatus);
-				jiraIssueSprint.setFromStatus(changelogItem.getToString());
-				jiraIssueSprint.setActivityDate(history.getCreated());
-				issueHistory.add(jiraIssueSprint);
-			}
-			if (sprintUpdated && sprintChanged) {
-				setIssueHistory(issueHistory, fromSprintId, jiraIssue);
-				sprintUpdated = false;
-			}
-
-			/*
-			 * check if only sprint changed. In this case only sprint name need
-			 * to be updated with last status
-			 */
-			sprintChanged = updateIfSprintChanged(jiraIssue, toSprint, toSprintId, sprintChanged, issueHistory);
-			values.put("fromSprint", fromSprint);
-			values.put("toSprint", toSprint);
-		}
-	}
-
-	/**
-	 * @param jiraIssueSprint
-	 * @param toSprintId
-	 * @param jiraIssue
-	 */
-	private void setSprintComponentId(JiraIssueSprint jiraIssueSprint, String toSprintId, JiraIssue jiraIssue) {
-		if (StringUtils.isNotBlank(toSprintId)) {
-			jiraIssueSprint.setSprintComponentId(toSprintId + "_" + jiraIssue.getProjectName());
-		} else {
-			jiraIssueSprint.setSprintComponentId(toSprintId);
-		}
-	}
-
-	/**
-	 * @param changelogItem
-	 * @param jiraIssue
-	 * @param history
-	 */
-	private void setJiraIssueForTestAutomated(ChangelogItem changelogItem, JiraIssue jiraIssue,
-			ChangelogGroup history) {
-		if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
-			if (changelogItem.getToString().equalsIgnoreCase(JiraConstants.YES)) {
-				jiraIssue.setTestAutomatedDate(JiraProcessorUtil
-						.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
-			} else {
-				jiraIssue.setTestAutomatedDate("");
-
-			}
-		}
-	}
-
-	/**
-	 * @param issueHistory
-	 * @param fromSprintId
-	 * @param jiraIssue
-	 */
-	private void setIssueHistory(List<JiraIssueSprint> issueHistory, String fromSprintId, JiraIssue jiraIssue) {
-		for (int i = 0; i < issueHistory.size() - 1; i++) {
-			JiraIssueSprint fsprint = issueHistory.get(i);
-			String[] toSprintIdArrFrom = {};
-
-			if (fromSprintId != null && fromSprintId.contains(",")) {
-				toSprintIdArrFrom = fromSprintId.split(",");
-			}
-			if (toSprintIdArrFrom.length > 0) {
-				fsprint.setSprintId(fromSprintId);
-				if (StringUtils.isNotBlank(fromSprintId)) {
-					fsprint.setSprintComponentId(fromSprintId + "_" + jiraIssue.getProjectName());
-				} else {
-					fsprint.setSprintComponentId(fromSprintId);
-				}
-			}
-			issueHistory.set(i, fsprint);
-		}
-	}
-
-	private boolean updateIfSprintChanged(JiraIssue jiraIssue, String toSprint, String toSprintId,
-			boolean sprintChanged, List<JiraIssueSprint> issueHistory) {
-		boolean changed = sprintChanged;
-		if (sprintChanged && toSprint != null
-				&& !(toSprint.equals(issueHistory.get(issueHistory.size() - 1).getSprintId()))) {
-			JiraIssueSprint fsprint = issueHistory.get(issueHistory.size() - 1);
-
-			fsprint.setSprintId(toSprint);
-			if (StringUtils.isNotBlank(toSprintId)) {
-				fsprint.setSprintComponentId(toSprintId + "_" + jiraIssue.getProjectName());
-			} else {
-				fsprint.setSprintComponentId(toSprintId);
-			}
-
-			issueHistory.set(issueHistory.size() - 1, fsprint);
-			changed = false;
-		}
-		return changed;
-	}
-
-	/**
-	 * Updates Change log with Sprint
-	 *
-	 * @param issueHistory
-	 *            List of JiraIssueSprint containing History data
-	 * @param jiraIssue
-	 *            JiraIssue
-	 */
-	private void updateChangeLogWithSprint(List<JiraIssueSprint> issueHistory, JiraIssue jiraIssue) {
-		for (int i = 0; i < issueHistory.size(); i++) {
-			JiraIssueSprint fsprint = issueHistory.get(i);
-			fsprint.setSprintId(jiraIssue.getSprintName());
-			fsprint.setSprintComponentId(jiraIssue.getSprintID());
-			fsprint.setStatus(jiraIssue.getSprintAssetState());
-			issueHistory.set(i, fsprint);
-		}
 	}
 
 	/**

@@ -88,37 +88,41 @@ function running_js()
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/default_estimation_mapping.js
 
 
-	echo "###########  creating indexes for db collections ###########"
+	echo "###########  creating indexes for db collections `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/dbCollection_indexes.js
 
-
-	echo "########### Email server Sapecloud details script ###########"
+	echo "########### Email server Sapecloud details script `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/email_server_details_global_config.js
 
-	echo "########## Zephyr Cloud Base Url ############"
+	echo "########## Zephyr Cloud Base Url `date` ############"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/zephyr_cloud_details.js
 
-  echo "########## insert processors to show on run processor screen ############"
+  echo "########## insert processors to show on run processor screen `date` ############"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_processors.js
 
-	echo "########## insert kpi_fieldmapping to show kpiwise field mapping############"
+	echo "########## insert kpi_fieldmapping to show kpiwise field mapping `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_fieldmapping_insert.js
-echo "########## insert jira test tool added for existing user using testing field mapping############"
+
+  echo "########## insert jira test tool added for existing user using testing field mapping `date` ############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/test_tool_backward_compatibility.js
 
-  echo "########## remove processor item dependency from build tools ############"
+  echo "########## remove processor item dependency from build tools `date` ############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/remove_processors_item_from_build_details.js
 
-  echo "########## remove Assignee details from all tools ############"
-    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/delete_assigneeDetails.js
+  echo "########## remove Assignee details from all tools `date` ############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/delete_assigneeDetails.js
 
   echo "########## jira issue custom history backward compatibility ############"
-     mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/jira_issue_custom_history_backward_compatibility.js
-     echo "########## add custom template code for existing projects ############"
-          mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/jira_issue_custom_history_backward_compatibility.js
 
-  echo "########## jira issue custom history backward compatibility ############"
-     mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/jira_issue_custom_history_backward_compatibility.js
+  echo "########## add custom template code for existing projects `date` ############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
+
+  echo "########## create release hierarchy with project version `date`############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_release_hierarchy.js
+
+
+
 }
 
 function cron_service()
