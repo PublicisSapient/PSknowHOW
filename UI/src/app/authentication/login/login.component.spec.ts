@@ -32,8 +32,6 @@ import { HttpService } from '../../services/http.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { SharedService } from '../../services/shared.service';
-import { RsaEncryptionService } from '../../services/rsa.encryption.service';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
 import { of } from 'rxjs';
 
@@ -45,8 +43,7 @@ describe('LoginComponent', () => {
   let httpMock;
   let httpreq;
   let httpService;
-  let encryption;
-  let aesEncryption;
+  let sharedService;
   const fakeLogin = {
     instance_owner: 'kbakshi@sapient.com',
     user_email: 'test@gmail.com',
@@ -93,7 +90,7 @@ describe('LoginComponent', () => {
       declarations: [LoginComponent,
         RegisterComponent, DashboardComponent, MyprofileComponent],
       providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, SharedService, RsaEncryptionService, TextEncryptionService
+        HttpService, SharedService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
@@ -103,9 +100,8 @@ describe('LoginComponent', () => {
       fixture = TestBed.createComponent(LoginComponent);
       component = fixture.componentInstance;
       httpService = TestBed.get(HttpService);
-      encryption = TestBed.get(RsaEncryptionService);
+      sharedService = TestBed.get(SharedService);
       httpMock = TestBed.get(HttpTestingController);
-      aesEncryption = TestBed.get(TextEncryptionService);
       fixture.detectChanges();
   }));
 
@@ -115,13 +111,6 @@ describe('LoginComponent', () => {
   });
 
 
-  it('remember me with saved value', waitForAsync(() => {
-    fixture.detectChanges();
-    localStorage.setItem('SpeedyUser', 'fakeUser');
-    localStorage.setItem('SpeedyPassword', aesEncryption.convertText('fakeUserPswd', 'encrypt'));
-    component.rememberMe();
-    expect(component.rememberMeCheckbox).toBeTruthy();
-  }));
 
   it('invalid form should not call login', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('');
@@ -132,7 +121,7 @@ describe('LoginComponent', () => {
 
   xit('valid form with correct username pswd', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.flush(fakeLogin);
@@ -143,7 +132,7 @@ describe('LoginComponent', () => {
   // 0 status
   it('Internal server error login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error('');
@@ -154,7 +143,7 @@ describe('LoginComponent', () => {
   // 404 status
   it('Unauthorized login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
-    component.loginForm.controls['password'].setValue('User@123');
+    component.loginForm.controls['password'].setValue('***');
     component.onSubmit('standard');
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error(fakeInvalidLogin, fakeInvalidLogin);
@@ -186,47 +175,32 @@ describe('LoginComponent', () => {
     expect(component.loginConfig).toEqual(failValues)
   })
 
-  it("should remember for speed user",()=>{
-    component.ngOnInit();
-    localStorage.setItem('SpeedyUser',"abc@gmail.com");
-    component.rememberMe();
-    expect(component.rememberMeCheckbox).toBeTruthy();
-  })
 
   it("should redirect to profile if user email is blank",()=>{
-    localStorage.setItem('user_email',"");
-    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
+    sharedService.setCurrentUserDetails({user_email:""});
+    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
+    fixture.detectChanges();
     component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy()
-  })
+    expect(component.redirectToProfile).toBeTruthy();
+  });
 
   it("should redirect on profile for superadmin",()=>{
-    localStorage.setItem('user_email',"abc@gmail.com");
-    localStorage.setItem('projectsAccess',JSON.stringify(["abc"]));
-    spyOn(aesEncryption,'convertText').and.returnValue("[\"ROLE_SUPERADMIN\"]")
+    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    sharedService.setCurrentUserDetails({'projectsAccess':[]});
+    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
+    fixture.detectChanges();
     const respo = component.redirectToProfile();
     expect(respo).toBeFalsy();
   })
 
   it("should not redirect on profile if not superadmin",()=>{
-    localStorage.setItem('user_email',"abc@gmail.com");
-    localStorage.setItem('projectsAccess',undefined);
-    spyOn(aesEncryption,'convertText').and.returnValue("[\"NOT_SUPERADMIN\"]")
+    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    sharedService.setCurrentUserDetails({projectsAccess:undefined});
+    sharedService.setCurrentUserDetails({authorities: ['NOT_SUPERADMIN']});
+    fixture.detectChanges();
     component.redirectToProfile();
-    expect(component.redirectToProfile).toBeTruthy()
-  })
+    expect(component.redirectToProfile).toBeTruthy();
+  });
 
-  it("should set SpeedyPassword in localstorage",()=>{
-    spyOn(localStorage,"setItem");
-    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
-   expect(localStorage.setItem).toHaveBeenCalled();
-  })
-
-  it("should remove SpeedyUser if remembercheckbox is false ",()=>{
-    component.rememberMeCheckbox = false;
-    spyOn(localStorage,"removeItem");
-    component.performLogin(fakeLoginResponse,"SUPERADMIN","SUPERADMIN@123","standard");
-   expect(localStorage.removeItem).toHaveBeenCalled();
-  })
 
 });

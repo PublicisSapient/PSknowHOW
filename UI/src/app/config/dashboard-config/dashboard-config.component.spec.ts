@@ -92,6 +92,7 @@ describe('DashboardconfigComponent', () => {
   }));
 
   it('save dashboard config ', waitForAsync(() => {
+    component.userName = "dummyName"
     fixture.detectChanges();
     const httpreq1 = httpMock.expectOne(baseUrl + '/api/user-board-config');
     httpreq1.flush(fakeGetDashData);
