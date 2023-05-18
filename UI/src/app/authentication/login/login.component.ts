@@ -22,8 +22,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-import { RsaEncryptionService } from '../../services/rsa.encryption.service';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 
 @Component({
     selector: 'app-login',
@@ -38,13 +36,12 @@ export class LoginComponent implements OnInit {
     returnUrl: string;
     error = '';
     sessionMsg = '';
-    rememberMeCheckbox = false;
     adLogin = true;
     loginConfig = {};
 
 
 
-    constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) {
+    constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService) {
     }
 
     ngOnInit() {
@@ -72,7 +69,6 @@ export class LoginComponent implements OnInit {
 
         });
 
-        this.rememberMe();
         /* get return url from route parameters or default to '/' */
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
@@ -100,15 +96,7 @@ export class LoginComponent implements OnInit {
  return this.adLoginForm.controls;
 }
 
-    rememberMe() {
-        if (localStorage.getItem('SpeedyUser') !== null) {
-            this.rememberMeCheckbox = true;
-            this.loginForm.controls['username'].setValue(localStorage.getItem('SpeedyUser'));
-            this.loginForm.controls['password'].setValue(this.aesEncryption.convertText(localStorage.getItem('SpeedyPassword'), 'decrypt'));
-        } else {
-            this.rememberMeCheckbox = false;
-        }
-    }
+   
 
     onSubmit(loginType) {
         this.submitted = true;
@@ -127,14 +115,14 @@ export class LoginComponent implements OnInit {
         this.loading = true;
         /*call login service*/
         if (loginType === 'standard') {
-            this.httpService.login('', this.f.username.value, this.rsa.encrypt(this.f.password.value))
+            this.httpService.login('', this.f.username.value, this.f.password.value)
                 .pipe(first())
                 .subscribe(
                     data => {
                         this.performLogin(data, this.f.username.value, this.f.password.value, 'standard');
                     });
         } else if (loginType === 'AD') {
-            this.httpService.login('LDAP', this.adf.username.value, this.rsa.encrypt(this.adf.password.value))
+            this.httpService.login('LDAP', this.adf.username.value, this.adf.password.value)
                 .pipe(first())
                 .subscribe(
                     data => {
@@ -144,13 +132,12 @@ export class LoginComponent implements OnInit {
     }
 
     redirectToProfile() {
-        if (!localStorage.getItem('user_email') || localStorage.getItem('user_email') === '') {
+        if (!this.sharedService.getCurrentUserDetails('user_email') || this.sharedService.getCurrentUserDetails('user_email') === '') {
             return true;
         }
-        const decryptedText = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
-        if (decryptedText && JSON.parse(decryptedText).includes('ROLE_SUPERADMIN')) {
+        if (this.sharedService.getCurrentUserDetails('authorities')?.includes('ROLE_SUPERADMIN')) {
             return false;
-        } else if (localStorage.getItem('projectsAccess') === 'undefined' || !localStorage.getItem('projectsAccess').length) {
+        } else if (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
             return true;
         }
 
@@ -172,16 +159,8 @@ export class LoginComponent implements OnInit {
 
         } else if (data['status'] === 200) {
             /*After successfully login redirect form to dashboard router(Executive page)*/
-            if (loginType === 'standard') {
-                localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(password, 'encrypt'));
-            }
             localStorage.setItem('loginType', loginType);
             this.adLogin = loginType;
-            if (this.rememberMeCheckbox) {
-                localStorage.setItem('SpeedyUser', username);
-            } else {
-                localStorage.removeItem('SpeedyUser');
-            }
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);
             } else {

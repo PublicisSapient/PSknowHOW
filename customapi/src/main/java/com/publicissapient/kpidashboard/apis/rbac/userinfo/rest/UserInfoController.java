@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServi
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
@@ -40,7 +41,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Objects;
 
 /**
  * @author narsingh9
@@ -137,5 +140,22 @@ public class UserInfoController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}
 
+	}
+
+	/**
+	 * get user details via token
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/userData")
+	public ResponseEntity<ServiceResponse> getUserDetails(HttpServletRequest request) {
+		UserDetailsResponseDTO userInfo = userInfoService.getUserInfoByToken(request);
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "invalid Token or user", null));
+
+		}
 	}
 }
