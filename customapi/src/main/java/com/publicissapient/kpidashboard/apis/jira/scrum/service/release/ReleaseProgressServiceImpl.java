@@ -92,10 +92,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		DataCount trendValue = new DataCount();
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest, trendValue);
+				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
 		LOGGER.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
@@ -103,7 +102,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest, DataCount trendValue) {
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestReleaseNode = new ArrayList<>();
@@ -140,9 +139,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PROGRESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PROGRESS.getColumns());
 				kpiElement.setExcelData(excelData);
-				trendValue.setValue(filterDataList);
 			}
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setTrendValueList(filterDataList);
 		}
 	}
 
