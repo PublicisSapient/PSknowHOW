@@ -1069,7 +1069,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedField = this.filterForm?.get(formfield)?.value;
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
-
+        
         if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
@@ -1081,7 +1081,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           } else {
             d = new Date(obj[endDateField]);
           }
-          dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
+          dateString = [this.pad(d.getDate()),this.pad(d.toLocaleString('default', { month: 'short' })),d.getFullYear()].join('/');
         }
       }
 
