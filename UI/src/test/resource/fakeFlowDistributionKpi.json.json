@@ -1,0 +1,74 @@
+{
+    "kpiId": "<>",
+    "kpiName": "<>",
+    "unit": "%",
+    "chartType": "",
+    "kpiInfo": {
+        "definition": "<>"
+    },
+    "id": "<>",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "kpiUnit": "%",
+    "kanban": false,
+    "kpiSource": "Jira",
+    "trendValueList": [
+        {
+            "data": "KnowHOW",
+            "value": [
+                {
+                    "date": "12-2-23",
+                    "value": {
+                                "Story": 58,
+                                "Defect": 40,
+                                "Change Request": 82,
+                                "Issue":5,
+                            },
+                },
+                {
+                    "date": "13-2-23",
+                    "value": {
+                                "Story": 56,
+                                "Defect": 10,
+                                "Change Request": 82,
+                                "Issue":6,
+                            },
+                },
+                {
+                    "date": "14-2-23",
+                    "value": {
+                                "Story": 97,
+                                "Defect": 90,
+                                "Change Request": 24,
+                                "Issue":5,
+                            },
+                    
+                },
+                {
+                    "date": "15-2-23",
+                    "value":{
+                                "Story": 85,
+                                "Defect": 80,
+                                "Change Request": 23,
+                                "Issue":5,
+                            },
+                    
+                },
+                {
+                    "date": "16-2-23",
+                    "value": {
+                                "Story": 51,
+                                "Defect": 60,
+                                "Change Request": 27,
+                                "Issue":5,
+                            },
+                    
+                }
+                //simillarly for other date
+            ]
+        }
+    ],
+    "groupId": 
+}
+
+//YYYY-MM-DD
