@@ -68,7 +68,6 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String OVERALL = "Overall";
 	private static final String SPRINT_DETAILS = "sprint details";
-	public static final String DUEDATE = "duedate";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -253,9 +252,9 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues, DUEDATE);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
-						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
@@ -267,7 +266,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
-			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 		}
 		return iterationPotentialDelayList;
 	}

@@ -89,7 +89,6 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String DATE = "date";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	public static final String DUEDATE = "duedate";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -351,9 +350,9 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues, DUEDATE);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
-						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
@@ -365,7 +364,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
-			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 		}
 		return iterationPotentialDelayList;
 	}

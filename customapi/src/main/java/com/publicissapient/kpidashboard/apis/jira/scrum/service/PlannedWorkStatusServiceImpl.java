@@ -96,7 +96,6 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	public static final String ACTUAL_COMPLETION_DATA = "actualCompletionData";
 	public static final String ISSUE_DELAY = "issueDelay";
 	public static final String DEV_COMPLETION_DATE = "devCompletionDate";
-	public static final String DUEDATE = "duedate";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -523,9 +522,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues, DUEDATE);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
-						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
@@ -537,7 +536,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
-			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails, DUEDATE));
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 		}
 		return iterationPotentialDelayList;
 	}
